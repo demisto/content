@@ -177,6 +177,502 @@ Configures security settings for GKE clusters, including access controls and vis
 | GCP.Container.Operations.privateClusterConfig.enablePrivateEndpoint | Boolean | Whether private endpoint is enabled for the cluster control plane. |
 | GCP.Container.Operations.masterVersion | String | The current version of the Kubernetes master in the GKE cluster. |
 
+### gcp-gke-cluster-legacy-abac-auth-set
+
+***
+Enables or disables legacy ABAC authorization for a GKE cluster. Required permissions: container.clusters.update.
+
+#### Base Command
+
+`gcp-gke-cluster-legacy-abac-auth-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the cluster. | Required |
+| resource_name | The name of the GKE cluster. | Required |
+| enabled | Whether to enable legacy ABAC authorization on the cluster. Possible values are: true, false. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.GKE.Operations.clusterConditions | Unknown | Which conditions caused the current cluster state. |
+| GCP.GKE.Operations.detail | String | Detailed operation progress, if available. |
+| GCP.GKE.Operations.endTime | String | The time the operation completed, in RFC3339 text format. |
+| GCP.GKE.Operations.error | Unknown | The error result of the operation in case of failure. |
+| GCP.GKE.Operations.location | String | The name of the Google Compute Engine zone or region in which the cluster resides. |
+| GCP.GKE.Operations.name | String | The server-assigned ID for the operation. |
+| GCP.GKE.Operations.nodepoolConditions | Unknown | Which conditions caused the current node pool state. |
+| GCP.GKE.Operations.operationType | String | The operation type. |
+| GCP.GKE.Operations.progress | Unknown | Progress information for an operation. |
+| GCP.GKE.Operations.selfLink | String | Server-defined URI for the operation. |
+| GCP.GKE.Operations.startTime | String | The time the operation started, in RFC3339 text format. |
+| GCP.GKE.Operations.status | String | The current status of the operation. |
+| GCP.GKE.Operations.statusMessage | String | If an error has occurred, a textual description of the error. |
+| GCP.GKE.Operations.targetLink | String | Server-defined URI for the target of the operation. |
+| GCP.GKE.Operations.zone | String | The name of the Google Compute Engine zone in which the operation is taking place. |
+
+### gcp-gke-clusters-list
+
+***
+Lists all GKE clusters owned by a project in the specified location. Required permissions: container.clusters.list.
+
+#### Base Command
+
+`gcp-gke-clusters-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) to list clusters from. Use "-" to list clusters from all locations. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.GKE.Clusters.addonsConfig | Unknown | Configurations for the various addons available to run in the cluster. |
+| GCP.GKE.Clusters.alphaClusterFeatureGates | Unknown | The list of user specified Kubernetes feature gates. |
+| GCP.GKE.Clusters.anonymousAuthenticationConfig | Unknown | Configuration for limiting anonymous access to all endpoints except the health checks. |
+| GCP.GKE.Clusters.authenticatorGroupsConfig | Unknown | Configuration controlling RBAC group membership information. |
+| GCP.GKE.Clusters.autopilot | Unknown | Autopilot configuration for the cluster. |
+| GCP.GKE.Clusters.autoscaling | Unknown | Cluster-level autoscaling configuration. |
+| GCP.GKE.Clusters.binaryAuthorization | Unknown | Configuration for Binary Authorization. |
+| GCP.GKE.Clusters.clusterIpv4Cidr | String | The IP address range of the container pods in this cluster, in CIDR notation. |
+| GCP.GKE.Clusters.compliancePostureConfig | Unknown | Compliance posture configuration for the cluster \(no longer supported\). |
+| GCP.GKE.Clusters.conditions | Unknown | Which conditions caused the current cluster state. |
+| GCP.GKE.Clusters.confidentialNodes | Unknown | Configuration of Confidential Nodes. |
+| GCP.GKE.Clusters.controlPlaneEgress | Unknown | Configuration for control plane egress control. |
+| GCP.GKE.Clusters.controlPlaneEndpointsConfig | Unknown | Configuration for all cluster's control plane endpoints. |
+| GCP.GKE.Clusters.costManagementConfig | Unknown | Configuration for the fine-grained cost management feature. |
+| GCP.GKE.Clusters.createTime | String | The time the cluster was created, in RFC3339 text format. |
+| GCP.GKE.Clusters.currentEmulatedVersion | String | The current emulated version of the master endpoint. |
+| GCP.GKE.Clusters.currentMasterVersion | String | The current software version of the master endpoint. |
+| GCP.GKE.Clusters.currentNodeCount | Number | The number of nodes currently in the cluster. |
+| GCP.GKE.Clusters.currentNodeVersion | String | The current version of the Kubernetes nodes in the cluster \(deprecated; use the node pool version instead\). |
+| GCP.GKE.Clusters.databaseEncryption | Unknown | Configuration of etcd encryption. |
+| GCP.GKE.Clusters.defaultMaxPodsConstraint | Unknown | The default constraint on the maximum number of pods that can be run simultaneously on a node in the node pool of this cluster. |
+| GCP.GKE.Clusters.description | String | An optional description of this cluster. |
+| GCP.GKE.Clusters.enableK8sBetaApis | Unknown | Beta APIs Config. |
+| GCP.GKE.Clusters.enableKubernetesAlpha | Boolean | Kubernetes alpha features are enabled on this cluster. |
+| GCP.GKE.Clusters.enableTpu | Boolean | Enable the ability to use Cloud TPUs in this cluster. |
+| GCP.GKE.Clusters.endpoint | String | The IP address of this cluster's master endpoint. |
+| GCP.GKE.Clusters.enterpriseConfig | Unknown | GKE Enterprise Configuration. |
+| GCP.GKE.Clusters.etag | String | This checksum is computed by the server based on the value of cluster fields, and may be sent on update requests to ensure the client has an up-to-date value before proceeding. |
+| GCP.GKE.Clusters.expireTime | String | The time the cluster will be automatically deleted in RFC3339 text format. |
+| GCP.GKE.Clusters.fleet | Unknown | Fleet information for the cluster. |
+| GCP.GKE.Clusters.gkeAutoUpgradeConfig | Unknown | Configuration for GKE auto upgrades. |
+| GCP.GKE.Clusters.id | String | Unique id for the cluster. |
+| GCP.GKE.Clusters.identityServiceConfig | Unknown | Configuration for Identity Service component. |
+| GCP.GKE.Clusters.initialClusterVersion | String | The initial Kubernetes version for this cluster. |
+| GCP.GKE.Clusters.initialNodeCount | Number | The number of nodes to create in this cluster. |
+| GCP.GKE.Clusters.instanceGroupUrls | Unknown | The instanceGroupUrls of the resource. |
+| GCP.GKE.Clusters.ipAllocationPolicy | Unknown | Configuration for cluster IP allocation. |
+| GCP.GKE.Clusters.labelFingerprint | String | The fingerprint of the set of labels for this cluster. |
+| GCP.GKE.Clusters.legacyAbac | Unknown | Configuration for the legacy ABAC authorization mode. |
+| GCP.GKE.Clusters.location | String | The name of the Google Compute Engine zone or region in which the cluster resides. |
+| GCP.GKE.Clusters.locations | Unknown | The list of Google Compute Engine zones in which the cluster's nodes should be located. |
+| GCP.GKE.Clusters.loggingConfig | Unknown | Logging configuration for the cluster. |
+| GCP.GKE.Clusters.loggingService | String | The logging service the cluster should use to write logs. |
+| GCP.GKE.Clusters.maintenancePolicy | Unknown | Configure the maintenance policy for this cluster. |
+| GCP.GKE.Clusters.managedMachineLearningDiagnosticsConfig | Unknown | Configuration for Managed Machine Learning Diagnostics. |
+| GCP.GKE.Clusters.managedOpentelemetryConfig | Unknown | Configuration for Managed OpenTelemetry pipeline. |
+| GCP.GKE.Clusters.masterAuth | Unknown | The authentication information for accessing the master endpoint. |
+| GCP.GKE.Clusters.masterAuthorizedNetworksConfig | Unknown | The configuration options for master authorized networks feature. |
+| GCP.GKE.Clusters.meshCertificates | Unknown | Configuration for issuance of mTLS keys and certificates to Kubernetes pods. |
+| GCP.GKE.Clusters.monitoringConfig | Unknown | Monitoring configuration for the cluster. |
+| GCP.GKE.Clusters.monitoringService | String | The monitoring service the cluster should use to write metrics. |
+| GCP.GKE.Clusters.name | String | The name of this cluster. |
+| GCP.GKE.Clusters.network | String | The name of the Google Compute Engine network to which the cluster is connected. |
+| GCP.GKE.Clusters.networkConfig | Unknown | Configuration for cluster networking. |
+| GCP.GKE.Clusters.networkPolicy | Unknown | Configuration options for the NetworkPolicy feature. |
+| GCP.GKE.Clusters.nodeConfig | Unknown | Parameters used in creating the cluster's nodes. |
+| GCP.GKE.Clusters.nodeCreationConfig | Unknown | Configuration for Node Creation Mode. |
+| GCP.GKE.Clusters.nodeIpv4CidrSize | Number | The size of the address space on each node for hosting containers. |
+| GCP.GKE.Clusters.nodePoolAutoConfig | Unknown | Node pool configs that apply to all auto-provisioned node pools in autopilot clusters and node auto-provisioning enabled clusters. |
+| GCP.GKE.Clusters.nodePoolDefaults | Unknown | Default NodePool settings for the entire cluster. |
+| GCP.GKE.Clusters.nodePools | Unknown | The node pools associated with this cluster. |
+| GCP.GKE.Clusters.notificationConfig | Unknown | Notification configuration of the cluster. |
+| GCP.GKE.Clusters.parentProductConfig | Unknown | The configuration of the parent product of the cluster. |
+| GCP.GKE.Clusters.podAutoscaling | Unknown | The config for pod autoscaling. |
+| GCP.GKE.Clusters.privateClusterConfig | Unknown | Configuration for private cluster. |
+| GCP.GKE.Clusters.rbacBindingConfig | Unknown | RBACBindingConfig allows user to restrict ClusterRoleBindings an RoleBindings that can be created. |
+| GCP.GKE.Clusters.releaseChannel | Unknown | Release channel configuration. |
+| GCP.GKE.Clusters.resourceLabels | Unknown | The resource labels for the cluster to use to annotate any related Google Compute Engine resources. |
+| GCP.GKE.Clusters.resourceUsageExportConfig | Unknown | Configuration for exporting resource usages. |
+| GCP.GKE.Clusters.rollbackSafeUpgrade | Unknown | The rollback safe upgrade information of the cluster. |
+| GCP.GKE.Clusters.satisfiesPzi | Boolean | Reserved for future use. |
+| GCP.GKE.Clusters.satisfiesPzs | Boolean | Reserved for future use. |
+| GCP.GKE.Clusters.scheduleUpgradeConfig | Unknown | Configuration for scheduled upgrades. |
+| GCP.GKE.Clusters.secretManagerConfig | Unknown | Secret CSI driver configuration. |
+| GCP.GKE.Clusters.secretSyncConfig | Unknown | Configuration for sync Secret Manager secrets as k8s secrets. |
+| GCP.GKE.Clusters.securityPostureConfig | Unknown | Enable/Disable Security Posture API features for the cluster. |
+| GCP.GKE.Clusters.selfLink | String | Server-defined URL for the resource. |
+| GCP.GKE.Clusters.servicesIpv4Cidr | String | The IP address range of the Kubernetes services in this cluster, in CIDR notation. |
+| GCP.GKE.Clusters.shieldedNodes | Unknown | Shielded Nodes configuration. |
+| GCP.GKE.Clusters.status | String | The current status of this cluster. |
+| GCP.GKE.Clusters.statusMessage | String | The statusMessage of the resource. |
+| GCP.GKE.Clusters.subnetwork | String | The name of the Google Compute Engine subnetwork to which the cluster is connected. |
+| GCP.GKE.Clusters.tpuIpv4CidrBlock | String | The IP address range of the Cloud TPUs in this cluster, in CIDR notation. |
+| GCP.GKE.Clusters.userManagedKeysConfig | Unknown | The Custom keys configuration for the cluster. |
+| GCP.GKE.Clusters.verticalPodAutoscaling | Unknown | Cluster-level Vertical Pod Autoscaling configuration. |
+| GCP.GKE.Clusters.workloadIdentityConfig | Unknown | Configuration for the use of Kubernetes Service Accounts in IAM policies. |
+| GCP.GKE.Clusters.zone | String | The name of the Google Compute Engine zone in which the cluster resides. |
+
+### gcp-gke-cluster-get
+
+***
+Gets the details of a specific GKE cluster. Required permissions: container.clusters.get.
+
+#### Base Command
+
+`gcp-gke-cluster-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the cluster. | Required |
+| resource_name | The name of the GKE cluster. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.GKE.Clusters.addonsConfig | Unknown | Configurations for the various addons available to run in the cluster. |
+| GCP.GKE.Clusters.alphaClusterFeatureGates | Unknown | The list of user specified Kubernetes feature gates. |
+| GCP.GKE.Clusters.anonymousAuthenticationConfig | Unknown | Configuration for limiting anonymous access to all endpoints except the health checks. |
+| GCP.GKE.Clusters.authenticatorGroupsConfig | Unknown | Configuration controlling RBAC group membership information. |
+| GCP.GKE.Clusters.autopilot | Unknown | Autopilot configuration for the cluster. |
+| GCP.GKE.Clusters.autoscaling | Unknown | Cluster-level autoscaling configuration. |
+| GCP.GKE.Clusters.binaryAuthorization | Unknown | Configuration for Binary Authorization. |
+| GCP.GKE.Clusters.clusterIpv4Cidr | String | The IP address range of the container pods in this cluster, in CIDR notation. |
+| GCP.GKE.Clusters.compliancePostureConfig | Unknown | Compliance posture configuration for the cluster \(no longer supported\). |
+| GCP.GKE.Clusters.conditions | Unknown | Which conditions caused the current cluster state. |
+| GCP.GKE.Clusters.confidentialNodes | Unknown | Configuration of Confidential Nodes. |
+| GCP.GKE.Clusters.controlPlaneEgress | Unknown | Configuration for control plane egress control. |
+| GCP.GKE.Clusters.controlPlaneEndpointsConfig | Unknown | Configuration for all cluster's control plane endpoints. |
+| GCP.GKE.Clusters.costManagementConfig | Unknown | Configuration for the fine-grained cost management feature. |
+| GCP.GKE.Clusters.createTime | String | The time the cluster was created, in RFC3339 text format. |
+| GCP.GKE.Clusters.currentEmulatedVersion | String | The current emulated version of the master endpoint. |
+| GCP.GKE.Clusters.currentMasterVersion | String | The current software version of the master endpoint. |
+| GCP.GKE.Clusters.currentNodeCount | Number | The number of nodes currently in the cluster. |
+| GCP.GKE.Clusters.currentNodeVersion | String | The current version of the Kubernetes nodes in the cluster \(deprecated; use the node pool version instead\). |
+| GCP.GKE.Clusters.databaseEncryption | Unknown | Configuration of etcd encryption. |
+| GCP.GKE.Clusters.defaultMaxPodsConstraint | Unknown | The default constraint on the maximum number of pods that can be run simultaneously on a node in the node pool of this cluster. |
+| GCP.GKE.Clusters.description | String | An optional description of this cluster. |
+| GCP.GKE.Clusters.enableK8sBetaApis | Unknown | Beta APIs Config. |
+| GCP.GKE.Clusters.enableKubernetesAlpha | Boolean | Kubernetes alpha features are enabled on this cluster. |
+| GCP.GKE.Clusters.enableTpu | Boolean | Enable the ability to use Cloud TPUs in this cluster. |
+| GCP.GKE.Clusters.endpoint | String | The IP address of this cluster's master endpoint. |
+| GCP.GKE.Clusters.enterpriseConfig | Unknown | GKE Enterprise Configuration. |
+| GCP.GKE.Clusters.etag | String | This checksum is computed by the server based on the value of cluster fields, and may be sent on update requests to ensure the client has an up-to-date value before proceeding. |
+| GCP.GKE.Clusters.expireTime | String | The time the cluster will be automatically deleted in RFC3339 text format. |
+| GCP.GKE.Clusters.fleet | Unknown | Fleet information for the cluster. |
+| GCP.GKE.Clusters.gkeAutoUpgradeConfig | Unknown | Configuration for GKE auto upgrades. |
+| GCP.GKE.Clusters.id | String | Unique id for the cluster. |
+| GCP.GKE.Clusters.identityServiceConfig | Unknown | Configuration for Identity Service component. |
+| GCP.GKE.Clusters.initialClusterVersion | String | The initial Kubernetes version for this cluster. |
+| GCP.GKE.Clusters.initialNodeCount | Number | The number of nodes to create in this cluster. |
+| GCP.GKE.Clusters.instanceGroupUrls | Unknown | The instanceGroupUrls of the resource. |
+| GCP.GKE.Clusters.ipAllocationPolicy | Unknown | Configuration for cluster IP allocation. |
+| GCP.GKE.Clusters.labelFingerprint | String | The fingerprint of the set of labels for this cluster. |
+| GCP.GKE.Clusters.legacyAbac | Unknown | Configuration for the legacy ABAC authorization mode. |
+| GCP.GKE.Clusters.location | String | The name of the Google Compute Engine zone or region in which the cluster resides. |
+| GCP.GKE.Clusters.locations | Unknown | The list of Google Compute Engine zones in which the cluster's nodes should be located. |
+| GCP.GKE.Clusters.loggingConfig | Unknown | Logging configuration for the cluster. |
+| GCP.GKE.Clusters.loggingService | String | The logging service the cluster should use to write logs. |
+| GCP.GKE.Clusters.maintenancePolicy | Unknown | Configure the maintenance policy for this cluster. |
+| GCP.GKE.Clusters.managedMachineLearningDiagnosticsConfig | Unknown | Configuration for Managed Machine Learning Diagnostics. |
+| GCP.GKE.Clusters.managedOpentelemetryConfig | Unknown | Configuration for Managed OpenTelemetry pipeline. |
+| GCP.GKE.Clusters.masterAuth | Unknown | The authentication information for accessing the master endpoint. |
+| GCP.GKE.Clusters.masterAuthorizedNetworksConfig | Unknown | The configuration options for master authorized networks feature. |
+| GCP.GKE.Clusters.meshCertificates | Unknown | Configuration for issuance of mTLS keys and certificates to Kubernetes pods. |
+| GCP.GKE.Clusters.monitoringConfig | Unknown | Monitoring configuration for the cluster. |
+| GCP.GKE.Clusters.monitoringService | String | The monitoring service the cluster should use to write metrics. |
+| GCP.GKE.Clusters.name | String | The name of this cluster. |
+| GCP.GKE.Clusters.network | String | The name of the Google Compute Engine network to which the cluster is connected. |
+| GCP.GKE.Clusters.networkConfig | Unknown | Configuration for cluster networking. |
+| GCP.GKE.Clusters.networkPolicy | Unknown | Configuration options for the NetworkPolicy feature. |
+| GCP.GKE.Clusters.nodeConfig | Unknown | Parameters used in creating the cluster's nodes. |
+| GCP.GKE.Clusters.nodeCreationConfig | Unknown | Configuration for Node Creation Mode. |
+| GCP.GKE.Clusters.nodeIpv4CidrSize | Number | The size of the address space on each node for hosting containers. |
+| GCP.GKE.Clusters.nodePoolAutoConfig | Unknown | Node pool configs that apply to all auto-provisioned node pools in autopilot clusters and node auto-provisioning enabled clusters. |
+| GCP.GKE.Clusters.nodePoolDefaults | Unknown | Default NodePool settings for the entire cluster. |
+| GCP.GKE.Clusters.nodePools | Unknown | The node pools associated with this cluster. |
+| GCP.GKE.Clusters.notificationConfig | Unknown | Notification configuration of the cluster. |
+| GCP.GKE.Clusters.parentProductConfig | Unknown | The configuration of the parent product of the cluster. |
+| GCP.GKE.Clusters.podAutoscaling | Unknown | The config for pod autoscaling. |
+| GCP.GKE.Clusters.privateClusterConfig | Unknown | Configuration for private cluster. |
+| GCP.GKE.Clusters.rbacBindingConfig | Unknown | RBACBindingConfig allows user to restrict ClusterRoleBindings an RoleBindings that can be created. |
+| GCP.GKE.Clusters.releaseChannel | Unknown | Release channel configuration. |
+| GCP.GKE.Clusters.resourceLabels | Unknown | The resource labels for the cluster to use to annotate any related Google Compute Engine resources. |
+| GCP.GKE.Clusters.resourceUsageExportConfig | Unknown | Configuration for exporting resource usages. |
+| GCP.GKE.Clusters.rollbackSafeUpgrade | Unknown | The rollback safe upgrade information of the cluster. |
+| GCP.GKE.Clusters.satisfiesPzi | Boolean | Reserved for future use. |
+| GCP.GKE.Clusters.satisfiesPzs | Boolean | Reserved for future use. |
+| GCP.GKE.Clusters.scheduleUpgradeConfig | Unknown | Configuration for scheduled upgrades. |
+| GCP.GKE.Clusters.secretManagerConfig | Unknown | Secret CSI driver configuration. |
+| GCP.GKE.Clusters.secretSyncConfig | Unknown | Configuration for sync Secret Manager secrets as k8s secrets. |
+| GCP.GKE.Clusters.securityPostureConfig | Unknown | Enable/Disable Security Posture API features for the cluster. |
+| GCP.GKE.Clusters.selfLink | String | Server-defined URL for the resource. |
+| GCP.GKE.Clusters.servicesIpv4Cidr | String | The IP address range of the Kubernetes services in this cluster, in CIDR notation. |
+| GCP.GKE.Clusters.shieldedNodes | Unknown | Shielded Nodes configuration. |
+| GCP.GKE.Clusters.status | String | The current status of this cluster. |
+| GCP.GKE.Clusters.statusMessage | String | The statusMessage of the resource. |
+| GCP.GKE.Clusters.subnetwork | String | The name of the Google Compute Engine subnetwork to which the cluster is connected. |
+| GCP.GKE.Clusters.tpuIpv4CidrBlock | String | The IP address range of the Cloud TPUs in this cluster, in CIDR notation. |
+| GCP.GKE.Clusters.userManagedKeysConfig | Unknown | The Custom keys configuration for the cluster. |
+| GCP.GKE.Clusters.verticalPodAutoscaling | Unknown | Cluster-level Vertical Pod Autoscaling configuration. |
+| GCP.GKE.Clusters.workloadIdentityConfig | Unknown | Configuration for the use of Kubernetes Service Accounts in IAM policies. |
+| GCP.GKE.Clusters.zone | String | The name of the Google Compute Engine zone in which the cluster resides. |
+
+### gcp-gke-node-pools-list
+
+***
+Lists the node pools for a GKE cluster. Required permissions: container.clusters.get.
+
+#### Base Command
+
+`gcp-gke-node-pools-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the cluster. | Required |
+| cluster | The name of the GKE cluster. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.GKE.NodePools.autoscaling | Unknown | Autoscaler configuration for this NodePool. |
+| GCP.GKE.NodePools.bestEffortProvisioning | Unknown | Enable best effort provisioning for nodes. |
+| GCP.GKE.NodePools.conditions | Unknown | Which conditions caused the current node pool state. |
+| GCP.GKE.NodePools.config | Unknown | The node configuration of the pool. |
+| GCP.GKE.NodePools.etag | String | This checksum is computed by the server based on the value of node pool fields, and may be sent on update requests to ensure the client has an up-to-date value before proceeding. |
+| GCP.GKE.NodePools.initialNodeCount | Number | The initial node count for the pool. |
+| GCP.GKE.NodePools.instanceGroupUrls | Unknown | The resource URLs of the managed instance groups associated with this node pool. |
+| GCP.GKE.NodePools.kubeletCertInfo | Unknown | Contains expiry information about the kubelet certificate. |
+| GCP.GKE.NodePools.locations | Unknown | The list of Google Compute Engine zones in which the NodePool's nodes should be located. |
+| GCP.GKE.NodePools.maintenancePolicy | Unknown | Specifies the maintenance policy for the node pool. |
+| GCP.GKE.NodePools.management | Unknown | NodeManagement configuration for this NodePool. |
+| GCP.GKE.NodePools.maxPodsConstraint | Unknown | The constraint on the maximum number of pods that can be run simultaneously on a node in the node pool. |
+| GCP.GKE.NodePools.name | String | The name of the node pool. |
+| GCP.GKE.NodePools.networkConfig | Unknown | Networking configuration for this NodePool. |
+| GCP.GKE.NodePools.nodeDrainConfig | Unknown | Specifies the node drain configuration for this node pool. |
+| GCP.GKE.NodePools.placementPolicy | Unknown | Specifies the node placement policy. |
+| GCP.GKE.NodePools.podIpv4CidrSize | Number | The pod CIDR block size per node in this node pool. |
+| GCP.GKE.NodePools.queuedProvisioning | Unknown | Specifies the configuration of queued provisioning. |
+| GCP.GKE.NodePools.selfLink | String | Server-defined URL for the resource. |
+| GCP.GKE.NodePools.status | String | The status of the nodes in this pool instance. |
+| GCP.GKE.NodePools.statusMessage | String | Additional information about the current status of the node pool, if available. |
+| GCP.GKE.NodePools.updateInfo | Unknown | Update info contains relevant information during a node pool update. |
+| GCP.GKE.NodePools.upgradeSettings | Unknown | Upgrade settings control disruption and speed of the upgrade. |
+| GCP.GKE.NodePools.version | String | The version of Kubernetes running on this NodePool's nodes. |
+| GCP.GKE.NodePools.config.machineType | String | The machine type of the Compute Engine instances in the node pool. |
+| GCP.GKE.NodePools.config.diskSizeGb | Number | The disk size \(in GB\) of the nodes in the node pool. |
+| GCP.GKE.NodePools.autoscaling.enabled | Boolean | Whether autoscaling is enabled for the node pool. |
+| GCP.GKE.NodePools.autoscaling.minNodeCount | Number | The minimum number of nodes when autoscaling is enabled. |
+| GCP.GKE.NodePools.autoscaling.maxNodeCount | Number | The maximum number of nodes when autoscaling is enabled. |
+| GCP.GKE.NodePools.management.autoRepair | Boolean | Whether node auto-repair is enabled for the node pool. |
+| GCP.GKE.NodePools.management.autoUpgrade | Boolean | Whether node auto-upgrade is enabled for the node pool. |
+
+### gcp-gke-node-pool-get
+
+***
+Gets the details of a specific node pool in a GKE cluster. Required permissions: container.clusters.get.
+
+#### Base Command
+
+`gcp-gke-node-pool-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the cluster. | Required |
+| cluster | The name of the GKE cluster. | Required |
+| node_pool | The name of the node pool. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.GKE.NodePools.autoscaling | Unknown | Autoscaler configuration for this NodePool. |
+| GCP.GKE.NodePools.bestEffortProvisioning | Unknown | Enable best effort provisioning for nodes. |
+| GCP.GKE.NodePools.conditions | Unknown | Which conditions caused the current node pool state. |
+| GCP.GKE.NodePools.config | Unknown | The node configuration of the pool. |
+| GCP.GKE.NodePools.etag | String | This checksum is computed by the server based on the value of node pool fields, and may be sent on update requests to ensure the client has an up-to-date value before proceeding. |
+| GCP.GKE.NodePools.initialNodeCount | Number | The initial node count for the pool. |
+| GCP.GKE.NodePools.instanceGroupUrls | Unknown | The resource URLs of the managed instance groups associated with this node pool. |
+| GCP.GKE.NodePools.kubeletCertInfo | Unknown | Contains expiry information about the kubelet certificate. |
+| GCP.GKE.NodePools.locations | Unknown | The list of Google Compute Engine zones in which the NodePool's nodes should be located. |
+| GCP.GKE.NodePools.maintenancePolicy | Unknown | Specifies the maintenance policy for the node pool. |
+| GCP.GKE.NodePools.management | Unknown | NodeManagement configuration for this NodePool. |
+| GCP.GKE.NodePools.maxPodsConstraint | Unknown | The constraint on the maximum number of pods that can be run simultaneously on a node in the node pool. |
+| GCP.GKE.NodePools.name | String | The name of the node pool. |
+| GCP.GKE.NodePools.networkConfig | Unknown | Networking configuration for this NodePool. |
+| GCP.GKE.NodePools.nodeDrainConfig | Unknown | Specifies the node drain configuration for this node pool. |
+| GCP.GKE.NodePools.placementPolicy | Unknown | Specifies the node placement policy. |
+| GCP.GKE.NodePools.podIpv4CidrSize | Number | The pod CIDR block size per node in this node pool. |
+| GCP.GKE.NodePools.queuedProvisioning | Unknown | Specifies the configuration of queued provisioning. |
+| GCP.GKE.NodePools.selfLink | String | Server-defined URL for the resource. |
+| GCP.GKE.NodePools.status | String | The status of the nodes in this pool instance. |
+| GCP.GKE.NodePools.statusMessage | String | Additional information about the current status of the node pool, if available. |
+| GCP.GKE.NodePools.updateInfo | Unknown | Update info contains relevant information during a node pool update. |
+| GCP.GKE.NodePools.upgradeSettings | Unknown | Upgrade settings control disruption and speed of the upgrade. |
+| GCP.GKE.NodePools.version | String | The version of Kubernetes running on this NodePool's nodes. |
+| GCP.GKE.NodePools.config.machineType | String | The machine type of the Compute Engine instances in the node pool. |
+| GCP.GKE.NodePools.config.diskSizeGb | Number | The disk size \(in GB\) of the nodes in the node pool. |
+| GCP.GKE.NodePools.autoscaling.enabled | Boolean | Whether autoscaling is enabled for the node pool. |
+| GCP.GKE.NodePools.autoscaling.minNodeCount | Number | The minimum number of nodes when autoscaling is enabled. |
+| GCP.GKE.NodePools.autoscaling.maxNodeCount | Number | The maximum number of nodes when autoscaling is enabled. |
+| GCP.GKE.NodePools.management.autoRepair | Boolean | Whether node auto-repair is enabled for the node pool. |
+| GCP.GKE.NodePools.management.autoUpgrade | Boolean | Whether node auto-upgrade is enabled for the node pool. |
+
+### gcp-gke-node-pool-management-set
+
+***
+Enables or disables the auto-repair and/or auto-upgrade management features of a node pool. Required permissions: container.clusters.update.
+
+#### Base Command
+
+`gcp-gke-node-pool-management-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the cluster. | Required |
+| cluster | The name of the GKE cluster. | Required |
+| node_pool | The name of the node pool. | Required |
+| auto_repair | Whether to enable node auto-repair for the node pool. Possible values are: true, false. | Optional |
+| auto_upgrade | Whether to enable node auto-upgrade for the node pool. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.GKE.Operations.clusterConditions | Unknown | Which conditions caused the current cluster state. |
+| GCP.GKE.Operations.detail | String | Detailed operation progress, if available. |
+| GCP.GKE.Operations.endTime | String | The time the operation completed, in RFC3339 text format. |
+| GCP.GKE.Operations.error | Unknown | The error result of the operation in case of failure. |
+| GCP.GKE.Operations.location | String | The name of the Google Compute Engine zone or region in which the cluster resides. |
+| GCP.GKE.Operations.name | String | The server-assigned ID for the operation. |
+| GCP.GKE.Operations.nodepoolConditions | Unknown | Which conditions caused the current node pool state. |
+| GCP.GKE.Operations.operationType | String | The operation type. |
+| GCP.GKE.Operations.progress | Unknown | Progress information for an operation. |
+| GCP.GKE.Operations.selfLink | String | Server-defined URI for the operation. |
+| GCP.GKE.Operations.startTime | String | The time the operation started, in RFC3339 text format. |
+| GCP.GKE.Operations.status | String | The current status of the operation. |
+| GCP.GKE.Operations.statusMessage | String | If an error has occurred, a textual description of the error. |
+| GCP.GKE.Operations.targetLink | String | Server-defined URI for the target of the operation. |
+| GCP.GKE.Operations.zone | String | The name of the Google Compute Engine zone in which the operation is taking place. |
+
+### gcp-gke-operations-list
+
+***
+Lists all GKE operations in a project for the specified location. Required permissions: container.operations.list.
+
+#### Base Command
+
+`gcp-gke-operations-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) to list operations from. Use "-" to list operations from all locations. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.GKE.Operations.clusterConditions | Unknown | Which conditions caused the current cluster state. |
+| GCP.GKE.Operations.detail | String | Detailed operation progress, if available. |
+| GCP.GKE.Operations.endTime | String | The time the operation completed, in RFC3339 text format. |
+| GCP.GKE.Operations.error | Unknown | The error result of the operation in case of failure. |
+| GCP.GKE.Operations.location | String | The name of the Google Compute Engine zone or region in which the cluster resides. |
+| GCP.GKE.Operations.name | String | The server-assigned ID for the operation. |
+| GCP.GKE.Operations.nodepoolConditions | Unknown | Which conditions caused the current node pool state. |
+| GCP.GKE.Operations.operationType | String | The operation type. |
+| GCP.GKE.Operations.progress | Unknown | Progress information for an operation. |
+| GCP.GKE.Operations.selfLink | String | Server-defined URI for the operation. |
+| GCP.GKE.Operations.startTime | String | The time the operation started, in RFC3339 text format. |
+| GCP.GKE.Operations.status | String | The current status of the operation. |
+| GCP.GKE.Operations.statusMessage | String | If an error has occurred, a textual description of the error. |
+| GCP.GKE.Operations.targetLink | String | Server-defined URI for the target of the operation. |
+| GCP.GKE.Operations.zone | String | The name of the Google Compute Engine zone in which the operation is taking place. |
+
+### gcp-gke-operation-get
+
+***
+Gets the details of a specific GKE operation. Required permissions: container.operations.get.
+
+#### Base Command
+
+`gcp-gke-operation-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the operation. | Required |
+| operation | The name of the operation. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.GKE.Operations.clusterConditions | Unknown | Which conditions caused the current cluster state. |
+| GCP.GKE.Operations.detail | String | Detailed operation progress, if available. |
+| GCP.GKE.Operations.endTime | String | The time the operation completed, in RFC3339 text format. |
+| GCP.GKE.Operations.error | Unknown | The error result of the operation in case of failure. |
+| GCP.GKE.Operations.location | String | The name of the Google Compute Engine zone or region in which the cluster resides. |
+| GCP.GKE.Operations.name | String | The server-assigned ID for the operation. |
+| GCP.GKE.Operations.nodepoolConditions | Unknown | Which conditions caused the current node pool state. |
+| GCP.GKE.Operations.operationType | String | The operation type. |
+| GCP.GKE.Operations.progress | Unknown | Progress information for an operation. |
+| GCP.GKE.Operations.selfLink | String | Server-defined URI for the operation. |
+| GCP.GKE.Operations.startTime | String | The time the operation started, in RFC3339 text format. |
+| GCP.GKE.Operations.status | String | The current status of the operation. |
+| GCP.GKE.Operations.statusMessage | String | If an error has occurred, a textual description of the error. |
+| GCP.GKE.Operations.targetLink | String | Server-defined URI for the target of the operation. |
+| GCP.GKE.Operations.zone | String | The name of the Google Compute Engine zone in which the operation is taking place. |
+
+### gcp-gke-operation-cancel
+
+***
+Cancels a specific GKE operation. Required permissions: container.operations.get.
+
+#### Base Command
+
+`gcp-gke-operation-cancel`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the operation. | Required |
+| operation | The name of the operation. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
 ### gcp-storage-bucket-metadata-update
 
 ***
@@ -2090,7 +2586,7 @@ Retrieves the IAM policy for a specific object in a bucket. Required permission:
 ### gcp-gke-cluster-security-update
 
 ***
-Configures security settings for GKE clusters, including access controls and visibility. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list.
+Configures security settings for GKE clusters, including access controls and visibility. Only one update may be applied to a cluster per request. Provide exactly one of the supported security flags. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list.
 
 #### Base Command
 
@@ -2105,7 +2601,12 @@ Configures security settings for GKE clusters, including access controls and vis
 | resource_name | Name of the GKE cluster. | Required |
 | enable_intra_node_visibility | Whether to enable intra-node visibility. Possible values are: true, false. | Optional |
 | enable_master_authorized_networks | Whether to enable Master Authorized Networks. Possible values are: true, false. | Optional |
-| cidrs | A comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.<br/>If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.<br/>. | Optional |
+| cidrs | A comma-separated list of up to 50 CIDR blocks (for example, "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.<br/>If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.<br/>. | Optional |
+| enable_binary_authorization | Whether to enable Binary Authorization on the cluster. Possible values are: true, false. | Optional |
+| enable_http_load_balancing | Whether to enable the HTTP load balancing add-on on the cluster. Possible values are: true, false. | Optional |
+| enable_kubernetes_dashboard | Whether to enable the Kubernetes dashboard add-on on the cluster. Possible values are: true, false. | Optional |
+| enable_network_policy | Whether to enable the network policy add-on on the cluster. Possible values are: true, false. | Optional |
+| enable_stackdriver_kubernetes | Whether to enable Stackdriver Kubernetes monitoring and logging on the cluster. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -5493,3 +5994,53 @@ Removes one or more instances from the specified instance group, but does not de
 | GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that is returned if the operation fails, such as NOT FOUND. |
 | GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
 | GCP.Compute.Operations.kind | string | The type of the resource. The value is always compute\#operation for Operation resources. |
+
+### gcp-logging-log-entries-list
+
+***
+Lists log entries. Use this command to retrieve log entries that originated from a project, organization, billing account, or folder. Required Permissions: logging.logEntries.list.
+
+#### Base Command
+
+`gcp-logging-log-entries-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID to read log entries from. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| organization_names | A comma-separated list of organization IDs of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional |
+| billing_account_names | A comma-separated list of billing account IDs of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional |
+| folder_names | A comma-separated list of folder IDs of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional |
+| filter | The filter to limit results to log entries that match. The maximum length of a filter is 20,000 characters. For example: "protoPayload.requestMetadata.callerIp:1.1.1.1 AND protoPayload.serviceName:name". | Optional |
+| order_by | The criteria to use for sorting the results. Can be "timestamp asc" or "timestamp desc". Possible values are: timestamp asc, timestamp desc. Default is timestamp asc. | Optional |
+| limit | The maximum number of results to return. Valid range is 1-500. Default is 50. | Optional |
+| next_token | The token used to retrieve the next batch of results. Must be the value of LogEntriesNextToken from the previous response. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Logging.LogEntries.logName | String | The resource name of the log to which this log entry belongs. |
+| GCP.Logging.LogEntries.resource.type | String | The monitored resource type. |
+| GCP.Logging.LogEntries.resource.labels | Unknown | The values for all labels listed in the associated monitored resource descriptor. |
+| GCP.Logging.LogEntries.timestamp | String | The time the event described by the log entry occurred, in RFC 3339 UTC "Zulu" format. For example: "2014-10-02T15:01:23Z". |
+| GCP.Logging.LogEntries.receiveTimestamp | String | The time the log entry was received by Logging, in RFC 3339 UTC "Zulu" format. For example: "2014-10-02T15:01:23Z". |
+| GCP.Logging.LogEntries.severity | String | The severity of the log entry. The default value is LogSeverity.DEFAULT. |
+| GCP.Logging.LogEntries.insertId | String | A unique identifier for the log entry. |
+| GCP.Logging.LogEntries.httpRequest | Unknown | The HTTP request associated with the log entry, containing requestMethod, requestUrl, status, userAgent, remoteIp, and other fields. |
+| GCP.Logging.LogEntries.labels | Unknown | The map of key-value pairs that provides additional information about the log entry. |
+| GCP.Logging.LogEntries.operation | Unknown | The information about an operation associated with the log entry, containing the ID, producer, first, and last fields. |
+| GCP.Logging.LogEntries.trace | String | The REST resource name of the trace being written to Cloud Trace in association with this log entry. |
+| GCP.Logging.LogEntries.spanId | String | The ID of the Cloud Trace span associated with the current operation in which the log is being written. |
+| GCP.Logging.LogEntries.traceSampled | Boolean | The sampling decision of the trace associated with the log entry. |
+| GCP.Logging.LogEntries.sourceLocation | Unknown | The source code location information associated with the log entry, containing file, line, and function fields. |
+| GCP.Logging.LogEntries.split | Unknown | The information indicating this LogEntry is part of a sequence of multiple log entries split from a single LogEntry, containing the UID, index, and totalSplits fields. |
+| GCP.Logging.LogEntries.errorGroups | Unknown | The Error Reporting error groups associated with this LogEntry, if any. |
+| GCP.Logging.LogEntries.apphub | Unknown | The AppHub application metadata associated with the monitored resource of this log entry. |
+| GCP.Logging.LogEntries.apphubDestination | Unknown | The AppHub application metadata associated with the destination of this log entry. |
+| GCP.Logging.LogEntries.apphubSource | Unknown | The AppHub application metadata associated with the source of this log entry. |
+| GCP.Logging.LogEntries.protoPayload | Unknown | The log entry payload, represented as a protocol buffer. A log entry has exactly one of protoPayload, textPayload, or jsonPayload. |
+| GCP.Logging.LogEntries.textPayload | String | The log entry payload, represented as a Unicode string \(UTF-8\). A log entry has exactly one of protoPayload, textPayload, or jsonPayload. |
+| GCP.Logging.LogEntries.jsonPayload | Unknown | The log entry payload, represented as a structure that is expressed as a JSON object. A log entry has exactly one of protoPayload, textPayload, or jsonPayload. |
+| GCP.Logging.LogEntriesNextToken | String | The nextPageToken included when there are more results than those appearing in this response. To get the next set of results, call this command again using the value of nextPageToken as next_token. |
