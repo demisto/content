@@ -157,7 +157,7 @@ demisto-sdk --version
 **Decision logic:**
 
 - If `demisto-sdk` is **not installed**, or the reported version is **below
-  1.40.0**, upgrade to the latest release from PyPI (inside the active venv):
+  1.39.10**, upgrade to the latest release from PyPI (inside the active venv):
 
   ```bash
   pip install --upgrade demisto-sdk
