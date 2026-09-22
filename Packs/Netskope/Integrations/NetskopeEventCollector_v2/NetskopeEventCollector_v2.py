@@ -372,8 +372,7 @@ async def handle_event_type_async(
         # if there are no success fetch/send, raise an exception and keep the previous next_fetch_start_time
         e: DemistoException = failures[0]
         demisto.error(
-            f"[Fetch][{coord_id}] Failed to fetch events for type={event_type}, "
-            f"offset={offset} limit={page_size}: {str(e)}"
+            f"[Fetch][{coord_id}] Failed to fetch events for type={event_type}, " f"offset={offset} limit={page_size}: {str(e)}"
         )
         if hasattr(e, "exception") and hasattr(e.exception, "status"):
             demisto.error(f"[Fetch][{coord_id}] HTTP status: {getattr(e.exception, 'status', None)}")
