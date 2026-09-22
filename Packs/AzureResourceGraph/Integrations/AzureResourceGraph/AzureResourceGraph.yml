@@ -42,12 +42,13 @@ configuration:
   hiddenusername: true
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   section: Connect
-- display: Private Key
+- displaypassword: Private Key
+  display: ""
   name: private_key
-  type: 14
+  type: 9
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
-  hidden: true
   section: Connect
+  hiddenusername: true
 - display: Use Gov Account Settings
   name: gov_account
   type: 8
