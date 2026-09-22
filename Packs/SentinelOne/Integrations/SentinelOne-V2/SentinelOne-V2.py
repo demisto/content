@@ -6227,18 +6227,23 @@ def get_alert_with_raw_indicators_command(client: Client, args: dict) -> Command
     readable = tableToMarkdown(
         "SentinelOne - Alert With Raw Indicators",
         alert_summary,
+        headers=list(alert_summary.keys()),
         removeNull=True,
     )
-    readable += tableToMarkdown(
-        "Indicators",
-        [{k: v for k, v in ind.items() if k != "Attacks"} for ind in indicators],
-        removeNull=True,
-    )
-    readable += tableToMarkdown(
-        "Event Search Parameters",
-        [event_search_params],
-        removeNull=True,
-    )
+    if indicators:
+        readable += tableToMarkdown(
+            "Indicators",
+            [{k: v for k, v in ind.items() if k != "Attacks"} for ind in indicators],
+            headers=["ID", "Type", "Severity", "Primary", "EventTime"],
+            removeNull=True,
+        )
+    if event_search_params:
+        readable += tableToMarkdown(
+            "Event Search Parameters",
+            [event_search_params],
+            headers=list(event_search_params.keys()),
+            removeNull=True,
+        )
     readable += f"\n**Raw Indicators:** {len(raw_indicators)} event(s) returned."
 
     return CommandResults(
