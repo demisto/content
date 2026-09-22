@@ -6160,9 +6160,9 @@ def get_alert_with_raw_indicators_command(client: Client, args: dict) -> Command
     alert_id = args["alert_id"]
     result = client.get_alert_with_raw_indicators_graphql_req(alert_id)
 
-    alert = result.get("alert", {})
-    raw_indicators = result.get("rawIndicators", [])
-    event_search_params = result.get("eventSearchParams", {})
+    alert = result.get("alert") or {}
+    raw_indicators = result.get("rawIndicators") or []
+    event_search_params = result.get("eventSearchParams") or {}
 
     indicators = [
         {
@@ -6173,7 +6173,7 @@ def get_alert_with_raw_indicators_command(client: Client, args: dict) -> Command
             "EventTime": ind.get("eventTime"),
             "Attacks": ind.get("attacks"),
         }
-        for ind in alert.get("indicators", [])
+        for ind in (alert.get("indicators") or [])
     ]
 
     context_entry = {
@@ -6220,14 +6220,33 @@ def get_alert_with_raw_indicators_command(client: Client, args: dict) -> Command
             "CreatedAt": alert.get("createdAt"),
             "DetectedAt": alert.get("detectedAt"),
         },
-        headers=["ID", "Name", "Severity", "Classification", "Status", "AnalystVerdict", "ConfidenceLevel", "Result", "CreatedAt", "DetectedAt"],
+        headers=[
+            "ID",
+            "Name",
+            "Severity",
+            "Classification",
+            "Status",
+            "AnalystVerdict",
+            "ConfidenceLevel",
+            "Result",
+            "CreatedAt",
+            "DetectedAt",
+        ],
         removeNull=True,
     )
     if alert.get("asset"):
         asset = alert.get("asset", {})
         readable += tableToMarkdown(
             "Asset",
-            [{"Name": asset.get("name"), "OS Type": asset.get("osType"), "OS Version": asset.get("osVersion"), "Last User": asset.get("lastLoggedInUser"), "Status": asset.get("status")}],
+            [
+                {
+                    "Name": asset.get("name"),
+                    "OS Type": asset.get("osType"),
+                    "OS Version": asset.get("osVersion"),
+                    "Last User": asset.get("lastLoggedInUser"),
+                    "Status": asset.get("status"),
+                }
+            ],
             headers=["Name", "OS Type", "OS Version", "Last User", "Status"],
             removeNull=True,
         )
@@ -6243,7 +6262,14 @@ def get_alert_with_raw_indicators_command(client: Client, args: dict) -> Command
         file_info = process.get("file", {}) or {}
         readable += tableToMarkdown(
             "Process",
-            [{"Username": process.get("username"), "File Name": file_info.get("name"), "File Path": file_info.get("path"), "SHA256": file_info.get("sha256")}],
+            [
+                {
+                    "Username": process.get("username"),
+                    "File Name": file_info.get("name"),
+                    "File Path": file_info.get("path"),
+                    "SHA256": file_info.get("sha256"),
+                }
+            ],
             headers=["Username", "File Name", "File Path", "SHA256"],
             removeNull=True,
         )
@@ -6265,7 +6291,10 @@ def get_alert_with_raw_indicators_command(client: Client, args: dict) -> Command
     if indicators:
         readable += tableToMarkdown(
             "Indicators",
-            [{"ID": ind.get("id"), "Type": ind.get("type"), "Severity": ind.get("severity"), "Primary": ind.get("primary")} for ind in indicators],
+            [
+                {"ID": ind.get("id"), "Type": ind.get("type"), "Severity": ind.get("severity"), "Primary": ind.get("primary")}
+                for ind in indicators
+            ],
             headers=["ID", "Type", "Severity", "Primary"],
             removeNull=True,
         )
@@ -6273,7 +6302,15 @@ def get_alert_with_raw_indicators_command(client: Client, args: dict) -> Command
     if related_events:
         readable += tableToMarkdown(
             "Related Events",
-            [{"Type": e.get("type_name"), "Time": e.get("time"), "Severity": e.get("severity"), "Process Name": ((e.get("actor") or {}).get("process") or {}).get("name")} for e in related_events],
+            [
+                {
+                    "Type": e.get("type_name"),
+                    "Time": e.get("time"),
+                    "Severity": e.get("severity"),
+                    "Process Name": ((e.get("actor") or {}).get("process") or {}).get("name"),
+                }
+                for e in related_events
+            ],
             headers=["Type", "Time", "Severity", "Process Name"],
             removeNull=True,
         )
