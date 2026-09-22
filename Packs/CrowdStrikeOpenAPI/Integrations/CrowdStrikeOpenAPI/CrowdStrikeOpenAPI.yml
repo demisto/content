@@ -17825,6 +17825,7 @@ script:
       name: sort
     - description: The filter expression that should be used to limit the results.
       name: filter_
+    deprecated: true
     description: Deprecated. Use the cs-query-devices-combined command instead. Search for hosts in your environment by platform, hostname, IP, and other criteria with continuous pagination capability (based on offset pointer which expires after 2 minutes with no maximum limit).
     name: cs-query-devices-by-filter-scroll
     outputs:
@@ -17846,7 +17847,6 @@ script:
     - contextPath: CrowdStrike.domainDeviceResponse.errors.message
       description: ''
       type: String
-    deprecated: true
   - arguments:
     - description: The maximum records to return. [1-500].
       name: limit
@@ -17884,9 +17884,9 @@ script:
       name: offset
     - description: The maximum records to return. [1-5000].
       name: limit
-    - description: The property to sort by.
+    - auto: PREDEFINED
+      description: The property to sort by.
       name: sort
-      auto: PREDEFINED
       predefined:
       - created_by.asc
       - created_by.desc
@@ -18026,9 +18026,9 @@ script:
       name: offset
     - description: The maximum records to return. [1-5000].
       name: limit
-    - description: The property to sort by.
+    - auto: PREDEFINED
+      description: The property to sort by.
       name: sort
-      auto: PREDEFINED
       predefined:
       - created_by.asc
       - created_by.desc
@@ -18094,9 +18094,9 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: The property to sort on, followed by a dot (.), followed by the sort direction, either "asc" or "desc".
+    - auto: PREDEFINED
+      description: The property to sort on, followed by a dot (.), followed by the sort direction, either "asc" or "desc".
       name: sort
-      auto: PREDEFINED
       predefined:
       - assigned_to.asc
       - assigned_to.desc
@@ -18118,9 +18118,9 @@ script:
       - status.desc
     - description: Optional filter and sort criteria in the form of an FQL query. For more information about FQL queries, see [our FQL documentation in Falcon](https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-feature-guide).
       name: filter_
-    - description: 'Starting index of overall result set from which to return ids.'
+    - description: Starting index of overall result set from which to return ids.
       name: offset
-    - description: 'The maximum records to return. [1-500].'
+    - description: The maximum records to return. [1-500].
       name: limit
     description: Search for incidents by providing an FQL filter, sorting, and paging details.
     name: cs-query-incidents
@@ -18561,7 +18561,7 @@ script:
       name: filter_
     - description: Perform a generic substring search across all fields.
       name: q
-    - description: 'If true, include both published and deleted indicators in the response. Defaults to false.'
+    - description: If true, include both published and deleted indicators in the response. Defaults to false.
       name: include_deleted
     description: Get indicators IDs that match provided FQL filters.
     name: cs-query-intel-indicator-ids
@@ -18850,7 +18850,7 @@ script:
       name: sort
     - description: 'Filter your query by specifying FQL filter  meters. Filter  meters include:  actors, actors.id, actors.name, actors.slug, actors.url, created_date, description, id, last_modified_date, motivations, motivations.id, motivations.slug, motivations.value, name, name.raw, short_description, slug, sub_type, sub_type.id, sub_type.name, sub_type.slug, tags, tags.id, tags.slug, tags.value, target_countries, target_countries.id, target_countries.slug, target_countries.value, target_industries, target_industries.id, target_industries.slug, target_industries.value, type, type.id, type.name, type.slug, url.'
       name: filter_
-    - description: 'Perform a generic substring search across all fields.'
+    - description: Perform a generic substring search across all fields.
       name: q
     description: Get report IDs that match provided FQL filters.
     name: cs-query-intel-report-ids
@@ -18880,9 +18880,9 @@ script:
       name: limit
     - description: 'Order fields in ascending or descending order.  Ex: created_date|asc.'
       name: sort
-    - description: 'Search by rule title.'
-      name: name
+    - description: Search by rule title.
       isArray: true
+      name: name
     - description: 'The rule news report type. Accepted values:  snort-suricata-master  snort-suricata-update  snort-suricata-changelog  yara-master  yara-update  yara-changelog  common-event-format  netwitness.'
       name: type_
       required: true
@@ -18982,9 +18982,9 @@ script:
       name: offset
     - description: The maximum records to return. [1-5000].
       name: limit
-    - description: The property to sort by.
+    - auto: PREDEFINED
+      description: The property to sort by.
       name: sort
-      auto: PREDEFINED
       predefined:
       - created_by.asc
       - created_by.desc
@@ -19060,9 +19060,9 @@ script:
       name: limit
     - description: The property to sort on, followed by a dot (.), followed by the sort direction, either "asc" or "desc".
       name: sort
-    - description: 'Optional filter and sort criteria in the form of an FQL query. For more information about FQL queries, see [our FQL documentation in Falcon](https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-feature-guide).'
+    - description: Optional filter and sort criteria in the form of an FQL query. For more information about FQL queries, see [our FQL documentation in Falcon](https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-feature-guide).
       name: filter_
-    - description: 'Starting index of overall result set from which to return ids.'
+    - description: Starting index of overall result set from which to return ids.
       name: offset
     description: Retrieve remediation tickets that match the provided filter criteria with scrolling enabled.
     name: cs-query-remediations-filter
@@ -19122,12 +19122,12 @@ script:
       name: cid_group_id
     - description: Role ID to fetch MSSP role for.
       name: role_id
-    - description: 'The sort expression used to sort the results.'
+    - auto: PREDEFINED
+      description: The sort expression used to sort the results.
       name: sort
-      auto: PREDEFINED
       predefined:
       - last_modified_timestamp
-    - description: 'Starting index of overall result set from which to return ids.'
+    - description: Starting index of overall result set from which to return ids.
       name: offset
     - description: Number of ids to return.
       name: limit
@@ -19155,7 +19155,7 @@ script:
   - arguments:
     - description: User UUID.
       name: X_CS_USERUUID
-    - description: 'Starting index of overall result set from which to return ids.'
+    - description: Starting index of overall result set from which to return ids.
       name: offset
     - description: Number of ids to return.
       name: limit
@@ -19214,8 +19214,8 @@ script:
     - description: User UUID.
       name: X_CS_USERUUID
     - description: ''
-      name: samplestore_querysamplesrequest_sha256s
       isArray: true
+      name: samplestore_querysamplesrequest_sha256s
     description: Retrieves a list with sha256 of samples that exist and customer has rights to access them, maximum number of accepted items is 200.
     name: cs-query-samplev1
     outputs:
@@ -19244,9 +19244,9 @@ script:
       name: offset
     - description: The maximum records to return. [1-5000].
       name: limit
-    - description: The property to sort by.
+    - auto: PREDEFINED
+      description: The property to sort by.
       name: sort
-      auto: PREDEFINED
       predefined:
       - created_by.asc
       - created_by.desc
@@ -19322,11 +19322,11 @@ script:
       name: filter_
     - description: The offset to start retrieving records from.
       name: offset
-    - description: 'The maximum records to return. [1-500].'
+    - description: The maximum records to return. [1-500].
       name: limit
-    - description: 'The sort expression that should be used to sort the results.'
+    - auto: PREDEFINED
+      description: The sort expression that should be used to sort the results.
       name: sort
-      auto: PREDEFINED
       predefined:
       - applied_globally.asc
       - applied_globally.desc
@@ -19458,15 +19458,15 @@ script:
   - arguments:
     - description: Name to lookup groups for.
       name: name
-    - description: 'The sort expression used to sort the results.'
+    - auto: PREDEFINED
+      description: The sort expression used to sort the results.
       name: sort
-      auto: PREDEFINED
       predefined:
       - last_modified_timestamp
       - name
-    - description: 'Starting index of overall result set from which to return ids.'
+    - description: Starting index of overall result set from which to return ids.
       name: offset
-    - description: 'Number of ids to return.'
+    - description: Number of ids to return.
       name: limit
     description: Query User Groups.
     name: cs-query-user-groups
@@ -19542,13 +19542,13 @@ script:
       description: ''
       type: String
     - contextPath: CrowdStrike.modelsAWSAccountsV1.resources.alias
-      description: 'Alias/Name associated with the account. This is only updated once the account is in a registered state.'
+      description: Alias/Name associated with the account. This is only updated once the account is in a registered state.
       type: String
     - contextPath: CrowdStrike.modelsAWSAccountsV1.resources.cid
       description: ''
       type: String
     - contextPath: CrowdStrike.modelsAWSAccountsV1.resources.cloudformation_stack_id
-      description: 'Unique identifier for the cloudformation stack id used for provisioning.'
+      description: Unique identifier for the cloudformation stack id used for provisioning.
       type: String
     - contextPath: CrowdStrike.modelsAWSAccountsV1.resources.cloudformation_url
       description: URL of the CloudFormation template to execute. This is returned when mode is to set 'cloudformation' when provisioning.
@@ -19717,11 +19717,11 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: 'Name to lookup groups for.'
+    - description: Name to lookup groups for.
       name: name
-    - description: 'The sort expression used to sort the results.'
+    - auto: PREDEFINED
+      description: The sort expression used to sort the results.
       name: sort
-      auto: PREDEFINED
       predefined:
       - last_modified_timestamp
       - name
@@ -19785,13 +19785,13 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: 'Get fields configuration for this platform.'
+    - description: Get fields configuration for this platform.
       name: platform_id
     - description: Starting index of overall result set from which to return ids.
       name: offset
     - description: Number of ids to return.
       name: limit
-    description: 'Get the firewall field specification IDs for the provided platform.'
+    description: Get the firewall field specification IDs for the provided platform.
     name: cs-queryfirewallfields
     outputs:
     - contextPath: CrowdStrike.fwmgrmsaQueryResponse.errors.code
@@ -20001,7 +20001,7 @@ script:
   - arguments:
     - description: Starting index of overall result set from which to return IDs.
       name: offset
-    - description: 'Number of IDs to return.'
+    - description: Number of IDs to return.
       name: limit
     description: Get all platform IDs.
     name: cs-queryplatforms-mixin0
@@ -20065,9 +20065,9 @@ script:
       name: offset
     - description: The maximum number of records to return [1-5000].
       name: limit
-    - description: The property to sort results by.
+    - auto: PREDEFINED
+      description: The property to sort results by.
       name: sort
-      auto: PREDEFINED
       predefined:
       - created_by.asc
       - created_by.desc
@@ -20107,9 +20107,9 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: 'The ID of the Response policy to search for members of.'
+    - description: The ID of the Response policy to search for members of.
       name: id_
-    - description: 'The filter expression that should be used to limit the results.'
+    - description: The filter expression that should be used to limit the results.
       name: filter_
     - description: The offset to start retrieving records from.
       name: offset
@@ -20214,9 +20214,9 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: 'Possible order by fields: {created_by, created_on, modified_by, modified_on, enabled, name, description}.'
+    - auto: PREDEFINED
+      description: 'Possible order by fields: {created_by, created_on, modified_by, modified_on, enabled, name, description}.'
       name: sort
-      auto: PREDEFINED
       predefined:
       - created_by
       - created_on
@@ -20289,9 +20289,9 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: 'Possible order by fields: {rules.ruletype_name, rules.enabled, rules.created_by, rules.current_version.name, rules.current_version.modified_by, rules.created_on, rules.current_version.description, rules.current_version.pattern_severity, rules.current_version.action_label, rules.current_version.modified_on}.'
+    - auto: PREDEFINED
+      description: 'Possible order by fields: {rules.ruletype_name, rules.enabled, rules.created_by, rules.current_version.name, rules.current_version.modified_by, rules.created_on, rules.current_version.description, rules.current_version.pattern_severity, rules.current_version.action_label, rules.current_version.modified_on}.'
       name: sort
-      auto: PREDEFINED
       predefined:
       - rules.created_by
       - rules.created_on
@@ -20335,7 +20335,7 @@ script:
   - arguments:
     - description: Starting index of overall result set from which to return IDs.
       name: offset
-    - description: 'Number of IDs to return.'
+    - description: Number of IDs to return.
       name: limit
     description: Get all rule type IDs.
     name: cs-queryruletypes
@@ -20358,7 +20358,17 @@ script:
     - contextPath: CrowdStrike.msaQueryResponse.errors.message
       description: ''
       type: String
-  - description: Refresh an active event stream. Use the URL shown in a GET /sensors/entities/datafeed/v2 response.
+  - arguments:
+    - description: Action name. Allowed value is refresh_active_stream_session.
+      name: action_name
+      required: true
+    - description: 'Label that identifies your connection. Max: 32 alphanumeric characters (a-z, A-Z, 0-9).'
+      name: appId
+      required: true
+    - description: Partition to request data for.
+      name: partition
+      required: true
+    description: Refresh an active event stream. Use the URL shown in a GET /sensors/entities/datafeed/v2 response.
     name: cs-refresh-active-stream-session
     outputs:
     - contextPath: CrowdStrike.msaReplyMetaOnly.errors.code
@@ -20379,16 +20389,6 @@ script:
     - contextPath: CrowdStrike.msaReplyMetaOnly.errors.message
       description: ''
       type: String
-    arguments:
-    - description: Action name. Allowed value is refresh_active_stream_session.
-      name: action_name
-      required: true
-    - description: 'Label that identifies your connection. Max: 32 alphanumeric characters (a-z, A-Z, 0-9).'
-      name: appId
-      required: true
-    - description: Partition to request data for.
-      name: partition
-      required: true
   - description: Regenerate API key for docker registry integrations.
     name: cs-regenerateapi-key
     outputs:
@@ -20437,7 +20437,12 @@ script:
     - contextPath: CrowdStrike.msaQueryResponse.errors.message
       description: ''
       type: String
-  - description: Get info about a user.
+  - arguments:
+    - description: ID of a user. Find a user's ID from `/users/entities/user/v1`.
+      isArray: true
+      name: ids
+      required: true
+    description: Get info about a user.
     name: cs-retrieve-user
     outputs:
     - contextPath: CrowdStrike.domainUserMetaDataResponse.errors.code
@@ -20488,11 +20493,6 @@ script:
     - contextPath: CrowdStrike.domainUserMetaDataResponse.resources.uuid
       description: ''
       type: String
-    arguments:
-    - description: ID of a user. Find a user's ID from `/users/entities/user/v1`.
-      isArray: true
-      name: ids
-      required: true
   - description: List user IDs for all users in your customer account. For more information on each user, provide the user ID to `/users/entities/user/v1`.
     name: cs-retrieve-useruui-ds-bycid
     outputs:
@@ -20516,8 +20516,8 @@ script:
       type: String
   - arguments:
     - description: A username. This is usually the user's email address, but may vary based on your configuration.
-      name: uid
       isArray: true
+      name: uid
       required: true
     description: Get a user's ID by providing a username (usually an email address).
     name: cs-retrieve-useruuid
@@ -20559,13 +20559,13 @@ script:
       description: ''
       type: String
     - contextPath: CrowdStrike.responsesRevealUninstallTokenRespV1.resources.device_id
-      description: 'The device the token belongs to.'
+      description: The device the token belongs to.
       type: String
     - contextPath: CrowdStrike.responsesRevealUninstallTokenRespV1.resources.seed_id
-      description: 'The seedID of the uninstall token.'
+      description: The seedID of the uninstall token.
       type: Number
     - contextPath: CrowdStrike.responsesRevealUninstallTokenRespV1.resources.uninstall_token
-      description: 'The uninstall token.'
+      description: The uninstall token.
       type: String
     - contextPath: CrowdStrike.responsesRevealUninstallTokenRespV1.errors.code
       description: ''
@@ -20586,13 +20586,13 @@ script:
       description: The uninstall token.
       type: String
   - arguments:
-    - description: 'ID of a user. Find a user''s ID from `/users/entities/user/v1`.'
+    - description: ID of a user. Find a user's ID from `/users/entities/user/v1`.
       name: user_uuid
       required: true
-    - description: 'One or more role IDs to revoke. Find a role''s ID from `/users/queries/roles/v1`.'
+    - description: One or more role IDs to revoke. Find a role's ID from `/users/queries/roles/v1`.
+      isArray: true
       name: ids
       required: true
-      isArray: true
     description: Revoke one or more roles from a user.
     name: cs-revoke-user-role-ids
     outputs:
@@ -20616,9 +20616,9 @@ script:
       type: String
   - arguments:
     - description: ''
+      isArray: true
       name: msa_aggregatequeryrequest_date_ranges
       required: true
-      isArray: true
     - description: ''
       name: msa_aggregatequeryrequest_field
       required: true
@@ -21091,7 +21091,7 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: 'RTR Session id.'
+    - description: RTR Session id.
       name: session_id
       required: true
     description: Delete a session.
@@ -21323,10 +21323,10 @@ script:
       description: ''
       type: Boolean
   - arguments:
-    - description: 'File IDs.'
+    - description: File IDs.
+      isArray: true
       name: ids
       required: true
-      isArray: true
     description: Get custom-scripts based on the ID's given. These are used for the RTR `runscript` command.
     name: cs-rtr-get-scripts
     outputs:
@@ -21596,7 +21596,7 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: 'Optional filter criteria in the form of an FQL query. For more information about FQL queries, see our [FQL documentation in Falcon](https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-feature-guide).'
+    - description: Optional filter criteria in the form of an FQL query. For more information about FQL queries, see our [FQL documentation in Falcon](https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-feature-guide).
       name: filter_
     - description: Starting index of overall result set from which to return ids.
       name: offset
@@ -21627,8 +21627,8 @@ script:
       type: String
   - arguments:
     - description: ''
-      name: msa_idsrequest_ids
       isArray: true
+      name: msa_idsrequest_ids
       required: true
     description: Get queued session metadata by session ID.
     name: cs-rtr-list-queued-sessions
@@ -21748,7 +21748,7 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: 'Optional filter criteria in the form of an FQL query. For more information about FQL queries, see our [FQL documentation in Falcon](https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-feature-guide).'
+    - description: Optional filter criteria in the form of an FQL query. For more information about FQL queries, see our [FQL documentation in Falcon](https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-feature-guide).
       name: filter_
     - description: Starting index of overall result set from which to return ids.
       name: offset
@@ -21779,9 +21779,9 @@ script:
       type: String
   - arguments:
     - description: ''
+      isArray: true
       name: msa_idsrequest_ids
       required: true
-      isArray: true
     description: Get session metadata by session id.
     name: cs-rtr-list-sessions
     outputs:
@@ -21960,7 +21960,7 @@ script:
     description: Refresh a session timeout on a single host.
     name: cs-rtr-pulse-session
   - arguments:
-    - description: 'ID to update.'
+    - description: ID to update.
       name: id_
       required: true
     - description: custom-script file to upload.  These should be powershell scripts.
@@ -22162,13 +22162,13 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: 'The ids of all current prevention policies for the platform specified. The precedence will be set in the order the ids are specified.'
+    - description: The ids of all current prevention policies for the platform specified. The precedence will be set in the order the ids are specified.
       isArray: true
       name: requests_setpolicyprecedencereqv1_ids
       required: true
-    - description: 'The name of the platform for which to set precedence.'
+    - auto: PREDEFINED
+      description: The name of the platform for which to set precedence.
       name: requests_setpolicyprecedencereqv1_platform_name
-      auto: PREDEFINED
       predefined:
       - Windows
       - Mac
@@ -22197,11 +22197,11 @@ script:
       type: String
   - arguments:
     - description: ''
+      isArray: true
       name: falconx_submissionparametersv1_sandbox
-      isArray: true
     - description: ''
-      name: falconx_submissionparametersv1_user_tags
       isArray: true
+      name: falconx_submissionparametersv1_user_tags
     description: Submit an uploaded file or a URL for sandbox analysis. Time required for analysis varies but is usually less than 15 minutes.
     name: cs-submit
     outputs:
@@ -22342,8 +22342,8 @@ script:
     name: cs-tokenscreate
   - arguments:
     - description: The token ids to delete.
-      name: ids
       isArray: true
+      name: ids
       required: true
     description: Deletes a token immediately. To revoke a token, use PATCH /installation-tokens/entities/tokens/v1 instead.
     name: cs-tokensdelete
@@ -22477,9 +22477,9 @@ script:
       type: String
   - arguments:
     - description: The token ids to update.
+      isArray: true
       name: ids
       required: true
-      isArray: true
     - description: The token's expiration time (RFC-3339). Null, if the token never expires.
       name: api_tokenpatchrequestv1_expires_timestamp
     - description: The token label.
@@ -22508,14 +22508,14 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: 'Scan Type to do.'
+    - auto: PREDEFINED
+      description: Scan Type to do.
       name: scan_type
-      required: true
-      auto: PREDEFINED
       predefined:
       - cluster-refresh
       - dry-run
       - full
+      required: true
     description: Triggers a dry run or a full scan of a customer's kubernetes footprint.
     name: cs-trigger-scan
   - arguments:
@@ -22665,10 +22665,10 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: 'A collection of policies to update.'
+    - description: A collection of policies to update.
+      isArray: true
       name: requests_updatedevicecontrolpoliciesv1_resources
       required: true
-      isArray: true
     description: Update Device Control Policies by specifying the ID of the policy and details to update.
     name: cs-update-device-control-policies
     outputs:
@@ -22682,13 +22682,13 @@ script:
       description: ''
       type: String
     - contextPath: CrowdStrike.responsesDeviceControlPoliciesV1.resources.created_by
-      description: 'The email of the user which created the policy.'
+      description: The email of the user which created the policy.
       type: String
     - contextPath: CrowdStrike.responsesDeviceControlPoliciesV1.resources.created_timestamp
-      description: 'The time at which the policy was created.'
+      description: The time at which the policy was created.
       type: String
     - contextPath: CrowdStrike.responsesDeviceControlPoliciesV1.resources.description
-      description: 'The description of a policy. Use this field to provide a high level summary of what this policy enforces.'
+      description: The description of a policy. Use this field to provide a high level summary of what this policy enforces.
       type: String
     - contextPath: CrowdStrike.responsesDeviceControlPoliciesV1.resources.enabled
       description: If a policy is enabled it will be used during the course of policy evaluation.
@@ -22876,13 +22876,13 @@ script:
       description: An additional description of the group or the devices it targets.
       type: String
     - contextPath: CrowdStrike.responsesFirewallPoliciesV1.resources.groups.group_type
-      description: 'The method by which this host group is managed.'
+      description: The method by which this host group is managed.
       type: String
     - contextPath: CrowdStrike.responsesFirewallPoliciesV1.resources.groups.id
-      description: 'The identifier of this host group.'
+      description: The identifier of this host group.
       type: String
     - contextPath: CrowdStrike.responsesFirewallPoliciesV1.resources.groups.modified_by
-      description: 'The email of the user which last modified the policy.'
+      description: The email of the user which last modified the policy.
       type: String
     - contextPath: CrowdStrike.responsesFirewallPoliciesV1.resources.groups.modified_timestamp
       description: The time at which the policy was last modified.
@@ -22979,9 +22979,9 @@ script:
       type: String
   - arguments:
     - description: A collection of groups to update.
+      isArray: true
       name: requests_updategroupsv1_resources
       required: true
-      isArray: true
     description: Update Host Groups by specifying the ID of the group and details to update.
     name: cs-update-host-groups
     outputs:
@@ -22995,16 +22995,16 @@ script:
       description: ''
       type: String
     - contextPath: CrowdStrike.responsesHostGroupsV1.resources.assignment_rule
-      description: 'The assignment rule of a group.'
+      description: The assignment rule of a group.
       type: String
     - contextPath: CrowdStrike.responsesHostGroupsV1.resources.created_by
-      description: 'The email of the user which created the policy.'
+      description: The email of the user which created the policy.
       type: String
     - contextPath: CrowdStrike.responsesHostGroupsV1.resources.created_timestamp
-      description: 'The time at which the policy was created.'
+      description: The time at which the policy was created.
       type: String
     - contextPath: CrowdStrike.responsesHostGroupsV1.resources.description
-      description: 'An additional description of the group or the devices it targets.'
+      description: An additional description of the group or the devices it targets.
       type: String
     - contextPath: CrowdStrike.responsesHostGroupsV1.resources.group_type
       description: The method by which this host group is managed.
@@ -23037,25 +23037,25 @@ script:
       description: The email of the user which created the policy.
       type: String
     - contextPath: CrowdStrike.responsesHostGroupsV1.resources.created_timestamp
-      description: 'The time at which the policy was created.'
+      description: The time at which the policy was created.
       type: String
     - contextPath: CrowdStrike.responsesHostGroupsV1.resources.description
-      description: 'An additional description of the group or the devices it targets.'
+      description: An additional description of the group or the devices it targets.
       type: String
     - contextPath: CrowdStrike.responsesHostGroupsV1.resources.group_type
-      description: 'The method by which this host group is managed.'
+      description: The method by which this host group is managed.
       type: String
     - contextPath: CrowdStrike.responsesHostGroupsV1.resources.id
       description: The identifier of this host group.
       type: String
     - contextPath: CrowdStrike.responsesHostGroupsV1.resources.modified_by
-      description: 'The email of the user which last modified the policy.'
+      description: The email of the user which last modified the policy.
       type: String
     - contextPath: CrowdStrike.responsesHostGroupsV1.resources.modified_timestamp
-      description: 'The time at which the policy was last modified.'
+      description: The time at which the policy was last modified.
       type: String
     - contextPath: CrowdStrike.responsesHostGroupsV1.resources.name
-      description: 'The name of the group.'
+      description: The name of the group.
       type: String
   - arguments:
     - description: The unique ID of the user who is assigned to this notification.
@@ -23155,7 +23155,7 @@ script:
       description: ''
       type: String
     - contextPath: CrowdStrike.domainNotificationEntitiesResponseV1.resources.assigned_to_uid
-      description: 'The email of the user who is assigned to this notification.'
+      description: The email of the user who is assigned to this notification.
       type: String
     - contextPath: CrowdStrike.domainNotificationEntitiesResponseV1.resources.assigned_to_username
       description: The name of the user who is assigned to this notification.
@@ -23198,8 +23198,8 @@ script:
       type: String
   - arguments:
     - description: A collection of policies to update.
-      name: requests_updatepreventionpoliciesv1_resources
       isArray: true
+      name: requests_updatepreventionpoliciesv1_resources
       required: true
     description: Update Prevention Policies by specifying the ID of the policy and details to update.
     name: cs-update-prevention-policies
@@ -23214,19 +23214,19 @@ script:
       description: ''
       type: String
     - contextPath: CrowdStrike.responsesPreventionPoliciesV1.resources.created_by
-      description: 'The email of the user which created the policy.'
+      description: The email of the user which created the policy.
       type: String
     - contextPath: CrowdStrike.responsesPreventionPoliciesV1.resources.created_timestamp
-      description: 'The time at which the policy was created.'
+      description: The time at which the policy was created.
       type: String
     - contextPath: CrowdStrike.responsesPreventionPoliciesV1.resources.description
-      description: 'The description of a policy. Use this field to provide a high level summary of what this policy enforces.'
+      description: The description of a policy. Use this field to provide a high level summary of what this policy enforces.
       type: String
     - contextPath: CrowdStrike.responsesPreventionPoliciesV1.resources.enabled
-      description: 'If a policy is enabled it will be used during the course of policy evaluation.'
+      description: If a policy is enabled it will be used during the course of policy evaluation.
       type: Boolean
     - contextPath: CrowdStrike.responsesPreventionPoliciesV1.resources.groups.assignment_rule
-      description: 'The assignment rule of a group.'
+      description: The assignment rule of a group.
       type: String
     - contextPath: CrowdStrike.responsesPreventionPoliciesV1.resources.groups.created_by
       description: The email of the user which created the policy.
@@ -23268,19 +23268,19 @@ script:
       description: The name of the platform.
       type: String
     - contextPath: CrowdStrike.responsesPreventionPoliciesV1.resources.prevention_settings.name
-      description: 'The name of the category.'
+      description: The name of the category.
       type: String
     - contextPath: CrowdStrike.responsesPreventionPoliciesV1.resources.prevention_settings.settings.description
-      description: 'The human readable description of the setting.'
+      description: The human readable description of the setting.
       type: String
     - contextPath: CrowdStrike.responsesPreventionPoliciesV1.resources.prevention_settings.settings.id
-      description: 'The id of the setting.'
+      description: The id of the setting.
       type: String
     - contextPath: CrowdStrike.responsesPreventionPoliciesV1.resources.prevention_settings.settings.name
-      description: 'The name of the setting.'
+      description: The name of the setting.
       type: String
     - contextPath: CrowdStrike.responsesPreventionPoliciesV1.resources.prevention_settings.settings.type
-      description: 'The type of the setting which can be used as a hint when displaying in the UI.'
+      description: The type of the setting which can be used as a hint when displaying in the UI.
       type: String
     - contextPath: CrowdStrike.responsesPreventionPoliciesV1.errors.code
       description: ''
@@ -23642,9 +23642,9 @@ script:
       description: The name of the platform.
       type: String
   - arguments:
-    - description: 'A collection of policies to update.'
-      name: requests_updatesensorupdatepoliciesv2_resources
+    - description: A collection of policies to update.
       isArray: true
+      name: requests_updatesensorupdatepoliciesv2_resources
       required: true
     description: Update Sensor Update Policies by specifying the ID of the policy and details to update with additional support for uninstall protection.
     name: cs-update-sensor-update-policiesv2
@@ -23659,13 +23659,13 @@ script:
       description: ''
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.created_by
-      description: 'The email of the user which created the policy.'
+      description: The email of the user which created the policy.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.created_timestamp
-      description: 'The time at which the policy was created.'
+      description: The time at which the policy was created.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.description
-      description: 'The description of a policy. Use this field to provide a high level summary of what this policy enforces.'
+      description: The description of a policy. Use this field to provide a high level summary of what this policy enforces.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.enabled
       description: If a policy is enabled it will be used during the course of policy evaluation.
@@ -23695,22 +23695,22 @@ script:
       description: The time at which the policy was last modified.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.groups.name
-      description: 'The name of the group.'
+      description: The name of the group.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.id
-      description: 'The unique id of the policy.'
+      description: The unique id of the policy.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.modified_by
-      description: 'The email of the user which last modified the policy.'
+      description: The email of the user which last modified the policy.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.modified_timestamp
-      description: 'The time at which the policy was last modified.'
+      description: The time at which the policy was last modified.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.name
-      description: 'The human readable name of the policy.'
+      description: The human readable name of the policy.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.platform_name
-      description: 'The name of the platform.'
+      description: The name of the platform.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.errors.code
       description: ''
@@ -23722,13 +23722,13 @@ script:
       description: ''
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.created_by
-      description: 'The email of the user which created the policy.'
+      description: The email of the user which created the policy.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.created_timestamp
-      description: 'The time at which the policy was created.'
+      description: The time at which the policy was created.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.description
-      description: 'The description of a policy. Use this field to provide a high level summary of what this policy enforces.'
+      description: The description of a policy. Use this field to provide a high level summary of what this policy enforces.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.enabled
       description: If a policy is enabled it will be used during the course of policy evaluation.
@@ -23758,29 +23758,29 @@ script:
       description: The time at which the policy was last modified.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.groups.name
-      description: 'The name of the group.'
+      description: The name of the group.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.id
-      description: 'The unique id of the policy.'
+      description: The unique id of the policy.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.modified_by
-      description: 'The email of the user which last modified the policy.'
+      description: The email of the user which last modified the policy.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.modified_timestamp
-      description: 'The time at which the policy was last modified.'
+      description: The time at which the policy was last modified.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.name
-      description: 'The human readable name of the policy.'
+      description: The human readable name of the policy.
       type: String
     - contextPath: CrowdStrike.responsesSensorUpdatePoliciesV2.resources.platform_name
-      description: 'The name of the platform.'
+      description: The name of the platform.
       type: String
   - arguments:
     - description: ''
       name: requests_svexclusionupdatereqv1_comment
     - description: ''
-      name: requests_svexclusionupdatereqv1_groups
       isArray: true
+      name: requests_svexclusionupdatereqv1_groups
     - description: ''
       name: requests_svexclusionupdatereqv1_id
       required: true
@@ -23808,31 +23808,31 @@ script:
       description: ''
       type: String
     - contextPath: CrowdStrike.responsesSvExclusionRespV1.resources.groups.assignment_rule
-      description: 'The assignment rule of a group.'
+      description: The assignment rule of a group.
       type: String
     - contextPath: CrowdStrike.responsesSvExclusionRespV1.resources.groups.created_by
-      description: 'The email of the user which created the policy.'
+      description: The email of the user which created the policy.
       type: String
     - contextPath: CrowdStrike.responsesSvExclusionRespV1.resources.groups.created_timestamp
-      description: 'The time at which the policy was created.'
+      description: The time at which the policy was created.
       type: String
     - contextPath: CrowdStrike.responsesSvExclusionRespV1.resources.groups.description
-      description: 'An additional description of the group or the devices it targets.'
+      description: An additional description of the group or the devices it targets.
       type: String
     - contextPath: CrowdStrike.responsesSvExclusionRespV1.resources.groups.group_type
-      description: 'The method by which this host group is managed.'
+      description: The method by which this host group is managed.
       type: String
     - contextPath: CrowdStrike.responsesSvExclusionRespV1.resources.groups.id
-      description: 'The identifier of this host group.'
+      description: The identifier of this host group.
       type: String
     - contextPath: CrowdStrike.responsesSvExclusionRespV1.resources.groups.modified_by
-      description: 'The email of the user which last modified the policy.'
+      description: The email of the user which last modified the policy.
       type: String
     - contextPath: CrowdStrike.responsesSvExclusionRespV1.resources.groups.modified_timestamp
-      description: 'The time at which the policy was last modified.'
+      description: The time at which the policy was last modified.
       type: String
     - contextPath: CrowdStrike.responsesSvExclusionRespV1.resources.groups.name
-      description: 'The name of the group.'
+      description: The name of the group.
       type: String
     - contextPath: CrowdStrike.responsesSvExclusionRespV1.resources.id
       description: ''
@@ -23916,7 +23916,7 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: 'ID of a user. Find a user''s ID from `/users/entities/user/v1`.'
+    - description: ID of a user. Find a user's ID from `/users/entities/user/v1`.
       name: user_uuid
       required: true
     - description: ''
@@ -24025,7 +24025,7 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: 'AWS Account ID.'
+    - description: AWS Account ID.
       isArray: true
       name: ids
       required: true
@@ -24070,37 +24070,37 @@ script:
       description: ''
       type: String
     - contextPath: CrowdStrike.modelsAWSAccountsV1.resources.alias
-      description: 'Alias/Name associated with the account. This is only updated once the account is in a registered state.'
+      description: Alias/Name associated with the account. This is only updated once the account is in a registered state.
       type: String
     - contextPath: CrowdStrike.modelsAWSAccountsV1.resources.cid
       description: ''
       type: String
     - contextPath: CrowdStrike.modelsAWSAccountsV1.resources.cloudformation_stack_id
-      description: 'Unique identifier for the cloudformation stack id used for provisioning.'
+      description: Unique identifier for the cloudformation stack id used for provisioning.
       type: String
     - contextPath: CrowdStrike.modelsAWSAccountsV1.resources.cloudformation_url
-      description: 'URL of the CloudFormation template to execute. This is returned when mode is to set ''cloudformation'' when provisioning.'
+      description: URL of the CloudFormation template to execute. This is returned when mode is to set 'cloudformation' when provisioning.
       type: String
     - contextPath: CrowdStrike.modelsAWSAccountsV1.resources.cloudtrail_bucket_owner_id
-      description: 'The 12 digit AWS account which is hosting the S3 bucket containing cloudtrail logs for this account. If this field is set, it takes precedence of the settings level field.'
+      description: The 12 digit AWS account which is hosting the S3 bucket containing cloudtrail logs for this account. If this field is set, it takes precedence of the settings level field.
       type: String
     - contextPath: CrowdStrike.modelsAWSAccountsV1.resources.cloudtrail_bucket_region
-      description: 'Region where the S3 bucket containing cloudtrail logs resides. This is only set if using cloudformation to provision and create the trail.'
+      description: Region where the S3 bucket containing cloudtrail logs resides. This is only set if using cloudformation to provision and create the trail.
       type: String
     - contextPath: CrowdStrike.modelsAWSAccountsV1.resources.created_timestamp
-      description: 'Timestamp of when the account was first provisioned within CrowdStrike''s system.'''
+      description: Timestamp of when the account was first provisioned within CrowdStrike's system.'
       type: String
     - contextPath: CrowdStrike.modelsAWSAccountsV1.resources.external_id
-      description: 'ID assigned for use with cross account IAM role access.'
+      description: ID assigned for use with cross account IAM role access.
       type: String
     - contextPath: CrowdStrike.modelsAWSAccountsV1.resources.iam_role_arn
-      description: 'The full arn of the IAM role created in this account to control access.'
+      description: The full arn of the IAM role created in this account to control access.
       type: String
     - contextPath: CrowdStrike.modelsAWSAccountsV1.resources.id
-      description: '12 digit AWS provided unique identifier for the account.'
+      description: 12 digit AWS provided unique identifier for the account.
       type: String
     - contextPath: CrowdStrike.modelsAWSAccountsV1.resources.last_modified_timestamp
-      description: 'Timestamp of when the account was last modified.'
+      description: Timestamp of when the account was last modified.
       type: String
     - contextPath: CrowdStrike.modelsAWSAccountsV1.resources.last_scanned_timestamp
       description: Timestamp of when the account was scanned.
@@ -24182,8 +24182,8 @@ script:
       type: String
   - arguments:
     - description: ''
-      name: domain_cidgroupsrequestv1_resources
       isArray: true
+      name: domain_cidgroupsrequestv1_resources
       required: true
     description: Update existing CID Group(s). CID Group ID is expected for each CID Group definition provided in request body. CID Group member(s) remain unaffected.
     name: cs-updatecid-groups
@@ -24231,7 +24231,7 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: 'Tenant ID to update client ID for. Required if multiple tenants are registered.'
+    - description: Tenant ID to update client ID for. Required if multiple tenants are registered.
       name: tenant_id
     - description: Default Subscription ID to patch for all subscriptions belonged to a tenant.
       name: subscription_id
@@ -24398,9 +24398,9 @@ script:
       type: String
   - arguments:
     - description: ''
+      isArray: true
       name: registration_scanscheduleupdaterequestv1_resources
       required: true
-      isArray: true
     description: Updates scan schedule configuration for one or more cloud platforms.
     name: cs-updatecspm-scan-schedule
     outputs:
@@ -24453,8 +24453,8 @@ script:
       name: requests_ioaexclusionupdatereqv1_detection_json
       required: true
     - description: ''
-      name: requests_ioaexclusionupdatereqv1_groups
       isArray: true
+      name: requests_ioaexclusionupdatereqv1_groups
       required: true
     - description: ''
       name: requests_ioaexclusionupdatereqv1_id
@@ -24471,7 +24471,7 @@ script:
     - description: ''
       name: requests_ioaexclusionupdatereqv1_pattern_name
       required: true
-    description: 'Update the IOA exclusions.'
+    description: Update the IOA exclusions.
     name: cs-updateioa-exclusionsv1
     outputs:
     - contextPath: CrowdStrike.responsesIoaExclusionRespV1.errors.code
@@ -24502,31 +24502,31 @@ script:
       description: ''
       type: String
     - contextPath: CrowdStrike.responsesIoaExclusionRespV1.resources.groups.assignment_rule
-      description: 'The assignment rule of a group.'
+      description: The assignment rule of a group.
       type: String
     - contextPath: CrowdStrike.responsesIoaExclusionRespV1.resources.groups.created_by
-      description: 'The email of the user which created the policy.'
+      description: The email of the user which created the policy.
       type: String
     - contextPath: CrowdStrike.responsesIoaExclusionRespV1.resources.groups.created_timestamp
-      description: 'The time at which the policy was created.'
+      description: The time at which the policy was created.
       type: String
     - contextPath: CrowdStrike.responsesIoaExclusionRespV1.resources.groups.description
-      description: 'An additional description of the group or the devices it targets.'
+      description: An additional description of the group or the devices it targets.
       type: String
     - contextPath: CrowdStrike.responsesIoaExclusionRespV1.resources.groups.group_type
-      description: 'The method by which this host group is managed.'
+      description: The method by which this host group is managed.
       type: String
     - contextPath: CrowdStrike.responsesIoaExclusionRespV1.resources.groups.id
-      description: 'The identifier of this host group.'
+      description: The identifier of this host group.
       type: String
     - contextPath: CrowdStrike.responsesIoaExclusionRespV1.resources.groups.modified_by
-      description: 'The email of the user which last modified the policy.'
+      description: The email of the user which last modified the policy.
       type: String
     - contextPath: CrowdStrike.responsesIoaExclusionRespV1.resources.groups.modified_timestamp
-      description: 'The time at which the policy was last modified.'
+      description: The time at which the policy was last modified.
       type: String
     - contextPath: CrowdStrike.responsesIoaExclusionRespV1.resources.groups.name
-      description: 'The name of the group.'
+      description: The name of the group.
       type: String
     - contextPath: CrowdStrike.responsesIoaExclusionRespV1.resources.id
       description: ''
@@ -24760,8 +24760,8 @@ script:
     - description: ''
       name: requests_svexclusionupdatereqv1_comment
     - description: ''
-      name: requests_svexclusionupdatereqv1_groups
       isArray: true
+      name: requests_svexclusionupdatereqv1_groups
     - description: ''
       name: requests_svexclusionupdatereqv1_id
       required: true
@@ -24949,9 +24949,9 @@ script:
       type: String
   - arguments:
     - description: A collection of policies to update.
+      isArray: true
       name: requests_updatertresponsepoliciesv1_resources
       required: true
-      isArray: true
     description: Update Response Policies by specifying the ID of the policy and details to update.
     name: cs-updatert-response-policies
     outputs:
@@ -24965,13 +24965,13 @@ script:
       description: ''
       type: String
     - contextPath: CrowdStrike.responsesRTResponsePoliciesV1.resources.created_by
-      description: 'The email of the user which created the policy.'
+      description: The email of the user which created the policy.
       type: String
     - contextPath: CrowdStrike.responsesRTResponsePoliciesV1.resources.created_timestamp
-      description: 'The time at which the policy was created.'
+      description: The time at which the policy was created.
       type: String
     - contextPath: CrowdStrike.responsesRTResponsePoliciesV1.resources.description
-      description: 'The description of a policy. Use this field to provide a high level summary of what this policy enforces.'
+      description: The description of a policy. Use this field to provide a high level summary of what this policy enforces.
       type: String
     - contextPath: CrowdStrike.responsesRTResponsePoliciesV1.resources.enabled
       description: If a policy is enabled it will be used during the course of policy evaluation.
@@ -25112,15 +25112,15 @@ script:
       description: The type of the setting which can be used as a hint when displaying in the UI.
       type: String
   - arguments:
-    - description: 'The user id.'
+    - description: The user id.
       name: X_CS_USERNAME
       required: true
-    - description: 'Audit log comment for this action.'
+    - description: Audit log comment for this action.
       name: comment
     - description: ''
+      isArray: true
       name: fwmgr_api_rulegroupmodifyrequestv1_diff_operations
       required: true
-      isArray: true
     - description: ''
       name: fwmgr_api_rulegroupmodifyrequestv1_diff_type
       required: true
@@ -25128,9 +25128,9 @@ script:
       name: fwmgr_api_rulegroupmodifyrequestv1_id
       required: true
     - description: ''
+      isArray: true
       name: fwmgr_api_rulegroupmodifyrequestv1_rule_ids
       required: true
-      isArray: true
     - description: ''
       isArray: true
       name: fwmgr_api_rulegroupmodifyrequestv1_rule_versions
@@ -25138,7 +25138,7 @@ script:
     - description: ''
       name: fwmgr_api_rulegroupmodifyrequestv1_tracking
       required: true
-    description: 'Update name, description, or enabled status of a rule group, or create, edit, delete, or reorder rules.'
+    description: Update name, description, or enabled status of a rule group, or create, edit, delete, or reorder rules.
     name: cs-updaterulegroup
     outputs:
     - contextPath: CrowdStrike.fwmgrapiQueryResponse.errors.code
@@ -25705,7 +25705,7 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: 'User UUID.'
+    - description: User UUID.
       name: X_CS_USERUUID
     - description: 'Content of the uploaded sample in binary format. For example, use `--data-binary @$FILE_PATH` when using cURL. Max file size: 100 MB.  Accepted file formats:  - Portable executables: `.exe`, `.scr`, `.pif`, `.dll`, `.com`, `.cpl`, etc. - Office documents: `.doc`, `.docx`, `.ppt`, `.pps`, `.pptx`, `.ppsx`, `.xls`, `.xlsx`, `.rtf`, `.pub` - PDF - APK - Executable JAR - Windows script component: `.sct` - Windows shortcut: `.lnk` - Windows help: `.chm` - HTML application: `.hta` - Windows script file: `.wsf` - Javascript: `.js` - Visual Basic: `.vbs`,  `.vbe` - Shockwave Flash: `.swf` - Perl: `.pl` - Powershell: `.ps1`, `.psd1`, `.psm1` - Scalable vector graphics: `.svg` - Python: `.py` - Linux ELF executables - Email files: MIME RFC 822 `.eml`, Outlook `.msg`.'
       isArray: true
@@ -25824,9 +25824,9 @@ script:
       type: String
   - arguments:
     - description: IDs of accounts to verify access on.
+      isArray: true
       name: ids
       required: true
-      isArray: true
     description: Performs an Access Verification check on the specified AWS Account IDs.
     name: cs-verifyaws-account-access
     outputs:
