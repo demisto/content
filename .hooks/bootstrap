@@ -21,7 +21,7 @@ PATH=~/.local/bin:$PATH
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     cat << __EOF__
 Setup development environment (run with no arguments):
-* install pre-commit hooks (set NO_HOOKS=1 to skip)
+* install pre-commit and pre-push hooks (set NO_HOOKS=1 to skip)
 __EOF__
     exit 0
 fi
