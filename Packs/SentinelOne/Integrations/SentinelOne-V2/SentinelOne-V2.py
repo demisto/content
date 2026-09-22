@@ -6174,6 +6174,7 @@ def get_alert_with_raw_indicators_command(client: Client, args: dict) -> Command
             "Attacks": ind.get("attacks"),
         }
         for ind in (alert.get("indicators") or [])
+        if ind and ind.get("id")
     ]
 
     context_entry = {
@@ -6314,7 +6315,26 @@ def get_alert_with_raw_indicators_command(client: Client, args: dict) -> Command
             headers=["Type", "Time", "Severity", "Process Name"],
             removeNull=True,
         )
-    readable += f"\n**Raw Indicators:** {len(raw_indicators)} event(s) returned."
+    if raw_indicators:
+        raw_indicator_rows = [
+            {
+                "Event ID": ind.get("event.id"),
+                "Event Time": ind.get("event.time"),
+                "Indicator Name": ind.get("indicator.name"),
+                "Category": ind.get("indicator.category"),
+                "Metadata": ind.get("indicator.metadata"),
+                "Process": ind.get("src.process.name"),
+                "Command Line": ind.get("src.process.cmdline"),
+                "Endpoint": ind.get("endpoint.name"),
+            }
+            for ind in raw_indicators
+        ]
+        readable += tableToMarkdown(
+            f"Raw Indicators ({len(raw_indicators)} event(s))",
+            raw_indicator_rows,
+            headers=["Event ID", "Event Time", "Indicator Name", "Category", "Metadata", "Process", "Command Line", "Endpoint"],
+            removeNull=True,
+        )
 
     return CommandResults(
         readable_output=readable,
