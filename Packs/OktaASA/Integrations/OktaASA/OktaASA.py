@@ -21,8 +21,8 @@ class OktaASAClient(BaseClient):
 
     def __init__(
         self,
-        key_id: str | None,
-        key_secret: str | None,
+        key_id: str,
+        key_secret: str,
         base_url: str,
         verify=True,
         proxy=False,
@@ -80,8 +80,7 @@ class OktaASAClient(BaseClient):
         """
 
         params = assign_params(offset=offset, count=count, descending=descending, prev=prev)
-        if not should_use_ucp_auth():
-            self.generate_token_if_required()
+        self.generate_token_if_required()
         response = self.get_audit_events_request(params)
         return response.get("list", []), response.get("related_objects", {})
 
@@ -313,13 +312,8 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
 
-    if should_use_ucp_auth():
-        api_key_id = None
-        api_key_secret = None
-    else:
-        api_key_id = params.get("credentials", {}).get("identifier")
-        api_key_secret = params.get("credentials", {}).get("password")
-    # Non-secret config fields are delivered by field id under both paths.
+    api_key_id = params.get("credentials", {}).get("identifier")
+    api_key_secret = params.get("credentials", {}).get("password")
     team_name = params.get("team_name", "").lower()
     base_url = urljoin(params.get("url"), f"/v1/teams/{team_name}")
     verify_certificate = not params.get("insecure", False)
