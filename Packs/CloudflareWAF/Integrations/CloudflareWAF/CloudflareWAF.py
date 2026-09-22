@@ -661,13 +661,7 @@ class Client(BaseClient):
         Returns:
             dict: API response from Cloudflare (the full entry point ruleset).
         """
-        json_data = remove_empty_elements(
-            {
-                "name": name,
-                "description": description,
-                "rules": rules,
-            }
-        )
+        json_data = assign_params(name=name, description=description, rules=rules)
 
         if zone_id:
             url_suffix = f"zones/{zone_id}/rulesets/phases/{phase}/entrypoint"
