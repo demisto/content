@@ -2679,10 +2679,13 @@ class AzureClient:
 
     def log_analytics_workspace_full_url(self, subscription_id: str, resource_group_name: str, workspace_name: str) -> str:
         """Build the ARM base URL for a Log Analytics workspace."""
-        return (
+        full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-            f"/providers/Microsoft.OperationalInsights/workspaces/{workspace_name}"
+            f"/providers/Microsoft.OperationalInsights/workspaces"
         )
+        if workspace_name:
+            full_url += f"/{workspace_name}"
+        return full_url
 
     def log_analytics_saved_searches_list(self, subscription_id: str, resource_group_name: str, workspace_name: str):
         """
@@ -2831,10 +2834,7 @@ class AzureClient:
             ValueError: If the resource group is not found.
             DemistoException: If there are permission or other API errors.
         """
-        full_url = (
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-            f"/providers/Microsoft.OperationalInsights/workspaces"
-        )
+        full_url = self.log_analytics_workspace_full_url(subscription_id, resource_group_name, "")
         params = {"api-version": LOG_ANALYTICS_API_VERSION}
         try:
             return self.http_request("GET", full_url=full_url, params=params)
