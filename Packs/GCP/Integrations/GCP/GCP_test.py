@@ -7200,6 +7200,30 @@ def test_test_connectivity_container_uses_clusters_list(mocker):
     )
 
 
+def test_test_connectivity_logging_uses_entries_list(mocker):
+    """
+    Given:
+        - The LOGGING service and a built API client.
+    When:
+        - test_connectivity is called.
+    Then:
+        - A project-scoped log entries list is invoked (Logging has no project testIamPermissions),
+          so no NotImplementedError is raised.
+    """
+    from GCP import GCPServices
+    from google.oauth2.credentials import Credentials
+
+    creds = MagicMock(spec=Credentials)
+    mock_client = MagicMock()
+    mocker.patch.object(GCPServices.LOGGING, "build", return_value=mock_client)
+
+    GCPServices.LOGGING.test_connectivity(creds, "dummy-project-id")
+
+    mock_client.entries.return_value.list.assert_called_once_with(
+        body={"resourceNames": ["projects/dummy-project-id"], "pageSize": 1}
+    )
+
+
 def test_test_all_services_wraps_results_into_tuples(mocker):
     """
     Given:
@@ -9091,19 +9115,23 @@ def _extract_output_prefixes(function_node: ast.AST, function_nodes: dict | None
     declares its own default; it is otherwise not resolvable statically and is
     ignored.
     """
+    return _collect_output_prefixes(function_node, seen=set())
+
+
+def _collect_output_prefixes(function_node: ast.AST, seen: set) -> set:
+    """Recursively collect output prefixes from a function and any local helper it delegates to.
+
+    Handlers may build their CommandResults through a shared local helper (e.g.
+    ``_container_operation_result(response, title)``) that owns the
+    ``outputs_prefix=...`` literal. To keep the wiring check accurate, when a
+    function calls another top-level function defined in the same module, that
+    callee's prefixes are folded in as well. ``seen`` guards against recursion
+    cycles.
+    """
     # Pattern 1c: the prefix declared as this function's own parameter default.
     prefixes: set = _extract_param_default_prefixes(function_node)
 
-    seen = _seen if _seen is not None else set()
-
     for node in ast.walk(function_node):
-        # Pattern 3: follow delegation into a called top-level function.
-        if function_nodes and isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
-            callee_name = node.func.id
-            callee_node = function_nodes.get(callee_name)
-            if callee_node is not None and callee_name not in seen:
-                seen.add(callee_name)
-                prefixes |= _extract_output_prefixes(callee_node, function_nodes, seen)
         # Pattern 1a: outputs_prefix="GCP.Some.Path" passed as a keyword argument.
         # NOTE: the literal is used verbatim (no .strip()) so that a leading or
         # trailing whitespace typo in the source (e.g. " GCP.Compute.Operations")
@@ -9112,6 +9140,12 @@ def _extract_output_prefixes(function_node: ast.AST, function_nodes: dict | None
             for keyword in node.keywords:
                 if keyword.arg == "outputs_prefix" and (value := _string_constant(keyword.value)):
                     prefixes.add(value)
+            # Pattern 3 (delegation): fold in the prefixes of a called local helper function.
+            if isinstance(node.func, ast.Name):
+                callee_name = node.func.id
+                if callee_name not in seen and (callee_node := _FUNCTION_NODES.get(callee_name)) is not None:
+                    seen.add(callee_name)
+                    prefixes |= _collect_output_prefixes(callee_node, seen)
         # Pattern 1b: outputs_prefix = "..." / output_prefix = "..." /
         # outputs_prefix: str = "...". The right-hand side may be a plain string
         # literal OR a command-branched conditional such as
@@ -9162,9 +9196,7 @@ def test_command_map_parser_ignores_commented_out_entries():
     commented_out = set(re.findall(r'^\s*#\s*"([a-z0-9][a-z0-9\-]*)"\s*:', _PY_SOURCE, flags=re.MULTILINE))
     leaked = sorted(commented_out & _COMMAND_MAP.keys())
 
-    assert not leaked, (
-        "The following commands are commented out in GCP.py but were parsed as wired " f"in the command_map: {leaked}"
-    )
+    assert not leaked, f"The following commands are commented out in GCP.py but were parsed as wired in the command_map: {leaked}"
 
 
 def test_command_map_handlers_resolve_to_real_functions():
@@ -9190,9 +9222,9 @@ def test_yml_commands_are_wired_in_py():
     Then: Every non-quick-action YML command must be wired in the .py.
     """
     missing = sorted(name for name in _YML_SPEC if name not in _COMMAND_MAP)
-    assert not missing, (
-        "The following commands are declared in GCP.yml but are NOT wired in the " f"command_map in GCP.py: {missing}"
-    )
+    assert (
+        not missing
+    ), f"The following commands are declared in GCP.yml but are NOT wired in the command_map in GCP.py: {missing}"
 
 
 def test_yml_args_match_py_handler_verbatim():
@@ -9399,6 +9431,721 @@ def test_extract_output_prefixes_does_not_strip_whitespace_typos():
     handler = _top_level_functions(ast.parse(source))["handler"]
 
     assert _extract_output_prefixes(handler) == {" GCP.Compute.Operations"}
+
+
+# ---------------------------------------------------------------------------
+# Container (GKE) commands - migrated from the legacy GoogleKubernetesEngine pack
+# ---------------------------------------------------------------------------
+
+
+def test_container_cluster_list_success(mocker):
+    """
+    Given: Valid credentials and snake_case args for listing GKE clusters in a location.
+    When: container_cluster_list is called.
+    Then: It calls the container clusters().list endpoint with the correct parent and
+          returns CommandResults with the GCP.GKE.Clusters prefix.
+    """
+    from GCP import gke_clusters_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"clusters": [{"name": "mock-cluster-1", "status": "RUNNING", "location": "us-central1-c"}]}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().list().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c"}
+    result = gke_clusters_list(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().list.call_args
+    assert called_kwargs["parent"] == "projects/mock_project_id/locations/us-central1-c"
+    assert result.outputs_prefix == "GCP.GKE.Clusters"
+    assert result.outputs == mock_response.get("clusters")
+
+
+def test_container_cluster_list_no_results(mocker):
+    """
+    Given: A container client returning no clusters.
+    When: container_cluster_list is called.
+    Then: It returns no outputs and a readable output indicating no clusters were found.
+    """
+    from GCP import gke_clusters_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().list().execute.return_value = {}
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c"}
+    result = gke_clusters_list(mock_creds, args)
+
+    assert result.outputs is None
+    assert "No clusters found" in result.readable_output
+
+
+def test_container_cluster_get_success(mocker):
+    """
+    Given: Valid credentials and snake_case args identifying a single GKE cluster.
+    When: gke_cluster_get is called.
+    Then: It calls clusters().get with the correct name and returns the cluster in
+          the GCP.GKE.Clusters context.
+    """
+    from GCP import gke_cluster_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"name": "mock-cluster-1", "status": "RUNNING", "location": "us-central1-c"}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().get().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "resource_name": "mock-cluster-1"}
+    result = gke_cluster_get(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().get.call_args
+    assert called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1"
+    assert result.outputs_prefix == "GCP.GKE.Clusters"
+    assert result.outputs == mock_response
+
+
+def test_container_node_pool_list_success(mocker):
+    """
+    Given: Valid credentials and snake_case args for listing node pools of a cluster.
+    When: container_node_pool_list is called.
+    Then: It calls nodePools().list with the correct parent and returns the node pools
+          in the GCP.GKE.NodePools context.
+    """
+    from GCP import gke_node_pools_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"nodePools": [{"name": "mock-pool-1", "status": "RUNNING", "version": "1.29"}]}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().nodePools().list().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "cluster": "mock-cluster-1"}
+    result = gke_node_pools_list(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().nodePools().list.call_args
+    assert called_kwargs["parent"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1"
+    assert result.outputs_prefix == "GCP.GKE.NodePools"
+    assert result.outputs == mock_response.get("nodePools")
+
+
+def test_container_node_pool_get_success(mocker):
+    """
+    Given: Valid credentials and snake_case args identifying a single node pool.
+    When: gke_node_pool_get is called.
+    Then: It calls nodePools().get with the correct name and returns the node pool in
+          the GCP.GKE.NodePools context.
+    """
+    from GCP import gke_node_pool_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"name": "mock-pool-1", "status": "RUNNING", "version": "1.29"}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().nodePools().get().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "cluster": "mock-cluster-1",
+        "node_pool": "mock-pool-1",
+    }
+    result = gke_node_pool_get(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().nodePools().get.call_args
+    assert (
+        called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1/nodePools/mock-pool-1"
+    )
+    assert result.outputs_prefix == "GCP.GKE.NodePools"
+    assert result.outputs == mock_response
+
+
+def test_container_node_pool_management_set_success(mocker):
+    """
+    Given: Valid credentials and snake_case args toggling node-pool auto-repair/auto-upgrade.
+    When: gke_node_pool_management_set is called.
+    Then: It calls nodePools().setManagement with the correct name and management body and
+          returns the operation in the GCP.GKE.Operations context.
+    """
+    from GCP import gke_node_pool_management_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"name": "operation-123", "status": "RUNNING"}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().nodePools().setManagement().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "cluster": "mock-cluster-1",
+        "node_pool": "mock-pool-1",
+        "auto_repair": "true",
+        "auto_upgrade": "false",
+    }
+    result = gke_node_pool_management_set(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().nodePools().setManagement.call_args
+    assert (
+        called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1/nodePools/mock-pool-1"
+    )
+    assert called_kwargs["body"]["management"]["autoRepair"] is True
+    assert called_kwargs["body"]["management"]["autoUpgrade"] is False
+    assert result.outputs_prefix == "GCP.GKE.Operations"
+    assert result.outputs == mock_response
+
+
+def test_container_operation_list_success(mocker):
+    """
+    Given: Valid credentials and snake_case args for listing GKE operations in a location.
+    When: container_operation_list is called.
+    Then: It calls operations().list with the correct parent and returns the operations in
+          the GCP.GKE.Operations context.
+    """
+    from GCP import gke_operations_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"operations": [{"name": "operation-123", "status": "DONE", "operationType": "UPGRADE_MASTER"}]}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().operations().list().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c"}
+    result = gke_operations_list(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().operations().list.call_args
+    assert called_kwargs["parent"] == "projects/mock_project_id/locations/us-central1-c"
+    assert result.outputs_prefix == "GCP.GKE.Operations"
+    assert result.outputs == mock_response.get("operations")
+
+
+def test_container_operation_get_success(mocker):
+    """
+    Given: Valid credentials and snake_case args identifying a single GKE operation.
+    When: gke_operation_get is called.
+    Then: It calls operations().get with the correct name and returns the operation in
+          the GCP.GKE.Operations context.
+    """
+    from GCP import gke_operation_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"name": "operation-123", "status": "DONE", "operationType": "UPGRADE_MASTER"}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().operations().get().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "operation": "operation-123"}
+    result = gke_operation_get(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().operations().get.call_args
+    assert called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/operations/operation-123"
+    assert result.outputs_prefix == "GCP.GKE.Operations"
+    assert result.outputs == mock_response
+
+
+def test_container_operation_get_api_error_propagates(mocker):
+    """
+    Given: A container client whose operations().get raises an HttpError.
+    When: gke_operation_get is called.
+    Then: The error propagates (handled centrally in main), rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import gke_operation_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=403, reason="Forbidden")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "permission denied"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().operations().get().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "operation": "operation-123"}
+    with pytest.raises(HttpError):
+        gke_operation_get(mock_creds, args)
+
+
+def test_container_cluster_security_update_no_flag_raises(mocker):
+    """
+    Given: A security update request that provides none of the mutually-exclusive security flags.
+    When: container_cluster_security_update is called.
+    Then: It raises a DemistoException indicating exactly one flag is required.
+    """
+    from GCP import DemistoException, container_cluster_security_update
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=MagicMock())
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "resource_name": "mock-cluster-1"}
+    with pytest.raises(DemistoException, match="Only one update can be applied"):
+        container_cluster_security_update(mock_creds, args)
+
+
+def test_container_operation_cancel_success(mocker):
+    """
+    Given: Valid credentials and snake_case args identifying a GKE operation to cancel.
+    When: gke_operation_cancel is called.
+    Then: It calls operations().cancel with the correct name and returns a readable
+          output confirming cancellation.
+    """
+    from GCP import gke_operation_cancel
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_container = MagicMock()
+    mock_container.projects().locations().operations().cancel().execute.return_value = {}
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "operation": "operation-123"}
+    result = gke_operation_cancel(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().operations().cancel.call_args
+    assert called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/operations/operation-123"
+    assert "operation-123" in result.readable_output
+    assert "cancel" in result.readable_output.lower()
+
+
+def test_container_cluster_security_update_binary_authorization(mocker):
+    """
+    Given: A GKE cluster needs Binary Authorization enabled.
+    When: container_cluster_security_update is called with enable_binary_authorization.
+    Then: The function issues an update with the desiredBinaryAuthorization body and returns
+          the operation in the GCP.Container.Operations context.
+    """
+    from GCP import container_cluster_security_update
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"name": "operation-123", "status": "RUNNING"}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().update().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "resource_name": "mock-cluster-1",
+        "enable_binary_authorization": "true",
+    }
+    result = container_cluster_security_update(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().update.call_args
+    assert called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1"
+    assert called_kwargs["body"]["update"]["desiredBinaryAuthorization"]["enabled"] is True
+    assert result.outputs == mock_response
+
+
+def test_container_cluster_security_update_addons(mocker):
+    """
+    Given: A GKE cluster needs an addon (HTTP load balancing) toggled.
+    When: container_cluster_security_update is called with enable_http_load_balancing.
+    Then: The function issues an update with the desiredAddonsConfig body and returns the
+          operation in the GCP.Container.Operations context.
+    """
+    from GCP import container_cluster_security_update
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"name": "operation-123", "status": "RUNNING"}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().update().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "resource_name": "mock-cluster-1",
+        "enable_http_load_balancing": "false",
+    }
+    result = container_cluster_security_update(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().update.call_args
+    addons = called_kwargs["body"]["update"]["desiredAddonsConfig"]
+    assert addons["httpLoadBalancing"]["disabled"] is True
+    assert result.outputs == mock_response
+
+
+def test_container_cluster_legacy_abac_auth_set(mocker):
+    """
+    Given: A GKE cluster needs legacy ABAC authorization enabled.
+    When: gke_cluster_legacy_abac_auth_set is called with enabled=true.
+    Then: The function calls the dedicated setLegacyAbac endpoint with enabled True, returning the
+          operation in the GCP.GKE.Operations context.
+    """
+    from GCP import gke_cluster_legacy_abac_auth_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"name": "operation-123", "status": "RUNNING"}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().setLegacyAbac().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "resource_name": "mock-cluster-1",
+        "enabled": "true",
+    }
+    result = gke_cluster_legacy_abac_auth_set(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().setLegacyAbac.call_args
+    assert called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1"
+    assert called_kwargs["body"]["enabled"] is True
+    assert result.outputs == mock_response
+
+
+def test_container_cluster_legacy_abac_auth_set_disable(mocker):
+    """
+    Given: A GKE cluster needs legacy ABAC authorization disabled.
+    When: gke_cluster_legacy_abac_auth_set is called with enabled=false.
+    Then: The function calls the dedicated setLegacyAbac endpoint with enabled False.
+    """
+    from GCP import gke_cluster_legacy_abac_auth_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().setLegacyAbac().execute.return_value = {"name": "operation-123"}
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "resource_name": "mock-cluster-1",
+        "enabled": "false",
+    }
+    gke_cluster_legacy_abac_auth_set(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().setLegacyAbac.call_args
+    assert called_kwargs["body"]["enabled"] is False
+
+
+def test_container_cluster_security_update_stackdriver_kubernetes(mocker):
+    """
+    Given: A GKE cluster needs Stackdriver Kubernetes monitoring/logging enabled.
+    When: container_cluster_security_update is called with enable_stackdriver_kubernetes=true.
+    Then: The function issues a clusters.update with the desiredMonitoringService and
+          desiredLoggingService fields set to the kubernetes-integrated services.
+    """
+    from GCP import container_cluster_security_update
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"name": "operation-123", "status": "RUNNING"}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().update().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "resource_name": "mock-cluster-1",
+        "enable_stackdriver_kubernetes": "true",
+    }
+    result = container_cluster_security_update(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().update.call_args
+    update_body = called_kwargs["body"]["update"]
+    assert update_body["desiredMonitoringService"] == "monitoring.googleapis.com/kubernetes"
+    assert update_body["desiredLoggingService"] == "logging.googleapis.com/kubernetes"
+    assert result.outputs == mock_response
+
+
+def test_container_node_pool_list_no_results(mocker):
+    """
+    Given: A container client returning no node pools for a cluster.
+    When: gke_node_pools_list is called.
+    Then: It returns no outputs and a readable output indicating no node pools were found.
+    """
+    from GCP import gke_node_pools_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().nodePools().list().execute.return_value = {}
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "cluster": "mock-cluster-1"}
+    result = gke_node_pools_list(mock_creds, args)
+
+    assert result.outputs is None
+    assert "No node pools found" in result.readable_output
+
+
+def test_container_operation_list_no_results(mocker):
+    """
+    Given: A container client returning no operations for a location.
+    When: gke_operations_list is called.
+    Then: It returns no outputs and a readable output indicating no operations were found.
+    """
+    from GCP import gke_operations_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_container = MagicMock()
+    mock_container.projects().locations().operations().list().execute.return_value = {}
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c"}
+    result = gke_operations_list(mock_creds, args)
+
+    assert result.outputs is None
+    assert "No operations found" in result.readable_output
+
+
+def test_container_node_pool_management_set_no_flag_raises(mocker):
+    """
+    Given: A node-pool management request that provides neither auto_repair nor auto_upgrade.
+    When: gke_node_pool_management_set is called.
+    Then: It raises a DemistoException indicating at least one flag is required.
+    """
+    from GCP import DemistoException, gke_node_pool_management_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=MagicMock())
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "cluster": "mock-cluster-1",
+        "node_pool": "mock-pool-1",
+    }
+    with pytest.raises(DemistoException, match="at least one of 'auto_repair' or 'auto_upgrade'"):
+        gke_node_pool_management_set(mock_creds, args)
+
+
+def test_container_clusters_list_api_error_propagates(mocker):
+    """
+    Given: A container client whose clusters().list raises an HttpError.
+    When: gke_clusters_list is called.
+    Then: The error propagates (handled centrally in main), rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import gke_clusters_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=403, reason="Forbidden")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "permission denied"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().list().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c"}
+    with pytest.raises(HttpError):
+        gke_clusters_list(mock_creds, args)
+
+
+def test_container_cluster_get_api_error_propagates(mocker):
+    """
+    Given: A container client whose clusters().get raises an HttpError.
+    When: gke_cluster_get is called.
+    Then: The error propagates rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import gke_cluster_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=404, reason="Not Found")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "cluster not found"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().get().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "resource_name": "mock-cluster-1"}
+    with pytest.raises(HttpError):
+        gke_cluster_get(mock_creds, args)
+
+
+def test_container_node_pools_list_api_error_propagates(mocker):
+    """
+    Given: A container client whose nodePools().list raises an HttpError.
+    When: gke_node_pools_list is called.
+    Then: The error propagates rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import gke_node_pools_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=403, reason="Forbidden")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "permission denied"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().nodePools().list().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "cluster": "mock-cluster-1"}
+    with pytest.raises(HttpError):
+        gke_node_pools_list(mock_creds, args)
+
+
+def test_container_node_pool_get_api_error_propagates(mocker):
+    """
+    Given: A container client whose nodePools().get raises an HttpError.
+    When: gke_node_pool_get is called.
+    Then: The error propagates rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import gke_node_pool_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=404, reason="Not Found")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "node pool not found"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().nodePools().get().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "cluster": "mock-cluster-1",
+        "node_pool": "mock-pool-1",
+    }
+    with pytest.raises(HttpError):
+        gke_node_pool_get(mock_creds, args)
+
+
+def test_container_node_pool_management_set_api_error_propagates(mocker):
+    """
+    Given: A container client whose nodePools().setManagement raises an HttpError.
+    When: gke_node_pool_management_set is called.
+    Then: The error propagates rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import gke_node_pool_management_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=403, reason="Forbidden")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "permission denied"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().nodePools().setManagement().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "cluster": "mock-cluster-1",
+        "node_pool": "mock-pool-1",
+        "auto_repair": "true",
+    }
+    with pytest.raises(HttpError):
+        gke_node_pool_management_set(mock_creds, args)
+
+
+def test_container_operations_list_api_error_propagates(mocker):
+    """
+    Given: A container client whose operations().list raises an HttpError.
+    When: gke_operations_list is called.
+    Then: The error propagates rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import gke_operations_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=403, reason="Forbidden")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "permission denied"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().operations().list().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c"}
+    with pytest.raises(HttpError):
+        gke_operations_list(mock_creds, args)
+
+
+def test_container_operation_cancel_api_error_propagates(mocker):
+    """
+    Given: A container client whose operations().cancel raises an HttpError.
+    When: gke_operation_cancel is called.
+    Then: The error propagates rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import gke_operation_cancel
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=404, reason="Not Found")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "operation not found"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().operations().cancel().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "operation": "operation-123"}
+    with pytest.raises(HttpError):
+        gke_operation_cancel(mock_creds, args)
+
+
+def test_container_cluster_legacy_abac_auth_set_api_error_propagates(mocker):
+    """
+    Given: A container client whose clusters().setLegacyAbac raises an HttpError.
+    When: gke_cluster_legacy_abac_auth_set is called.
+    Then: The error propagates rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import gke_cluster_legacy_abac_auth_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=403, reason="Forbidden")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "permission denied"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().setLegacyAbac().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "resource_name": "mock-cluster-1",
+        "enabled": "true",
+    }
+    with pytest.raises(HttpError):
+        gke_cluster_legacy_abac_auth_set(mock_creds, args)
+
+
+def test_container_cluster_security_update_api_error_propagates(mocker):
+    """
+    Given: A container client whose clusters().update raises an HttpError.
+    When: container_cluster_security_update is called with a valid single flag.
+    Then: The error propagates rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import container_cluster_security_update
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=403, reason="Forbidden")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "permission denied"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().update().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "resource_name": "mock-cluster-1",
+        "enable_binary_authorization": "true",
+    }
+    with pytest.raises(HttpError):
+        container_cluster_security_update(mock_creds, args)
 
 
 # ---------------------------------------------------------------------------
@@ -13884,3 +14631,771 @@ def test_compute_region_operation_delete_success(mocker):
     assert called_kwargs["region"] == "us-central1"
     assert called_kwargs["operation"] == "op-3"
     assert "successfully deleted" in res.readable_output
+
+
+# ---------------------------------------------------------------------------
+# Instance group commands
+# ---------------------------------------------------------------------------
+
+
+def _mock_instance_groups_resource(mocker, method_name: str, response):
+    """
+    Builds a mocked Compute client whose instanceGroups().<method_name>().execute() returns response.
+
+    Args:
+        mocker: The pytest-mock fixture.
+        method_name (str): The instanceGroups method to mock, e.g. "list" or "addInstances".
+        response: The value returned by execute(), or an Exception instance to raise.
+
+    Returns:
+        tuple: The mocked instanceGroups resource and the mocked credentials.
+    """
+    from GCP import GCPServices
+
+    mock_creds = mocker.Mock()
+    mock_compute = mocker.Mock()
+    mock_instance_groups = mocker.Mock()
+    mock_request = mocker.Mock()
+
+    if isinstance(response, Exception):
+        mock_request.execute.side_effect = response
+    else:
+        mock_request.execute.return_value = response
+
+    getattr(mock_instance_groups, method_name).return_value = mock_request
+    mock_compute.instanceGroups.return_value = mock_instance_groups
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    return mock_instance_groups, mock_creds
+
+
+class TestParseNamedPorts:
+    def test_parse_named_ports_multiple_ports(self):
+        """
+        Given: A semicolon-separated named ports string with two entries.
+        When: parse_named_ports is called.
+        Then: It returns a list of dictionaries with lowercase names and numeric ports.
+        """
+        from GCP import parse_named_ports
+
+        assert parse_named_ports("name=HTTP,port=80;name=https,port=443") == [
+            {"name": "http", "port": 80},
+            {"name": "https", "port": 443},
+        ]
+
+    def test_parse_named_ports_with_surrounding_whitespace(self):
+        """
+        Given: A named ports string with spaces around the semicolon separator.
+        When: parse_named_ports is called.
+        Then: Each entry is stripped before matching and parsed successfully.
+        """
+        from GCP import parse_named_ports
+
+        assert parse_named_ports(" name=http,port=80 ; name=https,port=443 ") == [
+            {"name": "http", "port": 80},
+            {"name": "https", "port": 443},
+        ]
+
+    def test_parse_named_ports_invalid_format_raises(self):
+        """
+        Given: A named ports string that does not match the expected format.
+        When: parse_named_ports is called.
+        Then: It raises a ValueError explaining the expected format.
+        """
+        from GCP import parse_named_ports
+
+        with pytest.raises(ValueError, match="Could not parse field"):
+            parse_named_ports("http:80")
+
+
+class TestGCPComputeInstanceGroupsList:
+    def test_gcp_compute_instance_groups_list_success(self, mocker):
+        """
+        Given: A mocked Compute API returning two instance groups without a next page token.
+        When: gcp_compute_instance_groups_list is called with project_id and zone.
+        Then: It returns the instance groups in the context outputs and calls the API with the expected parameters.
+        """
+        from GCP import gcp_compute_instance_groups_list
+
+        response = {
+            "items": [
+                {"id": "1", "name": "group-a", "zone": "us-central1-a", "size": 2},
+                {"id": "2", "name": "group-b", "zone": "us-central1-a", "size": 0},
+            ],
+            "selfLink": "https://www.googleapis.com/compute/v1/projects/test-project/zones/us-central1-a/instanceGroups",
+        }
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "list", response)
+
+        args = {"project_id": "test-project", "zone": "us-central1-a"}
+        result = gcp_compute_instance_groups_list(mock_creds, args)
+
+        assert result.outputs["GCP.Compute.InstanceGroups(val.id && val.id == obj.id)"] == response["items"]
+        assert "group-a" in result.readable_output
+        mock_instance_groups.list.assert_called_once_with(
+            project="test-project",
+            zone="us-central1-a",
+            maxResults=50,
+        )
+
+    def test_gcp_compute_instance_groups_list_with_next_page_token(self, mocker):
+        """
+        Given: A mocked Compute API returning a nextPageToken.
+        When: gcp_compute_instance_groups_list is called.
+        Then: The next page token is returned in the outputs.
+        """
+        from GCP import gcp_compute_instance_groups_list
+
+        response = {"items": [{"id": "1", "name": "group-a"}], "nextPageToken": "token-123"}
+        _mock_instance_groups_resource(mocker, "list", response)
+        mock_creds = mocker.Mock()
+
+        args = {"project_id": "test-project", "zone": "us-central1-a"}
+        result = gcp_compute_instance_groups_list(mock_creds, args)
+
+        assert result.outputs["GCP.Compute(true)"]["InstanceGroupsNextToken"] == "token-123"
+
+    def test_gcp_compute_instance_groups_list_empty_response(self, mocker):
+        """
+        Given: A mocked Compute API returning no instance groups.
+        When: gcp_compute_instance_groups_list is called.
+        Then: The instance groups entry is empty, no warning key is set and the readable output reports no results.
+        """
+        from GCP import gcp_compute_instance_groups_list
+
+        _mock_instance_groups_resource(mocker, "list", {})
+        mock_creds = mocker.Mock()
+
+        args = {"project_id": "test-project", "zone": "us-central1-a"}
+        result = gcp_compute_instance_groups_list(mock_creds, args)
+
+        assert result.outputs["GCP.Compute.InstanceGroups(val.id && val.id == obj.id)"] == []
+        assert "InstanceGroupsWarning" not in result.outputs["GCP.Compute(true)"]
+        assert "**No entries.**" in result.readable_output
+
+    def test_gcp_compute_instance_groups_list_response_warning(self, mocker):
+        """
+        Given: A mocked Compute API returning a top-level warning instead of instance groups.
+        When: gcp_compute_instance_groups_list is called.
+        Then: The warning is surfaced to the user under the InstanceGroupsWarning context key.
+        """
+        from GCP import gcp_compute_instance_groups_list
+
+        warning = {"code": "NO_RESULTS_ON_PAGE", "message": "There are no results for scope 'us-central1-a' on this page."}
+        _mock_instance_groups_resource(mocker, "list", {"warning": warning})
+        mock_creds = mocker.Mock()
+
+        args = {"project_id": "test-project", "zone": "us-central1-a"}
+        result = gcp_compute_instance_groups_list(mock_creds, args)
+
+        assert result.outputs["GCP.Compute(true)"]["InstanceGroupsWarning"] == warning
+
+    def test_gcp_compute_instance_groups_list_invalid_limit_raises(self, mocker):
+        """
+        Given: A limit argument above the maximum allowed value.
+        When: gcp_compute_instance_groups_list is called.
+        Then: A DemistoException is raised before any API call is made.
+        """
+        from GCP import gcp_compute_instance_groups_list
+        from CommonServerPython import DemistoException
+
+        mock_creds = mocker.Mock()
+        args = {"project_id": "test-project", "zone": "us-central1-a", "limit": "501"}
+
+        with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 500"):
+            gcp_compute_instance_groups_list(mock_creds, args)
+
+
+class TestGCPComputeInstanceGroupsAggregatedList:
+    def test_gcp_compute_instance_groups_aggregated_list_success(self, mocker):
+        """
+        Given: A mocked Compute API returning instance groups scoped by zone, including a scope that returned a warning.
+        When: gcp_compute_instance_groups_aggregated_list is called.
+        Then: The groups from every scope without a warning are flattened into a single list in the outputs.
+        """
+        from GCP import gcp_compute_instance_groups_aggregated_list
+
+        response = {
+            "items": {
+                "zones/us-central1-a": {"instanceGroups": [{"id": "1", "name": "group-a"}]},
+                "zones/us-east1-b": {"instanceGroups": [{"id": "2", "name": "group-b"}]},
+                "zones/europe-west1-c": {"warning": {"code": "NO_RESULTS_ON_PAGE"}},
+            }
+        }
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "aggregatedList", response)
+
+        args = {"project_id": "test-project"}
+        result = gcp_compute_instance_groups_aggregated_list(mock_creds, args)
+
+        assert result.outputs["GCP.Compute.InstanceGroups(val.id && val.id == obj.id)"] == [
+            {"id": "1", "name": "group-a"},
+            {"id": "2", "name": "group-b"},
+        ]
+        mock_instance_groups.aggregatedList.assert_called_once_with(project="test-project", maxResults=50)
+
+    def test_gcp_compute_instance_groups_aggregated_list_scope_warning_is_logged(self, mocker):
+        """
+        Given: A mocked Compute API returning a scope that holds both a warning and instance groups.
+        When: gcp_compute_instance_groups_aggregated_list is called.
+        Then: The scope is skipped and its warning is logged instead of being silently ignored.
+        """
+        from GCP import gcp_compute_instance_groups_aggregated_list
+
+        response = {
+            "items": {
+                "zones/us-central1-a": {"instanceGroups": [{"id": "1", "name": "group-a"}]},
+                "zones/us-east1-b": {"warning": {"code": "NO_RESULTS_ON_PAGE"}, "instanceGroups": []},
+            },
+            "warning": {"code": "NO_RESULTS_ON_PAGE"},
+        }
+        _mock_instance_groups_resource(mocker, "aggregatedList", response)
+        debug_mock = mocker.patch("demistomock.debug")
+        mock_creds = mocker.Mock()
+
+        result = gcp_compute_instance_groups_aggregated_list(mock_creds, {"project_id": "test-project"})
+
+        assert result.outputs["GCP.Compute(true)"]["AggregatedInstanceGroupsWarning"] == {"code": "NO_RESULTS_ON_PAGE"}
+        assert result.outputs["GCP.Compute.InstanceGroups(val.id && val.id == obj.id)"] == [{"id": "1", "name": "group-a"}]
+        assert any("returned a warning" in str(call) for call in debug_mock.call_args_list)
+
+    def test_gcp_compute_instance_groups_aggregated_list_empty_response(self, mocker):
+        """
+        Given: A mocked Compute API returning no aggregated items.
+        When: gcp_compute_instance_groups_aggregated_list is called.
+        Then: The instance groups entry is empty, no warning key is set and the readable output reports no results.
+        """
+        from GCP import gcp_compute_instance_groups_aggregated_list
+
+        _mock_instance_groups_resource(mocker, "aggregatedList", {})
+        mock_creds = mocker.Mock()
+
+        result = gcp_compute_instance_groups_aggregated_list(mock_creds, {"project_id": "test-project"})
+
+        assert result.outputs["GCP.Compute.InstanceGroups(val.id && val.id == obj.id)"] == []
+        assert "AggregatedInstanceGroupsWarning" not in result.outputs["GCP.Compute(true)"]
+        assert "**No entries.**" in result.readable_output
+
+    def test_gcp_compute_instance_groups_aggregated_list_api_error(self, mocker):
+        """
+        Given: A mocked Compute API that fails when listing the instance groups.
+        When: gcp_compute_instance_groups_aggregated_list is called.
+        Then: The exception propagates so main() can map it to a permission error.
+        """
+        from GCP import gcp_compute_instance_groups_aggregated_list
+
+        _mock_instance_groups_resource(mocker, "aggregatedList", Exception("Permission denied"))
+        mock_creds = mocker.Mock()
+
+        with pytest.raises(Exception, match="Permission denied"):
+            gcp_compute_instance_groups_aggregated_list(mock_creds, {"project_id": "test-project"})
+
+
+class TestGCPComputeInstanceGroupInstancesList:
+    def test_gcp_compute_instance_group_instances_list_success(self, mocker):
+        """
+        Given: A mocked Compute API returning the instances of an instance group and an instance_state filter.
+        When: gcp_compute_instance_group_instances_list is called.
+        Then: The instances are nested under the instance group in the outputs and the state filter is sent in the body.
+        """
+        from GCP import gcp_compute_instance_group_instances_list
+
+        response = {
+            "items": [
+                {"instance": "https://compute/v1/projects/p/zones/z/instances/vm-1", "status": "RUNNING"},
+                {"instance": "https://compute/v1/projects/p/zones/z/instances/vm-2", "status": "RUNNING"},
+            ]
+        }
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "listInstances", response)
+        mocker.patch("demistomock.context", return_value={})
+
+        args = {
+            "project_id": "test-project",
+            "zone": "us-central1-a",
+            "instance_group": "group-a",
+            "instance_state": "RUNNING",
+        }
+        result = gcp_compute_instance_group_instances_list(mock_creds, args)
+
+        outputs = result.outputs["GCP.Compute.InstanceGroups(val.id && val.id == obj.id)"]
+        assert outputs["id"] == "group-a"
+        assert outputs["Instances"] == response["items"]
+        mock_instance_groups.listInstances.assert_called_once_with(
+            project="test-project",
+            zone="us-central1-a",
+            instanceGroup="group-a",
+            maxResults=50,
+            body={"instanceState": "RUNNING"},
+        )
+
+    def test_gcp_compute_instance_group_instances_list_without_instance_state(self, mocker):
+        """
+        Given: A mocked Compute API and no instance_state argument.
+        When: gcp_compute_instance_group_instances_list is called.
+        Then: An empty body is sent so the API returns instances in every state.
+        """
+        from GCP import gcp_compute_instance_group_instances_list
+
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "listInstances", {"items": []})
+        mocker.patch("demistomock.context", return_value={})
+
+        args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "group-a"}
+        gcp_compute_instance_group_instances_list(mock_creds, args)
+
+        assert mock_instance_groups.listInstances.call_args.kwargs["body"] == {}
+
+    def test_gcp_compute_instance_group_instances_list_with_next_page_token(self, mocker):
+        """
+        Given: A mocked Compute API returning a nextPageToken.
+        When: gcp_compute_instance_group_instances_list is called.
+        Then: The next page token is returned nested under the instance groups context path.
+        """
+        from GCP import gcp_compute_instance_group_instances_list
+
+        response = {"items": [{"instance": "vm-1", "status": "RUNNING"}], "nextPageToken": "token-456"}
+        _mock_instance_groups_resource(mocker, "listInstances", response)
+        mocker.patch("demistomock.context", return_value={})
+        mock_creds = mocker.Mock()
+
+        args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "group-a"}
+        result = gcp_compute_instance_group_instances_list(mock_creds, args)
+
+        assert result.outputs["GCP.Compute.InstanceGroups(true)"]["InstanceGroupsInstancesNextToken"] == "token-456"
+
+    def test_gcp_compute_instance_group_instances_list_merges_context_instances(self, mocker):
+        """
+        Given: A context that already holds instances for the instance group from a previous paginated execution.
+        When: gcp_compute_instance_group_instances_list is called with the next page of instances.
+        Then: The instances from both executions are accumulated under the same instance group.
+        """
+        from GCP import gcp_compute_instance_group_instances_list
+
+        response = {"items": [{"instance": "vm-2", "status": "RUNNING"}]}
+        _mock_instance_groups_resource(mocker, "listInstances", response)
+        mocker.patch(
+            "demistomock.context",
+            return_value={"GCP": {"Compute": {"InstanceGroups": [{"id": "group-a", "Instances": [{"instance": "vm-1"}]}]}}},
+        )
+        mock_creds = mocker.Mock()
+
+        args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "group-a"}
+        result = gcp_compute_instance_group_instances_list(mock_creds, args)
+
+        outputs = result.outputs["GCP.Compute.InstanceGroups(val.id && val.id == obj.id)"]
+        assert outputs["Instances"] == [{"instance": "vm-1"}, {"instance": "vm-2", "status": "RUNNING"}]
+
+
+class TestGCPComputeInstanceGroupInsert:
+    def test_gcp_compute_instance_group_insert_success(self, mocker):
+        """
+        Given: A mocked Compute API and all optional instance group arguments.
+        When: gcp_compute_instance_group_insert is called.
+        Then: The operation is returned and the body contains the lowercase name, description, named ports and network.
+        """
+        from GCP import gcp_compute_instance_group_insert
+
+        response = {"id": "op-1", "name": "operation-1", "status": "RUNNING", "operationType": "insert"}
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "insert", response)
+
+        args = {
+            "project_id": "test-project",
+            "zone": "us-central1-a",
+            "name": "Group-A",
+            "description": "test group",
+            "named_ports": "name=http,port=80",
+            "network": "global/networks/default",
+        }
+        result = gcp_compute_instance_group_insert(mock_creds, args)
+
+        assert result.outputs_prefix == "GCP.Compute.Operations"
+        assert result.outputs == response
+        mock_instance_groups.insert.assert_called_once_with(
+            project="test-project",
+            zone="us-central1-a",
+            body={
+                "name": "group-a",
+                "description": "test group",
+                "namedPorts": [{"name": "http", "port": 80}],
+                "network": "global/networks/default",
+            },
+        )
+
+    def test_gcp_compute_instance_group_insert_minimal_args(self, mocker):
+        """
+        Given: A mocked Compute API and only the required name argument.
+        When: gcp_compute_instance_group_insert is called.
+        Then: The body contains only the name, with all empty optional fields removed.
+        """
+        from GCP import gcp_compute_instance_group_insert
+
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "insert", {"id": "op-1"})
+
+        args = {"project_id": "test-project", "zone": "us-central1-a", "name": "group-a"}
+        gcp_compute_instance_group_insert(mock_creds, args)
+
+        assert mock_instance_groups.insert.call_args.kwargs["body"] == {"name": "group-a"}
+
+
+class TestGCPComputeInstanceGroupDelete:
+    def test_gcp_compute_instance_group_delete_success(self, mocker):
+        """
+        Given: A mocked Compute API returning a delete operation.
+        When: gcp_compute_instance_group_delete is called.
+        Then: The operation is returned and the API is called with the expected parameters.
+        """
+        from GCP import gcp_compute_instance_group_delete
+
+        response = {"id": "op-1", "name": "operation-1", "status": "RUNNING", "operationType": "delete"}
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "delete", response)
+
+        args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "group-a"}
+        result = gcp_compute_instance_group_delete(mock_creds, args)
+
+        assert result.outputs_prefix == "GCP.Compute.Operations"
+        assert result.outputs == response
+        mock_instance_groups.delete.assert_called_once_with(project="test-project", zone="us-central1-a", instanceGroup="group-a")
+
+    def test_gcp_compute_instance_group_delete_extracts_zone_from_url(self, mocker):
+        """
+        Given: A zone argument provided as a full GCP zone URL.
+        When: gcp_compute_instance_group_delete is called.
+        Then: Only the zone name is sent to the API.
+        """
+        from GCP import gcp_compute_instance_group_delete
+
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "delete", {"id": "op-1"})
+
+        args = {
+            "project_id": "test-project",
+            "zone": "https://www.googleapis.com/compute/v1/projects/test-project/zones/us-central1-a",
+            "instance_group": "group-a",
+        }
+        gcp_compute_instance_group_delete(mock_creds, args)
+
+        assert mock_instance_groups.delete.call_args.kwargs["zone"] == "us-central1-a"
+
+    def test_gcp_compute_instance_group_delete_api_error(self, mocker):
+        """
+        Given: A mocked Compute API that fails when deleting the instance group.
+        When: gcp_compute_instance_group_delete is called.
+        Then: The exception propagates so main() can map it to a permission error.
+        """
+        from GCP import gcp_compute_instance_group_delete
+
+        _mock_instance_groups_resource(mocker, "delete", Exception("Instance group not found"))
+        mock_creds = mocker.Mock()
+
+        args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "missing-group"}
+
+        with pytest.raises(Exception, match="Instance group not found"):
+            gcp_compute_instance_group_delete(mock_creds, args)
+
+
+class TestGCPComputeInstanceGroupInstancesAdd:
+    def test_gcp_compute_instance_group_instances_add_success(self, mocker):
+        """
+        Given: A mocked Compute API and a comma-separated list of instance URLs.
+        When: gcp_compute_instance_group_instances_add is called.
+        Then: Each instance is wrapped in an instance object in the request body and the operation is returned.
+        """
+        from GCP import gcp_compute_instance_group_instances_add
+
+        response = {"id": "op-1", "name": "operation-1", "status": "RUNNING", "operationType": "addInstances"}
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "addInstances", response)
+
+        args = {
+            "project_id": "test-project",
+            "zone": "us-central1-a",
+            "instance_group": "group-a",
+            "instances": "zones/us-central1-a/instances/vm-1,zones/us-central1-a/instances/vm-2",
+        }
+        result = gcp_compute_instance_group_instances_add(mock_creds, args)
+
+        assert result.outputs_prefix == "GCP.Compute.Operations"
+        mock_instance_groups.addInstances.assert_called_once_with(
+            project="test-project",
+            zone="us-central1-a",
+            instanceGroup="group-a",
+            body={
+                "instances": [
+                    {"instance": "zones/us-central1-a/instances/vm-1"},
+                    {"instance": "zones/us-central1-a/instances/vm-2"},
+                ]
+            },
+        )
+
+    def test_gcp_compute_instance_group_instances_add_api_error(self, mocker):
+        """
+        Given: A mocked Compute API that fails when adding instances.
+        When: gcp_compute_instance_group_instances_add is called.
+        Then: The exception propagates so main() can map it to a permission error.
+        """
+        from GCP import gcp_compute_instance_group_instances_add
+
+        _mock_instance_groups_resource(mocker, "addInstances", Exception("Permission denied"))
+        mock_creds = mocker.Mock()
+
+        args = {
+            "project_id": "test-project",
+            "zone": "us-central1-a",
+            "instance_group": "group-a",
+            "instances": "vm-1",
+        }
+
+        with pytest.raises(Exception, match="Permission denied"):
+            gcp_compute_instance_group_instances_add(mock_creds, args)
+
+
+class TestGCPComputeInstanceGroupInstancesRemove:
+    def test_gcp_compute_instance_group_instances_remove_success(self, mocker):
+        """
+        Given: A mocked Compute API and a single instance URL.
+        When: gcp_compute_instance_group_instances_remove is called.
+        Then: The instance is wrapped in an instance object in the request body and the operation is returned.
+        """
+        from GCP import gcp_compute_instance_group_instances_remove
+
+        response = {"id": "op-1", "name": "operation-1", "status": "RUNNING", "operationType": "removeInstances"}
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "removeInstances", response)
+
+        args = {
+            "project_id": "test-project",
+            "zone": "us-central1-a",
+            "instance_group": "group-a",
+            "instances": "zones/us-central1-a/instances/vm-1",
+        }
+        result = gcp_compute_instance_group_instances_remove(mock_creds, args)
+
+        assert result.outputs == response
+        mock_instance_groups.removeInstances.assert_called_once_with(
+            project="test-project",
+            zone="us-central1-a",
+            instanceGroup="group-a",
+            body={"instances": [{"instance": "zones/us-central1-a/instances/vm-1"}]},
+        )
+
+    def test_gcp_compute_instance_group_instances_remove_api_error(self, mocker):
+        """
+        Given: A mocked Compute API that fails when removing instances.
+        When: gcp_compute_instance_group_instances_remove is called.
+        Then: The exception propagates so main() can map it to a permission error.
+        """
+        from GCP import gcp_compute_instance_group_instances_remove
+
+        _mock_instance_groups_resource(mocker, "removeInstances", Exception("Permission denied"))
+        mock_creds = mocker.Mock()
+
+        args = {
+            "project_id": "test-project",
+            "zone": "us-central1-a",
+            "instance_group": "group-a",
+            "instances": "vm-1",
+        }
+
+        with pytest.raises(Exception, match="Permission denied"):
+            gcp_compute_instance_group_instances_remove(mock_creds, args)
+
+
+class TestGCPComputeInstanceGroupNamedPortsSet:
+    def test_gcp_compute_instance_group_named_ports_set_success(self, mocker):
+        """
+        Given: A mocked Compute API, a named ports string and a fingerprint.
+        When: gcp_compute_instance_group_named_ports_set is called.
+        Then: The parsed named ports and the fingerprint are sent in the request body and the operation is returned.
+        """
+        from GCP import gcp_compute_instance_group_named_ports_set
+
+        response = {"id": "op-1", "name": "operation-1", "status": "RUNNING", "operationType": "setNamedPorts"}
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "setNamedPorts", response)
+
+        args = {
+            "project_id": "test-project",
+            "zone": "us-central1-a",
+            "instance_group": "group-a",
+            "named_ports": "name=http,port=80;name=https,port=443",
+            "fingerprint": "abc123",
+        }
+        result = gcp_compute_instance_group_named_ports_set(mock_creds, args)
+
+        assert result.outputs_prefix == "GCP.Compute.Operations"
+        mock_instance_groups.setNamedPorts.assert_called_once_with(
+            project="test-project",
+            zone="us-central1-a",
+            instanceGroup="group-a",
+            body={
+                "namedPorts": [{"name": "http", "port": 80}, {"name": "https", "port": 443}],
+                "fingerprint": "abc123",
+            },
+        )
+
+    def test_gcp_compute_instance_group_named_ports_set_without_fingerprint(self, mocker):
+        """
+        Given: A mocked Compute API and no fingerprint argument.
+        When: gcp_compute_instance_group_named_ports_set is called.
+        Then: The request body contains only the named ports.
+        """
+        from GCP import gcp_compute_instance_group_named_ports_set
+
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "setNamedPorts", {"id": "op-1"})
+
+        args = {
+            "project_id": "test-project",
+            "zone": "us-central1-a",
+            "instance_group": "group-a",
+            "named_ports": "name=http,port=80",
+        }
+        gcp_compute_instance_group_named_ports_set(mock_creds, args)
+
+        assert mock_instance_groups.setNamedPorts.call_args.kwargs["body"] == {"namedPorts": [{"name": "http", "port": 80}]}
+
+
+# ---------------------------------------------------------------------------
+# Migrated from the legacy GoogleCloudLogging integration
+# (command: gcp-logging-log-entries-list -> logging_log_entries_list).
+# ---------------------------------------------------------------------------
+
+
+def test_logging_log_entries_list_success(mocker):
+    """
+    Given: Valid credentials and snake_case args scoping the request to a project.
+    When: logging_log_entries_list is called.
+    Then: It POSTs the expected request body to entries().list in a single call and returns
+          CommandResults with the GCP.Logging.LogEntries context path and the LogEntriesNextToken.
+    """
+    from GCP import logging_log_entries_list
+
+    mock_response = util_load_json("test_data/logging_log_entries_list_response.json")
+    mock_creds = mocker.MagicMock()
+    mock_logging = mocker.MagicMock()
+    mock_logging.entries.return_value.list.return_value.execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_logging)
+
+    args = {
+        "project_id": "mock_project_id",
+        "filter": None,
+        "order_by": None,
+        "limit": 3,
+    }
+    result = logging_log_entries_list(mock_creds, args)
+
+    # A single API call is made (no internal accumulation).
+    mock_logging.entries.return_value.list.return_value.execute.assert_called_once()
+    request_body = mock_logging.entries.return_value.list.call_args[1]["body"]
+    assert request_body["resourceNames"] == ["projects/mock_project_id"]
+    assert request_body["pageSize"] == 3
+    assert result.outputs["GCP.Logging.LogEntries(val.insertId && val.insertId == obj.insertId)"] == mock_response.get("entries")
+    assert result.outputs["GCP.Logging(true)"]["LogEntriesNextToken"] == "xxxxxx-xxxxxx"
+
+
+def test_logging_log_entries_list_multiple_resources(mocker):
+    """
+    Given: Args providing project, organization, billing account, and folder resources.
+    When: logging_log_entries_list is called.
+    Then: The request body's resourceNames contains the correctly prefixed resource paths.
+    """
+    from GCP import logging_log_entries_list
+
+    single_page = {"entries": [{"insertId": "a1"}]}
+    mock_creds = mocker.MagicMock()
+    mock_logging = mocker.MagicMock()
+    mock_logging.entries.return_value.list.return_value.execute.return_value = single_page
+    mocker.patch("GCP.build", return_value=mock_logging)
+
+    args = {
+        "project_id": "mock_project_id",
+        "organization_names": "mock_org",
+        "billing_account_names": "mock_billing",
+        "folder_names": "mock_folder",
+        "limit": 5,
+    }
+    logging_log_entries_list(mock_creds, args)
+
+    request_body = mock_logging.entries.return_value.list.call_args[1]["body"]
+    assert request_body["resourceNames"] == [
+        "projects/mock_project_id",
+        "organizations/mock_org",
+        "billingAccounts/mock_billing",
+        "folders/mock_folder",
+    ]
+
+
+def test_logging_log_entries_list_next_token(mocker):
+    """
+    Given: Args providing a next_token and limit.
+    When: logging_log_entries_list is called.
+    Then: The request carries the supplied pageToken and uses limit as the pageSize.
+    """
+    from GCP import logging_log_entries_list
+
+    single_page = {"entries": [{"insertId": "a1"}]}
+    mock_creds = mocker.MagicMock()
+    mock_logging = mocker.MagicMock()
+    mock_logging.entries.return_value.list.return_value.execute.return_value = single_page
+    mocker.patch("GCP.build", return_value=mock_logging)
+
+    args = {
+        "project_id": "mock_project_id",
+        "next_token": "mock_next_token",
+        "limit": 3,
+    }
+    logging_log_entries_list(mock_creds, args)
+
+    request_body = mock_logging.entries.return_value.list.call_args[1]["body"]
+    assert request_body["pageToken"] == "mock_next_token"
+    assert request_body["pageSize"] == 3
+
+
+def test_logging_log_entries_list_no_resources(mocker):
+    """
+    Given: Args that provide none of the parent resource identifiers.
+    When: logging_log_entries_list is called.
+    Then: It raises a DemistoException instructing the caller to provide at least one resource.
+    """
+    from GCP import logging_log_entries_list
+    from CommonServerPython import DemistoException
+
+    mock_creds = mocker.MagicMock()
+
+    with pytest.raises(DemistoException) as e:
+        logging_log_entries_list(mock_creds, {})
+
+    assert "At least one of the following resources must be provided" in str(e.value)
+
+
+def test_logging_log_entries_list_empty_results(mocker):
+    """
+    Given: A mocked Logging client returning no entries and no nextPageToken.
+    When: logging_log_entries_list is called.
+    Then: It returns CommandResults with an empty entries list and a null LogEntriesNextToken.
+    """
+    from GCP import logging_log_entries_list
+
+    mock_creds = mocker.MagicMock()
+    mock_logging = mocker.MagicMock()
+    mock_logging.entries.return_value.list.return_value.execute.return_value = {"entries": []}
+    mocker.patch("GCP.build", return_value=mock_logging)
+
+    result = logging_log_entries_list(mock_creds, {"project_id": "mock_project_id"})
+
+    assert result.outputs["GCP.Logging.LogEntries(val.insertId && val.insertId == obj.insertId)"] == []
+    assert result.outputs["GCP.Logging(true)"]["LogEntriesNextToken"] is None
+
+
+def test_logging_log_entries_list_api_error_propagates(mocker):
+    """
+    Given: A mocked Logging client whose entries().list raises a 403 HttpError.
+    When: logging_log_entries_list is called.
+    Then: The HttpError propagates out of the handler (to be handled by main()),
+          rather than being swallowed or converted.
+    """
+    from GCP import logging_log_entries_list
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.MagicMock()
+    mock_logging = mocker.MagicMock()
+    http_error = _make_http_error(403, '{"error": {"code": 403, "message": "caller does not have permission"}}')
+    mock_logging.entries.return_value.list.return_value.execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_logging)
+
+    with pytest.raises(HttpError) as e:
+        logging_log_entries_list(mock_creds, {"project_id": "mock_project_id"})
+
+    assert e.value.resp.status == 403
