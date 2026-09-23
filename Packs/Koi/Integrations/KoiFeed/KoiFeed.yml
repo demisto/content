@@ -214,6 +214,9 @@ script:
   subtype: python3
   dockerimage: demisto/fastapi:0.141.1.13241299
 fromversion: 6.10.0
+supportedModules:
+- agentix
+- xsiam
 tests:
 - No tests (auto formatted)
 marketplaces:
