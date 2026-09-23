@@ -17610,211 +17610,211 @@ script:
     name: cs-query-devices-combined
     outputs:
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.errors.code
-      description: ''
+      description: The error code returned by the API.
       type: Number
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.errors.id
-      description: ''
+      description: The identifier of the error returned by the API.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.errors.message
-      description: ''
+      description: The human-readable message describing the error.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.agent_load_flags
-      description: ''
+      description: The agent load flags configured on the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.agent_local_time
-      description: ''
+      description: The local time reported by the agent in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.agent_version
-      description: ''
+      description: The version of the CrowdStrike agent installed on the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.bios_manufacturer
-      description: ''
+      description: The manufacturer of the device BIOS.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.bios_version
-      description: ''
+      description: The version of the device BIOS.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.build_number
-      description: ''
+      description: The operating system build number of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.cid
-      description: ''
+      description: The customer ID (CID) associated with the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.config_id_base
-      description: ''
+      description: The base configuration identifier of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.config_id_build
-      description: ''
+      description: The build configuration identifier of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.config_id_platform
-      description: ''
+      description: The platform configuration identifier of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.cpu_signature
-      description: ''
+      description: The CPU signature of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.detection_suppression_status
-      description: ''
+      description: The detection suppression status of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.device_id
-      description: ''
+      description: The unique identifier of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.email
-      description: ''
+      description: The email address associated with the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.external_ip
-      description: ''
+      description: The external IP address of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.first_login_timestamp
-      description: ''
+      description: The timestamp of the first login recorded on the device in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.first_seen
-      description: ''
+      description: The timestamp when the device was first seen in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.group_hash
-      description: ''
+      description: The hash of the host groups the device belongs to.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.host_hidden_status
-      description: ''
+      description: The hidden status of the host.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.hostname
-      description: ''
+      description: The hostname of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.instance_id
-      description: ''
+      description: The cloud instance identifier of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.last_login_timestamp
-      description: ''
+      description: The timestamp of the last login recorded on the device in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.last_seen
-      description: ''
+      description: The timestamp when the device was last seen in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.local_ip
-      description: ''
+      description: The local IP address of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.mac_address
-      description: ''
+      description: The MAC address of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.machine_domain
-      description: ''
+      description: The domain the device is joined to.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.major_version
-      description: ''
+      description: The major version of the device operating system.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.minor_version
-      description: ''
+      description: The minor version of the device operating system.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.modified_timestamp
-      description: ''
+      description: The timestamp when the device record was last modified in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.os_version
-      description: ''
+      description: The operating system version of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.platform_id
-      description: ''
+      description: The platform identifier of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.platform_name
-      description: ''
+      description: The platform name of the device (e.g., Windows, Mac, Linux).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_host_ip4
-      description: ''
+      description: The IPv4 address of the pod host.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_host_ip6
-      description: ''
+      description: The IPv6 address of the pod host.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_hostname
-      description: ''
+      description: The hostname of the pod.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_id
-      description: ''
+      description: The identifier of the pod.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_ip4
-      description: ''
+      description: The IPv4 address of the pod.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_ip6
-      description: ''
+      description: The IPv6 address of the pod.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_name
-      description: ''
+      description: The name of the pod.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_namespace
-      description: ''
+      description: The namespace of the pod.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_service_account_name
-      description: ''
+      description: The service account name associated with the pod.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pointer_size
-      description: ''
+      description: The pointer size of the device architecture.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.applied
-      description: ''
+      description: Whether the policy is currently applied to the device.
       type: Boolean
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.applied_date
-      description: ''
+      description: The date the policy was applied to the device in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.assigned_date
-      description: ''
+      description: The date the policy was assigned to the device in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.policy_id
-      description: ''
+      description: The identifier of the policy.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.policy_type
-      description: ''
+      description: The type of the policy.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.rule_set_id
-      description: ''
+      description: The identifier of the rule set associated with the policy.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.settings_hash
-      description: ''
+      description: The hash of the policy settings.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.uninstall_protection
-      description: ''
+      description: The uninstall protection status defined by the policy.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.product_type
-      description: ''
+      description: The product type identifier of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.product_type_desc
-      description: ''
+      description: The product type description of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.provision_status
-      description: ''
+      description: The provisioning status of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.reduced_functionality_mode
-      description: ''
+      description: The reduced functionality mode status of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.release_group
-      description: ''
+      description: The release group the device belongs to.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.serial_number
-      description: ''
+      description: The serial number of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.service_pack_major
-      description: ''
+      description: The major service pack version of the device operating system.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.service_pack_minor
-      description: ''
+      description: The minor service pack version of the device operating system.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.service_provider
-      description: ''
+      description: The service provider of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.service_provider_account_id
-      description: ''
+      description: The service provider account identifier of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.site_name
-      description: ''
+      description: The name of the site the device belongs to.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.slow_changing_modified_timestamp
-      description: ''
+      description: The timestamp when slow-changing device attributes were last modified in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.status
-      description: ''
+      description: The current status of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.system_manufacturer
-      description: ''
+      description: The manufacturer of the device system.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.system_product_name
-      description: ''
+      description: The product name of the device system.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.zone_group
-      description: ''
+      description: The cloud zone group of the device.
       type: String
   - arguments:
     - description: The offset to page from, for the next result set.

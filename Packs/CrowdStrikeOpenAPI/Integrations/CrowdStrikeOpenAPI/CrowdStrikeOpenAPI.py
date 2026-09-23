@@ -2997,7 +2997,9 @@ class Client:
 
         return response
 
-    def query_devices_combined_request(self, offset, limit, sort, filter_):
+    def query_devices_combined_request(
+        self, offset: str | int | None, limit: str | int | None, sort: str, filter_: str
+    ) -> dict:
         params = assign_params(offset=offset, limit=limit, sort=sort, filter=filter_)
 
         headers = self.cs_client._headers
@@ -8154,7 +8156,7 @@ def query_devices_by_filter_command(client, args):
     return command_results
 
 
-def query_devices_combined_command(client, args):
+def query_devices_combined_command(client: Client, args: dict) -> CommandResults:
     offset = args.get("offset", None)
     limit = args.get("limit", None)
     sort = str(args.get("sort", ""))
