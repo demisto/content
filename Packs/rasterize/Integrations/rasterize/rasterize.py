@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 import logging
 import psutil
 import base64
+import fcntl
 import os
 import pychrome
 import random
@@ -177,6 +178,13 @@ LOCAL_CHROME_HOST = "127.0.0.1"
 
 CHROME_LOG_FILE_PATH = "/var/chrome_headless.log"
 CHROME_INSTANCES_FILE_PATH = "/var/chrome_instances.json"
+# Cross-process mutex: serialises concurrent rasterize-email / rasterize-html
+# executions so they do not race over the single Chrome instance in lightweight
+# mode.  The lock is held for the entire perform_rasterize call (chrome_manager
+# → rasterize → terminate_chrome).  A blocking flock with a generous timeout is
+# used so that a crashed holder (OOM-killed container) never deadlocks waiters —
+# the OS releases the lock automatically when the file descriptor is closed.
+RASTERIZE_LOCK_FILE_PATH = "/var/rasterize.lock"
 
 
 class RasterizeType(Enum):
@@ -779,11 +787,20 @@ class PychromeEventHandler:
         This method will try to reload the current page up to DEFAULT_RETRIES_COUNT times
         if it encounters a Chrome error page. It sets the tab_ready_event when successful.
         """
+        # Cap the total retry budget so that all retry attempts together cannot
+        # exceed the engine's dispatch timeout.  Each attempt gets an equal share
+        # of the budget, with a minimum of 5 seconds per attempt.
+        max_retry_budget_seconds = min(self.navigation_timeout, 120) if self.navigation_timeout > 0 else 120
+        per_retry_sleep = max(max_retry_budget_seconds / DEFAULT_RETRIES_COUNT, 5)
+        demisto.debug(
+            f"retry_loading: {max_retry_budget_seconds=}s budget, {per_retry_sleep=:.1f}s per attempt, "
+            f"{self.tab.id=}, {self.path=}"
+        )
         for retry_count in range(1, DEFAULT_RETRIES_COUNT + 1):
             demisto.debug(f"Retrying loading URL {self.path}, {self.tab.id}. Attempt {retry_count}/{DEFAULT_RETRIES_COUNT}")
             try:
                 if self.navigation_timeout > 0:
-                    self.tab.Page.navigate(url=self.path, _timeout=self.navigation_timeout)
+                    self.tab.Page.navigate(url=self.path, _timeout=min(self.navigation_timeout, per_retry_sleep))
                 else:
                     self.tab.Page.navigate(url=self.path)
             except Exception as e:
@@ -791,7 +808,7 @@ class PychromeEventHandler:
                     f"Error during navigation to {self.tab.id=}, {self.path=} attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {e}"
                 )
 
-            safe_sleep(DEFAULT_PAGE_LOAD_TIME / DEFAULT_RETRIES_COUNT + 1)
+            safe_sleep(per_retry_sleep)
 
             try:
                 frame_url = self.get_frame_tree_url()
@@ -1168,7 +1185,6 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
             # Use list_tab to ping the browser and make sure it's available
             tabs_count = len(browser.list_tab())
             demisto.debug(f"get_chrome_browser, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
-            # if tabs_count < MAX_CHROME_TABS_COUNT:
             demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs")
             return browser
         except requests.exceptions.ConnectionError as exp:
@@ -1354,6 +1370,12 @@ def terminate_chrome(chrome_port: str = "", killall: bool = False) -> None:  # p
         None
     """
     process_in_list = get_chrome_processes(chrome_port)
+
+    if not process_in_list:
+        demisto.debug(f"terminate_chrome: no Chrome processes found for {chrome_port=}, nothing to kill.")
+        terminate_port_chrome_instances_file(chrome_port=chrome_port)
+        demisto.debug("terminate_chrome, Finish")
+        return
 
     if killall:
         # fetch the pids of the processes
@@ -2097,138 +2119,181 @@ def perform_rasterize(
         return None
 
     # until https://issues.chromium.org/issues/379034728 is fixed, we can only use one chrome port
+    # Acquire a cross-process lock before touching Chrome so that concurrent
+    # rasterize-email / rasterize-html executions (which all share the single
+    # Chrome instance in lightweight mode) do not race: one execution must not
+    # call terminate_chrome while another is still navigating.
+    # The lock is released automatically when the file descriptor is closed at
+    # the end of this function (or if the process is killed — the OS releases it).
+    _rasterize_lock_fd: Optional[int] = None
+    try:
+        _rasterize_lock_fd = os.open(RASTERIZE_LOCK_FILE_PATH, os.O_CREAT | os.O_RDWR)
+        # LOCK_EX | LOCK_NB: non-blocking first; if busy, fall back to blocking
+        # with a timeout implemented via repeated short sleeps so we can log progress.
+        _lock_acquired = False
+        _lock_wait_start = time.monotonic()  # pylint: disable=E9003
+        _lock_timeout = max(navigation_timeout * 2, 120)  # generous: 2× the page-load timeout
+        while not _lock_acquired:
+            try:
+                fcntl.flock(_rasterize_lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                _lock_acquired = True
+            except BlockingIOError:
+                elapsed = time.monotonic() - _lock_wait_start  # pylint: disable=E9003
+                if elapsed >= _lock_timeout:
+                    demisto.error(
+                        f"perform_rasterize: could not acquire rasterize lock after {elapsed:.0f}s, "
+                        f"proceeding without lock. {path=}"
+                    )
+                    break
+                if int(elapsed) % 30 == 0:
+                    demisto.debug(f"perform_rasterize: waiting for rasterize lock ({elapsed:.0f}s elapsed). {path=}")
+                time.sleep(1)  # pylint: disable=E9003
+    except Exception as lock_ex:
+        demisto.debug(f"perform_rasterize: could not open/acquire rasterize lock file: {lock_ex}. {path=}")
+        _rasterize_lock_fd = None
+
     browser, chrome_port = chrome_manager_one_port()
 
-    if browser:
-        support_multithreading()
-        with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
-            rasterization_threads = []
-            rasterization_results = []
-            for current_path in paths:
-                if not current_path.startswith("http") and not current_path.startswith("file:///"):
-                    protocol = "http" + "s" * IS_HTTPS
-                    current_path = f"{protocol}://{current_path}"
+    try:
+        if browser:
+            support_multithreading()
+            with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
+                rasterization_threads = []
+                rasterization_results = []
+                for current_path in paths:
+                    if not current_path.startswith("http") and not current_path.startswith("file:///"):
+                        protocol = "http" + "s" * IS_HTTPS
+                        current_path = f"{protocol}://{current_path}"
 
-                # Start a new thread in group of max_tabs
-                rasterization_threads.append(
-                    (
-                        executor.submit(
-                            rasterize_thread,
-                            browser=browser,
-                            chrome_port=chrome_port,
-                            path=current_path,
-                            rasterize_type=rasterize_type,
-                            wait_time=wait_time,
-                            offline_mode=offline_mode,
-                            navigation_timeout=navigation_timeout,
-                            include_url=include_url,
-                            full_screen=full_screen,
-                            width=width,
-                            height=height,
-                        ),
-                        current_path,
-                    )
-                )
-            # Wait for all tasks to complete
-            executor.shutdown(wait=True)
-            demisto.info(
-                f"perform_rasterize Finished {len(rasterization_threads)} rasterize operations,"
-                f"active tabs len: {len(browser.list_tab())}, {path=}"
-            )
-
-            chrome_instances_file_content: dict = read_json_file()  # CR fix name
-
-            rasterization_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZATION_COUNT, 0) + len(
-                rasterization_threads
-            )
-
-            demisto.debug(
-                f"perform_rasterize checking if the chrome in port:{chrome_port} should be deleted:"
-                f"{rasterization_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}, {path=}"
-            )
-            if not chrome_port:
-                demisto.debug(f"perform_rasterize: the chrome port was not found, {path=}")
-            elif IS_LIGHTWEIGHT or rasterization_count >= MAX_RASTERIZATIONS_COUNT:
-                # In lightweight mode we always terminate Chrome at the end of the command so no Chrome
-                # process (and its renderer RSS) survives into the next playbook iteration / command run.
-                demisto.info(f"perform_rasterize: terminating Chrome after {rasterization_count=} rasterization, {path=}")
-                terminate_chrome(chrome_port=chrome_port)
-            else:
-                increase_counter_chrome_instances_file(chrome_port=chrome_port)
-
-            # Get the results
-            for current_thread, path in rasterization_threads:
-                try:
-                    ret_value, response_body = current_thread.result()
-                    if ret_value:
-                        rasterization_results.append((ret_value, response_body))
-                    else:
-                        return_results(
-                            CommandResults(
-                                readable_output=str(response_body),
-                                entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING),
-                            )
+                    # Start a new thread in group of max_tabs
+                    rasterization_threads.append(
+                        (
+                            executor.submit(
+                                rasterize_thread,
+                                browser=browser,
+                                chrome_port=chrome_port,
+                                path=current_path,
+                                rasterize_type=rasterize_type,
+                                wait_time=wait_time,
+                                offline_mode=offline_mode,
+                                navigation_timeout=navigation_timeout,
+                                include_url=include_url,
+                                full_screen=full_screen,
+                                width=width,
+                                height=height,
+                            ),
+                            current_path,
                         )
-                except Exception as ex:
-                    error_msg = f"Failed to rasterize the path {path}, exception: {str(ex)}"
-                    demisto.debug(error_msg)
-                    return_err_or_warn(error_msg)
-            return rasterization_results
+                    )
+                # Wait for all tasks to complete
+                executor.shutdown(wait=True)
+                demisto.info(
+                    f"perform_rasterize Finished {len(rasterization_threads)} rasterize operations,"
+                    f"active tabs len: {len(browser.list_tab())}, {path=}"
+                )
 
-    else:
-        chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
-        chrome_options_dict = {
-            options[CHROME_INSTANCE_OPTIONS]: {"chrome_port": port} for port, options in chrome_instances_contents.items()
-        }
-        chrome_options = demisto.params().get("chrome_options", "None")
-        chrome_port = chrome_options_dict.get(chrome_options, {}).get("chrome_port", "")
+                chrome_instances_file_content: dict = read_json_file()  # CR fix name
 
-        # Get all Chrome headless processes for diagnostic purposes
-        # Using get_chrome_processes("") to match any port (equivalent to grep port=)
-        chrome_processes = get_chrome_processes("")
-        ps_aux_output = "\n".join(chrome_processes) if chrome_processes else "No Chrome processes found"
-        try:
-            with open(CHROME_LOG_FILE_PATH) as f:
-                chrome_headless_content = f.read().strip()
-        except (FileNotFoundError, PermissionError, OSError):
-            chrome_headless_content = f"Could not read {CHROME_LOG_FILE_PATH}"
+                rasterization_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZATION_COUNT, 0) + len(
+                    rasterization_threads
+                )
 
-        try:
-            df_output = subprocess.check_output(["df", "-h"], stderr=subprocess.STDOUT, text=True).strip()
-        except subprocess.CalledProcessError:
-            df_output = "Could not get disk usage information"
+                demisto.debug(
+                    f"perform_rasterize checking if the chrome in port:{chrome_port} should be deleted:"
+                    f"{rasterization_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}, {path=}"
+                )
+                if not chrome_port:
+                    demisto.debug(f"perform_rasterize: the chrome port was not found, {path=}")
+                elif IS_LIGHTWEIGHT or rasterization_count >= MAX_RASTERIZATIONS_COUNT:
+                    # In lightweight mode we always terminate Chrome at the end of the command so no Chrome
+                    # process (and its renderer RSS) survives into the next playbook iteration / command run.
+                    demisto.info(f"perform_rasterize: terminating Chrome after {rasterization_count=} rasterization, {path=}")
+                    terminate_chrome(chrome_port=chrome_port)
+                else:
+                    increase_counter_chrome_instances_file(chrome_port=chrome_port)
 
-        try:
-            free_output = "\n".join(subprocess.check_output(["free", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
-        except subprocess.CalledProcessError:
-            free_output = "Could not get memory information"
+                # Get the results
+                for current_thread, path in rasterization_threads:
+                    try:
+                        ret_value, response_body = current_thread.result()
+                        if ret_value:
+                            rasterization_results.append((ret_value, response_body))
+                        else:
+                            return_results(
+                                CommandResults(
+                                    readable_output=str(response_body),
+                                    entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING),
+                                )
+                            )
+                    except Exception as ex:
+                        error_msg = f"Failed to rasterize the path {path}, exception: {str(ex)}"
+                        demisto.debug(error_msg)
+                        return_err_or_warn(error_msg)
+                return rasterization_results
 
-        try:
-            chromedriver = subprocess.check_output(
-                ["chromedriver", "--version"], stderr=subprocess.STDOUT, text=True
-            ).splitlines()
-        except subprocess.CalledProcessError:
-            chromedriver = ["chromedriver not found or not executable"]
+        else:
+            chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
+            chrome_options_dict = {
+                options[CHROME_INSTANCE_OPTIONS]: {"chrome_port": port} for port, options in chrome_instances_contents.items()
+            }
+            chrome_options = demisto.params().get("chrome_options", "None")
+            chrome_port = chrome_options_dict.get(chrome_options, {}).get("chrome_port", "")
 
-        try:
-            chrome_version = subprocess.check_output(
-                ["google-chrome", "--version"], stderr=subprocess.STDOUT, text=True
-            ).splitlines()
-        except subprocess.CalledProcessError:
-            chrome_version = ["google-chrome not found or not executable"]
+            # Get all Chrome headless processes for diagnostic purposes
+            # Using get_chrome_processes("") to match any port (equivalent to grep port=)
+            chrome_processes = get_chrome_processes("")
+            ps_aux_output = "\n".join(chrome_processes) if chrome_processes else "No Chrome processes found"
+            try:
+                with open(CHROME_LOG_FILE_PATH) as f:
+                    chrome_headless_content = f.read().strip()
+            except (FileNotFoundError, PermissionError, OSError):
+                chrome_headless_content = f"Could not read {CHROME_LOG_FILE_PATH}"
 
-        demisto.debug(f"{chrome_instances_contents=}")
-        demisto.debug(f"ps aux command result:\n{ps_aux_output}")
-        demisto.debug(f"chrome_headless.log:\n{chrome_headless_content}")
-        demisto.debug(f"df command result:\n{df_output}")
-        demisto.debug(f"free command result:\n{free_output}")
-        demisto.debug(f"chrome driver: {chromedriver}")
-        demisto.debug(f"chrome version: {chrome_version}")
+            try:
+                df_output = subprocess.check_output(["df", "-h"], stderr=subprocess.STDOUT, text=True).strip()
+            except subprocess.CalledProcessError:
+                df_output = "Could not get disk usage information"
 
-        message = "Could not use local Chrome for rasterize command"
-        demisto.error(message)
-        return_error(message)
-        return None
+            try:
+                free_output = "\n".join(subprocess.check_output(["free", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
+            except subprocess.CalledProcessError:
+                free_output = "Could not get memory information"
+
+            try:
+                chromedriver = subprocess.check_output(
+                    ["chromedriver", "--version"], stderr=subprocess.STDOUT, text=True
+                ).splitlines()
+            except subprocess.CalledProcessError:
+                chromedriver = ["chromedriver not found or not executable"]
+
+            try:
+                chrome_version = subprocess.check_output(
+                    ["google-chrome", "--version"], stderr=subprocess.STDOUT, text=True
+                ).splitlines()
+            except subprocess.CalledProcessError:
+                chrome_version = ["google-chrome not found or not executable"]
+
+            demisto.debug(f"{chrome_instances_contents=}")
+            demisto.debug(f"ps aux command result:\n{ps_aux_output}")
+            demisto.debug(f"chrome_headless.log:\n{chrome_headless_content}")
+            demisto.debug(f"df command result:\n{df_output}")
+            demisto.debug(f"free command result:\n{free_output}")
+            demisto.debug(f"chrome driver: {chromedriver}")
+            demisto.debug(f"chrome version: {chrome_version}")
+
+            message = "Could not use local Chrome for rasterize command"
+            demisto.error(message)
+            return_error(message)
+            return None
+    finally:
+        # Release the cross-process lock so the next queued execution can proceed.
+        if _rasterize_lock_fd is not None:
+            try:
+                fcntl.flock(_rasterize_lock_fd, fcntl.LOCK_UN)
+                os.close(_rasterize_lock_fd)
+                demisto.debug(f"perform_rasterize: released rasterize lock. {path=}")
+            except Exception as unlock_ex:
+                demisto.debug(f"perform_rasterize: error releasing rasterize lock: {unlock_ex}. {path=}")
 
 
 def return_err_or_warn(msg):  # pragma: no cover
