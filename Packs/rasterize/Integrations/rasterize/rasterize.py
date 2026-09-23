@@ -2149,7 +2149,17 @@ def perform_rasterize(
                     demisto.debug(f"perform_rasterize: waiting for rasterize lock ({elapsed:.0f}s elapsed). {path=}")
                 time.sleep(1)  # pylint: disable=E9003
     except Exception as lock_ex:
-        demisto.debug(f"perform_rasterize: could not open/acquire rasterize lock file: {lock_ex}. {path=}")
+        demisto.debug(
+            f"perform_rasterize: could not open/acquire rasterize lock file: {lock_ex}. {path=}\n"
+            f"Trace:{traceback.format_exc()}"
+        )
+        # Close the descriptor before dropping the reference, otherwise the fd leaks
+        # for the remainder of the process lifetime.
+        if _rasterize_lock_fd is not None:
+            try:
+                os.close(_rasterize_lock_fd)
+            except OSError as close_ex:
+                demisto.debug(f"perform_rasterize: error closing rasterize lock fd: {close_ex}. {path=}")
         _rasterize_lock_fd = None
 
     browser, chrome_port = chrome_manager_one_port()
@@ -2233,11 +2243,6 @@ def perform_rasterize(
 
         else:
             chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
-            chrome_options_dict = {
-                options[CHROME_INSTANCE_OPTIONS]: {"chrome_port": port} for port, options in chrome_instances_contents.items()
-            }
-            chrome_options = demisto.params().get("chrome_options", "None")
-            chrome_port = chrome_options_dict.get(chrome_options, {}).get("chrome_port", "")
 
             # Get all Chrome headless processes for diagnostic purposes
             # Using get_chrome_processes("") to match any port (equivalent to grep port=)
@@ -2290,10 +2295,19 @@ def perform_rasterize(
         if _rasterize_lock_fd is not None:
             try:
                 fcntl.flock(_rasterize_lock_fd, fcntl.LOCK_UN)
-                os.close(_rasterize_lock_fd)
                 demisto.debug(f"perform_rasterize: released rasterize lock. {path=}")
             except Exception as unlock_ex:
-                demisto.debug(f"perform_rasterize: error releasing rasterize lock: {unlock_ex}. {path=}")
+                demisto.debug(
+                    f"perform_rasterize: error releasing rasterize lock: {unlock_ex}. {path=}\n"
+                    f"Trace:{traceback.format_exc()}"
+                )
+            finally:
+                # Always close the descriptor, even if the explicit unlock failed —
+                # closing the fd releases the flock anyway and prevents an fd leak.
+                try:
+                    os.close(_rasterize_lock_fd)
+                except OSError as close_ex:
+                    demisto.debug(f"perform_rasterize: error closing rasterize lock fd: {close_ex}. {path=}")
 
 
 def return_err_or_warn(msg):  # pragma: no cover
