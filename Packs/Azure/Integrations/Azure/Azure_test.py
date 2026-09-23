@@ -1,4 +1,5 @@
 import ast
+import copy
 import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -6231,6 +6232,481 @@ def test_main_auth_reset(mocker):
 
     mock_reset.assert_called_once()
     mock_get_client.assert_not_called()
+
+
+IP_GROUP_NAME = "test-ip-group"
+IP_GROUP_RESPONSE = {
+    "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/ipGroups/test-ip-group",
+    "name": IP_GROUP_NAME,
+    "type": "Microsoft.Network/ipGroups",
+    "location": "eastus",
+    "properties": {"provisioningState": "Succeeded", "ipAddresses": ["10.0.0.1", "10.0.0.2"]},
+}
+
+
+def test_ip_group_create_command_success(mocker):
+    """
+    Given:
+        - An AzureClient whose ip_group_create returns a created IP group.
+    When:
+        - Calling ip_group_create_command with an IP group name, location and IP addresses.
+    Then:
+        - The IP group is returned under the Azure.VirtualNetworks.IPGroups prefix and the
+          client is called with the parsed list of IP addresses.
+    """
+    from Azure import ip_group_create_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_client.ip_group_create.return_value = IP_GROUP_RESPONSE
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+    args = {"ip_group_name": IP_GROUP_NAME, "location": "eastus", "ip_addresses": "10.0.0.1,10.0.0.2"}
+
+    result = ip_group_create_command(client=mock_client, params=params, args=args)
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.IPGroups"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == IP_GROUP_RESPONSE
+    assert "The IP group test-ip-group was created successfully" in result.readable_output
+    mock_client.ip_group_create.assert_called_once_with(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        ip_group_name=IP_GROUP_NAME,
+        location="eastus",
+        ip_addresses=["10.0.0.1", "10.0.0.2"],
+    )
+
+
+def test_ip_group_create_command_without_ip_addresses(mocker):
+    """
+    Given:
+        - An AzureClient and a request to create an empty IP group.
+    When:
+        - Calling ip_group_create_command without the ip_addresses argument.
+    Then:
+        - The client is called with an empty list of IP addresses rather than failing.
+    """
+    from Azure import ip_group_create_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_client.ip_group_create.return_value = IP_GROUP_RESPONSE
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+
+    ip_group_create_command(client=mock_client, params=params, args={"ip_group_name": IP_GROUP_NAME, "location": "eastus"})
+
+    assert mock_client.ip_group_create.call_args.kwargs["ip_addresses"] == []
+
+
+def test_ip_group_create_command_permission_error(mocker):
+    """
+    Given:
+        - An AzureClient whose ip_group_create raises a permission error.
+    When:
+        - Calling ip_group_create_command.
+    Then:
+        - The error propagates to main() rather than being swallowed by the command layer.
+    """
+    from Azure import ip_group_create_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_client.ip_group_create.side_effect = DemistoException("403 Forbidden")
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+
+    with pytest.raises(DemistoException, match="403 Forbidden"):
+        ip_group_create_command(client=mock_client, params=params, args={"ip_group_name": IP_GROUP_NAME, "location": "eastus"})
+
+
+def test_ip_group_update_command_success(mocker):
+    """
+    Given:
+        - An AzureClient returning an existing IP group holding two IP addresses.
+    When:
+        - Calling ip_group_update_command with one address to add and one to remove.
+    Then:
+        - The updated address list is sent to the API and the updated IP group is returned.
+    """
+    from Azure import ip_group_update_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_client.ip_group_get.return_value = copy.deepcopy(IP_GROUP_RESPONSE)
+    mock_client.ip_group_update.return_value = IP_GROUP_RESPONSE
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+    args = {"ip_group_name": IP_GROUP_NAME, "ip_addresses_to_add": "10.0.0.3", "ip_addresses_to_remove": "10.0.0.1"}
+
+    result = ip_group_update_command(client=mock_client, params=params, args=args)
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.IPGroups"
+    assert "The IP group test-ip-group was updated successfully" in result.readable_output
+    sent_data = mock_client.ip_group_update.call_args.kwargs["ip_group_data"]
+    assert sent_data["properties"]["ipAddresses"] == ["10.0.0.2", "10.0.0.3"]
+
+
+def test_ip_group_update_command_ignores_missing_ip_to_remove(mocker):
+    """
+    Given:
+        - An AzureClient returning an IP group that does not hold the address to remove.
+    When:
+        - Calling ip_group_update_command with that address in ip_addresses_to_remove.
+    Then:
+        - The existing addresses are left untouched instead of raising a ValueError.
+    """
+    from Azure import ip_group_update_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_client.ip_group_get.return_value = copy.deepcopy(IP_GROUP_RESPONSE)
+    mock_client.ip_group_update.return_value = IP_GROUP_RESPONSE
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+    args = {"ip_group_name": IP_GROUP_NAME, "ip_addresses_to_remove": "192.168.1.1"}
+
+    ip_group_update_command(client=mock_client, params=params, args=args)
+
+    sent_data = mock_client.ip_group_update.call_args.kwargs["ip_group_data"]
+    assert sent_data["properties"]["ipAddresses"] == ["10.0.0.1", "10.0.0.2"]
+
+
+def test_ip_group_update_command_adds_to_group_with_no_ip_addresses(mocker):
+    """
+    Given:
+        - An AzureClient returning an existing but empty IP group, whose properties carry no
+          "ipAddresses" key at all.
+    When:
+        - Calling ip_group_update_command with an address to add.
+    Then:
+        - The added address is written into properties.ipAddresses and actually reaches the API,
+          rather than being appended to a throwaway default list and silently lost.
+    """
+    from Azure import ip_group_update_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_client.ip_group_get.return_value = {"name": IP_GROUP_NAME, "properties": {"provisioningState": "Succeeded"}}
+    mock_client.ip_group_update.return_value = IP_GROUP_RESPONSE
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+    args = {"ip_group_name": IP_GROUP_NAME, "ip_addresses_to_add": "10.0.0.9"}
+
+    ip_group_update_command(client=mock_client, params=params, args=args)
+
+    sent_data = mock_client.ip_group_update.call_args.kwargs["ip_group_data"]
+    assert sent_data["properties"]["ipAddresses"] == ["10.0.0.9"]
+
+
+def test_ip_group_update_command_removes_every_ip_address(mocker):
+    """
+    Given:
+        - An AzureClient returning an IP group holding exactly the addresses the caller removes.
+    When:
+        - Calling ip_group_update_command with all of them in ip_addresses_to_remove.
+    Then:
+        - An empty ipAddresses list is sent, so the group is actually emptied rather than the key
+          being dropped and the existing addresses left in place.
+    """
+    from Azure import ip_group_update_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_client.ip_group_get.return_value = copy.deepcopy(IP_GROUP_RESPONSE)
+    mock_client.ip_group_update.return_value = IP_GROUP_RESPONSE
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+    args = {"ip_group_name": IP_GROUP_NAME, "ip_addresses_to_remove": "10.0.0.1,10.0.0.2"}
+
+    ip_group_update_command(client=mock_client, params=params, args=args)
+
+    sent_data = mock_client.ip_group_update.call_args.kwargs["ip_group_data"]
+    assert sent_data["properties"]["ipAddresses"] == []
+
+
+def test_ip_group_update_command_no_ip_addresses_provided(mocker):
+    """
+    Given:
+        - An AzureClient and an update request carrying neither addresses to add nor to remove.
+    When:
+        - Calling ip_group_update_command.
+    Then:
+        - A DemistoException is raised and no API call is made.
+    """
+    from Azure import ip_group_update_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+
+    with pytest.raises(DemistoException, match="must be provided"):
+        ip_group_update_command(client=mock_client, params=params, args={"ip_group_name": IP_GROUP_NAME})
+
+    mock_client.ip_group_get.assert_not_called()
+    mock_client.ip_group_update.assert_not_called()
+
+
+def test_ip_group_get_command_success(mocker):
+    """
+    Given:
+        - An AzureClient whose ip_group_get returns an IP group.
+    When:
+        - Calling ip_group_get_command with an IP group name.
+    Then:
+        - The IP group is returned under the same prefix used by the list command.
+    """
+    from Azure import ip_group_get_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_client.ip_group_get.return_value = IP_GROUP_RESPONSE
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+
+    result = ip_group_get_command(client=mock_client, params=params, args={"ip_group_name": IP_GROUP_NAME})
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.IPGroups"
+    assert result.outputs == IP_GROUP_RESPONSE
+    assert "IP Group test-ip-group" in result.readable_output
+    mock_client.ip_group_get.assert_called_once_with(
+        subscription_id="sub-id", resource_group_name="test-rg", ip_group_name=IP_GROUP_NAME
+    )
+
+
+def test_ip_group_get_command_not_found(mocker):
+    """
+    Given:
+        - An AzureClient whose ip_group_get raises a not found error.
+    When:
+        - Calling ip_group_get_command.
+    Then:
+        - The ValueError propagates to main() rather than being swallowed.
+    """
+    from Azure import ip_group_get_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_client.ip_group_get.side_effect = ValueError('IP Group "test-ip-group" was not found.')
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+
+    with pytest.raises(ValueError, match="was not found"):
+        ip_group_get_command(client=mock_client, params=params, args={"ip_group_name": IP_GROUP_NAME})
+
+
+def test_ip_group_list_command_success(mocker):
+    """
+    Given:
+        - An AzureClient returning a page of IP groups together with a nextLink.
+    When:
+        - Calling ip_group_list_command with a resource group.
+    Then:
+        - The IP groups and the next token are returned in the expected context structure.
+    """
+    from Azure import ip_group_list_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_client.ip_group_list.return_value = {"value": [IP_GROUP_RESPONSE], "nextLink": "https://next.page"}
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+
+    result = ip_group_list_command(client=mock_client, params=params, args={})
+
+    assert result.outputs["Azure.VirtualNetworks.IPGroups(val.id && val.id == obj.id)"] == [IP_GROUP_RESPONSE]
+    assert result.outputs["Azure.VirtualNetworks(true)"] == {"IPGroupsNextToken": "https://next.page"}
+    assert "IP Groups List" in result.readable_output
+    assert "IPGroupsNextToken: https://next.page" in result.readable_output
+    mock_client.ip_group_list.assert_called_once_with(subscription_id="sub-id", resource_group_name="test-rg", next_token="")
+
+
+def test_ip_group_list_command_clears_stale_next_token_on_last_page(mocker):
+    """
+    Given:
+        - An AzureClient returning the final page of IP groups, with no nextLink.
+    When:
+        - Calling ip_group_list_command.
+    Then:
+        - The token key is still present and set to None, so a token left in the context by a
+          previous page is overwritten rather than kept and replayed by the user.
+    """
+    from Azure import ip_group_list_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_client.ip_group_list.return_value = {"value": [IP_GROUP_RESPONSE]}
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+
+    result = ip_group_list_command(client=mock_client, params=params, args={})
+
+    assert result.outputs["Azure.VirtualNetworks(true)"] == {"IPGroupsNextToken": None}
+    assert "IPGroupsNextToken" not in result.readable_output
+
+
+def test_ip_group_list_command_by_subscription(mocker):
+    """
+    Given:
+        - An AzureClient and params holding no default resource group.
+    When:
+        - Calling ip_group_list_command without a resource_group_name argument.
+    Then:
+        - The client is called with an empty resource group so the IP groups are listed
+          for the whole subscription.
+    """
+    from Azure import ip_group_list_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_client.ip_group_list.return_value = {"value": [IP_GROUP_RESPONSE]}
+
+    ip_group_list_command(client=mock_client, params={"subscription_id": "sub-id"}, args={})
+
+    assert mock_client.ip_group_list.call_args.kwargs["resource_group_name"] == ""
+
+
+def test_ip_group_list_command_no_ip_groups(mocker):
+    """
+    Given:
+        - An AzureClient returning an empty list of IP groups.
+    When:
+        - Calling ip_group_list_command.
+    Then:
+        - A "No IP groups found." message is returned and no context is set.
+    """
+    from Azure import ip_group_list_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_client.ip_group_list.return_value = {"value": []}
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+
+    result = ip_group_list_command(client=mock_client, params=params, args={})
+
+    assert result.readable_output == "No IP groups were found in resource group 'test-rg'."
+    assert result.outputs is None
+
+
+def test_ip_group_list_command_no_ip_groups_by_subscription(mocker):
+    """
+    Given:
+        - An AzureClient returning no IP groups for a subscription-wide listing.
+    When:
+        - Calling ip_group_list_command without a resource group.
+    Then:
+        - The message names the subscription that was searched, so the user can tell which scope
+          came back empty.
+    """
+    from Azure import ip_group_list_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_client.ip_group_list.return_value = {"value": []}
+
+    result = ip_group_list_command(client=mock_client, params={"subscription_id": "sub-id"}, args={})
+
+    assert result.readable_output == "No IP groups were found in subscription 'sub-id'."
+
+
+def test_ip_group_delete_command_accepted(mocker):
+    """
+    Given:
+        - An AzureClient whose ip_group_delete returns a 202 Accepted response.
+    When:
+        - Calling ip_group_delete_command.
+    Then:
+        - The readable output states the operation will complete asynchronously.
+    """
+    from Azure import ip_group_delete_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_response = mocker.Mock()
+    mock_response.status_code = 202
+    mock_client.ip_group_delete.return_value = mock_response
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+
+    result = ip_group_delete_command(client=mock_client, params=params, args={"ip_group_name": IP_GROUP_NAME})
+
+    assert "will complete asynchronously" in result.readable_output
+    mock_client.ip_group_delete.assert_called_once_with(
+        subscription_id="sub-id", resource_group_name="test-rg", ip_group_name=IP_GROUP_NAME
+    )
+
+
+def test_ip_group_delete_command_not_found(mocker):
+    """
+    Given:
+        - An AzureClient whose ip_group_delete returns a 204 No Content response.
+    When:
+        - Calling ip_group_delete_command.
+    Then:
+        - The readable output states the IP group was not found.
+    """
+    from Azure import ip_group_delete_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_response = mocker.Mock()
+    mock_response.status_code = 204
+    mock_client.ip_group_delete.return_value = mock_response
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+
+    result = ip_group_delete_command(client=mock_client, params=params, args={"ip_group_name": IP_GROUP_NAME})
+
+    assert "was not found" in result.readable_output
+
+
+def test_ip_group_delete_command_success(mocker):
+    """
+    Given:
+        - An AzureClient whose ip_group_delete returns a 200 OK response.
+    When:
+        - Calling ip_group_delete_command.
+    Then:
+        - The readable output states the IP group was deleted successfully.
+    """
+    from Azure import ip_group_delete_command
+
+    mock_client = mocker.Mock(spec=AzureClient)
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_client.ip_group_delete.return_value = mock_response
+    params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
+
+    result = ip_group_delete_command(client=mock_client, params=params, args={"ip_group_name": IP_GROUP_NAME})
+
+    assert result.readable_output == "IP group test-ip-group was successfully deleted."
+
+
+def test_ip_group_create_client_error_handling(mocker, client):
+    """
+    Given:
+        - An AzureClient whose http_request raises a permission error.
+    When:
+        - Calling the ip_group_create client method.
+    Then:
+        - handle_azure_error is invoked so the missing permission is reported.
+    """
+    mocker.patch.object(client, "http_request", side_effect=Exception("403 Forbidden"))
+    mock_handle_error = mocker.patch.object(client, "handle_azure_error")
+
+    client.ip_group_create(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        ip_group_name=IP_GROUP_NAME,
+        location="eastus",
+        ip_addresses=["10.0.0.1"],
+    )
+
+    assert mock_handle_error.call_args.kwargs["api_function_name"] == "ip_group_create"
+
+
+def test_ip_group_list_client_uses_next_token(mocker, client):
+    """
+    Given:
+        - An AzureClient and a next token pointing at the following page of results.
+    When:
+        - Calling the ip_group_list client method with that token.
+    Then:
+        - The token is used as the full URL and no api-version parameter is added by the method.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.ip_group_list(subscription_id="sub-id", resource_group_name="test-rg", next_token="https://next.page")
+
+    assert mock_http_request.call_args.kwargs["full_url"] == "https://next.page"
+    assert mock_http_request.call_args.kwargs["params"] == {}
+
+
+def test_ip_group_list_client_by_subscription(mocker, client):
+    """
+    Given:
+        - An AzureClient and no resource group name.
+    When:
+        - Calling the ip_group_list client method.
+    Then:
+        - The subscription-level IP groups URL is requested.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.ip_group_list(subscription_id="sub-id", resource_group_name="", next_token="")
+
+    assert mock_http_request.call_args.kwargs["full_url"].endswith("sub-id/providers/Microsoft.Network/ipGroups")
 
 
 # ---------------------------------------------------------------------------

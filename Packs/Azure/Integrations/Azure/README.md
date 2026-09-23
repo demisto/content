@@ -3124,3 +3124,157 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+### azure-vn-ip-group-create
+
+***
+Creates an IP group resource. Required Permissions: Microsoft.Network/ipGroups/write.
+
+#### Base Command
+
+`azure-vn-ip-group-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The resource group name. | Required |
+| ip_group_name | The name of the IP group to create. | Required |
+| location | The location of the IP group resource. | Required |
+| ip_addresses | The comma-separated list of IP addresses or IP address prefixes to include in the IP group \(for example, "10.0.0.1,10.1.0.0/24"\). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.IPGroups.id | String | The IP group resource ID. |
+| Azure.VirtualNetworks.IPGroups.name | String | The IP group resource name. |
+| Azure.VirtualNetworks.IPGroups.type | String | The resource type. |
+| Azure.VirtualNetworks.IPGroups.location | String | The resource location. |
+| Azure.VirtualNetworks.IPGroups.etag | String | The IP group ETag, used to prevent overwriting concurrent updates. |
+| Azure.VirtualNetworks.IPGroups.tags | Unknown | The tags attached to the IP group. |
+| Azure.VirtualNetworks.IPGroups.properties.provisioningState | String | The provisioning state of the IP group resource. |
+| Azure.VirtualNetworks.IPGroups.properties.ipAddresses | Unknown | The list of IP addresses or IP address prefixes in the IP group resource. |
+| Azure.VirtualNetworks.IPGroups.properties.firewalls | Unknown | A collection of references to firewalls that use the IP group. |
+| Azure.VirtualNetworks.IPGroups.properties.firewallPolicies | Unknown | A collection of references to firewall policies that use the IP group. |
+
+### azure-vn-ip-group-update
+
+***
+Updates an IP group resource by adding or removing IP addresses. Required Permissions: Microsoft.Network/ipGroups/read, Microsoft.Network/ipGroups/write.
+
+#### Base Command
+
+`azure-vn-ip-group-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The resource group name. | Required |
+| ip_group_name | The name of the IP group to update. | Required |
+| ip_addresses_to_add | The comma-separated list of IP addresses or IP address prefixes to add to the IP group \(for example, "10.0.0.1,10.1.0.0/24"\). At least one of ip_addresses_to_add or ip_addresses_to_remove must be provided. | Optional |
+| ip_addresses_to_remove | The comma-separated list of IP addresses or IP address prefixes to remove from the IP group \(for example, "10.0.0.1,10.1.0.0/24"\). An address that is not in the group is ignored. At least one of ip_addresses_to_add or ip_addresses_to_remove must be provided. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.IPGroups.id | String | The IP group resource ID. |
+| Azure.VirtualNetworks.IPGroups.name | String | The IP group resource name. |
+| Azure.VirtualNetworks.IPGroups.type | String | The resource type. |
+| Azure.VirtualNetworks.IPGroups.location | String | The resource location. |
+| Azure.VirtualNetworks.IPGroups.etag | String | The IP group ETag, used to prevent overwriting concurrent updates. |
+| Azure.VirtualNetworks.IPGroups.tags | Unknown | The tags attached to the IP group. |
+| Azure.VirtualNetworks.IPGroups.properties.provisioningState | String | The provisioning state of the IP group resource. |
+| Azure.VirtualNetworks.IPGroups.properties.ipAddresses | Unknown | The list of IP addresses or IP address prefixes in the IP group resource. |
+| Azure.VirtualNetworks.IPGroups.properties.firewalls | Unknown | A collection of references to firewalls that use the IP group. |
+| Azure.VirtualNetworks.IPGroups.properties.firewallPolicies | Unknown | A collection of references to firewall policies that use the IP group. |
+
+### azure-vn-ip-group-get
+
+***
+Retrieves an IP group resource. Required Permissions: Microsoft.Network/ipGroups/read.
+
+#### Base Command
+
+`azure-vn-ip-group-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The resource group name. | Required |
+| ip_group_name | The name of the IP group to retrieve. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.IPGroups.id | String | The IP group resource ID. |
+| Azure.VirtualNetworks.IPGroups.name | String | The IP group resource name. |
+| Azure.VirtualNetworks.IPGroups.type | String | The resource type. |
+| Azure.VirtualNetworks.IPGroups.location | String | The resource location. |
+| Azure.VirtualNetworks.IPGroups.etag | String | The IP group ETag, used to prevent overwriting concurrent updates. |
+| Azure.VirtualNetworks.IPGroups.tags | Unknown | The tags attached to the IP group. |
+| Azure.VirtualNetworks.IPGroups.properties.provisioningState | String | The provisioning state of the IP group resource. |
+| Azure.VirtualNetworks.IPGroups.properties.ipAddresses | Unknown | The list of IP addresses or IP address prefixes in the IP group resource. |
+| Azure.VirtualNetworks.IPGroups.properties.firewalls | Unknown | A collection of references to firewalls that use the IP group. |
+| Azure.VirtualNetworks.IPGroups.properties.firewallPolicies | Unknown | A collection of references to firewall policies that use the IP group. |
+
+### azure-vn-ip-group-list
+
+***
+Lists the IP groups in a resource group, or in the subscription when no resource group is provided. Use the next_token argument to view the next page of results. Required Permissions: Microsoft.Network/ipGroups/read.
+
+#### Base Command
+
+`azure-vn-ip-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The resource group name. When not provided, the IP groups are listed for the whole subscription. | Optional |
+| next_token | The token for the next set of items to return, used for pagination. The value is the Azure.VirtualNetworks.IPGroupsNextToken output of the previous response. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.IPGroups.id | String | The IP group resource ID. |
+| Azure.VirtualNetworks.IPGroups.name | String | The IP group resource name. |
+| Azure.VirtualNetworks.IPGroups.type | String | The resource type. |
+| Azure.VirtualNetworks.IPGroups.location | String | The resource location. |
+| Azure.VirtualNetworks.IPGroups.etag | String | The IP group ETag, used to prevent overwriting concurrent updates. |
+| Azure.VirtualNetworks.IPGroups.tags | Unknown | The tags attached to the IP group. |
+| Azure.VirtualNetworks.IPGroups.properties.provisioningState | String | The provisioning state of the IP group resource. |
+| Azure.VirtualNetworks.IPGroups.properties.ipAddresses | Unknown | The list of IP addresses or IP address prefixes in the IP group resource. |
+| Azure.VirtualNetworks.IPGroups.properties.firewalls | Unknown | A collection of references to firewalls that use the IP group. |
+| Azure.VirtualNetworks.IPGroups.properties.firewallPolicies | Unknown | A collection of references to firewall policies that use the IP group. |
+| Azure.VirtualNetworks.IPGroupsNextToken | String | The URI to use when requesting the next set of IP groups. |
+
+### azure-vn-ip-group-delete
+
+***
+Deletes an IP group resource. Required Permissions: Microsoft.Network/ipGroups/delete.
+
+#### Base Command
+
+`azure-vn-ip-group-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The resource group name. | Required |
+| ip_group_name | The name of the IP group to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
