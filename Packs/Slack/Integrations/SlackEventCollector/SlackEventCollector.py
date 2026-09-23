@@ -281,6 +281,13 @@ def fetch_slack_events(client: Client, params: dict, last_run: dict) -> list[dic
         return_error("The 'oldest' argument must be earlier than or equal to the 'latest' argument.")
 
     demisto.debug(f"Starting Slack event collection cycle. limit={limit}, upper_bound={upper_bound}, last_run={last_run}")
+    # Backlog lag: how far behind 'now' the collector currently is. This is the key health signal
+    # for this collector - a steadily growing lag means events are arriving faster than they can be
+    # drained (the timeout/backlog failure mode). Logged explicitly so it can be seen at a glance
+    # without cross-referencing last_fetched_time against upper_bound by hand.
+    if (last_fetched_time := last_run.get("last_fetched_time")) is not None:
+        lag_seconds = upper_bound - last_fetched_time
+        demisto.debug(f"Backlog lag before fetch: {lag_seconds} seconds (~{lag_seconds / 3600:.1f} hours behind 'now').")
     extra_params = {
         "action": params.get("action"),
         "actor": params.get("actor"),
@@ -407,9 +414,16 @@ def fetch_events_command(client: Client, params: dict, last_run: dict) -> tuple[
     limit = arg_to_number(params.get("limit")) or Config.DEFAULT_LIMIT
     if len(events_to_send) >= limit:
         last_run["nextTrigger"] = "0"
-        demisto.debug(f"Filled the limit ({limit}); setting nextTrigger=0 to re-run immediately.")
+        demisto.debug(
+            f"[Fetch] Sent {len(events_to_send)} event(s); filled the limit ({limit}), more remain - "
+            f"setting nextTrigger=0 to re-run immediately."
+        )
     else:
         last_run.pop("nextTrigger", None)
+        demisto.debug(
+            f"[Fetch] Sent {len(events_to_send)} event(s); below the limit ({limit}), caught up - "
+            f"next run follows the normal fetch interval."
+        )
 
     return events_to_send, last_run
 
