@@ -90,7 +90,7 @@ script:
       required: true
     description: Disables IOCs in the Cortex server. Applies only to TIM-managed indicators (indicators synced/pushed by this integration); indicators from other sources are not affected.
     name: core-iocs-disable
-  dockerimage: demisto/google-cloud-storage:1.0.0.10120494
+  dockerimage: demisto/google-cloud-storage:1.0.0.12844876
   runonce: false
   script: '-'
   subtype: python3

@@ -1,0 +1,81 @@
+{
+    "customFields": [
+        {
+            "name": "projects/chronicle-mock-proj/locations/us/instances/00000000-0000-0000-0000-000000000001/customFields/1",
+            "displayName": "Ticket Priority",
+            "type": "MULTIPLE_CHOICE_LIST",
+            "scopes": "Alert, Case",
+            "id": "1",
+            "multipleOptions": {
+                "values": [
+                    "High",
+                    "Medium",
+                    "Low"
+                ],
+                "orderedValues": [
+                    {
+                        "value": "High"
+                    },
+                    {
+                        "orderIndex": 1,
+                        "value": "Medium"
+                    },
+                    {
+                        "orderIndex": 2,
+                        "value": "Low"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "projects/chronicle-mock-proj/locations/us/instances/00000000-0000-0000-0000-000000000001/customFields/2",
+            "displayName": "Escalation Required",
+            "type": "MULTIPLE_CHOICE_LIST",
+            "scopes": "Alert, Case",
+            "id": "2",
+            "multipleOptions": {
+                "values": [
+                    "Yes",
+                    "No"
+                ],
+                "orderedValues": [
+                    {
+                        "value": "Yes"
+                    },
+                    {
+                        "orderIndex": 1,
+                        "value": "No"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "projects/chronicle-mock-proj/locations/us/instances/00000000-0000-0000-0000-000000000001/customFields/3",
+            "displayName": "Affected Systems",
+            "type": "MULTIPLE_CHOICE_LIST",
+            "scopes": "Alert, Case",
+            "id": "3",
+            "multipleOptions": {
+                "values": [
+                    "Web Server",
+                    "Database",
+                    "Auth Service"
+                ],
+                "orderedValues": [
+                    {
+                        "value": "Web Server"
+                    },
+                    {
+                        "orderIndex": 1,
+                        "value": "Database"
+                    },
+                    {
+                        "orderIndex": 2,
+                        "value": "Auth Service"
+                    }
+                ]
+            }
+        }
+    ],
+    "totalSize": 3
+}
