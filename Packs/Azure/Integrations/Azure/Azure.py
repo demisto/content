@@ -2152,7 +2152,7 @@ class AzureClient:
         )
         demisto.debug("Updating AKS managed cluster addon profiles.")
         try:
-            return self.http_request("PUT", full_url=full_url, json_data=data, params=params, timeout=30)
+            return self.http_request("PUT", full_url=full_url, json_data=data, params=params)
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -4415,9 +4415,7 @@ def aks_cluster_addon_update_command(client: AzureClient, params: dict[str, Any]
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
 
     http_application_routing_enabled = (
-        argToBoolean(args.get("http_application_routing_enabled"))
-        if args.get("http_application_routing_enabled")
-        else None
+        argToBoolean(args.get("http_application_routing_enabled")) if args.get("http_application_routing_enabled") else None
     )
     monitoring_agent_enabled = (
         argToBoolean(args.get("monitoring_agent_enabled")) if args.get("monitoring_agent_enabled") else None
