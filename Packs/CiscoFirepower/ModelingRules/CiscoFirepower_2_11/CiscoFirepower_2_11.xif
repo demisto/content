@@ -37,7 +37,6 @@ filter cefVersion != null
         xdm.target.file.md5 = fileHash,
         xdm.target.file.file_type = fileType;
 
-[MODEL: dataset="cisco_firepower_raw"]
 filter cefVersion = null
 | alter
         protocol = uppercase(_json -> generalCiscoLog.protocol),
