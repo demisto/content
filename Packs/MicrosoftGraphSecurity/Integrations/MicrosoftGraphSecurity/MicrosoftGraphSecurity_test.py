@@ -609,10 +609,7 @@ def test_fetch_alerts_same_timestamp_pagination_across_runs(mocker):
     - Run 3 returns 0 alerts without duplicating any.
     """
     ts = "2026-09-08T12:40:42.500Z"
-    all_alerts = [
-        {"id": f"alert_{i}", "createdDateTime": ts, "title": f"alert_{i}", "severity": "medium"}
-        for i in range(1, 5)
-    ]
+    all_alerts = [{"id": f"alert_{i}", "createdDateTime": ts, "title": f"alert_{i}", "severity": "medium"} for i in range(1, 5)]
     mocker.patch.object(client_mocker, "search_alerts", return_value={"value": all_alerts})
 
     # Run 1: limit 2
@@ -1032,7 +1029,8 @@ def test_fetch_realistic_pagination_simulation(mocker):
             time_from_str = ge_match.group(1)
             time_from_dt = to_utc_datetime(time_from_str) or datetime.min.replace(tzinfo=timezone.utc)  # noqa: UP017
             filtered = [
-                item for item in dataset
+                item
+                for item in dataset
                 if (to_utc_datetime(item["createdDateTime"]) or datetime.min.replace(tzinfo=timezone.utc)) >= time_from_dt  # noqa: UP017
             ]
         else:
