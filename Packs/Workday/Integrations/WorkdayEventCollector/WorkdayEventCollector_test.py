@@ -236,7 +236,7 @@ class TestFetchActivity:
         next_last_run = build_next_last_run([earlier, boundary_a, boundary_b], {})
 
         assert next_last_run["last_fetch_time"] == "2026-08-26T10:27:53Z"
-        assert next_last_run["latest_request_time"] == "2026-08-26T10:27:53.800Z"
+        assert next_last_run["last_log"] == boundary_b
         assert set(next_last_run["previous_event_ids"]) == {
             get_event_identity(boundary_a),
             get_event_identity(boundary_b),

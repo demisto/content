@@ -286,8 +286,7 @@ def build_next_last_run(activity_loggings: list, previous_last_run: dict) -> dic
     )
     return {
         "last_fetch_time": next_from_date,
-        "last_log": latest_logging,  # kept for backward compatibility / observability
-        "latest_request_time": latest_request_time,
+        "last_log": latest_logging,  # kept for observability / backward compatibility (not read by the code)
         "previous_event_ids": previous_event_ids,
     }
 
