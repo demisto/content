@@ -3,7 +3,7 @@ import datetime
 import pytest
 from freezegun import freeze_time
 from McAfee_ESM_v2 import *
-from McAfee_ESM_v2 import McAfeeESMClient
+from McAfee_ESM_v2 import McAfeeESMClient, _parse_version
 
 list_test_filtering_incidents = [{"id": 3}, {"id": 1}, {"id": 5}, {"id": 4}, {"id": 0}, {"id": 2}]
 data_test_filtering_incidents = [
