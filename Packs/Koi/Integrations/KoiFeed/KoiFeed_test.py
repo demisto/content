@@ -70,8 +70,8 @@ MOCK_ITEM_WITH_CVES = {
 MOCK_ITEM_VERSION_IN_NAME = {
     "item_id": "{GUID-1234}",
     "marketplace": "windows",
-    "version": "04/03/2026 1.0.252.0",
-    "item_display_name": "Windows Driver (04/03/2026 1.0.252.0)",
+    "version": "04/03/2026 1.1.1.1",
+    "item_display_name": "Windows Driver (04/03/2026 1.1.1.1)",
     "risk": None,
     "risk_level": "pending",
     "publisher_name": "Vendor",
@@ -150,8 +150,8 @@ class TestBuildIndicatorFromItem:
 
     def test_version_not_duplicated(self):
         ind = _build_indicator_from_item(MOCK_ITEM_VERSION_IN_NAME, [], None)
-        assert ind["value"] == "Windows Driver (04/03/2026 1.0.252.0)"
-        assert "(04/03/2026 1.0.252.0) (04/03/2026 1.0.252.0)" not in ind["value"]
+        assert ind["value"] == "Windows Driver (04/03/2026 1.1.1.1)"
+        assert "(04/03/2026 1.1.1.1) (04/03/2026 1.1.1.1)" not in ind["value"]
 
     def test_tags_applied(self):
         ind = _build_indicator_from_item(MOCK_ITEM_BASIC, ["Koi", "Test"], None)
