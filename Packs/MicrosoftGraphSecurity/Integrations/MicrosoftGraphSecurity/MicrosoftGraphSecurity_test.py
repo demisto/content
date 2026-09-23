@@ -466,12 +466,12 @@ def test_fetch_alerts_does_not_mutate_last_run(mocker):
     [
         (
             {"filter": "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
-            {"$filter": "Category eq 'Malware' and Severity eq 'High' and status eq 'resolved'"},
+            {"$filter": "(Category eq 'Malware' and Severity eq 'High') and status eq 'resolved'"},
             True,
         ),
         (
             {"filter": "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
-            {"$top": "50", "$filter": "Category eq 'Malware' and Severity eq 'High' and status eq 'resolved'"},
+            {"$top": "50", "$filter": "(Category eq 'Malware' and Severity eq 'High') and status eq 'resolved'"},
             False,
         ),
         ({"page": "2"}, {"$top": "50", "$skip": 100, "$filter": ""}, False),
@@ -490,12 +490,102 @@ def test_create_search_alerts_filters(args, expected_params, is_fetch):
 
     Then:
     - Ensure that the right fields were parsed into the query.
-    - Case 1: Should include both the value of the filter field from the args and the status.
-    - Case 2: Should include the filter and status in the $filter field, and 50 in the $top field.
+    - Case 1: Should include both the value of the filter field from the args (wrapped in parentheses) and the status.
+    - Case 2: Should include the filter (wrapped in parentheses) and status in the $filter field, and 50 in the $top field.
     - Case 3: Should return a params dict with empty $filter field, 50 in the $top field, and 100 in the $skip field.
     """
     params = create_search_alerts_filters(args, is_fetch=is_fetch)
     assert params == expected_params
+
+
+@pytest.mark.parametrize(
+    "args, expected_filter",
+    [
+        (
+            {"service_source": "microsoftDefenderForEndpoint"},
+            "serviceSource eq 'microsoftDefenderForEndpoint'",
+        ),
+        (
+            {"service_source": "microsoftDefenderForOffice365", "status": "resolved"},
+            "serviceSource eq 'microsoftDefenderForOffice365' and status eq 'resolved'",
+        ),
+        (
+            {
+                "classification": "truePositive",
+                "service_source": "microsoftDefenderForCloudApps",
+                "status": "inProgress",
+            },
+            "classification eq 'truePositive' and serviceSource eq 'microsoftDefenderForCloudApps' " "and status eq 'inProgress'",
+        ),
+        (
+            {"filter": "Category eq 'Malware'", "service_source": "microsoftDefenderForIdentity"},
+            "(Category eq 'Malware') and serviceSource eq 'microsoftDefenderForIdentity'",
+        ),
+        ({"classification": "falsePositive"}, "classification eq 'falsePositive'"),
+        ({"status": "newAlert"}, "status eq 'newAlert'"),
+        ({}, ""),
+    ],
+)
+def test_create_search_alerts_filters_maps_snake_case_args_to_odata_properties(args, expected_filter):
+    """
+    Regression test for XSUP-77232 - msg-search-alerts dropped the service_source argument.
+
+    Given:
+    - The msg-search-alerts command arguments, as declared in the YAML (snake_case, e.g. `service_source`).
+    - Case 1: Only service_source.
+    - Case 2: service_source together with status.
+    - Case 3: classification, service_source and status together.
+    - Case 4: A user-supplied `filter` together with service_source.
+    - Case 5: Only classification (regression guard - identically named arg must keep working).
+    - Case 6: Only status (regression guard - identically named arg must keep working).
+    - Case 7: No filtering arguments at all.
+
+    When:
+    - Running create_search_alerts_filters on the command path (is_fetch=False).
+
+    Then:
+    - The XSOAR argument name `service_source` must be translated to the Graph OData property `serviceSource`
+      and appended to the $filter. Before the fix the code looked up `args.get("serviceSource")`, which was always
+      None for the snake_case YAML argument, so the clause was silently dropped and alerts from every service
+      source were returned.
+    - `classification` and `status` must keep producing their identically named OData clauses.
+    - Multiple clauses must be joined with ` and `, and a user-supplied `filter` stays wrapped in parentheses.
+    - With no filtering arguments the $filter must be an empty string.
+    """
+    params = create_search_alerts_filters(args, is_fetch=False)
+
+    assert params["$filter"] == expected_filter
+
+
+@pytest.mark.parametrize(
+    "user_filter",
+    [
+        "severity eq 'high' or severity eq 'medium'",
+        "severity eq 'high'",
+    ],
+)
+def test_create_search_alerts_filters_wraps_user_filter_in_parentheses(user_filter):
+    """
+    Given:
+    - A time window (time_from/time_to) and a user-provided OData filter that may contain an `or` clause.
+
+    When:
+    - Running create_search_alerts_filters (the fetch-alerts path).
+
+    Then:
+    - The user filter must be wrapped in parentheses so that OData `and`/`or` precedence does not let an
+      `or` clause escape the createdDateTime time window (regression test for the "pulls ~6 months of alerts" bug).
+    """
+    args = {
+        "time_from": "2020-04-20T10:00:00Z",
+        "time_to": "2020-04-20T11:00:00Z",
+        "filter": user_filter,
+    }
+
+    params = create_search_alerts_filters(args, is_fetch=True)
+
+    expected = "createdDateTime ge 2020-04-20T10:00:00Z and " "createdDateTime le 2020-04-20T11:00:00Z and " f"({user_filter})"
+    assert params["$filter"] == expected
 
 
 @pytest.mark.parametrize(

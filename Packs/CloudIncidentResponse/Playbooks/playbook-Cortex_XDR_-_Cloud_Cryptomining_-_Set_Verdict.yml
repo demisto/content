@@ -152,7 +152,7 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Incident.alerts
+                root: PaloAltoNetworksXDR.Case.Issues
                 accessor: name
             iscontext: true
           right:
@@ -163,7 +163,7 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Incident.alerts
+                root: PaloAltoNetworksXDR.Case.Issues
                 accessor: name
             iscontext: true
           right:
@@ -210,7 +210,7 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Incident.alerts
+                root: PaloAltoNetworksXDR.Case.Issues
                 accessor: name
             iscontext: true
           right:
@@ -221,12 +221,12 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Incident.alerts
+                root: PaloAltoNetworksXDR.Case.Issues
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.Incident.alerts.severity
+                        simple: PaloAltoNetworksXDR.Case.Issues.severity
                       iscontext: true
                     right:
                       value:
@@ -235,7 +235,7 @@ tasks:
                   - operator: isEqualString
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.Incident.alerts.severity
+                        simple: PaloAltoNetworksXDR.Case.Issues.severity
                       iscontext: true
                     right:
                       value:
@@ -287,12 +287,12 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Incident.alerts
+                root: PaloAltoNetworksXDR.Case.Issues
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.Incident.alerts.severity
+                        simple: PaloAltoNetworksXDR.Case.Issues.severity
                       iscontext: true
                     right:
                       value:
@@ -301,7 +301,7 @@ tasks:
                   - operator: isEqualString
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.Incident.alerts.severity
+                        simple: PaloAltoNetworksXDR.Case.Issues.severity
                       iscontext: true
                     right:
                       value:
@@ -373,7 +373,7 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Incident.alerts
+                root: PaloAltoNetworksXDR.Case.Issues
                 accessor: name
             iscontext: true
           right:
@@ -384,7 +384,7 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Incident.alerts
+                root: PaloAltoNetworksXDR.Case.Issues
                 accessor: name
             iscontext: true
           right:
