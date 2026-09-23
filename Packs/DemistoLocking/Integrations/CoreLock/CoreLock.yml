@@ -21,7 +21,7 @@ configuration:
   name: sync
   defaultvalue: "false"
   type: 8
-  additionalinfo: Whether to sync the integration cache with the database (Available from Cortex XSOAR 6.2.0).
+  additionalinfo: Whether to sync the integration cache with the database.
   section: Connect
   advanced: true
   required: false
