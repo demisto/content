@@ -1,5 +1,6 @@
 [INGEST:vendor="cisco", product="firepower", target_dataset="cisco_firepower_raw", no_hit = keep]
-alter _json = parse_cisco(_raw_log)
+filter cefVersion = null
+| alter _json = parse_cisco(_raw_log)
 | alter
         tmp_time = _json -> date
 | alter
