@@ -5573,53 +5573,6 @@ def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: 
     )
 
 
-def get_firewall_rule_collection_key(rule_type: str) -> str:
-    """
-    Maps a command rule type to the Azure firewall rule collection property name.
-
-    Args:
-        rule_type (str): The rule type as given in the command arguments.
-
-    Returns:
-        str: The Azure firewall rule collection property name.
-    """
-    return {
-        "network_rule": "networkRuleCollections",
-        "application_rule": "applicationRuleCollections",
-        "nat_rule": "natRuleCollections",
-    }.get(rule_type, "")
-
-
-def get_policy_rule_collection_type(rule_type: str) -> str:
-    """
-    Maps a command rule type to the Azure firewall policy rule collection type.
-
-    Args:
-        rule_type (str): The rule type as given in the command arguments.
-
-    Returns:
-        str: The Azure firewall policy rule collection type.
-    """
-    return {
-        "network_rule": "FirewallPolicyFilterRuleCollection",
-        "application_rule": "FirewallPolicyFilterRuleCollection",
-        "nat_rule": "FirewallPolicyNatRuleCollection",
-    }.get(rule_type, "")
-
-
-def get_policy_rule_type(rule_type: str) -> str:
-    """
-    Maps a command rule type to the Azure firewall policy rule type.
-
-    Args:
-        rule_type (str): The rule type as given in the command arguments.
-
-    Returns:
-        str: The Azure firewall policy rule type.
-    """
-    return {"network_rule": "NetworkRule", "application_rule": "ApplicationRule", "nat_rule": "NatRule"}.get(rule_type, "")
-
-
 def filter_policy_rule_collections(rule_collection_groups: list, rule_type: str) -> list:
     """
     Filters firewall policy rule collection groups by the given rule type.
@@ -5631,8 +5584,12 @@ def filter_policy_rule_collections(rule_collection_groups: list, rule_type: str)
     Returns:
         list: The rule collection groups matching the given rule type.
     """
-    collection_type = get_policy_rule_collection_type(rule_type)
-    rule_key = get_policy_rule_type(rule_type)
+    collection_type = {
+        "network_rule": "FirewallPolicyFilterRuleCollection",
+        "application_rule": "FirewallPolicyFilterRuleCollection",
+        "nat_rule": "FirewallPolicyNatRuleCollection",
+    }.get(rule_type, "")
+    rule_key = {"network_rule": "NetworkRule", "application_rule": "ApplicationRule", "nat_rule": "NatRule"}.get(rule_type, "")
     filtered = []
 
     for collection_group in rule_collection_groups:
@@ -5706,7 +5663,12 @@ def get_firewall_rule_collections(
         tuple[dict, list]: The API response and the matching rule collections.
     """
     response = client.firewall_get_request(subscription_id, resource_group_name, firewall_name)
-    rule_collections = dict_safe_get(response, ["properties", get_firewall_rule_collection_key(rule_type)], [])
+    rule_collection_key = {
+        "network_rule": "networkRuleCollections",
+        "application_rule": "applicationRuleCollections",
+        "nat_rule": "natRuleCollections",
+    }.get(rule_type, "")
+    rule_collections = dict_safe_get(response, ["properties", rule_collection_key], [])
 
     return response, rule_collections
 
