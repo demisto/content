@@ -1,5 +1,4 @@
 fromversion: 6.10.0
-toversion: 8.14.0
 id: cisco_esa_modeling_rules_modeling_rule
 name: Cisco ESA Modeling Rule
 rules: ''
