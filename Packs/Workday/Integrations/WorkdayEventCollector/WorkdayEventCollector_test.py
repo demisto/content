@@ -1,6 +1,7 @@
 import json
 from datetime import datetime, timedelta
 
+import demistomock as demisto
 import pytest
 from freezegun import freeze_time
 from WorkdayEventCollector import DATE_FORMAT, DEFAULT_MAX_FETCH, MAX_PAGE_SIZE, Client
@@ -241,6 +242,69 @@ class TestFetchActivity:
             get_event_identity(boundary_a),
             get_event_identity(boundary_b),
         }
+
+    def test_build_next_last_run_merges_ids_when_second_does_not_advance(self):
+        """
+        Given: the previous cycle already tracked an event id for second ...53, and this cycle ingests
+               a different new event in the SAME second ...53 (the checkpoint second did not advance).
+        When: running build_next_last_run.
+        Then: previous_event_ids contains BOTH the old and the new id, so the previously-ingested event
+              is not forgotten and re-ingested next cycle.
+        """
+        from WorkdayEventCollector import build_next_last_run, get_event_identity
+
+        already_tracked = self._event(1, "2026-08-26T10:27:53.100Z")
+        new_same_second = self._event(2, "2026-08-26T10:27:53.800Z")
+        previous_last_run = {
+            "last_fetch_time": "2026-08-26T10:27:53Z",
+            "previous_event_ids": [get_event_identity(already_tracked)],
+        }
+
+        next_last_run = build_next_last_run([new_same_second], previous_last_run)
+
+        assert next_last_run["last_fetch_time"] == "2026-08-26T10:27:53Z"
+        assert set(next_last_run["previous_event_ids"]) == {
+            get_event_identity(already_tracked),
+            get_event_identity(new_same_second),
+        }
+
+    def test_build_next_last_run_does_not_merge_when_second_advances(self):
+        """
+        Given: the previous cycle tracked ids for second ...53, and this cycle advances to second ...54.
+        When: running build_next_last_run.
+        Then: only the new second's ids are kept (the old second's ids are dropped, not carried over).
+        """
+        from WorkdayEventCollector import build_next_last_run, get_event_identity
+
+        old_second_event = self._event(1, "2026-08-26T10:27:53.100Z")
+        new_second_event = self._event(2, "2026-08-26T10:27:54.200Z")
+        previous_last_run = {
+            "last_fetch_time": "2026-08-26T10:27:53Z",
+            "previous_event_ids": [get_event_identity(old_second_event)],
+        }
+
+        next_last_run = build_next_last_run([new_second_event], previous_last_run)
+
+        assert next_last_run["last_fetch_time"] == "2026-08-26T10:27:54Z"
+        assert next_last_run["previous_event_ids"] == [get_event_identity(new_second_event)]
+
+    def test_build_next_last_run_caps_previous_event_ids(self, mocker):
+        """
+        Given: a huge burst of events in the same second exceeding MAX_PREVIOUS_EVENT_IDS.
+        When: running build_next_last_run.
+        Then: previous_event_ids is capped so last_run cannot grow unbounded, and an error is logged so
+              the truncation (and possible re-appearing duplicates) is visible in the logs.
+        """
+        from WorkdayEventCollector import MAX_PREVIOUS_EVENT_IDS, build_next_last_run
+
+        error_log = mocker.patch.object(demisto, "error")
+        burst = [self._event(i, "2026-08-26T10:27:53.100Z") for i in range(MAX_PREVIOUS_EVENT_IDS + 50)]
+
+        next_last_run = build_next_last_run(burst, {})
+
+        assert len(next_last_run["previous_event_ids"]) == MAX_PREVIOUS_EVENT_IDS
+        assert error_log.call_count == 1
+        assert "cap" in error_log.call_args[0][0]
 
     def test_build_next_last_run_empty_preserves_previous(self):
         """
