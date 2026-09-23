@@ -319,6 +319,11 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-sql-db-transparent-data-encryption-set",
         "azure-sql-db-transparent-data-encryption-enable-tde-quick-action",
     ],
+    "Microsoft.ContainerService/managedClusters/read": [
+        "azure-aks-managed-cluster-list",
+        "azure-aks-managed-cluster-addon-update",
+    ],
+    "Microsoft.ContainerService/managedClusters/write": ["azure-aks-managed-cluster-addon-update"],
     "Microsoft.Consumption/usageDetails/read": ["azure-billing-usage-list"],
     "Microsoft.Consumption/budgets/read": ["azure-billing-budgets-list"],
     "Microsoft.CostManagement/forecast/read": ["azure-billing-forecast-list"],
@@ -366,6 +371,12 @@ API_FUNCTION_TO_PERMISSIONS = {
     "sql_db_tde_set": [
         "Microsoft.Sql/servers/databases/transparentDataEncryption/read",
         "Microsoft.Sql/servers/databases/transparentDataEncryption/write",
+    ],
+    "aks_clusters_list": ["Microsoft.ContainerService/managedClusters/read"],
+    "aks_cluster_get": ["Microsoft.ContainerService/managedClusters/read"],
+    "aks_cluster_addon_update": [
+        "Microsoft.ContainerService/managedClusters/read",
+        "Microsoft.ContainerService/managedClusters/write",
     ],
     "storage_account_update_request": ["Microsoft.Storage/storageAccounts/read", "Microsoft.Storage/storageAccounts/write"],
     "storage_blob_service_properties_set_request": [
@@ -455,6 +466,8 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.DocumentDB/databaseAccounts/write",
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read",
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write",
+    "Microsoft.ContainerService/managedClusters/read",
+    "Microsoft.ContainerService/managedClusters/write",
     "Microsoft.Resources/subscriptions/read",
     "Microsoft.Resources/subscriptions/resourceGroups/read",
     "Microsoft.Consumption/usageDetails/read",
@@ -478,6 +491,7 @@ COSMOS_DB_API_VERSION = "2024-11-15"
 PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
 NSG_API_VERSION = "2025-01-01"
+AKS_API_VERSION = "2023-02-01"
 
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
 # get_command_and_token_scopes.
@@ -2003,6 +2017,148 @@ class AzureClient:
                 resource_name=f"{server_name}/{db_name}",
                 resource_type="SQL Database Transparent Data Encryption",
                 api_function_name="sql_db_tde_set",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def aks_clusters_list(self, subscription_id: str):
+        """
+        Lists all managed AKS clusters in the specified subscription.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+
+        Returns:
+            dict: The response from the Azure REST API containing the list of managed clusters.
+
+        Raises:
+            ValueError: If the subscription is not found.
+            DemistoException: If there are permission or other API errors.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/aks/managed-clusters/list
+        """
+        params = {"api-version": AKS_API_VERSION}
+        full_url = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.ContainerService/managedClusters"
+        demisto.debug("Listing AKS managed clusters.")
+        try:
+            return self.http_request("GET", full_url=full_url, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=subscription_id,
+                resource_type="AKS Managed Cluster",
+                api_function_name="aks_clusters_list",
+                subscription_id=subscription_id,
+            )
+
+    def aks_cluster_get(self, subscription_id: str, resource_group_name: str, resource_name: str):
+        """
+        Gets a managed AKS cluster by name.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Name of the resource group containing the cluster.
+            resource_name (str): Name of the managed cluster resource.
+
+        Returns:
+            dict: The response from the Azure REST API containing the managed cluster.
+
+        Raises:
+            ValueError: If the managed cluster is not found.
+            DemistoException: If there are permission or other API errors.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/aks/managed-clusters/get
+        """
+        params = {"api-version": AKS_API_VERSION}
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.ContainerService/managedClusters/{resource_name}"
+        )
+        demisto.debug("Getting AKS managed cluster.")
+        try:
+            return self.http_request("GET", full_url=full_url, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_name,
+                resource_type="AKS Managed Cluster",
+                api_function_name="aks_cluster_get",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def aks_cluster_addon_update(
+        self,
+        subscription_id: str,
+        resource_group_name: str,
+        resource_name: str,
+        location: str,
+        http_application_routing_enabled: bool | None = None,
+        monitoring_agent_enabled: bool | None = None,
+        monitoring_resource_name: str | None = None,
+    ):
+        """
+        Updates the addon profiles of a managed AKS cluster.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Name of the resource group containing the cluster.
+            resource_name (str): Name of the managed cluster resource.
+            location (str): Resource location.
+            http_application_routing_enabled (bool | None): Whether HTTP application routing is enabled.
+            monitoring_agent_enabled (bool | None): Whether the Log Analytics monitoring agent is enabled.
+            monitoring_resource_name (str | None): Name of an existing Log Analytics workspace.
+
+        Returns:
+            dict: The response from the Azure REST API after applying the update.
+
+        Raises:
+            ValueError: If the managed cluster is not found.
+            DemistoException: If there are permission or other API errors.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/aks/managed-clusters/create-or-update
+        """
+        addon_profiles: dict[str, Any] = {}
+        if http_application_routing_enabled is not None:
+            addon_profiles["httpApplicationRouting"] = {"enabled": http_application_routing_enabled}
+        if monitoring_agent_enabled is not None:
+            if monitoring_resource_name:
+                workspace_resource_id = (
+                    f"/subscriptions/{subscription_id}/resourceGroups/"
+                    f"DefaultResourceGroup-WUS/providers/Microsoft.OperationalInsights/workspaces"
+                    f"/{monitoring_resource_name}"
+                )
+            else:
+                cluster = self.aks_cluster_get(subscription_id, resource_group_name, resource_name)
+                workspace_resource_id = (
+                    cluster.get("properties", {})
+                    .get("addonProfiles", {})
+                    .get("omsagent", {})
+                    .get("config", {})
+                    .get("logAnalyticsWorkspaceResourceID")
+                )
+            addon_profiles["omsagent"] = {
+                "enabled": monitoring_agent_enabled,
+                "config": {"logAnalyticsWorkspaceResourceID": workspace_resource_id},
+            }
+        data = {"location": location, "properties": {"addonProfiles": addon_profiles}}
+        params = {"api-version": AKS_API_VERSION}
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.ContainerService/managedClusters/{resource_name}"
+        )
+        demisto.debug("Updating AKS managed cluster addon profiles.")
+        try:
+            return self.http_request("PUT", full_url=full_url, json_data=data, params=params, timeout=30)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_name,
+                resource_type="AKS Managed Cluster",
+                api_function_name="aks_cluster_addon_update",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -4200,6 +4356,85 @@ def sql_db_tde_set_command(client: AzureClient, params: dict[str, Any], args: Di
     )
 
 
+def aks_clusters_list_command(client: AzureClient, params: dict[str, Any], args: Dict[str, Any]) -> CommandResults:
+    """
+    Lists all managed AKS clusters in the specified subscription.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments, optionally including the subscription ID.
+
+    Returns:
+        CommandResults: The list of managed clusters.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    response = client.aks_clusters_list(subscription_id=subscription_id)
+    clusters = response.get("value", [])
+
+    readable_output = [
+        {
+            "Name": cluster.get("name"),
+            "Status": cluster.get("properties", {}).get("provisioningState"),
+            "Location": cluster.get("location"),
+            "Tags": cluster.get("tags"),
+            "Kubernetes version": cluster.get("properties", {}).get("kubernetesVersion"),
+            "API server address": cluster.get("properties", {}).get("fqdn"),
+            "Network type (plugin)": cluster.get("properties", {}).get("networkProfile", {}).get("networkPlugin"),
+        }
+        for cluster in clusters
+    ]
+    return CommandResults(
+        outputs_prefix="Azure.AKS.ManagedCluster",
+        outputs_key_field="id",
+        outputs=clusters,
+        readable_output=tableToMarkdown(
+            "AKS Clusters List",
+            readable_output,
+            ["Name", "Status", "Location", "Tags", "Kubernetes version", "API server address", "Network type (plugin)"],
+        ),
+        raw_response=response,
+    )
+
+
+def aks_cluster_addon_update_command(client: AzureClient, params: dict[str, Any], args: Dict[str, Any]) -> CommandResults:
+    """
+    Updates the addon profiles of a managed AKS cluster.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including the cluster name, location, and addon settings.
+
+    Returns:
+        CommandResults: A message indicating the update request was sent successfully.
+    """
+    resource_name = args.get("resource_name", "")
+    location = args.get("location", "")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    http_application_routing_enabled = (
+        argToBoolean(args.get("http_application_routing_enabled"))
+        if args.get("http_application_routing_enabled")
+        else None
+    )
+    monitoring_agent_enabled = (
+        argToBoolean(args.get("monitoring_agent_enabled")) if args.get("monitoring_agent_enabled") else None
+    )
+
+    client.aks_cluster_addon_update(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        resource_name=resource_name,
+        location=location,
+        http_application_routing_enabled=http_application_routing_enabled,
+        monitoring_agent_enabled=monitoring_agent_enabled,
+        monitoring_resource_name=args.get("monitoring_resource_name"),
+    )
+    return CommandResults(readable_output="The request to update the managed cluster was sent successfully.")
+
+
 def cosmosdb_update_command(client: AzureClient, params: dict[str, Any], args: Dict[str, Any]) -> CommandResults:
     """
         Updates a Cosmos DB account with specified settings.
@@ -5774,6 +6009,8 @@ def main():  # pragma: no cover
             "azure-sqldb-security-alert-policy-update": sql_db_threat_policy_update_command,
             "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
             "azure-sql-db-transparent-data-encryption-enable-tde-quick-action": sql_db_tde_set_command,
+            "azure-aks-managed-cluster-list": aks_clusters_list_command,
+            "azure-aks-managed-cluster-addon-update": aks_cluster_addon_update_command,
             "azure-cosmos-db-update": cosmosdb_update_command,
             "azure-cosmos-db-disable-key-quick-action": cosmosdb_update_command,
             "azure-cosmosdb-db-account-update": cosmosdb_update_command,
