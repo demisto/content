@@ -5,7 +5,6 @@ import pytest
 
 import BlockUrl
 import demistomock as demisto
-import BlockUrl
 from BlockUrl import BlockUrlError, PanOs
 
 TEST_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data")
