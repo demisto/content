@@ -1011,6 +1011,8 @@ script:
       required: true
     - description: The PowerShell script code to run.
       name: raw
+    - description: Command-line arguments passed to the executed script. Use with the argument script_name only.
+      name: command_line
     - defaultValue: '30'
       description: Timeout for how long to wait for the request in seconds. Maximum is 600 (10 minutes).
       name: timeout
