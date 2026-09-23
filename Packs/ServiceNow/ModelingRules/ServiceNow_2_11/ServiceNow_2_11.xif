@@ -65,7 +65,6 @@ filter source_log_type = "outbound_http_log"
     xdm.event.description = to_string(object_create("Transaction Name", transaction_name, "Session ID", session_id, "Sequence", sequence, "Log Level", log_level)),
     xdm.session_context_id = transaction_id,
     xdm.network.http.url = url,
-    xdm.network.http.path = path,
     xdm.network.application_protocol = protocol,
     xdm.network.http.method = if(
         method = "GET", XDM_CONST.HTTP_METHOD_GET,

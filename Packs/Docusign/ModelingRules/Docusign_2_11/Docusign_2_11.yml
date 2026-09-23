@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-name: Docusign Modeling Rule
-id: Docusign_ModelingRule
+name: Docusign Docusign Modeling Rule
+id: docusign_docusign_ModelingRule
 rules: ''
 schema: ''
 tags: ''

@@ -44,6 +44,9 @@ filter api_object_type ~= "ApiEvent|APIEvent" // ApiEvent
     xdm.source.user.full_domain_name = arrayindex(get_Username, 1),
     xdm.source.identity.full_domain_name = arrayindex(get_Username, 1),
     xdm.source.user.identity_type = if(
+        ConnectedAppId != null, XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        XDM_CONST.IDENTITY_TYPE_USER
+    ),
     xdm.source.identity.identity_type = if(
         ConnectedAppId != null, XDM_CONST.IDENTITY_TYPE_APPLICATION,
         XDM_CONST.IDENTITY_TYPE_USER
@@ -839,6 +842,8 @@ filter api_object_type ~= "LoginEvent"
         LoginType IN("AppExchange", "LightningLogin"), "application",
         LoginType IN("ChatterCommunityThirdPartySso", "PortalThirdPartySso", "PrmPortalThirdPartySso", "saml","SamlChatterNetworks", "SamlCspPortal", "SamlPrmPortal", "SamlSite","Saml2"), "Generic SSO"),
     xdm.source.user.user_type = if(
+        LoginType CONTAINS "Remote Access", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        XDM_CONST.USER_TYPE_REGULAR),
     xdm.source.identity.user_type = if(
         LoginType CONTAINS "Remote Access", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
         XDM_CONST.USER_TYPE_REGULAR),
@@ -911,6 +916,8 @@ filter api_object_type ~= "LoginAsEvent"
         LoginType IN("AppExchange", "LightningLogin"), "application",
         LoginType IN("ChatterCommunityThirdPartySso", "PortalThirdPartySso", "PrmPortalThirdPartySso", "saml","SamlChatterNetworks", "SamlCspPortal", "SamlPrmPortal", "SamlSite","Saml2"), "Generic SSO"),
     xdm.source.user.user_type = if(
+        LoginType CONTAINS "Remote Access", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        XDM_CONST.USER_TYPE_REGULAR),
     xdm.source.identity.user_type = if(
         LoginType CONTAINS "Remote Access", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
         XDM_CONST.USER_TYPE_REGULAR);

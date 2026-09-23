@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: MicrosoftNPS_ModelingRule
-name: MicrosoftNPS Modeling Rule
+id: Microsoft_NPS_ModelingRule
+name: Microsoft NPS Modeling Rule
 rules: ''
 schema: ''
 tags: Microsoft NPS

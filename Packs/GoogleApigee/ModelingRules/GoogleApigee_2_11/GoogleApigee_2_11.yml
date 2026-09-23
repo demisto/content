@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: GoogleApigee_ModelingRule
-name: GoogleApigee Modeling Rule
+id: Google_Apigee_Edge_ModelingRule
+name: Google Apigee Edge Modeling Rule
 rules: ''
 schema: ''
 tags:
