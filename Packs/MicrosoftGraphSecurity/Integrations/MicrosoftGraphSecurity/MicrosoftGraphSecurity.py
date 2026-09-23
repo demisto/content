@@ -737,10 +737,14 @@ def create_search_alerts_filters(args, is_fetch=False):
         page = int(page)
         page = page * page_size
         params["$skip"] = page
-    relevant_filters_v2 = ["classification", "serviceSource", "status"]
-    for key in relevant_filters_v2:
-        if val := args.get(key):
-            filters.append(f"{key} eq '{val}'")
+    relevant_filters_v2 = {
+        "classification": "classification",
+        "service_source": "serviceSource",
+        "status": "status",
+    }
+    for arg_name, odata_property in relevant_filters_v2.items():
+        if val := args.get(arg_name):
+            filters.append(f"{odata_property} eq '{val}'")
     filters = " and ".join(filters)
     params["$filter"] = filters
     if is_fetch:
