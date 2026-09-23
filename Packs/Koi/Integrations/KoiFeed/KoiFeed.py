@@ -154,7 +154,7 @@ def _build_indicator_from_item(
 
 
 def _build_cve_indicators_from_item(item: dict[str, Any], tags: list[str], tlp_color: str | None) -> list[dict[str, Any]]:
-    cves = []
+    cves: list[dict[str, Any]] = []
     findings = item.get("findings", [])
     if not isinstance(findings, list):
         return cves
@@ -330,8 +330,8 @@ def main() -> None:
         elif command == "fetch-indicators":
             fetch_indicators_command(client, params)
         elif command == "koi-feed-get-indicators":
-            result = get_indicators_command(client, demisto.args(), params)
-            return_results(result)
+            indicators_result = get_indicators_command(client, demisto.args(), params)
+            return_results(indicators_result)
         else:
             raise DemistoException(f"Command '{command}' is not implemented")
 
