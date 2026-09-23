@@ -23,9 +23,13 @@ They also help automate repetitive tasks associated with:
 
 To fully leverage the capabilities of this integration, customers need a Censys Adversary Investigation module license, which facilitates the searching of related infrastructure and provides access to the comprehensive dataset.
 
+<~XSOAR>
+
 ## Dashboard
 
 - **Censys SOAR Dashboard**: This dashboard displays the total number of times the Censys playbook and Censys commands have been executed, including breakdown by execution type.
+
+</~XSOAR>
 
 ## Playbooks
 

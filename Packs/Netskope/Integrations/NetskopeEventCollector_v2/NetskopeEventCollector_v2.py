@@ -1,5 +1,5 @@
 from itertools import chain
-from aiohttp import ClientResponseError
+from aiohttp import ClientResponseError, ClientPayloadError
 import asyncio
 import aiohttp
 import traceback
@@ -18,6 +18,11 @@ MAX_EVENTS_PAGE_SIZE = 10000
 MAX_RETRY = 3
 NETSKOPE_SEMAPHORE_COUNT = 4
 MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE = 10
+# Minimum page size to shrink to when the server keeps truncating the response payload
+MIN_EVENTS_PAGE_SIZE = 100
+# Base backoff (in seconds) used between retries after a truncated/incomplete response payload.
+# The wait grows exponentially: PAYLOAD_ERROR_BACKOFF_SECONDS * (2 ** (retry - 1)), e.g. 1s, 2s, 4s.
+PAYLOAD_ERROR_BACKOFF_SECONDS = 1
 
 # Netskope response constants
 RATE_LIMIT_REMAINING = "ratelimit-remaining"  # Rate limit remaining
@@ -125,7 +130,7 @@ class Client:
             self.netskope_semaphore,
             self._async_session.get(url, params=params, headers=self._headers, proxy=self._proxy_url) as resp,
         ):
-            demisto.debug(f"Fetching {event_type} events with params: {params}")
+            demisto.debug(f"Fetching {event_type} events with offset={params.get('offset')} limit={params.get('limit')}")
             resp.raise_for_status()
             return await resp.json()
 
@@ -314,7 +319,9 @@ async def honor_rate_limiting_async(headers, event_type, params) -> bool:
             remaining = headers.get(RATE_LIMIT_REMAINING)
             demisto.debug(f"Remaining rate limit is: {remaining}")
             if int(remaining) <= 0:
-                demisto.debug(f"Rate limiting reached for {event_type=} and {params=}")
+                demisto.debug(
+                    f"Rate limiting reached for {event_type=} offset={params.get('offset')} limit={params.get('limit')}"
+                )
                 if to_sleep := headers.get(RATE_LIMIT_RESET):
                     demisto.debug(f"Going to async sleep for {to_sleep} seconds to avoid rate limit error")
                     await asyncio.sleep(int(to_sleep))
@@ -346,10 +353,10 @@ async def handle_event_type_async(
     page_size = min(limit, MAX_EVENTS_PAGE_SIZE)
     params = assign_params(limit=page_size, offset=offset, **get_time_window_params(event_type, start_time, end_time))
 
-    demisto.debug(f"[Fetch][{coord_id}] Fetching '{event_type}' events with params: {params}")
+    demisto.debug(f"[Fetch][{coord_id}] Fetching '{event_type}' events with offset={offset} limit={page_size}")
     # If this is a retry of a previous failure, log it.
     if is_re_fetch_failed_fetch:
-        demisto.debug(f"[Fetch][{coord_id}] Retrying failed fetch for type={event_type}, params={params}")
+        demisto.debug(f"[Fetch][{coord_id}] Retrying failed fetch for type={event_type}, offset={offset} limit={page_size}")
 
     success_res, failures = await fetch_and_send_events_async(
         client, event_type, params, limit, send_to_xsiam, is_re_fetch_failed_fetch
@@ -359,12 +366,14 @@ async def handle_event_type_async(
     )
 
     if is_re_fetch_failed_fetch and success_res:
-        demisto.debug(f"[Fetch][{coord_id}] Retry succeeded for type={event_type}, params={params}")
+        demisto.debug(f"[Fetch][{coord_id}] Retry succeeded for type={event_type}, offset={offset} limit={page_size}")
 
     if not success_res and failures and not is_re_fetch_failed_fetch:
         # if there are no success fetch/send, raise an exception and keep the previous next_fetch_start_time
         e: DemistoException = failures[0]
-        demisto.error(f"[Fetch][{coord_id}] Failed to fetch events for type={event_type}, params={params}: {str(e)}")
+        demisto.error(
+            f"[Fetch][{coord_id}] Failed to fetch events for type={event_type}, " f"offset={offset} limit={page_size}: {str(e)}"
+        )
         if hasattr(e, "exception") and hasattr(e.exception, "status"):
             demisto.error(f"[Fetch][{coord_id}] HTTP status: {getattr(e.exception, 'status', None)}")
         if hasattr(e, "res"):
@@ -444,10 +453,16 @@ async def fetch_and_send_events_async(
     async def _handle_page(params):
         async def _fetch_page():
             retry_count = 0
+            # separate counter for truncated/incomplete response payload errors, so it
+            # does not interfere with the rate-limit (429) retry semantics
+            payload_error_retry_count = 0
             while retry_count < MAX_RETRY:
                 try:
                     if retry_count > 0:
-                        demisto.debug(f"[Fetch] Rate limit (429) for {type=} {params=}, retry {retry_count=} < {MAX_RETRY=}")
+                        demisto.debug(
+                            f"[Fetch] Rate limit (429) for {type=} offset={params.get('offset')} "
+                            f"limit={params.get('limit')}, retry {retry_count=} < {MAX_RETRY=}"
+                        )
 
                     offset = params.get("offset")
                     demisto.debug(f"[Fetch] Fetching {type=} page from {offset=}")
@@ -459,6 +474,31 @@ async def fetch_and_send_events_async(
                         retry_count += 1
                     else:
                         raise e
+                except ClientPayloadError as e:
+                    # The server (or a proxy in between) announced a body length via
+                    # Content-Length / Transfer-Encoding but closed the connection before
+                    # sending all the bytes (e.g. TransferEncodingError). This is transient,
+                    # so retry with a backoff while shrinking the page size to reduce the
+                    # payload that must be streamed before the connection is torn down.
+                    if payload_error_retry_count >= MAX_RETRY:
+                        demisto.debug(
+                            f"[Fetch] Incomplete response payload for {type=} offset={params.get('offset')} "
+                            f"limit={params.get('limit')} persisted after "
+                            f"{payload_error_retry_count=} retries (>= {MAX_RETRY=}), giving up"
+                        )
+                        raise e
+                    current_limit = int(params.get("limit", MAX_EVENTS_PAGE_SIZE))
+                    new_limit = max(MIN_EVENTS_PAGE_SIZE, current_limit // 2)
+                    params["limit"] = new_limit
+                    payload_error_retry_count += 1
+                    # Exponential backoff: PAYLOAD_ERROR_BACKOFF_SECONDS * (2 ** (retry - 1)), e.g. 1s, 2s, 4s
+                    backoff = PAYLOAD_ERROR_BACKOFF_SECONDS * (2 ** (payload_error_retry_count - 1))
+                    demisto.debug(
+                        f"[Fetch] Incomplete response payload for {type=} ({str(e)}). "
+                        f"Retrying ({payload_error_retry_count}/{MAX_RETRY}) after {backoff}s "
+                        f"with reduced page size {current_limit} -> {new_limit}"
+                    )
+                    await asyncio.sleep(backoff)
             # Exhausted retries on a 429 - raise so the page is recorded as a failure (and retried
             # next cycle).
             raise DemistoException(f"Rate limit (429) for {type=} not resolved after {MAX_RETRY=} retries")
