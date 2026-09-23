@@ -13,12 +13,6 @@ disable_warnings()
 
 CONTEXT_INTEGRATION_NAME = "McAfeeESM."
 
-# Supported ESM versions. Versions earlier than 11.6 reached Trellix end-of-life and are no longer supported.
-# See https://www.trellix.com/support/end-of-life-products/
-VERSION_AES = "11.6.11 and later"
-VERSION_BASE64 = "11.6.0 - 11.6.10"
-SUPPORTED_VERSIONS = (VERSION_AES, VERSION_BASE64)
-
 # Starting with ESM 11.6.11, the login API requires the username and password to be AES-encrypted.
 # The key and IV below are fixed constants published by Trellix for all customers in KB90289
 # (https://support.trellix.com/s/article/KB90289) - they are not secret and are not instance-specific.
@@ -43,34 +37,75 @@ def encrypt_credential(value: str) -> str:
     return base64.b64encode(encryptor.update(padded) + encryptor.finalize()).decode()
 
 
+# Minimum supported ESM version (inclusive). Versions below this reached Trellix end-of-life.
+# See https://www.trellix.com/support/end-of-life-products/
+MIN_SUPPORTED_VERSION = (11, 6, 0)
+
+# ESM 11.6.11+ requires AES-encrypted credentials; 11.6.0–11.6.10 use plain Base64.
+AES_MIN_VERSION = (11, 6, 11)
+
+
+def _parse_version(version: str) -> tuple[int, ...]:
+    """Parses a dotted version string (e.g. '11.6.11') into a 3-element tuple of ints for comparison.
+
+    Short versions are zero-padded: '11.6' → (11, 6, 0), '11.7' → (11, 7, 0).
+
+    :param version: The version string entered by the user.
+    :return: Tuple of at least 3 ints, e.g. (11, 6, 11).
+    :raises DemistoException: If the string cannot be parsed as a dotted-integer version.
+    """
+    try:
+        parts = tuple(int(p) for p in version.strip().split("."))
+    except ValueError:
+        raise DemistoException(
+            f'Invalid ESM version "{version}". '
+            f'Enter a dotted version number such as "11.6.11" or "11.6.0".'
+        )
+    if len(parts) < 2:
+        raise DemistoException(
+            f'Invalid ESM version "{version}". '
+            f'Enter a dotted version number such as "11.6.11" or "11.6.0".'
+        )
+    # Zero-pad to at least 3 parts so that (11, 6) compares equal to (11, 6, 0)
+    # rather than less-than, which is Python's default for shorter tuples.
+    while len(parts) < 3:
+        parts += (0,)
+    return parts
+
+
+def validate_version(version: str) -> tuple[int, ...]:
+    """Validates that the configured ESM version is supported and returns the parsed tuple.
+
+    Versions below 11.6.0 are not supported by Trellix and will raise an error immediately.
+
+    :param version: The version string entered by the user (e.g. "11.6.11").
+    :return: The parsed version tuple, e.g. (11, 6, 11).
+    :raises DemistoException: If the version is below the minimum supported version.
+    """
+    parsed = _parse_version(version)
+    if parsed < MIN_SUPPORTED_VERSION:
+        raise DemistoException(
+            f'ESM version "{version}" is not supported. '
+            f"Trellix has reached end-of-life for all ESM versions below 11.6.0 "
+            f"(see https://www.trellix.com/support/end-of-life-products/). "
+            f'Enter version 11.6.0 or later in the "Version" parameter.'
+        )
+    return parsed
+
+
 def encode_credential(value: str, version: str) -> str:
     """Encodes a credential for the login request according to the configured ESM version.
 
-    ESM 11.6.11 and later require AES-encrypted credentials; earlier 11.6.x versions use Base64.
+    ESM 11.6.11 and later require AES-encrypted credentials; versions 11.6.0–11.6.10 use Base64.
 
     :param value: The plaintext credential (username or password).
-    :param version: The configured ESM version, one of SUPPORTED_VERSIONS.
+    :param version: The version string entered by the user (e.g. "11.6.11").
     :return: The encoded credential to send in the login body.
     """
-    if version == VERSION_AES:
+    parsed = _parse_version(version)
+    if parsed >= AES_MIN_VERSION:
         return encrypt_credential(value)
     return base64.b64encode(value.encode("utf-8")).decode()
-
-
-def validate_version(version: str) -> None:
-    """Validates that the configured ESM version is still supported.
-
-    :param version: The configured ESM version.
-    :raises DemistoException: If the version is not one of SUPPORTED_VERSIONS.
-    """
-    if version not in SUPPORTED_VERSIONS:
-        raise DemistoException(
-            f'McAfee ESM v2 no longer supports ESM version "{version}". '
-            f"Versions earlier than 11.6 reached Trellix end-of-life "
-            f"(see https://www.trellix.com/support/end-of-life-products/). "
-            f'Edit the integration instance and set the "Version" parameter to '
-            f'"{VERSION_AES}" or "{VERSION_BASE64}".'
-        )
 
 
 class EmptyFile(Exception):
@@ -85,7 +120,7 @@ class McAfeeESMClient(BaseClient):
         self.__user_name = params.get("credentials", {}).get("identifier", "")
         self.__password = params.get("credentials", {}).get("password", "")
         self.difference = int(params.get("timezone", 0))
-        self.version = params.get("version", VERSION_AES)
+        self.version = params.get("version", "11.6.1")
         validate_version(self.version)
         super().__init__(
             "{}/rs/esm/v2/".format(params.get("url", "").strip("/")),

@@ -1,11 +1,11 @@
 
-Run queries and receive alarms from Intel Security ESM.
+Run queries and receive alarms from Trellix (McAfee) ESM.
 This integration was integrated and tested with version 11.6 of McAfee ESM v2.
 
 Versions earlier than 11.6 are not supported, as they reached [Trellix end-of-life](https://www.trellix.com/support/end-of-life-products/).
 
-Starting with ESM 11.6.11, the login API requires the username and password to be AES-encrypted. When the **Version** parameter is set to *11.6.11 and later*, the integration applies this encryption automatically - no manual encryption is required.
-Previous versions have been declared [EOL](https://kc.mcafee.com/corporate/index?page=content&id=KB94822) by the vendor.
+Starting with ESM 11.6.11, the login API requires the username and password to be AES-encrypted. Enter your ESM version number in the **Version** parameter — the integration applies AES encryption automatically for versions 11.6.11 and later; no manual encryption is required.
+Previous versions have been declared [EOL](https://www.trellix.com/support/end-of-life-products/) by the vendor.
 
 ## Configure McAfee ESM v2 in Cortex
 

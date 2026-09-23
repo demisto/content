@@ -7,7 +7,7 @@ commonfields:
   id: McAfee ESM v2
   version: -1
 configuration:
-- display: Base URL (e.g. https://example.com)
+- display: Base URL
   name: url
   required: true
   type: 0
@@ -17,17 +17,15 @@ configuration:
   required: true
   type: 9
   section: Connect
-- defaultvalue: 11.6.11 and later
+- defaultvalue: '11.6.1'
   display: Version
-  additionalinfo: The ESM version of your instance. Version 11.6.11 and later require AES-encrypted credentials, which the integration
-    applies automatically at login - no manual encryption is needed. Versions earlier than 11.6 are not supported, as they reached
-    Trellix end-of-life.
+  additionalinfo: >-
+    The ESM version of your instance (e.g. 11.6.11). Versions 11.6.11 and later
+    use AES-encrypted credentials automatically. Versions 11.6.0 to 11.6.10 use
+    Base64 encoding. Versions below 11.6.0 are not supported (Trellix end-of-life).
   name: version
-  options:
-  - 11.6.11 and later
-  - 11.6.0 - 11.6.10
   required: true
-  type: 15
+  type: 0
   section: Connect
 - display: Fetch incidents
   name: isFetch
@@ -47,7 +45,8 @@ configuration:
   advanced: true
   section: Collect
 - defaultvalue: alarms
-  display: 'Fetch Types: cases, alarms, both (relevant only for fetch incident mode)'
+  display: Fetch Types
+  additionalinfo: 'Relevant only for fetch incident mode. Options: alarms, cases, both.'
   name: fetchType
   options:
   - alarms
@@ -57,7 +56,8 @@ configuration:
   required: false
   section: Collect
 - defaultvalue: '0'
-  display: 'Start fetch after ID: (relevant only for fetch incident mode)'
+  display: Start fetch after ID
+  additionalinfo: Relevant only for fetch incident mode.
   name: startingFetchID
   type: 0
   required: false
@@ -69,7 +69,8 @@ configuration:
   required: false
   section: Collect
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  display: First fetch timestamp
+  additionalinfo: 'Format: <number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year.'
   name: fetchTime
   type: 0
   required: false
@@ -81,7 +82,8 @@ configuration:
   required: false
   section: Collect
 - defaultvalue: '0'
-  display: McAfee ESM Timezone in hours (e.g if ESM timezone is +0300 => then insert 3)
+  display: McAfee ESM Timezone in hours
+  additionalinfo: 'Enter the ESM timezone offset in hours, e.g. if ESM timezone is +0300 enter 3.'
   name: timezone
   type: 0
   required: false

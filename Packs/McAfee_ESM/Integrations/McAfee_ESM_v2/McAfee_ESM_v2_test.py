@@ -142,7 +142,7 @@ def test_edit_case(mocker):
         "url": "https://example.com",
         "insecure": True,
         "credentials": {"identifier": "TEST", "password": "TEST"},
-        "version": VERSION_AES,
+        "version": "11.6.11",
     }
     raw_response_has_event_list = {
         "assignedTo": 8207,
@@ -212,7 +212,7 @@ def test_alarm_to_incidents(mocker):
         "url": "https://example.com",
         "insecure": True,
         "credentials": {"identifier": "TEST", "password": "TEST"},
-        "version": VERSION_AES,
+        "version": "11.6.11",
         "fetchTime": create_time_difference_string(days=3, hours=6),
         "startingFetchID": 0,
     }
@@ -273,7 +273,7 @@ class TestTestModule:
             "url": "https://example.com",
             "insecure": True,
             "credentials": {"identifier": "Shahaf", "password": "TEST"},
-            "version": VERSION_AES,
+            "version": "11.6.11",
         }
         mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__login", return_value={})
         mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__request", return_value={})
@@ -293,7 +293,7 @@ class TestTestModule:
                 "identifier": "Shahaf",
                 "password": "TEST",
             },
-            "version": VERSION_AES,
+            "version": "11.6.11",
             "startingFetchID": "",
             "isFetch": True,
         }
@@ -334,7 +334,7 @@ def test_encrypt_credential_matches_vendor_vectors(plaintext, expected):
 def test_encode_credential_aes_version():
     """
     Given:
-    - An instance configured with ESM 11.6.11 and later.
+    - An instance configured with ESM 11.6.11 (AES threshold).
 
     When:
     - Encoding a credential for the login request.
@@ -342,13 +342,13 @@ def test_encode_credential_aes_version():
     Then:
     - The credential is AES-encrypted rather than only base64-encoded.
     """
-    assert encode_credential("NGCP", VERSION_AES) == "jwNLgaSY2PFsAjF87bRyPg=="
+    assert encode_credential("NGCP", "11.6.11") == "jwNLgaSY2PFsAjF87bRyPg=="
 
 
 def test_encode_credential_base64_version():
     """
     Given:
-    - An instance configured with ESM 11.6.0 - 11.6.10.
+    - An instance configured with ESM 11.6.10 (last Base64 version).
 
     When:
     - Encoding a credential for the login request.
@@ -356,7 +356,7 @@ def test_encode_credential_base64_version():
     Then:
     - The legacy base64 encoding is used, unchanged from previous versions.
     """
-    assert encode_credential("NGCP", VERSION_BASE64) == base64.b64encode(b"NGCP").decode()
+    assert encode_credential("NGCP", "11.6.10") == base64.b64encode(b"NGCP").decode()
 
 
 def test_encode_credential_non_ascii():
@@ -365,51 +365,71 @@ def test_encode_credential_non_ascii():
     - A password containing non-ASCII characters.
 
     When:
-    - Encoding it for either supported version.
+    - Encoding it for both the Base64 (11.6.0) and AES (11.6.11) paths.
 
     Then:
     - Encoding succeeds (UTF-8), and the AES result decrypts back to the original password.
     """
     password = "sécrèt-ñ-密碼"
-    assert encode_credential(password, VERSION_BASE64) == base64.b64encode(password.encode("utf-8")).decode()
+    assert encode_credential(password, "11.6.0") == base64.b64encode(password.encode("utf-8")).decode()
 
     from cryptography.hazmat.primitives import padding as crypto_padding
     from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
-    ciphertext = base64.b64decode(encode_credential(password, VERSION_AES))
+    ciphertext = base64.b64decode(encode_credential(password, "11.6.11"))
     decryptor = Cipher(algorithms.AES(ESM_AES_KEY), modes.CBC(ESM_AES_IV)).decryptor()
     padded = decryptor.update(ciphertext) + decryptor.finalize()
     unpadder = crypto_padding.PKCS7(AES_BLOCK_SIZE_BITS).unpadder()
     assert (unpadder.update(padded) + unpadder.finalize()).decode("utf-8") == password
 
 
-@pytest.mark.parametrize("version", ["10.2", "11.1", "11.3", "11.5", "", "11.6"])
-def test_validate_version_rejects_unsupported(version):
+@pytest.mark.parametrize("version", ["10.2", "11.1", "11.3", "11.5.9", "11.5"])
+def test_validate_version_rejects_below_11_6(version):
     """
     Given:
-    - An instance still configured with an ESM version that is no longer supported.
+    - An instance configured with an ESM version below 11.6.0 (Trellix end-of-life).
 
     When:
-    - Initializing the client.
+    - Validating the version.
 
     Then:
-    - A DemistoException is raised naming the configured version and both supported options,
-      so the user can fix the instance instead of hitting an opaque login failure.
+    - A DemistoException is raised immediately, naming the configured version and the
+      minimum supported version, so the user can fix the instance.
     """
     with pytest.raises(DemistoException) as exception_info:
         validate_version(version)
 
     message = str(exception_info.value)
     assert version in message
-    assert VERSION_AES in message
-    assert VERSION_BASE64 in message
+    assert "11.6.0" in message
 
 
-@pytest.mark.parametrize("version", [VERSION_AES, VERSION_BASE64])
+@pytest.mark.parametrize("version", ["invalid", "", "abc.def"])
+def test_validate_version_rejects_non_numeric(version):
+    """
+    Given:
+    - A version string that cannot be parsed as a dotted integer version.
+
+    When:
+    - Validating the version.
+
+    Then:
+    - A DemistoException is raised with a helpful message.
+    """
+    with pytest.raises(DemistoException):
+        validate_version(version)
+
+
+@pytest.mark.parametrize(
+    "version",
+    ["11.6.0", "11.6.5", "11.6.10", "11.6.11", "11.6.20", "11.7.0", "12.0.0", "11.6", "11.7"],
+)
 def test_validate_version_accepts_supported(version):
     """
     Given:
-    - An instance configured with a supported ESM version.
+    - An instance configured with a supported ESM version (11.6.0 or later), including
+      short two-part versions like "11.6" and "11.7" which are zero-padded to (11, 6, 0)
+      and (11, 7, 0) respectively.
 
     When:
     - Validating the version.
@@ -418,6 +438,30 @@ def test_validate_version_accepts_supported(version):
     - No exception is raised.
     """
     validate_version(version)
+
+
+@pytest.mark.parametrize(
+    "version, expected_tuple",
+    [
+        ("11.6", (11, 6, 0)),
+        ("11.7", (11, 7, 0)),
+        ("11.6.11", (11, 6, 11)),
+        ("12.0.0", (12, 0, 0)),
+    ],
+)
+def test_parse_version_zero_pads_short_versions(version, expected_tuple):
+    """
+    Given:
+    - A version string with fewer than 3 parts (e.g. "11.6").
+
+    When:
+    - Parsing the version.
+
+    Then:
+    - The result is zero-padded to 3 parts so tuple comparisons work correctly,
+      e.g. "11.6" → (11, 6, 0) rather than (11, 6) which would compare less-than (11, 6, 0).
+    """
+    assert _parse_version(version) == expected_tuple
 
 
 @pytest.mark.filterwarnings("ignore::pytest.PytestUnraisableExceptionWarning")
@@ -449,8 +493,8 @@ def test_client_init_rejects_unsupported_version(mocker):
 @pytest.mark.parametrize(
     "version, expected_username",
     [
-        (VERSION_AES, "jwNLgaSY2PFsAjF87bRyPg=="),
-        (VERSION_BASE64, base64.b64encode(b"NGCP").decode()),
+        ("11.6.11", "jwNLgaSY2PFsAjF87bRyPg=="),
+        ("11.6.10", base64.b64encode(b"NGCP").decode()),
     ],
 )
 def test_login_body_encoding_per_version(mocker, version, expected_username):
