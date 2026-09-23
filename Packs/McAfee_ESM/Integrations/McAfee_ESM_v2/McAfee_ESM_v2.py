@@ -58,13 +58,11 @@ def _parse_version(version: str) -> tuple[int, ...]:
         parts = tuple(int(p) for p in version.strip().split("."))
     except ValueError:
         raise DemistoException(
-            f'Invalid ESM version "{version}". '
-            f'Enter a dotted version number such as "11.6.11" or "11.6.0".'
+            f'Invalid ESM version "{version}". ' f'Enter a dotted version number such as "11.6.11" or "11.6.0".'
         )
     if len(parts) < 2:
         raise DemistoException(
-            f'Invalid ESM version "{version}". '
-            f'Enter a dotted version number such as "11.6.11" or "11.6.0".'
+            f'Invalid ESM version "{version}". ' f'Enter a dotted version number such as "11.6.11" or "11.6.0".'
         )
     # Zero-pad to at least 3 parts so that (11, 6) compares equal to (11, 6, 0)
     # rather than less-than, which is Python's default for shorter tuples.
