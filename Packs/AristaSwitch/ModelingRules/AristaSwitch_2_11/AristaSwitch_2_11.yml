@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: AristaSwitch_ModelingRule
+name: AristaSwitch Modeling Rule
+rules: ''
+schema: ''
+tags: 'Arista Switch EOS'
+supportedModules:
+- xsiam
