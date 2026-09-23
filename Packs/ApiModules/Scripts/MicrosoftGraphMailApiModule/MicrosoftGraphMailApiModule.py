@@ -56,7 +56,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         self._emails_fetch_limit = emails_fetch_limit
         self._display_full_email_body = display_full_email_body
         self._mark_fetched_read = mark_fetched_read
-        self._look_back = look_back
+        self._look_back = arg_to_number(look_back) or 0
         self.fetch_html_formatting = fetch_html_formatting
         self.legacy_name = legacy_name
 

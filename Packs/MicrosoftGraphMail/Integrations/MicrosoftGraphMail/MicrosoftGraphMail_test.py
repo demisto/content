@@ -519,6 +519,66 @@ class TestFetchIncidentsWithLookBack:
             assert incidents[0]["name"] == f"email-{i}"
             assert "ID" not in incidents[0]
 
+    @pytest.mark.parametrize("look_back, expected_coerced", [("30", 30), ("0", 0), (None, 0), (40, 40)])
+    def test_client_coerces_string_look_back_and_fetch_does_not_crash(self, mocker, look_back, expected_coerced):
+        """
+        Regression test for XSUP-77321.
+
+        Given
+         - a look_back value that reaches the client constructor as a string / None
+           (as happens on a `-fetch debug-mode=true` run when the numeric param is
+           not coerced to int before being passed to the client).
+         - an incidents queue.
+
+        When
+         - constructing the client with that look_back and running fetch_incidents.
+
+        Then
+         - the client coerces look_back to a concrete int at the boundary.
+         - fetch_incidents must not raise
+           `TypeError: 'str' object cannot be interpreted as an integer`
+           (nor the related str/int TypeErrors from `look_back > 0` / `timedelta`
+           inside get_fetch_run_time_range).
+         - a string look_back behaves identically to its int equivalent.
+        """
+        client = MsGraphMailClient(
+            self_deployed=True,
+            tenant_id="dummy_tenant",
+            auth_id="dummy_client_id",
+            enc_key="dummy_secret",
+            base_url="https://graph.microsoft.com/v1.0",
+            verify=True,
+            proxy=False,
+            ok_codes=(200, 201, 202),
+            app_name="",
+            mailbox_to_fetch="dummy@mailbox.com",  # disable-secrets-detection
+            folder_to_fetch="Phishing",
+            first_fetch_interval="20 minutes",
+            emails_fetch_limit=50,
+            look_back=look_back,
+        )
+
+        # The boundary coercion must turn the raw str/None into a concrete int.
+        assert client._look_back == expected_coerced
+        assert isinstance(client._look_back, int)
+
+        mocker.patch.object(client, "_fetch_last_emails", side_effect=self.create_incidents_queue())
+        mocker.patch.object(client, "_get_email_attachments", return_value=[])
+
+        last_run = {
+            "LAST_RUN_FOLDER_ID": "last_run_dummy_folder_id",
+            "LAST_RUN_FOLDER_PATH": "Phishing",
+            "LAST_RUN_ACCOUNT": "dummy@mailbox.com",
+            "LAST_RUN_TIME": (datetime.now() - timedelta(minutes=20)).strftime(API_DATE_FORMAT),
+        }
+
+        # Should not raise a TypeError about a str reaching an int-only operation.
+        next_run, incidents = client.fetch_incidents(last_run=last_run)
+
+        assert len(incidents) == 1
+        assert incidents[0]["name"] == "email-3"
+        assert "ID" not in incidents[0]
+
 
 @pytest.mark.parametrize("client", [oproxy_client(), self_deployed_client()])
 def test_fetch_incidents_changed_folder(mocker, client, emails_data_as_html, emails_data_as_text, last_run_data):
