@@ -193,7 +193,25 @@ def fetch_events(
     )
     findings = res.get("results", [])
 
+    # Log the API-level pagination metadata so we can tell, on failure, whether the current
+    # window still has more pages than this single fetch pulled (i.e. offset hasn't reached
+    # a given finding's page yet). See XSUP-77274.
+    api_count = res.get("count")
+    api_links = res.get("links") or {}
+    demisto.debug(
+        f"BitSight: API response count={api_count} returned={len(findings)} "
+        f"has_next={bool(api_links.get('next'))} offset={offset} limit={max_fetch}"
+    )
+
+    # Log the identities of every raw finding returned so we can confirm whether a specific
+    # finding (e.g. a reported-missing rolledup_observation_id) was actually returned by the
+    # API on this page, versus never returned at all.
+    raw_finding_keys = [f"{f.get('rolledup_observation_id', '')}-#-{f.get('first_seen', '')}" for f in findings]
+    demisto.debug(f"BitSight: raw finding keys returned this page: {raw_finding_keys}")
+
     all_events, missing_date_findings = findings_to_events(findings)
+    if missing_date_findings:
+        demisto.debug(f"BitSight: findings missing first_seen date (no _time set): {missing_date_findings}")
 
     # De-duplicate: only send findings we have not already sent, keyed by
     # rolledup_observation_id + first_seen (creation day). This mirrors the proven
