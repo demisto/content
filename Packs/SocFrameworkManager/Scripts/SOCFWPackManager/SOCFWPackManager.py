@@ -1374,6 +1374,8 @@ def install_custom_pack_zip(
         if "did NOT take" in str(exc):
             raise
 
+        demisto.debug(f"socfw-install-pack raised for {asset_filename}: {exc}\n{traceback.format_exc()}")
+
         pack_id = _guess_pack_id_from_label(asset_filename)
         if poll_seconds <= 0 or not pack_id:
             raise

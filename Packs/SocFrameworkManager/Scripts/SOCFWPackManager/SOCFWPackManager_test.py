@@ -1423,11 +1423,11 @@ def test_version_from_asset_filename():
     assert mod._version_from_asset_filename("") == ""
 
 
-def test_wait_for_pack_installed_rejects_wrong_version(monkeypatch):
+def test_wait_for_pack_installed_rejects_wrong_version(mocker):
     """The defect: presence was the whole test, so a stale version passed."""
     mod, _ = load_script()
-    monkeypatch.setattr(mod, "fetch_installed_packs", lambda using: {"p": {"version": "1.2.13"}})
-    monkeypatch.setattr(mod.demisto, "executeCommand", lambda *a, **k: None)
+    mocker.patch.object(mod, "fetch_installed_packs", side_effect=lambda using: {"p": {"version": "1.2.13"}})
+    mocker.patch.object(mod.demisto, "executeCommand", return_value=None)
     assert mod.wait_for_pack_installed("p", "", 0, 5, False, expected_version="1.2.16") is False
 
 

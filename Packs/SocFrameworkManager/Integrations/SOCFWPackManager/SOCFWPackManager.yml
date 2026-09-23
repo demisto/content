@@ -65,8 +65,9 @@ script:
       predefined:
       - 'true'
       - 'false'
-      defaultValue: 'true'
-      description: Install through the demisto-sdk path, which builds the content graph and installs the pack's content items. Default true. Setting false uses a direct ZIP upload that registers the pack version WITHOUT installing its content -- it is not a faster install, it is a different and almost always wrong one.
+      defaultvalue: 'true'
+      type: 8
+      description: Whether to install through the demisto-sdk path, which builds the content graph and installs the pack's content items. Setting false uses a direct ZIP upload that registers the pack version WITHOUT installing its content -- it is not a faster install, it is a different and almost always wrong one.
     compliantpolicies:
     - Domain Blockage
     outputs:

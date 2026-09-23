@@ -11,6 +11,7 @@ import os
 import re
 import shutil
 import tempfile
+import traceback
 import zipfile
 from pathlib import Path
 from urllib.parse import urlparse
@@ -153,7 +154,7 @@ class ContentClient(BaseClient):
         return written
 
     def upload_pack_zip_direct(self, zip_path: str) -> dict:
-        """Install by POSTing the release ZIP as-is. Default path.
+        """Install by POSTing the release ZIP as-is. NOT the default path.
 
         The alternative, upload_pack_as_system_content, unpacks the archive and
         rebuilds it through demisto-sdk, which constructs a content graph.
@@ -417,10 +418,6 @@ def install_pack_command(client: ContentClient, args: dict[str, Any]) -> Command
     try:
         client.stream_download_zip(url, zip_path)
 
-        # use_sdk falls back to the demisto-sdk rebuild. Off by default: that
-        # path is what exhausts the container command timeout (see
-        # upload_pack_zip_direct). Kept so a caller can switch back without a
-        # redeploy if a pack ever needs the rebuild.
         # Default is the demisto-sdk path. The direct ZIP POST was made the
         # default and REVERTED: it registers the pack version on the tenant and
         # installs NO CONTENT. Verified on deathstar 19 Sep 2026 with
@@ -431,7 +428,7 @@ def install_pack_command(client: ContentClient, args: dict[str, Any]) -> Command
         #
         # use_sdk=false still selects the direct POST, for a caller that wants
         # a pack record without content. It must not be the default.
-        if not argToBoolean(args.get("use_sdk") or "true"):
+        if not argToBoolean(args.get("use_sdk", True)):
             result = client.upload_pack_zip_direct(zip_path)
         else:
             pack_path = _prepare_pack_dir(zip_path, filename)
@@ -454,7 +451,7 @@ def install_pack_command(client: ContentClient, args: dict[str, Any]) -> Command
             try:
                 installed = client.installed_pack_versions().get(pack_id, "")
             except Exception as exc:  # verification must not mask the install
-                demisto.debug(f"post-install version check failed: {exc}")
+                demisto.debug(f"post-install version check failed: {exc}\n{traceback.format_exc()}")
                 installed = ""
 
             if installed and installed != expected:
