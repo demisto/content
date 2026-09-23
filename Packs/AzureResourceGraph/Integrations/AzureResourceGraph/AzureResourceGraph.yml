@@ -43,7 +43,6 @@ configuration:
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   section: Connect
 - displaypassword: Private Key
-  display: ""
   name: private_key
   type: 9
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
