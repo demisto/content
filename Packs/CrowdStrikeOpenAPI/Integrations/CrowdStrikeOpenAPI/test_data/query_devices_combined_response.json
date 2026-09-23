@@ -11,8 +11,8 @@
     },
     "resources": [
         {
-            "device_id": "abc123def456ghi789jkl012mno345pq",
-            "cid": "cid1234567890abcdef1234567890abcd",
+            "device_id": "notarealdeviceidnotarealdeviceid",
+            "cid": "notarealcidnotarealcidnotarealci",
             "agent_load_flags": "0",
             "agent_local_time": "2024-01-15T10:30:00.000Z",
             "agent_version": "7.10.16305.0",
@@ -22,12 +22,12 @@
             "config_id_build": "16305",
             "config_id_platform": "3",
             "cpu_signature": "198386",
-            "external_ip": "203.0.113.42",
-            "hostname": "DESKTOP-TESTHOST",
+            "external_ip": "0.0.0.0",
+            "hostname": "NOT-A-REAL-HOST",
             "first_seen": "2023-06-01T08:00:00Z",
             "last_seen": "2024-01-15T10:29:00Z",
-            "local_ip": "192.168.1.100",
-            "mac_address": "aa-bb-cc-dd-ee-ff",
+            "local_ip": "0.0.0.0",
+            "mac_address": "00-00-00-00-00-00",
             "major_version": "10",
             "minor_version": "0",
             "os_version": "Windows 10",
@@ -35,7 +35,7 @@
             "platform_name": "Windows",
             "product_type": "1",
             "product_type_desc": "Workstation",
-            "serial_number": "ABCD1234",
+            "serial_number": "NOT-A-REAL-SERIAL",
             "status": "normal",
             "system_manufacturer": "Dell Inc.",
             "system_product_name": "OptiPlex 7090",
@@ -43,13 +43,13 @@
             "device_policies": {
                 "prevention": {
                     "policy_type": "prevention",
-                    "policy_id": "policy1234567890abcdef1234567890",
+                    "policy_id": "notarealpreventionpolicyid000000",
                     "applied": true,
                     "applied_date": "2023-06-01T09:00:00Z"
                 },
                 "sensor_update": {
                     "policy_type": "sensor-update",
-                    "policy_id": "policy0987654321fedcba0987654321",
+                    "policy_id": "notarealsensorupdatepolicyid0000",
                     "applied": true,
                     "applied_date": "2023-06-01T09:00:00Z",
                     "uninstall_protection": "ENABLED"
