@@ -123,6 +123,10 @@
         "fileType": {
             "type": "string",
             "is_array": false
-    }
+          },
+          "cefVersion": {
+            "type": "string",
+            "is_array": false
+          }
   }
 }
