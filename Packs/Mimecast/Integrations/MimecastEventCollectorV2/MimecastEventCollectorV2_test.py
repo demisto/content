@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import UTC, datetime
 import pytest
 from pytest_mock import MockerFixture
@@ -524,6 +525,11 @@ async def test_get_siem_events_pagination(async_client: AsyncClient, mocker: Moc
             False,
             id="Decodable cursor with a block but no parsable offsets is not valid",
         ),
+        # A cursor with all event types at offset 0-0 points to the very beginning for every type and is the
+        # degenerate cursor that caused the zero-ingestion bug. We cannot know whether such a cursor - even one
+        # that carries a page/token in its ":<page>:<token>" suffix - is genuinely usable, so we deliberately
+        # treat every all 0-0 cursor as invalid. Dropping it is always safe: the fetch simply falls back to the
+        # start date instead of risking a request with an invalid cursor.
         pytest.param(BAD_SIEM_CURSOR, False, id="All event types with 0-0 offset is not a valid cursor"),
         pytest.param(
             base64.b64encode(b"[attachment_protect=0-0, av=0-0, url_protect=0-1]:1:token").decode(),
@@ -531,6 +537,17 @@ async def test_get_siem_events_pagination(async_client: AsyncClient, mocker: Moc
             id="A single non 0-0 offset makes the cursor valid",
         ),
         pytest.param(GOOD_SIEM_CURSOR, True, id="At least one non 0-0 offset is a valid cursor"),
+        # Malformed cursor with a missing ":<page>:<token>" suffix must not raise; the offsets alone decide validity.
+        pytest.param(
+            base64.b64encode(b"[av=5-100]").decode(),
+            True,
+            id="Malformed cursor missing the suffix segments does not crash (offsets still decide validity)",
+        ),
+        pytest.param(
+            base64.b64encode(b"[av=0-0]").decode(),
+            False,
+            id="Malformed all 0-0 cursor missing the suffix segments does not crash and stays invalid",
+        ),
     ],
 )
 def test_is_valid_cursor(cursor, expected):
@@ -541,7 +558,10 @@ def test_is_valid_cursor(cursor, expected):
      - Calling is_valid_cursor.
     Then:
      - Ensure a cursor with all event types at offset 0-0 (or undecodable/empty) is invalid.
+       We cannot reliably tell whether an all 0-0 cursor is usable, so it is treated as invalid on purpose:
+       dropping it just falls back to the start date, which is always safe.
      - Ensure a cursor with at least one non 0-0 offset is valid.
+     - Ensure malformed cursors (missing suffix segments) are handled without raising.
     """
     from MimecastEventCollectorV2 import is_valid_cursor
 
@@ -557,7 +577,7 @@ async def test_get_siem_events_stops_on_invalid_cursor(async_client: AsyncClient
      - Calling get_siem_events with a limit that would otherwise require more pages.
     Then:
      - Ensure pagination stops after the first page (the invalid cursor is not used for another request).
-     - Ensure the invalid cursor is still returned as the next_page (never persisted by the caller).
+     - Ensure the returned next_page is None (a cursor proven invalid is discarded, never surfaced to the caller).
     """
     from MimecastEventCollectorV2 import get_siem_events
 
@@ -573,8 +593,49 @@ async def test_get_siem_events_stops_on_invalid_cursor(async_client: AsyncClient
         events, next_page = await get_siem_events(client=_client, start_date="2025-01-01T00:00:00.000Z", limit=150)
 
     assert len(events) == 100
-    assert next_page == BAD_SIEM_CURSOR
+    # The invalid cursor is discarded (set to None) so the caller can never mistakenly persist or reuse it.
+    assert next_page is None
     assert mock_get_siem_events.call_count == 1
+
+
+@pytest.mark.asyncio
+async def test_get_siem_events_stops_on_invalid_cursor_mid_run(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - A first page returning a valid cursor and a second page returning an invalid (all 0-0) cursor.
+    When:
+     - Calling get_siem_events with a limit that would otherwise require more pages.
+    Then:
+     - Ensure pagination stops after page 2 (the invalid cursor is not used for a third request).
+     - Ensure events already collected from both pages are still returned, sorted by _filter_time.
+     - Ensure the returned next_page is None so the caller cannot persist the invalid mid-run cursor.
+    """
+    from MimecastEventCollectorV2 import get_siem_events
+
+    page2_cursor = base64.b64encode(b"[av=100-200, delivery=0-0]:1:token2").decode()
+    mock_response_jsons = [
+        {  # Page 1: full page + valid cursor -> paginate
+            "value": [{"id": f"event-A{i}", "timestamp": 1704070800000} for i in range(100)],
+            "@nextPage": page2_cursor,
+        },
+        {  # Page 2: full page but an invalid cursor -> stop, discard cursor
+            "value": [{"id": f"event-B{i}", "timestamp": 1704067200000} for i in range(50)],
+            "@nextPage": BAD_SIEM_CURSOR,
+        },
+    ]
+
+    async with async_client as _client:
+        mock_get_siem_events = mocker.patch.object(_client, "get_siem_events", new=AsyncMock(side_effect=mock_response_jsons))
+        events, next_page = await get_siem_events(client=_client, start_date="2025-01-01T00:00:00.000Z", limit=300)
+
+    # Both pages' events are returned even though pagination stopped early on the invalid page-2 cursor.
+    assert len(events) == 150
+    assert mock_get_siem_events.call_count == 2
+    # Events are sorted by _filter_time (page-B timestamp is earlier, so those events come first).
+    filter_times = [event[FILTER_TIME_KEY] for event in events]
+    assert filter_times == sorted(filter_times)
+    # The invalid mid-run cursor must not be surfaced to the caller.
+    assert next_page is None
 
 
 @pytest.mark.asyncio
@@ -968,6 +1029,131 @@ async def test_fetch_siem_events_migration_invalid_persisted_cursor(async_client
     assert mock_get_siem_events.call_args.kwargs["next_page"] is None
     assert mock_get_siem_events.call_args.kwargs["start_date"] == "2025-01-01T00:00:00.000Z"
     assert NEXT_PAGE_KEY not in next_run
+
+
+@pytest.mark.asyncio
+async def test_fetch_siem_events_removes_filter_time_and_keeps_time(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - An API call that returns SIEM events already formatted with both _time (for the dataset)
+       and _filter_time (internal, for deduplication/last-run only).
+    When:
+     - Calling fetch_siem_events.
+    Then:
+     - Ensure every returned event still carries _time (needed by the dataset).
+     - Ensure the internal _filter_time key is stripped from every returned event before ingestion.
+    """
+    from MimecastEventCollectorV2 import fetch_siem_events
+
+    mocker.patch("MimecastEventCollectorV2.is_within_last_24_hours", return_value=True)
+    mock_events = [
+        {
+            "id": "event-1",
+            "aggregateId": "code-1",
+            "timestamp": 1704067200000,
+            "_time": "2025-01-01T00:00:00Z",
+            "_filter_time": "2025-01-01T00:00:00.000Z",
+        },
+        {
+            "id": "event-2",
+            "aggregateId": "code-2",
+            "timestamp": 1704070800000,
+            "_time": "2025-01-01T01:00:00Z",
+            "_filter_time": "2025-01-01T01:00:00.000Z",
+        },
+    ]
+    mocker.patch("MimecastEventCollectorV2.get_siem_events", new=AsyncMock(return_value=(mock_events, None)))
+
+    last_run = {"start_date": "2025-01-01T00:00:00.000Z", "last_fetched_ids": []}
+    _, events = await fetch_siem_events(async_client, last_run, 100)
+
+    assert len(events) == 2
+    for event in events:
+        assert EVENT_TIME_KEY in event, "Returned events must keep _time for the dataset."
+        assert FILTER_TIME_KEY not in event, "Internal _filter_time must be stripped before ingestion."
+
+
+@pytest.mark.parametrize(
+    "raised_exception",
+    [
+        pytest.param(DemistoException("SIEM API call failed"), id="DemistoException (error key branch)"),
+        pytest.param(
+            ClientResponseError(
+                status=500,
+                history=(),
+                request_info=RequestInfo("", "POST", {}),
+                message="Server error",
+            ),
+            id="ClientResponseError (transport failure)",
+        ),
+    ],
+)
+@pytest.mark.asyncio
+async def test_fetch_siem_events_propagates_errors_without_corrupting_last_run(
+    async_client: AsyncClient,
+    mocker: MockerFixture,
+    raised_exception: Exception,
+):
+    """
+    Given:
+     - A previous last_run with a start_date and last_fetched_ids.
+     - An API call (get_siem_events) that raises (either a DemistoException or a ClientResponseError).
+    When:
+     - Calling fetch_siem_events.
+    Then:
+     - Ensure the exception propagates (the caller does not silently swallow it).
+     - Ensure no partial/corrupted next_run is produced - the original last_run is left untouched so the
+       next fetch cycle resumes from the exact same state (setLastRun is only called on success in main()).
+    """
+    from MimecastEventCollectorV2 import fetch_siem_events
+
+    mocker.patch("MimecastEventCollectorV2.is_within_last_24_hours", return_value=True)
+    mocker.patch("MimecastEventCollectorV2.get_siem_events", new=AsyncMock(side_effect=raised_exception))
+
+    last_run = {"start_date": "2025-01-01T00:00:00.000Z", "last_fetched_ids": ["event-1"]}
+    original_last_run = deepcopy(last_run)
+
+    with pytest.raises(type(raised_exception)):
+        await fetch_siem_events(async_client, last_run, 100)
+
+    # The input last_run must not be mutated on failure so the next cycle resumes from the same cursor/date.
+    assert last_run == original_last_run
+
+
+@pytest.mark.asyncio
+async def test_fetch_events_command_persists_corrected_siem_next_run(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - A fetch cycle where fetch_siem_events returns a corrected next_run (no persisted cursor).
+    When:
+     - Calling fetch_events_command end-to-end (the layer where the original persistence bug lived).
+    Then:
+     - Ensure the SIEM next_run is nested correctly under the "siem" key.
+     - Ensure the persisted SIEM state carries start_date and last_fetched_ids and does NOT persist a cursor.
+    """
+    from MimecastEventCollectorV2 import fetch_events_command
+
+    mocker.patch("MimecastEventCollectorV2.is_within_last_24_hours", return_value=True)
+    siem_events = [
+        {"id": "event-1", "aggregateId": "code-1", "timestamp": 1704067200000, "_filter_time": "2025-01-01T00:00:00.000Z"},
+    ]
+    # get_siem_events returns a non-None cursor; fetch_siem_events must NOT persist it in next_run.
+    mocker.patch("MimecastEventCollectorV2.get_siem_events", new=AsyncMock(return_value=(siem_events, "some_cursor")))
+
+    last_run = {"siem": {"start_date": "2025-01-01T00:00:00.000Z", "last_fetched_ids": ["event-0"]}}
+    next_run, _ = await fetch_events_command(
+        async_client,
+        last_run=last_run,
+        max_fetch=100,
+        event_types=[EventTypes.SIEM.value],
+        audit_first_fetch=datetime.now() - timedelta(days=1),
+    )
+
+    assert "siem" in next_run
+    siem_next_run = next_run["siem"]
+    assert START_DATE_KEY in siem_next_run
+    assert LAST_FETCHED_IDS_KEY in siem_next_run
+    assert NEXT_PAGE_KEY not in siem_next_run
 
 
 @pytest.mark.asyncio
