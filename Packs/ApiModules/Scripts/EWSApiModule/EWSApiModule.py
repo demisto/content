@@ -65,9 +65,6 @@ SUPPORTED_ON_PREM_BUILDS = {
 }
 
 MARK_AS_READ_RETRY_DELAY = 0.1
-
-# Errors indicating Exchange is throttling or temporarily unavailable (HTTP 503/504).
-# They resolve on their own, so callers should back off and retry rather than fail outright.
 TRANSIENT_SERVER_ERRORS = (
     RateLimitError,
     ErrorServerBusy,
