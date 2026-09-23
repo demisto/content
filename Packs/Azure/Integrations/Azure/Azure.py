@@ -2150,7 +2150,7 @@ class AzureClient:
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.ContainerService/managedClusters/{resource_name}"
         )
-        demisto.debug("Updating AKS managed cluster addon profiles.")
+        demisto.debug(f"Updating AKS managed cluster addon profiles. addon_profiles keys: {list(addon_profiles.keys())}")
         try:
             return self.http_request("PUT", full_url=full_url, json_data=data, params=params)
         except Exception as e:
@@ -4392,6 +4392,7 @@ def aks_clusters_list_command(client: AzureClient, params: dict[str, Any], args:
             "AKS Clusters List",
             readable_output,
             ["Name", "Status", "Location", "Tags", "Kubernetes version", "API server address", "Network type (plugin)"],
+            removeNull=True,
         ),
         raw_response=response,
     )
@@ -4414,12 +4415,8 @@ def aks_cluster_addon_update_command(client: AzureClient, params: dict[str, Any]
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
 
-    http_application_routing_enabled = (
-        argToBoolean(args.get("http_application_routing_enabled")) if args.get("http_application_routing_enabled") else None
-    )
-    monitoring_agent_enabled = (
-        argToBoolean(args.get("monitoring_agent_enabled")) if args.get("monitoring_agent_enabled") else None
-    )
+    http_application_routing_enabled = arg_to_bool_or_none(args.get("http_application_routing_enabled"))
+    monitoring_agent_enabled = arg_to_bool_or_none(args.get("monitoring_agent_enabled"))
 
     client.aks_cluster_addon_update(
         subscription_id=subscription_id,
