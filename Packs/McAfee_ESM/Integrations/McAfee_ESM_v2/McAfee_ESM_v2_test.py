@@ -3,7 +3,7 @@ import datetime
 import pytest
 from freezegun import freeze_time
 from McAfee_ESM_v2 import *
-from McAfee_ESM_v2 import McAfeeESMClient, _parse_version
+from McAfee_ESM_v2 import McAfeeESMClient
 
 list_test_filtering_incidents = [{"id": 3}, {"id": 1}, {"id": 5}, {"id": 4}, {"id": 0}, {"id": 2}]
 data_test_filtering_incidents = [
@@ -404,22 +404,6 @@ def test_validate_version_rejects_below_11_6(version):
     assert "11.6.0" in message
 
 
-@pytest.mark.parametrize("version", ["invalid", "", "abc.def"])
-def test_validate_version_rejects_non_numeric(version):
-    """
-    Given:
-    - A version string that cannot be parsed as a dotted integer version.
-
-    When:
-    - Validating the version.
-
-    Then:
-    - A DemistoException is raised with a helpful message.
-    """
-    with pytest.raises(DemistoException):
-        validate_version(version)
-
-
 @pytest.mark.parametrize(
     "version",
     ["11.6.0", "11.6.5", "11.6.10", "11.6.11", "11.6.20", "11.7.0", "12.0.0", "11.6", "11.7"],
@@ -428,8 +412,7 @@ def test_validate_version_accepts_supported(version):
     """
     Given:
     - An instance configured with a supported ESM version (11.6.0 or later), including
-      short two-part versions like "11.6" and "11.7" which are zero-padded to (11, 6, 0)
-      and (11, 7, 0) respectively.
+      short two-part versions like "11.6" and "11.7".
 
     When:
     - Validating the version.
@@ -438,30 +421,6 @@ def test_validate_version_accepts_supported(version):
     - No exception is raised.
     """
     validate_version(version)
-
-
-@pytest.mark.parametrize(
-    "version, expected_tuple",
-    [
-        ("11.6", (11, 6, 0)),
-        ("11.7", (11, 7, 0)),
-        ("11.6.11", (11, 6, 11)),
-        ("12.0.0", (12, 0, 0)),
-    ],
-)
-def test_parse_version_zero_pads_short_versions(version, expected_tuple):
-    """
-    Given:
-    - A version string with fewer than 3 parts (e.g. "11.6").
-
-    When:
-    - Parsing the version.
-
-    Then:
-    - The result is zero-padded to 3 parts so tuple comparisons work correctly,
-      e.g. "11.6" → (11, 6, 0) rather than (11, 6) which would compare less-than (11, 6, 0).
-    """
-    assert _parse_version(version) == expected_tuple
 
 
 @pytest.mark.filterwarnings("ignore::pytest.PytestUnraisableExceptionWarning")

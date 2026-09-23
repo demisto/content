@@ -7,6 +7,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from packaging.version import Version
 from urllib3 import disable_warnings
 
 disable_warnings()
@@ -39,56 +40,27 @@ def encrypt_credential(value: str) -> str:
 
 # Minimum supported ESM version (inclusive). Versions below this reached Trellix end-of-life.
 # See https://www.trellix.com/support/end-of-life-products/
-MIN_SUPPORTED_VERSION = (11, 6, 0)
+MIN_SUPPORTED_VERSION = Version("11.6.0")
 
 # ESM 11.6.11+ requires AES-encrypted credentials; 11.6.0–11.6.10 use plain Base64.
-AES_MIN_VERSION = (11, 6, 11)
+AES_MIN_VERSION = Version("11.6.11")
 
 
-def _parse_version(version: str) -> tuple[int, ...]:
-    """Parses a dotted version string (e.g. '11.6.11') into a 3-element tuple of ints for comparison.
-
-    Short versions are zero-padded: '11.6' → (11, 6, 0), '11.7' → (11, 7, 0).
-
-    :param version: The version string entered by the user.
-    :return: Tuple of at least 3 ints, e.g. (11, 6, 11).
-    :raises DemistoException: If the string cannot be parsed as a dotted-integer version.
-    """
-    try:
-        parts = tuple(int(p) for p in version.strip().split("."))
-    except ValueError:
-        raise DemistoException(
-            f'Invalid ESM version "{version}". ' f'Enter a dotted version number such as "11.6.11" or "11.6.0".'
-        )
-    if len(parts) < 2:
-        raise DemistoException(
-            f'Invalid ESM version "{version}". ' f'Enter a dotted version number such as "11.6.11" or "11.6.0".'
-        )
-    # Zero-pad to at least 3 parts so that (11, 6) compares equal to (11, 6, 0)
-    # rather than less-than, which is Python's default for shorter tuples.
-    while len(parts) < 3:
-        parts += (0,)
-    return parts
-
-
-def validate_version(version: str) -> tuple[int, ...]:
-    """Validates that the configured ESM version is supported and returns the parsed tuple.
+def validate_version(version: str) -> None:
+    """Validates that the configured ESM version is supported.
 
     Versions below 11.6.0 are not supported by Trellix and will raise an error immediately.
 
     :param version: The version string entered by the user (e.g. "11.6.11").
-    :return: The parsed version tuple, e.g. (11, 6, 11).
     :raises DemistoException: If the version is below the minimum supported version.
     """
-    parsed = _parse_version(version)
-    if parsed < MIN_SUPPORTED_VERSION:
+    if Version(version) < MIN_SUPPORTED_VERSION:
         raise DemistoException(
             f'ESM version "{version}" is not supported. '
             f"Trellix has reached end-of-life for all ESM versions below 11.6.0 "
             f"(see https://www.trellix.com/support/end-of-life-products/). "
             f'Enter version 11.6.0 or later in the "Version" parameter.'
         )
-    return parsed
 
 
 def encode_credential(value: str, version: str) -> str:
@@ -100,8 +72,7 @@ def encode_credential(value: str, version: str) -> str:
     :param version: The version string entered by the user (e.g. "11.6.11").
     :return: The encoded credential to send in the login body.
     """
-    parsed = _parse_version(version)
-    if parsed >= AES_MIN_VERSION:
+    if Version(version) >= AES_MIN_VERSION:
         return encrypt_credential(value)
     return base64.b64encode(value.encode("utf-8")).decode()
 
