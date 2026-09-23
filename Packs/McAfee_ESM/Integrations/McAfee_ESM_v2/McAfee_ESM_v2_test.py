@@ -483,7 +483,7 @@ def test_client_init_rejects_unsupported_version(mocker):
         "credentials": {"identifier": "TEST", "password": "TEST"},
         "version": "11.3",
     }
-    with pytest.raises(DemistoException, match="no longer supports"):
+    with pytest.raises(DemistoException, match="is not supported"):
         McAfeeESMClient(params)
 
 
