@@ -1,4 +1,3 @@
-import pytest
 import demistomock as demisto
 from CommonServerPython import *  # noqa
 from KoiFeed import (
@@ -93,7 +92,6 @@ MOCK_INVENTORY_RESPONSE = {
 
 
 class TestKoiRiskToDbotScore:
-
     def test_none_inputs(self):
         assert koi_risk_to_dbot_score(None, None) == Common.DBotScore.NONE
 
@@ -138,7 +136,6 @@ class TestKoiRiskToDbotScore:
 
 
 class TestBuildIndicatorFromItem:
-
     def test_basic_indicator(self):
         ind = _build_indicator_from_item(MOCK_ITEM_BASIC, [], None)
         assert ind["value"] == "Test Extension (2.1.0)"
@@ -170,10 +167,7 @@ class TestBuildIndicatorFromItem:
         assert "trafficlightprotocol" not in ind["fields"]
 
     def test_relationships_created(self):
-        ind = _build_indicator_from_item(
-            MOCK_ITEM_SHA1, [], None,
-            create_relationships=True, reliability="B - Usually reliable"
-        )
+        ind = _build_indicator_from_item(MOCK_ITEM_SHA1, [], None, create_relationships=True, reliability="B - Usually reliable")
         assert "relationships" in ind
         assert len(ind["relationships"]) == 1
         rel = ind["relationships"][0]
@@ -181,10 +175,7 @@ class TestBuildIndicatorFromItem:
         assert rel["entityBType"] == "File"
 
     def test_relationships_not_created_when_disabled(self):
-        ind = _build_indicator_from_item(
-            MOCK_ITEM_SHA1, [], None,
-            create_relationships=False
-        )
+        ind = _build_indicator_from_item(MOCK_ITEM_SHA1, [], None, create_relationships=False)
         assert "relationships" not in ind
 
     def test_pending_risk_gives_none_score(self):
@@ -200,11 +191,8 @@ class TestBuildIndicatorFromItem:
 
 
 class TestBuildRelationships:
-
     def test_sha1_item_id(self):
-        rels = _build_relationships(
-            MOCK_ITEM_SHA1, "Windows Driver Package (1.0.0)", "B - Usually reliable"
-        )
+        rels = _build_relationships(MOCK_ITEM_SHA1, "Windows Driver Package (1.0.0)", "B - Usually reliable")
         assert len(rels) == 1
         assert rels[0]["entityBType"] == "File"
         assert rels[0]["entityB"] == "048728125C9B67AEBAF9C9A5C48A7B74CA229A0E"
@@ -223,9 +211,7 @@ class TestBuildRelationships:
         assert len(rels) == 0
 
     def test_cve_findings(self):
-        rels = _build_relationships(
-            MOCK_ITEM_WITH_CVES, "Vulnerable Package (1.0.0)", "B - Usually reliable"
-        )
+        rels = _build_relationships(MOCK_ITEM_WITH_CVES, "Vulnerable Package (1.0.0)", "B - Usually reliable")
         assert len(rels) == 2
         cve_values = [r["entityB"] for r in rels]
         assert "CVE-2024-1234" in cve_values
@@ -241,7 +227,6 @@ class TestBuildRelationships:
 
 
 class TestBuildCveIndicators:
-
     def test_cve_extraction(self):
         cves = _build_cve_indicators_from_item(MOCK_ITEM_WITH_CVES, ["Koi"], "WHITE")
         assert len(cves) == 2
@@ -269,7 +254,6 @@ class TestBuildCveIndicators:
 
 
 class TestGetIndicatorsCommand:
-
     def test_basic_get(self, mocker):
         mocker.patch.object(demisto, "params", return_value={})
         mock_client = mocker.MagicMock()
@@ -339,7 +323,6 @@ class TestGetIndicatorsCommand:
 
 
 class TestFetchIndicatorsCommand:
-
     def test_basic_fetch(self, mocker):
         mocker.patch.object(demisto, "params", return_value={})
         mock_create = mocker.patch.object(demisto, "createIndicators")
@@ -404,7 +387,6 @@ class TestFetchIndicatorsCommand:
 
 
 class TestClientTestConnection:
-
     def test_test_connection(self, mocker):
         mocker.patch.object(demisto, "params", return_value={})
         mock_client = mocker.MagicMock(spec=Client)

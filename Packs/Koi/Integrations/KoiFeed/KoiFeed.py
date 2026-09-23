@@ -12,8 +12,8 @@ MAX_PAGE_SIZE = 500
 MAX_PAGES = 200
 INDICATOR_TYPE = "Koi Software Item"
 
-SHA1_RE = re.compile(r'^[A-Fa-f0-9]{40}$')
-SHA256_RE = re.compile(r'^[A-Fa-f0-9]{64}$')
+SHA1_RE = re.compile(r"^[A-Fa-f0-9]{40}$")
+SHA256_RE = re.compile(r"^[A-Fa-f0-9]{64}$")
 
 DBOT_SCORE_TO_REPUTATION = {
     Common.DBotScore.NONE: "None",
@@ -34,19 +34,21 @@ def koi_risk_to_dbot_score(risk_score: float | None, risk_level: str | None) -> 
         if risk_score <= 6:
             return Common.DBotScore.SUSPICIOUS
         return Common.DBotScore.BAD
-    level_map = {"low": Common.DBotScore.GOOD, "medium": Common.DBotScore.SUSPICIOUS,
-                 "high": Common.DBotScore.BAD, "critical": Common.DBotScore.BAD}
+    level_map = {
+        "low": Common.DBotScore.GOOD,
+        "medium": Common.DBotScore.SUSPICIOUS,
+        "high": Common.DBotScore.BAD,
+        "critical": Common.DBotScore.BAD,
+    }
     return level_map.get(risk_level.lower() if risk_level else "", Common.DBotScore.NONE)
 
 
 class Client(ContentClient):
-
     def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self._headers = {"Authorization": f"Bearer {api_key}", "Accept": "application/json"}
 
-    def get_inventory(self, page: int = 1, page_size: int = MAX_PAGE_SIZE,
-                      marketplace: str | None = None) -> dict[str, Any]:
+    def get_inventory(self, page: int = 1, page_size: int = MAX_PAGE_SIZE, marketplace: str | None = None) -> dict[str, Any]:
         params: dict[str, Any] = {"page": page, "page_size": min(page_size, MAX_PAGE_SIZE)}
         if marketplace:
             params["marketplace"] = marketplace
@@ -62,37 +64,42 @@ def _build_relationships(item: dict[str, Any], indicator_value: str, reliability
     item_id = item.get("item_id", "")
 
     if SHA1_RE.match(item_id) or SHA256_RE.match(item_id):
-        relationships.append(EntityRelationship(
-            entity_a=indicator_value,
-            entity_a_type=INDICATOR_TYPE,
-            name=EntityRelationship.Relationships.RELATED_TO,
-            entity_b=item_id,
-            entity_b_type=FeedIndicatorType.File,
-            reverse_name=EntityRelationship.Relationships.RELATED_TO,
-            source_reliability=reliability,
-            brand=INTEGRATION_NAME,
-        ).to_indicator())
+        relationships.append(
+            EntityRelationship(
+                entity_a=indicator_value,
+                entity_a_type=INDICATOR_TYPE,
+                name=EntityRelationship.Relationships.RELATED_TO,
+                entity_b=item_id,
+                entity_b_type=FeedIndicatorType.File,
+                reverse_name=EntityRelationship.Relationships.RELATED_TO,
+                source_reliability=reliability,
+                brand=INTEGRATION_NAME,
+            ).to_indicator()
+        )
 
     findings = item.get("findings", [])
     if isinstance(findings, list):
         for finding in findings:
             if isinstance(finding, str) and finding.upper().startswith("CVE-"):
-                relationships.append(EntityRelationship(
-                    entity_a=indicator_value,
-                    entity_a_type=INDICATOR_TYPE,
-                    name=EntityRelationship.Relationships.RELATED_TO,
-                    entity_b=finding,
-                    entity_b_type=FeedIndicatorType.CVE,
-                    reverse_name=EntityRelationship.Relationships.RELATED_TO,
-                    source_reliability=reliability,
-                    brand=INTEGRATION_NAME,
-                ).to_indicator())
+                relationships.append(
+                    EntityRelationship(
+                        entity_a=indicator_value,
+                        entity_a_type=INDICATOR_TYPE,
+                        name=EntityRelationship.Relationships.RELATED_TO,
+                        entity_b=finding,
+                        entity_b_type=FeedIndicatorType.CVE,
+                        reverse_name=EntityRelationship.Relationships.RELATED_TO,
+                        source_reliability=reliability,
+                        brand=INTEGRATION_NAME,
+                    ).to_indicator()
+                )
 
     return relationships
 
 
-def _build_indicator_from_item(item: dict[str, Any], tags: list[str], tlp_color: str | None,
-                               create_relationships: bool = False, reliability: str = "") -> dict[str, Any]:
+def _build_indicator_from_item(
+    item: dict[str, Any], tags: list[str], tlp_color: str | None, create_relationships: bool = False, reliability: str = ""
+) -> dict[str, Any]:
     item_id = item.get("item_id", "")
     marketplace = item.get("marketplace", "")
     version = item.get("version", "")
@@ -164,14 +171,16 @@ def _build_cve_indicators_from_item(item: dict[str, Any], tags: list[str], tlp_c
                 fields["tags"] = tags
             if tlp_color:
                 fields["trafficlightprotocol"] = tlp_color
-            cves.append({
-                "value": cve_id,
-                "type": FeedIndicatorType.CVE,
-                "service": INTEGRATION_NAME,
-                "rawJSON": item,
-                "fields": fields,
-                "score": Common.DBotScore.SUSPICIOUS,
-            })
+            cves.append(
+                {
+                    "value": cve_id,
+                    "type": FeedIndicatorType.CVE,
+                    "service": INTEGRATION_NAME,
+                    "rawJSON": item,
+                    "fields": fields,
+                    "score": Common.DBotScore.SUSPICIOUS,
+                }
+            )
     return cves
 
 
@@ -261,23 +270,34 @@ def get_indicators_command(client: Client, args: dict[str, Any], params: dict[st
     display_rows = []
     for ind in all_indicators:
         fields = ind.get("fields", {})
-        display_rows.append({
-            "Value": ind["value"],
-            "Type": ind["type"],
-            "Display Name": fields.get("koidisplayname"),
-            "Risk Score": fields.get("koirisk"),
-            "Risk Level": fields.get("koirisklevel"),
-            "Marketplace": fields.get("koimarketplace"),
-            "Publisher": fields.get("koipublisher"),
-            "Reputation": fields.get("dbotreputation"),
-            "Endpoints": fields.get("koiendpointcount"),
-        })
+        display_rows.append(
+            {
+                "Value": ind["value"],
+                "Type": ind["type"],
+                "Display Name": fields.get("koidisplayname"),
+                "Risk Score": fields.get("koirisk"),
+                "Risk Level": fields.get("koirisklevel"),
+                "Marketplace": fields.get("koimarketplace"),
+                "Publisher": fields.get("koipublisher"),
+                "Reputation": fields.get("dbotreputation"),
+                "Endpoints": fields.get("koiendpointcount"),
+            }
+        )
 
     readable_output = tableToMarkdown(
         f"{INTEGRATION_NAME} Indicators",
         display_rows,
-        headers=["Value", "Type", "Display Name", "Risk Score", "Risk Level",
-                 "Marketplace", "Publisher", "Reputation", "Endpoints"],
+        headers=[
+            "Value",
+            "Type",
+            "Display Name",
+            "Risk Score",
+            "Risk Level",
+            "Marketplace",
+            "Publisher",
+            "Reputation",
+            "Endpoints",
+        ],
     )
 
     return CommandResults(
