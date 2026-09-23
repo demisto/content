@@ -56,6 +56,13 @@ configuration:
   display: Incident type
   type: 13
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - name: max_fetch
   display: Maximum number of incidents per fetch
   additionalinfo: Maximum number of incidents per fetch. Default is 50. The maximum is 200.
@@ -1154,7 +1161,7 @@ script:
       default: true
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   script: ''
 fromversion: 5.0.0

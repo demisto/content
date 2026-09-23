@@ -519,7 +519,7 @@ class ZendeskClient(BaseClient):
             [self._http_request("PUT", url_suffix=f"users/{user_id}", json_data={"user": user_body})["user"]]
         )
 
-    def zendesk_user_delete(self, user_id: str):  # pragma: no cover
+    def zendesk_user_delete(self, user_id: str, **kwargs):  # pragma: no cover
         self._http_request("DELETE", url_suffix=f"users/{user_id}")
         return f"User deleted. (id: {user_id})"
 
@@ -778,7 +778,7 @@ class ZendeskClient(BaseClient):
             return self.__command_results_zendesk_tickets([res["ticket"]])
         return None
 
-    def zendesk_ticket_delete(self, ticket_id: str):  # pragma: no cover
+    def zendesk_ticket_delete(self, ticket_id: str, **kwargs):  # pragma: no cover
         self._http_request("DELETE", url_suffix=f"tickets/{ticket_id}", return_empty_response=True)
         return f"ticket: {ticket_id} deleted."
 
@@ -827,14 +827,15 @@ class ZendeskClient(BaseClient):
         file_id: STR_OR_STR_LIST,
         ticket_id: int,
         comment: str,
-        file_name: STR_OR_STR_LIST | None = None,
+        filename: STR_OR_STR_LIST | None = None,
         is_mirror: bool = False,
+        **kwargs,
     ):
         headers = {"Content-Type": "application/binary"}
         if is_mirror:
             headers["user-agent"] = MIRROR_USER_AGENT
         file_id = argToList(file_id)
-        file_name_list = argToList(file_name) if file_name else [None] * len(file_id)
+        file_name_list = argToList(filename) if filename else [None] * len(file_id)
         file_tokens = []
         uploaded_files = []
         for single_file_id, single_file_name in zip(file_id, file_name_list):
@@ -880,7 +881,7 @@ class ZendeskClient(BaseClient):
             results.append(fileResult(filename=attachment_name, data=res.content, file_type=EntryType.ENTRY_INFO_FILE))
         return results
 
-    def zendesk_attachment_get_command(self, attachment_id: int):
+    def zendesk_attachment_get_command(self, attachment_id: int, **kwargs):
         attachments = self.zendesk_attachment_get(attachment_id)
         readable_output = tableToMarkdown(
             name="Zendesk attachments", t=attachments, headers=ATTACHMENTS_HEADERS, headerTransform=camelize_string
@@ -929,7 +930,7 @@ class ZendeskClient(BaseClient):
 
         return results
 
-    def zendesk_search(self, query: str, limit: int = 50, page_number: int | None = None, page_size: int = 50):
+    def zendesk_search(self, query: str, limit: int = 50, page_number: int | None = None, page_size: int = 50, **kwargs):
         return CommandResults(
             outputs_prefix="Zendesk.Search",
             outputs=self.__zendesk_search_results(query=query, limit=limit, page_number=page_number, page_size=page_size),
@@ -1119,7 +1120,7 @@ class ZendeskClient(BaseClient):
             )
         )
 
-    def get_modified_remote_data(self, lastUpdate: str | None = None):
+    def get_modified_remote_data(self, lastUpdate: str | None = None, **kwargs):
         try:
             timestamp = int(dateparser.parse(lastUpdate).timestamp())  # type: ignore
         except (TypeError, AttributeError):

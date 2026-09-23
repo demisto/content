@@ -30,6 +30,71 @@ def test_ms_ip_string_to_list(ips, expected):
     assert MicrosoftGraphIdentityandAccess.ms_ip_string_to_list(ips) == expected
 
 
+@pytest.mark.parametrize(
+    "ips",
+    [
+        "0.0.0.0",  # bare IPv4 without CIDR suffix (XSUP-71053)
+        "192.168.0.1",  # bare IPv4 without CIDR suffix
+        "2001:0:9d38:90d6:0:0:0:0",  # bare IPv6 without CIDR suffix
+        "12.34.221.11/22,0.0.0.0",  # one valid, one invalid
+        "not-an-ip",  # not an IP / not CIDR at all
+        "12.34.221.11/40",  # invalid prefix length for IPv4
+    ],
+)
+def test_ms_ip_string_to_list_invalid_cidr_raises(ips):
+    """
+    Given:
+    -   An ips string that contains a value which is not valid CIDR notation.
+        The Microsoft Graph ipNamedLocation API requires every cidrAddress to be
+        an IPv4 or IPv6 address range in CIDR notation
+        (https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations).
+
+    When:
+    -   Converting the string to an ip list.
+
+    Then:
+    - Ensure a DemistoException is raised mentioning CIDR notation, instead of
+      silently forwarding the invalid value to the Graph API (XSUP-71053).
+    """
+    with pytest.raises(DemistoException, match="CIDR"):
+        MicrosoftGraphIdentityandAccess.ms_ip_string_to_list(ips)
+
+
+def test_ms_ip_string_to_list_empty_raises():
+    """
+    Given:
+    -   An ips string that produces no valid ranges (empty / whitespace only).
+
+    When:
+    -   Converting the string to an ip list.
+
+    Then:
+    - Ensure a DemistoException is raised, since the ipNamedLocation API requires
+      the ipRanges collection to contain at least one range.
+    """
+    with pytest.raises(DemistoException, match="CIDR"):
+        MicrosoftGraphIdentityandAccess.ms_ip_string_to_list("   ")
+
+
+def test_ms_ip_string_to_list_host_bits_allowed():
+    """
+    Given:
+    -   CIDR values where host bits are set (e.g. 0.0.0.0/0 or 12.34.221.11/24).
+
+    When:
+    -   Converting the string to an ip list.
+
+    Then:
+    - Ensure the values are accepted and trimmed, since Graph accepts CIDR ranges
+      with host bits set.
+    """
+    result = MicrosoftGraphIdentityandAccess.ms_ip_string_to_list("0.0.0.0/0, 12.34.221.11/24")
+    assert result == [
+        {"@odata.type": "#microsoft.graph.iPv4CidrRange", "cidrAddress": "0.0.0.0/0"},
+        {"@odata.type": "#microsoft.graph.iPv4CidrRange", "cidrAddress": "12.34.221.11/24"},
+    ]
+
+
 @pytest.mark.parametrize("last,expected", [({"latest_detection_found": "2022-06-06"}, "2022-06-06")])
 def test_get_last_fetch_time(last, expected):
     """

@@ -1,0 +1,32 @@
+{
+    "id": "incident_gtirsalertdisplayname",
+    "version": -1,
+    "modified": "2026-04-30T00:00:00.000000000+05:30",
+    "name": "GTI RS Alert Display Name",
+    "ownerOnly": false,
+    "description": "Human-readable display name of the RS alert.",
+    "cliName": "gtirsalertdisplayname",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Google Threat Intelligence RS Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

@@ -813,3 +813,155 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Successfully closed request 123640000000288001
+>
+### service-desk-plus-request-notes-list
+
+***
+Get a request specific note, or list all of its notes.
+
+#### Base Command
+
+`service-desk-plus-request-notes-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_id | The ID of the request to retrieve its notes. | Required |
+| request_note_id | The ID of the note to retrieve it's data. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ServiceDeskPlus.Request.Note.mark_first_response | Boolean | Mark first response or not. |
+| ServiceDeskPlus.Request.Note.created_time.display_value | Date | Created time display value. |
+| ServiceDeskPlus.Request.Note.created_time.value | Date | Created time value. |
+| ServiceDeskPlus.Request.Note.add_to_linked_requests | Boolean | Add to linked requests or not. |
+| ServiceDeskPlus.Request.Note.request.display_id | String | Request display id. |
+| ServiceDeskPlus.Request.Note.request.subject | String | Request subject. |
+| ServiceDeskPlus.Request.Note.request.id | String | Request id. |
+| ServiceDeskPlus.Request.Note.notify_technician | Boolean | Notify technician or not. |
+| ServiceDeskPlus.Request.Note.show_to_requester | Boolean | Show to requester or not. |
+| ServiceDeskPlus.Request.Note.description | String | Note description. |
+| ServiceDeskPlus.Request.Note.id | Date | Note id. |
+| ServiceDeskPlus.Request.Note.created_by.email_id | String | Email id of the creator. |
+| ServiceDeskPlus.Request.Note.created_by.is_technician | Boolean | Whether the creator is technician or not. |
+| ServiceDeskPlus.Request.Note.created_by.sms_mail | String | Creator sms mail. |
+| ServiceDeskPlus.Request.Note.created_by.phone | String | Creator phone. |
+| ServiceDeskPlus.Request.Note.created_by.name | String | Creator name. |
+| ServiceDeskPlus.Request.Note.created_by.mobile | String | Creator mobile. |
+| ServiceDeskPlus.Request.Note.created_by.id | Date | Creator id. |
+| ServiceDeskPlus.Request.Note.created_by.photo_url | String | Creator photo url. |
+| ServiceDeskPlus.Request.Note.created_by.is_vip_user | Boolean | Whether creator is vip user or not. |
+
+### service-desk-plus-request-notes-add
+
+***
+add a request note.
+
+#### Base Command
+
+`service-desk-plus-request-notes-add`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_id | The ID of the request to retrieve it's notes. | Required |
+| description | The note description. | Optional |
+| mark_first_response | whether to mark first response or not. Possible values are: true, false. Default is false. | Optional |
+| add_to_linked_requests | whether to add to linked requests or not. Possible values are: true, false. Default is false. | Optional |
+| notify_technician | whether to notify technician. Possible values are: true, false. Default is false. | Optional |
+| show_to_requester | whether to show to requester. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ServiceDeskPlus.Request.Note.mark_first_response | Boolean | mark first response or not. |
+| ServiceDeskPlus.Request.Note.created_time.display_value | Date | created time display value. |
+| ServiceDeskPlus.Request.Note.created_time.value | Date | created time value. |
+| ServiceDeskPlus.Request.Note.add_to_linked_requests | Boolean | add to linked requests or not. |
+| ServiceDeskPlus.Request.Note.request.display_id | String | request display id. |
+| ServiceDeskPlus.Request.Note.request.subject | String | request subject. |
+| ServiceDeskPlus.Request.Note.request.id | Date | request id. |
+| ServiceDeskPlus.Request.Note.notify_technician | Boolean | notify technician or not. |
+| ServiceDeskPlus.Request.Note.show_to_requester | Boolean | show to requester or not. |
+| ServiceDeskPlus.Request.Note.description | String | note description. |
+| ServiceDeskPlus.Request.Note.id | Date | note id. |
+| ServiceDeskPlus.Request.Note.created_by.email_id | String | email id of the creator. |
+| ServiceDeskPlus.Request.Note.created_by.is_technician | Boolean | whether the creator is technician or not. |
+| ServiceDeskPlus.Request.Note.created_by.sms_mail | String | creator sms mail. |
+| ServiceDeskPlus.Request.Note.created_by.phone | String | creator phone. |
+| ServiceDeskPlus.Request.Note.created_by.name | String | creator name. |
+| ServiceDeskPlus.Request.Note.created_by.mobile | String | creator mobile. |
+| ServiceDeskPlus.Request.Note.created_by.id | Date | creator id. |
+| ServiceDeskPlus.Request.Note.created_by.photo_url | String | creator photo url. |
+| ServiceDeskPlus.Request.Note.created_by.is_vip_user | Boolean | whether creator is vip user or not. |
+
+### service-desk-plus-request-notes-delete
+
+***
+delete a request note.
+
+#### Base Command
+
+`service-desk-plus-request-notes-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_id | The ID of the request to delete it's notes. | Required |
+| request_note_id | The ID of the note to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### service-desk-plus-request-notes-update
+
+***
+update a request note.
+
+#### Base Command
+
+`service-desk-plus-request-notes-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_note_id | The ID of the note to retrieve it's data. | Required |
+| request_id | The ID of the request to retrieve it's notes. | Required |
+| description | The note description. | Required |
+| mark_first_response | whether to mark first response or not. Possible values are: true, false. Default is false. | Optional |
+| add_to_linked_requests | whether to add to linked requests or not. Possible values are: true, false. Default is false. | Optional |
+| notify_technician | whether to notify technician. Possible values are: true, false. Default is false. | Optional |
+| show_to_requester | whether to show to requester. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ServiceDeskPlus.Request.Note.mark_first_response | Boolean | mark first response or not. |
+| ServiceDeskPlus.Request.Note.created_time.display_value | Date | created time display value. |
+| ServiceDeskPlus.Request.Note.created_time.value | Date | created time value. |
+| ServiceDeskPlus.Request.Note.add_to_linked_requests | Boolean | add to linked requests or not. |
+| ServiceDeskPlus.Request.Note.request.display_id | String | request display id. |
+| ServiceDeskPlus.Request.Note.request.subject | String | request subject. |
+| ServiceDeskPlus.Request.Note.request.id | Date | request id. |
+| ServiceDeskPlus.Request.Note.notify_technician | Boolean | notify technician or not. |
+| ServiceDeskPlus.Request.Note.show_to_requester | Boolean | show to requester or not. |
+| ServiceDeskPlus.Request.Note.description | String | note description. |
+| ServiceDeskPlus.Request.Note.id | Date | note id. |
+| ServiceDeskPlus.Request.Note.created_by.email_id | String | email id of the creator. |
+| ServiceDeskPlus.Request.Note.created_by.is_technician | Boolean | whether the creator is technician or not. |
+| ServiceDeskPlus.Request.Note.created_by.sms_mail | String | creator sms mail. |
+| ServiceDeskPlus.Request.Note.created_by.phone | String | creator phone. |
+| ServiceDeskPlus.Request.Note.created_by.name | String | creator name. |
+| ServiceDeskPlus.Request.Note.created_by.mobile | String | creator mobile. |
+| ServiceDeskPlus.Request.Note.created_by.id | Date | creator id. |
+| ServiceDeskPlus.Request.Note.created_by.photo_url | String | creator photo url. |
+| ServiceDeskPlus.Request.Note.created_by.is_vip_user | Boolean | whether creator is vip user or not. |

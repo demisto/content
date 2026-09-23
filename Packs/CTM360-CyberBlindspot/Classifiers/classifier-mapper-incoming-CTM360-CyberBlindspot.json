@@ -54,6 +54,87 @@
 				"CTM360 CyberBlindspot Incident Type": {
 					"simple": "CustomFields.cbs_type"
 				},
+				"CTM360 CyberBlindspot Incident Status": {
+					"simple": "CustomFields.incident_status"
+				},
+				"CTM360 CyberBlindspot GS Enrichment": {
+					"simple": "CustomFields.enrichment"
+				},
+				"CTM360 CyberBlindspot GS External Links": {
+					"simple": "CustomFields.external_links"
+				},
+				"CTM360 CyberBlindspot GS Finding ID": {
+					"simple": "CustomFields.finding_id"
+				},
+				"CTM360 CyberBlindspot GS Internal Links": {
+					"simple": "CustomFields.internal_links"
+				},
+				"CTM360 CyberBlindspot GS Landing URL": {
+					"simple": "CustomFields.landing_url"
+				},
+				"CTM360 CyberBlindspot GS Resolving IP": {
+					"simple": "CustomFields.resolving_ip"
+				},
+				"CTM360 CyberBlindspot GS Scan Status": {
+					"simple": "CustomFields.scan_status"
+				},
+				"CTM360 CyberBlindspot GS Submitted URL": {
+					"simple": "CustomFields.submitted_url"
+				},
+				"CTM360 CyberBlindspot GS Status Code": {
+					"simple": "CustomFields.status_code"
+				},
+				"CTM360 CyberBlindspot GS Tags": {
+					"simple": "CustomFields.tags"
+				},
+				"CTM360 CyberBlindspot GS Title": {
+					"simple": "CustomFields.title"
+				},
+				"CTM360 CyberBlindspot GS URL": {
+					"simple": "CustomFields.url"
+				},
+				"CTM360 CyberBlindspot GS URL Status": {
+					"simple": "CustomFields.url_status"
+				},
+				"CTM360 CyberBlindspot MM Account Identifier": {
+					"simple": "CustomFields.account_identifier"
+				},
+				"CTM360 CyberBlindspot MM BIC": {
+					"simple": "CustomFields.bic"
+				},
+				"CTM360 CyberBlindspot MM Bank Account Country": {
+					"simple": "CustomFields.bank_account_country"
+				},
+				"CTM360 CyberBlindspot MM Bank Account Holder Name": {
+					"simple": "CustomFields.bank_account_holder_name"
+				},
+				"CTM360 CyberBlindspot MM Bank Name": {
+					"simple": "CustomFields.bank_name"
+				},
+				"CTM360 CyberBlindspot MM Money Mule ID": {
+					"simple": "CustomFields.money_mule_id"
+				},
+				"CTM360 CyberBlindspot MM Suspect Emails": {
+					"simple": "CustomFields.suspect_emails"
+				},
+				"CTM360 CyberBlindspot MM Suspect Names": {
+					"simple": "CustomFields.suspect_names"
+				},
+				"CTM360 CyberBlindspot MM Suspect Phones": {
+					"simple": "CustomFields.suspect_phones"
+				},
+				"CTM360 CyberBlindspot MM Transfer Amount": {
+					"simple": "CustomFields.transfer_amount"
+				},
+				"CTM360 CyberBlindspot MM Transfer Currency": {
+					"simple": "CustomFields.transfer_currency"
+				},
+				"CTM360 CyberBlindspot SMF Platform": {
+					"simple": "CustomFields.platform"
+				},
+				"CTM360 CyberBlindspot SMF Risk Score": {
+					"simple": "CustomFields.risk_score"
+				},
 				"CTM360 CyberBlindspot Last Seen": {
 					"simple": "CustomFields.cbs_updated_date"
 				},

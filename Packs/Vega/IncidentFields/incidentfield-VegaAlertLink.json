@@ -1,0 +1,30 @@
+{
+    "id": "incident_vegaalertlink",
+    "version": -1,
+    "name": "Vega Alert Link",
+    "ownerOnly": false,
+    "description": "Direct URL link to this alert in the Vega platform.",
+    "cliName": "vegaalertlink",
+    "type": "url",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Vega Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

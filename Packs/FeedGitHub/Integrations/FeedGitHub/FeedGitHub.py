@@ -152,12 +152,9 @@ def get_commits_files(client: Client, base_commit, head_commit, is_first_fetch: 
     Returns:
         tuple[list[dict], str]: A tuple containing a list of relevant file information and the SHA of the current repository head.
     """
-    try:
-        all_commits_files, current_repo_head_sha = client.get_files_between_commits(base_commit, head_commit, is_first_fetch)
-        relevant_files = filter_out_files_by_status(all_commits_files)
-        return relevant_files, current_repo_head_sha
-    except IndexError:
-        return [], base_commit
+    all_commits_files, current_repo_head_sha = client.get_files_between_commits(base_commit, head_commit, is_first_fetch)
+    relevant_files = filter_out_files_by_status(all_commits_files)
+    return relevant_files, current_repo_head_sha
 
 
 def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
@@ -256,9 +253,9 @@ def detect_domain_type(domain: str):
 ipv4Regex = (
     r"(?P<ipv4>(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))[:]?(?P<port>\d+)?"
 )
-ipv4cidrRegex = r"([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))"
+ipv4cidrRegex = r"([0-9]{1,3}\.){3}[0-9]{1,3}(\/([1-2][0-9]|3[0-2]|[0-9]))(?!\d)"
 ipv6Regex = r"(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))"  # noqa: E501
-ipv6cidrRegex = r"s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))"  # noqa: E501
+ipv6cidrRegex = r"(?:(?:[0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4}|(?:[0-9A-Fa-f]{1,4}:){1,7}:|(?:[0-9A-Fa-f]{1,4}:){1,6}:[0-9A-Fa-f]{1,4}|(?:[0-9A-Fa-f]{1,4}:){1,5}(?::[0-9A-Fa-f]{1,4}){1,2}|(?:[0-9A-Fa-f]{1,4}:){1,4}(?::[0-9A-Fa-f]{1,4}){1,3}|(?:[0-9A-Fa-f]{1,4}:){1,3}(?::[0-9A-Fa-f]{1,4}){1,4}|(?:[0-9A-Fa-f]{1,4}:){1,2}(?::[0-9A-Fa-f]{1,4}){1,5}|[0-9A-Fa-f]{1,4}:(?::[0-9A-Fa-f]{1,4}){1,6}|:(?::[0-9A-Fa-f]{1,4}){1,7}|::|(?:[0-9A-Fa-f]{1,4}:){6}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}|::(?:ffff(?::0{1,4})?:)?(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}|(?:[0-9A-Fa-f]{1,4}:){1,4}:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})(?:\/(?:12[0-8]|1[0-1]\d|[1-9]\d|[0-9]))(?!\d)"  # noqa: E501
 
 regex_indicators = [
     (ipv4cidrRegex, FeedIndicatorType.CIDR),
@@ -293,21 +290,44 @@ def extract_text_indicators(content: dict[str, str], params):
     text_content = list(content.values())[0]
     file_path = list(content.keys())[0]
     text_content = text_content.replace("[.]", ".").replace("[@]", "@")  # Refang indicator prior to checking
-    indicators = []
+    indicators: list[dict] = []
+
+    # seen_values tracks every indicator value captured in Pass 1 (specific types).
+    # Pass 2 (broader types) skips any value already present here to avoid
+    # re-classifying a CIDR/Email/File/CVE as URL, IP, or Domain.
+    seen_values: set[str] = set()
+
+    # --- Pass 1: specific-type regexes (CIDR, IPv6CIDR, Email, File, CVE) ---
+    # Order: ipv4cidrRegex → ipv6Regex → ipv6cidrRegex → emailRegex → cveRegex → md5/sha1/sha256/sha512
     for regex, type_ in regex_indicators:
         matches = re.finditer(regex, text_content)  # type: ignore
-        if matches:
-            indicators += [{"value": match.group(0), "type": type_} for match in matches]
+        for match in matches:
+            value = match.group(0)
+            indicators.append({"value": value, "type": type_})
+            seen_values.add(value)
+
+    # --- Pass 2: broader-type regexes (IP, URL, Domain) ---
+    # Values already captured in Pass 1 are skipped to prevent type collisions
+    # (e.g. a CIDR like 1.0.2.0/23 also matches urlRegex as host+path).
     for regex, type_, group_name in regex_with_groups:
         matches = re.finditer(regex, text_content)  # type: ignore
-        if matches:
-            for match in matches:
-                if regex in (ipv4Regex, urlRegex):
-                    indicators.append({"value": match.group(group_name), "type": type_})
-                elif regex == domainRegex:
-                    regex_type = type_(match.group(group_name)) if callable(type_) else type_
-                    if regex_type:
-                        indicators.append({"value": match.group(group_name), "type": regex_type})
+        for match in matches:
+            if regex in (ipv4Regex, urlRegex):
+                value = match.group(group_name)
+                if value in seen_values:
+                    demisto.debug(f"Skipping {value!r} as {type_}. Already captured as a more specific indicator type.")
+                    continue
+                indicators.append({"value": value, "type": type_})
+
+            elif regex == domainRegex:
+                value = match.group(group_name)
+                if value in seen_values:
+                    demisto.debug(f"Skipping {value!r} as domain. Already captured as a more specific indicator type.")
+                    continue
+                regex_type = type_(value) if callable(type_) else type_
+                if regex_type:
+                    indicators.append({"value": value, "type": regex_type})
+
     indicators_to_xsoar = arrange_iocs_indicator_to_xsoar(file_path, indicators, params)
     return indicators_to_xsoar
 
@@ -450,6 +470,10 @@ def fetch_indicators(
     Args:
         client (Client): The GitHub client used to fetch indicators.
         last_commit_fetch: The last commit fetched from the repository.
+            Used as the base SHA only when the feed is configured as incremental
+            (``feedIncremental`` = true). When non-incremental, the base is always
+            recomputed from the configured "First fetch time" so every cycle
+            returns the full current indicator set.
         tlp_color (Optional[str]): The Traffic Light Protocol (TLP) color to assign to the fetched indicators.
         feed_tags (List): Tags to associate with the fetched indicators.
         limit (int): The maximum number of indicators to fetch. Default is -1 (fetch all).
@@ -460,8 +484,20 @@ def fetch_indicators(
     demisto.debug(f"Before fetch command last commit sha run: {last_commit_fetch}")
     since = params.get("fetch_since", "90 days ago")
     until = "now"
-    is_first_fetch = not last_commit_fetch
-    base_commit_sha = last_commit_fetch or client.get_commits_between_dates(since, until)[-1]
+    is_incremental = argToBoolean(params.get("feedIncremental", True))
+
+    if is_incremental and last_commit_fetch:
+        base_commit_sha = last_commit_fetch
+        is_first_fetch = False
+    else:
+        base_commit_sha = client.get_commits_between_dates(since, until)[-1]
+        is_first_fetch = True
+
+    demisto.debug(
+        f"Fetch mode: {'incremental' if is_incremental else 'full'}; "
+        f"base_commit_sha={base_commit_sha}; is_first_fetch={is_first_fetch}"
+    )
+
     head_commit = params.get("branch_head", "")
     iterator, last_commit_info = get_indicators(client, params, base_commit_sha, head_commit, is_first_fetch)
     indicators = []

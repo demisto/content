@@ -176,6 +176,45 @@ class fetch_incidents:
     ]
 
 
+class fetch_incidents_lookback_first_run:
+    """First run with lookback enabled - no last_run state exists."""
+    last_run: dict = {}
+    params = {
+        "first_fetch": "2022-02-22 00:00:00",
+        "max_fetch": "10",
+        "region": "region",
+        "look_back": "10",
+    }
+    api_response = [
+        {"id": "100", "date_submitted": "2022-02-22 00:01:00 UTC"},
+        {"id": "101", "date_submitted": "2022-02-22 00:02:00 UTC"},
+    ]
+
+
+class fetch_incidents_lookback_subsequent_run:
+    """Subsequent run with lookback - last_run has time and found_incident_ids."""
+    last_run = {
+        "time": "2022-02-22 00:02:00",
+        "limit": 10,
+        "found_incident_ids": {
+            "Takedown-100": 1645488060,
+            "Takedown-101": 1645488120,
+        },
+    }
+    params = {
+        "first_fetch": "2022-02-22 00:00:00",
+        "max_fetch": "10",
+        "region": "region",
+        "look_back": "10",
+    }
+    api_response = [
+        {"id": "100", "date_submitted": "2022-02-22 00:01:00 UTC"},
+        {"id": "101", "date_submitted": "2022-02-22 00:02:00 UTC"},
+        {"id": "102", "date_submitted": "2022-02-22 00:03:00 UTC"},
+        {"id": "99", "date_submitted": "2022-02-22 00:01:30 UTC"},
+    ]
+
+
 class takedown_list:
     args = {
         "all_results": "false",

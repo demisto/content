@@ -430,9 +430,9 @@ def main() -> None:
 
     params = demisto.params()
     base_url = urljoin(params["url"], "/api/v1")
-    with_ports = argToBoolean(params.get("with_ports"))
+    with_ports = argToBoolean(params.get("with_ports") or False)
     confidence_threshold = arg_to_number(params.get("confidence_threshold")) or 75
-    create_relationship = argToBoolean(params.get("create_relationship"))
+    create_relationship = argToBoolean(params.get("create_relationship") or False)
     tlp_color = params.get("tlp_color") or "CLEAR"
     interval = validate_interval(arg_to_number(params.get("feedFetchInterval")) or 1440)
     feed_tags = argToList(params.get("feedTags"))

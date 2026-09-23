@@ -1,3 +1,4 @@
+import unicodedata
 import pytest
 from FormatURLApiModule import *
 
@@ -61,7 +62,32 @@ BRACKETS_URL_TO_FORMAT = [
     ("[[https://www.test.com", "https://www.test.com"),  # disable-secrets-detection
     ("'https://www.test.com/test'", "https://www.test.com/test"),  # disable-secrets-detection
     ("'https://www.test.com/?a='b''", "https://www.test.com/?a='b'"),  # disable-secrets-detection
-    ("https://www.test.com/?q=((A)%20and%20(B))", "https://www.test.com/?q=((A) and (B))"),  # disable-secrets-detection)
+    ("https://www.test.com/?q=((A)%20and%20(B))", "https://www.test.com/?q=((A)%20and%20(B))"),  # disable-secrets-detection)
+]
+
+# URLs containing spaces (literal or percent-encoded). A space is not a valid URL character and must be
+# percent-encoded as %20 rather than decoded back to a literal space (which produces an invalid URL).
+SPACE_ENCODING = [
+    # Percent-encoded spaces must be preserved, not decoded to literal spaces.
+    (
+        "https://www.google.com/some%20thing%20else",  # disable-secrets-detection
+        "https://www.google.com/some%20thing%20else",  # disable-secrets-detection
+    ),
+    # Literal spaces must be encoded to %20 so the resulting URL stays valid.
+    (
+        "https://www.google.com/some thing else",  # disable-secrets-detection
+        "https://www.google.com/some%20thing%20else",  # disable-secrets-detection
+    ),
+    # A mix of literal and encoded spaces should normalize to encoded spaces.
+    (
+        "https://www.google.com/a b%20c",  # disable-secrets-detection
+        "https://www.google.com/a%20b%20c",  # disable-secrets-detection
+    ),
+    # Spaces in the query part.
+    (
+        "https://www.test.com/?q=a b",  # disable-secrets-detection
+        "https://www.test.com/?q=a%20b",  # disable-secrets-detection
+    ),
 ]
 
 ATP_REDIRECTS = [
@@ -479,6 +505,22 @@ class TestFormatURL:
 
         assert URLFormatter(url_).__str__() == expected
 
+    @pytest.mark.parametrize("url_, expected", SPACE_ENCODING)
+    def test_space_encoding(self, url_: str, expected: str):
+        """
+        Given:
+        - A URL containing literal spaces or percent-encoded spaces (%20).
+
+        When:
+        - The URL is formatted.
+
+        Then:
+        - Ensure literal spaces are encoded to %20 and existing %20 sequences are preserved,
+          so the resulting URL remains valid.
+        """
+
+        assert URLFormatter(url_).__str__() == expected
+
     @pytest.mark.parametrize("url_, expected", FAILS)
     def test_exceptions(self, url_: str, expected):
         """
@@ -565,6 +607,95 @@ class TestFormatURL:
         result_part, result_brackets = remove_trailing_bracket_and_redundant_characters_from_part(part, inside_brackets)
         assert result_part == expected_part
         assert result_brackets == expected_brackets
+
+    # a mailto: link whose query contains percent-encoded CRLF (%0D%0A) must keep that
+    # sequence encoded, otherwise the literal newline splits one indicator into several lines.
+    CRLF_INJECTION = [
+        (
+            "mailto:sender@example.com?subject=Unsubscribe%20A1B2C3D4%2DE5F6%2D7890%2D"
+            + "ABCD%2DEF1234567890&body=Please%20don%27t%20change%20the%20email%20content%20and%20send"
+            + "%20this%20email%20to%20unsubscribe.%0D%0A%0D%0Arecipient@example.org"
+        ),
+        # The "/" after the host is the formatter's pre-existing normalization, unrelated to this fix.
+        (
+            "mailto:sender@example.com/?subject=Unsubscribe%20A1B2C3D4-E5F6-7890-ABCD-EF1234567890"
+            + "&body=Please%20don't%20change%20the%20email%20content%20and%20send%20this%20email%20to%20unsubscribe."
+            + "%0D%0A%0D%0Arecipient@example.org"
+        ),
+    ]
+
+    @pytest.mark.parametrize(
+        "url_, expected",
+        [
+            # "%2520" is the correct encoding of the literal text "%20". Decoding more than once
+            # collapsed it to a real space; "%252541" even fabricated an "A".
+            ("https://test.com/?p=%2520", "https://test.com/?p=%20"),
+            ("https://test.com/a%252Fb", "https://test.com/a%2Fb"),
+            ("https://test.com/?p=%252541", "https://test.com/?p=%2541"),
+        ],
+    )
+    def test_percent_encoding_is_decoded_only_once(self, url_: str, expected: str):
+        """
+        Given:
+        - A URL containing a double-encoded sequence, i.e. text that legitimately contains a
+          percent sign which was then encoded.
+
+        When:
+        - The URL is formatted.
+
+        Then:
+        - Ensure the value is decoded exactly once, so escaped data is preserved rather than
+          being decoded repeatedly into characters that were never in the original URL.
+        """
+
+        assert URLFormatter(url_).__str__() == expected
+
+    @pytest.mark.parametrize(
+        "url_",
+        [
+            CRLF_INJECTION[0],
+            "https://test.com/path?a=1%0D%0Ahttps://evil.com",
+            "https://test.com/path?a=1%0d%0avictim@example.com",
+            "https://test.com/path?a=1%0Abreak",
+            "https://test.com/path?a=1%09tab",
+            "https://test.com/path?a=1%00null",
+            "https://test.com/path?a=1%7Fdel",
+        ],
+    )
+    def test_control_characters_are_not_decoded(self, url_: str):
+        """
+        Given:
+        - A URL whose query contains percent-encoded control characters (CRLF, LF, TAB, NULL, DEL).
+
+        When:
+        - The URL is formatted.
+
+        Then:
+        - Ensure no literal control character leaks into the formatted output, so a single
+          indicator can never be split into multiple values.
+        """
+
+        output = URLFormatter(url_).__str__()
+
+        assert not any(unicodedata.category(char) == "Cc" for char in output)
+
+    def test_mailto_crlf_is_not_split_into_two_indicators(self):
+        """
+        Given:
+        - The mailto: unsubscribe link taken from the reported .eml, whose body parameter ends
+          with %0D%0A%0D%0A followed by a second email address.
+
+        When:
+        - The URL is formatted by the URL indicator format script.
+
+        Then:
+        - Ensure the encoded CRLF is preserved as-is and the trailing address stays part of the
+          single URL value instead of becoming a separate malformed indicator.
+        """
+
+        url_, expected = self.CRLF_INJECTION
+
+        assert URLFormatter(url_).__str__() == expected
 
     def test_url_class(self):
         url = URLType("https://www.test.com")

@@ -1,3 +1,5 @@
+name: Akamai WAF SIEM
+display: Akamai WAF SIEM
 category: Analytics & SIEM
 provider: Akamai Technologies
 sectionorder:
@@ -66,25 +68,28 @@ configuration:
   defaultvalue: 1 hours
   required: false
   section: Collect
-- display: Fetch limit (minimum is 20)
+- display: Incident fetch limit
   name: fetchLimit
   type: 0
   defaultvalue: '20'
   required: false
-  additionalinfo: Limit on the number of incidents retrieved in a single fetch. The maximum is 80k.
+  additionalinfo: The maximum total number of incidents to retrieve per fetch. The maximum is 2000.
   section: Collect
-- display: Akamai Page size
-  name: page_size
+  hidden:
+  - marketplacev2
+  - platform
+- display: Events fetch limit
+  name: eventsFetchLimit
   type: 0
+  defaultvalue: '60000'
   required: false
+  additionalinfo: The maximum total number of events to retrieve per fetch. The maximum is 80k.
   section: Collect
-  defaultvalue: '20000'
-  additionalinfo: The number of events to fetch per request to akamai (multiple requests are made for each fetch). If you're getting aggregated delays, increase the number. The maximum is 80k. Note that if your API has higher ingestion rate, the integration will be able to detect it and immediately starts the next run in order to fetch events quicker.
   hidden:
   - xsoar
   supportedModules:
   - xsiam
-  advanced: true
+  advanced: false
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -119,7 +124,7 @@ configuration:
   supportedModules:
   - xsiam
   defaultvalue: '1'
-  advanced: true
+  advanced: false
 - display: Fetch Events
   name: isFetchEvents
   type: 8
@@ -150,6 +155,7 @@ configuration:
   supportedModules:
   - xsiam
   section: Collect
+  advanced: true
 - display: Page Size - high performance mode
   name: beta_page_size
   type: 0
@@ -161,6 +167,7 @@ configuration:
   - xsoar
   supportedModules:
   - xsiam
+  advanced: true
 - display: Max allowed concurrent tasks
   name: max_concurrent_tasks
   type: 0
@@ -172,9 +179,8 @@ configuration:
   - xsoar
   supportedModules:
   - xsiam
+  advanced: true
 description: Use the Akamai WAF SIEM integration to retrieve security events from Akamai Web Application Firewall (WAF) service.
-display: Akamai WAF SIEM
-name: Akamai WAF SIEM
 script:
   commands:
   - description: Reset the last offset to start fetching from the first fetch timestamp, use this command when the instance is disabled.
@@ -269,7 +275,7 @@ script:
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
       type: String
-  dockerimage: demisto/auth-utils:1.0.0.6111183
+  dockerimage: demisto/auth-utils:1.0.0.10133006
   isfetch: true
   isfetch:marketplacev2: false
   isfetchevents: true

@@ -348,3 +348,6 @@ outputs:
   type: number
 tests:
 - tenable-sc-test
+supportedModules:
+- agentix
+- xsiam

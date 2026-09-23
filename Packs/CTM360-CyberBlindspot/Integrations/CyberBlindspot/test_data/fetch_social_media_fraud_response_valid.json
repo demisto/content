@@ -1,0 +1,59 @@
+[
+    {
+        "id": "BI-A81ET1215",
+        "first_seen": "19-01-2022 03:50:18 PM",
+        "last_seen": "19-01-2022 03:50:18 PM",
+        "type": "Brand Impersonation",
+        "remarks": "BI-A81ET1215",
+        "external_link": "https://platform.ctm360.com/cbs/social_media_fraud/brand_impersonation/?filters=[]&searchQuery=BI-A81ET1215&selectedSearchField=finding_id",
+        "brand": "JAX Labs",
+        "timestamp": 1642607418000,
+        "platform": "Twitter",
+        "subject": "https://social-fraud.example.local/profile-1",
+        "risk_score": 70,
+        "risks": [
+            "some posts or followers",
+            "exact name detected"
+        ],
+        "status": "resolved",
+        "incident_status": "resolved"
+    },
+    {
+        "id": "BI-4389DS950",
+        "first_seen": "19-01-2022 03:50:19 PM",
+        "last_seen": "19-01-2022 03:50:19 PM",
+        "type": "Brand Impersonation",
+        "remarks": "BI-4389DS950",
+        "external_link": "https://platform.ctm360.com/cbs/social_media_fraud/brand_impersonation/?filters=[]&searchQuery=BI-4389DS950&selectedSearchField=finding_id",
+        "brand": "JAX Labs",
+        "timestamp": 1642607419000,
+        "platform": "Twitter",
+        "subject": "https://social-fraud.example.local/profile-2",
+        "risk_score": 70,
+        "risks": [
+            "many posts or followers",
+            "exact name detected"
+        ],
+        "status": "resolved",
+        "incident_status": "resolved"
+    },
+    {
+        "id": "BI-29EJK0A81",
+        "first_seen": "19-01-2022 03:50:19 PM",
+        "last_seen": "19-01-2022 03:50:19 PM",
+        "type": "Brand Impersonation",
+        "remarks": "BI-29EJK0A81",
+        "external_link": "https://platform.ctm360.com/cbs/social_media_fraud/brand_impersonation/?filters=[]&searchQuery=BI-29EJK0A81&selectedSearchField=finding_id",
+        "brand": "JAX Labs",
+        "timestamp": 1642607419000,
+        "platform": "Twitter",
+        "subject": "https://social-fraud.example.local/profile-3",
+        "risk_score": 70,
+        "risks": [
+            "limited posts or follower",
+            "exact name detected"
+        ],
+        "status": "resolved",
+        "incident_status": "resolved"
+    }
+]

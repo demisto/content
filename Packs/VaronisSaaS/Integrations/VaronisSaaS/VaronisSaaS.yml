@@ -18,6 +18,13 @@ configuration:
   type: 13
   defaultvalue: Varonis SaaS Incident
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: The FQDN/IP the integration should connect to
   hidden: false
   name: url
@@ -87,7 +94,7 @@ configuration:
   required: false
   type: 15
   section: Collect
-- additionalinfo: 'Choose the direction to mirror the incident: Outgoing (from Cortex XSOAR to Varonis SaaS).'
+- additionalinfo: 'Choose the direction to mirror the incident: Outgoing (from Cortex XSOAR to Varonis SaaS). Cortex XSOAR only parameter.'
   defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -97,6 +104,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  hidden:
+  - marketplacev2
+  - platform
 description: Streamline alerts and related forensic information from Varonis SaaS.
 display: Varonis SaaS
 name: VaronisSaaS
@@ -158,7 +168,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: True
+      default: true
       description: Indicates whether alerts should be ordered in newest to oldest order.
       predefined:
       - 'True'
@@ -185,7 +195,7 @@ script:
       description: Alert severity.
       type: String
     - contextPath: Varonis.Alert.Rule.Category.Name
-      description:  |- 
+      description: |-
         Alert category. Options are:
         - Reconnaissance 
         - Intrusion 
@@ -391,7 +401,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: True
+      default: true
       description: Indicates whether events should be ordered in newest to oldest order.
       predefined:
       - 'True'
@@ -540,7 +550,7 @@ script:
     name: get-mapping-fields
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/python3:3.12.12.6391686
+  dockerimage: demisto/python3:3.12.13.10116658
   feed: false
   isfetch: true
   ismappable: true

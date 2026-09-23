@@ -1,0 +1,28 @@
+{
+    "synopsys_coverity_raw": {
+        "_raw_log": {
+            "type": "string",
+            "is_array": false
+        },
+        "log_level": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "src_ip": {
+            "type": "string",
+            "is_array": false
+        },
+        "src_hostname": {
+            "type": "string",
+            "is_array": false
+        },
+        "src_username": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+  }

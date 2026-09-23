@@ -133,9 +133,55 @@ def test_get_dbot_score(overall_riskscore, expected_dbot_score):
     assert actual_dbot_score == expected_dbot_score
 
 
+class TestIPFeedsBuildIterator:
+    def test_iphotlist_build_iterator(self, mocker, dt_feeds_client):
+        """
+        Given:
+            - Output of the IP hotlist feed API
+        When:
+            - When calling fetch_indicators or get_indicators
+        Then:
+            - Returns an iterator of IP indicators parsed from the API's response
+        """
+        mocker.patch.object(
+            dt_feeds_client,
+            "_get_dt_feeds",
+            return_value=feed_mock_response.IPHOTLIST_RESPONSE,
+        )
+        indicators = list(dt_feeds_client.build_iterator(feed_type="iphotlist"))
+        ips = [indicator.get("value") for indicator in indicators]
+
+        assert "203.0.113.5" in ips
+        assert len(indicators) == 3
+        assert indicators[0].get("type") == "DomainToolsFeed IP"
+        assert indicators[0].get("ip_threat_data", {}).get("asn") == 12345
+
+    def test_iprisk_build_iterator(self, mocker, dt_feeds_client):
+        """
+        Given:
+            - Output of the IP risk feed API
+        When:
+            - When calling fetch_indicators or get_indicators
+        Then:
+            - Returns an iterator of IP indicators parsed from the API's response
+        """
+        mocker.patch.object(
+            dt_feeds_client,
+            "_get_dt_feeds",
+            return_value=feed_mock_response.IPRISK_RESPONSE,
+        )
+        indicators = list(dt_feeds_client.build_iterator(feed_type="iprisk"))
+        ips = [indicator.get("value") for indicator in indicators]
+
+        assert "203.0.113.10" in ips
+        assert len(indicators) == 2
+        assert indicators[0].get("type") == "DomainToolsFeed IP"
+        assert indicators[0].get("ip_threat_data", {}).get("asn") == 22222
+
+
 @pytest.mark.parametrize(
     "feed_type",
-    ["nod", "nad", "noh", "domaindiscovery", "domainrdap", "domainrisk", "domainhotlist"],
+    ["nod", "nad", "noh", "domaindiscovery", "domainrdap", "domainrisk", "domainhotlist", "iphotlist", "iprisk"],
 )
 def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
     """
@@ -156,6 +202,8 @@ def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
         "domainrdap": feed_mock_response.DOMAINRDAP_RESPONSE,
         "domainrisk": feed_mock_response.DOMAINRISK_RESPONSE,
         "domainhotlist": feed_mock_response.DOMAINHOTLIST_RESPONSE,
+        "iphotlist": feed_mock_response.IPHOTLIST_RESPONSE,
+        "iprisk": feed_mock_response.IPRISK_RESPONSE,
     }
 
     mocker.patch.object(
@@ -173,6 +221,8 @@ def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
         "domainrdap": feed_mock_response.DOMAINRDAP_PARSED_INDICATOR_RESPONSE,
         "domainrisk": feed_mock_response.DOMAINRISK_PARSED_INDICATOR_RESPONSE,
         "domainhotlist": feed_mock_response.DOMAINHOTLIST_PARSED_INDICATOR_RESPONSE,
+        "iphotlist": feed_mock_response.IPHOTLIST_PARSED_INDICATOR_RESPONSE,
+        "iprisk": feed_mock_response.IPRISK_PARSED_INDICATOR_RESPONSE,
     }
 
     human_readable = tableToMarkdown(
@@ -234,3 +284,171 @@ def test_calling_command_using_main(mocker, dt_feeds_client):
     main()
     results = demisto.results.call_args[0]
     assert results[0] == "ok"
+
+
+class TestGetDtFeeds:
+    def test_dispatches_correct_api_method(self, mocker, dt_feeds_client):
+        """_get_dt_feeds calls the correct domaintools API method via FEED_METHOD_MAP."""
+        mock_response = mocker.MagicMock()
+        mock_response.response.return_value = iter([])
+        mock_method = mocker.MagicMock(return_value=mock_response)
+        mocker.patch.object(dt_feeds_client._api, "realtime_domain_risk", mock_method, create=True)
+
+        dt_feeds_client._get_dt_feeds(feed_type="domainrisk", top=10)
+
+        mock_method.assert_called_once_with(top=10)
+
+    def test_filters_none_kwargs(self, mocker, dt_feeds_client):
+        """None values are not passed as kwargs to the API method."""
+        mock_response = mocker.MagicMock()
+        mock_response.response.return_value = iter([])
+        mock_method = mocker.MagicMock(return_value=mock_response)
+        mocker.patch.object(dt_feeds_client._api, "nod", mock_method, create=True)
+
+        dt_feeds_client._get_dt_feeds(feed_type="nod", session_id="s1", domain=None, top=5)
+
+        call_kwargs = mock_method.call_args.kwargs
+        assert "domain" not in call_kwargs
+        assert call_kwargs == {"sessionID": "s1", "top": 5}
+
+    def test_returns_list_of_lines(self, mocker, dt_feeds_client):
+        """Returns list of NDJSON lines from FeedsResults.response()."""
+        lines = ['{"domain":"example.com"}', '{"domain":"test.com"}']
+        mock_response = mocker.MagicMock()
+        mock_response.response.return_value = iter(lines)
+        mocker.patch.object(dt_feeds_client._api, "nod", return_value=mock_response, create=True)
+
+        result = dt_feeds_client._get_dt_feeds(feed_type="nod")
+
+        assert result == lines
+
+    def test_invalid_feed_type_raises(self, dt_feeds_client):
+        """_get_dt_feeds raises DemistoException for unknown feed types."""
+        with pytest.raises(DemistoException, match="Unsupported feed type"):
+            dt_feeds_client._get_dt_feeds(feed_type="invalidfeed")
+
+    def test_feed_type_lowercased(self, mocker, dt_feeds_client):
+        """_get_dt_feeds normalizes feed_type to lowercase before lookup."""
+        mock_response = mocker.MagicMock()
+        mock_response.response.return_value = iter([])
+        mock_method = mocker.MagicMock(return_value=mock_response)
+        mocker.patch.object(dt_feeds_client._api, "nod", mock_method, create=True)
+
+        dt_feeds_client._get_dt_feeds(feed_type="NOD")
+
+        mock_method.assert_called_once()
+
+    def test_ip_filter_params_passed_for_iphotlist(self, mocker, dt_feeds_client):
+        """IP filter params are forwarded to the API for iphotlist feed type."""
+        mock_response = mocker.MagicMock()
+        mock_response.response.return_value = iter([])
+        mock_method = mocker.MagicMock(return_value=mock_response)
+        mocker.patch.object(dt_feeds_client._api, "iphotlist", mock_method, create=True)
+
+        dt_feeds_client._get_dt_feeds(
+            feed_type="iphotlist",
+            top=10,
+            pdns_resolutions_min=50,
+            country_code="RU",
+            combined_malware_percent_min=80,
+        )
+
+        call_kwargs = mock_method.call_args.kwargs
+        assert call_kwargs["pdns_resolutions_min"] == 50
+        assert call_kwargs["country_code"] == "RU"
+        assert call_kwargs["combined_malware_percent_min"] == 80
+        assert call_kwargs["top"] == 10
+
+    def test_all_threats_percent_min_passed_for_iprisk_only(self, mocker, dt_feeds_client):
+        """all_threats_percent_min is forwarded for iprisk but not for iphotlist."""
+        mock_response = mocker.MagicMock()
+        mock_response.response.return_value = iter([])
+
+        mock_iprisk = mocker.MagicMock(return_value=mock_response)
+        mocker.patch.object(dt_feeds_client._api, "iprisk", mock_iprisk, create=True)
+        dt_feeds_client._get_dt_feeds(feed_type="iprisk", all_threats_percent_min=60)
+        assert mock_iprisk.call_args.kwargs.get("all_threats_percent_min") == 60
+
+        mock_response2 = mocker.MagicMock()
+        mock_response2.response.return_value = iter([])
+        mock_iphotlist = mocker.MagicMock(return_value=mock_response2)
+        mocker.patch.object(dt_feeds_client._api, "iphotlist", mock_iphotlist, create=True)
+        dt_feeds_client._get_dt_feeds(feed_type="iphotlist", all_threats_percent_min=60)
+        assert "all_threats_percent_min" not in mock_iphotlist.call_args.kwargs
+
+    def test_ip_filter_params_not_passed_for_non_ip_feed(self, mocker, dt_feeds_client):
+        """IP filter params are not forwarded to the API for non-IP feed types."""
+        mock_response = mocker.MagicMock()
+        mock_response.response.return_value = iter([])
+        mock_method = mocker.MagicMock(return_value=mock_response)
+        mocker.patch.object(dt_feeds_client._api, "nod", mock_method, create=True)
+
+        dt_feeds_client._get_dt_feeds(
+            feed_type="nod",
+            top=10,
+            pdns_resolutions_min=50,
+            country_code="RU",
+        )
+
+        call_kwargs = mock_method.call_args.kwargs
+        assert "pdns_resolutions_min" not in call_kwargs
+        assert "country_code" not in call_kwargs
+        assert call_kwargs == {"top": 10}
+
+
+def test_get_indicators_command_passes_ip_filters(mocker, dt_feeds_client):
+    """
+    Given:
+        - iphotlist feed type with IP filter arguments
+    When:
+        - get_indicators_command is called
+    Then:
+        - IP filter kwargs are forwarded to _get_dt_feeds
+    """
+    mock_response = mocker.MagicMock()
+    mock_response.response.return_value = iter(feed_mock_response.IPHOTLIST_RESPONSE)
+    mock_method = mocker.MagicMock(return_value=mock_response)
+    mocker.patch.object(dt_feeds_client._api, "iphotlist", mock_method, create=True)
+
+    get_indicators_command(
+        dt_feeds_client,
+        args={
+            "feed_type": "iphotlist",
+            "top": "5",
+            "pdns_resolutions_min": "50",
+            "country_code": "RU",
+            "combined_malware_percent_min": "80",
+        },
+        params={},
+    )
+
+    call_kwargs = mock_method.call_args.kwargs
+    assert call_kwargs.get("pdns_resolutions_min") == 50
+    assert call_kwargs.get("country_code") == "RU"
+    assert call_kwargs.get("combined_malware_percent_min") == 80
+
+
+def test_missing_credentials():
+    """DomainToolsClient raises DemistoException when credentials are empty."""
+    with pytest.raises(DemistoException):
+        DomainToolsClient(api_username="", api_key="")
+
+
+def test_format_parameter_prepends_dash(dt_feeds_client):
+    """_format_parameter prepends '-' to after/before values that lack it."""
+    assert dt_feeds_client._format_parameter("after", "60") == "-60"
+    assert dt_feeds_client._format_parameter("after", "-60") == "-60"
+    assert dt_feeds_client._format_parameter("before", "120") == "-120"
+
+
+def test_test_module_all_feed_type_falls_back_to_nod(mocker, dt_feeds_client):
+    """test_module falls back to 'nod' when feed_type param is 'ALL'."""
+    from FeedDomainTools import test_module
+
+    mocker.patch.object(
+        dt_feeds_client,
+        "_get_dt_feeds",
+        return_value=feed_mock_response.NOD_FEED_RESPONSE,
+    )
+    result = test_module(dt_feeds_client, args={}, params={"feed_type": "ALL"})
+    assert result == "ok"

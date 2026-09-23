@@ -43,6 +43,9 @@ class BackendErrorCode(IntEnum):
     CONVERSATION_NOT_FOUND = 103201
     WRONG_USER = 103204
 
+    # Agent errors
+    AGENT_DISABLED = 103502
+
     @property
     def error_type(self) -> "BackendErrorType":
         """Return the corresponding BackendErrorType for this code."""
@@ -75,6 +78,7 @@ class BackendErrorType(str, Enum):
     PERMISSION_DENIED = "permission_denied"
     CONVERSATION_NOT_FOUND = "conversation_not_found"
     WRONG_USER = "wrong_user"
+    AGENT_DISABLED = "agent_disabled"
     UNKNOWN = "unknown"
 
     @property
@@ -90,6 +94,7 @@ _CODE_TO_ERROR_TYPE: dict[BackendErrorCode, BackendErrorType] = {
     BackendErrorCode.PERMISSION_DENIED: BackendErrorType.PERMISSION_DENIED,
     BackendErrorCode.CONVERSATION_NOT_FOUND: BackendErrorType.CONVERSATION_NOT_FOUND,
     BackendErrorCode.WRONG_USER: BackendErrorType.WRONG_USER,
+    BackendErrorCode.AGENT_DISABLED: BackendErrorType.AGENT_DISABLED,
 }
 
 # Mapping from BackendErrorCode → debug log message
@@ -99,6 +104,7 @@ _CODE_TO_DEBUG_MESSAGE: dict[BackendErrorCode, str] = {
     BackendErrorCode.PERMISSION_DENIED: "Permission denied",
     BackendErrorCode.CONVERSATION_NOT_FOUND: "Conversation not found",
     BackendErrorCode.WRONG_USER: "Wrong user for conversation",
+    BackendErrorCode.AGENT_DISABLED: "Agent is disabled",
 }
 
 
@@ -332,6 +338,7 @@ class AssistantMessages:
     # Generic error messages
     GENERIC_ERROR = "❌ An error occurred. Please try again later or contact your administrator if the issue persists."
     CONVERSATION_NOT_FOUND_ERROR = "❌ This conversation is no longer active."
+    AGENT_DISABLED = "❌ The selected agent is currently disabled. Please contact your administrator to enable it."
     SYSTEM_ERROR = "❌ A system error occurred. Please try again later or contact your administrator if the issue persists."
 
     # Reset session messages
@@ -424,6 +431,7 @@ _ERROR_TYPE_TO_USER_MESSAGE: dict[BackendErrorType, str] = {
     BackendErrorType.PERMISSION_DENIED: AssistantMessages.NO_ASSISTANT_PERMISSIONS,
     BackendErrorType.WRONG_USER: AssistantMessages.NOT_CONVERSATION_OWNER_FEEDBACK,
     BackendErrorType.CONVERSATION_NOT_FOUND: AssistantMessages.CONVERSATION_NOT_FOUND_ERROR,
+    BackendErrorType.AGENT_DISABLED: AssistantMessages.AGENT_DISABLED,
     BackendErrorType.UNKNOWN: AssistantMessages.SYSTEM_ERROR,
 }
 
@@ -1221,6 +1229,27 @@ class AssistantMessagingHandler:
         original_message = assistant[assistant_id_key].get("message", "")
 
         if user_id == locked_user:
+            # Guard against duplicate agent selections (XSOAR async listeners can process
+            # a second click before the first selection finished updating the status).
+            # We only proceed when the conversation is actually awaiting an agent selection.
+            current_status = assistant[assistant_id_key].get("status", "")
+            if current_status != AssistantStatus.AWAITING_AGENT_SELECTION.value:
+                demisto.error(
+                    f"Ignoring agent selection for {assistant_id_key}: expected status "
+                    f"'{AssistantStatus.AWAITING_AGENT_SELECTION.value}' but current status is '{current_status}'."
+                )
+                # An agent was most likely already selected and we're just waiting for a response
+                # (the previous selection took time to come back). This is not an error state, so we
+                # reassure the user instead of showing an error - and we never open another conversation.
+                if current_status == AssistantStatus.RESPONDING_WITH_PLAN.value:
+                    info_msg = AssistantMessages.WAITING_FOR_COMPLETION
+                else:
+                    info_msg = AssistantMessages.ALREADY_PROCESSING
+                await self.send_message_async(
+                    channel_id, info_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
+                )
+                return
+
             # Correct user selected an agent
             selected_agent_id = option_value.replace(AssistantActionIds.AGENT_SELECTION_VALUE_PREFIX.value, "")
             selected_agent_name = selected_option.get("text", {}).get("text", "")

@@ -15,7 +15,7 @@ urllib3.disable_warnings()  # noqa # pylint: disable=no-member
 
 """ CONSTANTS """
 SOCRADAR_API_ENDPOINT = "https://platform.socradar.com/api"
-SOCRADAR_SEVERITIES = ["Unknown", "Info", "Low", "Medium", "High"]
+SOCRADAR_SEVERITIES = ["Unknown", "Info", "Low", "Medium", "High", "Critical"]
 EXCLUDED_INCIDENT_FIELDS = ("extra_info", "alarm_notification_texts")
 MAX_INCIDENTS_TO_FETCH = 500
 
@@ -42,7 +42,7 @@ def parse_int_or_raise(str_to_parse: Any, error_msg=None) -> int:
 def convert_to_demisto_severity(severity: str) -> Union[int, float]:
     """Maps SOCRadar severity to Cortex XSOAR severity
 
-    Converts the SOCRadar alert severity level ('INFO', 'LOW', 'MEDIUM', 'HIGH') to Cortex XSOAR incident severity
+    Converts the SOCRadar alert severity level ('INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL') to Cortex XSOAR incident severity
     (1 to 4) for mapping.
 
     :type severity: ``str``
@@ -57,6 +57,7 @@ def convert_to_demisto_severity(severity: str) -> Union[int, float]:
         "LOW": IncidentSeverity.LOW,
         "MEDIUM": IncidentSeverity.MEDIUM,
         "HIGH": IncidentSeverity.HIGH,
+        "CRITICAL": IncidentSeverity.CRITICAL,
         "UNKNOWN": IncidentSeverity.UNKNOWN,
     }[severity]
 
@@ -277,6 +278,7 @@ def fetch_incidents(
     severity: List[str],
     incident_main_type: Optional[str],
     incident_sub_type: Optional[str],
+    include_company_id: bool = False,
 ) -> tuple[dict[str, int], List[dict]]:
     """
     :type client: ``Client``
@@ -363,20 +365,23 @@ def fetch_incidents(
         if last_fetch and incident_created_time <= last_fetch:
             continue
 
-        incident_content = alert.get("alarm_notification_texts", {}).get("alarm_text", "")
+        alarm_texts = alert.get("alarm_notification_texts") or {}
+        alarm_type_details = alert.get("alarm_type_details") or {}
+        alarm_title = alarm_texts.get("alarm_title") or alarm_type_details.get("alarm_generic_title", "")
+        incident_content = alarm_texts.get("alarm_text", "")
         alert = {
             **{key: value for key, value in alert.items() if key not in EXCLUDED_INCIDENT_FIELDS},
-            "alarm_notification_texts": {"alarm_title": alert.get("alarm_notification_texts", {}).get("alarm_title", "")},
+            "alarm_notification_texts": {"alarm_title": alarm_title},
         }
 
-        incident_name = f"{alert.get('alarm_notification_texts', {}).get('alarm_title', '')} - [#{alert.get('id', '')}]"
+        incident_name = f"{alarm_title} - [#{alert.get('id', '')}]"
 
-        alert_assets = " || ".join(alert.get("alarm_assets", []))
+        alert_assets = " || ".join(alert.get("alarm_assets") or [])
         alert_related_assets = ""
-        for related_asset_dict in alert.get("alarm_related_assets", []):
+        for related_asset_dict in alert.get("alarm_related_assets") or []:
             related_asset_key, related_asset_value_list = (
                 related_asset_dict.get("key"),
-                related_asset_dict.get("value", []),
+                related_asset_dict.get("value") or [],
             )
             related_asset_value_list: List[str] = list(filter(None, related_asset_value_list))
             if related_asset_key and related_asset_value_list:
@@ -384,10 +389,10 @@ def fetch_incidents(
                 alert_related_assets += f"{related_asset_key}: {' || '.join(related_asset_value_list)}\n"
 
         alert_related_entities = ""
-        for related_entity_dict in alert.get("alarm_related_entities", []):
+        for related_entity_dict in alert.get("alarm_related_entities") or []:
             related_entity_key, related_entity_value_list = (
                 related_entity_dict.get("key"),
-                related_entity_dict.get("value", []),
+                related_entity_dict.get("value") or [],
             )
             related_entity_value_list: List[str] = list(filter(None, related_entity_value_list))
             if related_entity_key and related_entity_value_list:
@@ -396,19 +401,28 @@ def fetch_incidents(
 
         incident_link = f"https://platform.socradar.com/company/{client.socradar_company_id}/incidents/{alert.get('id', '')}"
 
+        custom_fields: dict[str, Any] = {
+            "socradarincidentassets": alert_assets,
+            "socradarmitigation": alert.get("alarm_mitigation", ""),
+            "socradarrelatedassets": alert_related_assets,
+            "socradarrelatedentities": alert_related_entities,
+            "incidentlink": incident_link,
+            "socradarincidentcontent": incident_content,
+        }
+
+        if include_company_id:
+            alert["company_id"] = client.socradar_company_id
+            custom_fields["socradarcompanyid"] = client.socradar_company_id
+            demisto.debug(f"[SOCRadar] Added company_id to incident: {client.socradar_company_id}")
+
+        demisto.debug(f"[SOCRadar] CustomFields keys: {list(custom_fields.keys())}")
+
         incident = {
             "name": incident_name,
             "occurred": timestamp_to_datestring(incident_created_time * 1000, is_utc=True),
             "rawJSON": json.dumps(alert),
             "severity": convert_to_demisto_severity(alert.get("alarm_risk_level", "UNKNOWN")),
-            "CustomFields": {
-                "socradarincidentassets": alert_assets,
-                "socradarmitigation": alert.get("alarm_mitigation", ""),
-                "socradarrelatedassets": alert_related_assets,
-                "socradarrelatedentities": alert_related_entities,
-                "incidentlink": incident_link,
-                "socradarincidentcontent": incident_content,
-            },
+            "CustomFields": custom_fields,
         }
 
         incidents.append(incident)
@@ -482,7 +496,11 @@ def main() -> None:
     :rtype:
     """
 
-    api_key = demisto.params().get("apikey")
+    api_key_param = demisto.params().get("apikey")
+    if isinstance(api_key_param, dict):
+        api_key = api_key_param.get("password", "")
+    else:
+        api_key = api_key_param
     socradar_company_id = demisto.params().get("socradar_company_id")
 
     base_url = SOCRADAR_API_ENDPOINT
@@ -526,6 +544,9 @@ def main() -> None:
             if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
                 max_results = MAX_INCIDENTS_TO_FETCH
 
+            include_company_id = argToBoolean(demisto.params().get("include_company_id", False))
+            demisto.debug(f"[SOCRadar] include_company_id={include_company_id}, socradar_company_id={socradar_company_id}")
+
             next_run, incidents = fetch_incidents(
                 client=client,
                 max_results=max_results,
@@ -536,6 +557,7 @@ def main() -> None:
                 severity=severity,
                 incident_main_type=incident_main_type,
                 incident_sub_type=incident_sub_type,
+                include_company_id=include_company_id,
             )
 
             demisto.setLastRun(next_run)

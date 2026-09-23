@@ -18,6 +18,10 @@ Query Indicators of Compromise in AlienVault OTX.
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
+#### Disclaimer
+
+Retrieving Passive DNS history for high-volume indicators may time out and therefore be skipped.
+
 ### ip
 
 ***

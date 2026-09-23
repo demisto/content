@@ -11,6 +11,7 @@ from collections.abc import Callable
 from enum import Enum, IntEnum
 from threading import Timer
 from typing import Any
+import traceback
 import urllib.parse
 
 import requests
@@ -42,6 +43,7 @@ NGSIEM_INCIDENT = "ngsiem_incident"
 NGSIEM_AUTOMATED_LEAD = "ngsiem_automated_lead"
 NGSIEM_CASE = "ngsiem_case"
 THIRD_PARTY_DETECTION = "thirdparty_detection"
+IOA_DETECTION = "ioa_detection"
 RECON_NOTIFICATION = "Recon notifications"
 
 # Fetch type names as they appear in the .yml instance configurations
@@ -90,6 +92,36 @@ MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
 MAX_FETCH_SPOTLIGHT_ASSETS = 5000
+# Below the 5000 server-side maximum to keep payloads under XSOAR's auto-file threshold.
+MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE = 2500
+# Page sizes tried, in order, when a page fails: the same page is re-requested (same after token)
+# with progressively smaller limits. If the smallest still fails, the severity fetch fails.
+SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER = [MAX_FETCH_SPOTLIGHT_ASSETS, 2500, 1000, 500]
+# Delay before each shrink-ladder retry. Observed truncation offsets (~0.9 MB to ~23 MB) point at a
+# transient upstream fault, not a size limit, so retries are spaced out to let it clear.
+# One entry per retry, i.e. len(SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER) - 1.
+SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS = [2, 5, 15]
+# Statuses worth re-requesting at a smaller page size. Mirrors RetryPolicy.retryable_status_codes in
+# ContentClientApiModule; anything else (expired cursor 404, 401, 400) cannot be helped by shrinking.
+SPOTLIGHT_TRANSIENT_HTTP_STATUS_CODES = {408, 413, 425, 429, 500, 502, 503, 504}
+# Longest single blocking sleep in the long-running loop. The wait between cycles can be ~24h, and
+# a one-shot sleep of that length leaves the container unable to answer a shutdown request or
+# health check until it returns, so the wait is served in chunks of at most this many seconds.
+LONG_RUNNING_SLEEP_CHUNK_SECONDS = 60
+# Delay before each retry of a rejected XSIAM send. Back-to-back retries all fail to the same
+# gateway blip, so the attempts are spaced out to let it clear.
+XSIAM_SEND_RETRY_BACKOFF_SECONDS = 1
+MAX_PENDING_TASKS_PER_SEVERITY = 5  # Backpressure: max concurrent pending XSIAM send tasks per severity stream
+SPOTLIGHT_LOOKBACK_DAYS = 100  # Only fetch vulnerabilities updated within this many days (bounds dataset size)
+# Period between Spotlight fetch cycle starts for a long-running instance. Not configurable, so it
+# can never be set below the time a full fetch needs (~2.3h typical, longer on large tenants).
+LONG_RUNNING_ASSETS_INTERVAL_MINUTES = 1440
+# Retry delay after a FAILED cycle, doubling per consecutive failure up to the cap. Without this a
+# cycle that dies in seconds (bad credentials, tripped circuit breaker) would wait out the full
+# interval, leaving the instance idle for ~24h over a fault that may clear in minutes. Capped so a
+# persistent fault does not hammer the API, and never applied to a successful cycle.
+LONG_RUNNING_FAILURE_RETRY_MINUTES = 5
+LONG_RUNNING_FAILURE_RETRY_MAX_MINUTES = 60
 RECON_API_LIMIT = 100
 MAX_FETCH_RECON = 100
 
@@ -427,7 +459,7 @@ class IncidentType(Enum):
     LEGACY_ENDPOINT_DETECTION = "ldt"
     ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION = ":ind:"  # OFP was joined here since it has ':ind:' too in its id
     IOM_CONFIGURATIONS = "iom_configurations"
-    IOA_EVENTS = "ioa_events"
+    IOA_TYPE_TAG = "cloud-ioa"
     ON_DEMAND = "ods"
     OFP = "ofp"
     THIRD_PARTY = ":thirdparty:"
@@ -846,6 +878,39 @@ def log_falcon_assets(log_line: str, log_type="debug", asset="Spotlight"):
         demisto.error(full_log_line)
 
 
+def _get_process_memory_mb() -> str:
+    """Get current and peak process RSS, for the memory lines in the fetch logs.
+
+    Returns:
+        Formatted string with current and peak RSS in MB.
+    """
+    # Import locally to avoid shadowing the `resource` loop variable used in other functions
+    import resource as resource_mod  # noqa: F811
+    import sys
+
+    # Current RSS: VmRSS in /proc/self/status is the physical memory in use right now (Linux only).
+    current_rss_mb = 0.0
+    try:
+        with open("/proc/self/status") as f:
+            for line in f:
+                if line.startswith("VmRSS:"):
+                    # VmRSS is reported in KB in /proc/self/status
+                    current_rss_mb = int(line.split()[1]) / 1024
+                    break
+    except (FileNotFoundError, ValueError):
+        pass  # Not on Linux or parse error — current RSS will show 0
+
+    # Peak RSS: the maximum RSS ever reached during the process lifetime
+    # On Linux ru_maxrss is in KB, on macOS it's in bytes
+    rusage = resource_mod.getrusage(resource_mod.RUSAGE_SELF)
+    if sys.platform == "darwin":
+        peak_rss_mb = rusage.ru_maxrss / (1024 * 1024)
+    else:
+        peak_rss_mb = rusage.ru_maxrss / 1024
+
+    return f"current={current_rss_mb:.1f} MB, peak={peak_rss_mb:.1f} MB"
+
+
 def _normalize_data_to_str(data: Union[str, list, None], data_type: str) -> str | None:
     """Convert data to a newline-separated JSON string for XSIAM ingestion.
 
@@ -1002,6 +1067,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         THIRD_PARTY_DETECTION_FETCH_TYPE,
         NGSIEM_INCIDENT_FETCH_TYPE,
         NGSIEM_AUTOMATED_LEADS_FETCH_TYPE,
+        IOA_FETCH_TYPE,
     ):
         demisto.debug(f"detection_to_incident_context, {detection_type=} calling fix_time_field")
         fix_time_field(detection, start_time_key)
@@ -1013,6 +1079,9 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
     elif detection_type == MOBILE_DETECTION_FETCH_TYPE:
         incident_context["name"] = f'{detection_type} ID: {detection.get("mobile_detection_id")}'
         incident_context["severity"] = detection.get("severity")
+    elif detection_type == IOA_FETCH_TYPE:
+        incident_context["name"] = f'{detection_type} ID: {detection.get("composite_id")}'
+        incident_context["severity"] = severity_string_to_int(detection.get("severity_name"))
 
     if is_fetch_events:
         incident_context["_source_log_type"] = "detection"
@@ -2833,7 +2902,17 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
     detection_type = ""
     mirroring_fields = ["status"]
     updated_object: dict[str, Any] = {}
-    if "idp" in mirrored_data["product"]:
+    # Check type-based conditions first (more specific) before product-based conditions (more generic).
+    # ODS and OFP detections carry product=epp but must be classified by their type, not their product.
+    if "ofp" in mirrored_data["type"]:
+        updated_object = {"incident_type": OFP_DETECTION}
+        detection_type = "ofp"
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    elif "ods" in mirrored_data["type"]:
+        updated_object = {"incident_type": ON_DEMAND_SCANS_DETECTION}
+        detection_type = "ods"
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    elif "idp" in mirrored_data["product"]:
         updated_object = {"incident_type": IDP_DETECTION}
         detection_type = "IDP"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS_IDP
@@ -2844,14 +2923,6 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
     elif "epp" in mirrored_data["product"]:
         updated_object = {"incident_type": ENDPOINT_DETECTION}
         detection_type = "Detection"
-        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
-    elif "ofp" in mirrored_data["type"]:
-        updated_object = {"incident_type": OFP_DETECTION}
-        detection_type = "ofp"
-        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
-    elif "ods" in mirrored_data["type"]:
-        updated_object = {"incident_type": ON_DEMAND_SCANS_DETECTION}
-        detection_type = "ods"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
     elif "ngsiem" in mirrored_data["product"]:
         updated_object = {"incident_type": NGSIEM_DETECTION}
@@ -3317,21 +3388,26 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
         tuple: A tuple containing a list of detections and the updated fetch information dictionary.
     """
     detections = []
-    fetch_limit = MAX_FETCH_DETECTION_PER_API_CALL if is_fetch_events else INCIDENTS_PER_FETCH
+    # The configured per-run limit (10000 for XSIAM, "Max incidents per fetch" for XSOAR).
+    base_fetch_limit = MAX_FETCH_DETECTION_PER_API_CALL if is_fetch_events else INCIDENTS_PER_FETCH
 
     detections_offset: int = current_fetch_info_detections.get("offset") or 0
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(
         last_run=current_fetch_info_detections, first_fetch=FETCH_TIME, look_back=look_back, date_format=DETECTION_DATE_FORMAT
     )
-    fetch_limit = current_fetch_info_detections.get("limit") or fetch_limit
+    fetch_limit = current_fetch_info_detections.get("limit") or base_fetch_limit
     incident_type = "detection"
+
+    # The API rejects requests where offset + limit exceeds MAX_FETCH_SIZE. With look_back, fetch_limit can grow
+    # past that bound, so cap the value sent to the API while keeping fetch_limit for dedup and last_run bookkeeping.
+    api_limit = min(fetch_limit, MAX_FETCH_SIZE - detections_offset)
 
     fetch_query = demisto.params().get("fetch_query")
     if fetch_query:
         fetch_query = f"(created_timestamp:>'{start_fetch_time}')+({fetch_query})"
-        response = get_fetch_detections(filter_arg=fetch_query, limit=fetch_limit, offset=detections_offset)
+        response = get_fetch_detections(filter_arg=fetch_query, limit=api_limit, offset=detections_offset)
     else:
-        response = get_fetch_detections(last_created_timestamp=start_fetch_time, limit=fetch_limit, offset=detections_offset)
+        response = get_fetch_detections(last_created_timestamp=start_fetch_time, limit=api_limit, offset=detections_offset)
 
     detections_ids: list[dict] = demisto.get(response, "resources", [])
     total_detections = demisto.get(response, "meta.pagination.total")
@@ -3372,7 +3448,7 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
     current_fetch_info_detections = update_last_run_object(
         last_run=current_fetch_info_detections,
         incidents=detections,
-        fetch_limit=INCIDENTS_PER_FETCH,
+        fetch_limit=base_fetch_limit,
         start_fetch_time=start_fetch_time,
         end_fetch_time=end_fetch_time,
         look_back=look_back,
@@ -3431,53 +3507,6 @@ def fetch_iom_incidents(iom_last_run):
     }
 
     return iom_incidents, iom_last_run
-
-
-def fetch_ioa_incidents(ioa_last_run):
-    demisto.debug("Fetching Indicator of Attack incidents")
-    demisto.debug(f"{ioa_last_run=}")
-    fetch_query = demisto.params().get("ioa_fetch_query", "")
-    validate_ioa_fetch_query(ioa_fetch_query=fetch_query)
-
-    last_fetch_event_ids, ioa_next_token, last_date_time_since, _ = get_current_fetch_data(
-        last_run_object=ioa_last_run,
-        date_format=DATE_FORMAT,
-        last_date_key="last_date_time_since",
-        next_token_key="ioa_next_token",
-        last_fetched_ids_key="last_event_ids",
-    )
-    ioa_fetch_query = create_ioa_query(
-        is_paginating=bool(ioa_next_token),
-        configured_fetch_query=fetch_query,
-        last_fetch_query=ioa_last_run.get("last_fetch_query", ""),
-        last_date_time_since=last_date_time_since,
-    )
-    demisto.debug(f"IOA {ioa_fetch_query=}")
-    ioa_events, ioa_new_next_token = ioa_events_pagination(
-        ioa_fetch_query=ioa_fetch_query, ioa_next_token=ioa_next_token, fetch_limit=INCIDENTS_PER_FETCH, api_limit=1000
-    )
-    demisto.debug(f'Fetched the following IOA event IDs: {[event.get("event_id") for event in ioa_events]}')
-
-    ioa_incidents, ioa_event_ids, new_date_time_since = parse_ioa_iom_incidents(
-        fetched_data=ioa_events,
-        last_date=last_date_time_since,
-        last_fetched_ids=last_fetch_event_ids,
-        date_key="event_created",
-        id_key="event_id",
-        date_format=DATE_FORMAT,
-        is_paginating=bool(ioa_new_next_token or ioa_next_token),
-        to_incident_context=ioa_event_to_incident,
-        incident_type="ioa_events",
-    )
-
-    ioa_last_run = {
-        "ioa_next_token": ioa_new_next_token,
-        "last_date_time_since": new_date_time_since,
-        "last_fetch_query": ioa_fetch_query,
-        "last_event_ids": ioa_event_ids or last_fetch_event_ids,
-    }
-
-    return ioa_incidents, ioa_last_run
 
 
 def set_last_run_per_type(last_run: list, index: LastRunIndex, data: dict, is_fetch_events=False) -> None:
@@ -3717,7 +3746,16 @@ def fetch_items(command="fetch-incidents"):
         demisto.debug("CrowdStrikeFalconMsg: Start fetch IOA")
         demisto.debug(f"CrowdStrikeFalconMsg: Current IOA last_run object: {ioa_last_run}")
 
-        fetched_ioa_incidents, ioa_last_run = fetch_ioa_incidents(ioa_last_run)
+        fetched_ioa_incidents, ioa_last_run = fetch_detections_by_product_type(
+            ioa_last_run,
+            look_back=look_back,
+            fetch_query=params.get("ioa_fetch_query", ""),
+            detections_type=IOA_DETECTION,
+            product_type=IncidentType.IOA_TYPE_TAG.value,
+            detection_name_prefix=IOA_FETCH_TYPE,
+            start_time_key="created_timestamp",
+            is_fetch_events=False,
+        )
         items.extend(fetched_ioa_incidents)
 
     if not is_fetch_events and NGSIEM_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
@@ -3888,7 +3926,8 @@ def save_spotlight_state(context_store: ContentClientContextStore, spotlight_sta
     integration_context = context_store.read()
     integration_context["spotlight_assets"] = spotlight_state.to_dict()
     context_store.write(integration_context)
-    log_falcon_assets(f"Saved Spotlight state to integration context (keys: {list(integration_context.keys())})")
+    spotlight_data = integration_context.get("spotlight_assets", {})
+    log_falcon_assets(f"Saved Spotlight state: metadata={spotlight_data.get('metadata', {})}")
 
 
 class AssetsDeviceHandler:
@@ -3980,14 +4019,37 @@ class AssetsDeviceHandler:
         log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Enriching {len(aid_batch)} AIDs")
 
         try:
-            # 1. Enrich via ContentClient (uses OAuth2, retry, rate limiting)
+            # 1. Enrich the AID batch via ContentClient.
+            # /devices/entities/devices/v2 returns HTTP 400 on partial success (valid devices in
+            # "resources", rejected IDs in "errors"). Accept 400 (ok_codes) to ingest the resolved
+            # devices instead of discarding the whole batch and raising on the full response body.
             response = await self.client._request(
-                method="POST", url_suffix="/devices/entities/devices/v2", json_data={"ids": aid_batch}
+                method="POST",
+                url_suffix="/devices/entities/devices/v2",
+                json_data={"ids": aid_batch},
+                ok_codes=(200, 400),
+            )
+            log_falcon_assets(
+                f"AssetsDeviceHandler: [Batch {current_batch_number}] CrowdStrike response status={response.status_code}"
             )
 
             # Parse response
             response_data = response.json()
             devices = response_data.get("resources", [])
+
+            # Log any invalid device IDs returned in the partial-success "errors" array.
+            errors = response_data.get("errors") or []
+            if errors:
+                log_falcon_assets(
+                    f"AssetsDeviceHandler: [Batch {current_batch_number}] CrowdStrike returned "
+                    f"{len(errors)} invalid device ID(s); skipping them. First error: {errors[0].get('message')}",
+                    "warning",
+                )
+
+            # Mark the entire batch processed (including invalid IDs) regardless of whether any
+            # devices resolved, so permanently-invalid IDs are not retried indefinitely on every fetch.
+            self.processed_aids.update(aid_batch)
+            self.spotlight_state.metadata["processed_aids_count"] = len(self.processed_aids)
 
             if not devices:
                 log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] No devices returned from API")
@@ -3997,11 +4059,7 @@ class AssetsDeviceHandler:
 
             devices = self._filter_asset_fields(devices)
 
-            # 2. Update state and send it to XSIAM after finish
-            self.processed_aids.update(aid_batch)
-            self.spotlight_state.metadata["processed_aids"] = list(self.processed_aids)
-
-            # 3. Send to XSIAM using existing generic function (fire-and-forget)
+            # 2. Send to XSIAM using existing generic function (fire-and-forget)
             send_task = create_task_send_batch_to_xsiam_and_save_context(
                 data=devices,
                 product=SPOTLIGHT_ASSETS_PRODUCT,
@@ -4019,7 +4077,7 @@ class AssetsDeviceHandler:
             def update_last_saved(future):
                 # 'self' is accessible from enclosing method scope - no nonlocal needed
                 try:
-                    saved_batch_num = future.result()
+                    saved_batch_num, _records_stored = future.result()
                     if saved_batch_num > self.asset_last_saved_batch_number:
                         self.asset_last_saved_batch_number = saved_batch_num
                         log_falcon_assets(f"AssetsDeviceHandler: Updated asset_last_saved_batch_number to {saved_batch_num}")
@@ -4129,6 +4187,7 @@ async def xsiam_api_call_async(
     status_code = None
     attempt_num = 1
     response = None
+    last_error: aiohttp.ClientResponseError | None = None
 
     while status_code != 200 and attempt_num < num_of_attempts + 1:
         log_falcon_assets(f"Sending {data_type} to XSIAM, attempt {attempt_num}/{num_of_attempts}")
@@ -4145,17 +4204,32 @@ async def xsiam_api_call_async(
                         status_code = e.status
                         if e.status == 429:
                             await asyncio.sleep(1)
-                            attempt_num += 1
+                        attempt_num += 1
                         continue
                     else:
-                        header_msg = f"Error sending {data_type} to XSIAM: {e.message}"
-                        log_falcon_assets(header_msg, "error")
-                        demisto.updateModuleHealth(header_msg + e.message, is_error=True)
+                        # Clear any status carried over from an earlier attempt, so a 429 followed
+                        # by a 502 is not reported - or slept on - as though it were still a 429.
+                        status_code = None
+                        # Only logged here: a retry may still succeed, and reporting every attempt
+                        # to the health module turns a recovered blip into a red instance.
+                        last_error = e
+                        log_falcon_assets(f"Error sending {data_type} to XSIAM: {e.message}", "error")
+                        if attempt_num < num_of_attempts:
+                            await asyncio.sleep(XSIAM_SEND_RETRY_BACKOFF_SECONDS)
 
         log_falcon_assets(f"received status code: {status_code}")
-        if status_code == 429:
-            await asyncio.sleep(1)
         attempt_num += 1
+
+    if status_code != 200:
+        # Raising is necessary to keep "counted" tied to "confirmed stored". Failing gracefully
+        # here would let the caller count an unstored batch, and the snapshot would never seal.
+        error_detail = f"HTTP {last_error.status} {last_error.message}" if last_error else f"status_code={status_code}"
+        error_msg = (
+            f"Failed sending {data_type} to XSIAM after {num_of_attempts} attempt(s) ({error_detail}). "
+            f"The batch was NOT stored and must not be counted."
+        )
+        demisto.updateModuleHealth(error_msg, is_error=True)
+        raise DemistoException(error_msg)
     return response
 
 
@@ -4247,16 +4321,41 @@ def send_data_to_xsiam_async(
     else:
         data_chunks = list(split_data_to_chunks(data_str, chunk_size))
 
-    async def send_events_async(data_chunk) -> int:
-        chunk_size_val = len(data_chunk)
-        data_chunk = "\n".join(data_chunk)
-        zipped_data = gzip.compress(data_chunk.encode("utf-8"))
+    # Free the intermediate JSON string — chunks now hold the only references
+    del data_str
+
+    # Compress chunks synchronously to free raw string data before creating async tasks.
+    # This reduces memory fragmentation by allowing Python to reuse arenas for the next batch.
+    compressed_chunks: list[tuple[bytes, int]] = []
+    total_raw_bytes = 0
+    total_compressed_bytes = 0
+    for chunk in data_chunks:
+        chunk_size_val = len(chunk) if isinstance(chunk, list) else 1
+        chunk_str = "\n".join(chunk) if isinstance(chunk, list) else chunk
+        raw_bytes = chunk_str.encode("utf-8")
+        total_raw_bytes += len(raw_bytes)
+        zipped_data = gzip.compress(raw_bytes)
+        total_compressed_bytes += len(zipped_data)
+        del raw_bytes  # Free the encoded string immediately
+        compressed_chunks.append((zipped_data, chunk_size_val))
+
+    # Free the uncompressed chunks — only compressed bytes remain
+    del data_chunks
+
+    if total_raw_bytes > 0:
+        ratio = total_compressed_bytes / total_raw_bytes * 100
+        log_falcon_assets(
+            f"Compressed {len(compressed_chunks)} chunks: "
+            f"{total_raw_bytes / 1024:.1f} KB → {total_compressed_bytes / 1024:.1f} KB ({ratio:.1f}%)"
+        )
+
+    async def send_compressed_async(zipped_data: bytes, chunk_size_val: int) -> int:
         await xsiam_api_call_async(
             xsiam_url=xsiam_url, zipped_data=zipped_data, headers=headers, num_of_attempts=num_of_attempts, data_type=data_type
         )
         return chunk_size_val
 
-    tasks = [asyncio.create_task(send_events_async(chunk)) for chunk in data_chunks]
+    tasks = [asyncio.create_task(send_compressed_async(zipped, size)) for zipped, size in compressed_chunks]
     return tasks
 
 
@@ -4272,7 +4371,8 @@ async def send_batch_to_xsiam_and_save_context(
     state: ContentClientState,
     save_state_callback: Callable[[ContentClientContextStore, ContentClientState], None],
     data_type: str = "assets",
-) -> int:
+    count_stored: bool = False,
+) -> tuple[int, int]:
     """
     Send batch to XSIAM asynchronously, then save context ONLY if send succeeds AND this is the latest batch.
 
@@ -4294,14 +4394,22 @@ async def send_batch_to_xsiam_and_save_context(
                             (ContentClientContextStore, dict, ContentClientState) -> None
                             Example: save_spotlight_state, save_cnapp_state, etc.
         data_type: Type of data being sent for XSIAM collector-type header. Defaults to "assets"
+        count_stored: How a partially stored batch is handled. Set True only if you consume the
+            returned count; the default False is the strict setting, where any failing chunk
+            raises so a caller can never count records that were not stored.
+            False: chunks awaited with ``asyncio.gather``, raising on the first failure.
+            True: chunks awaited with ``return_exceptions=True``, counting only what stored.
 
     Returns:
-        int: batch_number if context was saved, else last_saved_batch_number
+        Tuple of (batch_number_for_context_save, records_stored). ``records_stored`` equals
+        ``len(data)`` on full success, and is lower when ``count_stored`` is set and some chunks
+        failed - 0 if every chunk failed.
     """
     log_falcon_assets(f"[Batch {batch_number}] Sending {len(data)} {data_type} to XSIAM")
+    total_records = len(data)
 
     try:
-        # 1. Send to XSIAM (returns list of async tasks)
+        # 1. Send to XSIAM (compresses data synchronously, returns async tasks for HTTP only)
         tasks = send_data_to_xsiam_async(
             data=data,
             vendor=vendor,
@@ -4314,21 +4422,39 @@ async def send_batch_to_xsiam_and_save_context(
             snapshot_id=snapshot_id,
             items_count=items_count,
         )
+        # Release raw data — compression already done synchronously, async tasks hold only compressed bytes
+        del data
 
         # 2. Wait for all chunks to complete
-        await asyncio.gather(*tasks)
+        if not count_stored:
+            await asyncio.gather(*tasks)
+            records_stored = total_records
+        else:
+            chunk_results = await asyncio.gather(*tasks, return_exceptions=True)
+            chunk_errors = [r for r in chunk_results if isinstance(r, BaseException)]
+            records_stored = sum(r for r in chunk_results if isinstance(r, int))
+            if chunk_errors:
+                log_falcon_assets(
+                    f"[Batch {batch_number}] for {product=} Partially sent to XSIAM: "
+                    f"{len(chunk_errors)}/{len(chunk_results)} chunk(s) failed. "
+                    f"{records_stored}/{total_records} records stored and counted. First error: {chunk_errors[0]}",
+                    "error",
+                )
+                # Do not advance the saved batch number: the batch is not fully stored.
+                return last_saved_batch_number, records_stored
+
         log_falcon_assets(f"[Batch {batch_number}] for {product=} Successfully sent to XSIAM")
 
         # 3. Save context ONLY if this is the latest batch using the provided callback
         if batch_number > last_saved_batch_number:
             save_state_callback(context_store, state)
             log_falcon_assets(f"[Batch {batch_number}] Context saved")
-            return batch_number
+            return batch_number, records_stored
         else:
             log_falcon_assets(
                 f"[Batch {batch_number}] for {product=} Skipped save (batch {last_saved_batch_number} already saved)"
             )
-            return last_saved_batch_number
+            return last_saved_batch_number, records_stored
 
     except Exception as e:
         log_falcon_assets(f"[Batch {batch_number}] Failed: {str(e)}", "error")
@@ -4346,6 +4472,7 @@ def create_task_send_batch_to_xsiam_and_save_context(
     state,
     save_state_callback,
     data_type,
+    count_stored=False,
 ):
     """
     Create an async task to send vulnerability batch to XSIAM and save context.
@@ -4364,10 +4491,10 @@ def create_task_send_batch_to_xsiam_and_save_context(
                             (ContentClientContextStore, dict, ContentClientState) -> None
                             Example: save_spotlight_state, save_cnapp_state, etc.
         data_type: Type of data being sent for XSIAM collector-type header. Defaults to "assets"
+        count_stored: When True, the task resolves with the number of records XSIAM stored
     Returns:
-        asyncio.Task: The created async task
+        asyncio.Task: The created async task, resolving to (batch_number, records_stored)
     """
-    # items_count = items_count if batch
     task = asyncio.create_task(
         send_batch_to_xsiam_and_save_context(
             data=data,
@@ -4381,6 +4508,7 @@ def create_task_send_batch_to_xsiam_and_save_context(
             state=state,
             save_state_callback=save_state_callback,
             data_type=data_type,
+            count_stored=count_stored,
         )
     )
     return task
@@ -4404,24 +4532,70 @@ def create_spotlight_client(context_store: ContentClientContextStore) -> Content
         auth_handler=OAuth2ClientCredentialsHandler(
             token_url=f"{SERVER}/oauth2/token", client_id=CLIENT_ID, client_secret=SECRET, context_store=context_store
         ),
-        # Enable diagnostics
-        diagnostic_mode=True,
+        # diagnostic_mode retains a history of every request/response (full parsed response bodies),
+        # which on large tenants grows memory linearly with the number of vulnerabilities and leads
+        # to an out-of-memory failure. Keep it disabled so memory stays bounded.
+        diagnostic_mode=False,
         client_name="FalconSpotlightAssetCollector",
     )
 
 
+def extract_device_id_from_aid(aid: str | None, cid: str | None) -> str | None:
+    """
+    Return the bare device ID from a Spotlight AID, stripping a composite CID prefix.
+
+    On multi-CID tenants (Flight Control / MSSP), Spotlight returns the AID as
+    <cid><separator><device_id>. The Devices API accepts only the bare device ID, so the
+    composite form fails the whole batch with "400 invalid device id". The separator varies
+    ("-" for sensor AIDs, "_" for non-sensor assets whose body also contains "_"), so the CID
+    length is used rather than splitting on the separator.
+
+    Args:
+        aid: The AID from a Spotlight vulnerability record.
+        cid: The CID from the same record.
+
+    Returns:
+        The bare device ID, or the AID unchanged when it carries no CID prefix.
+    """
+    if not aid or not cid:
+        return aid
+
+    # Require a separator plus at least one character, otherwise nothing would be left to send.
+    if not aid.startswith(cid) or len(aid) <= len(cid) + 1:
+        return aid
+
+    return aid[len(cid) + 1 :]
+
+
+def device_ids_from_vulns(vulnerabilities: list) -> set[str]:
+    """
+    Return the set of bare device IDs for a batch, stripping composite CID prefixes.
+
+    Each record carries its own CID, so extraction has to happen while the record is still in
+    scope - the CID is not available downstream.
+
+    Args:
+        vulnerabilities: List of vulnerability objects.
+
+    Returns:
+        The unique device IDs of the batch, excluding records with no usable AID.
+    """
+    return {device_id for vuln in vulnerabilities if (device_id := extract_device_id_from_aid(vuln.get("aid"), vuln.get("cid")))}
+
+
 def extract_unique_aids(vulnerabilities: list, existing_unique_aids: set) -> None:
     """
-    Extract unique AIDs (Host IDs) from vulnerabilities and merge with existing set.
+    Extract unique device IDs (Host IDs) from vulnerabilities and merge with existing set.
     Equivalent to JavaScript: const u_aid = [...new Set(aids)]
     Update the set of unique AIDs in place.
+    Composite AIDs are reduced here, while the record's CID is still in scope.
 
     Args:
         vulnerabilities: List of vulnerability objects
         existing_unique_aids: Existing set of unique AIDs
     """
     # Extract AIDs from this batch
-    batch_aids = {vuln.get("aid") for vuln in vulnerabilities if vuln.get("aid")}
+    batch_aids = device_ids_from_vulns(vulnerabilities)
 
     # Merge with existing
     existing_unique_aids.update(batch_aids)
@@ -4431,7 +4605,7 @@ def extract_unique_aids(vulnerabilities: list, existing_unique_aids: set) -> Non
 
 def load_spotlight_state(
     context_store: ContentClientContextStore,
-) -> tuple[ContentClientState, str, int, set, set, list[str]]:
+) -> tuple[ContentClientState, str, int, int, int, list[str], list[dict]]:
     """
     Load Spotlight state from integration context.
 
@@ -4439,7 +4613,9 @@ def load_spotlight_state(
         context_store: Context store for reading integration context
 
     Returns:
-        Tuple of (state_object, snapshot_id, total_fetched, unique_aids, processed_aids, completed_severities)
+        Tuple of (state_object, snapshot_id, total_fetched, unique_aids_count, processed_aids_count,
+        completed_severities, withheld_records). ``total_fetched`` is the running record total of the
+        severities completed in previous cycles of the current snapshot.
     """
     # Read entire integration context (preserves all existing keys)
     integration_context = context_store.read()
@@ -4452,18 +4628,33 @@ def load_spotlight_state(
     # Extract state variables
     snapshot_id = spotlight_state.metadata.get("snapshot_id") or str(round(time.time() * 1000))
     total_fetched = spotlight_state.metadata.get("total_fetched_until_now", 0)
-    unique_aids = set(spotlight_state.metadata.get("unique_aids", []))
-    processed_aids = set(spotlight_state.metadata.get("processed_aids", []))
+    # AIDs are no longer stored in context (only counts) to reduce memory/serialization overhead.
+    # Backward compat: read old "unique_aids"/"processed_aids" lists if present, otherwise use counts.
+    unique_aids_count = spotlight_state.metadata.get("unique_aids_count", len(spotlight_state.metadata.get("unique_aids", [])))
+    processed_aids_count = spotlight_state.metadata.get(
+        "processed_aids_count", len(spotlight_state.metadata.get("processed_aids", []))
+    )
     completed_severities = spotlight_state.metadata.get("completed_severities", [])
+    # Records withheld for the seal in previous cycles, persisted across resume cycles.
+    withheld_records = spotlight_state.metadata.get("withheld_records", [])
 
     log_falcon_assets(
         f"Loaded Spotlight state: {snapshot_id=}, {total_fetched=}, "
-        f"unique_aids_count={len(unique_aids)}, processed_aids_count={len(processed_aids)}, "
+        f"{unique_aids_count=}, {processed_aids_count=}, "
         f"completed_severities={completed_severities}, "
+        f"withheld_records_count={len(withheld_records)}, "
         f"after_token={spotlight_state.cursor}"
     )
 
-    return spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids, completed_severities
+    return (
+        spotlight_state,
+        snapshot_id,
+        total_fetched,
+        unique_aids_count,
+        processed_aids_count,
+        completed_severities,
+        withheld_records,
+    )
 
 
 def update_spotlight_state_and_metadata(
@@ -4474,6 +4665,7 @@ def update_spotlight_state_and_metadata(
     unique_aids: set,
     processed_aids: set,
     completed_severities: list[str] | None = None,
+    withheld_records: list[dict] | None = None,
 ) -> None:
     """
     Update Spotlight state with cursor and metadata.
@@ -4487,6 +4679,8 @@ def update_spotlight_state_and_metadata(
         unique_aids: Set of unique AIDs
         processed_aids: Set of processed AIDs
         completed_severities: List of severities that have completed successfully (optional)
+        withheld_records: Records withheld for the final sealing batch, persisted across
+            resume cycles. At most one record per severity (optional)
     """
     spotlight_state.cursor = cursor
 
@@ -4496,17 +4690,24 @@ def update_spotlight_state_and_metadata(
     elif completed_severities is None:
         completed_severities = []
 
+    # Preserve existing withheld_records if not explicitly provided
+    if withheld_records is None and isinstance(spotlight_state.metadata, dict):
+        withheld_records = spotlight_state.metadata.get("withheld_records", [])
+    elif withheld_records is None:
+        withheld_records = []
+
     spotlight_state.metadata = {
         "snapshot_id": snapshot_id,
         "total_fetched_until_now": total_fetched,
-        "unique_aids": list(unique_aids),
-        "processed_aids": list(processed_aids),
+        "unique_aids_count": len(unique_aids),
+        "processed_aids_count": len(processed_aids),
         "completed_severities": completed_severities,
+        "withheld_records": withheld_records,
     }
 
 
 async def fetch_spotlight_vulnerabilities_page(
-    client: ContentClient, after_token: str | None, filter_query: str
+    client: ContentClient, after_token: str | None, filter_query: str, limit: int = MAX_FETCH_SPOTLIGHT_ASSETS
 ) -> tuple[list, dict]:
     """
     Fetch a single page of Spotlight vulnerabilities with custom filter.
@@ -4515,20 +4716,20 @@ async def fetch_spotlight_vulnerabilities_page(
         client: ContentClient instance
         after_token: Pagination token (None for first request)
         filter_query: FQL filter query (e.g., "status:['open','reopen']" or "status:['open','reopen']+cve.severity:['CRITICAL']")
+        limit: Page size to request. Defaults to MAX_FETCH_SPOTLIGHT_ASSETS. Callers may shrink this
+            to recover from oversized-page JSON truncation (see fetch_vulnerabilities_by_severity).
 
     Returns:
         Tuple of (vulnerabilities_list, response_data)
     """
     # Build request parameters
-    params = {"limit": MAX_FETCH_SPOTLIGHT_ASSETS, "filter": filter_query, "facet": ["host_info", "cve"]}
+    params = {"limit": limit, "filter": filter_query, "facet": ["host_info", "cve"]}
 
     # Add pagination token if provided
     if after_token:
         params["after"] = after_token
 
-    log_falcon_assets(
-        f"Fetching Spotlight page with limit={MAX_FETCH_SPOTLIGHT_ASSETS}, after_token={'present' if after_token else 'none'}"
-    )
+    log_falcon_assets(f"Fetching Spotlight page with limit={limit}, after_token={'present' if after_token else 'none'}")
 
     # Make ASYNC API request
     response = await client._request(method="GET", url_suffix="/spotlight/combined/vulnerabilities/v1", params=params)
@@ -4566,6 +4767,85 @@ async def wait_for_background_tasks(pending_tasks: set[asyncio.Task], task_descr
     log_falcon_assets(f"All {task_description} tasks completed successfully", "info")
 
 
+async def fetch_spotlight_page_with_shrink(
+    client: ContentClient, after_token: str | None, filter_query: str, severity: str
+) -> tuple[list, dict]:
+    """Fetch a single Spotlight page, retrying transient failures on the same page.
+
+    Retries the SAME ``after_token`` down the ``SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER``
+    (5000 -> 2500 -> 1000 -> 500), pausing for an escalating
+    ``SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS`` delay before each retry. Handles oversized-page
+    truncation (``json.JSONDecodeError``) and upstream faults whose status is in
+    ``SPOTLIGHT_TRANSIENT_HTTP_STATUS_CODES``.
+    Other errors, such as an expired cursor, propagate immediately since shrinking cannot help.
+
+    Args:
+        client: ContentClient instance for API calls.
+        after_token: Pagination token for the page being fetched (None for the first page).
+        filter_query: FQL filter query for the request.
+        severity: Severity label, used only for logging.
+
+    Returns:
+        Tuple of (vulnerabilities_list, response_data) for the successfully fetched page.
+
+    Raises:
+        json.JSONDecodeError: If every page size in the ladder is still truncated.
+        ContentClientError: If a transient upstream fault persists across the whole ladder, or
+            immediately for any non-transient error that shrinking cannot resolve.
+    """
+    last_error: Exception | None = None
+    last_step_index = len(SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER) - 1
+
+    for step_index, attempt_limit in enumerate(SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER):
+        try:
+            page = await fetch_spotlight_vulnerabilities_page(
+                client=client, after_token=after_token, filter_query=filter_query, limit=attempt_limit
+            )
+            if step_index:
+                # Only reachable when an earlier step failed, so this is a genuine recovery.
+                log_falcon_assets(
+                    f"[{severity}] Page recovered at limit={attempt_limit} after {step_index} failed attempt(s).",
+                    "info",
+                )
+            return page
+        except (json.JSONDecodeError, ContentClientError) as e:
+            if isinstance(e, json.JSONDecodeError):
+                reason = "oversized-page JSON truncation"
+            else:
+                # ContentClientApiModule raises a bare ContentClientError once it has burned its own
+                # retry budget on a retryable status, so matching ContentClientRetryError alone
+                # would never fire for an HTTP 500.
+                status_code = getattr(e.response, "status_code", None)
+                if status_code not in SPOTLIGHT_TRANSIENT_HTTP_STATUS_CODES and not isinstance(e, ContentClientRetryError):
+                    # Expired cursor, auth failure, bad request: shrinking cannot help.
+                    raise
+                reason = f"transient upstream HTTP {status_code}" if status_code else "exhausted upstream retries"
+            last_error = e
+            if step_index == last_step_index:
+                break
+
+            backoff_seconds = SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS[step_index]
+            log_falcon_assets(
+                f"[{severity}] Transient page failure ({reason}) at limit={attempt_limit} "
+                f"(same after token). Backing off {backoff_seconds}s, then retrying the same page "
+                f"at limit={SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER[step_index + 1]}. Error: {e}",
+                "warning",
+            )
+            await asyncio.sleep(backoff_seconds)
+
+    # Exhausted the shrink ladder — the page is still failing at the smallest size.
+    log_falcon_assets(
+        f"[{severity}] Failed to fetch Spotlight page after exhausting the shrink ladder down to "
+        f"limit={SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER[-1]}. Last error: {last_error}",
+        "error",
+    )
+    # The ladder is non-empty and every iteration either returns, re-raises, or records last_error
+    # before breaking, so the fallback below is defensive only.
+    if last_error:
+        raise last_error
+    raise ContentClientError("fetch_spotlight_page_with_shrink exhausted the ladder without recording an error")
+
+
 async def fetch_vulnerabilities_by_severity(
     client: ContentClient,
     severity: str,
@@ -4573,11 +4853,11 @@ async def fetch_vulnerabilities_by_severity(
     spotlight_state: ContentClientState,
     snapshot_id: str,
     asset_handler: AssetsDeviceHandler,
-) -> tuple[int, set, set[asyncio.Task]]:
+    lost_records_by_severity: dict[str, int] | None = None,
+) -> tuple[int, set, set[asyncio.Task], list[dict]]:
     """Fetch all vulnerabilities for a single severity level with pagination.
 
-    This function handles continuous pagination for one severity, avoiding cursor
-    expiration by fetching all pages sequentially without delays.
+    Pages are fetched sequentially without delays, to avoid cursor expiration.
 
     Args:
         client: ContentClient instance for API calls
@@ -4586,9 +4866,13 @@ async def fetch_vulnerabilities_by_severity(
         spotlight_state: Current Spotlight state object
         snapshot_id: Snapshot ID for asset collection tracking
         asset_handler: AssetsDeviceHandler for AID enrichment
+        lost_records_by_severity: Optional accumulator collecting how many records each severity
+            failed to store, so the seal can report a snapshot-level total. One integer per
+            severity, written only when the severity completes; a severity that raises blocks the
+            seal anyway, so there is no seal line for it to appear on.
 
     Returns:
-        Tuple of (total_vulnerabilities_fetched, unique_aids, pending_tasks)
+        Tuple of (total_vulnerabilities_fetched, unique_aids, pending_tasks, withheld_records)
     """
     log_falcon_assets(f"[{severity}] Starting vulnerability fetch for severity: {severity}", "info")
 
@@ -4598,33 +4882,113 @@ async def fetch_vulnerabilities_by_severity(
     after_token: str | None = None
     batch_counter = 0
     last_saved_batch_number = 0
+    # The first fetched record is withheld from the data batches to be sent in the seal.
+    withheld_records: list[dict] = []
+    # Each send task reports how many records XSIAM actually stored, and only that number is added
+    # to total_fetched, so declared == stored even for a partially stored batch. A send failure is
+    # non-fatal: fetching continues and unstored records are skipped. Counters drive the log below.
+    lost_send_batches = 0
+    lost_send_records = 0
+    first_send_error: BaseException | None = None
+    # Records attempted per in-flight task, used only to report how many were lost on rejection;
+    # counting uses the task's records_stored. Bounded by MAX_PENDING_TASKS_PER_SEVERITY.
+    batch_items_sent: dict[asyncio.Task, int] = {}
+
+    def reap_completed_send_tasks(completed_tasks) -> None:
+        """Add each task's actually-stored record count, and report any records that were lost."""
+        nonlocal last_saved_batch_number, total_fetched
+        nonlocal lost_send_batches, lost_send_records, first_send_error
+        for completed_task in completed_tasks:
+            items_attempted = batch_items_sent.pop(completed_task, 0)
+            try:
+                saved_batch_number, records_stored = completed_task.result()
+                if isinstance(saved_batch_number, int) and saved_batch_number > last_saved_batch_number:
+                    last_saved_batch_number = saved_batch_number
+                # Clamp to what was attempted: send_data_to_xsiam_async reports a chunk size of 1
+                # for the empty "seal" chunk, which would otherwise count a phantom record.
+                records_stored = min(records_stored, items_attempted)
+                # Count only records XSIAM confirmed storing.
+                total_fetched += records_stored
+
+                records_lost = items_attempted - records_stored
+                if records_lost > 0:
+                    lost_send_batches += 1
+                    lost_send_records += records_lost
+                    log_falcon_assets(
+                        f"[{severity}] Batch partially stored: {records_stored}/{items_attempted} records counted, "
+                        f"{records_lost} lost (continuing with the next pages).",
+                        "error",
+                    )
+            except (asyncio.CancelledError, Exception) as e:  # noqa: BLE001
+                # Whole batch rejected: nothing is counted, so declared == stored still holds.
+                # CancelledError is listed explicitly: since Python 3.8 it does not derive from
+                # Exception, and a cancelled send task would otherwise kill the whole severity.
+                lost_send_batches += 1
+                lost_send_records += items_attempted
+                first_send_error = first_send_error or e
+                log_falcon_assets(
+                    f"[{severity}] Background vulnerability send task failed; "
+                    f"{items_attempted} records NOT counted and skipped (continuing with the next pages): {e}\n"
+                    f"{traceback.format_exc()}",
+                    "error",
+                )
 
     try:
         while True:
-            # Build filter query with severity
-            filter_query = f"status:['open','reopen']+cve.severity:['{severity}']"
+            # BACKPRESSURE: before fetching next page, wait if too many send tasks are pending.
+            # This prevents unbounded memory growth from fire-and-forget vulnerability batches.
+            while len(pending_tasks) >= MAX_PENDING_TASKS_PER_SEVERITY:
+                log_falcon_assets(
+                    f"[{severity}] Backpressure: {len(pending_tasks)} pending tasks >= limit {MAX_PENDING_TASKS_PER_SEVERITY}, "
+                    f"waiting for at least one to complete (RSS: {_get_process_memory_mb()})"
+                )
+                done, pending_tasks_updated = await asyncio.wait(pending_tasks, return_when=asyncio.FIRST_COMPLETED)
+                pending_tasks = pending_tasks_updated
+                reap_completed_send_tasks(done)
+                log_falcon_assets(
+                    f"[{severity}] Backpressure released: {len(done)} tasks completed, " f"{len(pending_tasks)} still pending"
+                )
+
+            # Build filter query with severity and a lookback window.
+            # Only fetch vulnerabilities updated within the last SPOTLIGHT_LOOKBACK_DAYS days to bound
+            # the dataset size for very large tenants. Uses FQL relative time syntax.
+            filter_query = (
+                f"status:['open','reopen']+cve.severity:['{severity}']" f"+updated_timestamp:>'now-{SPOTLIGHT_LOOKBACK_DAYS}d'"
+            )
 
             log_falcon_assets(
                 f"[{severity}] Fetching batch {batch_counter + 1} with limit={MAX_FETCH_SPOTLIGHT_ASSETS}, "
                 f"after_token={'present' if after_token else 'none'}"
             )
 
-            vulnerabilities, response_data = await fetch_spotlight_vulnerabilities_page(
-                client=client, after_token=after_token, filter_query=filter_query
+            # Retries transient page failures on the same after_token with smaller page sizes,
+            # instead of aborting the severity. The next page reverts to the default limit.
+            vulnerabilities, response_data = await fetch_spotlight_page_with_shrink(
+                client=client, after_token=after_token, filter_query=filter_query, severity=severity
             )
 
             log_falcon_assets(f"[{severity}] Fetched {len(vulnerabilities)} vulnerabilities in batch {batch_counter + 1}")
 
-            # Extract unique AIDs from this batch
+            # Extract unique AIDs from this batch (covers the withheld record too).
             extract_unique_aids(vulnerabilities, unique_aids)
 
             # Send AIDs to asset handler for enrichment (async fire-and-forget)
-            batch_aids = {vuln.get("aid") for vuln in vulnerabilities if vuln.get("aid")}
-            await asset_handler.receive_new_aids(batch_aids)
+            await asset_handler.receive_new_aids(device_ids_from_vulns(vulnerabilities))
 
-            # Update counters
-            total_fetched += len(vulnerabilities)
             batch_counter += 1
+
+            # Withhold this severity's first record for the sealing batch. It is AID-enriched above
+            # and counted once here, since the seal is guaranteed to carry it.
+            records_to_send = vulnerabilities
+            if not withheld_records and vulnerabilities:
+                withheld_records.append(vulnerabilities[0])
+                records_to_send = vulnerabilities[1:]
+                total_fetched += 1
+                log_falcon_assets(
+                    f"[{severity}] Withholding first record for the sealing batch "
+                    f"(id={vulnerabilities[0].get('id')}); sending {len(records_to_send)} records in this batch.",
+                    "info",
+                )
 
             # Get next pagination token
             new_after_token = response_data.get("meta", {}).get("pagination", {}).get("after")
@@ -4636,38 +5000,53 @@ async def fetch_vulnerabilities_by_severity(
             # The final sealing happens in the orchestrator after all severities complete
             items_count = 1
 
-            # Create task to send batch to XSIAM
-            task = create_task_send_batch_to_xsiam_and_save_context(
-                data=vulnerabilities,
-                product=SPOTLIGHT_VULN_PRODUCT,
-                snapshot_id=snapshot_id,
-                items_count=items_count,
-                batch_number=batch_counter,
-                last_saved_batch_number=last_saved_batch_number,
-                context_store=context_store,
-                state=spotlight_state,
-                save_state_callback=save_spotlight_state,
-                data_type="assets",
-            )
+            # Never send an empty batch: send_data_to_xsiam_async turns an empty assets payload into
+            # a "seal" chunk of size 1, inflating the declared total by a nonexistent record.
+            if not records_to_send:
+                log_falcon_assets(
+                    f"[{severity}] Batch {batch_counter} has no records to send "
+                    f"(fetched {len(vulnerabilities)}); skipping the send task."
+                )
+            else:
+                # count_stored=True reports how many records were actually stored, so a partially
+                # stored batch is counted exactly (keeps declared == stored).
+                task = create_task_send_batch_to_xsiam_and_save_context(
+                    data=records_to_send,
+                    product=SPOTLIGHT_VULN_PRODUCT,
+                    snapshot_id=snapshot_id,
+                    items_count=items_count,
+                    batch_number=batch_counter,
+                    last_saved_batch_number=last_saved_batch_number,
+                    context_store=context_store,
+                    state=spotlight_state,
+                    save_state_callback=save_spotlight_state,
+                    data_type="assets",
+                    count_stored=True,
+                )
 
-            # Track task and update last_saved_batch_number when task completes
-            def update_last_saved(future):
-                nonlocal last_saved_batch_number
-                try:
-                    last_saved_batch_number = future.result()
-                except Exception as e:
-                    log_falcon_assets(f"[{severity}] Background vulnerability task failed: {e}", "error")
-                finally:
-                    pending_tasks.discard(future)
+                # Remember the attempted count so reaping can report how many were lost; the counted
+                # amount always comes from the task's records_stored, never from this value.
+                batch_items_sent[task] = len(records_to_send)
+                pending_tasks.add(task)
+                log_falcon_assets(
+                    f"[{severity}] Created send task for batch {batch_counter} "
+                    f"(pending: {len(pending_tasks)}/{MAX_PENDING_TASKS_PER_SEVERITY})"
+                )
 
-            pending_tasks.add(task)
-            task.add_done_callback(update_last_saved)
-            log_falcon_assets(f"[{severity}] Created background task for batch {batch_counter}")
+            # Log memory stats every 10 batches
+            if batch_counter % 10 == 0:
+                log_falcon_assets(
+                    f"[{severity}] Memory checkpoint: batch={batch_counter}, total_fetched={total_fetched}, "
+                    f"unique_aids={len(unique_aids)}, pending_tasks={len(pending_tasks)}, "
+                    f"RSS: {_get_process_memory_mb()}",
+                    "info",
+                )
 
             # Check if more pages exist
             if is_last_batch:
                 log_falcon_assets(
-                    f"[{severity}] Completed fetching vulnerabilities. Total: {total_fetched}, Unique hosts: {len(unique_aids)}",
+                    f"[{severity}] Completed fetching vulnerabilities. Total: {total_fetched}, Unique hosts: {len(unique_aids)}, "
+                    f"pending_tasks: {len(pending_tasks)}, RSS: {_get_process_memory_mb()}",
                     "info",
                 )
                 break
@@ -4675,6 +5054,34 @@ async def fetch_vulnerabilities_by_severity(
             # More pages exist - continue to next batch
             log_falcon_assets(f"[{severity}] More pages available. Fetched so far: {total_fetched}")
             after_token = new_after_token
+
+        # Drain remaining send tasks so counting settles before the total is returned, guaranteeing
+        # total_fetched reflects only records XSIAM actually stored.
+        if pending_tasks:
+            log_falcon_assets(f"[{severity}] Draining {len(pending_tasks)} send tasks before finalizing count", "info")
+            await asyncio.gather(*pending_tasks, return_exceptions=True)
+            reap_completed_send_tasks(pending_tasks)
+            pending_tasks.clear()
+
+        log_falcon_assets(
+            f"[{severity}] Completed: counted={total_fetched} batches={batch_counter} "
+            f"lost_batches={lost_send_batches} lost_records={lost_send_records} unique_hosts={len(unique_aids)}",
+            "info",
+        )
+        if lost_records_by_severity is not None:
+            # One integer per severity, not the records themselves.
+            lost_records_by_severity[severity] = lost_send_records
+
+        if lost_send_batches:
+            # Non-fatal: the severity completes with the records that were stored. The lost records
+            # are absent from this snapshot and are picked up on the next full fetch cycle.
+            log_falcon_assets(
+                f"[{severity}] Completed with partial data: {lost_send_batches} batch(es) lost "
+                f"{lost_send_records} record(s) that XSIAM did not store; they were not counted. "
+                f"Counted {total_fetched} records. The missing records will be picked up on the next "
+                f"full fetch cycle. First error: {first_send_error}",
+                "error",
+            )
 
     except ContentClientError as e:
         # Check if this is an authentication error (HTTP 401)
@@ -4712,7 +5119,7 @@ async def fetch_vulnerabilities_by_severity(
         log_falcon_assets(f"[{severity}] Unexpected error during fetch: {e}", "error")
         raise
 
-    return total_fetched, unique_aids, pending_tasks
+    return total_fetched, unique_aids, pending_tasks, withheld_records
 
 
 async def await_and_aggregate_severity_results(
@@ -4721,7 +5128,8 @@ async def await_and_aggregate_severity_results(
     context_store: ContentClientContextStore,
     spotlight_state: ContentClientState,
     snapshot_id: str,
-) -> tuple[int, set, set[asyncio.Task], list[str]]:
+    prior_withheld_records: list[dict] | None = None,
+) -> tuple[int, set, set[asyncio.Task], list[str], list[dict]]:
     """Wait for all severity tasks and aggregate their results.
 
     Args:
@@ -4730,21 +5138,28 @@ async def await_and_aggregate_severity_results(
         context_store: Context store for state persistence
         spotlight_state: Current Spotlight state object
         snapshot_id: Snapshot ID for asset collection tracking
+        prior_withheld_records: Records withheld by severities completed in previous cycles.
+            New per-severity withheld records are appended so the seal covers all severities.
 
     Returns:
-        Tuple of (total_vulnerabilities, all_unique_aids, all_pending_tasks, updated_completed_severities)
+        Tuple of (total_vulnerabilities, all_unique_aids, all_pending_tasks,
+        updated_completed_severities, withheld_records). ``withheld_records`` holds the
+        records withheld across all completed severities (this cycle + prior cycles).
     """
     total_vulnerabilities = 0
     all_unique_aids: set = set()
     all_pending_tasks: set[asyncio.Task] = set()
+    # Seed with records withheld in previous cycles so the seal isn't missing earlier severities.
+    all_withheld_records: list[dict] = list(prior_withheld_records or [])
 
     for severity, task in severity_tasks:
         try:
             log_falcon_assets(f"Waiting for {severity} severity task to complete...", "info")
-            severity_total, severity_aids, severity_tasks_result = await task
+            severity_total, severity_aids, severity_tasks_result, severity_withheld = await task
             total_vulnerabilities += severity_total
             all_unique_aids.update(severity_aids)
             all_pending_tasks.update(severity_tasks_result)
+            all_withheld_records.extend(severity_withheld)
             log_falcon_assets(
                 f"[{severity}] Completed: {severity_total} vulnerabilities, {len(severity_aids)} unique hosts", "info"
             )
@@ -4754,7 +5169,8 @@ async def await_and_aggregate_severity_results(
                 current_completed_severities.append(severity)
                 log_falcon_assets(f"[{severity}] Marked as completed. Total completed: {current_completed_severities}", "info")
 
-                # Save state with updated completed severities after each severity completes
+                # Persist completed severities and the accumulated withheld records after each
+                # severity completes, so a resumed run does not lose earlier severities' records.
                 update_spotlight_state_and_metadata(
                     spotlight_state=spotlight_state,
                     cursor=None,  # No cursor needed for severity-based fetching
@@ -4763,9 +5179,13 @@ async def await_and_aggregate_severity_results(
                     unique_aids=set(),  # Reset for next cycle
                     processed_aids=set(),  # Reset for next cycle
                     completed_severities=current_completed_severities,
+                    withheld_records=all_withheld_records,
                 )
                 save_spotlight_state(context_store, spotlight_state)
-                log_falcon_assets(f"[{severity}] Saved completion state to context", "info")
+                log_falcon_assets(
+                    f"[{severity}] Saved completion state to context (withheld_records so far: {len(all_withheld_records)})",
+                    "info",
+                )
 
         except Exception as e:
             log_falcon_assets(f"[{severity}] Failed with error: {e}", "error")
@@ -4778,7 +5198,7 @@ async def await_and_aggregate_severity_results(
         "info",
     )
 
-    return total_vulnerabilities, all_unique_aids, all_pending_tasks, current_completed_severities
+    return total_vulnerabilities, all_unique_aids, all_pending_tasks, current_completed_severities, all_withheld_records
 
 
 async def finalize_severity_fetch(
@@ -4790,19 +5210,31 @@ async def finalize_severity_fetch(
     context_store: ContentClientContextStore,
     spotlight_state: ContentClientState,
     snapshot_id: str,
+    withheld_records: list[dict] | None = None,
+    lost_records_by_severity: dict[str, int] | None = None,
 ) -> None:
     """Finalize the severity fetch by waiting for background tasks and sealing snapshot if complete.
 
     Args:
         all_pending_tasks: Set of background tasks to wait for
         current_completed_severities: List of severities completed in this cycle
-        total_vulnerabilities: Total number of vulnerabilities fetched
-        all_unique_aids: Set of all unique asset IDs
+        total_vulnerabilities: Total number of vulnerabilities fetched, cumulative across every
+            cycle of this snapshot (not just the current cycle)
+        all_unique_aids: Set of unique asset IDs seen in the current cycle
         asset_handler: Asset handler for enrichment
         context_store: Context store for state persistence
         spotlight_state: Current Spotlight state object
         snapshot_id: Snapshot ID for asset collection tracking
+        withheld_records: Records withheld during fetching to send as the sealing batch.
+            Each record is sent exactly once (only here), so the count stays exact.
+        lost_records_by_severity: Per-severity counts of records XSIAM did not store. Only used to
+            report a snapshot-level total on the seal line; it does not affect whether the snapshot
+            seals. Severities that raised are absent, so the total is only meaningful when all
+            severities completed.
     """
+    withheld_records = withheld_records or []
+    lost_records_by_severity = lost_records_by_severity or {}
+
     # Wait for all background vulnerability send tasks to complete
     log_falcon_assets(f"Waiting for {len(all_pending_tasks)} background vulnerability send tasks...", "info")
     await wait_for_background_tasks(all_pending_tasks, "vulnerability send")
@@ -4810,25 +5242,60 @@ async def finalize_severity_fetch(
     # Check if ALL severities have completed (including previously completed ones)
     all_severities_completed = set(current_completed_severities) == set(SPOTLIGHT_SEVERITIES)
 
-    if all_severities_completed:
-        log_falcon_assets("All severities completed successfully. Sending final sealing batch.", "info")
+    # Snapshot-level view of how many records XSIAM refused across every severity. The declared
+    # count already excludes them (only stored records are counted), so a non-zero total here means
+    # the snapshot seals but is smaller than what Falcon returned.
+    lost_records_total = sum(lost_records_by_severity.values())
+    lossy_severities = {severity: lost for severity, lost in sorted(lost_records_by_severity.items()) if lost}
 
-        # Send final sealing batch with actual total count ONLY when all severities complete
-        log_falcon_assets(f"Sending final sealing batch with total count: {total_vulnerabilities}", "info")
-        final_task = create_task_send_batch_to_xsiam_and_save_context(
-            data=[],  # Empty batch for sealing
-            product=SPOTLIGHT_VULN_PRODUCT,
-            snapshot_id=snapshot_id,
-            items_count=total_vulnerabilities,  # Final total count
-            batch_number=999999,  # High number to ensure it's processed last
-            last_saved_batch_number=0,
-            context_store=context_store,
-            state=spotlight_state,
-            save_state_callback=save_spotlight_state,
-            data_type="assets",
+    if lost_records_total:
+        # The declared count already excludes these, so the snapshot still seals - but it seals
+        # smaller than what Falcon returned, which is otherwise invisible.
+        log_falcon_assets(
+            f"{lost_records_total} record(s) were not stored by XSIAM and are therefore not counted "
+            f"in the declared total: {lossy_severities}. They are picked up on the next fetch cycle.",
+            "warning",
         )
-        await final_task
-        log_falcon_assets("Final sealing batch sent successfully", "info")
+
+    if all_severities_completed:
+        if not withheld_records:
+            # Grand total is zero: there is no real record to seal with. Emitting an empty
+            # request would not create a BQ row anyway (the original bug), so skip sealing.
+            # This is a legitimately empty snapshot.
+            log_falcon_assets("All severities completed but no records were fetched. Skipping seal (empty snapshot).", "info")
+        else:
+            # Send the final sealing batch with the withheld records and the actual total count.
+            log_falcon_assets(
+                f"All severities completed successfully. Sending final sealing batch for "
+                f"snapshot_id={snapshot_id} with {len(withheld_records)} withheld record(s) and "
+                f"total-items-count={total_vulnerabilities}",
+                "info",
+            )
+            # count_stored is deliberately left False (all-or-nothing) for the seal, unlike the bulk
+            # batches. count_stored=True tolerates a partial send and returns normally; because this
+            # call discards its result, that would let a failed seal fall through to the success path,
+            # which resets snapshot_id and completed_severities. The snapshot would then be left
+            # declaring more than was stored, with the state needed to retry already destroyed.
+            # Raising instead propagates to fetch_spotlight_assets(), which skips the reset, so the
+            # next cycle retries the seal with every severity still marked complete.
+            final_task = create_task_send_batch_to_xsiam_and_save_context(
+                data=withheld_records,  # Real data rows so the count lands in BigQuery
+                product=SPOTLIGHT_VULN_PRODUCT,
+                snapshot_id=snapshot_id,
+                items_count=total_vulnerabilities,  # Final total count
+                batch_number=999999,  # High number to ensure it's processed last
+                last_saved_batch_number=0,
+                context_store=context_store,
+                state=spotlight_state,
+                save_state_callback=save_spotlight_state,
+                data_type="assets",
+            )
+            await final_task
+            log_falcon_assets(
+                f"Final sealing batch sent successfully for snapshot_id={snapshot_id} "
+                f"(total-items-count={total_vulnerabilities})",
+                "info",
+            )
 
         # Flush remaining AIDs and wait for all asset enrichment tasks
         total_assets_count = len(all_unique_aids)
@@ -4864,6 +5331,7 @@ async def fetch_spotlight_by_severity_parallel(
     spotlight_state: ContentClientState,
     snapshot_id: str,
     completed_severities: list[str],
+    prior_withheld_records: list[dict] | None = None,
 ) -> tuple[int, set]:
     """Orchestrate parallel vulnerability fetching across all severity levels.
 
@@ -4877,6 +5345,8 @@ async def fetch_spotlight_by_severity_parallel(
         spotlight_state: Current Spotlight state object
         snapshot_id: Snapshot ID for asset collection tracking
         completed_severities: List of severities already completed in previous cycles
+        prior_withheld_records: Records withheld for the seal by severities completed in
+            previous cycles, carried forward so the seal includes them.
 
     Returns:
         Tuple of (total_vulnerabilities, unique_aids)
@@ -4888,14 +5358,12 @@ async def fetch_spotlight_by_severity_parallel(
     # Filter out already completed severities
     severities_to_fetch = [s for s in SPOTLIGHT_SEVERITIES if s not in completed_severities]
 
-    if not severities_to_fetch:
-        log_falcon_assets("All severities already completed. Nothing to fetch.", "info")
-        return 0, set()
-
-    log_falcon_assets(f"Severities to fetch in this cycle: {severities_to_fetch}", "info")
-
     # Track completed severities in this cycle (start with previously completed)
     current_completed_severities = completed_severities.copy()
+
+    # Collected by each severity fetcher so the seal can report a snapshot-level lost total.
+    # One integer per severity (never the records), so this is bounded at 6 entries.
+    lost_records_by_severity: dict[str, int] = {}
 
     # Create asset handler for enrichment
     asset_handler = AssetsDeviceHandler(
@@ -4918,6 +5386,7 @@ async def fetch_spotlight_by_severity_parallel(
                 spotlight_state=spotlight_state,
                 snapshot_id=snapshot_id,
                 asset_handler=asset_handler,
+                lost_records_by_severity=lost_records_by_severity,
             )
         )
         severity_tasks.append((severity, task))
@@ -4930,15 +5399,16 @@ async def fetch_spotlight_by_severity_parallel(
         all_unique_aids,
         all_pending_tasks,
         current_completed_severities,
+        withheld_records,
     ) = await await_and_aggregate_severity_results(
         severity_tasks=severity_tasks,
         current_completed_severities=current_completed_severities,
         context_store=context_store,
         spotlight_state=spotlight_state,
         snapshot_id=snapshot_id,
+        prior_withheld_records=prior_withheld_records,
     )
 
-    # Finalize: wait for background tasks, seal snapshot if all complete, flush assets
     await finalize_severity_fetch(
         all_pending_tasks=all_pending_tasks,
         current_completed_severities=current_completed_severities,
@@ -4948,6 +5418,8 @@ async def fetch_spotlight_by_severity_parallel(
         context_store=context_store,
         spotlight_state=spotlight_state,
         snapshot_id=snapshot_id,
+        withheld_records=withheld_records,
+        lost_records_by_severity=lost_records_by_severity,
     )
 
     return total_vulnerabilities, all_unique_aids
@@ -4969,13 +5441,24 @@ async def fetch_spotlight_assets():
     Total time = max(all queries) = ~2.3 hours. No cursor expiration, no duplication.
     """
     log_falcon_assets("Starting Spotlight assets fetch execution (severity-based parallel approach).", "info")
+    fetch_start_time = time.monotonic()
 
     context_store = ContentClientContextStore(namespace="SpotlightAssets")
-    spotlight_state, snapshot_id, _total_fetched, _unique_aids, _processed_aids, completed_severities = load_spotlight_state(
-        context_store
+    (
+        spotlight_state,
+        snapshot_id,
+        _total_fetched,
+        _unique_aids_count,
+        _processed_aids,
+        completed_severities,
+        prior_withheld_records,
+    ) = load_spotlight_state(context_store)
+    # Note: cursor is not used for severity-based fetching - each severity starts fresh
+    log_falcon_assets(
+        f"Starting run for snapshot_id={snapshot_id}, resuming with completed severities "
+        f"{completed_severities} and {len(prior_withheld_records or [])} withheld record(s).",
+        "info",
     )
-    # Note: total_fetched, unique_aids, processed_aids not used in severity-based approach
-    # Each severity starts fresh. Only completed_severities used to skip already-completed severities.
 
     client = create_spotlight_client(context_store)
 
@@ -4987,9 +5470,11 @@ async def fetch_spotlight_assets():
             spotlight_state=spotlight_state,
             snapshot_id=snapshot_id,
             completed_severities=completed_severities,
+            prior_withheld_records=prior_withheld_records,
         )
 
-        # Reset state after successful fetch (completed_severities already cleared in parallel function if all done)
+        # Reset state after successful fetch (completed_severities already cleared in parallel function if all done).
+        # Also clear the persisted withheld_records so they do not leak into the next snapshot.
         log_falcon_assets("Resetting Spotlight state after successful complete fetch")
         update_spotlight_state_and_metadata(
             spotlight_state=spotlight_state,
@@ -4999,14 +5484,21 @@ async def fetch_spotlight_assets():
             unique_aids=set(),
             processed_aids=set(),
             completed_severities=[],  # Ensure it's cleared
+            withheld_records=[],  # Clear persisted seal records for the next snapshot
         )
         save_spotlight_state(context_store, spotlight_state)
 
+        fetch_elapsed = time.monotonic() - fetch_start_time
+        fetch_minutes = fetch_elapsed / 60
         log_falcon_assets(
-            f"Finished Spotlight assets fetch. Total vulnerabilities: {total_vulnerabilities}, "
-            f"Total unique hosts: {len(all_unique_aids)}",
+            f"Finished Spotlight assets fetch in {fetch_minutes:.1f} minutes ({fetch_elapsed:.0f}s). "
+            f"Total vulnerabilities: {total_vulnerabilities}, "
+            f"Total unique hosts: {len(all_unique_aids)}, "
+            f"RSS: {_get_process_memory_mb()}",
             "info",
         )
+
+        demisto.updateModuleHealth({"assetsPulled": total_vulnerabilities})
 
     except (ContentClientError, Exception) as e:
         log_falcon_assets(f"Error during Spotlight fetch: {e}", "error")
@@ -5060,6 +5552,98 @@ def fetch_assets_command():
         asyncio.run(fetch_spotlight_assets())
 
 
+def long_running_spotlight_execution():
+    """Continuously run the Spotlight vulnerabilities fetch in a long-running container.
+
+    Opt-in alternative to the scheduled ``fetch-assets`` command, for tenants where a full fetch
+    exceeds the assets fetch interval and is therefore repeatedly interrupted before sealing.
+    Wraps ``fetch_spotlight_assets()`` as-is; only Spotlight is fetched here, while CNAPP Alerts
+    stay on the regular assets fetch.
+
+    Cycles are strictly sequential and start every LONG_RUNNING_ASSETS_INTERVAL_MINUTES
+    (24 hours, not configurable). A cycle that overruns the period simply starts the next one
+    immediately, so cycles never overlap.
+
+    A cycle that *fails* does not wait out the remaining interval: it retries after
+    LONG_RUNNING_FAILURE_RETRY_MINUTES, doubling per consecutive failure up to
+    LONG_RUNNING_FAILURE_RETRY_MAX_MINUTES, so a fault that clears in minutes does not cost a full
+    day of collection. The retry delay never exceeds what the normal schedule would have waited.
+    """
+    log_falcon_assets(
+        f"Starting long-running Spotlight fetch loop (interval: {LONG_RUNNING_ASSETS_INTERVAL_MINUTES} minutes).",
+        "info",
+    )
+
+    cycle_number = 0
+    consecutive_failures = 0
+    while True:
+        cycle_start = time.monotonic()
+        cycle_number += 1
+        log_falcon_assets(f"Long-running Spotlight cycle {cycle_number} starting.", "info")
+        cycle_failed = False
+        try:
+            asyncio.run(fetch_spotlight_assets())
+            consecutive_failures = 0
+            log_falcon_assets(
+                f"Long-running Spotlight cycle {cycle_number} completed successfully in "
+                f"{(time.monotonic() - cycle_start) / 60:.1f} minutes.",
+                "info",
+            )
+        except Exception as e:  # noqa: BLE001 - a single bad cycle must not kill the container
+            cycle_failed = True
+            consecutive_failures += 1
+            error_message = (
+                f"Long-running Spotlight fetch cycle {cycle_number} failed "
+                f"({consecutive_failures} consecutive); the container stays alive for the next "
+                f"cycle. Error: {e}\n{traceback.format_exc()}"
+            )
+            demisto.error(error_message)
+            log_falcon_assets(error_message, "error")
+
+        elapsed = time.monotonic() - cycle_start
+        # Interval is a period between cycle starts, not a gap between cycles: a 3-hour fetch on a
+        # 24-hour interval still starts every 24 hours instead of every 27.
+        sleep_seconds = max(0.0, LONG_RUNNING_ASSETS_INTERVAL_MINUTES * 60 - elapsed)
+
+        if cycle_failed:
+            # A failed cycle can end in seconds (bad credentials, tripped circuit breaker), and
+            # waiting out the remaining interval would idle the instance for ~24h over a fault that
+            # may clear in minutes. Back off exponentially so a persistent fault is not hammered,
+            # and never wait longer than the normal schedule would have.
+            backoff_minutes = min(
+                LONG_RUNNING_FAILURE_RETRY_MINUTES * (2 ** (consecutive_failures - 1)),
+                LONG_RUNNING_FAILURE_RETRY_MAX_MINUTES,
+            )
+            sleep_seconds = min(sleep_seconds, backoff_minutes * 60)
+            log_falcon_assets(
+                f"Long-running Spotlight cycle failed after {elapsed / 60:.1f} minutes "
+                f"({consecutive_failures} consecutive); retrying in {sleep_seconds / 60:.1f} minutes "
+                f"instead of waiting out the {LONG_RUNNING_ASSETS_INTERVAL_MINUTES}-minute interval.",
+                "warning",
+            )
+        elif sleep_seconds:
+            log_falcon_assets(
+                f"Long-running Spotlight cycle finished in {elapsed / 60:.1f} minutes; "
+                f"sleeping {sleep_seconds / 60:.1f} minutes until the next cycle.",
+                "info",
+            )
+        else:
+            # Cycle met or exceeded the period; start the next immediately instead of piling up.
+            log_falcon_assets(
+                f"Long-running Spotlight cycle took {elapsed / 3600:.1f} hours, meeting or exceeding "
+                f"the {LONG_RUNNING_ASSETS_INTERVAL_MINUTES}-minute interval; starting the next cycle immediately.",
+                "info",
+            )
+        # Served in chunks rather than one long sleep: the wait can be ~24h, and a single
+        # time.sleep of that length would leave the container unresponsive to shutdown requests
+        # and health checks until it returned.
+        remaining = sleep_seconds
+        while remaining > 0:
+            chunk = min(remaining, LONG_RUNNING_SLEEP_CHUNK_SECONDS)
+            time.sleep(chunk)
+            remaining -= chunk
+
+
 def fetch_detections_by_product_type(
     current_fetch_info: dict,
     look_back: int,
@@ -5085,21 +5669,39 @@ def fetch_detections_by_product_type(
         tuple[List, dict]: The list of the fetched incidents and the updated last object.
     """
     detections: List = []
-    fetch_limit = MAX_FETCH_DETECTION_PER_API_CALL if is_fetch_events else INCIDENTS_PER_FETCH
+    # The configured per-run limit (10000 for XSIAM, "Max incidents per fetch" for XSOAR).
+    base_fetch_limit = MAX_FETCH_DETECTION_PER_API_CALL if is_fetch_events else INCIDENTS_PER_FETCH
     offset: int = current_fetch_info.get("offset") or 0
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(
         last_run=current_fetch_info, first_fetch=FETCH_TIME, look_back=look_back, date_format=DETECTION_DATE_FORMAT
     )
 
-    fetch_limit = current_fetch_info.get("limit") or fetch_limit
+    fetch_limit = current_fetch_info.get("limit") or base_fetch_limit
 
-    filter = f"product:'{product_type}'+created_timestamp:>'{start_fetch_time}'"
-    if product_type in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value}:
-        filter = filter.replace("product:", "type:")
+    # Build the base product/type filter clauses.
+    # Most product types (e.g. idp, mobile, ngsiem, xdr, automated-lead, thirdparty) map to a single
+    # `product:'<value>'` clause. ON_DEMAND ('ods') and OFP ('ofp') need `type:'<value>'` instead.
+    # IOA needs a compound `product:'fcs'+type:'cloud-ioa'` selector.
+    product_type_to_clauses: dict[str, tuple[str | None, str | None]] = {
+        IncidentType.ON_DEMAND.value: (None, IncidentType.ON_DEMAND.value),
+        IncidentType.OFP.value: (None, IncidentType.OFP.value),
+        IncidentType.IOA_TYPE_TAG.value: ("fcs", IncidentType.IOA_TYPE_TAG.value),
+    }
+    product_clause_value, type_clause_value = product_type_to_clauses.get(product_type, (product_type, None))
+    filter_clauses: list[str] = []
+    if product_clause_value:
+        filter_clauses.append(f"product:'{product_clause_value}'")
+    if type_clause_value:
+        filter_clauses.append(f"type:'{type_clause_value}'")
+    filter_clauses.append(f"created_timestamp:>'{start_fetch_time}'")
+    filter = "+".join(filter_clauses)
 
     if fetch_query:
         filter = f"({filter})+({fetch_query})"
-    response = get_detections_ids(filter_arg=filter, limit=fetch_limit, offset=offset, product_type=product_type)
+    # The API rejects requests where offset + limit exceeds MAX_FETCH_SIZE. With look_back, fetch_limit can grow
+    # past that bound, so cap the value sent to the API while keeping fetch_limit for dedup and last_run bookkeeping.
+    api_limit = min(fetch_limit, MAX_FETCH_SIZE - offset)
+    response = get_detections_ids(filter_arg=filter, limit=api_limit, offset=offset, product_type=product_type)
     detections_ids: list[dict] = demisto.get(response, "resources", [])
     demisto.debug(f"CrowdStrikeFalconMsg: Total fetched detections: {len(detections_ids)}")
     total_detections = demisto.get(response, "meta.pagination.total")
@@ -5130,14 +5732,14 @@ def fetch_detections_by_product_type(
             else detections
         )
         detections = filter_incidents_by_duplicates_and_limit(
-            incidents_res=detections, last_run=current_fetch_info, fetch_limit=INCIDENTS_PER_FETCH, id_field="name"
+            incidents_res=detections, last_run=current_fetch_info, fetch_limit=fetch_limit, id_field="name"
         )
 
     demisto.debug(f"CrowdstrikeFalconMsg: last_run before update: {current_fetch_info}")
     current_fetch_info = update_last_run_object(
         last_run=current_fetch_info,
         incidents=detections,
-        fetch_limit=INCIDENTS_PER_FETCH,
+        fetch_limit=base_fetch_limit,
         start_fetch_time=start_fetch_time,
         end_fetch_time=end_fetch_time,
         look_back=look_back,
@@ -5620,187 +6222,6 @@ def add_seconds_to_date(date: str, seconds_to_add: int, date_format: str) -> str
     """
     added_datetime = safe_strptime(date, date_format) + timedelta(seconds=seconds_to_add)
     return added_datetime.strftime(date_format)
-
-
-def create_ioa_query(is_paginating: bool, last_fetch_query: str, configured_fetch_query: str, last_date_time_since: str) -> str:
-    """Retrieve the IOA query that will be used in the current fetch round.
-
-    Args:
-        is_paginating (bool): Whether we are doing pagination or not.
-        last_fetch_query (str): The last fetch query that was used in the previous round.
-        configured_fetch_query (str): The fetched query configured by the user.
-        last_date_time_since (str): The last date time since.
-
-    Raises:
-        DemistoException: If paginating and last fetch query is an empty string.
-
-    Returns:
-        str: The IOA query that will be used in the current fetch.
-    """
-    fetch_query = configured_fetch_query
-    if is_paginating:
-        # If entered here, that means we are currently doing pagination, and we need to use the
-        # same fetch query as the previous round
-        fetch_query = last_fetch_query
-        if not fetch_query:
-            raise DemistoException("Last fetch query must not be empty when doing pagination")
-        demisto.debug(f"Doing pagination, using the same query as the previous round. Query is {fetch_query}")
-    else:
-        # If entered here, that means we aren't doing pagination, and we need to use the latest
-        # date_time_since time
-        fetch_query = f"{fetch_query}&date_time_since={last_date_time_since}"
-        demisto.debug(f"Not doing pagination. Query is {fetch_query}")
-    return fetch_query
-
-
-def ioa_event_to_incident(ioa_event: dict[str, Any], incident_type: str) -> dict[str, Any]:
-    """Create an incident from an IOA event.
-
-    Args:
-        ioa_event (dict[str, Any]): An IOA event.
-        incident_type (str): The incident type.
-
-    Returns:
-        dict[str, Any]: An incident from an IOA event.
-    """
-    resource = demisto.get(ioa_event, "aggregate.resource", {})
-    id = resource.get("id", [])
-    uuid = resource.get("uuid", [])
-    incident_metadata = assign_params(
-        mirror_direction=MIRROR_DIRECTION,
-        mirror_instance=INTEGRATION_INSTANCE,
-        extracted_account_id=demisto.get(ioa_event, "cloud_account_id.aws_account_id")
-        or demisto.get(ioa_event, "cloud_account_id.azure_account_id"),
-        extracted_uuid=uuid[0] if uuid else None,
-        extracted_resource_id=id[0] if id else None,
-        incident_type=incident_type,
-    )
-    incident_context = {
-        "name": f'IOA Event ID: {ioa_event.get("event_id")}',
-        "rawJSON": json.dumps(ioa_event | incident_metadata),
-    }
-    return incident_context
-
-
-def ioa_events_pagination(
-    ioa_fetch_query: str, api_limit: int, ioa_next_token: str | None, fetch_limit: int = INCIDENTS_PER_FETCH
-) -> tuple[list[dict[str, Any]], str | None]:
-    """This is in charge of doing the pagination process in a single fetch run, since the fetch limit can be greater than
-    the api limit, in such a case, we do multiple API calls until we reach the fetch limit, or no more results are found
-    by the API.
-
-    Args:
-        ioa_fetch_query (str): The IOA fetch query.
-        api_limit (int): The API limit
-        ioa_next_token (str | None): The IOA next token to start the pagination from.
-        fetch_limit (int, optional): The fetch limit. Defaults to INCIDENTS_PER_FETCH.
-
-    Returns:
-        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the fetched events, and the second is the next
-        token that will be used in the next fetch run.
-    """
-    total_incidents_count = 0
-    ioa_new_next_token = ioa_next_token
-    fetched_ioa_events: list[dict[str, Any]] = []
-    continue_pagination = True
-    while continue_pagination:
-        demisto.debug(
-            f"Doing IOA pagination with the arguments: {ioa_fetch_query=}, {api_limit=}, {ioa_new_next_token=},{fetch_limit=}"
-        )
-        ioa_events, ioa_new_next_token = get_ioa_events(
-            ioa_fetch_query=ioa_fetch_query,
-            ioa_next_token=ioa_new_next_token,
-            limit=min(api_limit, fetch_limit - total_incidents_count),
-        )
-        fetched_ioa_events.extend(ioa_events)
-        total_incidents_count += len(ioa_events)
-        demisto.debug(f"Results of IOA pagination: {total_incidents_count=}, {ioa_new_next_token=}")
-        if (ioa_new_next_token is None) or (total_incidents_count >= fetch_limit):
-            demisto.debug("Number of incidents reached the fetching limit, or there are no more results, stopping pagination")
-            # If the number of fetched incidents reaches the fetching limit, or there are no more results to be fetched
-            # (by checking the next token variable), then we should stop the pagination process
-            continue_pagination = False
-    return fetched_ioa_events, ioa_new_next_token
-
-
-def get_ioa_events(
-    ioa_fetch_query: str, ioa_next_token: str | None, limit: int = INCIDENTS_PER_FETCH
-) -> tuple[list[dict[str, Any]], str | None]:
-    """Do a single API call to receive IOA events.
-
-    Args:
-        ioa_fetch_query (str): The IOA fetch query.
-        ioa_next_token (int | None): The next token to be used as part of the pagination process.
-        limit (int, optional): The maximum amount to fetch IOA events. Defaults to INCIDENTS_PER_FETCH.
-
-    Returns:
-        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the returned events, and the second is the
-        next token that will be used in the next API call.
-    """
-    # The API does not support a `query` parameter, rather a set of query params
-    if ioa_next_token:
-        ioa_fetch_query = f"{ioa_fetch_query}&next_token={ioa_next_token}"
-    ioa_fetch_query = f"{ioa_fetch_query}&limit={limit}"
-    demisto.debug(f"IOA {ioa_fetch_query=}")
-    raw_response = http_request(method="GET", url_suffix=f"/detects/entities/ioa/v1?{ioa_fetch_query}")
-    events = demisto.get(raw_response, "resources.events", [])
-    pagination_obj = demisto.get(raw_response, "meta.pagination", {})
-    demisto.debug(f"{pagination_obj=}")
-    next_token = pagination_obj.get("next_token")
-    if next_token:
-        # If next_token has a value, that means more pagination is needed, and the next run should use it
-        demisto.debug("next_token has a value, more pagination is needed for the next run")
-        return events, next_token
-    else:
-        demisto.debug("next_token is None, no pagination is needed for the next run")
-        # If it is None, that means no more pagination is required, therefore,
-        # the next token for the next run should be None
-        return events, None
-
-
-def validate_ioa_fetch_query(ioa_fetch_query: str) -> None:
-    """Validate the IOA fetch query.
-
-    Args:
-        ioa_fetch_query (str): The IOA fetch query.
-
-    Raises:
-        DemistoException: If the param cloud_provider is not part of the query.
-        DemistoException: If an unsupported parameter has been entered.
-        DemistoException: If the value of a parameter is an empty string.
-        DemistoException: If a query section has a wrong format
-    """
-    demisto.debug(f"Validating IOA {ioa_fetch_query=}")
-    if "cloud_provider" not in ioa_fetch_query:
-        raise DemistoException("A cloud provider is required as part of the IOA fetch query. Options are: aws, azure")
-    # The following parameters are also supported by the API: 'date_time_since', 'next_token', 'limit', but we don't
-    # allow them to be as part of the original fetch query, since they are used by the fetching mechanism, internally
-    supported_params = (
-        "cloud_provider",
-        "account_id",
-        "aws_account_id",
-        "azure_subscription_id",
-        "azure_tenant_id",
-        "severity",
-        "region",
-        "service",
-        "state",
-    )
-    # The query has a format of 'param1=val1&param2=val2'
-    for section in ioa_fetch_query.split("&"):
-        param_and_value = section.split("=")
-        # Since each section should have a format of 'param1=val1', then when splitting by '=', we should get
-        # a list of length 2, where the first element holds the parameter that we want to validate
-        if param_and_value and len(param_and_value) == 2:
-            if param_and_value[0] not in supported_params:
-                raise DemistoException(
-                    f"An unsupported parameter has been entered, {param_and_value[0]}."
-                    f"Use the following parameters: {supported_params}"
-                )
-            if param_and_value[1] == "":
-                raise DemistoException(f"The value of the parameter {param_and_value[0]} cannot be an empty string")
-        else:
-            raise DemistoException(f'Query section "{section}" does not match the parameter=value format')
 
 
 def reformat_timestamp(time: str, date_format: str, dateparser_settings: Any | None = None) -> str:
@@ -7937,11 +8358,24 @@ def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
 
 
 def module_test():
+    params = demisto.params()
+    if params.get("isFetchAssets") and params.get("longRunning"):
+        # Both collectors would fetch Spotlight into the same snapshot, racing each other over the
+        # record count. Refused here rather than left to the parameter help, which is easy to miss.
+        return (
+            "Error: 'Fetch assets' and 'Long running instance for Spotlight vulnerabilities' cannot both be enabled "
+            "on the same instance. Enable only one, and configure a separate instance if you also need CNAPP Alerts."
+        )
     try:
         get_token(new_token=True)
-    except ValueError:
-        return "Connection Error: The URL or The API key you entered is probably incorrect, please try again."
-    if demisto.params().get("isFetch"):
+    except (ValueError, DemistoException, requests.exceptions.RequestException) as e:
+        demisto.debug(f"test-module failed to obtain a token: {e}\n{traceback.format_exc()}")
+        return (
+            "Connection Error: Failed to reach the CrowdStrike Falcon server. Verify that the Server URL parameter is"
+            " correct, that the API credentials are valid, and that the server is reachable from your host"
+            " (check network connectivity, DNS, and proxy settings)."
+        )
+    if params.get("isFetch"):
         try:
             fetch_items(command="fetch-incidents")
         except ValueError:
@@ -8272,6 +8706,7 @@ def cs_falcon_spotlight_search_vulnerability_request(
     evaluation_logic: bool | None,
     host_info: bool | None,
     limit: str | None,
+    next_token: str | None = None,
 ) -> dict:
     input_arg_dict = {
         "aid": aid,
@@ -8308,6 +8743,8 @@ def cs_falcon_spotlight_search_vulnerability_request(
             url_facet += f"&facet={argument}"
     # The url is hardcoded since facet is a parameter that can have serval values, therefore we can't use a dict
     suffix_url = f"/spotlight/combined/vulnerabilities/v1?filter={url_filter}{url_facet}&limit={limit}"
+    if next_token:
+        suffix_url += f"&after={urllib.parse.quote(next_token, safe='')}"
     return http_request("GET", suffix_url)
 
 
@@ -8322,30 +8759,56 @@ def cve_request(cve_id: list[str] | None) -> dict:
     return http_request("GET", "/spotlight/combined/vulnerabilities/v1", params={"filter": url_filter, "facet": "cve"})
 
 
-def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> CommandResults:
-    """
-    Get a list of vulnerability by spotlight
-    : args: filter which include params or filter param.
-    : return: a list of vulnerabilities according to the user.
-    """
+def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> list[CommandResults]:
+    """Search Spotlight vulnerabilities with cursor-based pagination via ``next_token``.
 
-    vulnerability_response = cs_falcon_spotlight_search_vulnerability_request(
-        argToList(args.get("aid")),
-        argToList(args.get("cve_id")),
-        argToList(args.get("cve_severity")),
-        argToList(args.get("tags")),
-        argToList(args.get("status")),
-        args.get("platform_name"),
-        argToList(args.get("host_group")),
-        argToList(args.get("host_type")),
-        args.get("last_seen_within"),
-        args.get("is_suppressed"),
-        args.get("filter", ""),
-        args.get("display_remediation_info"),
-        args.get("display_evaluation_logic_info"),
-        args.get("display_host_info"),
-        args.get("limit"),
-    )
+    The pagination cursor returned by CrowdStrike (``meta.pagination.after``) is always
+    emitted to the ``CrowdStrike.VulnerabilityNextToken`` context output when present,
+    and never rendered in the human-readable war-room output.
+
+    Args:
+        args: Command arguments (filter, limit, next_token, etc.).
+
+    Returns:
+        list[CommandResults]: Bulk-data entry, followed by a cursor entry when the
+        API returned a non-empty ``after`` cursor.
+    """
+    next_token = args.get("next_token")
+
+    limit = arg_to_number(args.get("limit", 50))
+    if limit is not None and limit > MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE:
+        limit = MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE
+
+    try:
+        vulnerability_response = cs_falcon_spotlight_search_vulnerability_request(
+            argToList(args.get("aid")),
+            argToList(args.get("cve_id")),
+            argToList(args.get("cve_severity")),
+            argToList(args.get("tags")),
+            argToList(args.get("status")),
+            args.get("platform_name"),
+            argToList(args.get("host_group")),
+            argToList(args.get("host_type")),
+            args.get("last_seen_within"),
+            args.get("is_suppressed"),
+            args.get("filter", ""),
+            args.get("display_remediation_info"),
+            args.get("display_evaluation_logic_info"),
+            args.get("display_host_info"),
+            str(limit),
+            next_token,
+        )
+    except DemistoException as exc:
+        # Narrow intercept: only the expired-cursor case (HTTP 404).
+        # The generic 400 "Invalid pagination token" is already self-explanatory
+        # and is intentionally NOT caught here.
+        if "Search context expired" in str(exc):
+            return_error(
+                "CrowdStrike Spotlight pagination cursor has expired "
+                "(these cursors are short-lived, typically a few minutes). "
+                "Please rerun the command without the next_token argument to start a fresh pagination session."
+            )
+        raise
     headers = ["ID", "Severity", "Status", "Base Score", "Published Date", "Impact Score", "Exploitability Score", "Vector"]
     outputs = []
     for vulnerability in vulnerability_response.get("resources", {}):
@@ -8362,13 +8825,30 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> CommandResul
             }
         )
     human_readable = tableToMarkdown("List Vulnerabilities", outputs, removeNull=True, headers=headers)
-    return CommandResults(
-        raw_response=vulnerability_response,
-        readable_output=human_readable,
-        outputs=vulnerability_response.get("resources"),
-        outputs_prefix="CrowdStrike.Vulnerability",
-        outputs_key_field="id",
-    )
+
+    raw_after = vulnerability_response.get("meta", {}).get("pagination", {}).get("after")
+
+    results: list[CommandResults] = [
+        CommandResults(
+            outputs_prefix="CrowdStrike.Vulnerability",
+            outputs_key_field="id",
+            outputs=vulnerability_response.get("resources"),
+            readable_output=human_readable,
+            raw_response=vulnerability_response,
+        )
+    ]
+
+    if raw_after:
+        results.append(
+            CommandResults(
+                outputs_prefix="CrowdStrike.VulnerabilityNextToken",
+                outputs=raw_after,
+                readable_output="Token for next page was generated and can be found under CrowdStrike.VulnerabilityNextToken",
+                replace_existing=True,
+            )
+        )
+
+    return results
 
 
 def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> CommandResults:
@@ -10131,7 +10611,6 @@ def main():  # pragma: no cover
             result = module_test()
             return_results(result)
         elif command == "fetch-incidents":
-            disable_for_xsiam()
             last_run, incidents = fetch_items(command=command)
             demisto.incidents(incidents)
         elif command == "fetch-events":
@@ -10359,6 +10838,8 @@ def main():  # pragma: no cover
             return_results(get_ioarules_command(args=args))
         elif command == "fetch-assets":
             fetch_assets_command()
+        elif command == "long-running-execution":
+            long_running_spotlight_execution()
         elif command == "cs-falcon-list-cnapp-alerts":
             return_results(list_cnapp_alerts_command(args=args))
         elif command == "cs-falcon-add-case-tag":

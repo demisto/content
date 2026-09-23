@@ -1,0 +1,14 @@
+{
+	"incidences": [{
+		"incidenceId": "6595940238747379:1630539139046817",
+		"shieldType": "ANTI_RANSOMWARE",
+		"antiRansomwareDetails": {
+			"entityId": "2294",
+			"entityName": "mock-testing03",
+			"clusterId": 6573823962906680,
+			"latestCleanSnapshotId": "snapshot_12345",
+			"protectionEnvType": "kVMware",
+			"anomalyStrength": 64
+		}
+	}]
+}

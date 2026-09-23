@@ -3,6 +3,20 @@
     "feed": false,
     "id": "SpyCloud - Incoming Mapper",
     "mapping": {
+		"SpyCloud Access Data": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Email": {
+					"simple": "email"
+				},
+				"Title": {
+					"simple": "breach_title"
+				},
+				"Username": {
+					"simple": "username"
+				}
+			}
+		},
 		"SpyCloud Breach Data": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {

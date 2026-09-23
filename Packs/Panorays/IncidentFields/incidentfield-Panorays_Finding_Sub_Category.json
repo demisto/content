@@ -1,0 +1,21 @@
+{
+    "cliName": "panoraysfindingsubcategory",
+    "description": "The sub-category of the Panorays finding.",
+    "group": 0,
+    "id": "incident_panoraysfindingsubcategory",
+    "name": "Panorays Finding Sub Category",
+    "associatedTypes": [
+        "Panorays Finding"
+    ],
+    "associatedToAll": false,
+    "type": "shortText",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "content": true,
+    "system": false,
+    "unsearchable": true,
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

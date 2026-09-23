@@ -1,0 +1,16 @@
+{
+    "data": {
+        "policyViolations": {
+            "edges": [],
+            "pageInfo": {
+                "startCursor": null,
+                "endCursor": null,
+                "hasNextPage": false,
+                "hasPreviousPage": false,
+                "__typename": "PageInfo"
+            },
+            "count": 0,
+            "__typename": "PolicyViolationConnection"
+        }
+    }
+}

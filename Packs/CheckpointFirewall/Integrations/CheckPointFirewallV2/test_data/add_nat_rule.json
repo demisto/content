@@ -1,0 +1,47 @@
+{
+  "uid": "nat-rule-uid-new-1234",
+  "name": "new-nat-rule",
+  "type": "nat-rule",
+  "enabled": true,
+  "comments": "",
+  "method": "static",
+  "original-source": {
+    "uid": "src-uid-1",
+    "name": "Any",
+    "type": "CpmiAnyObject"
+  },
+  "original-destination": {
+    "uid": "dst-uid-1",
+    "name": "web-server",
+    "type": "host"
+  },
+  "original-service": {
+    "uid": "svc-uid-1",
+    "name": "Any",
+    "type": "CpmiAnyObject"
+  },
+  "translated-source": {
+    "uid": "tsrc-uid-1",
+    "name": "Original",
+    "type": "CpmiAnyObject"
+  },
+  "translated-destination": {
+    "uid": "tdst-uid-1",
+    "name": "internal-server",
+    "type": "host"
+  },
+  "translated-service": {
+    "uid": "tsvc-uid-1",
+    "name": "Original",
+    "type": "CpmiAnyObject"
+  },
+  "domain": {
+    "uid": "domain-uid-5678",
+    "name": "SMC User",
+    "domain-type": "domain"
+  },
+  "meta-info": {
+    "creator": "admin",
+    "last-modifier": "admin"
+  }
+}
