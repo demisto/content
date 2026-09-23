@@ -430,12 +430,11 @@ class TestFetchActivity:
         params_sent = http_request.call_args_list[0][1].get("params", {})
         assert params_sent.get("instancesReturned") == instance_returned
 
-    # ------------------------- Late-arrival audit (XSUP-75678 smoking gun) -------------------------
     @freeze_time("2026-08-31 07:15:00")
     def test_fetch_to_date_is_lagged_from_now(self, mocker):
         """
-        XSUP-75678 FIX: the fetch must query up to (now - FETCH_TO_DATE_LAG_SECONDS), never up to now,
-        so it only requests already-settled minutes.
+        The fetch must query up to (now - FETCH_TO_DATE_LAG_SECONDS), never up to now, so it only
+        requests already-settled minutes.
         """
         from WorkdayEventCollector import FETCH_TO_DATE_LAG_SECONDS, fetch_activity_logging
 

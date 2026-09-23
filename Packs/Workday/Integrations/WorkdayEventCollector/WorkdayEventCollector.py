@@ -11,11 +11,7 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-# XSUP-75678 FIX: never query up to "now". Workday publishes a minute's events with a short lag
-# (its counts settle within ~30s of a minute closing). Querying to_date=now therefore captured an
-# incomplete tail of the newest minute, and the monotonic cursor then advanced past the not-yet-
-# published events -> permanent silent loss. We cap to_date at now - this many seconds so every
-# queried range is already fully settled by Workday. Clamped to never be earlier than from_date.
+# Query only up to (now - this lag) so we never read a minute Workday hasn't fully published yet.
 FETCH_TO_DATE_LAG_SECONDS = 60
 
 DEFAULT_MAX_FETCH = 3000
@@ -23,13 +19,8 @@ MAX_PAGE_SIZE = 1000
 VENDOR = "Workday"
 PRODUCT = "Activity"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-# Millisecond-precision format used for the persisted checkpoint. Workday's `from`/`to` query
-# params only accept whole seconds (see get_activity_logging_request), so we keep DATE_FORMAT for
-# the request, but we persist the checkpoint with milliseconds to dedup precisely and avoid loss.
-DATE_FORMAT_WITH_MS = "%Y-%m-%dT%H:%M:%S.%fZ"
-# Fields that together uniquely identify a single Workday activity logging event. Used to build a
-# stable identity for deduplication that does NOT depend on API result ordering (unlike the previous
-# position-based approach, which silently dropped new events that sorted before the stored checkpoint).
+DATE_FORMAT_WITH_MS = "%Y-%m-%dT%H:%M:%S.%fZ"  # requestTime precision (Workday query params accept whole seconds only).
+# Fields that together uniquely identify an event, for order-independent deduplication.
 EVENT_IDENTITY_FIELDS = ("taskId", "requestTime", "sessionId", "systemAccount", "activityAction", "ipAddress")
 
 """ CLIENT CLASS """
@@ -169,11 +160,6 @@ def get_event_identity(activity_logging: dict) -> str:
     """
     Builds a stable, order-independent identity for a single activity logging event.
 
-    This is the key to correct deduplication: instead of relying on the *position* of a
-    previously-seen event in the new result set (which silently dropped new events that sorted
-    before the checkpoint), we identify each event by its own content. Only events whose identity
-    was already ingested in the previous cycle are treated as duplicates.
-
     Args:
         activity_logging: a single activity logging event returned by the Workday API.
 
@@ -185,19 +171,11 @@ def get_event_identity(activity_logging: dict) -> str:
 
 def remove_duplications(activity_loggings: list, last_run: dict) -> list:
     """
-    Removes activity loggings that were already ingested in the previous fetch cycle.
+    Removes activity loggings already ingested in the previous cycle.
 
-    Because the checkpoint (`from_date`) is truncated to whole seconds for the Workday request, the
-    boundary second is intentionally re-requested every cycle. Previously this function trimmed the
-    *head* of the batch by the index of the stored `last_log`, assuming everything before it was a
-    duplicate. When the API returned events of the boundary second in a different order (or returned
-    a new event that sorts before the stored `last_log`), those new events were silently dropped
-    (XSUP-75678). It could also re-ingest the whole second as duplicates when the exact object was
-    not re-found.
-
-    This implementation deduplicates by *event identity*: any event whose identity was seen in the
-    previous cycle is dropped; every other event (including new events in the boundary second) is
-    kept, regardless of API ordering.
+    The boundary second is re-requested every cycle (the checkpoint is truncated to whole seconds),
+    so we dedup by event identity: any event whose identity was seen last cycle is dropped, every
+    other event is kept regardless of API ordering.
 
     Args:
         activity_loggings: activity loggings fetched from Workday.
@@ -225,9 +203,6 @@ def remove_milliseconds_from_time_of_logging(activity_logging: dict) -> str:
     """
     Converts a logging's requestTime to the whole-second format Workday's `from`/`to` params accept.
 
-    Note: Workday's query params only accept whole seconds, so this is used ONLY when building the
-    request. The persisted checkpoint keeps milliseconds (see get_checkpoint_time_with_ms).
-
     Args:
         activity_logging: activity logging
 
@@ -236,7 +211,7 @@ def remove_milliseconds_from_time_of_logging(activity_logging: dict) -> str:
     """
     demisto.debug("Changing timestamp of loggings to match whole-second date format.")
     request_time_date_obj = datetime.strptime(activity_logging.get("requestTime"), DATE_FORMAT_WITH_MS)  # type: ignore
-    # replace() returns a NEW datetime; must reassign (the previous code discarded the result).
+    # replace() returns a new datetime (datetimes are immutable), so reassign to actually drop the ms.
     request_time_date_obj = request_time_date_obj.replace(microsecond=0)
     return datetime.strftime(request_time_date_obj, DATE_FORMAT)
 
@@ -273,14 +248,11 @@ def get_activity_logging_command(
 
 def build_next_last_run(activity_loggings: list, previous_last_run: dict) -> dict:
     """
-    Builds the next last_run object after deduplication.
+    Builds the next last_run after deduplication.
 
-    The next `last_fetch_time` (used to build the next Workday request) is the whole-second floor of
-    the latest event's requestTime, because Workday's `from` param only accepts whole seconds. To
-    avoid losing or re-ingesting events in that re-requested boundary second, we also persist
-    `previous_event_ids`: the identities of every event we ingested whose requestTime falls in the
-    latest whole second. On the next cycle, remove_duplications uses this set to drop only genuine
-    duplicates while keeping any newly-arrived events in that same second.
+    `last_fetch_time` is the whole-second floor of the latest event's requestTime (Workday's `from`
+    accepts whole seconds only). `previous_event_ids` holds the identities of the ingested events in
+    that latest second, so the next cycle can dedup the re-requested boundary second by identity.
 
     Args:
         activity_loggings: the deduped events ingested this cycle.
@@ -334,16 +306,11 @@ def fetch_activity_logging(client: Client, max_fetch: int, first_fetch: datetime
 
     """
     from_date = last_run.get("last_fetch_time", first_fetch.strftime(DATE_FORMAT))
-    # XSUP-75678 FIX: never query up to "now" - cap to_date at (now - FETCH_TO_DATE_LAG_SECONDS) so we
-    # only ever request minutes Workday has already fully published (freshness audit shows counts settle
-    # within ~30s). Clamp so to_date is never earlier than from_date (e.g. after a long outage/backfill,
-    # where from_date is already older than the lagged now - in that case we still fetch up to now-lag,
-    # but never invert the window).
+    # Cap to_date at (now - lag) so we only request already-published minutes.
     now = datetime.now(tz=timezone.utc)
     safe_to_dt = now - timedelta(seconds=FETCH_TO_DATE_LAG_SECONDS)
     from_dt = datetime.strptime(from_date, DATE_FORMAT).replace(tzinfo=timezone.utc)
-    # If the lagged "now" would precede from_date (from_date is very recent), fall back to from_date so
-    # the window is non-inverted; the next cycle will advance once enough time has elapsed.
+    # Clamp to from_date so the window is never inverted when from_date is very recent.
     to_dt = safe_to_dt if safe_to_dt >= from_dt else from_dt
     to_date = to_dt.strftime(DATE_FORMAT)
     demisto.debug(
