@@ -1,6 +1,7 @@
 import traceback
 from abc import ABC
 from collections.abc import Callable, Iterable
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from enum import Enum
 from typing import Any, NamedTuple
 
@@ -17,8 +18,12 @@ from requests.auth import HTTPBasicAuth
 from CommonServerUserPython import *  # noqa
 
 
-DEFAULT_LIMIT = 1000
+DEFAULT_LIMIT = 5000
 DEFAULT_FROM_FETCH_PARAMETER = "3 days"
+# Events requested per API call. alerts honors this directly; activities is capped at 250 unless
+# isScan=true is sent, which raises the per-page cap to 500 (the hard ceiling).
+API_PAGE_SIZE = 500
+ACTIVITIES_ENDPOINT_TYPE = "activities"
 # When a fetched event type returns 0 events and has no existing watermark, seed its watermark to
 # (now - this buffer) instead of exactly "now". The small step-back covers the vendor's ingestion
 # lag (~2-3 min) so events that occurred just before "now" but were not yet available are not
@@ -47,7 +52,7 @@ ALL_EVENT_FILTERS: list[EventFilter] = [ALERTS_FILTER, ADMIN_ACTIVITIES_FILTER, 
 UI_NAME_TO_EVENT_FILTERS = {event_filter.ui_name: event_filter for event_filter in ALL_EVENT_FILTERS}
 
 """ CONSTANTS """
-AUTH_ERROR_MSG = "Authorization Error: make sure tenant id, client id and client secret is correctly set"
+AUTH_ERROR_MSG = "Authorization Error: make sure the Client (Application) ID, Client Secret, and Tenant ID are correct."
 VENDOR = "Microsoft"
 PRODUCT = "defender_cloud_apps"
 
@@ -120,8 +125,8 @@ class IntegrationOptions(BaseModel):
     # limit is the maximum number of events to fetch per event type per fetch cycle.
     # Defaults to DEFAULT_LIMIT so fetch-events pagination is always bounded. There is no
     # upper cap: the correct value depends on the tenant's event volume, which we cannot
-    # know in advance, so admins may raise it as needed. Pagination loops in pages (~100,
-    # the API default page size).
+    # know in advance, so admins may raise it as needed. Pagination loops in pages of
+    # API_PAGE_SIZE.
     limit: int = Field(DEFAULT_LIMIT, ge=1)
 
 
@@ -181,36 +186,10 @@ class IntegrationGetEvents(ABC):
         self.filter_name_to_attributes = {event_filter.name: event_filter.attributes for event_filter in event_filters}
         self.base_url = base_url
 
+    @abstractmethod
     def run(self):
-        final_stored_all_types = []
-        # In this integration we need to do 3 API calls:
-        # - activities with filter to get the admin events
-        # - activities with different filter to get the login events
-        # - alerts with no filter
-        # Each event type is fetched independently: a failure in one type is caught
-        # and logged so the remaining types can still be collected in the same cycle.
-        for event_type_name, endpoint_details in self.filter_name_to_attributes.items():
-            stored_per_type: list = []
-            try:
-                for logs in self._iter_events(event_type_name, endpoint_details):
-                    stored_per_type.extend(logs)
-                    if len(stored_per_type) >= self.options.limit:
-                        demisto.debug(f"[Slicing Events] reached {self.options.limit=} for {event_type_name=}, slicing per type.")
-                        stored_per_type = stored_per_type[: self.options.limit]
-                        break
-            except Exception as e:
-                # Discard this type's partial batch so its watermark is NOT advanced past
-                # unfetched events (no data loss); it will be retried on the next cycle.
-                # Other event types continue unaffected.
-                demisto.error(
-                    f"[Fetch Events] failed fetching {event_type_name=}, skipping it this cycle. "
-                    f"Error: {e!s}\n{traceback.format_exc()}"
-                )
-                continue
-            final_stored_all_types.extend(stored_per_type)
-            demisto.debug(f"[MicrosoftDefender] kept {len(stored_per_type)} events for {event_type_name=}")
-        demisto.debug(f"[MicrosoftDefender] keeping {len(final_stored_all_types)} events from all event types")
-        return final_stored_all_types
+        """Fetch all event types for one cycle. Implemented by the concrete subclass."""
+        raise NotImplementedError
 
     def call(self) -> requests.Response:
         return self.client.call(self.client.request)
@@ -224,7 +203,7 @@ class IntegrationGetEvents(ABC):
         return {"after": events[-1]["created"]}
 
     @abstractmethod
-    def _iter_events(self, event_type_name: str, endpoint_details: dict):
+    def _iter_events(self, client: "DefenderClient", event_type_name: str, endpoint_details: dict):
         """Create iterators with Yield"""
         raise NotImplementedError
 
@@ -292,11 +271,16 @@ class DefenderClient(IntegrationEventsClient):
     options: IntegrationOptions
 
     def __init__(
-        self, request: DefenderHTTPRequest, options: IntegrationOptions, authenticator: DefenderAuthenticator, after: int
+        self,
+        request: DefenderHTTPRequest,
+        options: IntegrationOptions,
+        authenticator: DefenderAuthenticator,
+        after: int,
+        session: requests.Session | None = None,
     ):
         self.after = after
         self.authenticator = authenticator
-        super().__init__(request, options)
+        super().__init__(request, options, session=session or requests.Session())
 
     def set_request_filter(self, after: Any):
         curr_filters = json.loads(self.request.params["filters"])
@@ -306,33 +290,97 @@ class DefenderClient(IntegrationEventsClient):
     def authenticate(self):
         self.authenticator.set_authorization(self.request)
 
+    def clone(self) -> "DefenderClient":
+        """A fresh client with its own request and session, safe for a single thread.
+
+        The request is deep-copied so per-type mutations (url, filters, isScan) don't clash, and a
+        new requests.Session is used because a Session is not guaranteed thread-safe. The MS token
+        is cached on the shared authenticator, so cloned clients reuse it without re-authenticating.
+        """
+        return DefenderClient(
+            request=self.request.copy(deep=True),
+            options=self.options,
+            authenticator=self.authenticator,
+            after=self.after,
+            session=requests.Session(),
+        )
+
 
 class DefenderGetEvents(IntegrationGetEvents):
     client: DefenderClient
+    limit_reached: bool = False
 
-    def _iter_events(self, event_type_name, endpoint_details):
-        self.last_timestamp = {}
-        base_url = self.base_url
+    def run(self):
         self.client.authenticate()
+        # Reset per-cycle: set True if any type fills its limit, signalling a backlog to drain next cycle.
+        self.limit_reached = False
+        types = list(self.filter_name_to_attributes.items())
+        demisto.debug(
+            f"[MicrosoftDefender] authenticated; fetching {len(types)} event types concurrently: {[t[0] for t in types]}"
+        )
+        results: list = []
+        with ThreadPoolExecutor(max_workers=len(types) or 1) as pool:
+            futures = [
+                pool.submit(self._collect_type, self.client.clone(), event_type_name, endpoint_details)
+                for event_type_name, endpoint_details in types
+            ]
+            for future in as_completed(futures):
+                results.extend(future.result())
+        demisto.debug(f"[MicrosoftDefender] keeping {len(results)} events from all event types")
+        return results
 
-        self.client.request.params.pop("filters", None)
-        self.client.request.url = parse_obj_as(HttpUrl, f'{base_url}{endpoint_details["type"]}')
+    def _collect_type(self, client: "DefenderClient", event_type_name: str, endpoint_details: dict) -> list:
+        stored: list = []
+        try:
+            for logs in self._iter_events(client, event_type_name, endpoint_details):
+                stored.extend(logs)
+                if len(stored) >= self.options.limit:
+                    stored = stored[: self.options.limit]
+                    # This type filled its limit, so more events are likely waiting; signal the fetch
+                    # cycle to re-trigger immediately (nextTrigger=0) instead of idling until the next interval.
+                    self.limit_reached = True
+                    demisto.debug(f"[MicrosoftDefender] {event_type_name=} reached the limit; will request an immediate next run")
+                    break
+        except Exception as e:
+            # Discard the partial batch so the watermark is not advanced past unfetched events.
+            demisto.error(
+                f"[Fetch Events] failed fetching {event_type_name=}, skipping it this cycle. "
+                f"Error: {e!s}\n{traceback.format_exc()}"
+            )
+            return []
+        demisto.debug(f"[MicrosoftDefender] kept {len(stored)} events for {event_type_name=}")
+        return stored
 
-        # get the filter for this type
-        filters = endpoint_details["filters"]
+    def _iter_events(self, client: "DefenderClient", event_type_name, endpoint_details):
+        base_url = self.base_url
 
-        after = demisto.getLastRun().get(event_type_name) or self.client.after
-        # add the time filter
+        client.request.params.pop("filters", None)
+        endpoint_type = endpoint_details["type"]
+        client.request.url = parse_obj_as(HttpUrl, f"{base_url}{endpoint_type}")
+
+        # activities returns up to 500 per page only with isScan=true (otherwise 250); alerts must
+        # not send isScan. Cap the page size at the run limit so a smaller limit (e.g. the
+        # test-module probe) is honored instead of always requesting the full page.
+        client.request.params["limit"] = min(API_PAGE_SIZE, self.options.limit)
+        if endpoint_type == ACTIVITIES_ENDPOINT_TYPE:
+            client.request.params["isScan"] = "true"
+        else:
+            client.request.params.pop("isScan", None)
+
+        # Copy so the shared module-level filter dict is never mutated (each thread builds its own).
+        filters = dict(endpoint_details["filters"])
+
+        after = demisto.getLastRun().get(event_type_name) or client.after
         if after:
             filters["date"] = {"gte": after}  # type: ignore
 
-        demisto.debug(f"MD: Sending request with filters {filters}")
-        self.client.request.params["filters"] = json.dumps(filters)
-        response = self.client.call(self.client.request).json()
+        demisto.debug(f"MD: Sending request for {event_type_name=} with filters {filters}")
+        client.request.params["filters"] = json.dumps(filters)
+        demisto.debug(f"MD: API call for {event_type_name=} | url={client.request.url} | params={client.request.params}")
+        response = client.call(client.request).json()
         events = response.get("data", [])
         demisto.debug(f"MD: Got {len(events)} events for {event_type_name=}")
 
-        # add new field with the event type
         for event in events:
             event["event_type_name"] = event_type_name
 
@@ -341,13 +389,15 @@ class DefenderGetEvents(IntegrationGetEvents):
         yield events
 
         while has_next:
-            demisto.debug("MD: Got more events to fetch")
+            demisto.debug(f"MD: Got more events to fetch for {event_type_name=}")
             last = events.pop()
-            self.client.set_request_filter(last["timestamp"])
-            response = self.client.call(self.client.request).json()
+            client.set_request_filter(last["timestamp"])
+            demisto.debug(
+                f"MD: Paginated API call for {event_type_name=} | url={client.request.url} | params={client.request.params}"
+            )
+            response = client.call(client.request).json()
             events = response.get("data", [])
             demisto.debug(f"MD: Got {len(events)} events for {event_type_name=}")
-            # add new field with the event type
             for event in events:
                 event["event_type_name"] = event_type_name
 
@@ -411,21 +461,30 @@ def module_test(get_events: DefenderGetEvents) -> str:
     :rtype: ``str``
     """
 
+    get_events.client.authenticate()
+    # _iter_events derives the page size from options.limit, so set it here rather than on params
+    # (params["limit"] would be overwritten).
+    get_events.options.limit = 1
+
+    # Call _iter_events directly on a single event type instead of run(): run() isolates per-type
+    # failures (a 403/auth error for one type is logged and swallowed so the fetch cycle survives),
+    # which would hide the connectivity/authorization problems that test-module must surface.
+    event_type_name, endpoint_details = next(iter(get_events.filter_name_to_attributes.items()))
     try:
-        get_events.client.request.params = {"limit": 1}
-        get_events.options.limit = 1
-        get_events.run()
-        message = "ok"
+        events = get_events._iter_events(get_events.client, event_type_name, endpoint_details)
+        next(events, None)  # trigger the first API call
     except DemistoException as e:
-        if "Forbidden" in str(e) or "authenticate" in str(e):
-            message = AUTH_ERROR_MSG
-        else:
-            raise
-    return message
+        error_msg = str(e)
+        demisto.debug(f"[Test Module] Failed: {error_msg}")
+        if "401" in error_msg or "403" in error_msg or "Forbidden" in error_msg or "Unauthorized" in error_msg:
+            return AUTH_ERROR_MSG
+        raise
+    return "ok"
 
 
 def main(command: str, demisto_params: dict):
     demisto.debug(f"MD: Command being called is {command}")
+    demisto.debug(f"MD: received param keys: {sorted(demisto_params.keys())}")
 
     try:
         demisto_params["client_secret"] = demisto_params["credentials"]["password"]
@@ -469,6 +528,10 @@ def main(command: str, demisto_params: dict):
                 # publishing events to XSIAM
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)  # type: ignore
                 next_run = DefenderGetEvents.get_last_run(events, get_events.filter_name_to_attributes.keys())
+                if get_events.limit_reached:
+                    # A type filled its limit this cycle, so a backlog likely remains; re-trigger the
+                    # fetch immediately instead of waiting for the next scheduled interval.
+                    next_run["nextTrigger"] = "0"
                 demisto.debug(f"MD: setting the next run: {next_run}")
                 demisto.setLastRun(next_run)
 

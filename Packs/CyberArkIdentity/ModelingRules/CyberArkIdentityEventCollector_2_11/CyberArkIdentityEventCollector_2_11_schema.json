@@ -1,0 +1,364 @@
+{
+  "cyberark_identity_raw": {
+    "ID": {
+      "type": "string",
+      "is_array": false
+    },
+    "_vendor": {
+      "type": "string",
+      "is_array": false
+    },
+    "_product": {
+      "type": "string",
+      "is_array": false
+    },
+    "UserName": {
+      "type": "string",
+      "is_array": false
+    },
+    "EnrollProfileUser": {
+      "type": "string",
+      "is_array": false
+    },
+    "Changer": {
+      "type": "string",
+      "is_array": false
+    },
+    "LicenseType": {
+      "type": "string",
+      "is_array": false
+    },
+    "ImpersonateTargetUuid": {
+      "type": "string",
+      "is_array": false
+    },
+    "RoleId": {
+      "type": "string",
+      "is_array": false
+    },
+    "SetPath": {
+      "type": "string",
+      "is_array": false
+    },
+    "JobUniqueId": {
+      "type": "string",
+      "is_array": false
+    },
+    "ProfileName": {
+      "type": "string",
+      "is_array": false
+    },
+    "Target": {
+      "type": "string",
+      "is_array": false
+    },
+    "Role": {
+      "type": "string",
+      "is_array": false
+    },
+    "TargetUser": {
+      "type": "string",
+      "is_array": false
+    },
+    "MfaResult": {
+      "type": "string",
+      "is_array": false
+    },
+    "Value": {
+      "type": "string",
+      "is_array": false
+    },
+    "NewEntity": {
+      "type": "string",
+      "is_array": false
+    },
+    "_TableName": {
+      "type": "string",
+      "is_array": false
+    },
+    "Type": {
+      "type": "string",
+      "is_array": false
+    },
+    "HostAddress": {
+      "type": "string",
+      "is_array": false
+    },
+    "Result": {
+      "type": "string",
+      "is_array": false
+    },
+    "EntityUuid": {
+      "type": "string",
+      "is_array": false
+    },
+    "DSName": {
+      "type": "string",
+      "is_array": false
+    },
+    "LocalAccountUuid": {
+      "type": "string",
+      "is_array": false
+    },
+    "OldState": {
+      "type": "string",
+      "is_array": false
+    },
+    "DeleteReason": {
+      "type": "string",
+      "is_array": false
+    },
+    "WhenLogged": {
+      "type": "string",
+      "is_array": false
+    },
+    "AuthMethod": {
+      "type": "string",
+      "is_array": false
+    },
+    "SyncAction": {
+      "type": "string",
+      "is_array": false
+    },
+    "Cname": {
+      "type": "string",
+      "is_array": false
+    },
+    "From": {
+      "type": "string",
+      "is_array": false
+    },
+    "ProxyId": {
+      "type": "string",
+      "is_array": false
+    },
+    "ApplicationID": {
+      "type": "string",
+      "is_array": false
+    },
+    "Level": {
+      "type": "string",
+      "is_array": false
+    },
+    "DSUuid": {
+      "type": "string",
+      "is_array": false
+    },
+    "ImpersonateTargetName": {
+      "type": "string",
+      "is_array": false
+    },
+    "ObjectType": {
+      "type": "string",
+      "is_array": false
+    },
+    "MachineName": {
+      "type": "string",
+      "is_array": false
+    },
+    "Tenant": {
+      "type": "string",
+      "is_array": false
+    },
+    "MobileAppType": {
+      "type": "string",
+      "is_array": false
+    },
+    "OldEntity": {
+      "type": "string",
+      "is_array": false
+    },
+    "RequestIsMobileDevice": {
+      "type": "string",
+      "is_array": false
+    },
+    "NewState": {
+      "type": "string",
+      "is_array": false
+    },
+    "EntityName": {
+      "type": "string",
+      "is_array": false
+    },
+    "NormalizedUser": {
+      "type": "string",
+      "is_array": false
+    },
+    "FailedMessage": {
+      "type": "string",
+      "is_array": false
+    },
+    "RequestHostName": {
+      "type": "string",
+      "is_array": false
+    },
+    "ApplicationName": {
+      "type": "string",
+      "is_array": false
+    },
+    "ObjectName": {
+      "type": "string",
+      "is_array": false
+    },
+    "ClientAddress": {
+      "type": "string",
+      "is_array": false
+    },
+    "Key": {
+      "type": "string",
+      "is_array": false
+    },
+    "Description": {
+      "type": "string",
+      "is_array": false
+    },
+    "OU": {
+      "type": "string",
+      "is_array": false
+    },
+    "Alias": {
+      "type": "string",
+      "is_array": false
+    },
+    "ApplicationType": {
+      "type": "string",
+      "is_array": false
+    },
+    "DirectoryServiceUuid": {
+      "type": "string",
+      "is_array": false
+    },
+    "UserState": {
+      "type": "string",
+      "is_array": false
+    },
+    "UserGuid": {
+      "type": "string",
+      "is_array": false
+    },
+    "Thumbprint": {
+      "type": "string",
+      "is_array": false
+    },
+    "DirectoryServicePartnerName": {
+      "type": "string",
+      "is_array": false
+    },
+    "AppId": {
+      "type": "string",
+      "is_array": false
+    },
+    "OldLicenseType": {
+      "type": "string",
+      "is_array": false
+    },
+    "WhenOccurred": {
+      "type": "string",
+      "is_array": false
+    },
+    "To": {
+      "type": "string",
+      "is_array": false
+    },
+    "NewLicenseType": {
+      "type": "string",
+      "is_array": false
+    },
+    "ReplaceDomain": {
+      "type": "string",
+      "is_array": false
+    },
+    "ImpersonatorUuid": {
+      "type": "string",
+      "is_array": false
+    },
+    "DeviceID": {
+      "type": "string",
+      "is_array": false
+    },
+    "DSType": {
+      "type": "string",
+      "is_array": false
+    },
+    "ConnectorUuid": {
+      "type": "string",
+      "is_array": false
+    },
+    "MfaReason": {
+      "type": "string",
+      "is_array": false
+    },
+    "EntityType": {
+      "type": "string",
+      "is_array": false
+    },
+    "FromIPAddress": {
+      "type": "string",
+      "is_array": false
+    },
+    "TargetUserID": {
+      "type": "string",
+      "is_array": false
+    },
+    "EventType": {
+      "type": "string",
+      "is_array": false
+    },
+    "Session": {
+      "type": "string",
+      "is_array": false
+    },
+    "FailureReason": {
+      "type": "string",
+      "is_array": false
+    },
+    "RequestDeviceOS": {
+      "type": "string",
+      "is_array": false
+    },
+    "Uuid": {
+      "type": "string",
+      "is_array": false
+    },
+    "AffectedTenant": {
+      "type": "string",
+      "is_array": false
+    },
+    "ChangerUuid": {
+      "type": "string",
+      "is_array": false
+    },
+    "PreviousUserState": {
+      "type": "string",
+      "is_array": false
+    },
+    "Exception": {
+      "type": "string",
+      "is_array": false
+    },
+    "SyncResult": {
+      "type": "string",
+      "is_array": false
+    },
+    "DeviceName": {
+      "type": "string",
+      "is_array": false
+    },
+    "AppName": {
+      "type": "string",
+      "is_array": false
+    },
+    "EmailAddress": {
+      "type": "string",
+      "is_array": false
+    },
+    "SyncActionReason": {
+      "type": "string",
+      "is_array": false
+    },
+    "SessionId": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

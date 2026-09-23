@@ -2174,7 +2174,7 @@ script:
     compliantpolicies:
     - EndPoint Isolation
     - User Hard Remediation
-  dockerimage: demisto/vendors-sdk:1.0.0.10120494
+  dockerimage: demisto/vendors-sdk:1.0.0.11778894
   feed: false
   isfetch: true
   longRunning: false

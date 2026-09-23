@@ -1,7 +1,16 @@
 import demistomock as demisto
+import Netcraft
 import pytest
 from CommonServerPython import DemistoException, ScheduledCommand
-from Netcraft import Client
+from Netcraft import (
+    DATE_FORMAT,
+    LOOKBACK_DATE_FORMAT,
+    Client,
+    email_report_submit_command,
+    file_report_submit_command,
+    url_report_submit_command,
+)
+
 from test_data.data import *  # nopycln: import
 
 MOCK_CLIENT = Client(
@@ -121,8 +130,6 @@ def test_fetch_incidents(mocker, data):
     Then:
         - Fetch Netcraft takedowns as incidents.
     """
-    import Netcraft
-
     Netcraft.PARAMS = data.params
     mocker.patch.object(demisto, "getLastRun", return_value=data.last_run)
     setLastRun = mocker.patch.object(demisto, "setLastRun")
@@ -145,9 +152,10 @@ def test_fetch_incidents_lookback_first_run(mocker):
 
     Then:
         - All incidents from the API response should be returned as XSOAR incidents.
+        - Each incident's `occurred` field is formatted to %Y-%m-%dT%H:%M:%SZ
         - The last_run should be updated with time, limit, and found_incident_ids.
     """
-    import Netcraft
+    from datetime import datetime
 
     data = fetch_incidents_lookback_first_run
     Netcraft.PARAMS = data.params
@@ -160,6 +168,10 @@ def test_fetch_incidents_lookback_first_run(mocker):
     assert len(incidents) == 2
     assert incidents[0]["name"] == "Takedown-100"
     assert incidents[1]["name"] == "Takedown-101"
+
+    # occurred MUST match DATE_FORMAT ("%Y-%m-%dT%H:%M:%SZ").
+    for inc in incidents:
+        datetime.strptime(inc["occurred"], DATE_FORMAT)
 
     last_run_call = set_last_run_mock.call_args[0][0]
     assert "time" in last_run_call
@@ -182,8 +194,6 @@ def test_fetch_incidents_lookback_dedup(mocker):
         - Only the new incidents (Takedown-102, Takedown-99) should be returned.
         - Previously seen incidents should be deduplicated out.
     """
-    import Netcraft
-
     data = fetch_incidents_lookback_subsequent_run
     Netcraft.PARAMS = data.params
     mocker.patch.object(demisto, "getLastRun", return_value=data.last_run.copy())
@@ -205,6 +215,71 @@ def test_fetch_incidents_lookback_dedup(mocker):
     assert "Takedown-99" in last_run_call["found_incident_ids"]
 
 
+def test_fetch_incidents_lookback_backward_compat_old_last_run_time_format(mocker):
+    """
+    Given:
+        - look_back is configured (10 minutes).
+        - A pre-existing last_run["time"] persisted by an older version of the
+          integration using the LOOKBACK_DATE_FORMAT ("YYYY-MM-DD HH:MM:SS")
+          instead of the new RFC 3339 DATE_FORMAT.
+
+    When:
+        - Fetching incidents using the lookback mechanism.
+
+    Then:
+        - The fetch runs successfully (no ValueError parsing the old timestamp).
+        - The `date_from` sent to the Netcraft API remains in the legacy
+          "YYYY-MM-DD HH:MM:SS" format that the Netcraft takedown API expects.
+        - The new last_run["time"] also stays in LOOKBACK_DATE_FORMAT so it
+          remains consistent with start_fetch_time / end_fetch_time inside
+          update_last_run_object (both its strptime read of `occurred` and its
+          `latest_incident_fetched_time == start_fetch_time` string comparison
+          require a single matching format across all three inputs).
+        - The `occurred` handed to XSOAR is rewritten to DATE_FORMAT
+          which is what the server accepts.
+
+    """
+    from datetime import datetime
+
+    Netcraft.PARAMS = {
+        "first_fetch": "2022-02-22 00:00:00",
+        "max_fetch": "10",
+        "region": "region",
+        "look_back": "10",
+    }
+    old_format_last_run = {
+        "time": "2022-02-22 00:02:00",  # legacy LOOKBACK_DATE_FORMAT persisted state
+        "limit": 10,
+        "found_incident_ids": {},
+    }
+    mocker.patch.object(demisto, "getLastRun", return_value=old_format_last_run.copy())
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    request = mocker.patch.object(
+        Client,
+        "_http_request",
+        return_value=[
+            {"id": "200", "date_submitted": "2022-02-22 00:03:00 UTC"},
+        ],
+    )
+
+    incidents = Netcraft.fetch_incidents(MOCK_CLIENT)
+
+    # date_from sent to Netcraft API stays in the legacy space-separated format.
+    api_params = request.call_args[1]["params"]
+    datetime.strptime(api_params["date_from"], LOOKBACK_DATE_FORMAT)
+
+    # occurred on the fetched incident is now RFC 3339 with Z suffix.
+    datetime.strptime(incidents[0]["occurred"], DATE_FORMAT)
+
+    # New last_run["time"] stays in LOOKBACK_DATE_FORMAT so it remains
+    # consistent with start_fetch_time / end_fetch_time inside
+    # update_last_run_object. Both its strptime read of `occurred` and its
+    # `latest_incident_fetched_time == start_fetch_time` string comparison
+    # require a single matching format across all three inputs.
+    new_last_run = set_last_run_mock.call_args[0][0]
+    datetime.strptime(new_last_run["time"], LOOKBACK_DATE_FORMAT)
+
+
 def test_fetch_incidents_no_lookback_uses_id_based(mocker):
     """
     Given:
@@ -216,8 +291,6 @@ def test_fetch_incidents_no_lookback_uses_id_based(mocker):
     Then:
         - The ID-based fetch mechanism should be used (original behavior).
     """
-    import Netcraft
-
     Netcraft.PARAMS = {
         "first_fetch": "2022-02-22 00:00:00",
         "max_fetch": "10",
@@ -491,8 +564,6 @@ def test_file_report_submit_command(mocker, data):
     Then:
         - Report files to Netcraft for analysis.
     """
-    import Netcraft
-
     mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
     getFilePath = mocker.patch.object(
         demisto, "getFilePath", return_value={"name": "file name", "path": "test_data/mock_file.txt"}
@@ -500,7 +571,7 @@ def test_file_report_submit_command(mocker, data):
     request = mocker.patch.object(Client, "_http_request", return_value=data.api_response)
     get_submission = mocker.patch.object(Netcraft, "get_submission")
 
-    Netcraft.file_report_submit_command(data.args, MOCK_CLIENT)
+    file_report_submit_command(data.args, MOCK_CLIENT)
 
     get_submission.assert_called_with(*data.get_submission_call_args, MOCK_CLIENT)
     assert str(getFilePath.call_args_list) == data.getFilePath_call_args
@@ -560,13 +631,11 @@ def test_email_report_submit_command(mocker):
     Then:
         - Report email messages to Netcraft for analysis.
     """
-    import Netcraft
-
     mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
     request = mocker.patch.object(Client, "_http_request", return_value=email_report_submit.api_response)
     get_submission = mocker.patch.object(Netcraft, "get_submission")
 
-    Netcraft.email_report_submit_command(email_report_submit.args, MOCK_CLIENT)
+    email_report_submit_command(email_report_submit.args, MOCK_CLIENT)
 
     get_submission.assert_called_with(*email_report_submit.get_submission_call_args, MOCK_CLIENT)
 
@@ -610,13 +679,11 @@ def test_url_report_submit_command(mocker):
     Then:
         - Report URLs to Netcraft for analysis.
     """
-    import Netcraft
-
     mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
     request = mocker.patch.object(Client, "_http_request", return_value=url_report_submit.api_response)
     get_submission = mocker.patch.object(Netcraft, "get_submission")
 
-    Netcraft.url_report_submit_command(url_report_submit.args, MOCK_CLIENT)
+    url_report_submit_command(url_report_submit.args, MOCK_CLIENT)
 
     get_submission.assert_called_with(*url_report_submit.get_submission_call_args, MOCK_CLIENT)
 

@@ -15,6 +15,10 @@ from Doppel import (
     doppel_get_alerts_command,
     doppel_create_alert_command,
     doppel_create_abuse_alert_command,
+    doppel_get_alert_screenshot_command,
+    _screenshot_blob_path,
+    _attach_screenshot_if_new,
+    _track_screenshot_version,
     get_modified_remote_data_command,
     format_datetime,
     _paginated_call_to_get_alerts,
@@ -1297,6 +1301,225 @@ def test_client_sends_attribution_headers(requests_mock):
     assert alert_mock.last_request.headers["User-Agent"] == f"doppel-{CLIENT_ATTRIBUTION}"
     # Attribution never replaces auth headers.
     assert alert_mock.last_request.headers["x-api-key"] == "test-api-key"
+
+
+SIGNED_URL_V1 = "https://storage.googleapis.com/screenshots-bucket/TET-1234/shot-v1.png?X-Goog-Signature=abc&X-Goog-Expires=3600"
+SIGNED_URL_V1_RESIGNED = (
+    "https://storage.googleapis.com/screenshots-bucket/TET-1234/shot-v1.png?X-Goog-Signature=zzz&X-Goog-Expires=3600"
+)
+SIGNED_URL_V2 = "https://storage.googleapis.com/screenshots-bucket/TET-1234/shot-v2.png?X-Goog-Signature=def&X-Goog-Expires=3600"
+
+
+def _mock_screenshot_context(mocker, initial=None):
+    """Mock the integration context read/write used for screenshot version tracking.
+
+    Returns copies on read and stores copies on write, mirroring the real server
+    behavior (the context is serialized, so callers never share object references).
+    """
+    import copy
+
+    state = {"screenshot_versions": dict(initial or {})}
+    mocker.patch("Doppel.get_integration_context", side_effect=lambda: copy.deepcopy(state))
+
+    def _set(new_context):
+        snapshot = copy.deepcopy(new_context)
+        state.clear()
+        state.update(snapshot)
+
+    mocker.patch("Doppel.set_integration_context", side_effect=_set)
+    return state
+
+
+def test_screenshot_blob_path_ignores_signature():
+    """Re-signed URLs for the same object must map to the same dedup key."""
+    assert _screenshot_blob_path(SIGNED_URL_V1) == _screenshot_blob_path(SIGNED_URL_V1_RESIGNED)
+    assert _screenshot_blob_path(SIGNED_URL_V1) != _screenshot_blob_path(SIGNED_URL_V2)
+    assert _screenshot_blob_path(SIGNED_URL_V1) == "storage.googleapis.com/screenshots-bucket/TET-1234/shot-v1.png"
+
+
+def test_get_alert_screenshot_command_attaches_new_screenshot(mocker):
+    """First run downloads the screenshot and returns a file entry plus summary."""
+    _mock_screenshot_context(mocker)
+    file_entry = {"Type": 3, "File": "TET-1234-screenshot-shot-v1.png"}
+    mocker.patch("Doppel.fileResult", return_value=file_entry)
+
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {"id": "TET-1234", "screenshot_url": SIGNED_URL_V1}
+    mock_client.download_screenshot.return_value = b"png-bytes"
+
+    results = doppel_get_alert_screenshot_command(mock_client, {"id": "TET-1234"})
+
+    mock_client.download_screenshot.assert_called_once_with(SIGNED_URL_V1)
+    assert results[0] is file_entry
+    summary = results[1]
+    assert summary.outputs["attached"] is True
+    assert summary.outputs["version"] == "shot-v1.png"
+
+
+def test_get_alert_screenshot_command_skips_unchanged_screenshot(mocker):
+    """A re-signed URL for the already-attached version attaches nothing."""
+    _mock_screenshot_context(mocker, {"TET-1234": _screenshot_blob_path(SIGNED_URL_V1)})
+    file_result = mocker.patch("Doppel.fileResult")
+
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {"id": "TET-1234", "screenshot_url": SIGNED_URL_V1_RESIGNED}
+
+    results = doppel_get_alert_screenshot_command(mock_client, {"id": "TET-1234"})
+
+    mock_client.download_screenshot.assert_not_called()
+    file_result.assert_not_called()
+    assert len(results) == 1
+    assert results[0].outputs["attached"] is False
+    assert "already current" in results[0].readable_output
+
+
+def test_get_alert_screenshot_command_force_reattaches(mocker):
+    """force=true re-downloads even when the version is current."""
+    _mock_screenshot_context(mocker, {"TET-1234": _screenshot_blob_path(SIGNED_URL_V1)})
+    mocker.patch("Doppel.fileResult", return_value={"Type": 3})
+
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {"id": "TET-1234", "screenshot_url": SIGNED_URL_V1_RESIGNED}
+    mock_client.download_screenshot.return_value = b"png-bytes"
+
+    results = doppel_get_alert_screenshot_command(mock_client, {"id": "TET-1234", "force": "true"})
+
+    mock_client.download_screenshot.assert_called_once()
+    assert results[-1].outputs["attached"] is True
+
+
+def test_get_alert_screenshot_command_new_version_replaces_tracked(mocker):
+    """A new screenshot version is attached and becomes the tracked version."""
+    context = _mock_screenshot_context(mocker, {"TET-1234": _screenshot_blob_path(SIGNED_URL_V1)})
+    mocker.patch("Doppel.fileResult", return_value={"Type": 3})
+
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {"id": "TET-1234", "screenshot_url": SIGNED_URL_V2}
+    mock_client.download_screenshot.return_value = b"new-png-bytes"
+
+    results = doppel_get_alert_screenshot_command(mock_client, {"id": "TET-1234"})
+
+    assert results[-1].outputs["attached"] is True
+    assert context["screenshot_versions"]["TET-1234"] == _screenshot_blob_path(SIGNED_URL_V2)
+
+
+def test_get_alert_screenshot_command_no_screenshot(mocker):
+    """Alerts without screenshots return a readable message and no file."""
+    _mock_screenshot_context(mocker)
+
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {"id": "TET-1234"}
+
+    results = doppel_get_alert_screenshot_command(mock_client, {"id": "TET-1234"})
+
+    mock_client.download_screenshot.assert_not_called()
+    assert len(results) == 1
+    assert "no screenshot available" in results[0].readable_output
+
+
+def test_get_alert_screenshot_command_requires_id(mocker):
+    with pytest.raises(ValueError, match="id must be specified"):
+        doppel_get_alert_screenshot_command(MagicMock(), {})
+
+
+def test_mirroring_attaches_screenshot_when_param_enabled(mocker):
+    """get-remote-data appends the screenshot file entry when the opt-in param is set."""
+    from Doppel import _get_remote_updated_incident_data_with_entry
+
+    _mock_screenshot_context(mocker)
+    file_entry = {"Type": 3, "File": "TET-1234-screenshot-shot-v1.png"}
+    mocker.patch("Doppel.fileResult", return_value=file_entry)
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {"queue_state": "archived", "screenshot_url": SIGNED_URL_V1, "audit_logs": []}
+    mock_client.download_screenshot.return_value = b"png-bytes"
+
+    _, entries = _get_remote_updated_incident_data_with_entry(
+        mock_client, "TET-1234", "2025-01-19T08:44:52Z", attach_screenshots=True
+    )
+
+    assert file_entry in entries
+
+
+def test_mirroring_skips_screenshot_when_param_disabled(mocker):
+    """Default behavior: no screenshot download during mirroring."""
+    from Doppel import _get_remote_updated_incident_data_with_entry
+
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {"queue_state": "archived", "screenshot_url": SIGNED_URL_V1, "audit_logs": []}
+
+    _, entries = _get_remote_updated_incident_data_with_entry(mock_client, "TET-1234", "2025-01-19T08:44:52Z")
+
+    mock_client.download_screenshot.assert_not_called()
+    assert entries == []
+
+
+def test_mirroring_skips_unchanged_screenshot_version(mocker):
+    """Re-signed URL for an unchanged screenshot never duplicates the file on sync."""
+    from Doppel import _get_remote_updated_incident_data_with_entry
+
+    _mock_screenshot_context(mocker, {"TET-1234": _screenshot_blob_path(SIGNED_URL_V1)})
+    file_result = mocker.patch("Doppel.fileResult")
+
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {"queue_state": "archived", "screenshot_url": SIGNED_URL_V1_RESIGNED, "audit_logs": []}
+
+    _, entries = _get_remote_updated_incident_data_with_entry(
+        mock_client, "TET-1234", "2025-01-19T08:44:52Z", attach_screenshots=True
+    )
+
+    mock_client.download_screenshot.assert_not_called()
+    file_result.assert_not_called()
+    assert entries == []
+
+
+def test_mirroring_screenshot_failure_does_not_block_sync(mocker):
+    """A download error must not prevent the field sync itself."""
+    from Doppel import _get_remote_updated_incident_data_with_entry
+
+    _mock_screenshot_context(mocker)
+
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {"queue_state": "archived", "screenshot_url": SIGNED_URL_V1, "audit_logs": []}
+    mock_client.download_screenshot.side_effect = Exception("GCS unreachable")
+
+    updated_alert, entries = _get_remote_updated_incident_data_with_entry(
+        mock_client, "TET-1234", "2025-01-19T08:44:52Z", attach_screenshots=True
+    )
+
+    assert updated_alert is not None
+    assert entries == []
+
+
+def test_download_screenshot_rejects_non_https():
+    """The screenshot downloader refuses cleartext URLs outright."""
+    from CommonServerPython import DemistoException
+
+    client = Client(base_url="https://api.doppel.com/v1", api_key="test-api-key", verify=True)
+    with pytest.raises(DemistoException, match="non-HTTPS"):
+        client.download_screenshot("http://storage.googleapis.com/screenshots-bucket/TET-1234/shot-v1.png")
+
+
+def test_track_screenshot_version_prunes_oldest(mocker):
+    """The tracking map never grows beyond the cap; oldest entries are evicted first."""
+    import Doppel as doppel_module
+
+    context = _mock_screenshot_context(mocker)
+    mocker.patch.object(doppel_module, "SCREENSHOT_VERSIONS_MAX_TRACKED", 3)
+
+    for i in range(5):
+        _track_screenshot_version(f"TET-{i}", f"bucket/shot-{i}.png")
+
+    versions = context["screenshot_versions"]
+    assert len(versions) == 3
+    assert set(versions) == {"TET-2", "TET-3", "TET-4"}
+
+
+def test_attach_screenshot_if_new_reports_missing_url(mocker):
+    _mock_screenshot_context(mocker)
+    file_entry, blob_path, message = _attach_screenshot_if_new(MagicMock(), "TET-1", None)
+    assert file_entry is None
+    assert blob_path is None
+    assert "no screenshot available" in message
 
 
 def test_pack_version_matches_pack_metadata():

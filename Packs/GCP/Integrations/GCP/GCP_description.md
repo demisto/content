@@ -21,6 +21,8 @@ In the [Google Cloud Console](https://console.cloud.google.com/apis/library), en
 - **Cloud Resource Manager API** (`cloudresourcemanager.googleapis.com`)
 - **BigQuery API** (`bigquery.googleapis.com`)
 - **Cloud Key Management Service (KMS) API** (`cloudkms.googleapis.com`)
+- **Cloud Functions API** (`cloudfunctions.googleapis.com`)
+- **Cloud Logging API** (`logging.googleapis.com`)
 
 #### Step 2 — Create a Service Account
 

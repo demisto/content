@@ -1458,7 +1458,7 @@ script:
     - contextPath: ANYRUN.SandboxAnalysisReportVerdict
       description: "The analysis verdict."
       type: String
-  dockerimage: demisto/anyrun-sdk:1.0.0.10440656
+  dockerimage: demisto/anyrun-sdk:1.0.0.12844876
   subtype: python3
   runonce: false
   script: '-'

@@ -1,2 +1,4 @@
 !dtfeeds-get-indicators limit="10" feed_type="nod" session_id="dt-nod-cortex-integrations"
 !dtfeeds-get-indicators limit="10" feed_type="nad" session_id="dt-nad-cortex-integrations"
+!dtfeeds-get-indicators limit="10" feed_type="iphotlist" session_id="dt-iphotlist-cortex-integrations"
+!dtfeeds-get-indicators limit="10" feed_type="iprisk" session_id="dt-iprisk-cortex-integrations"

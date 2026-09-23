@@ -279,6 +279,34 @@ def test_ipv6_cidr_regex_full_prefix_length(cidr: str, expected_value: str):
     assert got == expected_value, f"For input {cidr!r}: expected {expected_value!r} but got {got!r}"
 
 
+def test_cidr_not_duplicated_as_url():
+    """
+    Given:
+     - Text content containing IPv4 CIDR indicators (e.g. 1.1.1.1/24).
+    When:
+     - Calling extract_text_indicators.
+    Then:
+     - Each CIDR value appears exactly once, typed as CIDR, not duplicated as URL.
+    """
+    from FeedGitHub import extract_text_indicators
+
+    content = {"feed.txt": "Malicious ranges: 1.1.1.1/24 and 192.168.0.0/16"}
+    params = {"owner": "owner", "repo": "repo"}
+    indicators = extract_text_indicators(content, params)
+
+    cidr_values = [i["value"] for i in indicators if i["type"] == "CIDR"]
+    url_values = [i["value"] for i in indicators if i["type"] == "URL"]
+
+    assert "1.1.1.1/24" in cidr_values
+    assert "192.168.0.0/16" in cidr_values
+    # CIDRs must not also appear as URLs
+    assert "1.1.1.1/24" not in url_values
+    assert "192.168.0.0/16" not in url_values
+    # Each CIDR must appear exactly once
+    assert cidr_values.count("1.1.1.1/24") == 1
+    assert cidr_values.count("192.168.0.0/16") == 1
+
+
 def test_get_stix_indicators():
     """
     Given:

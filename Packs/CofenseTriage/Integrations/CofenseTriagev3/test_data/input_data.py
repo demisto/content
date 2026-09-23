@@ -31,7 +31,7 @@ exception_handler = [
         "Bad request",
         404,
         {"errors": [{"detail": "The record identified by -1 could not be found."}]},
-        "Resource not found: invalid endpoint was called.\n" "Details: The record identified by -1 could not be found.",
+        "Resource not found 404: invalid endpoint was called.\n" "Details: The record identified by -1 could not be found.",
     ),
     (
         "Unprocessable Entity",
@@ -39,7 +39,7 @@ exception_handler = [
         {"errors": [{"detail": "threat_key - can't be blank"}, {"detail": "threat_value - can't be blank"}]},
         "Unprocessable Entity\nDetails: threat_key - can't be blank,threat_value - can't be blank",
     ),
-    ("Bad request", 404, "API not found.", "Resource not found: invalid endpoint was called.\nDetails: API not found."),
+    ("Bad request", 404, "API not found.", "Resource not found 404: invalid endpoint was called.\nDetails: API not found."),
 ]
 
 # To be used for testing all the negative scenarios of the function validate_arguments
@@ -80,6 +80,24 @@ list_rule_cmd_arg = [
     ({"active": "test"}, MESSAGES["INVALID_BOOLEAN"]),
     ({"page_number": "-1"}, MESSAGES["PAGE_NUMBER"].format(-1)),
     ({"priority": "a"}, '"a" is not a valid number'),
+]
+
+list_playbook_cmd_arg = [
+    ({"active": "test"}, MESSAGES["INVALID_BOOLEAN"]),
+    ({"trigger_only": "test"}, MESSAGES["INVALID_BOOLEAN"]),
+    ({"delete_report": "test"}, MESSAGES["INVALID_BOOLEAN"]),
+    ({"page_size": "201"}, MESSAGES["PAGE_SIZE"].format(201)),
+    ({"page_number": "-1"}, MESSAGES["PAGE_NUMBER"].format(-1)),
+    ({"created_at": "abc"}, '"abc" is not a valid date'),
+]
+
+execute_playbook_cmd_arg = [
+    ({}, MESSAGES["REQUIRED_ARGUMENT"].format("report_ids")),
+    ({"report_ids": ""}, MESSAGES["REQUIRED_ARGUMENT"].format("report_ids")),
+    ({"report_ids": "1"}, MESSAGES["REQUIRED_ARGUMENT"].format("playbook_id")),
+    ({"report_ids": "1", "playbook_id": ""}, MESSAGES["REQUIRED_ARGUMENT"].format("playbook_id")),
+    ({"report_ids": "a", "playbook_id": "3"}, '"a" is not a valid number'),
+    ({"report_ids": "1", "playbook_id": "a"}, '"a" is not a valid number'),
 ]
 
 list_cluster_cmd_arg = [

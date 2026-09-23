@@ -33,7 +33,7 @@ alter event_type = arrayindex(regextract(_raw_log, "\d{10}\.\d+\s+\S+\s+(\S+)"),
     
 /* Flows. for inbound rules, 1=deny and 0=allow. */
 alter event_type = arrayindex(regextract(_raw_log, "\d{10}\.\d+\s+\S+\s+(\S+)"), 0)
-| filter event_type in ("flows", "firewall", "cellular_firewall", "vpn_firewall", "bridge_anyconnect_client_vpn_firewall")
+| filter event_type in ("flows", "firewall", "cellular_firewall", "vpn_firewall", "bridge_anyconnect_client_vpn_firewall", "l7_firewall")
 | alter 
     appliance_name = arrayindex(regextract(_raw_log, "\d{10}\.\d+\s+(\S+)"), 0),
     direction = arrayindex(regextract(_raw_log, "\S+\s*(0|1)\s+\d{10}\.\d+"), 0),
@@ -276,7 +276,7 @@ alter
 
 /* Fallback for mapping all other event types */
 alter event_type = arrayindex(regextract(_raw_log, "\d{10}\.\d+\s+\S+\s+(\S+)"), 0)
-| filter event_type not in ("urls", "flows", "firewall", "cellular_firewall", "vpn_firewall", "bridge_anyconnect_client_vpn_firewall", "ip_flow_start", "ip_flow_end", "security_event", "ids-alerts", "ids_alerted","events")
+| filter event_type not in ("urls", "flows", "firewall", "cellular_firewall", "vpn_firewall", "bridge_anyconnect_client_vpn_firewall", "l7_firewall", "ip_flow_start", "ip_flow_end", "security_event", "ids-alerts", "ids_alerted", "events")
 | alter 
     appliance_name = arrayindex(regextract(_raw_log, "\d{10}\.\d+\s+(\S+)"), 0),
     event_description = arrayindex(regextract(_raw_log, "\d{10}\.\d+\s+\S+\s+\S+\s+(.+)"), 0)

@@ -2,7 +2,7 @@
     "name": "DomainTools Feed",
     "description": "Indicators feed from DomainTools",
     "support": "partner",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.2.0",
     "author": "DomainTools",
     "url": "https://www.domaintools.com/support/",
     "email": "memberservices@domaintools.com",
@@ -11,7 +11,13 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "DomainTools",
+        "IP feeds",
+        "IP threat intelligence",
+        "IP hotlist",
+        "IP risk"
+    ],
     "certification": "certified",
     "marketplaces": [
         "xsoar",

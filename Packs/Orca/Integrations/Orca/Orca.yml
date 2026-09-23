@@ -225,7 +225,7 @@ script:
       description: Basic information of the file.
       type: string
     description: Downloads a capture file from CS Enterprise.
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.13053055
   isfetch: true
   runonce: false
   script: '-'
