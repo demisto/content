@@ -158,8 +158,8 @@ The Cisco ETD integration does not automatically deploy a Cortex XSIAM dashboard
 
 ```xql
 dataset = cisco_etd_raw
-| comp count() as log_count by _source_log_type
-| view graph type = pie xaxis = _source_log_type yaxis = log_count
+| comp count() as log_count by source_log_type
+| view graph type = pie xaxis = source_log_type yaxis = log_count
 ```
 
 #### Purpose
@@ -176,7 +176,7 @@ Displays the distribution of ETD log types (Message, Audit, and Connection logs)
 
 ```xql
 dataset = cisco_etd_raw
-| filter _source_log_type = "message"
+| filter source_log_type = "message"
 | alter verdict = json_extract_scalar(message, "$.verdict.verdict")
 | alter category = if(verdict in ("phishing", "bec", "scam", "malicious"), "Threat", if(verdict in ("spam", "graymail"), "Unwanted", "Legit"))
 | comp count() as category_count by category
@@ -201,9 +201,9 @@ Provides a high-level classification of email activity into:
 
 ```xql
 dataset = cisco_etd_raw
-| comp count() as event_count by logDate, _source_log_type
+| comp count() as event_count by logDate, source_log_type
 | sort asc logDate
-| view graph type = line xaxis = logDate yaxis = event_count series = _source_log_type
+| view graph type = line xaxis = logDate yaxis = event_count series = source_log_type
 ```
 
 #### Purpose
