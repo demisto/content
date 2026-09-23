@@ -51,4 +51,4 @@ The playbook is a template. Replace the three placeholder tasks with your own fl
 
 ## Screenshot
 
-![Haseen Delta Feed Job Playbook](doc_files/Haseen-DeltaFeed-Generic.png)
+![Haseen Delta Feed Job Playbook](../doc_files/Haseen-DeltaFeed-Generic.png)
