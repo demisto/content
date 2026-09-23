@@ -105,6 +105,5 @@
     "supportedModules": [
         "agentix",
         "xsiam"
-    ],
-    "excludefromtightlycoupled": true
+    ]
 }
