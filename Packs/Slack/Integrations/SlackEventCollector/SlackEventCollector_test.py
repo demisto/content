@@ -1183,3 +1183,68 @@ def test_fetch_events_no_oldest_arg_skips_range_validation(mocker):
 
     return_error.assert_not_called()  # no 'oldest' arg -> guard is a no-op
     assert [e["id"] for e in events] == ["a"]
+
+
+def test_fetch_events_sets_next_trigger_when_limit_reached(mocker):
+    """
+    Given:
+        - A window holding more events than the limit (limit=2, three new events available).
+    When:
+        - Running fetch_events_command (the automated collector).
+    Then:
+        - The run fills the limit (there are still more events to drain), so lastRun carries
+          nextTrigger=0, instructing the platform to re-invoke fetch-events immediately instead
+          of waiting for the next scheduled interval. (Regression guard for the backlog-stall
+          timeout: a busy backlog must keep draining across back-to-back runs.)
+    """
+    from SlackEventCollector import fetch_events_command
+
+    mocker.patch("SlackEventCollector.get_now_timestamp", return_value=1000)
+    mocker.patch.object(
+        Client,
+        "_http_request",
+        return_value=make_page(
+            [
+                {"id": "3", "date_create": 300},
+                {"id": "2", "date_create": 200},
+                {"id": "1", "date_create": 100},
+            ]
+        ),
+    )
+    events, last_run = fetch_events_command(
+        Client(base_url=""),
+        params={"limit": 2, "oldest": "100"},
+        last_run={},
+    )
+
+    assert len(events) == 2  # a full batch was returned
+    assert last_run.get("nextTrigger") == "0"  # more events remain -> re-trigger immediately
+
+
+def test_fetch_events_clears_next_trigger_when_caught_up(mocker):
+    """
+    Given:
+        - A window holding fewer events than the limit (limit=10, one event available), and a
+          lastRun that still carries a stale nextTrigger from a previous busy run.
+    When:
+        - Running fetch_events_command.
+    Then:
+        - The run does NOT fill the limit (caught up), so nextTrigger is cleared and the
+          collector reverts to its normal fetch interval.
+    """
+    from SlackEventCollector import fetch_events_command
+
+    mocker.patch("SlackEventCollector.get_now_timestamp", return_value=1000)
+    mocker.patch.object(
+        Client,
+        "_http_request",
+        return_value=make_page([{"id": "1", "date_create": 100}]),
+    )
+    events, last_run = fetch_events_command(
+        Client(base_url=""),
+        params={"limit": 10, "oldest": "100"},
+        last_run={"nextTrigger": "0"},
+    )
+
+    assert len(events) == 1  # fewer than the limit -> caught up
+    assert "nextTrigger" not in last_run  # stale nextTrigger cleared
