@@ -59,3 +59,7 @@ There is no context output for this command.
 | test_action | test_device | 1.1.1.1 | 2023-04-24T07:00:00Z | test_session_id | 123 | id: 1234<br>descriptor: test_descriptor<br>href: test_href | test_display | 2 | 1234 | test_agent |
 | test_action | test_device | 1.1.1.1 | 2023-04-24T07:00:00Z | test_session_id | 123 | id: 1234<br>descriptor: test_descriptor<br>href: test_href | test_display | 3 | 1234 | test_agent |
 | test_action | test_device | 1.1.1.1 | 2023-04-24T07:00:00Z | test_session_id | 123 | id: 1234<br>descriptor: test_descriptor<br>href: test_href | test_display | 4 | 1234 | test_agent |
+
+## Fetch Behavior
+
+By design, the fetch always lags 60 seconds behind the current time (fetching only up to `now - 60 seconds`). Workday publishes a minute's events gradually and not strictly in timestamp order, so this lag ensures each window is fully published before it is fetched, preventing events from being missed. As a result, the most recent ~60 seconds of events appear only on the next fetch cycle.
