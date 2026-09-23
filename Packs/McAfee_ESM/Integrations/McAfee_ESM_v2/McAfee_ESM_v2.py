@@ -26,18 +26,6 @@ ESM_AES_IV = bytes.fromhex("31323334353637383132333435363738")
 AES_BLOCK_SIZE_BITS = 128
 
 
-def encrypt_credential(value: str) -> str:
-    """AES-128-CBC encrypts a credential and base64-encodes the ciphertext, as required by ESM 11.6.11+.
-
-    :param value: The plaintext credential (username or password).
-    :return: The base64-encoded ciphertext.
-    """
-    padder = padding.PKCS7(AES_BLOCK_SIZE_BITS).padder()
-    padded = padder.update(value.encode("utf-8")) + padder.finalize()
-    encryptor = Cipher(algorithms.AES(ESM_AES_KEY), modes.CBC(ESM_AES_IV)).encryptor()
-    return base64.b64encode(encryptor.update(padded) + encryptor.finalize()).decode()
-
-
 # Minimum supported ESM version (inclusive). Versions below this reached Trellix end-of-life.
 # See https://www.trellix.com/support/end-of-life-products/
 MIN_SUPPORTED_VERSION = Version("11.6.0")
@@ -61,6 +49,18 @@ def validate_version(version: str) -> None:
             f"(see https://www.trellix.com/support/end-of-life-products/). "
             f'Enter version 11.6.0 or later in the "Version" parameter.'
         )
+
+
+def encrypt_credential(value: str) -> str:
+    """AES-128-CBC encrypts a credential and base64-encodes the ciphertext, as required by ESM 11.6.11+.
+
+    :param value: The plaintext credential (username or password).
+    :return: The base64-encoded ciphertext.
+    """
+    padder = padding.PKCS7(AES_BLOCK_SIZE_BITS).padder()
+    padded = padder.update(value.encode("utf-8")) + padder.finalize()
+    encryptor = Cipher(algorithms.AES(ESM_AES_KEY), modes.CBC(ESM_AES_IV)).encryptor()
+    return base64.b64encode(encryptor.update(padded) + encryptor.finalize()).decode()
 
 
 def encode_credential(value: str, version: str) -> str:
