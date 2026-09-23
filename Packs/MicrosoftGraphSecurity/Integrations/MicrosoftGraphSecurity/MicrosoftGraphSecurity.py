@@ -1232,8 +1232,11 @@ def to_utc_datetime(val: Any) -> Optional[datetime]:
     Parses a timestamp string or object into a timezone-aware UTC datetime.
     Ensures safe chronological comparison and sorting across timestamps with varying fractional second precision.
     """
-    if dt := arg_to_datetime(val):
-        return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt  # noqa: UP017
+    try:
+        if dt := arg_to_datetime(val):
+            return dt.astimezone(timezone.utc) if dt.tzinfo is not None else dt.replace(tzinfo=timezone.utc)  # noqa: UP017
+    except (ValueError, TypeError):
+        return None
     return None
 
 
@@ -1291,6 +1294,7 @@ def fetch_incidents(
         demisto.debug(f"Incidents times from API: {[i.get('createdDateTime') for i in incidents]}")
         demisto.debug(f"Deduplication start -> Last incident DT: {last_incident_dt}, Cached IDs count: {len(last_fetched_ids)}")
 
+        ingested_records: list[tuple[str, Optional[datetime]]] = []
         for incident in incidents:
             incident_time_str = incident.get("createdDateTime")
             incident_dt = to_utc_datetime(incident_time_str)
@@ -1305,28 +1309,34 @@ def fetch_incidents(
             )
 
             if (is_newer or is_same_time_unseen) and count < fetch_limit:
-                demisto.debug(f"Ingesting incident {incident_id} at {incident_time_str} (Newer: {is_newer}, Same-time unseen: {is_same_time_unseen})")
+                demisto.debug(
+                    f"Ingesting incident {incident_id} at {incident_time_str} "
+                    f"(Newer: {is_newer}, Same-time unseen: {is_same_time_unseen})"
+                )
+                ingested_records.append((incident_id, incident_dt))
                 demisto_incidents.append(
                     {
                         "name": f'{incident.get("displayName")} - {incident.get("id")}',
                         "occurred": incident.get("createdDateTime"),
                         "severity": SEVERITY_MAP.get(incident.get("severity", ""), 0),
                         "rawJSON": json.dumps(incident),
-                        "id": incident.get("id"),
                     }
                 )
                 count += 1
             else:
                 limit_reached = count >= fetch_limit
-                demisto.debug(f"Skipping incident {incident_id} at {incident_time_str} (Newer: {is_newer}, Same-time unseen: {is_same_time_unseen}, Limit reached: {limit_reached})")
+                demisto.debug(
+                    f"Skipping incident {incident_id} at {incident_time_str} "
+                    f"(Newer: {is_newer}, Same-time unseen: {is_same_time_unseen}, Limit reached: {limit_reached})"
+                )
 
         if demisto_incidents:
             latest_time_str = demisto_incidents[-1].get("occurred")
             latest_dt = to_utc_datetime(latest_time_str)
             ids_at_latest_time = [
-                i.get("id")
-                for i in demisto_incidents
-                if to_utc_datetime(i.get("occurred")) == latest_dt
+                rec_id
+                for rec_id, rec_dt in ingested_records
+                if rec_id and rec_dt == latest_dt
             ]
             if last_incident_dt and latest_dt == last_incident_dt:
                 ids_at_latest_time = list(last_fetched_ids.union(ids_at_latest_time))
@@ -1368,7 +1378,10 @@ def fetch_alerts(
     time_to = datetime.now().strftime(TIMESTAMP_FORMAT)
 
     # Get alerts from MS Graph Security. Pass fetch_limit as the page size so we request up to fetch_limit alerts.
-    demisto.debug(f"Fetching MS Graph Security alerts. From: {time_from}. To: {time_to}. Limit: {fetch_limit}. Filter: {filter_query}")
+    demisto.debug(
+        f"Fetching MS Graph Security alerts. From: {time_from}. To: {time_to}. "
+        f"Limit: {fetch_limit}. Filter: {filter_query}"
+    )
     demisto.debug(f"Current last_run state: {last_run}")
     
     args = {"time_to": time_to, "time_from": time_from, "filter": filter_query, "page_size": fetch_limit}
@@ -1391,6 +1404,7 @@ def fetch_alerts(
         demisto.debug(f"Alerts times from API: {[a.get('createdDateTime') for a in alerts]}")
         demisto.debug(f"Deduplication start -> Last alert DT: {last_alert_dt}, Cached IDs count: {len(last_fetched_ids)}")
         
+        ingested_records: list[tuple[str, Optional[datetime]]] = []
         for alert in alerts:
             alert_time_str = alert.get("createdDateTime")
             alert_dt = to_utc_datetime(alert_time_str)
@@ -1405,28 +1419,34 @@ def fetch_alerts(
             )
 
             if (is_newer or is_same_time_unseen) and count < fetch_limit:
-                demisto.debug(f"Ingesting alert {alert_id} at {alert_time_str} (Newer: {is_newer}, Same-time unseen: {is_same_time_unseen})")
+                demisto.debug(
+                    f"Ingesting alert {alert_id} at {alert_time_str} "
+                    f"(Newer: {is_newer}, Same-time unseen: {is_same_time_unseen})"
+                )
+                ingested_records.append((alert_id, alert_dt))
                 demisto_alerts.append(
                     {
                         "name": f'{alert.get("title", "Unknown")} - {alert.get("id", "Unknown")}',
                         "occurred": alert.get("createdDateTime"),
                         "severity": SEVERITY_MAP.get(alert.get("severity", ""), 0),
                         "rawJSON": json.dumps(alert),
-                        "id": alert.get("id"),
                     }
                 )
                 count += 1
             else:
                 limit_reached = count >= fetch_limit
-                demisto.debug(f"Skipping alert {alert_id} at {alert_time_str} (Newer: {is_newer}, Same-time unseen: {is_same_time_unseen}, Limit reached: {limit_reached})")
+                demisto.debug(
+                    f"Skipping alert {alert_id} at {alert_time_str} "
+                    f"(Newer: {is_newer}, Same-time unseen: {is_same_time_unseen}, Limit reached: {limit_reached})"
+                )
 
         if demisto_alerts:
             latest_time_str = demisto_alerts[-1].get("occurred")
             latest_dt = to_utc_datetime(latest_time_str)
             ids_at_latest_time = [
-                alert.get("id")
-                for alert in demisto_alerts
-                if to_utc_datetime(alert.get("occurred")) == latest_dt
+                rec_id
+                for rec_id, rec_dt in ingested_records
+                if rec_id and rec_dt == latest_dt
             ]
             if last_alert_dt and latest_dt == last_alert_dt:
                 ids_at_latest_time = list(last_fetched_ids.union(ids_at_latest_time))
