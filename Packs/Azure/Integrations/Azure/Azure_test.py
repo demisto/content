@@ -2331,7 +2331,9 @@ def test_postgres_flexible_server_configuration_update_command(mocker, client, m
 
     result = postgres_flexible_server_configuration_update_command(client, mock_params, args)
 
-    assert "Updated the configuration log_checkpoints of the PostgreSQL Flexible Server test-postgres-flex" in result.readable_output
+    assert (
+        "Updated the configuration log_checkpoints of the PostgreSQL Flexible Server test-postgres-flex" in result.readable_output
+    )
     client.postgres_flexible_server_configuration_update.assert_called_once_with(
         "test-postgres-flex",
         "log_checkpoints",
