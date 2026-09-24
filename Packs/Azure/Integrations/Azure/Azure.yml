@@ -2137,8 +2137,8 @@ script:
       description: Source of the configuration value (e.g. "user-override").
     - name: value
       type: string
-      required: false
-      description: The new value to set for the configuration parameter.
+      required: true
+      description: The new value of the configuration (also known as server parameter). Required to update the value assigned to a specific modifiable configuration.
     outputs: [] # No outputs are returned in response
   - arguments:
     - name: subscription_id
