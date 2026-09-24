@@ -12,9 +12,9 @@ import pytest
 
 def test_shim_imports_run_entry_point():
     """The shim must re-export the ApiModule entry point under its expected name."""
-    assert hasattr(integration_module, "run_okta_iam_integration"), (
-        "OktaIAMApiModule.run_okta_iam_integration must be importable via the shim"
-    )
+    assert hasattr(
+        integration_module, "run_okta_iam_integration"
+    ), "OktaIAMApiModule.run_okta_iam_integration must be importable via the shim"
 
 
 def test_shim_imports_client():
