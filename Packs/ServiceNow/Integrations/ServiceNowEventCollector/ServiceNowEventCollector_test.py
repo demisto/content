@@ -1057,14 +1057,15 @@ def test_fetch_events_outbound_http_advances_time_and_dedups_across_runs(mocker)
     ]
 
     def fake_search(from_time, log_type, limit=None, offset=0):
-        # Return only events newer-or-equal to from_time, ascending — matching the query.
-        result = [e for e in all_events if e["sys_created_on"] >= from_time]
+        # Return only events strictly newer than from_time, ascending — matching the API query,
+        # which uses the strict '>' operator (sys_created_on>{from_time}).
+        result = [e for e in all_events if e["sys_created_on"] > from_time]
         return copy.deepcopy(sorted(result, key=lambda e: e["sys_created_on"]))
 
     mocker.patch.object(client, "search_events", side_effect=fake_search)
 
-    # ---- First run: starting window at the oldest event's time ----
-    initial_last_run = {LogType.OUTBOUND_HTTP_LOG.last_fetch_time_key: "2026-09-17 10:00:00"}
+    # ---- First run: starting window just before the oldest event's time ----
+    initial_last_run = {LogType.OUTBOUND_HTTP_LOG.last_fetch_time_key: "2026-09-17 09:59:59"}
     collected_first, last_run_after_first = fetch_events_command(client, initial_last_run, [LogType.OUTBOUND_HTTP_LOG])
 
     # last_fetch_time must advance to the NEWEST event, not the oldest.
