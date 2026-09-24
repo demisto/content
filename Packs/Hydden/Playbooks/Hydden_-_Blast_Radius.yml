@@ -1,0 +1,174 @@
+id: silent-Hydden - Blast Radius
+version: -1
+name: silent-Hydden - Blast Radius
+description: When a Cortex issue flags an account, take the account name or email from the alert and get its blast radius from Hydden Control. The command looks up a unique Hydden UUID first. Returns Hydden.Identity blast-radius fields.
+starttaskid: "0"
+fromversion: "8.9.0"
+inputs:
+- key: AccountId
+  value:
+    simple: ${alert.username}
+  required: true
+  description: Cortex account name or email from the alert. Defaults to ${alert.username}.
+  playbookInputQuery:
+outputs:
+- contextPath: Hydden.Identity.blast_radius
+  description: The subject's blast radius score, as a string.
+  type: string
+- contextPath: Hydden.Identity.score
+  description: The reach score for the subject.
+  type: number
+- contextPath: Hydden.Identity.reachable_resources
+  description: The number of resources the subject can reach.
+  type: number
+- contextPath: Hydden.Identity.tenant_resources
+  description: The total resources in the tenant, the denominator for share_of_tenant.
+  type: number
+- contextPath: Hydden.Identity.share_of_tenant
+  description: The fraction of tenant resources the subject reaches.
+  type: number
+- contextPath: Hydden.Identity.denied_resources
+  description: The resources reachable by grant but blocked by a deny rule.
+  type: number
+- contextPath: Hydden.Identity.subject_ref
+  description: The ref the score was computed for.
+  type: string
+- contextPath: Hydden.Identity.subject_type
+  description: The subject type the score was computed for.
+  type: string
+- contextPath: Hydden.Identity.computed_at
+  description: The time when the score was computed, for example 2024-01-15T12:34:56Z.
+  type: date
+tasks:
+  "0":
+    id: "0"
+    taskid: b1111111-c222-4d33-8e44-f55555555501
+    type: start
+    task:
+      id: b1111111-c222-4d33-8e44-f55555555501
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b1111111-c222-4d33-8e44-f55555555502
+    type: regular
+    task:
+      id: b1111111-c222-4d33-8e44-f55555555502
+      version: -1
+      name: Set account ID
+      description: Stage a single account identifier from the alert under Hydden.Input.AccountId.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: Hydden.Input.AccountId
+      value:
+        complex:
+          root: inputs.AccountId
+          transformers:
+          - operator: uniq
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: b1111111-c222-4d33-8e44-f55555555503
+    type: regular
+    task:
+      id: b1111111-c222-4d33-8e44-f55555555503
+      version: -1
+      name: Get blast radius from Hydden
+      description: Call hydden-blast-radius with the Cortex name or email from the alert. The command looks up a unique Hydden UUID via GET /accounts/lookup, then GET /blast-radius.
+      script: 'Hydden Control|||hydden-blast-radius'
+      type: regular
+      iscommand: true
+      brand: Hydden Control
+    scriptarguments:
+      account_id:
+        complex:
+          root: Hydden.Input
+          accessor: AccountId
+          transformers:
+          - operator: uniq
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 470,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+quiet: false
+tests:
+- No tests
+issilent: true
