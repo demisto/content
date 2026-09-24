@@ -392,10 +392,10 @@ def get_error_details(res):
     Returns:
         (str) The parsed error details.
     """
-    error_msg = f'{res.get("errorSummary")}. '
+    error_msg = f"{res.get('errorSummary')}. "
     causes = ""
     for idx, cause in enumerate(res.get("errorCauses", []), 1):
-        causes += f'{idx}. {cause.get("errorSummary")}\n'
+        causes += f"{idx}. {cause.get('errorSummary')}\n"
     if causes:
         error_msg += f"Reason:\n{causes}"
     return error_msg

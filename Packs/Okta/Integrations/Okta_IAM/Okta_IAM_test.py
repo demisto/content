@@ -639,9 +639,7 @@ def test_main_legacy_auth_header_when_ucp_off(mocker):
     import Okta_IAM
 
     mocker.patch.object(Okta_IAM, "should_use_ucp_auth", return_value=False)
-    mocker.patch.object(
-        demisto, "params", return_value={"url": "https://test.com", "credentials": {"password": "my-token"}}
-    )
+    mocker.patch.object(demisto, "params", return_value={"url": "https://test.com", "credentials": {"password": "my-token"}})
     mocker.patch.object(demisto, "command", return_value="test-module")
     mocker.patch.object(demisto, "getIntegrationContext", return_value={})
     mocker.patch.object(Okta_IAM, "test_module")

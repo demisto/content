@@ -109,7 +109,7 @@ class OktaClient(BaseClient):
                     missing_required_params.append("Private key")
 
                 if missing_required_params:
-                    raise ValueError(f'Required OAuth parameters are missing: {", ".join(missing_required_params)}')
+                    raise ValueError(f"Required OAuth parameters are missing: {', '.join(missing_required_params)}")
 
     def assign_app_role(self, client_id: str, role: str, auth_type: AuthType) -> dict:
         """
