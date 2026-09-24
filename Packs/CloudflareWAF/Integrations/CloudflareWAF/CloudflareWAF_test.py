@@ -938,13 +938,14 @@ class TestRulesetRuleCommands:
          - cloudflare_waf_ruleset_rule_create_command is called.
         Then:
          - The request includes the dry_run=true query parameter.
+         - The readable output is a dry-run message (not a success message).
+         - No context output is set.
         """
         from CloudflareWAF import cloudflare_waf_ruleset_rule_create_command
 
         ruleset_id = "ruleset_id_1"
-        mock_response = load_mock_response("create_ruleset_rule.json")
         url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/{ruleset_id}/rules"
-        requests_mock.post(url, json=mock_response)
+        requests_mock.post(url, json={"result": None, "success": True, "errors": [], "messages": []})
 
         args = {
             "ruleset_id": ruleset_id,
@@ -952,9 +953,11 @@ class TestRulesetRuleCommands:
             "dry_run": "true",
         }
 
-        cloudflare_waf_ruleset_rule_create_command(mock_client, args)
+        result = cloudflare_waf_ruleset_rule_create_command(mock_client, args)
 
         assert requests_mock.last_request.qs.get("dry_run") == ["true"]
+        assert "Dry run" in result.readable_output
+        assert result.outputs is None
 
     def test_ruleset_rule_create_mutually_exclusive(self, mock_client):
         """
@@ -1011,6 +1014,37 @@ class TestRulesetRuleCommands:
         assert result.outputs_prefix == "CloudflareWAF.Ruleset"
         assert result.outputs["rules"][0]["action"] == "log"
 
+    def test_ruleset_rule_update_dry_run(self, requests_mock, mock_client):
+        """
+        Scenario: Update a ruleset rule with dry_run=true.
+        Given:
+         - dry_run set to 'true' in args.
+        When:
+         - cloudflare_waf_ruleset_rule_update_command is called.
+        Then:
+         - The request includes the dry_run=true query parameter.
+         - The readable output is a dry-run message and no context output is set.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_rule_update_command
+
+        ruleset_id = "ruleset_id_1"
+        rule_id = "rule_id_1"
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/{ruleset_id}/rules/{rule_id}"
+        requests_mock.patch(url, json={"result": None, "success": True, "errors": [], "messages": []})
+
+        args = {
+            "ruleset_id": ruleset_id,
+            "rule_id": rule_id,
+            "rule": '{"action": "log", "expression": "(ip.src eq 192.0.2.1)"}',
+            "dry_run": "true",
+        }
+
+        result = cloudflare_waf_ruleset_rule_update_command(mock_client, args)
+
+        assert requests_mock.last_request.qs.get("dry_run") == ["true"]
+        assert "Dry run" in result.readable_output
+        assert result.outputs is None
+
     def test_ruleset_rule_update_invalid_json(self, mock_client):
         """
         Scenario: Update a ruleset rule with an invalid rule JSON string.
@@ -1050,6 +1084,31 @@ class TestRulesetRuleCommands:
         result = cloudflare_waf_ruleset_rule_delete_command(mock_client, args)
 
         assert result.readable_output == f"Rule {rule_id} was successfully deleted from ruleset {ruleset_id}."
+
+    def test_ruleset_rule_delete_dry_run(self, requests_mock, mock_client):
+        """
+        Scenario: Delete a ruleset rule with dry_run=true.
+        Given:
+         - dry_run set to 'true' in args.
+        When:
+         - cloudflare_waf_ruleset_rule_delete_command is called.
+        Then:
+         - The request includes the dry_run=true query parameter.
+         - The readable output is a dry-run message, not a success message.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_rule_delete_command
+
+        ruleset_id = "ruleset_id_1"
+        rule_id = "rule_id_1"
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/{ruleset_id}/rules/{rule_id}"
+        requests_mock.delete(url, json=load_mock_response("delete_ruleset_rule.json"))
+
+        args = {"ruleset_id": ruleset_id, "rule_id": rule_id, "dry_run": "true"}
+
+        result = cloudflare_waf_ruleset_rule_delete_command(mock_client, args)
+
+        assert requests_mock.last_request.qs.get("dry_run") == ["true"]
+        assert "Dry run" in result.readable_output
 
     def test_ruleset_rule_delete_account_scope_override(self, requests_mock):
         """
@@ -1264,13 +1323,14 @@ class TestRulesetEntrypointCommands:
          - cloudflare_waf_ruleset_entrypoint_update_command is called.
         Then:
          - The request includes the dry_run=true query parameter.
+         - The readable output is a dry-run message.
+         - No context output is set.
         """
         from CloudflareWAF import cloudflare_waf_ruleset_entrypoint_update_command
 
         phase = "http_request_firewall_managed"
-        mock_response = load_mock_response("update_entrypoint_ruleset.json")
         url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/phases/{phase}/entrypoint"
-        requests_mock.put(url, json=mock_response)
+        requests_mock.put(url, json={"result": None, "success": True, "errors": [], "messages": []})
 
         args = {
             "phase": phase,
@@ -1278,9 +1338,11 @@ class TestRulesetEntrypointCommands:
             "dry_run": "true",
         }
 
-        cloudflare_waf_ruleset_entrypoint_update_command(mock_client, args)
+        result = cloudflare_waf_ruleset_entrypoint_update_command(mock_client, args)
 
         assert requests_mock.last_request.qs.get("dry_run") == ["true"]
+        assert "Dry run" in result.readable_output
+        assert result.outputs is None
 
     def test_ruleset_entrypoint_update_invalid_json(self, mock_client):
         """
@@ -1522,9 +1584,10 @@ class TestRulesetVersionCommands:
 
         args = {"ruleset_id": ruleset_id, "version": version, "dry_run": "true"}
 
-        cloudflare_waf_ruleset_version_delete_command(mock_client, args)
+        result = cloudflare_waf_ruleset_version_delete_command(mock_client, args)
 
         assert requests_mock.last_request.qs.get("dry_run") == ["true"]
+        assert "Dry run" in result.readable_output
 
     def test_ruleset_version_delete_account_scope_override(self, requests_mock):
         """

@@ -1915,7 +1915,14 @@ def cloudflare_waf_ruleset_rule_create_command(client: Client, args: dict[str, A
         dry_run=dry_run,
     )
 
-    output = response.get("result", {})
+    # On a dry run the API returns "result": null and no rule is created.
+    if dry_run:
+        return CommandResults(
+            readable_output=f"Dry run: the rule was validated for ruleset {ruleset_id}. No changes were applied.",
+            raw_response=response,
+        )
+
+    output = response.get("result") or {}
 
     readable_output = _ruleset_readable_output("Ruleset details", output)
 
@@ -1965,7 +1972,14 @@ def cloudflare_waf_ruleset_rule_update_command(client: Client, args: dict[str, A
         dry_run=dry_run,
     )
 
-    output = response.get("result", {})
+    # On a dry run the API returns "result": null and the rule is not modified.
+    if dry_run:
+        return CommandResults(
+            readable_output=f"Dry run: rule {rule_id} in ruleset {ruleset_id} was validated. No changes were applied.",
+            raw_response=response,
+        )
+
+    output = response.get("result") or {}
 
     readable_output = _ruleset_readable_output("Ruleset details", output)
 
@@ -2006,7 +2020,12 @@ def cloudflare_waf_ruleset_rule_delete_command(client: Client, args: dict[str, A
         dry_run=dry_run,
     )
 
-    return CommandResults(readable_output=f"Rule {rule_id} was successfully deleted from ruleset {ruleset_id}.")
+    if dry_run:
+        readable_output = f"Dry run: rule {rule_id} in ruleset {ruleset_id} was validated for deletion. No changes were applied."
+    else:
+        readable_output = f"Rule {rule_id} was successfully deleted from ruleset {ruleset_id}."
+
+    return CommandResults(readable_output=readable_output)
 
 
 def cloudflare_waf_ruleset_entrypoint_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2083,7 +2102,14 @@ def cloudflare_waf_ruleset_entrypoint_update_command(client: Client, args: dict[
         dry_run=dry_run,
     )
 
-    output = response.get("result", {})
+    # On a dry run the API returns "result": null and the entry point is not updated.
+    if dry_run:
+        return CommandResults(
+            readable_output=f"Dry run: the {phase} entry point ruleset was validated. No changes were applied.",
+            raw_response=response,
+        )
+
+    output = response.get("result") or {}
 
     readable_output = _ruleset_readable_output("Ruleset details", output)
 
@@ -2209,7 +2235,14 @@ def cloudflare_waf_ruleset_version_delete_command(client: Client, args: dict[str
         dry_run=dry_run,
     )
 
-    return CommandResults(readable_output=f"Version {version} of ruleset {ruleset_id} was successfully deleted.")
+    if dry_run:
+        readable_output = (
+            f"Dry run: version {version} of ruleset {ruleset_id} was validated for deletion. No changes were applied."
+        )
+    else:
+        readable_output = f"Version {version} of ruleset {ruleset_id} was successfully deleted."
+
+    return CommandResults(readable_output=readable_output)
 
 
 def cloudflare_waf_ruleset_entrypoint_version_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
