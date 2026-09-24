@@ -254,7 +254,7 @@ def main():
     auth_and_token_url = params.get("cred_auth_id", {}).get("password") or params.get("auth_id")
     enc_key = params.get("cred_enc_key", {}).get("password") or params.get("enc_key")
     certificate_thumbprint = params.get("cred_certificate_thumbprint", {}).get("password") or params.get("certificate_thumbprint")
-    private_key = params.get("private_key", {}).get("password")
+    private_key = params.get("private_key")
     verify = not params.get("unsecure", False)
     proxy: bool = params.get("proxy", False)
     is_gov: bool = argToBoolean(params.get("gov_account", False))
