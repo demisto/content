@@ -8,12 +8,12 @@ subtype: python3
 tags:
 - infra
 - server
-comment: Common Okta code for all Okta-related integrations.
+comment: Common Okta code for all Okta-related integrations, including the Okta v2 integration implementation.
 system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/crypto:1.0.0.111961
+dockerimage: demisto/crypto:1.0.0.12833174
 fromversion: 5.0.0
 tests:
 - No test
