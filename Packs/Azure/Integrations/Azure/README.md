@@ -3144,19 +3144,19 @@ Gets a list of managed clusters in the specified subscription. Required permissi
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.AKS.ManagedCluster.id | String | Resource ID. |
-| Azure.AKS.ManagedCluster.location | String | Resource location. |
-| Azure.AKS.ManagedCluster.name | String | Resource name. |
-| Azure.AKS.ManagedCluster.tags | Unknown | Resource tags. |
-| Azure.AKS.ManagedCluster.type | String | Resource type. |
+| Azure.AKS.ManagedCluster.id | String | The resource ID. |
+| Azure.AKS.ManagedCluster.location | String | The resource location. |
+| Azure.AKS.ManagedCluster.name | String | The resource name. |
+| Azure.AKS.ManagedCluster.tags | Unknown | The resource tags. |
+| Azure.AKS.ManagedCluster.type | String | The resource type. |
 | Azure.AKS.ManagedCluster.properties.provisioningState | String | The current deployment or provisioning state, which only appears in the response. |
-| Azure.AKS.ManagedCluster.properties.kubernetesVersion | String | Version of Kubernetes specified when creating the managed cluster. |
+| Azure.AKS.ManagedCluster.properties.kubernetesVersion | String | The version of Kubernetes specified when creating the managed cluster. |
 | Azure.AKS.ManagedCluster.properties.maxAgentPools | Number | The maximum number of agent pools for the managed cluster. |
-| Azure.AKS.ManagedCluster.properties.dnsPrefix | String | DNS prefix specified when creating the managed cluster. |
-| Azure.AKS.ManagedCluster.properties.fqdn | String | FQDN for the master pool. |
-| Azure.AKS.ManagedCluster.properties.nodeResourceGroup | String | Name of the resource group containing agent pool nodes. |
+| Azure.AKS.ManagedCluster.properties.dnsPrefix | String | The DNS prefix specified when creating the managed cluster. |
+| Azure.AKS.ManagedCluster.properties.fqdn | String | The FQDN for the master pool. |
+| Azure.AKS.ManagedCluster.properties.nodeResourceGroup | String | The name of the resource group containing agent pool nodes. |
 | Azure.AKS.ManagedCluster.properties.enableRBAC | Boolean | Whether to enable Kubernetes Role-Based Access Control \(RBAC\). |
-| Azure.AKS.ManagedCluster.properties.networkProfile.networkPlugin | String | Network plugin used for building Kubernetes network. |
+| Azure.AKS.ManagedCluster.properties.networkProfile.networkPlugin | String | The network plugin used for building the Kubernetes network. |
 | Azure.AKS.ManagedCluster.properties.addonProfiles.omsagent.enabled | Boolean | Whether the Operations Management Suite Agent is enabled. |
 | Azure.AKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting.enabled | Boolean | Whether the ingress is configured with automatic public DNS name creation. |
 
@@ -3174,7 +3174,7 @@ Updates a managed cluster with the specified configuration. Required permissions
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_name | The name of the managed cluster resource. Can be retrieved using the azure-aks-managed-cluster-list command. | Required |
-| location | Resource location. Can be retrieved using the azure-aks-managed-cluster-list command. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilse, brazilsouth, canadacentral, canadaeast, centralfrance, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, germanyn, germanywc, japaneast, japanwest, koreacentral, koreasouth, northcentralus, northeurope, norwaye, norwayw, southafricanorth, southafricawest, southcentralus, southeastasia, southfrance, southindia, switzerlandn, switzerlandw, uaecentral, uaenorth, uknorth, uksouth, uksouth2, ukwest, westcentralus, westeurope, westindia, westus, westus2. | Required |
+| location | The resource location. Can be retrieved using the azure-aks-managed-cluster-list command. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilse, brazilsouth, canadacentral, canadaeast, centralfrance, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, germanyn, germanywc, japaneast, japanwest, koreacentral, koreasouth, northcentralus, northeurope, norwaye, norwayw, southafricanorth, southafricawest, southcentralus, southeastasia, southfrance, southindia, switzerlandn, switzerlandw, uaecentral, uaenorth, uknorth, uksouth, uksouth2, ukwest, westcentralus, westeurope, westindia, westus, westus2. | Required |
 | http_application_routing_enabled | Whether to configure ingress with automatic public DNS name creation. Possible values are: true, false. | Optional |
 | monitoring_agent_enabled | Whether to turn on Log Analytics monitoring. If enabled and monitoring_resource_name is not specified, will use the currently configured workspace resource ID. Possible values are: true, false. | Optional |
 | monitoring_resource_name | The name of an existing Log Analytics workspace to use for storing monitoring data. Can be retrieved in the Log Analytics workspace from the Azure portal. | Optional |

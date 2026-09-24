@@ -3407,46 +3407,46 @@ script:
       required:platform: true
     outputs:
     - contextPath: Azure.AKS.ManagedCluster.id
-      description: Resource ID.
+      description: The resource ID.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.location
-      description: Resource location.
+      description: The resource location.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.name
-      description: Resource name.
+      description: The resource name.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.tags
-      description: Resource tags.
+      description: The resource tags.
       type: Unknown
     - contextPath: Azure.AKS.ManagedCluster.type
-      description: Resource type.
+      description: The resource type.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.provisioningState
       description: The current deployment or provisioning state, which only appears in the response.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.kubernetesVersion
-      description: Version of Kubernetes specified when creating the managed cluster.
+      description: The version of Kubernetes specified when creating the managed cluster.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.maxAgentPools
       description: The maximum number of agent pools for the managed cluster.
       type: Number
     - contextPath: Azure.AKS.ManagedCluster.properties.dnsPrefix
-      description: DNS prefix specified when creating the managed cluster.
+      description: The DNS prefix specified when creating the managed cluster.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.fqdn
-      description: FQDN for the master pool.
+      description: The FQDN for the master pool.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.agentPoolProfiles.name
-      description: Unique name of the agent pool profile in the context of the subscription and resource group.
+      description: The unique name of the agent pool profile in the context of the subscription and resource group.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.agentPoolProfiles.count
-      description: Number of agents (VMs) to host Docker containers.
+      description: The number of agents (VMs) to host Docker containers.
       type: Number
     - contextPath: Azure.AKS.ManagedCluster.properties.agentPoolProfiles.vmSize
-      description: Size of agent VMs.
+      description: The size of agent VMs.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.agentPoolProfiles.maxPods
-      description: Maximum number of pods that can run on a node.
+      description: The maximum number of pods that can run on a node.
       type: Number
     - contextPath: Azure.AKS.ManagedCluster.properties.agentPoolProfiles.osType
       description: The operating system type, either Linux or Windows.
@@ -3455,37 +3455,37 @@ script:
       description: The current deployment or provisioning state.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.agentPoolProfiles.orchestratorVersion
-      description: Version of the orchestrator specified when creating the managed cluster.
+      description: The version of the orchestrator specified when creating the managed cluster.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.linuxProfile.adminUsername
       description: The name of the administrator account.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.linuxProfile.ssh.publicKeys.keyData
-      description: Certificate public key used to authenticate with VMs through SSH.
+      description: The certificate public key used to authenticate with VMs through SSH.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.servicePrincipalProfile.clientId
       description: The ID for the service principal.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.nodeResourceGroup
-      description: Name of the resource group containing agent pool nodes.
+      description: The name of the resource group containing agent pool nodes.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.enableRBAC
       description: Whether to enable Kubernetes Role-Based Access Control (RBAC).
       type: Boolean
     - contextPath: Azure.AKS.ManagedCluster.properties.diskEncryptionSetID
-      description: Resource ID of the disk encryption set to use for enabling encryption at rest.
+      description: The resource ID of the disk encryption set to use for enabling encryption at rest.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.networkProfile.networkPlugin
-      description: Network plugin used for building Kubernetes network.
+      description: The network plugin used for building the Kubernetes network.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.networkProfile.podCidr
-      description: A CIDR notation IP range from which to assign pod IPs when kubenet is used.
+      description: The CIDR notation IP range from which to assign pod IPs when kubenet is used.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.networkProfile.serviceCidr
-      description: A CIDR notation IP range from which to assign service cluster IPs.
+      description: The CIDR notation IP range from which to assign service cluster IPs.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.networkProfile.dnsServiceIP
-      description: An IP address assigned to the Kubernetes DNS service.
+      description: The IP address assigned to the Kubernetes DNS service.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.addonProfiles.omsagent.enabled
       description: Whether the Operations Management Suite Agent is enabled.
@@ -3506,7 +3506,7 @@ script:
       name: resource_name
       required: true
     - auto: PREDEFINED
-      description: Resource location. Can be retrieved using the azure-aks-managed-cluster-list command.
+      description: The resource location. Can be retrieved using the azure-aks-managed-cluster-list command.
       name: location
       predefined:
       - 'australiacentral'
