@@ -3,12 +3,14 @@ commonfields:
   id: Group-IB Digital Risk Protection
   version: -1
 configuration:
-- defaultvalue: https://drp.group-ib.com/client_api/
-  display: GIB DRP URL
+- defaultvalue: https://drp.group-ib.com/client_api
+  display: GIB DRP API URL
   name: url
   required: true
   section: Connect
   type: 0
+  additionalinfo: >
+    Base URL of the Group-IB DRP API, not of the DRP web interface. For the SaaS portal this is https://drp.group-ib.com/client_api.
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -44,9 +46,9 @@ configuration:
   displaypassword: ""
   hiddenusername: false
   section: Connect
-- display: Filter by Violation Type
+- display: Filter by Violation Section
   additionalinfo: >
-    Select a Violation Section to filter fetched Violations. Options map to DRP sections: Web (1), Marketplace (3), Advertising (5), Mobile Apps (2), Social Networks (4), Instant Messengers (6). Leave empty to fetch from all sections.
+    Fetch Violations found in one DRP section only. Options map to the DRP `section` parameter: Web (1), Mobile Apps (2), Marketplace (3), Social Networks (4), Advertising (5), Instant Messengers (6). Leave empty to fetch from all sections.
   name: violationSection
   type: 15
   required: false
@@ -58,27 +60,59 @@ configuration:
   - "Social Networks"
   - "Instant Messengers"
   section: Collect
+- display: Filter by Violation Type
+  name: violationSubtypes
+  type: 16
+  required: false
+  additionalinfo: >
+    Fetch only Violations of the selected types (the DRP `subtypes[]` parameter). Leave empty to fetch every type. Known limitation: the bundled ciaops library sends a single subtype to the API, so a selection of two or more types is fetched unfiltered and applied client-side instead - correct, but heavier on the API. Selecting exactly one type is filtered server-side.
+  section: Collect
+  options:
+  - Counterfeit
+  - Piracy
+  - Partner policy compliance
+  - Trademark
+  - Malware
+  - Phishing
+  - Scam
+  - No violation
+- additionalinfo: >
+    Create incidents only for Violations that Group-IB has sent to you for a decision, i.e. whose approve state is `under_review`. These are the Violations the Approve Violation and Reject Violation buttons act on. Leave disabled to create incidents for Violations in every approve state. The filter applies to creation only: once a Violation has an incident on this instance, its later changes (the decision, the take-down) still arrive and refresh or close that incident.
+  defaultvalue: "false"
+  display: Fetch only Violations awaiting approval
+  name: only_approval_required
+  required: false
+  type: 8
+  section: Collect
+- display: Close the incident when a violation is approved
+  name: close_incident_on_decision
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: >-
+    When the Approve Violation button (or the postprocessing playbook) successfully sends an approval through this instance, also close the incident as Resolved. Leave disabled to keep the incident open until Group-IB DRP resolves the violation, which the pre-processing rule then closes. Rejecting a violation always closes the incident as False Positive: Group-IB DRP does nothing more with a rejected violation.
+  section: Collect
 - display: Filter by Brand
   name: brands
   type: 0
   required: false
   additionalinfo: >
-    Requests only Violations associated with the specified Brand IDs. The list of available brands can be obtained with the command !gibdrp-get-brands in the menu WarRoom -> Playground. After getting the brands you must specify the brand ID for which you want to receive violations. Attention! Currently filtering is available only by one brand in one Instance
+    Requests only Violations associated with the specified Brand IDs, as a comma-separated list. Get the available brands with !gibdrp-get-brands (War Room -> Playground) and use the `id` values, not the names. Known limitation: the bundled ciaops library currently sends only the first id of the list to the API, so until it is updated a second id has no effect - configure one brand per instance if you need more.
   section: Collect
-- additionalinfo: Date to start fetching incidents from.
-  defaultvalue: 3 days
-  display: Incidents first fetch
-  hidden: false
+- display: Incidents first fetch
   name: first_fetch
-  required: false
   type: 0
+  required: false
+  defaultvalue: "3 days"
+  additionalinfo: Date to start fetching incidents from.
   section: Collect
+  hidden: false
 - display: Download images
   name: download_images
-  defaultvalue: "false"
   type: 8
   required: false
-  additionalinfo: Enables or disables loading of each image in each violation. Can significantly affect the speed of data collection if the parameter is enabled, i.e. set to True
+  defaultvalue: "false"
+  additionalinfo: Enables or disables loading of each image in each violation. Can significantly affect the speed of data collection if the parameter is enabled, i.e. set to True. Images over 2 MB (or past a 5 MB per-incident total) are skipped to keep incidents within XSOAR entry limits; skipped images remain retrievable via gibdrp-get-violation-by-id.
   section: Optimize
 - display: Get Typosquatting Only
   name: only_typosquatting
@@ -87,7 +121,7 @@ configuration:
   required: false
   additionalinfo: Returns only records of the Typosquatting type. If not specified, you consume only violations - without Typosquatting detections.
   section: Optimize
-- display: Number of requests per collection
+- display: Number of requests per execution
   name: max_fetch
   type: 15
   required: true
@@ -99,10 +133,87 @@ configuration:
   - "4"
   - "5"
   - "6"
-  additionalinfo: A number of requests per collection that integration sends in one fetch iteration (each request picks up to 30 incidents). If you face some runtime errors, lower the value.
+  additionalinfo: How many requests the integration sends to the DRP API in one fetch iteration (each request picks up to 30 violations). If you face runtime errors, lower the value.
   section: Collect
+- display: Maximum incidents per fetch
+  name: max_incidents_per_fetch
+  type: 0
+  required: false
+  defaultvalue: "200"
+  additionalinfo: >-
+    Upper bound on the number of XSOAR incidents created in a single fetch iteration, applied per API page: the page (up to 30 violations) that reaches the limit is still processed in full, so one iteration can exceed the value by up to a page, and the remaining pages are left to the next iteration from the same seqUpdate cursor. Acts as a safety valve when "Number of requests per execution" combined with the API page size would otherwise produce a large burst (e.g. after a long downtime). Recommended range 100-500. Set to 0 to disable the cap (not recommended for production).
+  section: Collect
+- display: Filter by Violation Status
+  name: violationStatuses
+  type: 16
+  required: false
+  defaultvalue: detected,in_response
+  additionalinfo: >-
+    Create incidents only for Group-IB DRP violations whose `status` is one of the selected values (status values as defined by the DRP API). The default, `detected` and `in_response`, covers the violations still being worked on. The filter applies to creation only: once a violation has an incident on this instance, its later status changes still arrive and refresh or close that incident. A violation that arrives already finished (`resolved`, `solved`, `legal`, `false_status`, or rejected by the customer) never creates an incident, whatever is selected. Leave empty to create incidents for every other status. Filtering is applied by the integration after parsing each portion, so the seqUpdate cursor advances even when a whole portion is filtered out.
+  options:
+  - found
+  - detected
+  - false_status
+  - legal
+  - on_tracking
+  - no_content
+  - on_parking
+  - active
+  - solved
+  - redirect
+  - in_response
+  - resolved
+  section: Collect
+- display: Incident severity
+  name: incident_severity
+  type: 15
+  required: false
+  defaultvalue: Unknown
+  additionalinfo: >
+    Severity assigned to every incident this instance creates. Configure one instance per severity to grade Violations - for example a Phishing-only instance at Critical and a Scam-only instance at Medium. Cortex stores severity on a fixed scale, so the levels are offered by name.
+  options:
+  - Unknown
+  - Informational
+  - Low
+  - Medium
+  - High
+  - Critical
+  section: Collect
+- display: Create indicators from Violations
+  name: createIndicatorsForSubtypes
+  type: 16
+  required: false
+  additionalinfo: >
+    Create an indicator from the Violation URI for the selected Violation types only. Leave empty to create no indicators. The indicator is created by the postprocessing playbook (GIBDRPCreateViolationIndicator) from the new incident, so it is linked to the incident and carries Group-IB Digital Risk Protection as its source. Only an http or https URL, a domain or an IPv4 address becomes an indicator; any other URI - a marketplace seller id, a messenger handle, a mail address - creates none. Reputation follows the Violation type: Counterfeit, Scam, Malware and Phishing are published as Malicious, Partner policy compliance, Piracy and Trademark as Suspicious, and No violation as Benign.
+  options:
+  - Counterfeit
+  - Piracy
+  - Partner policy compliance
+  - Trademark
+  - Malware
+  - Phishing
+  - Scam
+  - No violation
+  section: Collect
+- display: Expire the indicator when the violation is closed
+  name: expire_indicator_on_close
+  type: 8
+  required: false
+  defaultvalue: "false"
+  additionalinfo: When the violation of an incident created by this instance is resolved, handed to legal, found false or rejected, also expire the indicator that was created from it. Applies only to violation types selected in "Create indicators from Violations". Leave disabled to keep the indicator active.
+  section: Collect
+- display: Known violations retention (days)
+  name: dedup_lookback_days
+  type: 0
+  required: false
+  defaultvalue: "365"
+  additionalinfo: How many days the instance remembers the violations it created incidents for. A remembered violation is passed through to its incident on every change, whatever the status and approval filters say; a forgotten one is treated as new and has to pass them again. A violation is remembered from the last fetch that carried it, so 365 days covers any violation that changed within a year. 0 forgets everything, so every fetched violation is filtered as if it were new.
+  section: Optimize
+  advanced: true
 description: Pack helps to integrate Group-IB Digital Risk Protection and get violations incidents directly into Cortex XSOAR.
 display: Group-IB Digital Risk Protection
+defaultclassifier: Group-IB Digital Risk Protection (classifier)
+defaultmapperin: Group-IB Digital Risk Protection (mapper)
 name: Group-IB Digital Risk Protection
 script:
   dockerimage: demisto/vendors-sdk:1.0.0.11778894
@@ -116,30 +227,32 @@ script:
     arguments: []
     description: Receive all configured brands.
     outputs:
-    - contextPath: GIBDRP.OtherInfo
-      description: List of configured brands.
-      type: string
-    - contextPath: GIBDRP.OtherInfo.brands.name
+    - contextPath: GIBDRP.Brand.name
       description: Brand name.
       type: string
-    - contextPath: GIBDRP.OtherInfo.brands.id
+    - contextPath: GIBDRP.Brand.id
       description: Brand ID.
       type: string
   - name: gibdrp-get-subscriptions
     arguments: []
     description: Receive all configured subscriptions.
     outputs:
-    - contextPath: GIBDRP.OtherInfo
+    - contextPath: GIBDRP.Subscription
       description: List of configured subscriptions.
-      type: string
-    - contextPath: GIBDRP.OtherInfo.subscriptions
-      description: Subscriptions list.
       type: string
   - name: gibdrp-get-violation-by-id
     arguments:
     - name: id
       required: true
       description: ID violation.
+    - name: download_images
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "true"
+      description: Whether to download the violation's screenshots and attach them as files. Set to false for a quick status check.
     description: Getting a single violation by its ID.
     outputs:
     - contextPath: GIBDRP.Violation.id
@@ -175,7 +288,67 @@ script:
       - approve
       - reject
       description: What status to change to.
-    description: Changing the status of a single violation.
+    description: Approves or rejects a single violation pending customer review (approveState `under_review`). Reports whether the instance wants the incident closed after an approval (the "Close the incident when a violation is approved" setting); the GIBDRPResolveViolation automation acts on it, and always closes the incident on a rejection.
+    outputs:
+    - contextPath: GIBDRP.ViolationDecision.id
+      description: Violation ID.
+      type: String
+    - contextPath: GIBDRP.ViolationDecision.status
+      description: The decision sent, approve or reject.
+      type: String
+    - contextPath: GIBDRP.ViolationDecision.approveState
+      description: The approve state the violation moved to, approved or rejected.
+      type: String
+    - contextPath: GIBDRP.ViolationDecision.closeIncident
+      description: Whether the instance is configured to close the incident after an approval.
+      type: Boolean
+  - name: gibdrp-create-violation
+    arguments:
+    - name: url
+      required: true
+      isArray: true
+      description: Violation URL(s) to submit, each a valid http/https URL with a non-empty host. A comma-separated list of up to 100 URLs is supported; every URL is submitted with the same violation subtype and brand. A URL already submitted for the same brand and subtype is rejected by Group-IB DRP ("This URL already exists"), so re-running the command with the same URL fails rather than creating a second violation.
+    - name: violation_subtype
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - scam
+      - trademark
+      - phishing
+      - copyright
+      - counterfeit
+      - malware
+      - partnerPolicyCompliance
+      description: Violation subtype assigned to every submitted URL.
+    - name: brand_id
+      required: true
+      description: Brand ID the violation(s) belong to. Use !gibdrp-get-brands to list the brand IDs configured for your account.
+    description: Creates one or more violations in the Group-IB DRP portal. Fails with an error entry if the DRP API rejects every submitted item; a partial success reports both accepted and rejected items.
+    outputs:
+    - contextPath: GIBDRP.CreatedViolation.succeeded.url
+      description: URL of the created violation.
+      type: String
+    - contextPath: GIBDRP.CreatedViolation.succeeded.brandId
+      description: Brand ID the violation was created for.
+      type: String
+    - contextPath: GIBDRP.CreatedViolation.succeeded.violationSubtype
+      description: Subtype assigned to the created violation.
+      type: String
+    - contextPath: GIBDRP.CreatedViolation.succeeded.violationId
+      description: ID of the created violation in the DRP system. Can be passed to gibdrp-get-violation-by-id.
+      type: String
+    - contextPath: GIBDRP.CreatedViolation.failed.url
+      description: URL rejected by the Group-IB DRP API (populated on partial success).
+      type: String
+    - contextPath: GIBDRP.CreatedViolation.failed.brandId
+      description: Brand ID of the rejected item.
+      type: String
+    - contextPath: GIBDRP.CreatedViolation.failed.violationSubtype
+      description: Subtype of the rejected item.
+      type: String
+    - contextPath: GIBDRP.CreatedViolation.failed.reason
+      description: Reason the item was rejected.
+      type: String
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0

@@ -3,7 +3,12 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Group-IB Digital Risk Protection - Violation Incident Postprocessing
-description: Handles postprocessing of violation incidents detected by Group-IB Digital Risk Protection.
+description: |-
+  Handles postprocessing of violation incidents detected by Group-IB Digital Risk Protection.
+
+  A violation incident is closed when the work on the violation is over: as Resolved when Group-IB DRP reports the violation as "resolved" (taken down; older API versions spell it "solved") or "legal" (handed to legal), and as False Positive when DRP found it false ("false_status") or the customer rejected it. Approving a violation does not close the incident - it only settles the customer's decision, and the take-down carries on afterwards - unless the instance has "Close the incident when a violation is approved" enabled, in which case GIBDRPResolveViolation closes it with the approval.
+
+  Incidents whose violation ends later are closed by the GIBDRPIncidentUpdate pre-processing rule, which sees the change arrive on the next fetch. This playbook covers a violation that is already over when its incident is created, creates the violation's indicator when the instance asked for one (GIB DRP Indicator Wanted), and asks the analyst for the decision while Group-IB DRP is waiting for it. The decision is sent through the instance that fetched the incident.
 starttaskid: "0"
 fromversion: 6.10.0
 tasks:
@@ -20,11 +25,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "10"
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 450,
           "y": 50
         }
       }
@@ -36,14 +41,14 @@ tasks:
       id: 6fd5d3b2-9734-4e5f-9a47-5b0a9d3a1c2f
       version: -1
       name: Is Group-IB integration enabled?
-      description: Returns 'yes' if the Group-IB Digital Risk Protection integration is enabled.
+      description: Returns 'yes' if the Group-IB Digital Risk Protection integration is enabled. Without it the approve/reject decision cannot reach Group-IB DRP, so the incident is left open for an analyst.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "9"
       "yes":
       - "8"
     scriptarguments:
@@ -54,8 +59,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 140
+          "x": 900,
+          "y": 895
         }
       }
     note: false
@@ -72,8 +77,8 @@ tasks:
     task:
       id: 10df369a-8b31-4bf2-8e2e-123e0dc9c5d7
       version: -1
-      name: Close investigation (no action required)
-      description: Close the current incident when no action is required.
+      name: Close investigation (resolved in Group-IB DRP)
+      description: Close the incident because Group-IB DRP has finished with the violation.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -87,7 +92,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 480
+          "y": 370
         }
       }
     note: false
@@ -97,6 +102,11 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      closeReason:
+        simple: Resolved
+      closeNotes:
+        simple: Group-IB DRP reports the violation as '${incident.gibdrpstatus}', so the incident was closed automatically. The violation is identified by the GIB DRP ID field.
   "3":
     id: "3"
     taskid: 115174e9-015b-4d4a-8f64-d66eee88a54c
@@ -121,8 +131,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 480
+          "x": 1110,
+          "y": 1245
         }
       }
     note: false
@@ -140,7 +150,7 @@ tasks:
       id: 391cf8bb-9ba8-4836-897d-7c0f8affd1ca
       version: -1
       name: Selecting an action with a violation
-      description: Determines if the incident should be approved or rejected.
+      description: Ask the assigned analyst whether the violation should be approved or rejected in Group-IB DRP. "Later" ends the playbook without touching the violation; the incident stays open with its Approve Violation and Reject Violation buttons, and the decision can be made from there at any time.
       type: condition
       iscommand: false
       brand: ""
@@ -149,13 +159,15 @@ tasks:
       - "6"
       "Yes":
       - "5"
+      "Later":
+      - "9"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 660
+          "x": 1110,
+          "y": 1420
         }
       }
     note: false
@@ -165,7 +177,7 @@ tasks:
       to:
       subject:
       body:
-        simple: Do you want to “Approve” this incident?
+        simple: 'Approve this violation in Group-IB DRP? Yes sends Approve, No sends Reject, Later leaves the decision to the Approve Violation / Reject Violation buttons on the incident.'
       methods: []
       format: ""
       bcc:
@@ -179,6 +191,7 @@ tasks:
       replyOptions:
       - "Yes"
       - "No"
+      - "Later"
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -190,27 +203,29 @@ tasks:
     task:
       id: 31ee2b04-5c14-4f26-83db-4c589d9db86f
       version: -1
-      name: Launching a violation approval
-      description: Change the status of the violation to approved.
-      script: '|||gibdrp-change-violation-status'
+      name: Approve Violation
+      description: Approve the violation in Group-IB DRP through the instance that fetched the incident, and record the decision on the incident. The incident is not closed here unless the instance is configured to close on approval - it stays open until Group-IB DRP resolves the violation.
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
+      scriptName: GIBDRPResolveViolation
     nexttasks:
       '#none#':
-      - "7"
+      - "9"
     scriptarguments:
       id:
         simple: ${incident.gibdrpid}
       status:
         simple: approve
+      using:
+        simple: ${incident.sourceInstance}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 945
+          "x": 900,
+          "y": 1615
         }
       }
     note: false
@@ -228,58 +243,28 @@ tasks:
       id: 2f0a4e3d-0078-4213-8eb8-ee093fb0fc62
       version: -1
       name: Reject Violation
-      description: Change the status of the violation to rejected.
-      script: '|||gibdrp-change-violation-status'
+      description: Reject the violation in Group-IB DRP through the instance that fetched the incident, record the decision on the incident and close it as False Positive - Group-IB DRP does nothing more with a rejected violation.
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
+      scriptName: GIBDRPResolveViolation
     nexttasks:
       '#none#':
-      - "7"
+      - "9"
     scriptarguments:
       id:
         simple: ${incident.gibdrpid}
       status:
         simple: reject
+      using:
+        simple: ${incident.sourceInstance}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 890,
-          "y": 945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: dbb43028-c9d7-4609-89e0-908e87190560
-    type: regular
-    task:
-      id: dbb43028-c9d7-4609-89e0-908e87190560
-      version: -1
-      name: Close investigation (processed)
-      description: Close the investigation after processing the violation.
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "9"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 680,
-          "y": 1170
+          "x": 1320,
+          "y": 1615
         }
       }
     note: false
@@ -296,14 +281,14 @@ tasks:
     task:
       id: 7f5e4bfe-aeea-4582-8e6e-75016f8f3b71
       version: -1
-      name: Is an action in violation required?
-      description: Determines if the incident requires further action.
+      name: Is a customer decision required?
+      description: Returns 'yes' only while Group-IB DRP is waiting for the customer - status 'detected' and approve state 'under_review'. Any other state is left to the analyst; the incident stays open until DRP resolves the violation.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "9"
       "yes":
       - "3"
     separatecontext: false
@@ -330,8 +315,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 220
+          "x": 900,
+          "y": 1070
         }
       }
     note: false
@@ -358,8 +343,230 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 450,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 8c1b4f52-7a63-4e0d-9d51-2c9f6b0a7e14
+    type: condition
+    task:
+      id: 8c1b4f52-7a63-4e0d-9d51-2c9f6b0a7e14
+      version: -1
+      name: Is the violation already resolved in Group-IB DRP?
+      description: Returns 'yes' when the violation arrived with a status Group-IB DRP considers final - 'resolved' (taken down; 'solved' on older API versions) or 'legal' (handed to legal). The fetch does not create incidents for such violations, so this is a safeguard for incidents created another way.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.gibdrpstatus
+            iscontext: true
+          right:
+            value:
+              simple: resolved
+        - operator: isEqualString
+          left:
+            value:
+              simple: incident.gibdrpstatus
+            iscontext: true
+          right:
+            value:
+              simple: solved
+        - operator: isEqualString
+          left:
+            value:
+              simple: incident.gibdrpstatus
+            iscontext: true
+          right:
+            value:
+              simple: legal
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 3b7d2c41-9e5a-4f0b-8c6d-1a2b3c4d5e6f
+    type: condition
+    task:
+      id: 3b7d2c41-9e5a-4f0b-8c6d-1a2b3c4d5e6f
+      version: -1
+      name: Was the violation rejected or found false?
+      description: Returns 'yes' when the customer rejected the violation (approve state 'rejected') or Group-IB DRP found it false (status 'false_status'). DRP does nothing more with either, so the incident is closed as False Positive.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.gibdrpapprovestate
+            iscontext: true
+          right:
+            value:
+              simple: rejected
+        - operator: isEqualString
+          left:
+            value:
+              simple: incident.gibdrpstatus
+            iscontext: true
+          right:
+            value:
+              simple: false_status
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 7c8d9e0f-1a2b-4c3d-9e4f-5a6b7c8d9e0f
+    type: regular
+    task:
+      id: 7c8d9e0f-1a2b-4c3d-9e4f-5a6b7c8d9e0f
+      version: -1
+      name: Close investigation (rejected or false)
+      description: Close the incident as False Positive because the violation was rejected or found false; Group-IB DRP does nothing more with it.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      closeReason:
+        simple: False Positive
+      closeNotes:
+        simple: The violation was rejected or found false in Group-IB DRP (approve state '${incident.gibdrpapprovestate}', status '${incident.gibdrpstatus}'), so the incident was closed automatically. The violation is identified by the GIB DRP ID field.
+  "13":
+    id: "13"
+    taskid: 9d0e1f2a-3b4c-4d5e-8f6a-7b8c9d0e1f2a
+    type: condition
+    task:
+      id: 9d0e1f2a-3b4c-4d5e-8f6a-7b8c9d0e1f2a
+      version: -1
+      name: Does the instance want an indicator?
+      description: Returns 'yes' when GIB DRP Indicator Wanted is set, which the fetch does for the violation types selected in "Create indicators from Violations" on the instance.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: incident.gibdrpindicatorwanted
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
           "x": 680,
-          "y": 1340
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 0e1f2a3b-4c5d-4e6f-9a7b-8c9d0e1f2a3b
+    type: regular
+    task:
+      id: 0e1f2a3b-4c5d-4e6f-9a7b-8c9d0e1f2a3b
+      version: -1
+      name: Create the violation indicator
+      description: Create the indicator from the violation URI, linked to this incident, with Group-IB Digital Risk Protection as its source and a verdict that follows the violation type. A URI that is not an http or https URL, a domain or an IPv4 address creates no indicator.
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: GIBDRPCreateViolationIndicator
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 720
         }
       }
     note: false
@@ -375,8 +582,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1215,
-        "width": 1220,
+        "height": 1805,
+        "width": 1650,
         "x": 50,
         "y": 50
       }

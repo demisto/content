@@ -2,3 +2,4 @@
 !gibdrp-get-subscriptions
 !gibdrp-get-violation-by-id
 !gibdrp-change-violation-status id=exampleId status=approve
+!gibdrp-create-violation url=https://phishing.example.com violation_subtype=phishing brand_id=exampleBrandId

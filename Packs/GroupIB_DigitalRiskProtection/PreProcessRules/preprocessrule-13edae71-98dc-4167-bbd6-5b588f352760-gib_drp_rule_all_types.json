@@ -1,0 +1,56 @@
+{
+    "action": "script",
+    "enabled": true,
+    "id": "gib_drp_rule_all_types",
+    "index": 0,
+    "itemVersion": "1.2.0",
+    "linkTo": "oldest",
+    "locked": false,
+    "name": "GIB DRP Rule All Types",
+    "newEventFilters": [
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "gibdrpid"
+                    }
+                },
+                "operator": "isNotEmpty",
+                "right": {
+                    "value": {}
+                },
+                "type": "shortText"
+            }
+        ]
+    ],
+    "packID": "GroupIB_DigitalRiskProtection",
+    "period": {
+        "by": "days",
+        "fromValue": 30
+    },
+    "readyNewEventFilters": [
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "gibdrpid"
+                    }
+                },
+                "operator": "isNotEmpty",
+                "right": {
+                    "value": {}
+                },
+                "type": "shortText"
+            }
+        ]
+    ],
+    "scriptID": "GIBDRPIncidentUpdate",
+    "scriptName": "GIBDRPIncidentUpdate",
+    "searchClosed": true,
+    "system": true,
+    "toServerVersion": "",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

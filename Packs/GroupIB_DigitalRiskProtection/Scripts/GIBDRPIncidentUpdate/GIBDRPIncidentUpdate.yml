@@ -1,5 +1,8 @@
 comment: |-
-  This script prevents duplication of existing incidents.
+  Pre-processing rule script for Group-IB DRP violations: updates the existing incident of the violation
+  in place instead of creating a duplicate, and closes it once the work on the violation is over - as
+  Resolved when DRP resolved it or handed it to legal, as False Positive when DRP found it false or the
+  customer rejected it. Expires the indicator created from the violation when the incident asks for it.
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
   For more information, see the section about permissions here:
@@ -7,7 +10,7 @@ comment: |-
 commonfields:
   id: GIBDRPIncidentUpdate
   version: -1
-dockerimage: demisto/python3:3.12.13.10116658
+dockerimage: demisto/python3:3.12.14.12343672
 enabled: true
 name: GIBDRPIncidentUpdate
 script: ''
