@@ -19,10 +19,7 @@ configuration:
   section: Connect
 - defaultvalue: 11.6.0
   display: Version
-  additionalinfo: >-
-    The version number of your ESM instance (e.g., 11.6.11). Versions 11.6.11 and later
-    use AES-encrypted credentials automatically. Versions 11.6.0 to 11.6.10 use
-    Base64 encoding. Versions earlier than 11.6.0 are not supported (Trellix end-of-life).
+  additionalinfo: The version number of your ESM instance (e.g. `11.6.11`). Versions `11.6.11` and later use AES-encrypted credentials automatically. Versions `11.6.0` to `11.6.10` use Base64 encoding. Versions earlier than `11.6.0` are not supported (Trellix end-of-life).
   name: version
   required: true
   type: 0
@@ -46,7 +43,7 @@ configuration:
   section: Collect
 - defaultvalue: alarms
   display: Fetch Types
-  additionalinfo: 'The fetch types to retrieve. Relevant only for fetch incident mode. Options: alarms, cases, both.'
+  additionalinfo: The fetch types to retrieve. Relevant only for fetch incident mode. Possible values are `alarms`, `cases`, and `both`.
   name: fetchType
   options:
   - alarms
@@ -70,7 +67,7 @@ configuration:
   section: Collect
 - defaultvalue: 3 days
   display: First fetch timestamp
-  additionalinfo: 'The first fetch timestamp. Format: <number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year.'
+  additionalinfo: The first fetch timestamp, in the format <number> <time unit> (e.g. `12 hours`, `7 days`, `3 months`, `1 year`).
   name: fetchTime
   type: 0
   required: false
@@ -83,7 +80,7 @@ configuration:
   section: Collect
 - defaultvalue: '0'
   display: McAfee ESM Timezone in hours
-  additionalinfo: 'The ESM timezone offset in hours (e.g., if ESM timezone is +0300 enter 3).'
+  additionalinfo: The ESM timezone offset in hours (e.g. if the ESM timezone is +0300, enter 3).
   name: timezone
   type: 0
   required: false

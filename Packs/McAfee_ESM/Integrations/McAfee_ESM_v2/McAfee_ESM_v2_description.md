@@ -4,7 +4,7 @@ Run queries and receive alarms from Trellix (McAfee) ESM. Supports version 11.6 
 
 ### Setup
 
-Versions earlier than 11.6.0 are not supported — they reached [Trellix end-of-life](https://www.trellix.com/support/end-of-life-products/) and the integration returns an error immediately if such a version is configured.
+Versions earlier than 11.6.0 are not supported — they reached [Trellix end-of-life](https://www.trellix.com/support/end-of-life-products/). The integration returns an error immediately if these versions are specified.
 
 Enter the version number of your ESM instance (e.g., `11.6.11`) in the **Version** parameter. The integration selects the correct credential encoding automatically:
 

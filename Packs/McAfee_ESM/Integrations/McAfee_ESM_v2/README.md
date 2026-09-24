@@ -1,6 +1,6 @@
 
 Run queries and receive alarms from Trellix (McAfee) ESM.
-This integration was integrated and tested with version 11.6 of McAfee ESM v2.
+This integration was tested with version 11.6 of McAfee ESM v2.
 
 Versions earlier than 11.6 are not supported, as they reached [Trellix end-of-life](https://www.trellix.com/support/end-of-life-products/).
 
@@ -13,16 +13,16 @@ Starting with ESM 11.6.11, the login API requires the username and password to b
 | Base URL |  | True |
 | Username |  | True |
 | Password |  | True |
-| Version | The version number of your ESM instance \(e.g., 11.6.11\). Versions 11.6.11 and later use AES-encrypted credentials automatically. Versions 11.6.0 to 11.6.10 use Base64 encoding. Versions earlier than 11.6.0 are not supported \(Trellix end-of-life\). | True |
+| Version | The version number of your ESM instance \(e.g. `11.6.11`\). Versions `11.6.11` and later use AES-encrypted credentials automatically. Versions `11.6.0` to `11.6.10` use Base64 encoding. Versions earlier than `11.6.0` are not supported \(Trellix end-of-life\). | True |
 | Fetch incidents |  | False |
 | Incident type |  | False |
 | Incidents Fetch Interval |  | False |
-| Fetch Types | The fetch types to retrieve. Relevant only for fetch incident mode. Options: alarms, cases, both. | False |
+| Fetch Types | The fetch types to retrieve. Relevant only for fetch incident mode. Possible values are `alarms`, `cases`, and `both`. | False |
 | Start fetch after ID | The ID after which to start fetching. Relevant only for fetch incident mode. | False |
 | Fetch cases limit |  | False |
-| First fetch timestamp | The first fetch timestamp. Format: &lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year. | False |
+| First fetch timestamp | The first fetch timestamp, in the format &lt;number&gt; &lt;time unit&gt; \(e.g. `12 hours`, `7 days`, `3 months`, `1 year`\). | False |
 | Fetch alarms limit |  | False |
-| McAfee ESM Timezone in hours | The ESM timezone offset in hours \(e.g., if ESM timezone is \+0300 enter 3\). | False |
+| McAfee ESM Timezone in hours | The ESM timezone offset in hours \(e.g. if the ESM timezone is \+0300, enter 3\). | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
