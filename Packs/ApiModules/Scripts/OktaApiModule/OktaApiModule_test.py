@@ -4,6 +4,8 @@ import pytest
 from freezegun import freeze_time
 from OktaApiModule import *
 
+TEST_DATA_DIR = Path(__file__).parent / "test_data"
+
 
 def load_test_data(folder: str, file_name: str) -> dict:
     """
@@ -16,7 +18,7 @@ def load_test_data(folder: str, file_name: str) -> dict:
     Returns:
         dict: The data loaded from the file.
     """
-    with open(Path("test_data") / folder / f"{file_name}.json") as f:
+    with open(TEST_DATA_DIR / folder / f"{file_name}.json") as f:
         return json.load(f)
 
 
@@ -1003,7 +1005,7 @@ def util_load_json(path: str):
     """
     Utility to load json data from a local folder.
     """
-    with open(path, encoding="utf-8") as file:
+    with open(Path(__file__).parent / path, encoding="utf-8") as file:
         return json.loads(file.read())
 
 
