@@ -42,6 +42,7 @@ configuration:
   required: false
 - display: Incident type
   name: incidentType
+  defaultvalue: GRAIncident
   type: 13
   section: Collect
   required: false
@@ -176,6 +177,9 @@ script:
       type: string
     - contextPath: Gra.Accounts.datasourcename
       description: Data Source Name.
+      type: string
+    - contextPath: Gra.Accounts.resource
+      description: Resource. Deprecated. Use Gra.Accounts.datasourcename instead.
       type: string
     - contextPath: Gra.Accounts.domain
       description: Domain.
@@ -345,6 +349,9 @@ script:
     - contextPath: Gra.User.Accounts.datasourcename
       description: Data Source Name.
       type: string
+    - contextPath: Gra.User.Accounts.resource
+      description: Resource. Deprecated. Use Gra.User.Accounts.datasourcename instead.
+      type: string
     - contextPath: Gra.User.Accounts.domain
       description: Domain.
       type: string
@@ -509,6 +516,9 @@ script:
       type: string
     - contextPath: Gra.Hpa.datasourcename
       description: Data Source Name.
+      type: string
+    - contextPath: Gra.Hpa.resource
+      description: Resource. Deprecated. Use Gra.Hpa.datasourcename instead.
       type: string
     - contextPath: Gra.Hpa.domain
       description: Domain.
@@ -675,6 +685,9 @@ script:
     - contextPath: Gra.Orphan.Accounts.datasourcename
       description: Data Source Name.
       type: string
+    - contextPath: Gra.Orphan.Accounts.resource
+      description: Resource. Deprecated. Use Gra.Orphan.Accounts.datasourcename instead.
+      type: string
     - contextPath: Gra.Orphan.Accounts.domain
       description: Domain.
       type: string
@@ -831,6 +844,9 @@ script:
     - contextPath: Gra.User.Activity.datasource_name
       description: Data Source Name.
       type: string
+    - contextPath: Gra.User.Activity.resource_name
+      description: Resource Name. Deprecated. Use Gra.User.Activity.datasource_name instead.
+      type: string
     - contextPath: Gra.User.Activity.event_desc
       description: Event Desc.
       type: string
@@ -949,6 +965,39 @@ script:
       type: date
     - contextPath: Gra.Highrisk.Users.profilePicturePath
       description: Profile Picture Path.
+      type: string
+    - contextPath: Gra.Highrisk.Users.id
+      description: Id.
+      type: string
+    - contextPath: Gra.Highrisk.Users.name
+      description: Name.
+      type: string
+    - contextPath: Gra.Highrisk.Users.type
+      description: Type.
+      type: string
+    - contextPath: Gra.Highrisk.Users.description
+      description: Description.
+      type: string
+    - contextPath: Gra.Highrisk.Users.domain
+      description: Domain.
+      type: string
+    - contextPath: Gra.Highrisk.Users.high_risk
+      description: High Risk.
+      type: string
+    - contextPath: Gra.Highrisk.Users.is_orphan
+      description: Is Orphan.
+      type: string
+    - contextPath: Gra.Highrisk.Users.is_reassigned
+      description: Is Reassigned.
+      type: string
+    - contextPath: Gra.Highrisk.Users.created_on
+      description: Created On.
+      type: date
+    - contextPath: Gra.Highrisk.Users.updated_on
+      description: Updated On.
+      type: date
+    - contextPath: Gra.Highrisk.Users.resource
+      description: Resource. Deprecated. Use the Data Source outputs instead.
       type: string
     description: Retrieve list of all high risk users.
   - name: gra-cases
@@ -1123,6 +1172,9 @@ script:
     - contextPath: Gra.Investigate.Anomaly.Summary.datasourceCount
       description: Data Source Count.
       type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.resourceCount
+      description: Resource Count. Deprecated. Use Gra.Investigate.Anomaly.Summary.datasourceCount instead.
+      type: string
     - contextPath: Gra.Investigate.Anomaly.Summary.records
       description: Records.
       type: string
@@ -1140,6 +1192,9 @@ script:
       type: string
     - contextPath: Gra.Investigate.Anomaly.Summary.datasourcename
       description: Data Source Name.
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.resourceName
+      description: Resource Name. Deprecated. Use Gra.Investigate.Anomaly.Summary.datasourcename instead.
       type: string
     - contextPath: Gra.Investigate.Anomaly.Summary.datasource
       description: Data Source (nested anomalous-account rows).
@@ -1682,11 +1737,10 @@ script:
       description: The comment.
       type: string
     description: Retrieves update history for a GRA alert.
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.14.13053055
   isfetch: true
   subtype: python3
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
 defaultmapperin: GRAIncident-Mapper
-defaultIncidentType: GRAIncident

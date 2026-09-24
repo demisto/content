@@ -146,6 +146,7 @@ Retrieve all Accounts Information
 | Gra.Accounts.department | String | Department. |
 | Gra.Accounts.description | String | Description. |
 | Gra.Accounts.datasourcename | String | Data Source Name. |
+| Gra.Accounts.resource | String | Resource. Deprecated. Use Gra.Accounts.datasourcename instead. |
 | Gra.Accounts.domain | String | Domain. |
 | Gra.Accounts.high_risk | String | High Risk. |
 | Gra.Accounts.is_orphan | String | Is Orphan. |
@@ -339,6 +340,7 @@ Retrieve list of all active accounts for a specified data source.
 | Gra.User.Accounts.department | String | Department. |
 | Gra.User.Accounts.description | String | Description. |
 | Gra.User.Accounts.datasourcename | String | Data Source Name. |
+| Gra.User.Accounts.resource | String | Resource. Deprecated. Use Gra.User.Accounts.datasourcename instead. |
 | Gra.User.Accounts.domain | String | Domain Name. |
 | Gra.User.Accounts.high_risk | String | High Risk. |
 | Gra.User.Accounts.is_orphan | String | Is Account Orphan. |
@@ -464,6 +466,7 @@ Retrieve List of All High Risk Privileged Accounts.
 | Gra.Hpa.department | String | Department. |
 | Gra.Hpa.description | String | Description. |
 | Gra.Hpa.datasourcename | String | Data Source Name. |
+| Gra.Hpa.resource | String | Resource. Deprecated. Use Gra.Hpa.datasourcename instead. |
 | Gra.Hpa.domain | String | Domain Name. |
 | Gra.Hpa.high_risk | String | High Risk. |
 | Gra.Hpa.is_orphan | String | Is Account Orphan. |
@@ -589,6 +592,7 @@ Retrieve List of All Orphan / Rogue Accounts.
 | Gra.Orphan.Accounts.department | String | Department. |
 | Gra.Orphan.Accounts.description | String | Description. |
 | Gra.Orphan.Accounts.datasourcename | String | Data Source Name. |
+| Gra.Orphan.Accounts.resource | String | Resource. Deprecated. Use Gra.Orphan.Accounts.datasourcename instead. |
 | Gra.Orphan.Accounts.domain | String | Domain Name. |
 | Gra.Orphan.Accounts.high_risk | String | High Risk. |
 | Gra.Orphan.Accounts.is_orphan | String | Is Account Orphan. |
@@ -898,6 +902,7 @@ Retrieve activity for a specified user.
 | Gra.User.Activity.employee_id | String | Employee Id . |
 | Gra.User.Activity.account_name | String | Account Name . |
 | Gra.User.Activity.datasource_name | String | Data Source Name. |
+| Gra.User.Activity.resource_name | String | Resource Name. Deprecated. Use Gra.User.Activity.datasource_name instead. |
 | Gra.User.Activity.event_desc | String | Event Description . |
 | Gra.User.Activity.event_date | String | Event Date . |
 | Gra.User.Activity.risk_score | Number | Risk Score . |
@@ -1021,6 +1026,17 @@ Retrieve list of all high risk users.
 | Gra.Highrisk.Users.joiningDate | Date | Joining Date. |
 | Gra.Highrisk.Users.exitDate | Date | Exit Date. |
 | Gra.Highrisk.Users.profilePicturePath | String | Profile Picture Path. |
+| Gra.Highrisk.Users.id | String | Id. |
+| Gra.Highrisk.Users.name | String | Name. |
+| Gra.Highrisk.Users.type | String | Type. |
+| Gra.Highrisk.Users.description | String | Description. |
+| Gra.Highrisk.Users.domain | String | Domain. |
+| Gra.Highrisk.Users.high_risk | String | High Risk. |
+| Gra.Highrisk.Users.is_orphan | String | Is Orphan. |
+| Gra.Highrisk.Users.is_reassigned | String | Is Reassigned. |
+| Gra.Highrisk.Users.created_on | Date | Created On. |
+| Gra.Highrisk.Users.updated_on | Date | Updated On. |
+| Gra.Highrisk.Users.resource | String | Resource. Deprecated. Use the Data Source outputs instead. |
 
 #### Command Example
 
@@ -1261,12 +1277,14 @@ Retrieve detailed anomaly summary of specified anomaly name.
 | Gra.Investigate.Anomaly.Summary.analyticalFeatures | String | Analytical Features  |
 | Gra.Investigate.Anomaly.Summary.entityCount | String | Entity Count |
 | Gra.Investigate.Anomaly.Summary.datasourceCount | String | Data Source Count |
+| Gra.Investigate.Anomaly.Summary.resourceCount | String | Resource Count. Deprecated. Use Gra.Investigate.Anomaly.Summary.datasourceCount instead. |
 | Gra.Investigate.Anomaly.Summary.records | String | Records |
 | Gra.Investigate.Anomaly.Summary.anomalyBaseline | String | Anomaly Baseline |
 | Gra.Investigate.Anomaly.Summary.anomalyLastCatch | String | Anomaly Last Catch |
 | Gra.Investigate.Anomaly.Summary.executionDays | String | Execution Days |
 | Gra.Investigate.Anomaly.Summary.chainDetails | String | Chain Details |
 | Gra.Investigate.Anomaly.Summary.datasourcename | String | datasourcename |
+| Gra.Investigate.Anomaly.Summary.resourceName | String | Resource Name. Deprecated. Use Gra.Investigate.Anomaly.Summary.datasourcename instead. |
 | Gra.Investigate.Anomaly.Summary.datasource | String | Data Source (nested anomalous-account rows) |
 | Gra.Investigate.Anomaly.Summary.type | String | type |
 | Gra.Investigate.Anomaly.Summary.value | String | value |
