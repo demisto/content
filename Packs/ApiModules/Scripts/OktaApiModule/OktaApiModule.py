@@ -48,7 +48,7 @@ def resolve_ucp_auth_type(default=AuthType.API_TOKEN):
         return AuthType.API_TOKEN
     raise DemistoException(
         "UCP authentication failed: the system does not recognize the authentication method "
-        "(unrecognized credential type {!r}).".format(cred_type)
+        f"(unrecognized credential type {cred_type!r})."
     )
 
 
