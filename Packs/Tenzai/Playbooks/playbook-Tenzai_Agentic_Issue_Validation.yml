@@ -26,7 +26,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 275,
           "y": 50
         }
       }
@@ -85,8 +85,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 410
+          "x": 265,
+          "y": 775
         }
       }
     note: false
@@ -129,8 +129,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 500
+          "x": 265,
+          "y": 960
         }
       }
     note: false
@@ -184,8 +184,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 590
+          "x": 480,
+          "y": 1145
         }
       }
     note: false
@@ -212,8 +212,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 680
+          "x": 480,
+          "y": 1330
         }
       }
     note: false
@@ -249,8 +249,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 140
+          "x": 275,
+          "y": 220
         }
       }
     note: false
@@ -284,8 +284,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 500
+          "x": 50,
+          "y": 1145
         }
       }
     note: false
@@ -330,8 +330,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 387.5,
+          "y": 405
         }
       }
     note: false
@@ -387,8 +387,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 320
+          "x": 725,
+          "y": 590
         }
       }
     note: false
@@ -403,9 +403,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 760,
-        "width": 690,
-        "x": 230,
+        "height": 1340,
+        "width": 1055,
+        "x": 50,
         "y": 50
       }
     }
