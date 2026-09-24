@@ -2111,7 +2111,9 @@ script:
     name: azure-mysql-flexible-server-param-set
     description: "Updates a server configuration. Required permissions: Microsoft.DBforMySQL/flexibleServers/configurations/read, Microsoft.DBforMySQL/flexibleServers/configurations/write."
     outputs: [] # No outputs are returned in response
-  - arguments:
+  - name: azure-postgres-flexible-server-configuration-update
+    description: "Updates a configuration of a PostgreSQL Flexible Server. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write."
+    arguments:
     - name: resource_group_name
       type: string
       required: true
@@ -2137,8 +2139,6 @@ script:
       type: string
       required: false
       description: The new value to set for the configuration parameter.
-    name: azure-postgres-flexible-server-configuration-update
-    description: "Creates or updates a configuration of a PostgreSQL Flexible Server. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write."
     outputs: [] # No outputs are returned in response
   - arguments:
     - name: subscription_id

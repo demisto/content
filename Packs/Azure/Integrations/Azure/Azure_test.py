@@ -2318,7 +2318,7 @@ def test_postgres_flexible_server_configuration_update_command(mocker, client, m
     """
     Given: An Azure client and a request to update a PostgreSQL Flexible Server configuration.
     When: The postgres_flexible_server_configuration_update_command function is called with valid parameters.
-    Then: The function should return a success message.
+    Then: The function should return a success message and pass the correct arguments to the client method.
     """
     mocker.patch.object(client, "postgres_flexible_server_configuration_update", return_value=None)
 
@@ -2332,6 +2332,14 @@ def test_postgres_flexible_server_configuration_update_command(mocker, client, m
     result = postgres_flexible_server_configuration_update_command(client, mock_params, args)
 
     assert "Updated the configuration log_checkpoints of the PostgreSQL Flexible Server test-postgres-flex" in result.readable_output
+    client.postgres_flexible_server_configuration_update.assert_called_once_with(
+        "test-postgres-flex",
+        "log_checkpoints",
+        mock_params.get("subscription_id"),
+        mock_params.get("resource_group_name"),
+        "user-override",
+        "on",
+    )
 
 
 def test_azure_client_postgres_flexible_server_configuration_update_success(mocker, client):

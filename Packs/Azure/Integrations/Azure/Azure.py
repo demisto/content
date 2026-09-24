@@ -1608,7 +1608,7 @@ class AzureClient:
         value: str,
     ):
         """
-        Creates or updates a configuration of a PostgreSQL Flexible Server.
+        Updates a configuration of a PostgreSQL Flexible Server.
 
         Args:
             server_name (str): Name of the PostgreSQL Flexible Server.
@@ -3891,7 +3891,7 @@ def mysql_flexible_server_param_set_command(client: AzureClient, params: dict, a
 
 def postgres_flexible_server_configuration_update_command(client: AzureClient, params: dict, args: dict):
     """
-    Creates or updates a configuration of a PostgreSQL Flexible Server.
+    Updates a configuration of a PostgreSQL Flexible Server.
 
     Args:
         client (AzureClient): The Azure client instance.
