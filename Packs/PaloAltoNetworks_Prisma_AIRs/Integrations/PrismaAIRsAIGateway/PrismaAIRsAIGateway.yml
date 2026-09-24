@@ -1,0 +1,2425 @@
+category: Cloud Security
+provider: Palo Alto Networks
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: Palo Alto Networks Prisma AIRS - AI Gateway
+  version: -1
+configuration:
+- defaultvalue: https://api.apps.paloaltonetworks.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: API Client ID
+  name: credentials
+  required: true
+  type: 9
+  displaypassword: API Client Secret
+  section: Connect
+- additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example: 1234567890.'
+  display: Tenant Services Group ID
+  name: tsg_id
+  required: true
+  type: 0
+  section: Connect
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: Manage Palo Alto Networks Prisma AIRS AI Gateway governance resources, including guardrails, gateway configs, deployments, rate- and usage-limit policies, secret references, and MCP servers and integrations.
+display: Palo Alto Networks Prisma AIRS - AI Gateway
+name: Palo Alto Networks Prisma AIRS - AI Gateway
+script:
+  commands:
+  - name: prisma-airs-aigateway-guardrails-list
+    description: Lists guardrails on the AI Gateway control plane.
+    arguments:
+    - name: workspace_id
+      description: The workspace ID to list guardrails for. Required; omitting it returns a 404 (errorCode AB02).
+      required: true
+    - name: page_size
+      description: The number of results to return per page.
+      defaultValue: '50'
+    - name: current_page
+      description: The page number to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayGuardrail.id
+      description: The guardrail ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrail.name
+      description: The guardrail name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrail.slug
+      description: The guardrail slug.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrail.target
+      description: The guardrail target (llm or mcp_tools).
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrail.status
+      description: The guardrail status (active or archived).
+      type: String
+  - name: prisma-airs-aigateway-guardrails-create
+    description: Creates a guardrail on the AI Gateway control plane.
+    arguments:
+    - name: name
+      required: true
+      description: The guardrail name.
+    - name: target
+      description: The guardrail target.
+      auto: PREDEFINED
+      predefined:
+      - llm
+      - mcp_tools
+    - name: workspace_id
+      description: The workspace ID the guardrail belongs to.
+    - name: checks
+      description: A JSON array of guardrail checks. For example, '[{"id":"...","parameters":{}}]'.
+    - name: actions
+      description: A JSON object describing the guardrail actions.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayGuardrail.id
+      description: The created guardrail ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrail.slug
+      description: The created guardrail slug.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrail.version_id
+      description: The created guardrail version ID.
+      type: String
+  - name: prisma-airs-aigateway-guardrails-get
+    description: Retrieves a guardrail by ID from the AI Gateway control plane.
+    arguments:
+    - name: guardrail_id
+      required: true
+      description: The guardrail ID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayGuardrail.id
+      description: The guardrail ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrail.name
+      description: The guardrail name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrail.slug
+      description: The guardrail slug.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrail.target
+      description: The guardrail target.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrail.status
+      description: The guardrail status.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrail.workspace_id
+      description: The workspace ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrail.created_at
+      description: The creation timestamp.
+      type: Date
+  - name: prisma-airs-aigateway-guardrails-update
+    description: Updates a guardrail on the AI Gateway control plane.
+    arguments:
+    - name: guardrail_id
+      required: true
+      description: The guardrail ID.
+    - name: name
+      description: The updated guardrail name.
+    - name: checks
+      description: A JSON array of guardrail checks.
+    - name: actions
+      description: A JSON object describing the guardrail actions.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayGuardrail.id
+      description: The guardrail ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrail.slug
+      description: The guardrail slug.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrail.version_id
+      description: The new guardrail version ID.
+      type: String
+  - name: prisma-airs-aigateway-guardrails-delete
+    execution: true
+    description: Deletes a guardrail from the AI Gateway control plane.
+    arguments:
+    - name: guardrail_id
+      required: true
+      description: The guardrail ID.
+  - name: prisma-airs-aigateway-guardrails-catalog
+    description: Lists the available guardrail evaluators and their parameter schemas (the catalog of check types), not configured guardrail instances. Uses the AI Gateway admin plane.
+    arguments: []
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayGuardrailCatalog.id
+      description: The guardrail evaluator ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrailCatalog.name
+      description: The guardrail evaluator name.
+      type: String
+  - name: prisma-airs-aigateway-guardrails-mcp-servers-list
+    description: Lists the MCP server mappings attached to a guardrail on the AI Gateway control plane.
+    arguments:
+    - name: guardrail_id
+      required: true
+      description: The guardrail ID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayGuardrailMcpServer.id
+      description: The mapping ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrailMcpServer.guardrail_id
+      description: The guardrail ID the mapping belongs to.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrailMcpServer.mcp_server_id
+      description: The mapped MCP server ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrailMcpServer.run_on
+      description: The stages the guardrail runs on for this MCP server.
+      type: Unknown
+  - name: prisma-airs-aigateway-guardrails-mcp-servers-sync
+    description: Replaces all MCP server mappings on a guardrail in one bulk sync on the AI Gateway control plane.
+    arguments:
+    - name: guardrail_id
+      required: true
+      description: The guardrail ID.
+    - name: mcp_servers
+      required: true
+      description: 'A JSON object keyed by MCP server ID, each value an object with optional run_on and mcp_integration_capability_ids arrays. Example: {"<mcp_server_id>": {"run_on": ["request"], "mcp_integration_capability_ids": []}}.'
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayGuardrailMcpServerSync.guardrail_id
+      description: The guardrail ID that was synced.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrailMcpServerSync.changed
+      description: Whether any mapping changed.
+      type: Boolean
+    - contextPath: PrismaAIRs.AIGatewayGuardrailMcpServerSync.added
+      description: The number of mappings added.
+      type: Number
+    - contextPath: PrismaAIRs.AIGatewayGuardrailMcpServerSync.updated
+      description: The number of mappings updated.
+      type: Number
+    - contextPath: PrismaAIRs.AIGatewayGuardrailMcpServerSync.removed
+      description: The number of mappings removed.
+      type: Number
+  - name: prisma-airs-aigateway-guardrails-mcp-server-set
+    description: Enables or disables a single MCP server mapping on a guardrail on the AI Gateway control plane.
+    arguments:
+    - name: guardrail_id
+      required: true
+      description: The guardrail ID.
+    - name: mcp_server_id
+      required: true
+      description: The MCP server ID to map.
+    - name: run_on
+      description: A comma-separated list of stages the guardrail runs on for this MCP server.
+      isArray: true
+    - name: mcp_integration_capability_ids
+      description: A comma-separated list of MCP integration capability IDs to scope the mapping to.
+      isArray: true
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayGuardrailMcpServerMapping.map_id
+      description: The mapping ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrailMcpServerMapping.guardrail_id
+      description: The guardrail ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayGuardrailMcpServerMapping.mcp_server_id
+      description: The mapped MCP server ID.
+      type: String
+  - name: prisma-airs-aigateway-org-guardrails-list
+    description: Lists organization-level guardrails on the AI Gateway admin plane.
+    arguments:
+    - name: workspace_id
+      description: Filters guardrails by workspace ID.
+    - name: page_size
+      description: The number of results to return per page.
+      defaultValue: '50'
+    - name: current_page
+      description: The page number to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayOrgGuardrail.id
+      description: The guardrail ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayOrgGuardrail.name
+      description: The guardrail name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayOrgGuardrail.slug
+      description: The guardrail slug.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayOrgGuardrail.status
+      description: The guardrail status.
+      type: String
+  - name: prisma-airs-aigateway-org-guardrails-create
+    description: Creates an organization-level guardrail on the AI Gateway admin plane.
+    arguments:
+    - name: name
+      required: true
+      description: The guardrail name.
+    - name: target
+      description: The guardrail target.
+      auto: PREDEFINED
+      predefined:
+      - llm
+      - mcp_tools
+    - name: workspace_id
+      description: The workspace ID the guardrail belongs to.
+    - name: checks
+      description: A JSON array of guardrail checks.
+    - name: actions
+      description: A JSON object describing the guardrail actions.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayOrgGuardrail.id
+      description: The created guardrail ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayOrgGuardrail.slug
+      description: The created guardrail slug.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayOrgGuardrail.version_id
+      description: The created guardrail version ID.
+      type: String
+  - name: prisma-airs-aigateway-org-guardrails-get
+    description: Retrieves an organization-level guardrail by ID from the AI Gateway admin plane.
+    arguments:
+    - name: guardrail_id
+      required: true
+      description: The guardrail ID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayOrgGuardrail.id
+      description: The guardrail ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayOrgGuardrail.name
+      description: The guardrail name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayOrgGuardrail.status
+      description: The guardrail status.
+      type: String
+  - name: prisma-airs-aigateway-org-guardrails-update
+    description: Updates an organization-level guardrail on the AI Gateway admin plane.
+    arguments:
+    - name: guardrail_id
+      required: true
+      description: The guardrail ID.
+    - name: name
+      description: The updated guardrail name.
+    - name: checks
+      description: A JSON array of guardrail checks.
+    - name: actions
+      description: A JSON object describing the guardrail actions.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayOrgGuardrail.id
+      description: The guardrail ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayOrgGuardrail.version_id
+      description: The new guardrail version ID.
+      type: String
+  - name: prisma-airs-aigateway-org-guardrails-delete
+    execution: true
+    description: Deletes an organization-level guardrail from the AI Gateway admin plane.
+    arguments:
+    - name: guardrail_id
+      required: true
+      description: The guardrail ID.
+  - name: prisma-airs-aigateway-configs-list
+    description: Lists gateway configs on the AI Gateway control plane.
+    arguments:
+    - name: workspace_id
+      required: true
+      description: The workspace ID to list configs for. Required; omitting it returns a 404 (errorCode AB02).
+    - name: page_size
+      description: The number of results to return per page.
+      defaultValue: '50'
+    - name: current_page
+      description: The page number to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayConfig.id
+      description: The config ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayConfig.name
+      description: The config name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayConfig.slug
+      description: The config slug.
+      type: String
+  - name: prisma-airs-aigateway-configs-create
+    description: Creates a gateway config on the AI Gateway control plane.
+    arguments:
+    - name: name
+      description: The config name.
+    - name: config
+      description: A JSON object describing the config definition.
+    - name: workspace_id
+      description: The workspace ID the config belongs to.
+      required: true
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayConfig.id
+      description: The created config ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayConfig.slug
+      description: The created config slug.
+      type: String
+  - name: prisma-airs-aigateway-configs-get
+    description: Retrieves a gateway config by ID from the AI Gateway control plane.
+    arguments:
+    - name: config_id
+      required: true
+      description: The config ID (UUID) from prisma-airs-aigateway-configs-list. Must be the UUID, not the slug; a slug returns a 404 (errorCode AB02).
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayConfig.id
+      description: The config ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayConfig.name
+      description: The config name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayConfig.slug
+      description: The config slug.
+      type: String
+  - name: prisma-airs-aigateway-configs-update
+    description: Updates a gateway config on the AI Gateway control plane.
+    arguments:
+    - name: config_id
+      required: true
+      description: The config ID (UUID) from prisma-airs-aigateway-configs-list. Must be the UUID, not the slug; a slug returns a 404 (errorCode AB02).
+    - name: name
+      description: The updated config name.
+    - name: config
+      description: A JSON object describing the config definition.
+    - name: status
+      description: The config status.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayConfig.id
+      description: The config ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayConfig.slug
+      description: The config slug.
+      type: String
+  - name: prisma-airs-aigateway-configs-delete
+    execution: true
+    description: Deletes a gateway config from the AI Gateway control plane.
+    arguments:
+    - name: config_id
+      required: true
+      description: The config ID (UUID) from prisma-airs-aigateway-configs-list. Must be the UUID, not the slug; a slug returns a 404 (errorCode AB02).
+  - name: prisma-airs-aigateway-config-versions-list
+    description: Lists the versions of a gateway config on the AI Gateway control plane.
+    arguments:
+    - name: config_id
+      required: true
+      description: The config ID (UUID) from prisma-airs-aigateway-configs-list. Must be the UUID, not the slug; a slug returns a 404 (errorCode AB02).
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayConfigVersion.id
+      description: The config version ID.
+      type: String
+  - name: prisma-airs-aigateway-deployments-list
+    description: Lists deployments on the AI Gateway admin plane.
+    arguments:
+    - name: status
+      description: Filters deployments by status.
+      auto: PREDEFINED
+      predefined:
+      - active
+      - archived
+    - name: type
+      description: Filters deployments by type.
+      auto: PREDEFINED
+      predefined:
+      - production
+      - non_production
+    - name: workspace_slug
+      description: A comma-separated list of workspace slugs to filter by.
+      isArray: true
+    - name: search
+      description: Filters deployments by a search term.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayDeployment.id
+      description: The deployment ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayDeployment.name
+      description: The deployment name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayDeployment.slug
+      description: The deployment slug.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayDeployment.type
+      description: The deployment type.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayDeployment.status
+      description: The deployment status.
+      type: String
+  - name: prisma-airs-aigateway-deployments-create
+    description: Creates a deployment on the AI Gateway admin plane.
+    arguments:
+    - name: name
+      required: true
+      description: The deployment name.
+    - name: slug
+      description: The deployment slug.
+    - name: type
+      description: The deployment type.
+      auto: PREDEFINED
+      predefined:
+      - production
+      - non_production
+    - name: deployment_config
+      description: A JSON object describing the deployment configuration.
+    - name: is_default
+      description: Whether this deployment is the default.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: auth_settings
+      description: A JSON object describing the deployment auth settings.
+    - name: tags
+      description: A JSON object of deployment tags.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayDeployment.id
+      description: The created deployment ID.
+      type: String
+  - name: prisma-airs-aigateway-deployments-get
+    description: Retrieves a deployment by ID from the AI Gateway admin plane.
+    arguments:
+    - name: deployment_id
+      required: true
+      description: The deployment ID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayDeployment.id
+      description: The deployment ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayDeployment.name
+      description: The deployment name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayDeployment.status
+      description: The deployment status.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayDeployment.connection_status
+      description: The deployment connection status.
+      type: String
+  - name: prisma-airs-aigateway-deployments-update
+    description: Updates a deployment on the AI Gateway admin plane.
+    arguments:
+    - name: deployment_id
+      required: true
+      description: The deployment ID.
+    - name: name
+      description: The updated deployment name.
+    - name: type
+      description: The deployment type.
+      auto: PREDEFINED
+      predefined:
+      - production
+      - non_production
+    - name: status
+      description: The deployment status.
+      auto: PREDEFINED
+      predefined:
+      - active
+      - archived
+    - name: deployment_config
+      description: A JSON object describing the deployment configuration.
+    - name: is_default
+      description: Whether this deployment is the default.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: rotate_auth
+      description: Whether to rotate the deployment auth credentials.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: override_existing
+      description: Whether to override the existing deployment configuration.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: auth_settings
+      description: A JSON object describing the deployment auth settings.
+    - name: tags
+      description: A JSON object of deployment tags.
+  - name: prisma-airs-aigateway-deployments-delete
+    execution: true
+    description: Deletes a deployment from the AI Gateway admin plane.
+    arguments:
+    - name: deployment_id
+      required: true
+      description: The deployment ID.
+  - name: prisma-airs-aigateway-deployment-ping
+    description: Pings a deployment to check its connectivity and health on the AI Gateway admin plane.
+    arguments:
+    - name: deployment_id
+      required: true
+      description: The deployment ID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayDeploymentPing.deployment_id
+      description: The deployment ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayDeploymentPing.status
+      description: The deployment health status (healthy, partial, or unhealthy).
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayDeploymentPing.gateway_base_url
+      description: The gateway base URL.
+      type: String
+  - name: prisma-airs-aigateway-rate-limit-policies-list
+    description: Lists rate-limit policies on the AI Gateway control plane.
+    arguments:
+    - name: workspace_id
+      description: The workspace ID to list rate-limit policies for. Required; omitting it returns a 404 (errorCode AB02).
+      required: true
+    - name: status
+      description: Filters policies by status.
+      auto: PREDEFINED
+      predefined:
+      - active
+      - archived
+    - name: type
+      description: Filters policies by type.
+      auto: PREDEFINED
+      predefined:
+      - requests
+      - tokens
+    - name: unit
+      description: Filters policies by unit.
+      auto: PREDEFINED
+      predefined:
+      - rpm
+      - rph
+      - rpd
+      - rpw
+    - name: target
+      description: Filters policies by target.
+      auto: PREDEFINED
+      predefined:
+      - llm
+      - mcp_tools
+    - name: page_size
+      description: The number of results to return per page.
+      defaultValue: '50'
+    - name: current_page
+      description: The page number to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayRateLimitPolicy.id
+      description: The policy ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayRateLimitPolicy.name
+      description: The policy name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayRateLimitPolicy.type
+      description: The policy type.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayRateLimitPolicy.unit
+      description: The policy unit.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayRateLimitPolicy.value
+      description: The policy limit value.
+      type: Number
+    - contextPath: PrismaAIRs.AIGatewayRateLimitPolicy.status
+      description: The policy status.
+      type: String
+  - name: prisma-airs-aigateway-rate-limit-policies-create
+    description: Creates a rate-limit policy on the AI Gateway control plane.
+    arguments:
+    - name: name
+      description: The policy name.
+    - name: conditions
+      required: true
+      description: A JSON array of policy conditions.
+    - name: group_by
+      required: true
+      description: A JSON array describing how usage is grouped.
+    - name: type
+      required: true
+      description: The policy type.
+      auto: PREDEFINED
+      predefined:
+      - requests
+      - tokens
+    - name: unit
+      required: true
+      description: The policy unit.
+      auto: PREDEFINED
+      predefined:
+      - rpm
+      - rph
+      - rpd
+      - rpw
+    - name: value
+      required: true
+      description: The rate-limit value.
+    - name: target
+      description: The policy target.
+      auto: PREDEFINED
+      predefined:
+      - llm
+      - mcp_tools
+    - name: workspace_id
+      description: The workspace ID the policy belongs to.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayRateLimitPolicy.id
+      description: The created policy ID.
+      type: String
+  - name: prisma-airs-aigateway-rate-limit-policies-get
+    description: Retrieves a rate-limit policy by ID from the AI Gateway control plane.
+    arguments:
+    - name: policy_id
+      required: true
+      description: The policy ID.
+    - name: status
+      description: Filters by policy status.
+      auto: PREDEFINED
+      predefined:
+      - active
+      - archived
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayRateLimitPolicy.id
+      description: The policy ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayRateLimitPolicy.name
+      description: The policy name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayRateLimitPolicy.value
+      description: The policy limit value.
+      type: Number
+    - contextPath: PrismaAIRs.AIGatewayRateLimitPolicy.status
+      description: The policy status.
+      type: String
+  - name: prisma-airs-aigateway-rate-limit-policies-update
+    description: Updates a rate-limit policy on the AI Gateway control plane.
+    arguments:
+    - name: policy_id
+      required: true
+      description: The policy ID.
+    - name: name
+      description: The updated policy name.
+    - name: unit
+      description: The policy unit.
+      auto: PREDEFINED
+      predefined:
+      - rpm
+      - rph
+      - rpd
+      - rpw
+    - name: value
+      description: The rate-limit value.
+    - name: conditions
+      description: A JSON array of policy conditions.
+  - name: prisma-airs-aigateway-rate-limit-policies-delete
+    execution: true
+    description: Deletes a rate-limit policy from the AI Gateway control plane.
+    arguments:
+    - name: policy_id
+      required: true
+      description: The policy ID.
+  - name: prisma-airs-aigateway-usage-limit-policies-list
+    description: Lists usage-limit policies on the AI Gateway control plane.
+    arguments:
+    - name: workspace_id
+      description: The workspace ID to list usage-limit policies for. Required; omitting it returns a 404 (errorCode AB02).
+      required: true
+    - name: status
+      description: Filters policies by status.
+      auto: PREDEFINED
+      predefined:
+      - active
+      - archived
+    - name: type
+      description: Filters policies by type.
+      auto: PREDEFINED
+      predefined:
+      - cost
+      - tokens
+    - name: page_size
+      description: The number of results to return per page.
+      defaultValue: '50'
+    - name: current_page
+      description: The page number to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayUsageLimitPolicy.id
+      description: The policy ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayUsageLimitPolicy.name
+      description: The policy name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayUsageLimitPolicy.type
+      description: The policy type.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayUsageLimitPolicy.credit_limit
+      description: The policy credit limit.
+      type: Number
+    - contextPath: PrismaAIRs.AIGatewayUsageLimitPolicy.status
+      description: The policy status.
+      type: String
+  - name: prisma-airs-aigateway-usage-limit-policies-create
+    description: Creates a usage-limit policy on the AI Gateway control plane.
+    arguments:
+    - name: name
+      description: The policy name.
+    - name: conditions
+      required: true
+      description: A JSON array of policy conditions.
+    - name: group_by
+      required: true
+      description: A JSON array describing how usage is grouped.
+    - name: type
+      required: true
+      description: The policy type.
+      auto: PREDEFINED
+      predefined:
+      - cost
+      - tokens
+    - name: credit_limit
+      required: true
+      description: The usage credit limit.
+    - name: alert_threshold
+      description: The alert threshold value.
+    - name: periodic_reset
+      description: The periodic reset interval.
+      auto: PREDEFINED
+      predefined:
+      - monthly
+      - weekly
+    - name: workspace_id
+      description: The workspace ID the policy belongs to.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayUsageLimitPolicy.id
+      description: The created policy ID.
+      type: String
+  - name: prisma-airs-aigateway-usage-limit-policies-get
+    description: Retrieves a usage-limit policy by ID from the AI Gateway control plane.
+    arguments:
+    - name: policy_id
+      required: true
+      description: The policy ID.
+    - name: status
+      description: Filters by policy status.
+      auto: PREDEFINED
+      predefined:
+      - active
+      - archived
+    - name: include_usage
+      description: Whether to include current usage details in the response.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayUsageLimitPolicy.id
+      description: The policy ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayUsageLimitPolicy.name
+      description: The policy name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayUsageLimitPolicy.credit_limit
+      description: The policy credit limit.
+      type: Number
+    - contextPath: PrismaAIRs.AIGatewayUsageLimitPolicy.status
+      description: The policy status.
+      type: String
+  - name: prisma-airs-aigateway-usage-limit-policies-update
+    description: Updates a usage-limit policy on the AI Gateway control plane.
+    arguments:
+    - name: policy_id
+      required: true
+      description: The policy ID.
+    - name: name
+      description: The updated policy name.
+    - name: description
+      description: The updated policy description.
+    - name: conditions
+      description: A JSON array of policy conditions.
+    - name: credit_limit
+      description: The usage credit limit.
+    - name: alert_threshold
+      description: The alert threshold value.
+    - name: periodic_reset
+      description: The periodic reset interval.
+      auto: PREDEFINED
+      predefined:
+      - monthly
+      - weekly
+  - name: prisma-airs-aigateway-usage-limit-policies-delete
+    execution: true
+    description: Deletes a usage-limit policy from the AI Gateway control plane.
+    arguments:
+    - name: policy_id
+      required: true
+      description: The policy ID.
+  - name: prisma-airs-aigateway-usage-limit-policy-entities-list
+    description: Lists the entities tracked by a usage-limit policy on the AI Gateway control plane.
+    arguments:
+    - name: policy_id
+      required: true
+      description: The policy ID.
+    - name: status
+      description: Filters entities by status.
+      auto: PREDEFINED
+      predefined:
+      - active
+      - exhausted
+    - name: search
+      description: Filters entities by a search term.
+    - name: page_size
+      description: The number of results to return per page.
+      defaultValue: '50'
+    - name: current_page
+      description: The page number to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayUsageLimitPolicyEntity.id
+      description: The entity ID.
+      type: String
+  - name: prisma-airs-aigateway-usage-limit-policy-entity-reset
+    execution: true
+    description: Resets the usage counter of a single entity within a usage-limit policy on the AI Gateway control plane.
+    arguments:
+    - name: policy_id
+      required: true
+      description: The policy ID.
+    - name: entity_id
+      required: true
+      description: The entity ID to reset.
+  - name: prisma-airs-aigateway-secret-references-list
+    description: Lists secret references on the AI Gateway admin plane.
+    arguments:
+    - name: manager_type
+      description: Filters secret references by secret manager type.
+      auto: PREDEFINED
+      predefined:
+      - aws_sm
+      - azure_kv
+      - hashicorp_vault
+    - name: tags
+      description: Filters secret references by tags.
+    - name: search
+      description: Filters secret references by a search term.
+    - name: page_size
+      description: The number of results to return per page.
+      defaultValue: '50'
+    - name: current_page
+      description: The page number to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewaySecretReference.id
+      description: The secret reference ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewaySecretReference.name
+      description: The secret reference name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewaySecretReference.manager_type
+      description: The secret manager type.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewaySecretReference.status
+      description: The secret reference status.
+      type: String
+  - name: prisma-airs-aigateway-secret-references-create
+    description: Creates a secret reference on the AI Gateway admin plane.
+    arguments:
+    - name: name
+      required: true
+      description: The secret reference name.
+    - name: slug
+      description: The secret reference slug.
+    - name: description
+      description: The secret reference description.
+    - name: manager_type
+      required: true
+      description: The secret manager type.
+      auto: PREDEFINED
+      predefined:
+      - aws_sm
+      - azure_kv
+      - hashicorp_vault
+    - name: auth_config
+      required: true
+      description: A JSON object describing the secret manager auth configuration.
+    - name: secret_path
+      required: true
+      description: The path to the secret in the secret manager.
+    - name: secret_key
+      description: The key of the secret within the secret path.
+    - name: allow_all_workspaces
+      description: Whether the secret reference is available to all workspaces.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: allowed_workspaces
+      description: A comma-separated list of workspace IDs allowed to use the secret reference.
+      isArray: true
+    - name: tags
+      description: A JSON object of tags.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewaySecretReference.id
+      description: The created secret reference ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewaySecretReference.slug
+      description: The created secret reference slug.
+      type: String
+  - name: prisma-airs-aigateway-secret-references-get
+    description: Retrieves a secret reference by ID from the AI Gateway admin plane.
+    arguments:
+    - name: secret_reference_id
+      required: true
+      description: The secret reference ID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewaySecretReference.id
+      description: The secret reference ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewaySecretReference.name
+      description: The secret reference name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewaySecretReference.manager_type
+      description: The secret manager type.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewaySecretReference.secret_path
+      description: The path to the secret.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewaySecretReference.status
+      description: The secret reference status.
+      type: String
+  - name: prisma-airs-aigateway-secret-references-update
+    description: Updates a secret reference on the AI Gateway admin plane.
+    arguments:
+    - name: secret_reference_id
+      required: true
+      description: The secret reference ID.
+    - name: name
+      description: The updated secret reference name.
+    - name: description
+      description: The updated secret reference description.
+    - name: auth_config
+      description: A JSON object describing the secret manager auth configuration.
+    - name: secret_path
+      description: The path to the secret in the secret manager.
+    - name: secret_key
+      description: The key of the secret within the secret path.
+    - name: allow_all_workspaces
+      description: Whether the secret reference is available to all workspaces.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: allowed_workspaces
+      description: A comma-separated list of workspace IDs allowed to use the secret reference.
+      isArray: true
+    - name: tags
+      description: A JSON object of tags.
+  - name: prisma-airs-aigateway-secret-references-delete
+    execution: true
+    description: Deletes a secret reference from the AI Gateway admin plane.
+    arguments:
+    - name: secret_reference_id
+      required: true
+      description: The secret reference ID.
+  - name: prisma-airs-aigateway-mcp-servers-list
+    description: Lists MCP servers on the AI Gateway control plane.
+    arguments:
+    - name: workspace_id
+      description: The workspace ID to list MCP servers for. Required; omitting it returns a 404 (errorCode AB02).
+      required: true
+    - name: id
+      description: Filters MCP servers by ID.
+    - name: search
+      description: Filters MCP servers by a search term.
+    - name: page_size
+      description: The number of results to return per page.
+      defaultValue: '50'
+    - name: current_page
+      description: The page number to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayMcpServer.id
+      description: The MCP server ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpServer.name
+      description: The MCP server name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpServer.slug
+      description: The MCP server slug.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpServer.status
+      description: The MCP server status.
+      type: String
+  - name: prisma-airs-aigateway-mcp-servers-create
+    description: Creates an MCP server on the AI Gateway control plane.
+    arguments:
+    - name: name
+      required: true
+      description: The MCP server name.
+    - name: mcp_integration_id
+      required: true
+      description: The MCP integration ID the server is based on.
+    - name: description
+      description: The MCP server description.
+    - name: workspace_id
+      description: The workspace ID the MCP server belongs to.
+    - name: slug
+      description: The MCP server slug.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayMcpServer.id
+      description: The created MCP server ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpServer.slug
+      description: The created MCP server slug.
+      type: String
+  - name: prisma-airs-aigateway-mcp-servers-get
+    description: Retrieves an MCP server by ID from the AI Gateway control plane.
+    arguments:
+    - name: mcp_server_id
+      required: true
+      description: The MCP server ID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayMcpServer.id
+      description: The MCP server ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpServer.name
+      description: The MCP server name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpServer.status
+      description: The MCP server status.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpServer.mcp_integration_id
+      description: The MCP integration ID the server is based on.
+      type: String
+  - name: prisma-airs-aigateway-mcp-servers-update
+    description: Updates an MCP server on the AI Gateway control plane.
+    arguments:
+    - name: mcp_server_id
+      required: true
+      description: The MCP server ID.
+    - name: name
+      description: The updated MCP server name.
+    - name: description
+      description: The updated MCP server description.
+  - name: prisma-airs-aigateway-mcp-servers-delete
+    execution: true
+    description: Deletes an MCP server from the AI Gateway control plane.
+    arguments:
+    - name: mcp_server_id
+      required: true
+      description: The MCP server ID.
+  - name: prisma-airs-aigateway-mcp-server-test
+    description: Tests connectivity to an MCP server on the AI Gateway control plane.
+    arguments:
+    - name: mcp_server_id
+      required: true
+      description: The MCP server ID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayMcpServerTest.mcp_server_id
+      description: The MCP server ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpServerTest.success
+      description: Whether the test succeeded.
+      type: Boolean
+    - contextPath: PrismaAIRs.AIGatewayMcpServerTest.status_code
+      description: The HTTP status code returned by the MCP server.
+      type: Number
+    - contextPath: PrismaAIRs.AIGatewayMcpServerTest.response_time_ms
+      description: The response time in milliseconds.
+      type: Number
+  - name: prisma-airs-aigateway-mcp-servers-capabilities-list
+    description: Lists the capabilities (tools, prompts, resources, resource templates) discovered on an MCP server (AI Gateway control plane).
+    arguments:
+    - name: mcp_server_id
+      required: true
+      description: The MCP server ID.
+    - name: type
+      description: Filters capabilities by type.
+      auto: PREDEFINED
+      predefined:
+      - tool
+      - prompt
+      - resource
+      - resource_template
+    - name: page
+      description: The page number to retrieve.
+    - name: page_size
+      description: The number of results to return per page.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayMcpServerCapability.name
+      description: The capability name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpServerCapability.type
+      description: The capability type.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpServerCapability.enabled
+      description: Whether the capability is enabled.
+      type: Boolean
+  - name: prisma-airs-aigateway-mcp-servers-capabilities-set
+    description: Bulk-updates capability enablement on an MCP server (AI Gateway control plane).
+    arguments:
+    - name: mcp_server_id
+      required: true
+      description: The MCP server ID.
+    - name: capabilities
+      required: true
+      description: 'A JSON array of capability enablement objects, each: {"name": ..., "type": ..., "enabled": true|false}.'
+  - name: prisma-airs-aigateway-mcp-servers-user-access-list
+    description: Lists per-user access for an MCP server (AI Gateway control plane).
+    arguments:
+    - name: mcp_server_id
+      required: true
+      description: The MCP server ID.
+    - name: search
+      description: Filters users by a search term.
+    - name: page
+      description: The page number to retrieve.
+    - name: page_size
+      description: The number of results to return per page.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayMcpServerUserAccess.user_id
+      description: The user ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpServerUserAccess.enabled
+      description: Whether the user has access.
+      type: Boolean
+    - contextPath: PrismaAIRs.AIGatewayMcpServerUserAccess.connection_status
+      description: The user's connection status.
+      type: String
+  - name: prisma-airs-aigateway-mcp-servers-user-access-set
+    description: Bulk-updates per-user access for an MCP server (AI Gateway control plane). Provide at least one field.
+    arguments:
+    - name: mcp_server_id
+      required: true
+      description: The MCP server ID.
+    - name: user_access
+      description: 'A JSON array of per-user access objects, each: {"user_id": ..., "enabled": true|false}.'
+    - name: default_user_access
+      description: The default access applied to users without an explicit override.
+  - name: prisma-airs-aigateway-mcp-servers-connections-list
+    description: Lists user connections established against an MCP server (AI Gateway control plane).
+    arguments:
+    - name: mcp_server_id
+      required: true
+      description: The MCP server ID.
+    - name: user_id
+      description: Filters connections by user ID.
+    - name: workspace_id
+      description: Filters connections by workspace ID.
+    - name: current_page
+      description: The page number to retrieve.
+    - name: page_size
+      description: The number of results to return per page.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayMcpServerConnection.user_id
+      description: The user ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpServerConnection.connected
+      description: Whether the user is connected.
+      type: Boolean
+  - name: prisma-airs-aigateway-mcp-servers-connections-delete
+    execution: true
+    description: Deletes MCP server user connection(s), optionally scoped by user ID and/or workspace ID (AI Gateway control plane).
+    arguments:
+    - name: mcp_server_id
+      required: true
+      description: The MCP server ID.
+    - name: user_id
+      description: Deletes only the connection for this user ID.
+    - name: workspace_id
+      description: Deletes only connections within this workspace ID.
+  - name: prisma-airs-aigateway-mcp-integrations-list
+    description: Lists MCP integrations on the AI Gateway admin plane.
+    arguments:
+    - name: type
+      description: Filters MCP integrations by type.
+      auto: PREDEFINED
+      predefined:
+      - workspace
+      - organisation
+      - all
+    - name: workspace_id
+      description: Filters MCP integrations by workspace ID.
+    - name: search
+      description: Filters MCP integrations by a search term.
+    - name: page_size
+      description: The number of results to return per page.
+      defaultValue: '50'
+    - name: current_page
+      description: The page number to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayMcpIntegration.id
+      description: The MCP integration ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpIntegration.name
+      description: The MCP integration name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpIntegration.status
+      description: The MCP integration status.
+      type: String
+  - name: prisma-airs-aigateway-mcp-integrations-create
+    description: Creates an MCP integration on the AI Gateway admin plane.
+    arguments:
+    - name: name
+      required: true
+      description: The MCP integration name.
+    - name: url
+      required: true
+      description: The MCP server URL the integration connects to.
+    - name: auth_type
+      required: true
+      description: The authentication type for the MCP integration.
+      auto: PREDEFINED
+      predefined:
+      - oauth_auto
+      - headers
+      - none
+    - name: transport
+      required: true
+      description: The transport protocol for the MCP integration.
+      auto: PREDEFINED
+      predefined:
+      - http
+      - sse
+    - name: description
+      description: The MCP integration description.
+    - name: workspace_id
+      description: The workspace ID the MCP integration belongs to.
+    - name: slug
+      description: The MCP integration slug.
+    - name: configurations
+      description: A JSON object describing the MCP integration configurations.
+    - name: secret_mappings
+      description: A JSON array of secret mappings.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayMcpIntegration.id
+      description: The created MCP integration ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpIntegration.slug
+      description: The created MCP integration slug.
+      type: String
+  - name: prisma-airs-aigateway-mcp-integrations-get
+    description: Retrieves an MCP integration by ID from the AI Gateway admin plane.
+    arguments:
+    - name: mcp_integration_id
+      required: true
+      description: The MCP integration ID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayMcpIntegration.id
+      description: The MCP integration ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpIntegration.name
+      description: The MCP integration name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpIntegration.url
+      description: The MCP server URL.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpIntegration.auth_type
+      description: The authentication type.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpIntegration.transport
+      description: The transport protocol.
+      type: String
+  - name: prisma-airs-aigateway-mcp-integrations-update
+    description: Updates an MCP integration on the AI Gateway admin plane.
+    arguments:
+    - name: mcp_integration_id
+      required: true
+      description: The MCP integration ID.
+    - name: name
+      description: The updated MCP integration name.
+    - name: description
+      description: The updated MCP integration description.
+    - name: url
+      description: The MCP server URL the integration connects to.
+    - name: auth_type
+      description: The authentication type for the MCP integration.
+      auto: PREDEFINED
+      predefined:
+      - oauth_auto
+      - headers
+      - none
+    - name: transport
+      description: The transport protocol for the MCP integration.
+      auto: PREDEFINED
+      predefined:
+      - http
+      - sse
+    - name: configurations
+      description: A JSON object describing the MCP integration configurations.
+    - name: secret_mappings
+      description: A JSON array of secret mappings.
+  - name: prisma-airs-aigateway-mcp-integrations-delete
+    execution: true
+    description: Deletes an MCP integration from the AI Gateway admin plane.
+    arguments:
+    - name: mcp_integration_id
+      required: true
+      description: The MCP integration ID.
+  - name: prisma-airs-aigateway-mcp-integrations-workspaces-list
+    description: Lists which workspaces an MCP integration is exposed to (AI Gateway admin plane).
+    arguments:
+    - name: mcp_integration_id
+      required: true
+      description: The MCP integration ID.
+    - name: version
+      description: Selects the upstream response envelope version.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayMcpIntegrationWorkspace.id
+      description: The workspace ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpIntegrationWorkspace.enabled
+      description: Whether the workspace may use the MCP integration.
+      type: Boolean
+  - name: prisma-airs-aigateway-mcp-integrations-capabilities-list
+    description: Lists the capabilities (tools, prompts, resources, resource templates) discovered from an MCP integration (AI Gateway admin plane).
+    arguments:
+    - name: mcp_integration_id
+      required: true
+      description: The MCP integration ID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayMcpIntegrationCapability.name
+      description: The capability name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpIntegrationCapability.type
+      description: The capability type.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpIntegrationCapability.enabled
+      description: Whether the capability is enabled.
+      type: Boolean
+  - name: prisma-airs-aigateway-mcp-integrations-metadata-get
+    description: Retrieves metadata discovered from an MCP integration's server (identity, protocol, capability flags, sync state) on the AI Gateway admin plane.
+    arguments:
+    - name: mcp_integration_id
+      required: true
+      description: The MCP integration ID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayMcpIntegrationMetadata.mcp_integration_id
+      description: The MCP integration ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayMcpIntegrationMetadata.sync_status
+      description: The server metadata sync status.
+      type: String
+  - name: prisma-airs-aigateway-mcp-integrations-capabilities-set
+    description: Bulk-updates capability enablement on an MCP integration (AI Gateway admin plane).
+    arguments:
+    - name: mcp_integration_id
+      required: true
+      description: The MCP integration ID.
+    - name: capabilities
+      required: true
+      description: 'A JSON array of capability enablement objects, each: {"name": ..., "type": ..., "enabled": true|false}.'
+  - name: prisma-airs-aigateway-mcp-integrations-workspaces-set
+    description: Bulk-sets which workspaces may use an MCP integration (AI Gateway admin plane). Provide at least one field.
+    arguments:
+    - name: mcp_integration_id
+      required: true
+      description: The MCP integration ID.
+    - name: workspaces
+      description: 'A JSON array of workspace bindings, each: {"id": ..., "enabled": true|false}.'
+    - name: global_workspace_access
+      description: 'A JSON object toggling global workspace access, e.g. {"enabled": false}.'
+    - name: override_existing_workspace_access
+      description: Whether to replace existing workspace access rather than merge.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+  - name: prisma-airs-aigateway-workspaces-list
+    description: Lists AI Gateway workspaces and their IDs. Use this to discover the workspace_id values required by the data-plane list commands.
+    arguments:
+    - name: plane
+      description: Which plane to read from. 'data' (default) returns only active workspaces the service account is scoped to; 'admin' enumerates the whole tenant.
+      auto: PREDEFINED
+      predefined:
+      - data
+      - admin
+      defaultValue: data
+    - name: status
+      description: Filter by lifecycle state. Omitting this returns active workspaces only; archived workspaces are invisible unless requested explicitly.
+      auto: PREDEFINED
+      predefined:
+      - active
+      - archived
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayWorkspace.id
+      description: The workspace ID (UUID).
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayWorkspace.name
+      description: The workspace name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayWorkspace.slug
+      description: The workspace slug.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayWorkspace.scope_name
+      description: The SCM scope name that grants data-plane access to the workspace.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayWorkspace.status
+      description: The workspace lifecycle state.
+      type: String
+  - name: prisma-airs-aigateway-workspaces-get
+    description: Gets one AI Gateway workspace by UUID or slug, including its settings blocks.
+    arguments:
+    - name: workspace_ref
+      required: true
+      description: The workspace UUID or slug.
+    - name: plane
+      description: Which plane to read from. 'data' (default) reads workspaces the service account is scoped to; 'admin' reads a workspace outside your workspace scope.
+      auto: PREDEFINED
+      predefined:
+      - data
+      - admin
+      defaultValue: data
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayWorkspace.id
+      description: The workspace ID (UUID).
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayWorkspace.name
+      description: The workspace name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayWorkspace.slug
+      description: The workspace slug.
+      type: String
+  - name: prisma-airs-aigateway-workspaces-create
+    description: 'Creates an AI Gateway workspace (admin plane). scope_name must name an IAM scope that already exists - create one first with prisma-airs-aigateway-scopes-create. The response omits status/icon/limit blocks; call prisma-airs-aigateway-workspaces-get for full detail.'
+    arguments:
+    - name: name
+      required: true
+      description: The workspace display name.
+    - name: scope_name
+      required: true
+      description: The name of an existing SCM IAM scope that grants access to this workspace. Must already exist (see prisma-airs-aigateway-scopes-create).
+    - name: description
+      description: The workspace description.
+    - name: icon
+      description: The workspace icon identifier.
+    - name: defaults
+      description: 'Default settings for the workspace as a JSON object (e.g. {"config_id": "...", "allow_config_override": true, "metadata": {}}).'
+    - name: users
+      description: Comma-separated list of user IDs to seed as workspace members.
+      isArray: true
+    - name: usage_limits
+      description: Usage-limit definitions as a JSON array.
+    - name: rate_limits
+      description: Rate-limit definitions as a JSON array.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayWorkspace.id
+      description: The workspace ID (UUID).
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayWorkspace.name
+      description: The workspace name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayWorkspace.slug
+      description: The workspace slug.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayWorkspace.scope_name
+      description: The SCM scope name that grants data-plane access to the workspace.
+      type: String
+  - name: prisma-airs-aigateway-workspaces-update
+    description: Updates an AI Gateway workspace by UUID or slug (admin plane). Partial patch - supply at least one field. scope_name is not updatable here; rebind through the IAM scope instead.
+    arguments:
+    - name: workspace_ref
+      required: true
+      description: The workspace UUID or slug.
+    - name: name
+      description: The new workspace display name.
+    - name: description
+      description: The new workspace description.
+    - name: icon
+      description: The new workspace icon identifier.
+    - name: defaults
+      description: Default settings for the workspace as a JSON object.
+    - name: usage_limits
+      description: Usage-limit definitions as a JSON array.
+    - name: rate_limits
+      description: Rate-limit definitions as a JSON array.
+    outputs: []
+  - name: prisma-airs-aigateway-workspaces-archive
+    description: 'Archives (soft-deletes) an AI Gateway workspace by UUID or slug (admin plane). This is a soft delete: a subsequent workspaces-get returns 404 (errorCode AB08), but the row is still listed by prisma-airs-aigateway-workspaces-list status=archived.'
+    execution: true
+    arguments:
+    - name: workspace_ref
+      required: true
+      description: The workspace UUID or slug to archive.
+    outputs: []
+  - name: prisma-airs-aigateway-workspaces-provision
+    description: 'Provisions a workspace end to end the way the SCM UI does (admin + IAM planes): creates the IAM scope, creates the workspace bound to that scope_name, then binds the scope to the new workspace slug. On a partial failure the scope create is rolled back (best effort) and the error reports how to recover. Use this instead of orchestrating scopes-create + workspaces-create + scopes-bind yourself.'
+    arguments:
+    - name: name
+      required: true
+      description: The workspace display name.
+    - name: scope_name
+      description: The IAM scope name to use. When omitted, one is generated as ws_<name>_<suffix>. Required when existing_scope is true.
+    - name: existing_scope
+      description: Whether to bind to a scope that already exists instead of creating one. When true, scope_name is required.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: description
+      description: The workspace (and, when created, the IAM scope) description.
+    - name: icon
+      description: The workspace icon identifier.
+    - name: defaults
+      description: 'Default settings for the workspace as a JSON object (e.g. {"config_id": "...", "allow_config_override": true, "metadata": {}}).'
+    - name: users
+      description: Comma-separated list of user IDs to seed as workspace members.
+      isArray: true
+    - name: usage_limits
+      description: Usage-limit definitions as a JSON array.
+    - name: rate_limits
+      description: Rate-limit definitions as a JSON array.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayWorkspaceProvision.workspace_slug
+      description: The provisioned workspace slug.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayWorkspaceProvision.workspace_id
+      description: The provisioned workspace ID (UUID).
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayWorkspaceProvision.scope_name
+      description: The IAM scope name bound to the workspace.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayWorkspaceProvision.scope_created
+      description: Whether a new IAM scope was created (false when an existing scope was reused).
+      type: Boolean
+  - name: prisma-airs-aigateway-scopes-list
+    description: Lists every SCM IAM scope in the tenant. Scopes are the objects a workspace's scope_name points at; unbound scopes have no resources.
+    arguments: []
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayScope.name
+      description: The scope name (the path key, e.g. ws_production_bx7qw0).
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayScope.description
+      description: The scope description.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayScope.tsg_id
+      description: The Tenant Services Group ID the scope belongs to.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayScope.id
+      description: The scope ID (name:tsg_id). Display only; the path key is the name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayScope.resources
+      description: The resources bound to the scope.
+      type: Unknown
+  - name: prisma-airs-aigateway-scopes-get
+    description: Gets one SCM IAM scope by name.
+    arguments:
+    - name: name
+      required: true
+      description: The scope name (e.g. ws_production_bx7qw0). This is the path key, not the id (name:tsg_id).
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayScope.name
+      description: The scope name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayScope.description
+      description: The scope description.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayScope.tsg_id
+      description: The Tenant Services Group ID the scope belongs to.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayScope.id
+      description: The scope ID (name:tsg_id).
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayScope.resources
+      description: The resources bound to the scope.
+      type: Unknown
+  - name: prisma-airs-aigateway-scopes-create
+    description: Creates an unbound SCM IAM scope. This is step 1 of workspace provisioning; a workspace's scope_name must name a scope that already exists.
+    arguments:
+    - name: name
+      required: true
+      description: The scope name. Must be unique in the tenant, e.g. ws_production_bx7qw0.
+    - name: description
+      description: The scope description.
+    - name: resources
+      description: A JSON array of resources to bind at creation time. For example, '[{"resource_type":"workspace","resource_id":"ws-produc-985697"}]'. Usually omitted; bind later with prisma-airs-aigateway-scopes-bind.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayScope.name
+      description: The created scope name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayScope.id
+      description: The created scope ID (name:tsg_id).
+      type: String
+  - name: prisma-airs-aigateway-scopes-update
+    description: Updates an SCM IAM scope. This is a full replacement (PUT), not a patch - omitting resources unbinds everything. To add a workspace without dropping existing bindings, use prisma-airs-aigateway-scopes-bind.
+    arguments:
+    - name: name
+      required: true
+      description: The scope name (path key).
+    - name: description
+      description: The new scope description.
+    - name: resources
+      description: A JSON array of resources that fully replaces the scope's current resources. For example, '[{"resource_type":"workspace","resource_id":"ws-produc-985697"}]'.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayScope.name
+      description: The scope name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayScope.id
+      description: The scope ID (name:tsg_id).
+      type: String
+  - name: prisma-airs-aigateway-scopes-bind
+    description: Binds a workspace to an existing SCM IAM scope. This is step 3 of workspace provisioning; existing bindings are preserved. SCM binds by workspace slug, not UUID.
+    arguments:
+    - name: name
+      required: true
+      description: The scope name to bind the workspace to.
+    - name: workspace_slug
+      required: true
+      description: The workspace slug (e.g. ws-produc-985697) to bind. Not the UUID - SCM binds by slug.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayScope.name
+      description: The scope name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayScope.resources
+      description: The resources now bound to the scope.
+      type: Unknown
+  - name: prisma-airs-aigateway-scopes-delete
+    execution: true
+    description: Deletes an SCM IAM scope by name. Note that scope deletion is not verified upstream; the API may decline with a 404 or 405.
+    arguments:
+    - name: name
+      required: true
+      description: The scope name to delete.
+  - name: prisma-airs-aigateway-integrations-catalog
+    description: Lists the static provider catalog on the AI Gateway admin plane. Maps a provider slug (for example open-ai or x-ai) to the ai_provider_id UUID required when binding an integration or creating a provider.
+    arguments: []
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayProviderCatalog.id
+      description: The upstream provider (ai_provider_id) UUID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayProviderCatalog.slug
+      description: The provider catalog slug (for example open-ai).
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayProviderCatalog.name
+      description: The provider display name.
+      type: String
+  - name: prisma-airs-aigateway-integrations-list
+    description: Lists credential integrations (upstream provider bindings) for the tenant on the AI Gateway admin plane. Distinct from mcp-integrations.
+    arguments:
+    - name: page_size
+      description: The number of results to return per page.
+      defaultValue: '50'
+    - name: current_page
+      description: The page number to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayIntegration.id
+      description: The integration ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayIntegration.name
+      description: The integration name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayIntegration.slug
+      description: The integration slug.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayIntegration.status
+      description: The integration status.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayIntegration.ai_provider_id
+      description: The bound upstream provider (ai_provider_id) UUID.
+      type: String
+  - name: prisma-airs-aigateway-integrations-get
+    description: Gets one credential integration by UUID on the AI Gateway admin plane.
+    arguments:
+    - name: integration_id
+      required: true
+      description: The integration UUID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayIntegration.id
+      description: The integration ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayIntegration.name
+      description: The integration name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayIntegration.slug
+      description: The integration slug.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayIntegration.status
+      description: The integration status.
+      type: String
+  - name: prisma-airs-aigateway-integrations-models-list
+    description: Lists the models bound to a credential integration on the AI Gateway admin plane.
+    arguments:
+    - name: integration_id
+      required: true
+      description: The integration UUID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayIntegrationModel.slug
+      description: The model slug.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayIntegrationModel.name
+      description: The model display name.
+      type: String
+  - name: prisma-airs-aigateway-integrations-workspaces-list
+    description: Lists the workspaces a credential integration is exposed to, plus global-access settings, on the AI Gateway admin plane.
+    arguments:
+    - name: integration_id
+      required: true
+      description: The integration UUID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayIntegrationWorkspace.id
+      description: The bound workspace ID.
+      type: String
+  - name: prisma-airs-aigateway-integrations-create
+    description: Creates a credential integration (upstream provider binding) on the AI Gateway admin plane. Accepts secret credential material via the key/secret_mappings arguments.
+    arguments:
+    - name: ai_provider_id
+      required: true
+      description: The upstream provider UUID (from integrations-catalog).
+    - name: name
+      required: true
+      description: The integration display name.
+    - name: slug
+      required: true
+      description: The integration slug.
+    - name: organisation_id
+      description: The numeric organisation ID. Defaults to the configured tenant TSG ID when omitted.
+    - name: workspace_id
+      description: Optional upstream workspace scope.
+    - name: description
+      description: A free-form description.
+    - name: configurations
+      description: Provider-specific configuration object (JSON).
+    - name: key
+      description: The upstream API key / credential (secret).
+    - name: secret_mappings
+      description: Secret mapping entries (JSON array).
+    - name: create_default_provider
+      description: Whether to create a default provider binding for this integration.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: default_provider_slug
+      description: Slug for the default provider when create_default_provider is set.
+    - name: pricing_adjustments
+      description: Pricing adjustment settings (JSON).
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayIntegration.id
+      description: The created integration ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayIntegration.slug
+      description: The created integration slug.
+      type: String
+  - name: prisma-airs-aigateway-integrations-update
+    description: Updates a credential integration on the AI Gateway admin plane. Provide at least one field.
+    arguments:
+    - name: integration_id
+      required: true
+      description: The integration UUID.
+    - name: name
+      description: The integration display name.
+    - name: description
+      description: A free-form description.
+    - name: configurations
+      description: Provider-specific configuration object (JSON).
+    - name: key
+      description: The upstream API key / credential (secret).
+    - name: secret_mappings
+      description: Secret mapping entries (JSON array).
+    - name: pricing_adjustments
+      description: Pricing adjustment settings (JSON).
+    outputs: []
+  - name: prisma-airs-aigateway-integrations-delete
+    execution: true
+    description: Deletes a credential integration on the AI Gateway admin plane. The organisation_id query param is required and defaults to the configured tenant TSG ID.
+    arguments:
+    - name: integration_id
+      required: true
+      description: The integration UUID.
+    - name: organisation_id
+      description: The numeric organisation ID. Defaults to the configured tenant TSG ID when omitted.
+    outputs: []
+  - name: prisma-airs-aigateway-integrations-models-set
+    description: Bulk-sets the models bound to a credential integration on the AI Gateway admin plane.
+    arguments:
+    - name: integration_id
+      required: true
+      description: The integration UUID.
+    - name: models
+      required: true
+      description: The model entries to set (JSON array of objects, at least one).
+    - name: allow_all_models
+      description: Whether to allow all models for this integration.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs: []
+  - name: prisma-airs-aigateway-integrations-models-delete
+    execution: true
+    description: Removes specific model slugs from a credential integration on the AI Gateway admin plane.
+    arguments:
+    - name: integration_id
+      required: true
+      description: The integration UUID.
+    - name: slugs
+      required: true
+      isArray: true
+      description: Comma-separated list of model slugs to remove.
+    outputs: []
+  - name: prisma-airs-aigateway-integrations-workspaces-set
+    description: Bulk-sets which workspaces a credential integration is exposed to, on the AI Gateway admin plane. Provide at least one field.
+    arguments:
+    - name: integration_id
+      required: true
+      description: The integration UUID.
+    - name: workspaces
+      description: Workspace binding entries (JSON array).
+    - name: global_workspace_access
+      description: Global workspace access settings object (JSON) with enabled/rate_limits/usage_limits.
+    - name: override_existing_workspace_access
+      description: Whether to override existing workspace access.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: create_default_provider
+      description: Whether to create a default provider binding.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: default_provider_slug
+      description: Slug for the default provider when create_default_provider is set.
+    outputs: []
+  - name: prisma-airs-aigateway-providers-list
+    description: Lists provider bindings in a workspace on the AI Gateway control plane. Raw credential material is stripped from the output.
+    arguments:
+    - name: workspace_id
+      required: true
+      description: The workspace ID (UUID) to list providers for.
+    - name: page_size
+      description: The number of results to return per page.
+      defaultValue: '50'
+    - name: current_page
+      description: The page number to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayProvider.id
+      description: The provider ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayProvider.name
+      description: The provider name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayProvider.slug
+      description: The provider slug.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayProvider.status
+      description: The provider status.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayProvider.integration_id
+      description: The credential integration this provider is bound to.
+      type: String
+  - name: prisma-airs-aigateway-providers-get
+    description: Gets one provider binding by UUID on the AI Gateway control plane. The raw API key is stripped from the output; the masked_api_key value is retained.
+    arguments:
+    - name: provider_id
+      required: true
+      description: The provider UUID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayProvider.id
+      description: The provider ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayProvider.name
+      description: The provider name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayProvider.slug
+      description: The provider slug.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayProvider.status
+      description: The provider status.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayProvider.masked_api_key
+      description: The masked upstream API key.
+      type: String
+  - name: prisma-airs-aigateway-providers-create
+    description: Creates a provider binding inside a workspace on the AI Gateway control plane. Requires workspace_id, ai_provider_id (from integrations-catalog) and integration_id (from integrations-list).
+    arguments:
+    - name: workspace_id
+      required: true
+      description: The workspace UUID to create the provider in.
+    - name: ai_provider_id
+      required: true
+      description: The upstream provider UUID (from integrations-catalog).
+    - name: integration_id
+      required: true
+      description: The credential integration UUID (from integrations-list).
+    - name: name
+      required: true
+      description: The provider display name.
+    - name: slug
+      required: true
+      description: The provider slug.
+    - name: note
+      description: A free-form note.
+    - name: usage_limits
+      description: Usage limit settings (JSON).
+    - name: rate_limits
+      description: Rate limit settings (JSON).
+    - name: expires_at
+      description: Expiry timestamp (ISO 8601).
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayProvider.id
+      description: The created provider ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayProvider.slug
+      description: The created provider slug.
+      type: String
+  - name: prisma-airs-aigateway-providers-update
+    description: Updates a provider binding on the AI Gateway control plane. Provide at least one field.
+    arguments:
+    - name: provider_id
+      required: true
+      description: The provider UUID.
+    - name: name
+      description: The provider display name.
+    - name: note
+      description: A free-form note.
+    - name: usage_limits
+      description: Usage limit settings (JSON).
+    - name: rate_limits
+      description: Rate limit settings (JSON).
+    - name: expires_at
+      description: Expiry timestamp (ISO 8601).
+    - name: reset_usage
+      description: Whether to reset the accumulated usage counters.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs: []
+  - name: prisma-airs-aigateway-providers-delete
+    execution: true
+    description: Deletes a provider binding on the AI Gateway control plane. This is a hard delete - the provider is removed entirely (not archived).
+    arguments:
+    - name: provider_id
+      required: true
+      description: The provider UUID.
+    outputs: []
+  - name: prisma-airs-aigateway-plugins-list
+    description: Lists organisation-level plugin bindings on the AI Gateway admin plane. Credential values are masked in the output.
+    arguments: []
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayPlugin.id
+      description: The plugin binding ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayPlugin.integration_id
+      description: The credential integration the plugin is bound to.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayPlugin.integration_slug
+      description: The credential integration slug.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayPlugin.plugin_provider_slug
+      description: The plugin provider slug.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayPlugin.status
+      description: The plugin binding status.
+      type: String
+  - name: prisma-airs-aigateway-plugins-create
+    description: Binds a plugin to the organisation on the AI Gateway admin plane. Takes live secret credential material, which is never echoed back in the output.
+    arguments:
+    - name: integration_id
+      required: true
+      description: The credential integration UUID to bind the plugin to.
+    - name: credentials
+      required: true
+      description: 'A JSON object of provider-specific credential name/value pairs. Example: {"AIRS_API_KEY": "<secret>"}.'
+    - name: organisation_id
+      description: The numeric organisation ID. Defaults to the configured tenant TSG ID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayPlugin.id
+      description: The created plugin binding ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayPlugin.version_id
+      description: The created plugin binding version ID.
+      type: String
+  - name: prisma-airs-aigateway-api-keys-service-list
+    description: Lists service API keys in a workspace on the AI Gateway data plane. The key secret is never returned by list.
+    arguments:
+    - name: workspace_id
+      required: true
+      description: The workspace ID (UUID) to list service keys for.
+    - name: page_size
+      description: The number of results to return per page.
+      defaultValue: '50'
+    - name: current_page
+      description: The page number to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayApiKey.id
+      description: The API key ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.name
+      description: The API key name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.type
+      description: The API key type.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.status
+      description: The API key status.
+      type: String
+  - name: prisma-airs-aigateway-api-keys-user-list
+    description: Lists user API keys in a workspace on the AI Gateway data plane. The key secret is never returned by list.
+    arguments:
+    - name: workspace_id
+      required: true
+      description: The workspace ID (UUID) to list user keys for.
+    - name: page_size
+      description: The number of results to return per page.
+      defaultValue: '50'
+    - name: current_page
+      description: The page number to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayApiKey.id
+      description: The API key ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.name
+      description: The API key name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.type
+      description: The API key type.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.status
+      description: The API key status.
+      type: String
+  - name: prisma-airs-aigateway-api-keys-service-get
+    description: Gets one service API key by UUID on the AI Gateway data plane. The key secret is never returned by get.
+    arguments:
+    - name: key_id
+      required: true
+      description: The API key UUID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayApiKey.id
+      description: The API key ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.name
+      description: The API key name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.type
+      description: The API key type.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.status
+      description: The API key status.
+      type: String
+  - name: prisma-airs-aigateway-api-keys-user-get
+    description: Gets one user API key by UUID on the AI Gateway data plane. The key secret is never returned by get.
+    arguments:
+    - name: key_id
+      required: true
+      description: The API key UUID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayApiKey.id
+      description: The API key ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.name
+      description: The API key name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.type
+      description: The API key type.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.status
+      description: The API key status.
+      type: String
+  - name: prisma-airs-aigateway-api-keys-service-create
+    description: Creates a service API key in a workspace on the AI Gateway data plane. The one-time secret key is returned ONLY in this response and cannot be retrieved afterwards - capture it immediately.
+    arguments:
+    - name: name
+      required: true
+      description: The API key display name.
+    - name: scopes
+      required: true
+      description: 'A comma-separated list of at least one scope (for example: completions.write,logs.write).'
+      isArray: true
+    - name: workspace_id
+      required: true
+      description: The workspace UUID to create the key in.
+    - name: type
+      description: The API key type.
+      defaultValue: workspace
+    - name: organisation_id
+      description: The numeric organisation ID. Defaults to the configured tenant TSG ID.
+    - name: description
+      description: A free-form description.
+    - name: alert_emails
+      description: A comma-separated list of alert notification email addresses.
+      isArray: true
+    - name: expires_at
+      description: Expiry timestamp (ISO 8601).
+    - name: rate_limits
+      description: Rate limit settings (JSON array).
+    - name: usage_limits
+      description: Usage limit settings (JSON object).
+    - name: defaults
+      description: Default settings (JSON object).
+    - name: rotation_policy
+      description: Rotation policy settings (JSON object).
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayApiKey.id
+      description: The created API key ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.key
+      description: The one-time secret key value. Shown only once - capture it immediately.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.version_id
+      description: The created API key version ID.
+      type: String
+  - name: prisma-airs-aigateway-api-keys-user-create
+    description: Creates a user API key in a workspace on the AI Gateway data plane. Requires user_id. The one-time secret key is returned ONLY in this response and cannot be retrieved afterwards - capture it immediately.
+    arguments:
+    - name: name
+      required: true
+      description: The API key display name.
+    - name: scopes
+      required: true
+      description: 'A comma-separated list of at least one scope (for example: completions.write).'
+      isArray: true
+    - name: workspace_id
+      required: true
+      description: The workspace UUID to create the key in.
+    - name: user_id
+      required: true
+      description: The user UUID the key belongs to.
+    - name: type
+      description: The API key type.
+      defaultValue: workspace
+    - name: organisation_id
+      description: The numeric organisation ID. Defaults to the configured tenant TSG ID.
+    - name: description
+      description: A free-form description.
+    - name: alert_emails
+      description: A comma-separated list of alert notification email addresses.
+      isArray: true
+    - name: expires_at
+      description: Expiry timestamp (ISO 8601).
+    - name: rate_limits
+      description: Rate limit settings (JSON array).
+    - name: usage_limits
+      description: Usage limit settings (JSON object).
+    - name: defaults
+      description: Default settings (JSON object).
+    - name: rotation_policy
+      description: Rotation policy settings (JSON object).
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayApiKey.id
+      description: The created API key ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.key
+      description: The one-time secret key value. Shown only once - capture it immediately.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.version_id
+      description: The created API key version ID.
+      type: String
+  - name: prisma-airs-aigateway-api-keys-service-update
+    description: Updates a service API key on the AI Gateway data plane. Provide at least one field.
+    arguments:
+    - name: key_id
+      required: true
+      description: The API key UUID.
+    - name: name
+      description: The API key display name.
+    - name: description
+      description: A free-form description.
+    - name: scopes
+      description: A comma-separated list of at least one scope.
+      isArray: true
+    - name: alert_emails
+      description: A comma-separated list of alert notification email addresses.
+      isArray: true
+    - name: expires_at
+      description: Expiry timestamp (ISO 8601).
+    - name: rate_limits
+      description: Rate limit settings (JSON array).
+    - name: usage_limits
+      description: Usage limit settings (JSON object).
+    - name: defaults
+      description: Default settings (JSON object).
+    - name: rotation_policy
+      description: Rotation policy settings (JSON object).
+    - name: reset_usage
+      description: Whether to reset the accumulated usage counters.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs: []
+  - name: prisma-airs-aigateway-api-keys-user-update
+    description: Updates a user API key on the AI Gateway data plane. Provide at least one field.
+    arguments:
+    - name: key_id
+      required: true
+      description: The API key UUID.
+    - name: name
+      description: The API key display name.
+    - name: description
+      description: A free-form description.
+    - name: scopes
+      description: A comma-separated list of at least one scope.
+      isArray: true
+    - name: alert_emails
+      description: A comma-separated list of alert notification email addresses.
+      isArray: true
+    - name: expires_at
+      description: Expiry timestamp (ISO 8601).
+    - name: rate_limits
+      description: Rate limit settings (JSON array).
+    - name: usage_limits
+      description: Usage limit settings (JSON object).
+    - name: defaults
+      description: Default settings (JSON object).
+    - name: rotation_policy
+      description: Rotation policy settings (JSON object).
+    - name: reset_usage
+      description: Whether to reset the accumulated usage counters.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs: []
+  - name: prisma-airs-aigateway-api-keys-service-delete
+    execution: true
+    description: Permanently deletes a service API key on the AI Gateway data plane. This is a hard delete.
+    arguments:
+    - name: key_id
+      required: true
+      description: The API key UUID.
+    outputs: []
+  - name: prisma-airs-aigateway-api-keys-user-delete
+    execution: true
+    description: Permanently deletes a user API key on the AI Gateway data plane. This is a hard delete.
+    arguments:
+    - name: key_id
+      required: true
+      description: The API key UUID.
+    outputs: []
+  - name: prisma-airs-aigateway-api-keys-service-rotate
+    description: Rotates a service API key on the AI Gateway data plane. The new one-time secret key is returned ONLY in this response - capture it immediately.
+    arguments:
+    - name: key_id
+      required: true
+      description: The API key UUID.
+    - name: key_transition_period_ms
+      description: The grace period (in milliseconds, minimum 1800000) during which the old key remains valid.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayApiKeyRotation.id
+      description: The rotated API key ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKeyRotation.key
+      description: The new one-time secret key value. Shown only once - capture it immediately.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKeyRotation.key_transition_expires_at
+      description: When the previous key stops being accepted.
+      type: String
+  - name: prisma-airs-aigateway-api-keys-user-rotate
+    description: Rotates a user API key on the AI Gateway data plane. The new one-time secret key is returned ONLY in this response - capture it immediately.
+    arguments:
+    - name: key_id
+      required: true
+      description: The API key UUID.
+    - name: key_transition_period_ms
+      description: The grace period (in milliseconds, minimum 1800000) during which the old key remains valid.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayApiKeyRotation.id
+      description: The rotated API key ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKeyRotation.key
+      description: The new one-time secret key value. Shown only once - capture it immediately.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKeyRotation.key_transition_expires_at
+      description: When the previous key stops being accepted.
+      type: String
+  - name: prisma-airs-aigateway-organisations-info-get
+    description: Gets one organisation's capabilities and settings on the AI Gateway admin plane.
+    arguments:
+    - name: organisation_id
+      description: The numeric organisation (TSG) ID. Defaults to the configured tenant TSG ID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayOrganisationInfo.id
+      description: The organisation ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayOrganisationInfo.name
+      description: The organisation name.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayOrganisationInfo.subscription.type
+      description: The subscription type.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayOrganisationInfo.subscription.name
+      description: The subscription name.
+      type: String
+  - name: prisma-airs-aigateway-organisations-self-get
+    description: Gets the calling organisation's record on the AI Gateway admin plane.
+    arguments: []
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayOrganisation.id
+      description: The organisation ID.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayOrganisation.name
+      description: The organisation name.
+      type: String
+  - name: prisma-airs-aigateway-organisations-self-update
+    description: Updates the calling organisation's settings on the AI Gateway admin plane. Provide at least one field.
+    arguments:
+    - name: name
+      description: The organisation display name.
+    - name: settings
+      description: Additional organisation settings to update (JSON object). Merged into the update body.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayOrganisation.id
+      description: The organisation ID.
+      type: String
+  - name: prisma-airs-aigateway-organisations-auth-settings-get
+    description: Gets an organisation's auth settings on the AI Gateway admin plane. The scim_token and any client_secret values are redacted from the output.
+    arguments:
+    - name: organisation_id
+      description: The numeric organisation (TSG) ID. Defaults to the configured tenant TSG ID.
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayOrganisationAuthSettings.domains
+      description: The configured SSO/SCIM domains.
+      type: Unknown
+    - contextPath: PrismaAIRs.AIGatewayOrganisationAuthSettings.scim_token
+      description: The SCIM token (always redacted in the output).
+      type: String
+  - name: prisma-airs-aigateway-organisations-auth-settings-update
+    description: Updates an organisation's auth settings on the AI Gateway admin plane. Takes a secret scim_token as input; the response is redacted. Provide at least one field.
+    arguments:
+    - name: organisation_id
+      description: The numeric organisation (TSG) ID. Defaults to the configured tenant TSG ID.
+    - name: auth_settings
+      description: Auth settings to update (JSON object).
+    - name: domains
+      description: A comma-separated list of SSO/SCIM domains.
+      isArray: true
+    - name: scim_token
+      description: The SCIM token (secret). Never echoed back in the output.
+    outputs: []
+  - name: prisma-airs-aigateway-model-pricing-get
+    description: 'Reads one provider/model entry from the public model-pricing catalog. Note: this is NOT an SCM gateway call - it is an unauthenticated read against a public catalog host and carries no OAuth2/tenant credentials. Prices are upstream catalog data, not effective tenant billing.'
+    arguments:
+    - name: provider
+      required: true
+      description: The provider slug (for example openai).
+    - name: model
+      required: true
+      description: The model identifier (for example gpt-4o or text-embedding-3-small).
+    - name: endpoint
+      description: The public pricing catalog base URL (HTTPS; HTTP allowed only on loopback).
+      defaultValue: https://api.portkey.ai
+    outputs:
+    - contextPath: PrismaAIRs.AIGatewayModelPricing.provider
+      description: The provider slug the pricing was requested for.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayModelPricing.model
+      description: The model the pricing was requested for.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayModelPricing.currency
+      description: The pricing currency (USD).
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayModelPricing.pay_as_you_go
+      description: The pay-as-you-go rate configuration.
+      type: Unknown
+    - contextPath: PrismaAIRs.AIGatewayModelPricing.calculate
+      description: The unevaluated price calculation expressions.
+      type: Unknown
+  dockerimage: demisto/python3:3.12.14.12343672
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- PaloAltoNetworks_Prisma_AIRs_AI_Gateway_Provisioning_Test
