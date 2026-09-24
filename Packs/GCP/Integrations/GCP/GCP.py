@@ -9291,7 +9291,7 @@ def main():  # pragma: no cover
             raise NotImplementedError(f"Command not implemented: {command}")
 
     except HttpError as e:
-        project_id = args.get("project_id") or args.get("folder_id") or "N/A"
+        project_id = args.get("project_id") or args.get("identifier") or "N/A"
         handle_permission_error(e, project_id, command)
 
     except Exception as e:
