@@ -879,8 +879,8 @@ def test_sql_db_tde_set_command(mocker, client, mock_params):
 def test_sql_servers_list_command(mocker, client, mock_params):
     """
     Given: An AzureClient whose sql_servers_list returns a list of servers with a nextLink.
-    When: sql_servers_list_command is called without list_by_resource_group.
-    Then: It returns CommandResults with the servers list and the nextLink in outputs.
+    When: sql_servers_list_command is called without resource_group_name.
+    Then: It returns CommandResults with the servers list, generic title, and the nextLink in outputs.
     """
     raw = {
         "value": [
@@ -905,13 +905,14 @@ def test_sql_servers_list_command(mocker, client, mock_params):
     next_link_key = next(k for k in result.outputs if "true" in k)
     assert result.outputs[next_link_key].get("ServersNextLink") == "https://management.azure.com/next-page-url"
     call_kwargs = client.sql_servers_list.call_args[1]
+    assert call_kwargs.get("resource_group_name") is None
     assert call_kwargs.get("next_link") is None
 
 
 def test_sql_servers_list_command_by_resource_group(mocker, client, mock_params):
     """
     Given: An AzureClient whose sql_servers_list returns a list of servers.
-    When: sql_servers_list_command is called with list_by_resource_group=true.
+    When: sql_servers_list_command is called with resource_group_name.
     Then: It passes the resource_group_name to the client and includes it in the table title.
     """
     raw = {
@@ -921,7 +922,9 @@ def test_sql_servers_list_command_by_resource_group(mocker, client, mock_params)
     }
     mocker.patch.object(client, "sql_servers_list", return_value=raw)
 
-    result = sql_servers_list_command(client=client, params=mock_params, args={"list_by_resource_group": "true"})
+    result = sql_servers_list_command(
+        client=client, params=mock_params, args={"resource_group_name": mock_params["resource_group_name"]}
+    )
 
     assert "SQL Servers in resource group" in result.readable_output
     call_kwargs = client.sql_servers_list.call_args[1]

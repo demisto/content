@@ -3240,15 +3240,8 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The resource group name.
-      required: true
-    - name: list_by_resource_group
-      description: If true, returns servers in the configured resource group only. Default is false.
+      description: The resource group name. If provided, only servers in this resource group are returned. If omitted, all servers in the subscription are returned.
       required: false
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
     - name: next_link
       description: The URL to the next page of results, returned by a previous call to this command. Use this to paginate through large result sets.
       required: false

@@ -2087,10 +2087,13 @@ class AzureClient:
             demisto.debug("Listing SQL servers (next page).")
             full_url = next_link
         else:
-            full_url = (
-                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-                f"/providers/Microsoft.Sql/servers"
-            )
+            if resource_group_name:
+                full_url = (
+                    f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+                    f"/providers/Microsoft.Sql/servers"
+                )
+            else:
+                full_url = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.Sql/servers"
             demisto.debug("Listing SQL servers.")
         try:
             return self.http_request("GET", full_url=full_url, params=params)
@@ -2101,7 +2104,7 @@ class AzureClient:
                 resource_type="SQL Servers",
                 api_function_name="sql_servers_list",
                 subscription_id=subscription_id,
-                resource_group_name=resource_group_name,
+                resource_group_name=resource_group_name or "",
             )
 
     def sql_db_list(
@@ -4709,18 +4712,16 @@ def sql_servers_list_command(client: AzureClient, params: dict, args: Dict[str, 
     Args:
         client (AzureClient): The Azure client instance.
         params (dict): Configuration parameters.
-        args (dict): Command arguments including optional server_name and list_by_resource_group.
+        args (dict): Command arguments including optional resource_group_name and next_link.
 
     Returns:
         CommandResults: The list of SQL servers formatted for display.
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-    list_by_resource_group = argToBoolean(args.get("list_by_resource_group", False))
+    resource_group_name = args.get("resource_group_name") or params.get("resource_group_name")
     next_link = args.get("next_link")
 
-    rg = resource_group_name if list_by_resource_group else None
-    response = client.sql_servers_list(subscription_id=subscription_id, resource_group_name=rg, next_link=next_link)
+    response = client.sql_servers_list(subscription_id=subscription_id, resource_group_name=resource_group_name, next_link=next_link)
 
     servers = copy.deepcopy(response.get("value", []))
     for server in servers:
@@ -4728,7 +4729,7 @@ def sql_servers_list_command(client: AzureClient, params: dict, args: Dict[str, 
             server.update(properties)
             del server["properties"]
 
-    name = f"SQL Servers in resource group: {resource_group_name}" if list_by_resource_group else "SQL Servers List"
+    name = f"SQL Servers in resource group: {resource_group_name}" if resource_group_name else "SQL Servers List"
     if not servers:
         return CommandResults(readable_output="No SQL servers found.")
 
