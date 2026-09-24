@@ -1,0 +1,14 @@
+[file:README.md]
+ignore=RM104
+
+[file:OktaStandardConnector.yml]
+ignore=PR101,BA129
+
+[file:OktaStandardConnector_image.png]
+ignore=IM111
+
+[file:OktaIAMStandardConnector.yml]
+ignore=PR101,BA129
+
+[file:OktaIAMStandardConnector_image.png]
+ignore=IM111
