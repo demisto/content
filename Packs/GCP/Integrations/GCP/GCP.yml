@@ -12785,6 +12785,7 @@ script:
     - name: identifier
       description: The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version >=3.0 , Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions < 3.0.
       required:platform: true
+      required: false
     - name: query
       description: 'The optional query string to filter the projects. Supported fields include displayName, parent, id, state, and labels.[KEY] (for example, "state:ACTIVE" or "displayName:how*").'
     - name: limit
