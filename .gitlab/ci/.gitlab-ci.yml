@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: test_for_remove_aiagents
+  CURRENT_BRANCH_NAME: test_for_remove_aiagents_with_patch
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: test_for_remove_aiagents
+    ref: test_for_remove_aiagents_with_patch
     project: "${CI_PROJECT_NAMESPACE}/infra"
