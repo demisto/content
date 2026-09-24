@@ -57,6 +57,15 @@ from Azure import (
     get_command_and_token_scopes,
     create_set_tags_request_body,
     nsg_security_rules_list_command,
+    sql_servers_list_command,
+    sql_db_list_command,
+    sql_db_audit_policy_list_command,
+    sql_db_audit_policy_create_update_command,
+    sql_db_threat_policy_create_update_command,
+    sql_firewall_rule_list_command,
+    sql_firewall_rule_create_update_command,
+    sql_firewall_rule_delete_command,
+    sql_firewall_rule_replace_command,
 )
 from MicrosoftApiModule import Resources
 from requests import Response
@@ -863,6 +872,452 @@ def test_sql_db_tde_set_command(mocker, client, mock_params):
     # Verify results
     assert "Updated SQL database test-db of the server test-server" in result.readable_output
 
+
+
+
+
+def test_sql_servers_list_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_servers_list returns a list of servers with a nextLink.
+    When: sql_servers_list_command is called without list_by_resource_group.
+    Then: It returns CommandResults with the servers list and the nextLink in outputs.
+    """
+    raw = {
+        "value": [
+            {
+                "id": "/subscriptions/sub/resourceGroups/rg/providers/Microsoft.Sql/servers/integration",
+                "name": "integration",
+                "location": "eastus",
+                "type": "Microsoft.Sql/servers",
+                "properties": {"state": "Ready", "version": "12.0"},
+            }
+        ],
+        "nextLink": "https://management.azure.com/next-page-url",
+    }
+    mocker.patch.object(client, "sql_servers_list", return_value=raw)
+
+    result = sql_servers_list_command(client=client, params=mock_params, args={})
+
+    servers_key = next(k for k in result.outputs if "Servers" in k and "NextLink" not in k)
+    assert len(result.outputs[servers_key]) == 1
+    assert result.outputs[servers_key][0].get("name") == "integration"
+    assert "SQL Servers List" in result.readable_output
+    next_link_key = next(k for k in result.outputs if "true" in k)
+    assert result.outputs[next_link_key].get("ServersNextLink") == "https://management.azure.com/next-page-url"
+    call_kwargs = client.sql_servers_list.call_args[1]
+    assert call_kwargs.get("next_link") is None
+
+
+def test_sql_servers_list_command_by_resource_group(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_servers_list returns a list of servers.
+    When: sql_servers_list_command is called with list_by_resource_group=true.
+    Then: It passes the resource_group_name to the client and includes it in the table title.
+    """
+    raw = {
+        "value": [
+            {"id": "/sub/rg/srv", "name": "integration", "properties": {"state": "Ready"}}
+        ]
+    }
+    mocker.patch.object(client, "sql_servers_list", return_value=raw)
+
+    result = sql_servers_list_command(client=client, params=mock_params, args={"list_by_resource_group": "true"})
+
+    assert "SQL Servers in resource group" in result.readable_output
+    call_kwargs = client.sql_servers_list.call_args[1]
+    assert call_kwargs.get("resource_group_name") == mock_params["resource_group_name"]
+
+
+def test_sql_servers_list_command_empty(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_servers_list returns an empty value list.
+    When: sql_servers_list_command is called.
+    Then: It returns a no-results readable output with no outputs.
+    """
+    mocker.patch.object(client, "sql_servers_list", return_value={"value": []})
+
+    result = sql_servers_list_command(client=client, params=mock_params, args={})
+
+    assert "No SQL servers found" in result.readable_output
+    assert result.outputs is None
+
+
+def test_sql_db_list_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_db_list returns a list of databases with a nextLink.
+    When: sql_db_list_command is called with a server_name.
+    Then: It returns CommandResults with the databases list and the nextLink in outputs.
+    """
+    raw = {
+        "value": [
+            {
+                "id": "/sub/rg/srv/db",
+                "name": "integration-db",
+                "location": "eastus",
+                "type": "Microsoft.Sql/servers/databases",
+                "properties": {"status": "Online"},
+            }
+        ],
+        "nextLink": "https://management.azure.com/next-db-page",
+    }
+    mocker.patch.object(client, "sql_db_list", return_value=raw)
+
+    result = sql_db_list_command(client=client, params=mock_params, args={"server_name": "integration"})
+
+    db_key = next(k for k in result.outputs if "Databases" in k and "NextLink" not in k)
+    assert len(result.outputs[db_key]) == 1
+    assert result.outputs[db_key][0].get("name") == "integration-db"
+    assert "Databases for server integration" in result.readable_output
+    next_link_key = next(k for k in result.outputs if "true" in k)
+    assert result.outputs[next_link_key].get("DatabasesNextLink") == "https://management.azure.com/next-db-page"
+
+
+def test_sql_db_list_command_empty(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_db_list returns an empty value list.
+    When: sql_db_list_command is called.
+    Then: It returns a no-results readable output.
+    """
+    mocker.patch.object(client, "sql_db_list", return_value={"value": []})
+
+    result = sql_db_list_command(client=client, params=mock_params, args={"server_name": "srv"})
+
+    assert "No databases found" in result.readable_output
+    assert not result.outputs
+
+
+def test_sql_db_audit_policy_list_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_db_audit_policy_list returns a list of audit policies with a nextLink.
+    When: sql_db_audit_policy_list_command is called with server_name and db_name.
+    Then: It returns CommandResults with the audit policies and the nextLink in outputs.
+    """
+    raw = {
+        "value": [
+            {
+                "id": "/sub/rg/srv/db/auditingSettings/Default",
+                "name": "Default",
+                "type": "Microsoft.Sql/servers/databases/auditingSettings",
+                "properties": {"state": "Enabled", "retentionDays": 0, "isAzureMonitorTargetEnabled": True},
+            }
+        ],
+        "nextLink": "https://management.azure.com/next-audit-page",
+    }
+    mocker.patch.object(client, "sql_db_audit_policy_list", return_value=raw)
+
+    args = {"server_name": "integration", "db_name": "integration-db"}
+    result = sql_db_audit_policy_list_command(client=client, params=mock_params, args=args)
+
+    audit_key = next(k for k in result.outputs if "DBAuditPolicy" in k and "NextLink" not in k)
+    assert len(result.outputs[audit_key]) == 1
+    assert result.outputs[audit_key][0].get("type") == "Microsoft.Sql/servers/databases/auditingSettings"
+    assert result.outputs[audit_key][0].get("serverName") == "integration"
+    assert result.outputs[audit_key][0].get("databaseName") == "integration-db"
+    assert "Database Audit Settings" in result.readable_output
+    next_link_key = next(k for k in result.outputs if "true" in k)
+    assert result.outputs[next_link_key].get("DBAuditPolicyNextLink") == "https://management.azure.com/next-audit-page"
+
+
+def test_sql_db_audit_policy_list_command_empty(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_db_audit_policy_list returns an empty value list.
+    When: sql_db_audit_policy_list_command is called.
+    Then: It returns a no-results readable output.
+    """
+    mocker.patch.object(client, "sql_db_audit_policy_list", return_value={"value": []})
+
+    result = sql_db_audit_policy_list_command(
+        client=client, params=mock_params, args={"server_name": "srv", "db_name": "db"}
+    )
+
+    assert "No audit policies found" in result.readable_output
+    assert not result.outputs
+
+
+def test_sql_db_audit_policy_create_update_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_db_audit_policy_create_update returns an updated policy.
+    When: sql_db_audit_policy_create_update_command is called with state=Enabled.
+    Then: It returns CommandResults with the updated policy and the correct outputs prefix.
+    """
+    raw = {
+        "id": "/sub/rg/srv/db/auditingSettings/default",
+        "name": "default",
+        "type": "Microsoft.Sql/servers/databases/auditingSettings",
+        "properties": {"state": "Enabled", "retentionDays": 5, "isAzureMonitorTargetEnabled": True},
+    }
+    mocker.patch.object(client, "sql_db_audit_policy_create_update", return_value=raw)
+
+    args = {
+        "server_name": "integration",
+        "db_name": "integration-db",
+        "state": "Enabled",
+        "retention_days": "5",
+        "is_azure_monitor_target_enabled": "true",
+    }
+    result = sql_db_audit_policy_create_update_command(client=client, params=mock_params, args=args)
+
+    assert result.outputs_prefix == "Azure.SQL.DBAuditPolicy"
+    assert result.outputs_key_field == "id"
+    assert "Create Or Update Database Auditing Settings" in result.readable_output
+    call_kwargs = client.sql_db_audit_policy_create_update.call_args[1]
+    assert call_kwargs["state"] == "Enabled"
+    assert call_kwargs["server_name"] == "integration"
+    assert call_kwargs["db_name"] == "integration-db"
+
+
+def test_sql_db_threat_policy_create_update_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_db_threat_policy_create_update returns an updated policy.
+    When: sql_db_threat_policy_create_update_command is called with state=Enabled.
+    Then: It returns CommandResults with the updated policy and the correct outputs prefix.
+    """
+    raw = {
+        "id": "/sub/rg/srv/db/securityAlertPolicies/default",
+        "name": "default",
+        "type": "Microsoft.Sql/servers/databases/securityAlertPolicies",
+        "properties": {"state": "Enabled", "retentionDays": 5, "emailAddresses": ["test1@test.com"]},
+    }
+    mocker.patch.object(client, "sql_db_threat_policy_create_update", return_value=raw)
+
+    args = {
+        "server_name": "integration",
+        "db_name": "integration-db",
+        "state": "Enabled",
+        "retention_days": "5",
+        "email_addresses": "test1@test.com",
+    }
+    result = sql_db_threat_policy_create_update_command(client=client, params=mock_params, args=args)
+
+    assert result.outputs_prefix == "Azure.SQL.DBThreatPolicy"
+    assert result.outputs_key_field == "id"
+    assert "Create Or Update Database Threat Detection Policies" in result.readable_output
+    call_kwargs = client.sql_db_threat_policy_create_update.call_args[1]
+    assert call_kwargs["state"] == "Enabled"
+    assert call_kwargs["email_addresses"] == ["test1@test.com"]
+
+
+def test_sql_db_threat_policy_create_update_command_none_alerts(mocker, client, mock_params):
+    """
+    Given: An AzureClient and disabled_alerts set to 'None'.
+    When: sql_db_threat_policy_create_update_command is called.
+    Then: The disabled_alerts passed to the client is [''] (empty string sentinel).
+    """
+    mocker.patch.object(client, "sql_db_threat_policy_create_update", return_value={"id": "x", "properties": {}})
+
+    args = {"server_name": "srv", "db_name": "db", "state": "Enabled", "disabled_alerts": "None"}
+    sql_db_threat_policy_create_update_command(client=client, params=mock_params, args=args)
+
+    call_kwargs = client.sql_db_threat_policy_create_update.call_args[1]
+    assert call_kwargs["disabled_alerts"] == [""]
+
+
+def test_sql_firewall_rule_list_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_firewall_rule_list returns a list of firewall rules with a nextLink.
+    When: sql_firewall_rule_list_command is called without a specific rule name.
+    Then: It returns CommandResults with all rules and the nextLink in outputs.
+    """
+    raw = {
+        "value": [
+            {"id": "/sub/rg/srv/fw/AllowAll", "name": "AllowAllWindowsAzureIps", "type": "Microsoft.Sql/servers/firewallRules",
+             "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"}},
+            {"id": "/sub/rg/srv/fw/test-rule", "name": "test-rule", "type": "Microsoft.Sql/servers/firewallRules",
+             "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"}},
+        ],
+        "nextLink": "https://management.azure.com/next-fw-page",
+    }
+    mocker.patch.object(client, "sql_firewall_rule_list", return_value=raw)
+
+    result = sql_firewall_rule_list_command(client=client, params=mock_params, args={"server_name": "integration"})
+
+    fw_key = next(k for k in result.outputs if "FirewallRule" in k and "NextLink" not in k)
+    assert len(result.outputs[fw_key]) == 2
+    assert result.outputs[fw_key][0].get("name") == "AllowAllWindowsAzureIps"
+    assert "Firewall Rules" in result.readable_output
+    next_link_key = next(k for k in result.outputs if "true" in k)
+    assert result.outputs[next_link_key].get("FirewallRuleNextLink") == "https://management.azure.com/next-fw-page"
+    call_kwargs = client.sql_firewall_rule_list.call_args[1]
+    assert call_kwargs.get("firewall_rule_name") is None
+    assert call_kwargs.get("next_link") is None
+
+
+def test_sql_firewall_rule_list_command_single_rule(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_firewall_rule_list returns a single firewall rule object.
+    When: sql_firewall_rule_list_command is called with a specific firewall_rule_name.
+    Then: It returns CommandResults with exactly one rule (no nextLink in outputs).
+    """
+    raw = {
+        "id": "/sub/rg/srv/fw/test-rule",
+        "name": "test-rule",
+        "type": "Microsoft.Sql/servers/firewallRules",
+        "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"},
+    }
+    mocker.patch.object(client, "sql_firewall_rule_list", return_value=raw)
+
+    args = {"server_name": "integration", "firewall_rule_name": "test-rule"}
+    result = sql_firewall_rule_list_command(client=client, params=mock_params, args=args)
+
+    # Single-rule path: uses outputs_prefix + outputs_key_field
+    assert result.outputs_prefix == "Azure.SQL.FirewallRule"
+    assert result.outputs_key_field == "id"
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    assert result.outputs[0].get("name") == "test-rule"
+    call_kwargs = client.sql_firewall_rule_list.call_args[1]
+    assert call_kwargs.get("firewall_rule_name") == "test-rule"
+
+
+def test_sql_firewall_rule_list_command_empty(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_firewall_rule_list returns an empty value list.
+    When: sql_firewall_rule_list_command is called.
+    Then: It returns a no-results readable output.
+    """
+    mocker.patch.object(client, "sql_firewall_rule_list", return_value={"value": []})
+
+    result = sql_firewall_rule_list_command(client=client, params=mock_params, args={"server_name": "srv"})
+
+    assert "No firewall rules were found" in result.readable_output
+    assert not result.outputs
+
+
+def test_sql_firewall_rule_create_update_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_firewall_rule_create_update returns the created rule.
+    When: sql_firewall_rule_create_update_command is called with all required args.
+    Then: It returns CommandResults with a success message and the rule in outputs.
+    """
+    raw = {
+        "id": "/sub/rg/srv/fw/new-rule",
+        "name": "new-rule",
+        "type": "Microsoft.Sql/servers/firewallRules",
+        "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"},
+    }
+    mocker.patch.object(client, "sql_firewall_rule_create_update", return_value=raw)
+
+    args = {
+        "server_name": "integration",
+        "firewall_rule_name": "new-rule",
+        "start_ip_address": "0.0.0.0",
+        "end_ip_address": "0.0.0.0",
+    }
+    result = sql_firewall_rule_create_update_command(client=client, params=mock_params, args=args)
+
+    assert "Successfully updated the firewall rule new-rule" in result.readable_output
+    assert result.outputs_prefix == "Azure.SQL.FirewallRule"
+    call_kwargs = client.sql_firewall_rule_create_update.call_args[1]
+    assert call_kwargs["firewall_rule_name"] == "new-rule"
+    assert call_kwargs["start_ip_address"] == "0.0.0.0"
+    assert call_kwargs["end_ip_address"] == "0.0.0.0"
+
+
+def test_sql_firewall_rule_delete_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_firewall_rule_delete succeeds.
+    When: sql_firewall_rule_delete_command is called with server_name and firewall_rule_name.
+    Then: It returns a success readable output confirming deletion.
+    """
+    mocker.patch.object(client, "sql_firewall_rule_delete", return_value=None)
+
+    args = {"server_name": "integration", "firewall_rule_name": "test-rule"}
+    result = sql_firewall_rule_delete_command(client=client, params=mock_params, args=args)
+
+    assert "The firewall rule test-rule has been successfully deleted" in result.readable_output
+    client.sql_firewall_rule_delete.assert_called_once_with(
+        server_name="integration",
+        subscription_id=mock_params["subscription_id"],
+        resource_group_name=mock_params["resource_group_name"],
+        firewall_rule_name="test-rule",
+    )
+
+
+def test_sql_firewall_rule_replace_command(mocker, client, mock_params):
+    """
+    Given: An AzureClient whose sql_firewall_rule_replace returns the updated rules.
+    When: sql_firewall_rule_replace_command is called with rule name and IP addresses.
+    Then: It returns a success message and the rules in outputs.
+    """
+    raw = {
+        "values": [
+            {"id": "/sub/rg/srv/fw/replaced-rule", "name": "replaced-rule",
+             "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"}}
+        ]
+    }
+    mocker.patch.object(client, "sql_firewall_rule_replace", return_value=raw)
+
+    args = {
+        "server_name": "integration",
+        "firewall_rule_name": "replaced-rule",
+        "start_ip_address": "0.0.0.0",
+        "end_ip_address": "0.0.0.0",
+    }
+    result = sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
+
+    assert "Successfully updated the firewall rules" in result.readable_output
+    assert result.outputs_prefix == "Azure.SQL.FirewallRule"
+    call_kwargs = client.sql_firewall_rule_replace.call_args[1]
+    assert call_kwargs["firewall_rule_name"] == "replaced-rule"
+    assert call_kwargs["start_ip_address"] == "0.0.0.0"
+    assert call_kwargs["end_ip_address"] == "0.0.0.0"
+    assert call_kwargs["request_body"] is None
+
+
+def test_sql_firewall_rule_replace_command_with_entry_id(mocker, client, mock_params, tmp_path):
+    """
+    Given: An AzureClient and an entry_id pointing to a JSON file.
+    When: sql_firewall_rule_replace_command is called with entry_id.
+    Then: The request body is taken from the file and passed to the client.
+    """
+    import json
+
+    request_file = tmp_path / "fw_rules.json"
+    request_file.write_text(json.dumps({"values": [{"name": "test-rule", "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"}}]}))
+
+    raw = {"values": [{"id": "/sub/rg/srv/fw/test-rule", "name": "test-rule"}]}
+    mocker.patch.object(client, "sql_firewall_rule_replace", return_value=raw)
+    mocker.patch("Azure.demisto.getFilePath", return_value={"path": str(request_file)})
+
+    args = {"server_name": "integration", "entry_id": "123@456"}
+    result = sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
+
+    assert "Successfully updated the firewall rules" in result.readable_output
+    call_kwargs = client.sql_firewall_rule_replace.call_args[1]
+    assert call_kwargs["request_body"] is not None
+    assert "values" in call_kwargs["request_body"]
+
+
+@pytest.mark.parametrize(
+    "extra_arg",
+    [
+        {"firewall_rule_name": "replaced-rule"},
+        {"start_ip_address": "0.0.0.0"},
+        {"end_ip_address": "0.0.0.0"},
+    ],
+)
+def test_sql_firewall_rule_replace_command_entry_id_with_other_args(mocker, client, mock_params, extra_arg):
+    """
+    Given: An entry_id together with one of firewall_rule_name / start_ip_address / end_ip_address.
+    When: sql_firewall_rule_replace_command is called.
+    Then: A DemistoException is raised.
+    """
+    args = {"server_name": "integration", "entry_id": "123@456", **extra_arg}
+    with pytest.raises(DemistoException) as exc:
+        sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
+    assert "When 'entry_id' is provided" in str(exc.value)
+
+
+def test_sql_firewall_rule_replace_command_missing_required_args(mocker, client, mock_params):
+    """
+    Given: No entry_id and missing rule arguments.
+    When: sql_firewall_rule_replace_command is called.
+    Then: A DemistoException is raised.
+    """
+    args = {"server_name": "integration", "firewall_rule_name": "replaced-rule"}
+    with pytest.raises(DemistoException) as exc:
+        sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
+    assert "Either 'entry_id' must be provided" in str(exc.value)
 
 def test_cosmosdb_update_command(mocker, client, mock_params):
     """
