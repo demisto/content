@@ -3436,33 +3436,15 @@ script:
     - contextPath: Azure.AKS.ManagedCluster.properties.fqdn
       description: The FQDN for the master pool.
       type: String
-    - contextPath: Azure.AKS.ManagedCluster.properties.agentPoolProfiles.name
-      description: The unique name of the agent pool profile in the context of the subscription and resource group.
-      type: String
-    - contextPath: Azure.AKS.ManagedCluster.properties.agentPoolProfiles.count
-      description: The number of agents (VMs) to host Docker containers.
-      type: Number
-    - contextPath: Azure.AKS.ManagedCluster.properties.agentPoolProfiles.vmSize
-      description: The size of agent VMs.
-      type: String
-    - contextPath: Azure.AKS.ManagedCluster.properties.agentPoolProfiles.maxPods
-      description: The maximum number of pods that can run on a node.
-      type: Number
-    - contextPath: Azure.AKS.ManagedCluster.properties.agentPoolProfiles.osType
-      description: The operating system type, either Linux or Windows.
-      type: String
-    - contextPath: Azure.AKS.ManagedCluster.properties.agentPoolProfiles.provisioningState
-      description: The current deployment or provisioning state.
-      type: String
-    - contextPath: Azure.AKS.ManagedCluster.properties.agentPoolProfiles.orchestratorVersion
-      description: The version of the orchestrator specified when creating the managed cluster.
-      type: String
+    - contextPath: Azure.AKS.ManagedCluster.properties.agentPoolProfiles
+      description: The agent pool profiles, including name, count, VM size, max pods, OS type, provisioning state, and orchestrator version.
+      type: Unknown
     - contextPath: Azure.AKS.ManagedCluster.properties.linuxProfile.adminUsername
       description: The name of the administrator account.
       type: String
-    - contextPath: Azure.AKS.ManagedCluster.properties.linuxProfile.ssh.publicKeys.keyData
-      description: The certificate public key used to authenticate with VMs through SSH.
-      type: String
+    - contextPath: Azure.AKS.ManagedCluster.properties.linuxProfile.ssh
+      description: The SSH configuration, including the certificate public keys used to authenticate with VMs through SSH.
+      type: Unknown
     - contextPath: Azure.AKS.ManagedCluster.properties.servicePrincipalProfile.clientId
       description: The ID for the service principal.
       type: String
@@ -3475,30 +3457,15 @@ script:
     - contextPath: Azure.AKS.ManagedCluster.properties.diskEncryptionSetID
       description: The resource ID of the disk encryption set to use for enabling encryption at rest.
       type: String
-    - contextPath: Azure.AKS.ManagedCluster.properties.networkProfile.networkPlugin
-      description: The network plugin used for building the Kubernetes network.
-      type: String
-    - contextPath: Azure.AKS.ManagedCluster.properties.networkProfile.podCidr
-      description: The CIDR notation IP range from which to assign pod IPs when kubenet is used.
-      type: String
-    - contextPath: Azure.AKS.ManagedCluster.properties.networkProfile.serviceCidr
-      description: The CIDR notation IP range from which to assign service cluster IPs.
-      type: String
-    - contextPath: Azure.AKS.ManagedCluster.properties.networkProfile.dnsServiceIP
-      description: The IP address assigned to the Kubernetes DNS service.
-      type: String
-    - contextPath: Azure.AKS.ManagedCluster.properties.addonProfiles.omsagent.enabled
-      description: Whether the Operations Management Suite Agent is enabled.
-      type: Boolean
-    - contextPath: Azure.AKS.ManagedCluster.properties.addonProfiles.omsagent.config.logAnalyticsWorkspaceResourceID
-      description: The resource ID of an existing Log Analytics Workspace to use for storing monitoring data.
-      type: String
-    - contextPath: Azure.AKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting.enabled
-      description: Whether the ingress is configured with automatic public DNS name creation.
-      type: Boolean
-    - contextPath: Azure.AKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName
-      description: The subscription DNS zone name.
-      type: String
+    - contextPath: Azure.AKS.ManagedCluster.properties.networkProfile
+      description: The network configuration, including the network plugin, pod CIDR, service CIDR, and DNS service IP.
+      type: Unknown
+    - contextPath: Azure.AKS.ManagedCluster.properties.addonProfiles.omsagent
+      description: The Operations Management Suite Agent add-on configuration, including whether it is enabled and the Log Analytics workspace resource ID.
+      type: Unknown
+    - contextPath: Azure.AKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting
+      description: The HTTP application routing add-on configuration, including whether it is enabled and the DNS zone name.
+      type: Unknown
   - name: azure-aks-managed-cluster-addon-update
     description: "Updates a managed cluster with the specified configuration. Required permissions: Microsoft.ContainerService/managedClusters/read, Microsoft.ContainerService/managedClusters/write."
     arguments:
