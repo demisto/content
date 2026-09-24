@@ -4478,10 +4478,10 @@ script:
       description: The list of IP addresses or IP address prefixes in the IP group resource.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.IPGroups.properties.firewalls
-      description: A collection of references to firewalls that use the IP group.
+      description: The collection of references to firewalls that use the IP group.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.IPGroups.properties.firewallPolicies
-      description: A collection of references to firewall policies that use the IP group.
+      description: The collection of references to firewall policies that use the IP group.
       type: Unknown
   - name: azure-vn-ip-group-update
     description: "Updates an IP group resource by adding or removing IP addresses. Required Permissions: Microsoft.Network/ipGroups/read, Microsoft.Network/ipGroups/write."
@@ -4530,10 +4530,10 @@ script:
       description: The list of IP addresses or IP address prefixes in the IP group resource.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.IPGroups.properties.firewalls
-      description: A collection of references to firewalls that use the IP group.
+      description: The collection of references to firewalls that use the IP group.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.IPGroups.properties.firewallPolicies
-      description: A collection of references to firewall policies that use the IP group.
+      description: The collection of references to firewall policies that use the IP group.
       type: Unknown
   - name: azure-vn-ip-group-get
     description: "Retrieves an IP group resource. Required Permissions: Microsoft.Network/ipGroups/read."
@@ -4576,10 +4576,10 @@ script:
       description: The list of IP addresses or IP address prefixes in the IP group resource.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.IPGroups.properties.firewalls
-      description: A collection of references to firewalls that use the IP group.
+      description: The collection of references to firewalls that use the IP group.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.IPGroups.properties.firewallPolicies
-      description: A collection of references to firewall policies that use the IP group.
+      description: The collection of references to firewall policies that use the IP group.
       type: Unknown
   - name: azure-vn-ip-group-list
     description: "Lists the IP groups in a resource group, or in the subscription when no resource group is provided. Use the next_token argument to view the next page of results. Required Permissions: Microsoft.Network/ipGroups/read."
@@ -4620,16 +4620,17 @@ script:
       description: The list of IP addresses or IP address prefixes in the IP group resource.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.IPGroups.properties.firewalls
-      description: A collection of references to firewalls that use the IP group.
+      description: The collection of references to firewalls that use the IP group.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.IPGroups.properties.firewallPolicies
-      description: A collection of references to firewall policies that use the IP group.
+      description: The collection of references to firewall policies that use the IP group.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.IPGroupsNextToken
       description: The URI to use when requesting the next set of IP groups.
       type: String
   - name: azure-vn-ip-group-delete
     description: "Deletes an IP group resource. Required Permissions: Microsoft.Network/ipGroups/delete."
+    execution: true
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.

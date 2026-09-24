@@ -6683,14 +6683,17 @@ def test_ip_group_list_client_uses_next_token(mocker, client):
     When:
         - Calling the ip_group_list client method with that token.
     Then:
-        - The token is used as the full URL and no api-version parameter is added by the method.
+        - The token is used as the full URL with its api-version stripped, and the IP groups api-version is passed
+          explicitly so that the default api-version is not injected on top of the one in the next link.
     """
     mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
 
-    client.ip_group_list(subscription_id="sub-id", resource_group_name="test-rg", next_token="https://next.page")
+    client.ip_group_list(
+        subscription_id="sub-id", resource_group_name="test-rg", next_token="https://next.page?api-version=2024-05-01"
+    )
 
     assert mock_http_request.call_args.kwargs["full_url"] == "https://next.page"
-    assert mock_http_request.call_args.kwargs["params"] == {}
+    assert mock_http_request.call_args.kwargs["params"] == {"api-version": "2024-05-01"}
 
 
 def test_ip_group_list_client_by_subscription(mocker, client):

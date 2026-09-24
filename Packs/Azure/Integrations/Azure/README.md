@@ -3156,8 +3156,8 @@ Creates an IP group resource. Required Permissions: Microsoft.Network/ipGroups/w
 | Azure.VirtualNetworks.IPGroups.tags | Unknown | The tags attached to the IP group. |
 | Azure.VirtualNetworks.IPGroups.properties.provisioningState | String | The provisioning state of the IP group resource. |
 | Azure.VirtualNetworks.IPGroups.properties.ipAddresses | Unknown | The list of IP addresses or IP address prefixes in the IP group resource. |
-| Azure.VirtualNetworks.IPGroups.properties.firewalls | Unknown | A collection of references to firewalls that use the IP group. |
-| Azure.VirtualNetworks.IPGroups.properties.firewallPolicies | Unknown | A collection of references to firewall policies that use the IP group. |
+| Azure.VirtualNetworks.IPGroups.properties.firewalls | Unknown | The collection of references to firewalls that use the IP group. |
+| Azure.VirtualNetworks.IPGroups.properties.firewallPolicies | Unknown | The collection of references to firewall policies that use the IP group. |
 
 ### azure-vn-ip-group-update
 
@@ -3190,8 +3190,8 @@ Updates an IP group resource by adding or removing IP addresses. Required Permis
 | Azure.VirtualNetworks.IPGroups.tags | Unknown | The tags attached to the IP group. |
 | Azure.VirtualNetworks.IPGroups.properties.provisioningState | String | The provisioning state of the IP group resource. |
 | Azure.VirtualNetworks.IPGroups.properties.ipAddresses | Unknown | The list of IP addresses or IP address prefixes in the IP group resource. |
-| Azure.VirtualNetworks.IPGroups.properties.firewalls | Unknown | A collection of references to firewalls that use the IP group. |
-| Azure.VirtualNetworks.IPGroups.properties.firewallPolicies | Unknown | A collection of references to firewall policies that use the IP group. |
+| Azure.VirtualNetworks.IPGroups.properties.firewalls | Unknown | The collection of references to firewalls that use the IP group. |
+| Azure.VirtualNetworks.IPGroups.properties.firewallPolicies | Unknown | The collection of references to firewall policies that use the IP group. |
 
 ### azure-vn-ip-group-get
 
@@ -3222,8 +3222,8 @@ Retrieves an IP group resource. Required Permissions: Microsoft.Network/ipGroups
 | Azure.VirtualNetworks.IPGroups.tags | Unknown | The tags attached to the IP group. |
 | Azure.VirtualNetworks.IPGroups.properties.provisioningState | String | The provisioning state of the IP group resource. |
 | Azure.VirtualNetworks.IPGroups.properties.ipAddresses | Unknown | The list of IP addresses or IP address prefixes in the IP group resource. |
-| Azure.VirtualNetworks.IPGroups.properties.firewalls | Unknown | A collection of references to firewalls that use the IP group. |
-| Azure.VirtualNetworks.IPGroups.properties.firewallPolicies | Unknown | A collection of references to firewall policies that use the IP group. |
+| Azure.VirtualNetworks.IPGroups.properties.firewalls | Unknown | The collection of references to firewalls that use the IP group. |
+| Azure.VirtualNetworks.IPGroups.properties.firewallPolicies | Unknown | The collection of references to firewall policies that use the IP group. |
 
 ### azure-vn-ip-group-list
 
@@ -3254,8 +3254,8 @@ Lists the IP groups in a resource group, or in the subscription when no resource
 | Azure.VirtualNetworks.IPGroups.tags | Unknown | The tags attached to the IP group. |
 | Azure.VirtualNetworks.IPGroups.properties.provisioningState | String | The provisioning state of the IP group resource. |
 | Azure.VirtualNetworks.IPGroups.properties.ipAddresses | Unknown | The list of IP addresses or IP address prefixes in the IP group resource. |
-| Azure.VirtualNetworks.IPGroups.properties.firewalls | Unknown | A collection of references to firewalls that use the IP group. |
-| Azure.VirtualNetworks.IPGroups.properties.firewallPolicies | Unknown | A collection of references to firewall policies that use the IP group. |
+| Azure.VirtualNetworks.IPGroups.properties.firewalls | Unknown | The collection of references to firewalls that use the IP group. |
+| Azure.VirtualNetworks.IPGroups.properties.firewallPolicies | Unknown | The collection of references to firewall policies that use the IP group. |
 | Azure.VirtualNetworks.IPGroupsNextToken | String | The URI to use when requesting the next set of IP groups. |
 
 ### azure-vn-ip-group-delete

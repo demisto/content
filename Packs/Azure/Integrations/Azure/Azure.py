@@ -2322,8 +2322,10 @@ class AzureClient:
         """
         if next_token:
             demisto.debug(f"using {next_token=} for retrieving the next page of results.")
-            full_url = next_token
-            params = {}
+            # The api-version is stripped from the next link and passed explicitly, otherwise http_request injects the
+            # default API_VERSION on top of the one already present in the URL and Azure rejects the duplicated parameter.
+            full_url = remove_query_param_from_url(next_token, "api-version")
+            params = {"api-version": IP_GROUPS_API_VERSION}
         else:
             resource_group_path = f"/resourceGroups/{resource_group_name}" if resource_group_name else ""
             full_url = f"{PREFIX_URL_AZURE}{subscription_id}{resource_group_path}/providers/Microsoft.Network/ipGroups"
@@ -4789,7 +4791,10 @@ def ip_group_update_command(client: AzureClient, params: dict[str, Any], args: d
     ip_addresses = dict_safe_get(ip_group_data, ["properties", "ipAddresses"], []) or []
     ip_addresses.extend(ip_addresses_to_add)
     ip_addresses = [ip_address for ip_address in ip_addresses if ip_address not in ip_addresses_to_remove]
-    ip_group_data.setdefault("properties", {})["ipAddresses"] = ip_addresses
+    # "properties" is read with "or {}" rather than setdefault, so that an explicit null value is replaced as well.
+    properties = ip_group_data.get("properties") or {}
+    properties["ipAddresses"] = ip_addresses
+    ip_group_data["properties"] = properties
     demisto.debug(f"[Azure] updating IP group {ip_group_name} with {len(ip_addresses)} IP addresses.")
 
     response = client.ip_group_update(
