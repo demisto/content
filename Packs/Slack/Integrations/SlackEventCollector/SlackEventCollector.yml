@@ -32,8 +32,8 @@ configuration:
   defaultvalue: "1"
   type: 19
   required: false
-- defaultvalue: 2000
-  display: The maximum number of audit logs to fetch
+- defaultvalue: '2000'
+  display: The maximum number of audit logs to fetch.
   name: limit
   type: 0
   section: Collect

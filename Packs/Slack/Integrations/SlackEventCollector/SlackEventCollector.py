@@ -370,9 +370,9 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
     # Drive the cycle purely from the command arguments with a fresh run state, keeping the
     # command independent of the collector's persisted state and free of side effects on it.
     run_state: dict = {}
-    demisto.debug("slack-get-events invoked; running an argument-driven collection cycle with a fresh run state.")
+    demisto.debug("[Get Events] slack-get-events invoked; running an argument-driven collection cycle with a fresh run state.")
     events = fetch_slack_events(client, args, run_state)
-    demisto.debug(f"slack-get-events retrieved {len(events)} events.")
+    demisto.debug(f"[Get Events] slack-get-events retrieved {len(events)} events.")
     results = CommandResults(
         readable_output=tableToMarkdown(
             "Slack Audit Logs",
@@ -408,10 +408,10 @@ def fetch_events_command(client: Client, params: dict, last_run: dict) -> tuple[
     """
     if last_run is None:
         last_run = {}
+    limit = arg_to_number(params.get("limit")) or Config.DEFAULT_LIMIT
     events_to_send = fetch_slack_events(client, params, last_run)
 
     # A full batch (>= limit) means more events remain, so re-trigger immediately.
-    limit = arg_to_number(params.get("limit")) or Config.DEFAULT_LIMIT
     if len(events_to_send) >= limit:
         last_run["nextTrigger"] = "0"
         demisto.debug(
