@@ -6188,7 +6188,7 @@ Creates a new GCP project under the specified parent (organization or folder). R
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0. | Optional |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions &lt; 3.0. | Optional |
 | project_id | The unique, user-assigned ID of the project to create. Must be 6 to 30 lowercase letters, digits, or hyphens, and must start with a letter. Trailing hyphens are prohibited (for example, tokyo-rain-123). | Required |
 | parent | The resource name of the parent under which to create the project, in the form "organizations/[organization_id]" or "folders/[folder_id]". | Required |
 | display_name | The user-assigned display name of the project. Must be 4 to 30 characters. | Optional |
@@ -6217,7 +6217,7 @@ Retrieves a GCP project by its project ID. Required Permission: resourcemanager.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0. | Optional |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions &lt; 3.0. | Optional |
 | project_id | The unique ID of the project to fetch (for example, tokyo-rain-123). | Required |
 
 #### Context Output
@@ -6234,7 +6234,7 @@ Retrieves a GCP project by its project ID. Required Permission: resourcemanager.
 | GCP.ResourceManager.Projects.updateTime | String | The time the project was last modified, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
 | GCP.ResourceManager.Projects.deleteTime | String | The time the project was marked for deletion, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). Present only when the project is in the DELETE_REQUESTED state. |
 | GCP.ResourceManager.Projects.etag | String | A checksum computed by the server, used for optimistic concurrency control. |
-| GCP.ResourceManager.Projects.tags | Object | The tags bound to the project, in the format {tag_key: tag_value}. |
+| GCP.ResourceManager.Projects.tags | Object | The tags bound to the project, in the format \{tag_key: tag_value\}. |
 | GCP.ResourceManager.Projects.configuredCapabilities | Unknown | The capabilities configured on the project. |
 
 ### gcp-resource-manager-project-search
@@ -6250,7 +6250,7 @@ Searches for GCP projects that are visible to the caller and match an optional q
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Used only to obtain credentials, not to filter results. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0. | Optional |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 , Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions &lt; 3.0. | Optional |
 | query | The optional query string to filter the projects. Supported fields include displayName, parent, id, state, and labels.[KEY] (for example, "state:ACTIVE" or "displayName:how*"). | Optional |
 | limit | The maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
 | next_token | The pagination token returned from a previous call, indicating where the listing should continue. | Optional |
@@ -6269,7 +6269,7 @@ Searches for GCP projects that are visible to the caller and match an optional q
 | GCP.ResourceManager.Projects.updateTime | String | The time the project was last modified, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
 | GCP.ResourceManager.Projects.deleteTime | String | The time the project was marked for deletion, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). Present only when the project is in the DELETE_REQUESTED state. |
 | GCP.ResourceManager.Projects.etag | String | A checksum computed by the server, used for optimistic concurrency control. |
-| GCP.ResourceManager.Projects.tags | Object | The tags bound to the project, in the format {tag_key: tag_value}. |
+| GCP.ResourceManager.Projects.tags | Object | The tags bound to the project, in the format \{tag_key: tag_value\}. |
 | GCP.ResourceManager.Projects.configuredCapabilities | Unknown | The capabilities configured on the project. |
 | GCP.ResourceManager.ProjectsNextToken | String | The token to use to retrieve the next batch of projects. |
 
@@ -6286,7 +6286,7 @@ Updates the display name and/or labels of an existing GCP project. Required Perm
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0. | Optional |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions &lt; 3.0. | Optional |
 | project_id | The unique ID of the project to update (for example, tokyo-rain-123). | Required |
 | display_name | The new display name for the project. Must be 4 to 30 characters. | Optional |
 | labels | An object containing a list of "key": value pairs to associate with the project, without spaces. Example: key=abc,value=123;key=ABC,value=321. | Optional |
@@ -6314,7 +6314,7 @@ Marks a GCP project for deletion (sets its state to DELETE_REQUESTED). Required 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0. | Optional |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions &lt; 3.0. | Optional |
 | project_id | The unique ID of the project to delete (for example, tokyo-rain-123). | Required |
 
 #### Context Output
@@ -6340,7 +6340,7 @@ Restores a GCP project that was previously marked for deletion. Required Permiss
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0. | Optional |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions &lt; 3.0. | Optional |
 | project_id | The unique ID of the project to restore (for example, tokyo-rain-123). | Required |
 
 #### Context Output
@@ -6366,7 +6366,7 @@ Searches for GCP organizations that are visible to the caller and match an optio
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Used only to obtain credentials, not to filter results. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0. | Optional |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions &lt; 3.0. | Optional |
 | query | The optional query string to filter the organizations. Organizations may be filtered by owner.directoryCustomerId or by domain (for example, "domain:google.com"). | Optional |
 | limit | The maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
 | next_token | The pagination token returned from a previous call, indicating where the listing should continue. | Optional |
@@ -6398,7 +6398,7 @@ Retrieves a GCP organization by its resource name. Required Permission: resource
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Used only to obtain credentials, not to filter results. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0. | Optional |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions &lt; 3.0. | Optional |
 | name | The resource name of the organization to fetch, in the form "organizations/[organization_id]" (e.g. organizations/1234). | Required |
 
 #### Context Output
