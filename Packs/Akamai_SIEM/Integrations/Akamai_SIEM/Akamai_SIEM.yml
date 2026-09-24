@@ -145,6 +145,29 @@ configuration:
   - xsoar
   supportedModules:
   - xsiam
+- display: Simulate Akamai API (debug)
+  name: simulate_akamai_api
+  additionalinfo: DEBUG ONLY (XSUP-76982). When enabled, the integration does NOT call the real Akamai API and instead returns a synthetic response with a fixed number of events per page. Used to reproduce and audit the reported events count. Do not enable in production.
+  type: 8
+  required: false
+  section: Collect
+  advanced: true
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
+- display: Simulated events per page (debug)
+  name: sim_events_per_page
+  defaultvalue: '5000'
+  additionalinfo: DEBUG ONLY (XSUP-76982). The number of synthetic events each simulated Akamai page returns when "Simulate Akamai API (debug)" is enabled.
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
 - display: Long running instance
   name: longRunning
   additionalinfo: This is a beta feature for high performance fetch events. Use this param only if advised by CS. Make sure this feature is not used with fetch events configured in the integration params and that there's no config ID used for 2 different instances / features.
