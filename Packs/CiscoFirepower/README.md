@@ -1,10 +1,10 @@
 <~XSIAM>
+
 # Cisco Firepower
 
 ## Overview
 
 Cisco Firepower is Cisco’s Next-Generation Firewall (NGFW) and network security suite designed to inspect, monitor, and secure network traffic across enterprise environments.
-
 
 # This pack includes
 
@@ -49,12 +49,9 @@ To collect logs from Cisco Firepower to XSIAM in CEF format, use the information
 
 For more information on the event types sent via the eStreamer, use the information described [here](https://www.cisco.com/c/en/us/td/docs/security/firepower/660/configuration/guide/fpmc-config-guide-v66/analyze_events_using_external_tools.html#ID-2219-00000439).
 
-
 #### Raw syslog format
 
 To configure Cisco Firepower to forward logs in raw syslog format, use the information described [here](https://www.cisco.com/c/en/us/support/docs/security/firepower-ngfw/200479-Configure-Logging-on-FTD-via-FMC.html#toc-hId--1299712609).
-
-
 
 ### Cortex XSIAM side - Broker VM
 
@@ -68,7 +65,6 @@ Configure the Broker VM to receive Cisco Firepower logs. For more information on
 2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and click **Configure**.
 3. Click **Add New**.
 4. When configuring the Syslog Collector, set the following parameters:
-
 
     | Parameter    | Value                                                                                                                       |
     |:-------------|:----------------------------------------------------------------------------------------------------------------------------|
