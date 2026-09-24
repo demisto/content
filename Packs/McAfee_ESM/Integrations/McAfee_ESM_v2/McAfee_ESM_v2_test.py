@@ -167,7 +167,7 @@ def test_edit_case(mocker):
         "summary": "ALERT - Scan",
     }
 
-    mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__login", return_value={})
+    mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__set_session", return_value={})
     mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__request", return_value={})
     mocker.patch.object(McAfeeESMClient, "get_case_detail", return_value=("", {}, raw_response_has_event_list))
     try:
@@ -240,7 +240,7 @@ def test_alarm_to_incidents(mocker):
         return demisto.setLastRun.call_args[0][0]
 
     mocker.patch("McAfee_ESM_v2.parse_date_range", return_value=["", ""])
-    mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__login", return_value={})
+    mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__set_session", return_value={})
     mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__request", return_value={})
     mocker.patch.object(demisto, "getLastRun", return_value={"alarms": {"time": create_time_difference_string(days=3)}})
     mocker.patch.object(demisto, "setLastRun")
@@ -275,7 +275,7 @@ class TestTestModule:
             "credentials": {"identifier": "Shahaf", "password": "TEST"},
             "version": "11.6.11",
         }
-        mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__login", return_value={})
+        mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__set_session", return_value={})
         mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__request", return_value={})
         try:
             client = McAfeeESMClient(params)
@@ -297,7 +297,7 @@ class TestTestModule:
             "startingFetchID": "",
             "isFetch": True,
         }
-        mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__login", return_value={})
+        mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__set_session", return_value={})
         mocker.patch.object(McAfeeESMClient, "_http_request")
         mocker.patch.object(demisto, "params", return_value=params)
         client = McAfeeESMClient(params)
@@ -404,6 +404,27 @@ def test_validate_version_rejects_below_11_6(version):
     assert "11.6.0" in message
 
 
+@pytest.mark.parametrize("version", ["", "latest", "11.6.11 and later", "v11,6,11", "eleven"])
+def test_validate_version_rejects_invalid_version_string(version):
+    """
+    Given:
+    - A *Version* parameter that is not a version number (for example a label or free text).
+
+    When:
+    - Validating the version.
+
+    Then:
+    - A DemistoException with an actionable message is raised instead of an unhandled
+      packaging.version.InvalidVersion error.
+    """
+    with pytest.raises(DemistoException) as exception_info:
+        validate_version(version)
+
+    message = str(exception_info.value)
+    assert "Invalid ESM version" in message
+    assert "11.6.11" in message
+
+
 @pytest.mark.parametrize(
     "version",
     ["11.6.0", "11.6.5", "11.6.10", "11.6.11", "11.6.20", "11.7.0", "12.0.0", "11.6", "11.7"],
@@ -435,7 +456,7 @@ def test_client_init_rejects_unsupported_version(mocker):
     Then:
     - Initialization fails fast with an actionable error, before any login attempt is made.
     """
-    mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__login", return_value={})
+    mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__set_session", return_value={})
     params = {
         "url": "https://example.com",
         "insecure": True,
@@ -479,6 +500,8 @@ def test_login_body_encoding_per_version(mocker, version, expected_username):
             def get(_name):
                 return "test-jwt"
 
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
     http_request = mocker.patch.object(McAfeeESMClient, "_http_request", return_value=MockResponse())
     params = {
         "url": "https://example.com",
@@ -495,3 +518,142 @@ def test_login_body_encoding_per_version(mocker, version, expected_username):
     assert login_body["locale"] == "en_US"
     assert client._headers["Cookie"] == "JWTToken=test-jwt"
     assert client._headers["X-Xsrf-Token"] == "test-xsrf"
+
+
+@pytest.mark.filterwarnings(
+    "ignore::urllib3.exceptions.InsecureRequestWarning", "ignore::pytest.PytestUnraisableExceptionWarning"
+)
+def test_session_is_cached_in_integration_context(mocker):
+    """
+    Given:
+    - An instance with no cached ESM session.
+
+    When:
+    - The client is initialized and logs in.
+
+    Then:
+    - The JWT and XSRF tokens are stored in the integration context with an expiry,
+      so the next execution can reuse them instead of logging in again.
+    """
+
+    class MockResponse:
+        status_code = 200
+        text = ""
+        headers = {"Xsrf-Token": "test-xsrf"}
+
+        class cookies:  # noqa: N801
+            @staticmethod
+            def get(_name):
+                return "test-jwt"
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    set_context = mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch.object(McAfeeESMClient, "_http_request", return_value=MockResponse())
+
+    McAfeeESMClient(
+        {
+            "url": "https://example.com",
+            "insecure": True,
+            "credentials": {"identifier": "NGCP", "password": "NGCP"},
+            "version": "11.6.11",
+        }
+    )
+
+    cached_session = set_context.call_args[0][0][SESSION_CACHE_KEY]
+    assert cached_session["cookie"] == "JWTToken=test-jwt"
+    assert cached_session["xsrf_token"] == "test-xsrf"
+    assert cached_session["expiry"] > time.time()
+
+
+@pytest.mark.filterwarnings(
+    "ignore::urllib3.exceptions.InsecureRequestWarning", "ignore::pytest.PytestUnraisableExceptionWarning"
+)
+def test_valid_cached_session_is_reused_without_login(mocker):
+    """
+    Given:
+    - A cached ESM session in the integration context that has not expired.
+
+    When:
+    - The client is initialized.
+
+    Then:
+    - The cached tokens are used for the session headers and no login request is sent.
+    """
+    mocker.patch.object(
+        demisto,
+        "getIntegrationContext",
+        return_value={
+            SESSION_CACHE_KEY: {
+                "cookie": "JWTToken=cached-jwt",
+                "xsrf_token": "cached-xsrf",
+                "expiry": time.time() + SESSION_TTL_SECONDS,
+            }
+        },
+    )
+    http_request = mocker.patch.object(McAfeeESMClient, "_http_request")
+
+    client = McAfeeESMClient(
+        {
+            "url": "https://example.com",
+            "insecure": True,
+            "credentials": {"identifier": "NGCP", "password": "NGCP"},
+            "version": "11.6.11",
+        }
+    )
+
+    assert client._headers["Cookie"] == "JWTToken=cached-jwt"
+    assert client._headers["X-Xsrf-Token"] == "cached-xsrf"
+    http_request.assert_not_called()
+
+
+@pytest.mark.filterwarnings(
+    "ignore::urllib3.exceptions.InsecureRequestWarning", "ignore::pytest.PytestUnraisableExceptionWarning"
+)
+def test_expired_cached_session_triggers_login(mocker):
+    """
+    Given:
+    - A cached ESM session in the integration context whose expiry has passed.
+
+    When:
+    - The client is initialized.
+
+    Then:
+    - The stale session is discarded and a new login request is sent.
+    """
+
+    class MockResponse:
+        status_code = 200
+        text = ""
+        headers = {"Xsrf-Token": "fresh-xsrf"}
+
+        class cookies:  # noqa: N801
+            @staticmethod
+            def get(_name):
+                return "fresh-jwt"
+
+    mocker.patch.object(
+        demisto,
+        "getIntegrationContext",
+        return_value={
+            SESSION_CACHE_KEY: {
+                "cookie": "JWTToken=stale-jwt",
+                "xsrf_token": "stale-xsrf",
+                "expiry": time.time() - 1,
+            }
+        },
+    )
+    mocker.patch.object(demisto, "setIntegrationContext")
+    http_request = mocker.patch.object(McAfeeESMClient, "_http_request", return_value=MockResponse())
+
+    client = McAfeeESMClient(
+        {
+            "url": "https://example.com",
+            "insecure": True,
+            "credentials": {"identifier": "NGCP", "password": "NGCP"},
+            "version": "11.6.11",
+        }
+    )
+
+    assert http_request.call_args.args[1] == "login"
+    assert client._headers["Cookie"] == "JWTToken=fresh-jwt"
+    assert client._headers["X-Xsrf-Token"] == "fresh-xsrf"
