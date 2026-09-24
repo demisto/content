@@ -876,7 +876,7 @@ script:
     - description: The ruleset identifier.
       name: ruleset_id
       required: true
-    - description: 'The rule object to add, as a JSON string. For example: {"action": "block", "expression": "(ip.src eq 192.0.2.1)", "description": "Block bad IP", "position": {"before": "<rule_id>"}}.'
+    - description: 'The rule object to add as a JSON string. For example: `{"action": "block", "expression": "(ip.src eq 192.0.2.1)", "description": "Block bad IP", "position": {"before": "<rule_id>"}}`.'
       name: rule
       required: true
     - auto: PREDEFINED
@@ -887,9 +887,9 @@ script:
       - 'false'
     - description: The account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
       name: account_id
-    - description: Zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
+    - description: The zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
       name: zone_id
-    description: Creates a new rule in a ruleset at the account or zone level. Replaces the deprecated cloudflare-waf-firewall-rule-create and cloudflare-waf-filter-create commands.
+    description: Creates a new rule in a ruleset at the account or zone level. Replaces the deprecated `cloudflare-waf-firewall-rule-create` and `cloudflare-waf-filter-create` commands.
     execution: true
     name: cloudflare-waf-ruleset-rule-create
     outputs:
@@ -900,7 +900,7 @@ script:
       description: The name of the ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.kind
-      description: The kind of the ruleset.
+      description: The kind of ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.phase
       description: The phase of the ruleset.
@@ -912,7 +912,7 @@ script:
       description: The version of the ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.last_updated
-      description: 'The timestamp of when the ruleset was last updated. For example, 2024-08-01T17:37:12.291474Z.'
+      description: 'The date and time when the ruleset was last updated. For example: `2024-08-01T17:37:12.291474Z`.'
       type: Date
     - contextPath: CloudflareWAF.Ruleset.rules.id
       description: The rule identifier.
@@ -942,20 +942,20 @@ script:
     - description: The rule identifier.
       name: rule_id
       required: true
-    - description: 'The full rule object as a JSON string. PATCH replaces the whole rule. This is the request body. For example: {"action": "block", "expression": "(ip.src eq 192.0.2.1)", "description": "Block bad IP"}.'
+    - description: 'The full rule object as a JSON string representing the request body. A PATCH request replaces the entire rule. For example: `{"action": "block", "expression": "(ip.src eq 192.0.2.1)", "description": "Block bad IP"}`.'
       name: rule
       required: true
     - auto: PREDEFINED
-      description: If true, validates the rule without applying it.
+      description: Whether to validate the rule without applying it.
       name: dry_run
       predefined:
       - 'true'
       - 'false'
-    - description: Account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
+    - description: The account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
       name: account_id
-    - description: Zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
+    - description: The zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
       name: zone_id
-    description: The command updates an existing rule in a ruleset. Replaces the whole rule. Replaces the deprecated cloudflare-waf-firewall-rule-update and cloudflare-waf-filter-update commands.
+    description: Updates an existing rule in a ruleset by replacing the entire rule. Replaces the deprecated `cloudflare-waf-firewall-rule-update` and `cloudflare-waf-filter-update` commands.
     execution: true
     name: cloudflare-waf-ruleset-rule-update
     outputs:
@@ -966,7 +966,7 @@ script:
       description: The name of the ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.kind
-      description: The kind of the ruleset.
+      description: The kind of ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.phase
       description: The phase of the ruleset.
@@ -978,7 +978,7 @@ script:
       description: The version of the ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.last_updated
-      description: 'The timestamp of when the ruleset was last updated. For example, 2024-08-01T17:37:12.291474Z.'
+      description: 'The date and time when the ruleset was last updated. For example: `2024-08-01T17:37:12.291474Z`.'
       type: Date
     - contextPath: CloudflareWAF.Ruleset.rules.id
       description: The rule identifier.
@@ -1009,16 +1009,16 @@ script:
       name: rule_id
       required: true
     - auto: PREDEFINED
-      description: If true, validates the deletion without applying it.
+      description: Whether to validate the deletion without applying it.
       name: dry_run
       predefined:
       - 'true'
       - 'false'
-    - description: Account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
+    - description: The account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
       name: account_id
-    - description: Zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
+    - description: The zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
       name: zone_id
-    description: The command deletes a rule from a ruleset. Replaces the deprecated cloudflare-waf-firewall-rule-delete and cloudflare-waf-filter-delete commands.
+    description: Deletes a rule from a ruleset. Replaces the deprecated `cloudflare-waf-firewall-rule-delete` and `cloudflare-waf-filter-delete` commands.
     execution: true
     name: cloudflare-waf-ruleset-rule-delete
     outputs: []
@@ -1052,11 +1052,11 @@ script:
       - magic_transit_managed
       - magic_transit_ratelimit
       required: true
-    - description: Account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
+    - description: The account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
       name: account_id
-    - description: Zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
+    - description: The zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
       name: zone_id
-    description: The command retrieves the entry point ruleset for a specific phase at the account or zone level.
+    description: Retrieves the entry point ruleset for a specific phase at the account or zone level.
     name: cloudflare-waf-ruleset-entrypoint-get
     outputs:
     - contextPath: CloudflareWAF.Ruleset.id
@@ -1066,7 +1066,7 @@ script:
       description: The name of the ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.kind
-      description: The kind of the ruleset.
+      description: The kind of ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.phase
       description: The phase of the ruleset.
@@ -1078,7 +1078,7 @@ script:
       description: The version of the ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.last_updated
-      description: 'The timestamp of when the ruleset was last updated. For example, 2024-08-01T17:37:12.291474Z.'
+      description: 'The date and time when the ruleset was last updated. For example: `2024-08-01T17:37:12.291474Z`.'
       type: Date
     - contextPath: CloudflareWAF.Ruleset.rules.id
       description: The rule identifier.
@@ -1138,16 +1138,16 @@ script:
     - description: 'The JSON array of rule objects that replaces all existing entry-point rules. For example: [{"action": "block", "expression": "(ip.src eq 192.0.2.1)", "description": "Block bad IP"}].'
       name: rules
     - auto: PREDEFINED
-      description: If true, validates the update without applying it.
+      description: Whether to validate the update without applying it.
       name: dry_run
       predefined:
       - 'true'
       - 'false'
-    - description: Account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
+    - description: The account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
       name: account_id
-    - description: Zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
+    - description: The zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
       name: zone_id
-    description: The command updates the entry point ruleset for a specific phase. When rules are provided, they replace all existing entry-point rules.
+    description: Updates the entry point ruleset for a specific phase. When rules are provided, they replace all existing entry-point rules.
     execution: true
     name: cloudflare-waf-ruleset-entrypoint-update
     outputs:
@@ -1158,7 +1158,7 @@ script:
       description: The name of the ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.kind
-      description: The kind of the ruleset.
+      description: The kind of ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.phase
       description: The phase of the ruleset.
@@ -1170,7 +1170,7 @@ script:
       description: The version of the ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.last_updated
-      description: 'The timestamp of when the ruleset was last updated. For example, 2024-08-01T17:37:12.291474Z.'
+      description: 'The date and time when the ruleset was last updated. For example: 2024-08-01T17:37:12.291474Z.'
       type: Date
     - contextPath: CloudflareWAF.Ruleset.rules.id
       description: The rule identifier.
@@ -1197,20 +1197,20 @@ script:
     - description: The ruleset identifier.
       name: ruleset_id
       required: true
-    - description: Account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
+    - description: The account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
       name: account_id
-    - description: Zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
+    - description: The zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
       name: zone_id
     - defaultValue: '50'
       description: The maximum number of records to return.
       name: limit
     - auto: PREDEFINED
-      description: If true, retrieves all results, overriding the limit argument.
+      description: Whether to retrieve all results, overriding the limit argument.
       name: all_results
       predefined:
       - 'true'
       - 'false'
-    description: The command lists all versions of a ruleset at the account or zone level.
+    description: Lists all versions of a ruleset at the account or zone level.
     name: cloudflare-waf-ruleset-version-list
     outputs:
     - contextPath: CloudflareWAF.Ruleset.id
@@ -1220,7 +1220,7 @@ script:
       description: The name of the ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.kind
-      description: The kind of the ruleset.
+      description: The kind of ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.phase
       description: The phase of the ruleset.
@@ -1232,7 +1232,7 @@ script:
       description: The version of the ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.last_updated
-      description: 'The timestamp of when the ruleset was last updated. For example, 2024-08-01T17:37:12.291474Z.'
+      description: 'The date and time when the ruleset was last updated. For example: 2024-08-01T17:37:12.291474Z.'
       type: Date
   - arguments:
     - description: The ruleset identifier.
@@ -1241,11 +1241,11 @@ script:
     - description: The version of the ruleset.
       name: version
       required: true
-    - description: Account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
+    - description: The account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
       name: account_id
-    - description: Zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
+    - description: The zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
       name: zone_id
-    description: The command retrieves a specific version of a ruleset, including its rules. Replaces the deprecated cloudflare-waf-firewall-rule-list command.
+    description: Retrieves a specific version of a ruleset, including its rules. Replaces the deprecated `cloudflare-waf-firewall-rule-list` command.
     name: cloudflare-waf-ruleset-version-get
     outputs:
     - contextPath: CloudflareWAF.Ruleset.id
@@ -1255,7 +1255,7 @@ script:
       description: The name of the ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.kind
-      description: The kind of the ruleset.
+      description: The kind of ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.phase
       description: The phase of the ruleset.
@@ -1267,7 +1267,7 @@ script:
       description: The version of the ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.last_updated
-      description: 'The timestamp of when the ruleset was last updated. For example, 2024-08-01T17:37:12.291474Z.'
+      description: 'The date and time when the ruleset was last updated. For example: 2024-08-01T17:37:12.291474Z.'
       type: Date
     - contextPath: CloudflareWAF.Ruleset.rules.id
       description: The rule identifier.
@@ -1297,17 +1297,17 @@ script:
     - description: The version of the ruleset.
       name: version
       required: true
-    - description: Account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
+    - description: The account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
       name: account_id
-    - description: Zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
+    - description: The zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
       name: zone_id
     - auto: PREDEFINED
-      description: If true, validates the deletion without applying it.
+      description: Whether to validate the deletion without applying it.
       name: dry_run
       predefined:
       - 'true'
       - 'false'
-    description: The command deletes a specific version of a ruleset.
+    description: Deletes a specific version of a ruleset.
     execution: true
     name: cloudflare-waf-ruleset-version-delete
     outputs: []
@@ -1341,20 +1341,20 @@ script:
       - magic_transit_managed
       - magic_transit_ratelimit
       required: true
-    - description: Account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
+    - description: The account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
       name: account_id
-    - description: Zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
+    - description: The zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
       name: zone_id
     - defaultValue: '50'
-      description: The maximum number of records to return. Default is 50.
+      description: The maximum number of records to return.
       name: limit
     - auto: PREDEFINED
-      description: If true, retrieves all results, overriding the limit argument.
+      description: Whether to retrieve all results, overriding the limit argument.
       name: all_results
       predefined:
       - 'true'
       - 'false'
-    description: The command lists all versions of the entry point ruleset for a specific phase at the account or zone level.
+    description: Lists all versions of the entry point ruleset for a specific phase at the account or zone level.
     name: cloudflare-waf-ruleset-entrypoint-version-list
     outputs:
     - contextPath: CloudflareWAF.Ruleset.id
@@ -1364,7 +1364,7 @@ script:
       description: The name of the ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.kind
-      description: The kind of the ruleset.
+      description: The kind of ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.phase
       description: The phase of the ruleset.
@@ -1376,7 +1376,7 @@ script:
       description: The version of the ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.last_updated
-      description: 'The timestamp of when the ruleset was last updated. For example, 2024-08-01T17:37:12.291474Z.'
+      description: 'The date and time when the ruleset was last updated. For example: 2024-08-01T17:37:12.291474Z.'
       type: Date
   - arguments:
     - auto: PREDEFINED
@@ -1411,11 +1411,11 @@ script:
     - description: The version of the ruleset.
       name: version
       required: true
-    - description: Account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
+    - description: The account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
       name: account_id
-    - description: Zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
+    - description: The zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
       name: zone_id
-    description: The command retrieves a specific version of the entry point ruleset for a phase, including its rules.
+    description: Retrieves a specific version of the entry point ruleset for a phase, including its rules.
     name: cloudflare-waf-ruleset-entrypoint-version-get
     outputs:
     - contextPath: CloudflareWAF.Ruleset.id
@@ -1425,7 +1425,7 @@ script:
       description: The name of the ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.kind
-      description: The kind of the ruleset.
+      description: The kind of ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.phase
       description: The phase of the ruleset.
@@ -1437,7 +1437,7 @@ script:
       description: The version of the ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.last_updated
-      description: 'The timestamp of when the ruleset was last updated. For example, 2024-08-01T17:37:12.291474Z.'
+      description: 'The date and time when the ruleset was last updated. For example: 2024-08-01T17:37:12.291474Z.'
       type: Date
     - contextPath: CloudflareWAF.Ruleset.rules.id
       description: The rule identifier.
@@ -1467,12 +1467,12 @@ script:
     - description: The version of the ruleset.
       name: version
       required: true
-    - description: The tag/category to filter the rules by.
+    - description: The tag or category by which to filter the rules.
       name: tag
       required: true
-    - description: Account scope. Overrides the instance-configured Account ID. Defaults to the instance Account ID.
+    - description: The account scope. Overrides the instance-configured Account ID. Defaults to the instance Account ID.
       name: account_id
-    description: The command lists the rules of a managed ruleset filtered by tag/category. Account scope only.
+    description: Lists the rules of a managed ruleset, filtered by tag or category. Account scope only.
     name: cloudflare-waf-ruleset-rule-list-by-tag
     outputs:
     - contextPath: CloudflareWAF.Ruleset.id
@@ -1482,7 +1482,7 @@ script:
       description: The name of the ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.kind
-      description: The kind of the ruleset.
+      description: The kind of ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.phase
       description: The phase of the ruleset.
@@ -1494,7 +1494,7 @@ script:
       description: The version of the ruleset.
       type: String
     - contextPath: CloudflareWAF.Ruleset.last_updated
-      description: 'The timestamp of when the ruleset was last updated. For example, 2024-08-01T17:37:12.291474Z.'
+      description: 'The date and time when the ruleset was last updated. For example: 2024-08-01T17:37:12.291474Z.'
       type: Date
     - contextPath: CloudflareWAF.Ruleset.rules.id
       description: The rule identifier.
@@ -1518,7 +1518,7 @@ script:
       description: The reference of the rule.
       type: String
     - contextPath: CloudflareWAF.Ruleset.rules.categories
-      description: The categories/tags the rule carries.
+      description: The categories or tags that the rule carries.
       type: Unknown
   dockerimage: demisto/python3:3.12.13.10404775
   runonce: false
