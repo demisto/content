@@ -1,14 +1,14 @@
-Look up Zero Networks Segment assets by FQDN and quarantine or release them.
+Looks up Zero Networks Segment assets by FQDN and quarantines or releases them.
 This integration was integrated and tested with version 1.26 of Zero Networks Segment.
 
 ## Configure Zero Networks Segment Assets in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL |  | True |
+| Server URL | The URL of the Zero Networks portal. The API path is appended to it. | True |
 | API Key | The API key to use for connection. The key must allow write operations for the quarantine commands. | True |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+| Use system proxy settings | Whether to route requests through the system proxy. | False |
+| Trust any certificate (not secure) | Whether to accept any certificate presented by the server. Do not enable this outside of testing. | False |
 
 ## Commands
 
@@ -51,9 +51,9 @@ Searches for an asset by its fully qualified domain name (FQDN) and returns the 
 | ZeroNetworks.Asset.Source | String | The source the asset was discovered from. For example, Active Directory or AWS. |
 | ZeroNetworks.Asset.HealthStatus | String | The health status of the asset. For example, Healthy, Warning, or Error. |
 | ZeroNetworks.Asset.Labels | Unknown | The names of the labels assigned to the asset. |
-| ZeroNetworks.Asset.LastLogon | Date | The date of the last logon recorded for the asset, in UTC. |
-| ZeroNetworks.Asset.ProtectedAt | Date | The date the asset became protected, in UTC. |
-| ZeroNetworks.Asset.InactiveSince | Date | The date the asset became inactive, in UTC. |
+| ZeroNetworks.Asset.LastLogon | Date | The date of the last logon recorded for the asset, in UTC \(e.g., 2024-08-29T12:00:15.000Z\). |
+| ZeroNetworks.Asset.ProtectedAt | Date | The date the asset became protected, in UTC \(e.g., 2024-07-30T12:00:15.000Z\). |
+| ZeroNetworks.Asset.InactiveSince | Date | The date the asset became inactive, in UTC \(e.g., 2024-07-30T12:00:15.000Z\). |
 
 #### Command example
 

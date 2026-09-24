@@ -1,10 +1,10 @@
-### About Zero Networks Segment
+## What does this pack do?
 
 Zero Networks Segment is a security platform that automatically enforces zero trust policies across an organization's network. It dynamically segments and controls access to network resources, ensuring that only authorized users and devices can communicate, thereby reducing the attack surface and mitigating potential threats.
 
 ### Pack Contents
 
-- `ZeroNetworksSegmentAssets` integration - looks up assets by FQDN and quarantines or releases them, so that a compromised asset can be contained from a playbook.
+- `ZeroNetworksSegmentAssets` integration - looks up assets by FQDN and quarantines or releases them, so that a compromised asset can be contained via a playbook.
 <~XSIAM>
 - `ZeroNetworksSegmentEventCollector` integration - integrates with Zero Networks Segment API to fetch and process audit and network events.
 - Log Normalization - XDM mapping for key event types.

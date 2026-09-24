@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
+import traceback
 from typing import Any
 
 import urllib3
@@ -333,8 +334,8 @@ def main() -> None:
 
     server_url = params.get("url") or DEFAULT_SERVER_URL
     api_key = (params.get("credentials") or {}).get("password", "")
-    verify_certificate = not params.get("insecure", False)
-    proxy = params.get("proxy", False)
+    verify_certificate = not argToBoolean(params.get("insecure", False))
+    proxy = argToBoolean(params.get("proxy", False))
 
     demisto.debug(f"Command being called is {command}")
     try:
@@ -352,7 +353,8 @@ def main() -> None:
             raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        demisto.error(traceback.format_exc())
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}", error=e)
 
 
 """ ENTRY POINT """
