@@ -572,15 +572,16 @@ class Client:
         headers = await self._resolve_headers()
         async with (
             httpx.AsyncClient(headers=headers, verify=self.verify) as custom_httpx_client,
-            streamable_http_client(url=self.base_url, http_client=custom_httpx_client) as (  # type: ignore[arg-type]
+            streamable_http_client(url=self.base_url, http_client=custom_httpx_client) as (  # type: ignore[misc,arg-type]
                 read_stream,
                 write_stream,
+                _,
             ),
             ClientSession(read_stream, write_stream) as session,  # pylint: disable=E0601
         ):
             # Initialize the connection
             init = await session.initialize()
-            yield session, init.server_info.name
+            yield session, init.serverInfo.name  # type: ignore[attr-defined]
 
     async def test_connection(self, auth_test: bool = False):
         async with self._get_session():
