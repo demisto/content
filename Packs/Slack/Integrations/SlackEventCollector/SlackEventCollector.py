@@ -21,7 +21,7 @@ class Config:
     # timeout while paginating it. When a run fills the `limit` (i.e. more events remain) the
     # collector re-triggers immediately (nextTrigger=0) to keep draining without waiting for
     # the next scheduled interval.
-    DEFAULT_MAX_FETCH_WINDOW = 30 * 60  # 30 minutes
+    DEFAULT_MAX_FETCH_WINDOW = 5 * 60  # 5 minutes
     # Maximum number of forward windows a single fetch run may walk. This bounds the run's
     # duration / number of API calls when a large backlog needs to be backfilled; the remaining
     # windows are covered by subsequent runs.
