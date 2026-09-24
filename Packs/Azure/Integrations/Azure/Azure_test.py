@@ -876,7 +876,7 @@ def test_sql_db_tde_set_command(mocker, client, mock_params):
 def test_sql_servers_list_command(mocker, client, mock_params):
     """
     Given: An AzureClient whose sql_servers_list returns a list of servers with a nextLink.
-    When: sql_servers_list_command is called without resource_group_name.
+    When: sql_servers_list_command is called without resource_group_name in args or params.
     Then: It returns CommandResults with the servers list, generic title, and the nextLink in outputs.
     """
     raw = {
@@ -892,8 +892,9 @@ def test_sql_servers_list_command(mocker, client, mock_params):
         "nextLink": "https://management.azure.com/next-page-url",
     }
     mocker.patch.object(client, "sql_servers_list", return_value=raw)
+    params_no_rg = {k: v for k, v in mock_params.items() if k != "resource_group_name"}
 
-    result = sql_servers_list_command(client=client, params=mock_params, args={})
+    result = sql_servers_list_command(client=client, params=params_no_rg, args={})
 
     servers_key = next(k for k in result.outputs if "Servers" in k and "NextLink" not in k)
     assert len(result.outputs[servers_key]) == 1
@@ -1269,22 +1270,25 @@ def test_sql_firewall_rule_replace_command(mocker, client, mock_params):
     assert call_kwargs["request_body"] is None
 
 
-def test_sql_firewall_rule_replace_command_with_entry_id(mocker, client, mock_params, tmp_path):
+def test_sql_firewall_rule_replace_command_with_entry_id(mocker, client, mock_params):
     """
     Given: An AzureClient and an entry_id pointing to a JSON file.
     When: sql_firewall_rule_replace_command is called with entry_id.
     Then: The request body is taken from the file and passed to the client.
     """
     import json
+    import tempfile
 
-    request_file = tmp_path / "fw_rules.json"
-    request_file.write_text(
-        json.dumps({"values": [{"name": "test-rule", "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"}}]})
+    fw_rules_content = json.dumps(
+        {"values": [{"name": "test-rule", "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"}}]}
     )
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+        f.write(fw_rules_content)
+        tmp_file_path = f.name
 
     raw = {"values": [{"id": "/sub/rg/srv/fw/test-rule", "name": "test-rule"}]}
     mocker.patch.object(client, "sql_firewall_rule_replace", return_value=raw)
-    mocker.patch("Azure.demisto.getFilePath", return_value={"path": str(request_file)})
+    mocker.patch("Azure.demisto.getFilePath", return_value={"path": tmp_file_path})
 
     args = {"server_name": "integration", "entry_id": "123@456"}
     result = sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)

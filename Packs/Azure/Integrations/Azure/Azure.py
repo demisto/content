@@ -310,6 +310,9 @@ PERMISSIONS_TO_COMMANDS = {
     ],
     "Microsoft.Sql/servers/databases/securityAlertPolicies/write": [
         "azure-sql-db-threat-policy-create-update",
+        "azure-sql-db-threat-policy-update",
+        "azure-sql-db-threat-policy-update-quick-action",
+        "azure-sqldb-security-alert-policy-update",
     ],
     "Microsoft.Sql/servers/firewallRules/read": [
         "azure-sql-firewall-rule-list",
@@ -322,11 +325,6 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-sql-firewall-rule-delete",
     ],
     "Microsoft.Sql/servers/databases/securityAlertPolicies/read": [
-        "azure-sql-db-threat-policy-update",
-        "azure-sql-db-threat-policy-update-quick-action",
-        "azure-sqldb-security-alert-policy-update",
-    ],
-    "Microsoft.Sql/servers/databases/securityAlertPolicies/write": [
         "azure-sql-db-threat-policy-update",
         "azure-sql-db-threat-policy-update-quick-action",
         "azure-sqldb-security-alert-policy-update",
@@ -2064,9 +2062,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def sql_servers_list(
-        self, subscription_id: str, resource_group_name: str | None = None, next_link: str | None = None
-    ) -> dict:
+    def sql_servers_list(self, subscription_id: str, resource_group_name: str | None = None, next_link: str | None = None):
         """
         Lists all SQL servers, optionally filtered by resource group.
 
@@ -2107,7 +2103,7 @@ class AzureClient:
                 resource_group_name=resource_group_name or "",
             )
 
-    def sql_db_list(self, server_name: str, subscription_id: str, resource_group_name: str, next_link: str | None = None) -> dict:
+    def sql_db_list(self, server_name: str, subscription_id: str, resource_group_name: str, next_link: str | None = None):
         """
         Lists all databases for a given SQL server.
 
@@ -2148,7 +2144,7 @@ class AzureClient:
 
     def sql_db_audit_policy_list(
         self, server_name: str, db_name: str, subscription_id: str, resource_group_name: str, next_link: str | None = None
-    ) -> dict:
+    ):
         """
         Lists the auditing settings for a SQL database.
 
@@ -2204,7 +2200,7 @@ class AzureClient:
         storage_account_subscription_id: str | None = None,
         storage_endpoint: str | None = None,
         is_managed_identity_in_use: str | None = None,
-    ) -> dict:
+    ):
         """
         Creates or updates the auditing policy for a SQL database.
 
@@ -2275,7 +2271,7 @@ class AzureClient:
         retention_days: str | None = None,
         storage_account_access_key: str | None = None,
         storage_endpoint: str | None = None,
-    ) -> dict:
+    ):
         """
         Creates or updates the threat detection policy for a SQL database.
 
@@ -2334,7 +2330,7 @@ class AzureClient:
         resource_group_name: str,
         firewall_rule_name: str | None = None,
         next_link: str | None = None,
-    ) -> dict:
+    ):
         """
         Lists firewall rules for a SQL server, or retrieves a specific rule.
 
@@ -2384,7 +2380,7 @@ class AzureClient:
         firewall_rule_name: str,
         start_ip_address: str,
         end_ip_address: str,
-    ) -> dict:
+    ):
         """
         Creates or updates a firewall rule for a SQL server.
 
@@ -2465,7 +2461,7 @@ class AzureClient:
         start_ip_address: str | None = None,
         end_ip_address: str | None = None,
         request_body: dict | None = None,
-    ) -> dict:
+    ):
         """
         Replaces all firewall rules on a SQL server.
 
