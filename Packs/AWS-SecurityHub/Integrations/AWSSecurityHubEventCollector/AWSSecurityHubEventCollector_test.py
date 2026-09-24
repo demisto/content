@@ -134,6 +134,10 @@ class TestParseAwsTimestamp:
             ("2026-08-08T19:55:21+00:00", dt.datetime(2026, 8, 8, 19, 55, 21)),
             # ISO-8601 with a non-zero offset should be normalized to naive UTC
             ("2026-08-08T21:55:21+02:00", dt.datetime(2026, 8, 8, 19, 55, 21)),
+            # ISO-8601 without 'Z' and without offset: fails both strptime formats and is
+            # parsed by fromisoformat as an already-naive datetime (no tzinfo normalization).
+            ("2026-08-08T19:55:21.905451", dt.datetime(2026, 8, 8, 19, 55, 21, 905451)),
+            ("2026-08-08T19:55:21", dt.datetime(2026, 8, 8, 19, 55, 21)),
         ],
     )
     def test_parse_timestamp_valid_formats(self, timestamp_str, expected_result):
