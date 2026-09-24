@@ -16,7 +16,7 @@ This integration was integrated and tested with the Hydden Control public REST A
 
    | **Parameter** | **Required** |
    | --- | --- |
-   | Hydden API URL (e.g., https://control.hydden.ai/api/public/v1) | True |
+   | Hydden API URL | True |
    | Client ID / Client Secret | True |
    | HTTP request timeout (seconds) | False |
    | Trust any certificate (not secure) | False |
@@ -36,5 +36,5 @@ This integration was integrated and tested with the Hydden Control public REST A
 - If the integration reports a TLS error, verify the certificate chain on the Hydden API URL. Use **Trust any certificate (not secure)** only for temporary testing.
 - If the connection requires an outbound proxy, enable **Use system proxy settings**.
 - A cold `hydden-blast-radius` request can take several minutes while Hydden builds the tenant reachability graph. Increase **HTTP request timeout (seconds)** if the request times out.
-- If a playbook reports a missing `account_id`, confirm that the Cortex XSIAM issue contains `${xdm.target.user.identifier}`, or supply the **AccountId** input in the Playbook Debugger.
+- If a playbook reports a missing `account_id`, confirm that the Cortex XSIAM issue contains `${alert.username}`, or supply the **AccountId** input in the Playbook Debugger.
 - If a command reports no matches or more than one match, the Cortex name or email did not resolve to a unique Hydden UUID. Confirm the identifier and retry.

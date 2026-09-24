@@ -476,14 +476,14 @@
                                             }
                                         },
                                         {
-								                            "func": {
-								                                "args": [
-								                                    "top_count",
-								                                    "Total"
-								                                ],
-								                                "name": "seriestitle"
-								                            }
-								                        }
+                                            "func": {
+                                                "args": [
+                                                    "top_count",
+                                                    "Total"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
                                     ]
                                 },
                                 "title": "Top 10 Identity Targets Last 7 Days"
@@ -1000,5 +1000,5 @@
             }
         }
     ],
-    "fromVersion": "6.10.0"
+    "fromVersion": "8.3.0"
 }

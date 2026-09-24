@@ -1,22 +1,21 @@
-id: Hydden - Deprovision Account
+id: silent-Hydden - Deprovision Account
 version: -1
-name: Hydden - Deprovision Account
-description: When a Cortex issue indicates a compromised or otherwise high-risk account, take the account name or email from the issue and deprovision it with Hydden Control. The command looks up a unique Hydden UUID first. Returns Hydden.Identity.deprovisioned as true or false.
+name: silent-Hydden - Deprovision Account
+description: When a Cortex issue indicates a compromised or otherwise high-risk account, take the account name or email from the alert and deprovision it with Hydden Control. The command looks up a unique Hydden UUID first. When RequireApproval is True, an analyst must confirm before deprovision runs.
 starttaskid: "0"
-fromversion: "6.10.0"
+fromversion: "8.9.0"
 inputs:
 - key: AccountId
   value:
-    simple: ${xdm.target.user.identifier}
+    simple: ${alert.username}
   required: true
-  description: Cortex account identifier from the issue. Defaults to
-    ${xdm.target.user.identifier}.
+  description: Cortex account name or email from the alert. Defaults to ${alert.username}.
   playbookInputQuery:
-- key: AccountIdFallback
+- key: RequireApproval
   value:
-    simple: ${incident.username}
+    simple: "True"
   required: false
-  description: Incident username when ${xdm.target.user.identifier} is empty.
+  description: When True, wait for an analyst to confirm before deprovisioning.
   playbookInputQuery:
 outputs:
 - contextPath: Hydden.Identity.deprovisioned
@@ -61,8 +60,7 @@ tasks:
       id: c1111111-d222-4e33-8f44-a55555555502
       version: -1
       name: Set account ID
-      description: Stage the account identifier from the issue under Hydden.Input.AccountId.
-        Falls back to the incident username when the alert field is empty.
+      description: Stage a single account identifier from the alert under Hydden.Input.AccountId.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -77,10 +75,12 @@ tasks:
         complex:
           root: inputs.AccountId
           transformers:
-          - operator: SetIfEmpty
+          - operator: uniq
+          - operator: atIndex
             args:
-              defaultValue:
-                simple: ${inputs.AccountIdFallback}
+              index:
+                value:
+                  simple: "0"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -99,28 +99,34 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: c1111111-d222-4e33-8f44-a55555555503
-    type: regular
+    taskid: c1111111-d222-4e33-8f44-a55555555505
+    type: condition
     task:
-      id: c1111111-d222-4e33-8f44-a55555555503
+      id: c1111111-d222-4e33-8f44-a55555555505
       version: -1
-      name: Deprovision account in Hydden
-      description: Call hydden-deprovision-account with the Cortex name or email from the issue. The command looks up a unique Hydden UUID via GET /accounts/lookup, then POST /account-actions/deprovision. Sets Hydden.Identity.deprovisioned to true on success.
-      script: 'Hydden Control|||hydden-deprovision-account'
-      type: regular
-      iscommand: true
-      brand: Hydden Control
-    scriptarguments:
-      account_id:
-        complex:
-          root: Hydden.Input
-          accessor: AccountId
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              defaultValue:
-                simple: ${inputs.AccountId}
+      name: Require approval?
+      description: When RequireApproval is True, wait for an analyst to confirm before deprovisioning.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.RequireApproval
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
     continueonerrortype: ""
     view: |-
       {
@@ -136,14 +142,86 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c1111111-d222-4e33-8f44-a55555555504
+    type: condition
+    task:
+      id: c1111111-d222-4e33-8f44-a55555555504
+      version: -1
+      name: Confirm deprovision
+      description: Analyst must confirm before Hydden deprovisions the account.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: c1111111-d222-4e33-8f44-a55555555503
+    type: regular
+    task:
+      id: c1111111-d222-4e33-8f44-a55555555503
+      version: -1
+      name: Deprovision account in Hydden
+      description: Call hydden-deprovision-account with the Cortex name or email from the alert. The command looks up a unique Hydden UUID via GET /accounts/lookup, then POST /account-actions/deprovision. Sets Hydden.Identity.deprovisioned to true on success.
+      script: 'Hydden Control|||hydden-deprovision-account'
+      type: regular
+      iscommand: true
+      brand: Hydden Control
+    scriptarguments:
+      account_id:
+        complex:
+          root: Hydden.Input
+          accessor: AccountId
+          transformers:
+          - operator: uniq
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 470,
-        "width": 380,
-        "x": 450,
+        "height": 830,
+        "width": 780,
+        "x": 50,
         "y": 50
       }
     }
@@ -151,3 +229,4 @@ view: |-
 quiet: false
 tests:
 - No tests
+issilent: true

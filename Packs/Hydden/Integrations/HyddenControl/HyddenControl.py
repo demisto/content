@@ -31,8 +31,6 @@ DEFAULT_TIMEOUT_SECONDS = 300
 _UUID_RE = re.compile(
     r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
 )
-_LOOKUP_UUID_FIELDS = ("uuid", "id", "ref", "account_id", "account_ref", "accountId")
-_LOOKUP_COLLECTION_KEYS = ("accounts", "items", "data", "results", "uuids", "ids")
 
 
 def _as_blast_radius_string(response: Any) -> str:
@@ -141,6 +139,10 @@ class Client(ContentClient):  # noqa: F405
 
 def _get_account_id(args: dict[str, Any]) -> str:
     account_id = args.get("account_id") or args.get("account")
+    if isinstance(account_id, list):
+        if len(account_id) != 1:
+            raise DemistoException("account_id must be a single value.")
+        account_id = account_id[0]
     if account_id is None or str(account_id).strip() == "":
         raise DemistoException("Please provide account_id.")
     return str(account_id)
@@ -155,31 +157,26 @@ def _uuid_from_value(value: Any) -> str | None:
 
 
 def _uuids_from_item(item: Any) -> list[str]:
+    """Hydden UUID from one lookup row: a UUID string, or an object with uuid."""
     if uuid := _uuid_from_value(item):
         return [uuid]
-    if not isinstance(item, dict):
-        return []
-    for field in _LOOKUP_UUID_FIELDS:
-        if uuid := _uuid_from_value(item.get(field)):
+    if isinstance(item, dict):
+        if uuid := _uuid_from_value(item.get("uuid")):
             return [uuid]
     return []
 
 
 def _uuids_from_lookup(response: Any) -> list[str]:
-    """Unique Hydden UUIDs from an accounts/lookup payload, in first-seen order."""
+    """Unique Hydden UUIDs from GET /accounts/lookup, in first-seen order.
+
+    Documented payload is a JSON array. Each row is a Hydden UUID string or an
+    object with a uuid field. That UUID is not the Cortex identifier that was
+    sent as q; it is the ref for blast-radius and deprovision.
+    """
     if isinstance(response, list):
         items = response
-    elif isinstance(response, dict):
-        items = None
-        for key in _LOOKUP_COLLECTION_KEYS:
-            value = response.get(key)
-            if isinstance(value, list):
-                items = value
-                break
-        if items is None:
-            items = [response]
     else:
-        items = [response]
+        items = []
 
     seen: list[str] = []
     seen_keys: set[str] = set()

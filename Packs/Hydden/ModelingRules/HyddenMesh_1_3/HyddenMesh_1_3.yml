@@ -1,9 +1,6 @@
-fromversion: 6.10.0
+fromversion: 8.3.0
 id: Hydden_Mesh_ModelingRule
 name: Hydden Mesh Modeling Rule
 rules: ''
 schema: ''
 tags: Hydden,Mesh
-marketplaces:
-- marketplacev2
-- platform

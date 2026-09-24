@@ -8,7 +8,7 @@ This is the Hydden Control integration for Cortex XSIAM.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Hydden API URL (e.g., https://control.hydden.ai/api/public/v1) | The public API root. | True |
+    | Hydden API URL | Public API root, for example `https://control.hydden.ai/api/public/v1`. | True |
     | Client ID | The client ID for the Hydden REST API. | True |
     | Client Secret | The client secret for the Hydden REST API. | True |
     | HTTP request timeout (seconds) | The maximum request duration in seconds. A cold blast-radius call can take several minutes. | False |

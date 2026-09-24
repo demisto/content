@@ -1,13 +1,13 @@
 name: Hydden Control
 display: Hydden Control
-supportlevelheader: xsoar
 category: Identity and Access Management
 provider: Hydden
 commonfields:
   id: Hydden Control
   version: -1
 configuration:
-- display: Hydden API URL (e.g., https://control.hydden.ai/api/public/v1)
+- display: Hydden API URL
+  additionalinfo: Public API root, for example https://control.hydden.ai/api/public/v1
   name: url
   defaultvalue: https://control.hydden.ai/api/public/v1
   type: 0
@@ -20,8 +20,7 @@ configuration:
   required: true
   section: Connect
 - display: HTTP request timeout (seconds)
-  additionalinfo: The cold blast-radius call builds the tenant reachability graph and can take
-    several minutes; later calls are sub-second.
+  additionalinfo: The cold blast-radius call builds the tenant reachability graph and can take several minutes; later calls are sub-second.
   name: timeout
   defaultvalue: "300"
   type: 0
@@ -103,7 +102,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 6.10.0
+fromversion: 8.3.0
 marketplaces:
 - marketplacev2
 - platform

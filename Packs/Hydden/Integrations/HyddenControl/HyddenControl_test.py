@@ -1,3 +1,14 @@
+from HyddenControl import (
+    Client,
+    DemistoException,
+    _get_account_id,
+    hydden_blast_radius_command,
+    hydden_deprovision_account_command,
+    _as_blast_radius_string,
+    _resolve_account_uuid,
+    _uuids_from_lookup,
+    test_module as run_test_module,
+)
 import sys
 from types import ModuleType
 from unittest.mock import MagicMock
@@ -51,17 +62,6 @@ def _install_cortex_test_stubs() -> None:
 
 _install_cortex_test_stubs()
 
-from HyddenControl import (
-    Client,
-    DemistoException,
-    _get_account_id,
-    hydden_blast_radius_command,
-    hydden_deprovision_account_command,
-    _as_blast_radius_string,
-    _resolve_account_uuid,
-    _uuids_from_lookup,
-    test_module as run_test_module,
-)
 
 ACCOUNT_ID = "00000000-0000-0000-0000-000000000000"
 OTHER_UUID = "11111111-1111-1111-1111-111111111111"
@@ -255,6 +255,15 @@ def test_get_account_id_rejects_empty_value() -> None:
         _get_account_id({"account_id": " "})
 
 
+def test_get_account_id_accepts_a_single_element_list() -> None:
+    assert _get_account_id({"account_id": [IDENTIFIER]}) == IDENTIFIER
+
+
+def test_get_account_id_rejects_a_multi_element_list() -> None:
+    with pytest.raises(DemistoException, match="single value"):
+        _get_account_id({"account_id": [IDENTIFIER, "other"]})
+
+
 def test_hydden_blast_radius_command_passes_group_type() -> None:
     client = MagicMock()
     client.get_bearer_token.return_value = TOKEN
@@ -335,8 +344,20 @@ def test_uuids_from_lookup_accepts_a_list_of_uuid_strings() -> None:
     assert _uuids_from_lookup([ACCOUNT_ID]) == [ACCOUNT_ID]
 
 
-def test_uuids_from_lookup_dedupes_wrapped_account_objects() -> None:
-    assert _uuids_from_lookup({"accounts": [{"uuid": ACCOUNT_ID}, {"id": ACCOUNT_ID}]}) == [ACCOUNT_ID]
+def test_uuids_from_lookup_accepts_a_list_of_uuid_objects() -> None:
+    assert _uuids_from_lookup([{"uuid": ACCOUNT_ID}]) == [ACCOUNT_ID]
+
+
+def test_uuids_from_lookup_dedupes_uuid_objects() -> None:
+    assert _uuids_from_lookup([{"uuid": ACCOUNT_ID}, {"uuid": ACCOUNT_ID}]) == [ACCOUNT_ID]
+
+
+def test_uuids_from_lookup_ignores_id_and_ref_fields() -> None:
+    assert _uuids_from_lookup([{"id": ACCOUNT_ID, "ref": ACCOUNT_ID}]) == []
+
+
+def test_uuids_from_lookup_ignores_accounts_wrapper() -> None:
+    assert _uuids_from_lookup({"accounts": [{"uuid": ACCOUNT_ID}]}) == []
 
 
 def test_hydden_blast_radius_command_resolves_email_to_a_unique_uuid() -> None:
