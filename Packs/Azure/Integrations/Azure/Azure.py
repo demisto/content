@@ -409,14 +409,14 @@ API_FUNCTION_TO_PERMISSIONS = {
     "sql_firewall_rule_replace": ["Microsoft.Sql/servers/firewallRules/write"],
     "sql_db_threat_policy_update": [
         "Microsoft.Sql/servers/read",
-    "Microsoft.Sql/servers/databases/read",
-    "Microsoft.Sql/servers/databases/auditingSettings/read",
-    "Microsoft.Sql/servers/databases/auditingSettings/write",
-    "Microsoft.Sql/servers/databases/securityAlertPolicies/write",
-    "Microsoft.Sql/servers/firewallRules/read",
-    "Microsoft.Sql/servers/firewallRules/write",
-    "Microsoft.Sql/servers/firewallRules/delete",
-    "Microsoft.Sql/servers/databases/securityAlertPolicies/read",
+        "Microsoft.Sql/servers/databases/read",
+        "Microsoft.Sql/servers/databases/auditingSettings/read",
+        "Microsoft.Sql/servers/databases/auditingSettings/write",
+        "Microsoft.Sql/servers/databases/securityAlertPolicies/write",
+        "Microsoft.Sql/servers/firewallRules/read",
+        "Microsoft.Sql/servers/firewallRules/write",
+        "Microsoft.Sql/servers/firewallRules/delete",
+        "Microsoft.Sql/servers/databases/securityAlertPolicies/read",
         "Microsoft.Sql/servers/databases/securityAlertPolicies/write",
     ],
     "sql_db_tde_set": [
@@ -2107,9 +2107,7 @@ class AzureClient:
                 resource_group_name=resource_group_name or "",
             )
 
-    def sql_db_list(
-        self, server_name: str, subscription_id: str, resource_group_name: str, next_link: str | None = None
-    ) -> dict:
+    def sql_db_list(self, server_name: str, subscription_id: str, resource_group_name: str, next_link: str | None = None) -> dict:
         """
         Lists all databases for a given SQL server.
 
@@ -4704,7 +4702,6 @@ def sql_db_tde_set_command(client: AzureClient, params: dict[str, Any], args: Di
     )
 
 
-
 def sql_servers_list_command(client: AzureClient, params: dict, args: Dict[str, Any]) -> CommandResults:
     """
     Lists all SQL servers, optionally filtered by resource group.
@@ -4721,7 +4718,9 @@ def sql_servers_list_command(client: AzureClient, params: dict, args: Dict[str, 
     resource_group_name = args.get("resource_group_name") or params.get("resource_group_name")
     next_link = args.get("next_link")
 
-    response = client.sql_servers_list(subscription_id=subscription_id, resource_group_name=resource_group_name, next_link=next_link)
+    response = client.sql_servers_list(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, next_link=next_link
+    )
 
     servers = copy.deepcopy(response.get("value", []))
     for server in servers:
@@ -4733,10 +4732,12 @@ def sql_servers_list_command(client: AzureClient, params: dict, args: Dict[str, 
     if not servers:
         return CommandResults(readable_output="No SQL servers found.")
 
-    outputs = remove_empty_elements({
-        "Azure.SQL.Servers(val.id && val.id == obj.id)": servers,
-        "Azure.SQL(true)": {"ServersNextLink": response.get("nextLink")},
-    })
+    outputs = remove_empty_elements(
+        {
+            "Azure.SQL.Servers(val.id && val.id == obj.id)": servers,
+            "Azure.SQL(true)": {"ServersNextLink": response.get("nextLink")},
+        }
+    )
     readable_output = tableToMarkdown(name, servers, headerTransform=pascalToSpace, removeNull=True)
     return CommandResults(
         readable_output=readable_output,
@@ -4775,10 +4776,12 @@ def sql_db_list_command(client: AzureClient, params: dict, args: Dict[str, Any])
     if not databases:
         return CommandResults(readable_output=f"No databases found for server {server_name}.")
 
-    outputs = remove_empty_elements({
-        "Azure.SQL.Databases(val.id && val.id == obj.id)": databases,
-        "Azure.SQL(true)": {"DatabasesNextLink": response.get("nextLink")},
-    })
+    outputs = remove_empty_elements(
+        {
+            "Azure.SQL.Databases(val.id && val.id == obj.id)": databases,
+            "Azure.SQL(true)": {"DatabasesNextLink": response.get("nextLink")},
+        }
+    )
     readable_output = tableToMarkdown(
         f"Databases for server {server_name}",
         databases,
@@ -4812,8 +4815,11 @@ def sql_db_audit_policy_list_command(client: AzureClient, params: dict, args: Di
     next_link = args.get("next_link")
 
     response = client.sql_db_audit_policy_list(
-        server_name=server_name, db_name=db_name, subscription_id=subscription_id,
-        resource_group_name=resource_group_name, next_link=next_link
+        server_name=server_name,
+        db_name=db_name,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        next_link=next_link,
     )
 
     policies = copy.deepcopy(response.get("value", []))
@@ -4827,10 +4833,12 @@ def sql_db_audit_policy_list_command(client: AzureClient, params: dict, args: Di
     if not policies:
         return CommandResults(readable_output=f"No audit policies found for database {db_name}.")
 
-    outputs = remove_empty_elements({
-        "Azure.SQL.DBAuditPolicy(val.id && val.id == obj.id)": policies,
-        "Azure.SQL(true)": {"DBAuditPolicyNextLink": response.get("nextLink")},
-    })
+    outputs = remove_empty_elements(
+        {
+            "Azure.SQL.DBAuditPolicy(val.id && val.id == obj.id)": policies,
+            "Azure.SQL(true)": {"DBAuditPolicyNextLink": response.get("nextLink")},
+        }
+    )
     readable_output = tableToMarkdown(
         f"Database Audit Settings for {server_name}/{db_name}",
         policies,
@@ -5006,10 +5014,12 @@ def sql_firewall_rule_list_command(client: AzureClient, params: dict, args: Dict
     if not rules:
         return CommandResults(readable_output="No firewall rules were found.")
 
-    outputs = remove_empty_elements({
-        "Azure.SQL.FirewallRule(val.id && val.id == obj.id)": rules,
-        "Azure.SQL(true)": {"FirewallRuleNextLink": response.get("nextLink")},
-    })
+    outputs = remove_empty_elements(
+        {
+            "Azure.SQL.FirewallRule(val.id && val.id == obj.id)": rules,
+            "Azure.SQL(true)": {"FirewallRuleNextLink": response.get("nextLink")},
+        }
+    )
     readable_output = tableToMarkdown(
         "Firewall Rules",
         rules,
@@ -5142,6 +5152,7 @@ def sql_firewall_rule_replace_command(client: AzureClient, params: dict, args: D
         outputs=response,
         raw_response=response,
     )
+
 
 def cosmosdb_update_command(client: AzureClient, params: dict[str, Any], args: Dict[str, Any]) -> CommandResults:
     """

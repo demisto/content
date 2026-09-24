@@ -873,9 +873,6 @@ def test_sql_db_tde_set_command(mocker, client, mock_params):
     assert "Updated SQL database test-db of the server test-server" in result.readable_output
 
 
-
-
-
 def test_sql_servers_list_command(mocker, client, mock_params):
     """
     Given: An AzureClient whose sql_servers_list returns a list of servers with a nextLink.
@@ -915,11 +912,7 @@ def test_sql_servers_list_command_by_resource_group(mocker, client, mock_params)
     When: sql_servers_list_command is called with resource_group_name.
     Then: It passes the resource_group_name to the client and includes it in the table title.
     """
-    raw = {
-        "value": [
-            {"id": "/sub/rg/srv", "name": "integration", "properties": {"state": "Ready"}}
-        ]
-    }
+    raw = {"value": [{"id": "/sub/rg/srv", "name": "integration", "properties": {"state": "Ready"}}]}
     mocker.patch.object(client, "sql_servers_list", return_value=raw)
 
     result = sql_servers_list_command(
@@ -1029,9 +1022,7 @@ def test_sql_db_audit_policy_list_command_empty(mocker, client, mock_params):
     """
     mocker.patch.object(client, "sql_db_audit_policy_list", return_value={"value": []})
 
-    result = sql_db_audit_policy_list_command(
-        client=client, params=mock_params, args={"server_name": "srv", "db_name": "db"}
-    )
+    result = sql_db_audit_policy_list_command(client=client, params=mock_params, args={"server_name": "srv", "db_name": "db"})
 
     assert "No audit policies found" in result.readable_output
     assert not result.outputs
@@ -1123,10 +1114,18 @@ def test_sql_firewall_rule_list_command(mocker, client, mock_params):
     """
     raw = {
         "value": [
-            {"id": "/sub/rg/srv/fw/AllowAll", "name": "AllowAllWindowsAzureIps", "type": "Microsoft.Sql/servers/firewallRules",
-             "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"}},
-            {"id": "/sub/rg/srv/fw/test-rule", "name": "test-rule", "type": "Microsoft.Sql/servers/firewallRules",
-             "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"}},
+            {
+                "id": "/sub/rg/srv/fw/AllowAll",
+                "name": "AllowAllWindowsAzureIps",
+                "type": "Microsoft.Sql/servers/firewallRules",
+                "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"},
+            },
+            {
+                "id": "/sub/rg/srv/fw/test-rule",
+                "name": "test-rule",
+                "type": "Microsoft.Sql/servers/firewallRules",
+                "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"},
+            },
         ],
         "nextLink": "https://management.azure.com/next-fw-page",
     }
@@ -1244,8 +1243,11 @@ def test_sql_firewall_rule_replace_command(mocker, client, mock_params):
     """
     raw = {
         "values": [
-            {"id": "/sub/rg/srv/fw/replaced-rule", "name": "replaced-rule",
-             "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"}}
+            {
+                "id": "/sub/rg/srv/fw/replaced-rule",
+                "name": "replaced-rule",
+                "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"},
+            }
         ]
     }
     mocker.patch.object(client, "sql_firewall_rule_replace", return_value=raw)
@@ -1276,7 +1278,9 @@ def test_sql_firewall_rule_replace_command_with_entry_id(mocker, client, mock_pa
     import json
 
     request_file = tmp_path / "fw_rules.json"
-    request_file.write_text(json.dumps({"values": [{"name": "test-rule", "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"}}]}))
+    request_file.write_text(
+        json.dumps({"values": [{"name": "test-rule", "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "0.0.0.0"}}]})
+    )
 
     raw = {"values": [{"id": "/sub/rg/srv/fw/test-rule", "name": "test-rule"}]}
     mocker.patch.object(client, "sql_firewall_rule_replace", return_value=raw)
@@ -1321,6 +1325,7 @@ def test_sql_firewall_rule_replace_command_missing_required_args(mocker, client,
     with pytest.raises(DemistoException) as exc:
         sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
     assert "Either 'entry_id' must be provided" in str(exc.value)
+
 
 def test_cosmosdb_update_command(mocker, client, mock_params):
     """
