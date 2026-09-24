@@ -1135,7 +1135,7 @@ script:
       name: name
     - description: The description of the ruleset.
       name: description
-    - description: 'The JSON array of rule objects that replaces all existing entry-point rules. For example: [{"action": "block", "expression": "(ip.src eq 192.0.2.1)", "description": "Block bad IP"}].'
+    - description: 'The JSON array of rule objects that replaces all existing entry-point rules. For example: `[{"action": "block", "expression": "(ip.src eq 192.0.2.1)", "description": "Block bad IP"}]`.'
       name: rules
     - auto: PREDEFINED
       description: Whether to validate the update without applying it.

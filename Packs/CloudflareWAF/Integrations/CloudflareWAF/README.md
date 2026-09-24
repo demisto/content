@@ -1323,23 +1323,22 @@ There is no context output for this command.
 
 >Ruleset abc123 was successfully deleted.
 >
-### cloudflare-waf-ruleset-rule-list-by-tag
+### cloudflare-waf-ruleset-entrypoint-get
 
 ***
-Lists the rules of a managed ruleset, filtered by tag or category. Account scope only.
+Retrieves the entry point ruleset for a specific phase at the account or zone level.
 
 #### Base Command
 
-`cloudflare-waf-ruleset-rule-list-by-tag`
+`cloudflare-waf-ruleset-entrypoint-get`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ruleset_id | The ruleset identifier. | Required |
-| version | The version of the ruleset. | Required |
-| tag | The tag or category by which to filter the rules. | Required |
-| account_id | The account scope. Overrides the instance-configured Account ID. Defaults to the instance Account ID. | Optional |
+| phase | The phase of the ruleset. Possible values are: ddos_l4, ddos_l7, http_config_settings, http_custom_errors, http_log_custom_fields, http_ratelimit, http_request_cache_settings, http_request_dynamic_redirect, http_request_firewall_custom, http_request_firewall_managed, http_request_late_transform, http_request_origin, http_request_redirect, http_request_sanitize, http_request_sbfm, http_request_transform, http_response_cache_settings, http_response_compression, http_response_firewall_managed, http_response_headers_transform, magic_transit, magic_transit_ids_managed, magic_transit_managed, magic_transit_ratelimit. | Required |
+| account_id | The account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID. | Optional |
+| zone_id | The zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id. | Optional |
 
 #### Context Output
 
@@ -1351,7 +1350,7 @@ Lists the rules of a managed ruleset, filtered by tag or category. Account scope
 | CloudflareWAF.Ruleset.phase | String | The phase of the ruleset. |
 | CloudflareWAF.Ruleset.description | String | The description of the ruleset. |
 | CloudflareWAF.Ruleset.version | String | The version of the ruleset. |
-| CloudflareWAF.Ruleset.last_updated | Date | The date and time when the ruleset was last updated. For example: 2024-08-01T17:37:12.291474Z. |
+| CloudflareWAF.Ruleset.last_updated | Date | The date and time when the ruleset was last updated. For example: \`2024-08-01T17:37:12.291474Z\`. |
 | CloudflareWAF.Ruleset.rules.id | String | The rule identifier. |
 | CloudflareWAF.Ruleset.rules.action | String | The action to perform when the rule matches. |
 | CloudflareWAF.Ruleset.rules.expression | String | The filter expression for the rule. |
@@ -1359,30 +1358,6 @@ Lists the rules of a managed ruleset, filtered by tag or category. Account scope
 | CloudflareWAF.Ruleset.rules.enabled | Boolean | Whether the rule is enabled. |
 | CloudflareWAF.Ruleset.rules.version | String | The version of the rule. |
 | CloudflareWAF.Ruleset.rules.ref | String | The reference of the rule. |
-| CloudflareWAF.Ruleset.rules.categories | Unknown | The categories or tags that the rule carries. |
-
-### cloudflare-waf-ruleset-version-delete
-
-***
-Deletes a specific version of a ruleset.
-
-#### Base Command
-
-`cloudflare-waf-ruleset-version-delete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ruleset_id | The ruleset identifier. | Required |
-| version | The version of the ruleset. | Required |
-| account_id | The account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID. | Optional |
-| zone_id | The zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id. | Optional |
-| dry_run | Whether to validate the deletion without applying it. Possible values are: true, false. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
 
 ### cloudflare-waf-ruleset-entrypoint-version-get
 
@@ -1421,20 +1396,63 @@ Retrieves a specific version of the entry point ruleset for a phase, including i
 | CloudflareWAF.Ruleset.rules.version | String | The version of the rule. |
 | CloudflareWAF.Ruleset.rules.ref | String | The reference of the rule. |
 
-### cloudflare-waf-ruleset-entrypoint-get
+### cloudflare-waf-ruleset-entrypoint-update
 
 ***
-Retrieves the entry point ruleset for a specific phase at the account or zone level.
+Updates the entry point ruleset for a specific phase. When rules are provided, they replace all existing entry-point rules.
 
 #### Base Command
 
-`cloudflare-waf-ruleset-entrypoint-get`
+`cloudflare-waf-ruleset-entrypoint-update`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | phase | The phase of the ruleset. Possible values are: ddos_l4, ddos_l7, http_config_settings, http_custom_errors, http_log_custom_fields, http_ratelimit, http_request_cache_settings, http_request_dynamic_redirect, http_request_firewall_custom, http_request_firewall_managed, http_request_late_transform, http_request_origin, http_request_redirect, http_request_sanitize, http_request_sbfm, http_request_transform, http_response_cache_settings, http_response_compression, http_response_firewall_managed, http_response_headers_transform, magic_transit, magic_transit_ids_managed, magic_transit_managed, magic_transit_ratelimit. | Required |
+| name | The human-readable name of the ruleset. | Optional |
+| description | The description of the ruleset. | Optional |
+| rules | The JSON array of rule objects that replaces all existing entry-point rules. For example: `[{"action": "block", "expression": "(ip.src eq 192.0.2.1)", "description": "Block bad IP"}]`. | Optional |
+| dry_run | Whether to validate the update without applying it. Possible values are: true, false. | Optional |
+| account_id | The account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID. | Optional |
+| zone_id | The zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CloudflareWAF.Ruleset.id | String | The ruleset identifier. |
+| CloudflareWAF.Ruleset.name | String | The name of the ruleset. |
+| CloudflareWAF.Ruleset.kind | String | The kind of ruleset. |
+| CloudflareWAF.Ruleset.phase | String | The phase of the ruleset. |
+| CloudflareWAF.Ruleset.description | String | The description of the ruleset. |
+| CloudflareWAF.Ruleset.version | String | The version of the ruleset. |
+| CloudflareWAF.Ruleset.last_updated | Date | The date and time when the ruleset was last updated. For example: 2024-08-01T17:37:12.291474Z. |
+| CloudflareWAF.Ruleset.rules.id | String | The rule identifier. |
+| CloudflareWAF.Ruleset.rules.action | String | The action to perform when the rule matches. |
+| CloudflareWAF.Ruleset.rules.expression | String | The filter expression for the rule. |
+| CloudflareWAF.Ruleset.rules.description | String | The description of the rule. |
+| CloudflareWAF.Ruleset.rules.enabled | Boolean | Whether the rule is enabled. |
+| CloudflareWAF.Ruleset.rules.version | String | The version of the rule. |
+| CloudflareWAF.Ruleset.rules.ref | String | The reference of the rule. |
+
+### cloudflare-waf-ruleset-rule-update
+
+***
+Updates an existing rule in a ruleset by replacing the entire rule. Replaces the deprecated `cloudflare-waf-firewall-rule-update` and `cloudflare-waf-filter-update` commands.
+
+#### Base Command
+
+`cloudflare-waf-ruleset-rule-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ruleset_id | The ruleset identifier. | Required |
+| rule_id | The rule identifier. | Required |
+| rule | The full rule object as a JSON string representing the request body. A PATCH request replaces the entire rule. For example: `{"action": "block", "expression": "(ip.src eq 192.0.2.1)", "description": "Block bad IP"}`. | Required |
+| dry_run | Whether to validate the rule without applying it. Possible values are: true, false. | Optional |
 | account_id | The account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID. | Optional |
 | zone_id | The zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id. | Optional |
 
@@ -1511,14 +1529,14 @@ Deletes a rule from a ruleset. Replaces the deprecated `cloudflare-waf-firewall-
 
 There is no context output for this command.
 
-### cloudflare-waf-ruleset-version-get
+### cloudflare-waf-ruleset-version-delete
 
 ***
-Retrieves a specific version of a ruleset, including its rules. Replaces the deprecated `cloudflare-waf-firewall-rule-list` command.
+Deletes a specific version of a ruleset.
 
 #### Base Command
 
-`cloudflare-waf-ruleset-version-get`
+`cloudflare-waf-ruleset-version-delete`
 
 #### Input
 
@@ -1528,25 +1546,11 @@ Retrieves a specific version of a ruleset, including its rules. Replaces the dep
 | version | The version of the ruleset. | Required |
 | account_id | The account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID. | Optional |
 | zone_id | The zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id. | Optional |
+| dry_run | Whether to validate the deletion without applying it. Possible values are: true, false. | Optional |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CloudflareWAF.Ruleset.id | String | The ruleset identifier. |
-| CloudflareWAF.Ruleset.name | String | The name of the ruleset. |
-| CloudflareWAF.Ruleset.kind | String | The kind of ruleset. |
-| CloudflareWAF.Ruleset.phase | String | The phase of the ruleset. |
-| CloudflareWAF.Ruleset.description | String | The description of the ruleset. |
-| CloudflareWAF.Ruleset.version | String | The version of the ruleset. |
-| CloudflareWAF.Ruleset.last_updated | Date | The date and time when the ruleset was last updated. For example: 2024-08-01T17:37:12.291474Z. |
-| CloudflareWAF.Ruleset.rules.id | String | The rule identifier. |
-| CloudflareWAF.Ruleset.rules.action | String | The action to perform when the rule matches. |
-| CloudflareWAF.Ruleset.rules.expression | String | The filter expression for the rule. |
-| CloudflareWAF.Ruleset.rules.description | String | The description of the rule. |
-| CloudflareWAF.Ruleset.rules.enabled | Boolean | Whether the rule is enabled. |
-| CloudflareWAF.Ruleset.rules.version | String | The version of the rule. |
-| CloudflareWAF.Ruleset.rules.ref | String | The reference of the rule. |
+There is no context output for this command.
 
 ### cloudflare-waf-ruleset-rule-create
 
@@ -1586,46 +1590,6 @@ Creates a new rule in a ruleset at the account or zone level. Replaces the depre
 | CloudflareWAF.Ruleset.rules.version | String | The version of the rule. |
 | CloudflareWAF.Ruleset.rules.ref | String | The reference of the rule. |
 
-### cloudflare-waf-ruleset-entrypoint-update
-
-***
-Updates the entry point ruleset for a specific phase. When rules are provided, they replace all existing entry-point rules.
-
-#### Base Command
-
-`cloudflare-waf-ruleset-entrypoint-update`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| phase | The phase of the ruleset. Possible values are: ddos_l4, ddos_l7, http_config_settings, http_custom_errors, http_log_custom_fields, http_ratelimit, http_request_cache_settings, http_request_dynamic_redirect, http_request_firewall_custom, http_request_firewall_managed, http_request_late_transform, http_request_origin, http_request_redirect, http_request_sanitize, http_request_sbfm, http_request_transform, http_response_cache_settings, http_response_compression, http_response_firewall_managed, http_response_headers_transform, magic_transit, magic_transit_ids_managed, magic_transit_managed, magic_transit_ratelimit. | Required |
-| name | The human-readable name of the ruleset. | Optional |
-| description | The description of the ruleset. | Optional |
-| rules | The JSON array of rule objects that replaces all existing entry-point rules. For example: [{"action": "block", "expression": "(ip.src eq 192.0.2.1)", "description": "Block bad IP"}]. | Optional |
-| dry_run | Whether to validate the update without applying it. Possible values are: true, false. | Optional |
-| account_id | The account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID. | Optional |
-| zone_id | The zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CloudflareWAF.Ruleset.id | String | The ruleset identifier. |
-| CloudflareWAF.Ruleset.name | String | The name of the ruleset. |
-| CloudflareWAF.Ruleset.kind | String | The kind of ruleset. |
-| CloudflareWAF.Ruleset.phase | String | The phase of the ruleset. |
-| CloudflareWAF.Ruleset.description | String | The description of the ruleset. |
-| CloudflareWAF.Ruleset.version | String | The version of the ruleset. |
-| CloudflareWAF.Ruleset.last_updated | Date | The date and time when the ruleset was last updated. For example: 2024-08-01T17:37:12.291474Z. |
-| CloudflareWAF.Ruleset.rules.id | String | The rule identifier. |
-| CloudflareWAF.Ruleset.rules.action | String | The action to perform when the rule matches. |
-| CloudflareWAF.Ruleset.rules.expression | String | The filter expression for the rule. |
-| CloudflareWAF.Ruleset.rules.description | String | The description of the rule. |
-| CloudflareWAF.Ruleset.rules.enabled | Boolean | Whether the rule is enabled. |
-| CloudflareWAF.Ruleset.rules.version | String | The version of the rule. |
-| CloudflareWAF.Ruleset.rules.ref | String | The reference of the rule. |
-
 ### cloudflare-waf-ruleset-entrypoint-version-list
 
 ***
@@ -1657,23 +1621,59 @@ Lists all versions of the entry point ruleset for a specific phase at the accoun
 | CloudflareWAF.Ruleset.version | String | The version of the ruleset. |
 | CloudflareWAF.Ruleset.last_updated | Date | The date and time when the ruleset was last updated. For example: 2024-08-01T17:37:12.291474Z. |
 
-### cloudflare-waf-ruleset-rule-update
+### cloudflare-waf-ruleset-rule-list-by-tag
 
 ***
-Updates an existing rule in a ruleset by replacing the entire rule. Replaces the deprecated `cloudflare-waf-firewall-rule-update` and `cloudflare-waf-filter-update` commands.
+Lists the rules of a managed ruleset, filtered by tag or category. Account scope only.
 
 #### Base Command
 
-`cloudflare-waf-ruleset-rule-update`
+`cloudflare-waf-ruleset-rule-list-by-tag`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ruleset_id | The ruleset identifier. | Required |
-| rule_id | The rule identifier. | Required |
-| rule | The full rule object as a JSON string representing the request body. A PATCH request replaces the entire rule. For example: `{"action": "block", "expression": "(ip.src eq 192.0.2.1)", "description": "Block bad IP"}`. | Required |
-| dry_run | Whether to validate the rule without applying it. Possible values are: true, false. | Optional |
+| version | The version of the ruleset. | Required |
+| tag | The tag or category by which to filter the rules. | Required |
+| account_id | The account scope. Overrides the instance-configured Account ID. Defaults to the instance Account ID. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CloudflareWAF.Ruleset.id | String | The ruleset identifier. |
+| CloudflareWAF.Ruleset.name | String | The name of the ruleset. |
+| CloudflareWAF.Ruleset.kind | String | The kind of ruleset. |
+| CloudflareWAF.Ruleset.phase | String | The phase of the ruleset. |
+| CloudflareWAF.Ruleset.description | String | The description of the ruleset. |
+| CloudflareWAF.Ruleset.version | String | The version of the ruleset. |
+| CloudflareWAF.Ruleset.last_updated | Date | The date and time when the ruleset was last updated. For example: 2024-08-01T17:37:12.291474Z. |
+| CloudflareWAF.Ruleset.rules.id | String | The rule identifier. |
+| CloudflareWAF.Ruleset.rules.action | String | The action to perform when the rule matches. |
+| CloudflareWAF.Ruleset.rules.expression | String | The filter expression for the rule. |
+| CloudflareWAF.Ruleset.rules.description | String | The description of the rule. |
+| CloudflareWAF.Ruleset.rules.enabled | Boolean | Whether the rule is enabled. |
+| CloudflareWAF.Ruleset.rules.version | String | The version of the rule. |
+| CloudflareWAF.Ruleset.rules.ref | String | The reference of the rule. |
+| CloudflareWAF.Ruleset.rules.categories | Unknown | The categories or tags that the rule carries. |
+
+### cloudflare-waf-ruleset-version-get
+
+***
+Retrieves a specific version of a ruleset, including its rules. Replaces the deprecated `cloudflare-waf-firewall-rule-list` command.
+
+#### Base Command
+
+`cloudflare-waf-ruleset-version-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ruleset_id | The ruleset identifier. | Required |
+| version | The version of the ruleset. | Required |
 | account_id | The account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID. | Optional |
 | zone_id | The zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id. | Optional |
 
@@ -1687,7 +1687,7 @@ Updates an existing rule in a ruleset by replacing the entire rule. Replaces the
 | CloudflareWAF.Ruleset.phase | String | The phase of the ruleset. |
 | CloudflareWAF.Ruleset.description | String | The description of the ruleset. |
 | CloudflareWAF.Ruleset.version | String | The version of the ruleset. |
-| CloudflareWAF.Ruleset.last_updated | Date | The date and time when the ruleset was last updated. For example: \`2024-08-01T17:37:12.291474Z\`. |
+| CloudflareWAF.Ruleset.last_updated | Date | The date and time when the ruleset was last updated. For example: 2024-08-01T17:37:12.291474Z. |
 | CloudflareWAF.Ruleset.rules.id | String | The rule identifier. |
 | CloudflareWAF.Ruleset.rules.action | String | The action to perform when the rule matches. |
 | CloudflareWAF.Ruleset.rules.expression | String | The filter expression for the rule. |
