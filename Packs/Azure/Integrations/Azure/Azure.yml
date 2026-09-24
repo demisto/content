@@ -767,6 +767,43 @@ script:
       description: The SKU tier.
       type: String
 
+  - description: Run this command to list blob containers. The command is deprecated, please use azure-storage-blob-container-list.
+    name: azure-storage-blob-containers-list
+    deprecated: true
+    outputs:
+      - contextPath: Azure.Storage.BlobContainers.id
+        description: Fully qualified resource ID for the resource.
+        type: String
+      - contextPath: Azure.Storage.BlobContainers.name
+        description: The name of the resource.
+        type: String
+      - contextPath: Azure.Storage.BlobContainers.type
+        description: The resource type.
+        type: String
+      - contextPath: Azure.Storage.BlobContainers.properties.publicAccess
+        description: Specifies whether data in the container may be accessed publicly and the access level.
+        type: String
+      - contextPath: Azure.Storage.BlobContainers.properties.leaseState
+        description: The lease state of the container.
+        type: String
+      - contextPath: Azure.Storage.BlobContainers.properties.lastModifiedTime
+        description: Returns the date and time the container was last modified.
+        type: Date
+    arguments:
+      - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        name: subscription_id
+        required: false
+        required:platform: true
+      - description: "The resource group name."
+        name: resource_group_name
+        required: true
+      - description: The storage account name.
+        name: account_name
+        required: true
+      - description: The container name. When provided, retrieves the specified container only; otherwise all containers in the storage account are listed.
+        name: container_name
+        required: false
+
   - description: Run this command to update a specific blob container. The command is deprecated, please use azure-storage-blob-container-update.
     name: azure-storage-blob-containers-update
     deprecated: true
@@ -821,6 +858,104 @@ script:
           - Blob
           - Container
           - None
+
+  - name: azure-storage-account-list
+    description: "Lists storage accounts, or retrieves a single storage account when an account name is provided. Required permission: Microsoft.Storage/storageAccounts/read."
+    arguments:
+    - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: subscription_id
+      required: false
+      required:platform: true
+    - description: The resource group name.
+      name: resource_group_name
+      required: true
+    - description: The storage account name. When provided, retrieves the specified storage account only; otherwise all storage accounts in the resource group are listed.
+      name: account_name
+      required: false
+    outputs:
+    - contextPath: Azure.Storage.StorageAccounts.id
+      description: Fully qualified resource ID for the storage account.
+      type: String
+    - contextPath: Azure.Storage.StorageAccounts.name
+      description: The name of the storage account.
+      type: String
+    - contextPath: Azure.Storage.StorageAccounts.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.Storage.StorageAccounts.location
+      description: The geo-location where the resource lives.
+      type: String
+    - contextPath: Azure.Storage.StorageAccounts.kind
+      description: The kind of the storage account.
+      type: String
+    - contextPath: Azure.Storage.StorageAccounts.sku.name
+      description: The SKU name of the storage account.
+      type: String
+    - contextPath: Azure.Storage.StorageAccounts.sku.tier
+      description: The SKU tier of the storage account.
+      type: String
+    - contextPath: Azure.Storage.StorageAccounts.properties.provisioningState
+      description: The status of the storage account at the time the operation was called.
+      type: String
+    - contextPath: Azure.Storage.StorageAccounts.properties.statusOfPrimary
+      description: The status indicating whether the primary location of the storage account is available or unavailable.
+      type: String
+    - contextPath: Azure.Storage.StorageAccounts.properties.statusOfSecondary
+      description: The status indicating whether the secondary location of the storage account is available or unavailable.
+      type: String
+
+  - name: azure-storage-blob-container-list
+    description: "Lists blob containers, or retrieves a single blob container when a container name is provided. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/read."
+    arguments:
+    - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: subscription_id
+      required: false
+      required:platform: true
+    - description: The resource group name.
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - description: The container name. When provided, retrieves the specified container only; otherwise all containers in the storage account are listed.
+      name: container_name
+      required: false
+    - auto: PREDEFINED
+      description: Whether to include soft-deleted blob containers in the response.
+      name: include_deleted
+      predefined:
+        - 'true'
+        - 'false'
+    - description: The maximum number of containers that the server returns per page.
+      name: maxpagesize
+    outputs:
+    - contextPath: Azure.Storage.BlobContainers.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: Azure.Storage.BlobContainers.name
+      description: The name of the resource.
+      type: String
+    - contextPath: Azure.Storage.BlobContainers.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.Storage.BlobContainers.properties.publicAccess
+      description: Specifies whether data in the container may be accessed publicly and the access level.
+      type: String
+    - contextPath: Azure.Storage.BlobContainers.properties.leaseStatus
+      description: The lease status of the container.
+      type: String
+    - contextPath: Azure.Storage.BlobContainers.properties.leaseState
+      description: The lease state of the container.
+      type: String
+    - contextPath: Azure.Storage.BlobContainers.properties.lastModifiedTime
+      description: Returns the date and time the container was last modified.
+      type: Date
+    - contextPath: Azure.Storage.BlobContainers.properties.hasImmutabilityPolicy
+      description: The hasImmutabilityPolicy property is set to true by SRP if an ImmutabilityPolicy exists for this container, and false if it does not.
+      type: Boolean
+    - contextPath: Azure.Storage.BlobContainers.properties.hasLegalHold
+      description: The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared.
+      type: Boolean
 
   - name: azure-storage-blob-container-update
     description: "Updates container properties as specified in request body. Properties not mentioned in the request will be unchanged. Update fails if the specified container doesn't already exist. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write."
