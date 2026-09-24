@@ -7613,7 +7613,7 @@ def test_firewall_policy_create_command_success(mocker):
         - firewall_policy_create_command is called with the policy name, location, tier and
           the optional threat intelligence, DNS and base policy arguments.
     Then:
-        - The command returns CommandResults under the Azure.Firewall.Policies prefix, and the
+        - The command returns CommandResults under the Azure.VirtualNetworks.FirewallPolicies prefix, and the
           request body carries the location together with the translated properties.
     """
     from Azure import firewall_policy_create_command
@@ -7641,7 +7641,7 @@ def test_firewall_policy_create_command_success(mocker):
 
     result = firewall_policy_create_command(client, params, args)
 
-    assert result.outputs_prefix == "Azure.Firewall.Policies"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicies"
     assert result.outputs_key_field == "id"
     assert "Successfully created firewall policy policy1" in result.readable_output
     call_kwargs = client.firewall_policy_create_or_update.call_args[1]
@@ -7746,7 +7746,7 @@ def test_firewall_policy_update_command_success(mocker):
 
     result = firewall_policy_update_command(client, params, args)
 
-    assert result.outputs_prefix == "Azure.Firewall.Policies"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicies"
     assert "Successfully updated firewall policy policy1" in result.readable_output
     client.firewall_policy_get.assert_called_once_with(subscription_id="sub1", resource_group_name="rg1", policy_name="policy1")
     sent_properties = client.firewall_policy_create_or_update.call_args[1]["policy_data"]["properties"]
@@ -7846,7 +7846,7 @@ def test_firewall_policy_get_command_success(mocker):
     When:
         - firewall_policy_get_command is called with the policy name.
     Then:
-        - The policy is returned under the Azure.Firewall.Policies prefix, matching the prefix
+        - The policy is returned under the Azure.VirtualNetworks.FirewallPolicies prefix, matching the prefix
           used by the list command for the same resource.
     """
     from Azure import firewall_policy_get_command
@@ -7868,7 +7868,7 @@ def test_firewall_policy_get_command_success(mocker):
 
     result = firewall_policy_get_command(client, params, {"policy_name": "policy1"})
 
-    assert result.outputs_prefix == "Azure.Firewall.Policies"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicies"
     assert result.outputs["name"] == "policy1"
     assert "Firewall policy policy1" in result.readable_output
     client.firewall_policy_get.assert_called_once_with(subscription_id="sub1", resource_group_name="rg1", policy_name="policy1")
@@ -7902,7 +7902,7 @@ def test_firewall_policy_delete_command_status_codes(mocker):
     When:
         - firewall_policy_delete_command is called for each status code.
     Then:
-        - 202 reports an asynchronous delete, 204 reports the policy was not found, and 200
+        - 202 reports an asynchronous delete, 204 reports the policy does not exist, and 200
           reports a successful delete.
     """
     from Azure import firewall_policy_delete_command
@@ -7918,7 +7918,7 @@ def test_firewall_policy_delete_command_status_codes(mocker):
     assert "will complete asynchronously" in firewall_policy_delete_command(client, params, args).readable_output
 
     response.status_code = 204
-    assert "was not found" in firewall_policy_delete_command(client, params, args).readable_output
+    assert "does not exist" in firewall_policy_delete_command(client, params, args).readable_output
 
     response.status_code = 200
     assert "was successfully deleted" in firewall_policy_delete_command(client, params, args).readable_output
@@ -7954,8 +7954,8 @@ def test_firewall_policy_list_command_success(mocker):
     When:
         - firewall_policy_list_command is called.
     Then:
-        - The policies are returned under the Azure.Firewall.Policies DT path, and the
-          continuation token is emitted as PoliciesNextToken.
+        - The policies are returned under the Azure.VirtualNetworks.FirewallPolicies DT path, and the
+          continuation token is emitted as FirewallPoliciesNextToken.
     """
     from Azure import firewall_policy_list_command
 
@@ -7967,15 +7967,14 @@ def test_firewall_policy_list_command_success(mocker):
 
     params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
 
-    result = firewall_policy_list_command(client, params, {"limit": "1"})
+    result = firewall_policy_list_command(client, params, {})
 
     assert result.outputs == {
-        "Azure.Firewall.Policies(val.id && val.id == obj.id)": [
+        "Azure.VirtualNetworks.FirewallPolicies(val.id && val.id == obj.id)": [
             {"id": "policy-id", "name": "policy1", "properties": {"provisioningState": "Succeeded"}}
         ],
-        "Azure.Firewall(true)": {"PoliciesNextToken": "next_token_value"},
+        "Azure.VirtualNetworks(true)": {"FirewallPoliciesNextToken": "next_token_value"},
     }
-    assert "PoliciesNextToken: next_token_value" in result.readable_output
     client.firewall_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="rg1", next_token="")
 
 
@@ -8011,7 +8010,7 @@ def test_firewall_policy_list_command_clears_stale_next_token(mocker):
     When:
         - firewall_policy_list_command is called.
     Then:
-        - PoliciesNextToken is still written, as None, so a token left in the context by a
+        - FirewallPoliciesNextToken is still written, as None, so a token left in the context by a
           previous run is cleared rather than being silently reused.
     """
     from Azure import firewall_policy_list_command
@@ -8023,18 +8022,18 @@ def test_firewall_policy_list_command_clears_stale_next_token(mocker):
 
     result = firewall_policy_list_command(client, params, {})
 
-    assert result.outputs["Azure.Firewall(true)"] == {"PoliciesNextToken": None}
+    assert result.outputs["Azure.VirtualNetworks(true)"] == {"FirewallPoliciesNextToken": None}
 
 
-def test_firewall_policy_list_command_limit_and_next_token(mocker):
+def test_firewall_policy_list_command_forwards_next_token(mocker):
     """
     Given:
-        - An AzureClient returning more firewall policies than the requested limit, and a
-          next_token argument for the next page.
+        - An AzureClient returning a page of firewall policies, and a next_token argument
+          pointing at that page.
     When:
-        - firewall_policy_list_command is called with limit and next_token.
+        - firewall_policy_list_command is called with next_token.
     Then:
-        - The next_token is forwarded to the client and the results are truncated to the limit.
+        - The next_token is forwarded to the client and every policy on the page is returned.
     """
     from Azure import firewall_policy_list_command
 
@@ -8045,24 +8044,26 @@ def test_firewall_policy_list_command_limit_and_next_token(mocker):
 
     params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
 
-    result = firewall_policy_list_command(client, params, {"limit": "1", "next_token": "next_token_value"})
+    result = firewall_policy_list_command(client, params, {"next_token": "next_token_value"})
 
     client.firewall_policy_list.assert_called_once_with(
         subscription_id="sub1", resource_group_name="rg1", next_token="next_token_value"
     )
-    assert result.outputs["Azure.Firewall.Policies(val.id && val.id == obj.id)"] == [{"id": "policy-1", "name": "policy1"}]
+    assert result.outputs["Azure.VirtualNetworks.FirewallPolicies(val.id && val.id == obj.id)"] == [
+        {"id": "policy-1", "name": "policy1"},
+        {"id": "policy-2", "name": "policy2"},
+    ]
 
 
-def test_firewall_policy_list_command_iterates_pages_until_limit(mocker):
+def test_firewall_policy_list_command_fetches_a_single_page(mocker):
     """
     Given:
-        - An AzureClient whose firewall_policy_list returns one policy per page, and the
-          requested limit spans more than a single page.
+        - An AzureClient whose firewall_policy_list returns a page that carries a nextLink.
     When:
-        - firewall_policy_list_command is called with a limit of 2.
+        - firewall_policy_list_command is called.
     Then:
-        - The command iterates the pages internally, forwarding the nextLink of each page, and
-          returns the collected policies with the token of the last retrieved page.
+        - Only that page is requested, and the nextLink is surfaced for the caller to pass back
+          as next_token rather than being followed internally.
     """
     from Azure import firewall_policy_list_command
 
@@ -8074,89 +8075,13 @@ def test_firewall_policy_list_command_iterates_pages_until_limit(mocker):
 
     params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
 
-    result = firewall_policy_list_command(client, params, {"limit": "2"})
+    result = firewall_policy_list_command(client, params, {})
 
-    assert client.firewall_policy_list.call_args_list == [
-        mocker.call(subscription_id="sub1", resource_group_name="rg1", next_token=""),
-        mocker.call(subscription_id="sub1", resource_group_name="rg1", next_token="page_2_token"),
+    client.firewall_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="rg1", next_token="")
+    assert result.outputs["Azure.VirtualNetworks.FirewallPolicies(val.id && val.id == obj.id)"] == [
+        {"id": "policy-1", "name": "policy1"}
     ]
-    assert result.outputs["Azure.Firewall.Policies(val.id && val.id == obj.id)"] == [
-        {"id": "policy-1", "name": "policy1"},
-        {"id": "policy-2", "name": "policy2"},
-    ]
-    assert result.outputs["Azure.Firewall(true)"] == {"PoliciesNextToken": "page_3_token"}
-    assert "PoliciesNextToken: page_3_token" in result.readable_output
-
-
-def test_firewall_policy_list_command_stops_when_pages_are_exhausted(mocker):
-    """
-    Given:
-        - An AzureClient whose firewall_policy_list returns fewer policies than the requested
-          limit and no nextLink on the last page.
-    When:
-        - firewall_policy_list_command is called with a limit larger than the number of policies.
-    Then:
-        - The iteration stops on the last page instead of requesting more pages, and the readable
-          output does not advertise a next token.
-    """
-    from Azure import firewall_policy_list_command
-
-    client = mocker.MagicMock()
-    client.firewall_policy_list.side_effect = [
-        {"value": [{"id": "policy-1", "name": "policy1"}], "nextLink": "page_2_token"},
-        {"value": [{"id": "policy-2", "name": "policy2"}]},
-    ]
-
-    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
-
-    result = firewall_policy_list_command(client, params, {"limit": "10"})
-
-    assert client.firewall_policy_list.call_count == 2
-    assert result.outputs["Azure.Firewall(true)"] == {"PoliciesNextToken": None}
-    assert "PoliciesNextToken" not in result.readable_output
-
-
-def test_firewall_policy_list_command_zero_limit_raises(mocker):
-    """
-    Given:
-        - An AzureClient returning firewall policies, and a limit of 0.
-    When:
-        - firewall_policy_list_command is called.
-    Then:
-        - A DemistoException is raised, as a limit of 0 can never return results.
-    """
-    from Azure import firewall_policy_list_command
-
-    client = mocker.MagicMock()
-    client.firewall_policy_list.return_value = {"value": [{"id": "policy-1", "name": "policy1"}]}
-
-    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
-
-    with pytest.raises(DemistoException, match="The 'limit' argument must be a positive number"):
-        firewall_policy_list_command(client, params, {"limit": "0"})
-
-
-def test_firewall_policy_list_command_negative_limit_raises(mocker):
-    """
-    Given:
-        - An AzureClient returning firewall policies, and a negative limit.
-    When:
-        - firewall_policy_list_command is called.
-    Then:
-        - A DemistoException is raised, rather than slicing policies off the end of the list and
-          silently returning incorrect results.
-    """
-    from Azure import firewall_policy_list_command
-
-    client = mocker.MagicMock()
-    client.firewall_policy_list.return_value = {
-        "value": [{"id": "policy-1", "name": "policy1"}, {"id": "policy-2", "name": "policy2"}]
-    }
-
-    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
-
-    with pytest.raises(DemistoException, match="The 'limit' argument must be a positive number"):
-        firewall_policy_list_command(client, params, {"limit": "-1"})
+    assert result.outputs["Azure.VirtualNetworks(true)"] == {"FirewallPoliciesNextToken": "page_2_token"}
 
 
 def test_firewall_policy_attach_command_success(mocker):
@@ -8167,7 +8092,7 @@ def test_firewall_policy_attach_command_success(mocker):
         - firewall_policy_attach_command is called.
     Then:
         - The firewall is fetched, its firewallPolicy property is set to the given policy ID,
-          and the updated firewall is returned under the Azure.Firewall.Firewalls prefix.
+          and the updated firewall is returned under the Azure.VirtualNetworks.Firewalls prefix.
     """
     from Azure import firewall_policy_attach_command
 
@@ -8189,7 +8114,7 @@ def test_firewall_policy_attach_command_success(mocker):
 
     result = firewall_policy_attach_command(client, params, args)
 
-    assert result.outputs_prefix == "Azure.Firewall.Firewalls"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.Firewalls"
     assert "Successfully attached the firewall policy to firewall firewall1" in result.readable_output
     sent_firewall = client.firewall_update.call_args[1]["firewall_data"]
     assert sent_firewall["properties"]["firewallPolicy"] == {"id": "policy-id"}
@@ -8225,7 +8150,7 @@ def test_firewall_policy_detach_command_success(mocker):
         - firewall_policy_detach_command is called.
     Then:
         - The firewallPolicy property is removed from the firewall before the update is sent,
-          and the updated firewall is returned under the Azure.Firewall.Firewalls prefix.
+          and the updated firewall is returned under the Azure.VirtualNetworks.Firewalls prefix.
     """
     from Azure import firewall_policy_detach_command
 
@@ -8246,7 +8171,7 @@ def test_firewall_policy_detach_command_success(mocker):
 
     result = firewall_policy_detach_command(client, params, {"firewall_name": "firewall1"})
 
-    assert result.outputs_prefix == "Azure.Firewall.Firewalls"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.Firewalls"
     assert "Successfully detached the firewall policy from firewall firewall1" in result.readable_output
     assert "firewallPolicy" not in client.firewall_update.call_args[1]["firewall_data"]["properties"]
 
@@ -8271,7 +8196,7 @@ def test_firewall_policy_detach_command_no_policy_attached(mocker):
 
     result = firewall_policy_detach_command(client, params, {"firewall_name": "firewall1"})
 
-    assert result.outputs_prefix == "Azure.Firewall.Firewalls"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.Firewalls"
     client.firewall_update.assert_called_once()
 
 

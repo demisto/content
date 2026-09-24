@@ -329,18 +329,18 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/loadBalancers/backendAddressPools/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list", "azure-rm-resource-groups-list"],
     "Microsoft.Network/firewallPolicies/read": [
-        "azure-firewall-policy-get",
-        "azure-firewall-policy-list",
-        "azure-firewall-policy-update",
+        "azure-vn-firewall-policy-get",
+        "azure-vn-firewall-policy-list",
+        "azure-vn-firewall-policy-update",
     ],
     "Microsoft.Network/firewallPolicies/write": [
-        "azure-firewall-policy-create",
-        "azure-firewall-policy-update",
+        "azure-vn-firewall-policy-create",
+        "azure-vn-firewall-policy-update",
     ],
-    "Microsoft.Network/firewallPolicies/delete": ["azure-firewall-policy-delete"],
-    "Microsoft.Network/firewallPolicies/join/action": ["azure-firewall-policy-attach"],
-    "Microsoft.Network/azureFirewalls/read": ["azure-firewall-policy-attach", "azure-firewall-policy-detach"],
-    "Microsoft.Network/azureFirewalls/write": ["azure-firewall-policy-attach", "azure-firewall-policy-detach"],
+    "Microsoft.Network/firewallPolicies/delete": ["azure-vn-firewall-policy-delete"],
+    "Microsoft.Network/firewallPolicies/join/action": ["azure-vn-firewall-policy-attach"],
+    "Microsoft.Network/azureFirewalls/read": ["azure-vn-firewall-policy-attach", "azure-vn-firewall-policy-detach"],
+    "Microsoft.Network/azureFirewalls/write": ["azure-vn-firewall-policy-attach", "azure-vn-firewall-policy-detach"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -510,7 +510,7 @@ COSMOS_DB_API_VERSION = "2024-11-15"
 PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
 NSG_API_VERSION = "2025-01-01"
-FIREWALL_API_VERSION = "2024-05-01"
+FIREWALL_API_VERSION = "2025-09-01"
 
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
 # get_command_and_token_scopes.
@@ -3008,7 +3008,7 @@ class AzureClient:
             dict: The updated Azure firewall object.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/azure-firewalls/create-or-update
+            https://learn.microsoft.com/en-us/rest/api/firewall/azure-firewalls/create-or-update?view=rest-firewall-2025-09-01&tabs=HTTP
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -5652,63 +5652,10 @@ def parse_forecast_table_to_dict(response: dict) -> list[dict]:
         raise DemistoException(f"Failed to parse API response. Malformed data structure: {e}")
 
 
-def build_firewall_policy_readable_data(policies: list[dict]) -> list[dict]:
-    """
-    Flatten firewall policy objects into rows for the readable output table.
-
-    Args:
-        policies (list[dict]): The firewall policy objects returned by the Azure API.
-
-    Returns:
-        list[dict]: A row per policy, holding the fields presented in the war room table.
-    """
-    readable_data = []
-    for policy in policies:
-        # The API can return an explicit null for these fields, so a `get` default is not enough.
-        properties = policy.get("properties") or {}
-        readable_data.append(
-            {
-                "name": policy.get("name"),
-                "id": policy.get("id"),
-                "location": policy.get("location"),
-                "tier": dict_safe_get(properties, ["sku", "tier"]),
-                "threatIntelMode": properties.get("threatIntelMode"),
-                "basePolicy": dict_safe_get(properties, ["basePolicy", "id"]),
-                "firewalls": [firewall.get("id") for firewall in properties.get("firewalls") or []],
-                "childPolicies": [child_policy.get("id") for child_policy in properties.get("childPolicies") or []],
-                "provisioningState": properties.get("provisioningState"),
-            }
-        )
-    return readable_data
-
-
-def build_firewall_readable_data(firewall: dict) -> list[dict]:
-    """
-    Flatten a firewall object into a row for the readable output table.
-
-    Args:
-        firewall (dict): The Azure firewall object returned by the Azure API.
-
-    Returns:
-        list[dict]: A single row holding the fields presented in the war room table.
-    """
-    properties = firewall.get("properties") or {}
-    return [
-        {
-            "name": firewall.get("name"),
-            "id": firewall.get("id"),
-            "location": firewall.get("location"),
-            "firewallPolicy": dict_safe_get(properties, ["firewallPolicy", "id"]),
-            "threatIntelMode": properties.get("threatIntelMode"),
-            "provisioningState": properties.get("provisioningState"),
-        }
-    ]
-
-
 def firewall_policy_create_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
     Create a firewall policy. The command only creates the policy resource. To attach the policy to a firewall,
-    run the azure-firewall-policy-attach command.
+    run the azure-vn-firewall-policy-attach command.
 
     Args:
         client (AzureClient): The Azure client.
@@ -5740,7 +5687,7 @@ def firewall_policy_create_command(client: AzureClient, params: dict[str, Any], 
             },
         }
     )
-    demisto.debug(f"[Azure] Creating firewall policy {policy_name} with {policy_data=}")
+    demisto.debug(f"[Azure] Creating firewall policy {policy_name} with {policy_data.keys()=}")
 
     response = client.firewall_policy_create_or_update(
         subscription_id=subscription_id,
@@ -5751,14 +5698,14 @@ def firewall_policy_create_command(client: AzureClient, params: dict[str, Any], 
 
     readable_output = tableToMarkdown(
         name=f"Successfully created firewall policy {policy_name}",
-        t=build_firewall_policy_readable_data([response]),
-        headers=["name", "id", "location", "tier", "threatIntelMode", "basePolicy", "provisioningState"],
+        t=response,
+        headers=["name", "id", "location"],
         removeNull=True,
         headerTransform=pascalToSpace,
     )
 
     return CommandResults(
-        outputs_prefix="Azure.Firewall.Policies",
+        outputs_prefix="Azure.VirtualNetworks.FirewallPolicies",
         outputs_key_field="id",
         outputs=response,
         readable_output=readable_output,
@@ -5812,7 +5759,7 @@ def firewall_policy_update_command(client: AzureClient, params: dict[str, Any], 
         else:
             properties[field_name] = value
 
-    demisto.debug(f"[Azure] Updating firewall policy {policy_name} with {updated_properties=}")
+    demisto.debug(f"[Azure] Updating firewall policy {policy_name} with {updated_properties.keys()=}")
 
     response = client.firewall_policy_create_or_update(
         subscription_id=subscription_id,
@@ -5823,14 +5770,14 @@ def firewall_policy_update_command(client: AzureClient, params: dict[str, Any], 
 
     readable_output = tableToMarkdown(
         name=f"Successfully updated firewall policy {policy_name}",
-        t=build_firewall_policy_readable_data([response]),
-        headers=["name", "id", "location", "tier", "threatIntelMode", "basePolicy", "provisioningState"],
+        t=response,
+        headers=["name", "id", "location"],
         removeNull=True,
         headerTransform=pascalToSpace,
     )
 
     return CommandResults(
-        outputs_prefix="Azure.Firewall.Policies",
+        outputs_prefix="Azure.VirtualNetworks.FirewallPolicies",
         outputs_key_field="id",
         outputs=response,
         readable_output=readable_output,
@@ -5861,14 +5808,14 @@ def firewall_policy_get_command(client: AzureClient, params: dict[str, Any], arg
 
     readable_output = tableToMarkdown(
         name=f"Firewall policy {policy_name}",
-        t=build_firewall_policy_readable_data([response]),
-        headers=["name", "id", "location", "tier", "threatIntelMode", "basePolicy", "firewalls", "provisioningState"],
+        t=response,
+        headers=["name", "id", "location"],
         removeNull=True,
         headerTransform=pascalToSpace,
     )
 
     return CommandResults(
-        outputs_prefix="Azure.Firewall.Policies",
+        outputs_prefix="Azure.VirtualNetworks.FirewallPolicies",
         outputs_key_field="id",
         outputs=response,
         readable_output=readable_output,
@@ -5902,7 +5849,7 @@ def firewall_policy_delete_command(client: AzureClient, params: dict[str, Any], 
     elif response.status_code == 204:
         message = (
             f"Firewall policy {policy_name} with resource group {resource_group_name} "
-            f"and subscription ID {subscription_id} was not found."
+            f"and subscription ID {subscription_id} does not exist."
         )
     else:
         message = f"Firewall policy {policy_name} was successfully deleted."
@@ -5924,44 +5871,31 @@ def firewall_policy_list_command(client: AzureClient, params: dict[str, Any], ar
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-    requested_limit = arg_to_number(args.get("limit"))
-    if requested_limit is not None and requested_limit <= 0:
-        raise DemistoException(f"The 'limit' argument must be a positive number, got {requested_limit}.")
-    limit = requested_limit or int(DEFAULT_LIMIT)
     next_token = args.get("next_token", "")
-    demisto.debug(f"[Azure] Listing firewall policies with {limit=} and {bool(next_token)=}")
+    demisto.debug(f"[Azure] Listing firewall policies with {bool(next_token)=}")
 
-    # The Azure API does not support a page size parameter, so pages are fetched internally until `limit`
-    # policies are collected or there are no more pages.
-    policies: list[dict] = []
-    response: dict = {}
-    while len(policies) < limit:
-        response = client.firewall_policy_list(
-            subscription_id=subscription_id, resource_group_name=resource_group_name, next_token=next_token
-        )
-        policies.extend(response.get("value") or [])
-        next_token = response.get("nextLink") or ""
-        demisto.debug(f"[Azure] Collected {len(policies)} firewall policies so far, {bool(next_token)=}")
-        if not next_token:
-            break
-    policies = policies[:limit]
+    response = client.firewall_policy_list(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, next_token=next_token
+    )
+    policies = response.get("value") or []
+    next_token = response.get("nextLink") or ""
+    demisto.debug(f"[Azure] Retrieved {len(policies)} firewall policies, {bool(next_token)=}")
 
     if not policies:
         return CommandResults(readable_output=f"No firewall policies were found in resource group '{resource_group_name}'.")
 
     # The token is always written, as null on the last page, so a stale token is cleared from the context.
     outputs = {
-        "Azure.Firewall.Policies(val.id && val.id == obj.id)": policies,
-        "Azure.Firewall(true)": {"PoliciesNextToken": next_token or None},
+        "Azure.VirtualNetworks.FirewallPolicies(val.id && val.id == obj.id)": policies,
+        "Azure.VirtualNetworks(true)": {"FirewallPoliciesNextToken": next_token or None},
     }
 
     readable_output = tableToMarkdown(
         name="Firewall Policies List",
-        t=build_firewall_policy_readable_data(policies),
-        headers=["name", "id", "location", "tier", "threatIntelMode", "basePolicy", "firewalls", "provisioningState"],
+        t=policies,
+        headers=["name", "id", "location"],
         removeNull=True,
         headerTransform=pascalToSpace,
-        metadata=f"PoliciesNextToken: {next_token}" if next_token else "",
     )
 
     return CommandResults(
@@ -6005,14 +5939,14 @@ def firewall_policy_attach_command(client: AzureClient, params: dict[str, Any], 
 
     readable_output = tableToMarkdown(
         name=f"Successfully attached the firewall policy to firewall {firewall_name}",
-        t=build_firewall_readable_data(response),
-        headers=["name", "id", "location", "firewallPolicy", "threatIntelMode", "provisioningState"],
+        t=response,
+        headers=["name", "id", "location"],
         removeNull=True,
         headerTransform=pascalToSpace,
     )
 
     return CommandResults(
-        outputs_prefix="Azure.Firewall.Firewalls",
+        outputs_prefix="Azure.VirtualNetworks.Firewalls",
         outputs_key_field="id",
         outputs=response,
         readable_output=readable_output,
@@ -6052,14 +5986,14 @@ def firewall_policy_detach_command(client: AzureClient, params: dict[str, Any], 
 
     readable_output = tableToMarkdown(
         name=f"Successfully detached the firewall policy from firewall {firewall_name}",
-        t=build_firewall_readable_data(response),
-        headers=["name", "id", "location", "firewallPolicy", "threatIntelMode", "provisioningState"],
+        t=response,
+        headers=["name", "id", "location"],
         removeNull=True,
         headerTransform=pascalToSpace,
     )
 
     return CommandResults(
-        outputs_prefix="Azure.Firewall.Firewalls",
+        outputs_prefix="Azure.VirtualNetworks.Firewalls",
         outputs_key_field="id",
         outputs=response,
         readable_output=readable_output,
@@ -6509,13 +6443,13 @@ def main():  # pragma: no cover
             "azure-postgres-config-set-log-retention-period-quick-action": set_postgres_config_command,
             "azure-postgres-config-set-statement-logging-quick-action": set_postgres_config_command,
             "azure-postgres-server-update-ssl-enforcement-quick-action": postgres_server_update_command,
-            "azure-firewall-policy-create": firewall_policy_create_command,
-            "azure-firewall-policy-update": firewall_policy_update_command,
-            "azure-firewall-policy-get": firewall_policy_get_command,
-            "azure-firewall-policy-delete": firewall_policy_delete_command,
-            "azure-firewall-policy-list": firewall_policy_list_command,
-            "azure-firewall-policy-attach": firewall_policy_attach_command,
-            "azure-firewall-policy-detach": firewall_policy_detach_command,
+            "azure-vn-firewall-policy-create": firewall_policy_create_command,
+            "azure-vn-firewall-policy-update": firewall_policy_update_command,
+            "azure-vn-firewall-policy-get": firewall_policy_get_command,
+            "azure-vn-firewall-policy-delete": firewall_policy_delete_command,
+            "azure-vn-firewall-policy-list": firewall_policy_list_command,
+            "azure-vn-firewall-policy-attach": firewall_policy_attach_command,
+            "azure-vn-firewall-policy-detach": firewall_policy_detach_command,
         }
 
         azure_ad_endpoint = params.get("azure_ad_endpoint") or DEFAULT_AZURE_AD_ENDPOINT
