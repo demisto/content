@@ -10,6 +10,15 @@ This integration was integrated and tested with version xx of Anti Fraud API.
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
 
+## Access and Data Security
+
+You request access through the CSC service team at: phishing-response@cscglobal.com. The team will gather account details and access authorization to any accounts that will be used to access the API; and the API key will be generated and returned along with login credentials to access the API.
+
+There is no token refresh or API expiration, all that is needed is to place the API key at the end of this URL:
+https://apis.cscglobal.com/dbs/fraud-protection/v1/fraud-protection-api/swagger/external/docs?APIKey={YOUR API KEY HERE} and signing in with the provided credentials on said page.
+
+CSC generates the API key and authorizes access to accounts within the organization. These authorizations are checked and verified before any information is returned to ensure data security.
+
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
@@ -29,28 +38,6 @@ Control detection flow by event ID and action
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | action | Update the action with eventID. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CSCFraudProtection.message | String |  |
-| CSCFraudProtection.status | String |  |
-
-### csc-fetchthedetectiondataandconverttopdf
-
-***
-Fetch the detection data and convert to pdf
-
-#### Base Command
-
-`csc-fetchthedetectiondataandconverttopdf`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| eventId | Event Id to download takedown report. | Required |
 
 #### Context Output
 
@@ -96,28 +83,6 @@ Fetch the screenshot data with ticketId
 #### Context Output
 
 There is no context output for this command.
-
-### csc-fetchtheticketdataandconverttopdf
-
-***
-Fetch the ticket data and convert to pdf
-
-#### Base Command
-
-`csc-fetchtheticketdataandconverttopdf`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ticketId | Ticket Id to fetch supporting documents for takedown. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CSCFraudProtection.message | String |  |
-| CSCFraudProtection.status | String |  |
 
 ### csc-gethtmlsourcecodeforaticket
 
