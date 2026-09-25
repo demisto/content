@@ -88,7 +88,7 @@ def test_get_asset_details_command_maps_nas_and_location_fields(mocker, mock_par
     assert asset["asimilydevicelocationcampus"] == "Asimily Sunnyvale Campus"
     assert asset["asimilydevicelocationbuilding"] == "Asimily Lab"
     assert asset["asimilydevicelocationfloor"] == 1
-    assert asset["asimilydevicelocationlastlocatedat"]
+    assert asset["asimilydevicelocationlastlocatedat"] == "2025-09-04T18:57:00Z"
 
 
 def test_get_asset_details_command_missing_nas_and_location_fields(mocker, mock_params):
@@ -111,6 +111,9 @@ def test_get_asset_details_command_missing_nas_and_location_fields(mocker, mock_
     assert asset["asimilydevicenasip"] is None
     assert asset["asimilydevicenasport"] is None
     assert asset["asimilydevicelocationaccesspoint"] is None
+    assert asset["asimilydevicelocationcampus"] is None
+    assert asset["asimilydevicelocationbuilding"] is None
+    assert asset["asimilydevicelocationfloor"] is None
     assert asset["asimilydevicelocationlastlocatedat"] is None
 
 

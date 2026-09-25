@@ -11,7 +11,7 @@ This integration utilizes the Asimily Insight RESTful APIs to provide seamless a
 - **Vulnerability (CVE) Synchronization**: Periodically retrieve and update known device vulnerabilities detected by Asimily Insight to support informed risk management and mitigation.
 - **Incident Creation in Cortex XSOAR**: All synced data—whether alerts, or vulnerabilities is automatically converted into incidents within the Cortex XSOAR platform for streamlined investigation and response workflows. Asset info can be automatically queried and stored by using Playbook to call the `asimily-get-asset-details` command.
 
-## Configure Asimily Insight on Cortex XSOAR
+## Configure Asimily Insight in Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Asimily Insight.
