@@ -946,6 +946,34 @@
                         "root": "vulnerability_indicators",
                         "transformers": []
                     }
+                },
+                "Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "headline",
+                        "transformers": []
+                    }
+                },
+                "details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "headline",
+                        "transformers": []
+                    }
+                },
+                "Case Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "headline",
+                        "transformers": []
+                    }
+                },
+                "description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "headline",
+                        "transformers": []
+                    }
                 }
             }
         },
