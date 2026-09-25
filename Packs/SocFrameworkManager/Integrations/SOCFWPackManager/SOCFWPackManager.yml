@@ -1,6 +1,6 @@
 display: SOC Framework Pack Manager
 name: SOCFWPackManager
-description: Downloads a SOC Framework content pack from a ZIP URL and installs it on the tenant as system content. Used internally by the SOCFWPackManager script — end users invoke the script, not this integration directly.
+description: "Downloads a SOC Framework content pack from a ZIP URL and installs it on the tenant as system content. Used internally by the SOCFWPackManager script \u2014 end users invoke the script, not this integration directly."
 category: Utilities
 fromversion: 8.0.0
 system: true
@@ -51,7 +51,7 @@ script:
   runonce: false
   commands:
   - name: socfw-install-pack
-    description: Download and install a SOC Framework pack ZIP as system content. Called by the SOCFWPackManager script — do not invoke directly.
+    description: "Download and install a SOC Framework pack ZIP as system content. Called by the SOCFWPackManager script \u2014 do not invoke directly."
     arguments:
     - name: url
       required: true
@@ -59,8 +59,17 @@ script:
     - name: filename
       required: false
       description: Asset filename, including the .zip extension. Derived from the URL when omitted.
+    - name: use_sdk
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultvalue: 'true'
+      type: 8
+      description: Whether to install through the demisto-sdk path, which builds the content graph and installs the pack's content items. Setting false uses a direct ZIP upload that registers the pack version WITHOUT installing its content -- it is not a faster install, it is a different and almost always wrong one.
     compliantpolicies:
-      - Domain Blockage
+    - Domain Blockage
     outputs:
     - contextPath: SOCFramework.PackInstall.filename
       description: Installed pack filename.
