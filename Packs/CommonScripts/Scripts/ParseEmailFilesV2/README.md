@@ -58,3 +58,21 @@ We handle EML and MSG parsing differently when the email contains HTML.
 
 - If it's an EML and it has the **content-type** of *text/html*, the content of the body will be stored in the html field.
 - If it's an MSG, we store the text inside the HTML in the text field and the HTML in the html field.
+
+#### Multipart attachment regression fixtures
+
+`test_data/reported_message_root_attachment.eml` is a harmless reproduction of
+a multipart report carrying a top-level `Content-Disposition: attachment`.
+It embeds `test_data/original_message.eml` as a base64 `message/rfc822` attachment.
+The inner message contains plain text, HTML, and a generated one-pixel PNG.
+All addresses, identifiers, message content, and image data are synthetic.
+
+Regression coverage checks that the parser returns the nested message and its
+image without preprocessing, writes the original attachment bytes, and supplies
+`Email.AttachmentsData.FilePath` for each emitted file. It also covers `.eml`
+attachments labeled `text/plain` or `application/octet-stream`, nesting selection,
+and the depth limit.
+
+The script normalizes attached `.eml` payloads when the parser returns them as
+serialized message objects, then parses the nested email while preserving the
+configured depth and nesting-level behavior.
