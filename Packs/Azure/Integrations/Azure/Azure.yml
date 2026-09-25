@@ -11035,6 +11035,370 @@ script:
       - contextPath: Azure.Compute.VirtualMachinesNextToken
         description: The URI to fetch the next page of VMs. Run the same command with the next_token argument to get the next page of VMs.
         type: String
+  - name: azure-firewall-instance-list
+    description: "Lists the Azure firewalls in the specified resource group or subscription. Use the next_token argument to view the next page of results. Required permission: Microsoft.Network/azureFirewalls/read."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: "The name of the resource group. Required when the resource argument is set to resource_group, and ignored when it is set to subscription. Can also be retrieved from the integration configuration."
+      required: false
+    - name: resource
+      description: The scope that contains the firewalls to list.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - resource_group
+      - subscription
+      defaultValue: resource_group
+    - name: next_token
+      description: "The token for the next set of items to return, used for pagination. The token is the value of Azure.Firewall.InstancesNextToken from the previous response."
+      required: false
+    outputs:
+      - contextPath: Azure.Firewall.Instances.id
+        description: The ID of the firewall resource.
+        type: String
+      - contextPath: Azure.Firewall.Instances.name
+        description: The name of the firewall resource.
+        type: String
+      - contextPath: Azure.Firewall.Instances.type
+        description: The type of the firewall resource.
+        type: String
+      - contextPath: Azure.Firewall.Instances.location
+        description: The location of the firewall resource.
+        type: String
+      - contextPath: Azure.Firewall.Instances.etag
+        description: The ETag of the firewall, used to prevent overwriting concurrent updates.
+        type: String
+      - contextPath: Azure.Firewall.Instances.tags
+        description: The tags of the firewall resource.
+        type: Unknown
+      - contextPath: Azure.Firewall.Instances.zones
+        description: The availability zones of the firewall.
+        type: Unknown
+      - contextPath: Azure.Firewall.Instances.properties.provisioningState
+        description: The provisioning state of the firewall resource.
+        type: String
+      - contextPath: Azure.Firewall.Instances.properties.threatIntelMode
+        description: The operation mode for threat intelligence.
+        type: String
+      - contextPath: Azure.Firewall.Instances.properties.ipConfigurations
+        description: The IP configuration objects of the firewall, containing name, id, etag, type, and properties fields.
+        type: Unknown
+      - contextPath: Azure.Firewall.Instances.properties.firewallPolicy
+        description: The firewall policy associated with the firewall, containing the id field.
+        type: Unknown
+      - contextPath: Azure.Firewall.Instances.properties.sku
+        description: The SKU of the firewall, containing the name and tier fields.
+        type: Unknown
+      - contextPath: Azure.Firewall.Instances.properties.networkRuleCollections
+        description: The network rule collections of the firewall, containing name, id, etag, and properties fields.
+        type: Unknown
+      - contextPath: Azure.Firewall.Instances.properties.applicationRuleCollections
+        description: The application rule collections of the firewall, containing name, id, etag, and properties fields.
+        type: Unknown
+      - contextPath: Azure.Firewall.Instances.properties.natRuleCollections
+        description: The NAT rule collections of the firewall, containing name, id, etag, and properties fields.
+        type: Unknown
+      - contextPath: Azure.Firewall.InstancesNextToken
+        description: The URI to fetch the next page of firewalls. Run the same command with the next_token argument to get the next page of firewalls.
+        type: String
+  - name: azure-firewall-instance-get
+    description: "Gets the properties of a given Azure firewall. Required permission: Microsoft.Network/azureFirewalls/read."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: "The name of the resource group."
+      required: true
+    - name: firewall_name
+      description: "The name of the Azure firewall to retrieve."
+      required: true
+    outputs:
+      - contextPath: Azure.Firewall.Instances.id
+        description: The ID of the firewall resource.
+        type: String
+      - contextPath: Azure.Firewall.Instances.name
+        description: The name of the firewall resource.
+        type: String
+      - contextPath: Azure.Firewall.Instances.type
+        description: The type of the firewall resource.
+        type: String
+      - contextPath: Azure.Firewall.Instances.location
+        description: The location of the firewall resource.
+        type: String
+      - contextPath: Azure.Firewall.Instances.etag
+        description: The ETag of the firewall, used to prevent overwriting concurrent updates.
+        type: String
+      - contextPath: Azure.Firewall.Instances.tags
+        description: The tags of the firewall resource.
+        type: Unknown
+      - contextPath: Azure.Firewall.Instances.zones
+        description: The availability zones of the firewall.
+        type: Unknown
+      - contextPath: Azure.Firewall.Instances.properties.provisioningState
+        description: The provisioning state of the firewall resource.
+        type: String
+      - contextPath: Azure.Firewall.Instances.properties.threatIntelMode
+        description: The operation mode for threat intelligence.
+        type: String
+      - contextPath: Azure.Firewall.Instances.properties.ipConfigurations
+        description: The IP configuration objects of the firewall, containing name, id, etag, type, and properties fields.
+        type: Unknown
+      - contextPath: Azure.Firewall.Instances.properties.firewallPolicy
+        description: The firewall policy associated with the firewall, containing the id field.
+        type: Unknown
+      - contextPath: Azure.Firewall.Instances.properties.sku
+        description: The SKU of the firewall, containing the name and tier fields.
+        type: Unknown
+      - contextPath: Azure.Firewall.Instances.properties.networkRuleCollections
+        description: The network rule collections of the firewall, containing name, id, etag, and properties fields.
+        type: Unknown
+      - contextPath: Azure.Firewall.Instances.properties.applicationRuleCollections
+        description: The application rule collections of the firewall, containing name, id, etag, and properties fields.
+        type: Unknown
+      - contextPath: Azure.Firewall.Instances.properties.natRuleCollections
+        description: The NAT rule collections of the firewall, containing name, id, etag, and properties fields.
+        type: Unknown
+  - name: azure-firewall-rule-collection-list
+    description: "Lists the rule collections of an Azure firewall or of a firewall policy. You must provide exactly one of the arguments firewall_name or policy_name. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/read."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: "The name of the resource group."
+      required: true
+    - name: firewall_name
+      description: "The name of the Azure firewall that contains the rule collections. You must provide exactly one of firewall_name or policy_name."
+      required: false
+    - name: policy_name
+      description: "The name of the Azure firewall policy that contains the rule collections. You must provide exactly one of firewall_name or policy_name."
+      required: false
+    - name: rule_type
+      description: The rule collection type to retrieve.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - application_rule
+      - network_rule
+      - nat_rule
+    - name: next_token
+      description: "The token for the next set of items to return, used for pagination. The token is the value of Azure.Firewall.RuleCollectionsNextToken from the previous response. Relevant only when the policy_name argument is provided."
+      required: false
+    outputs:
+      - contextPath: Azure.Firewall.RuleCollections.id
+        description: The ID of the rule collection resource.
+        type: String
+      - contextPath: Azure.Firewall.RuleCollections.name
+        description: The name of the rule collection resource.
+        type: String
+      - contextPath: Azure.Firewall.RuleCollections.type
+        description: The type of the rule collection resource.
+        type: String
+      - contextPath: Azure.Firewall.RuleCollections.etag
+        description: The ETag of the rule collection, used to prevent overwriting concurrent updates.
+        type: String
+      - contextPath: Azure.Firewall.RuleCollections.properties.priority
+        description: The priority of the rule collection.
+        type: Number
+      - contextPath: Azure.Firewall.RuleCollections.properties.provisioningState
+        description: The provisioning state of the rule collection resource.
+        type: String
+      - contextPath: Azure.Firewall.RuleCollections.properties.action
+        description: The action of the firewall rule collection, containing the type field.
+        type: Unknown
+      - contextPath: Azure.Firewall.RuleCollections.properties.rules
+        description: The rules of the firewall rule collection, containing name, protocols, sourceAddresses, destinationAddresses, and destinationPorts fields.
+        type: Unknown
+      - contextPath: Azure.Firewall.RuleCollections.properties.ruleCollections
+        description: The rule collections of the policy rule collection group, containing ruleCollectionType, name, priority, action, and rules fields.
+        type: Unknown
+      - contextPath: Azure.Firewall.RuleCollectionsNextToken
+        description: The URI to fetch the next page of rule collections. Run the same command with the next_token argument to get the next page of rule collections.
+        type: String
+  - name: azure-firewall-rule-list
+    description: "Lists the rules of an Azure firewall rule collection or of a firewall policy rule collection group. You must provide exactly one of the arguments firewall_name or policy_name. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/read."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: "The name of the resource group."
+      required: true
+    - name: firewall_name
+      description: "The name of the Azure firewall that contains the rules. You must provide exactly one of firewall_name or policy_name."
+      required: false
+    - name: policy_name
+      description: "The name of the Azure firewall policy that contains the rules. You must provide exactly one of firewall_name or policy_name."
+      required: false
+    - name: rule_type
+      description: The rule type to retrieve. Required when the firewall_name argument is provided.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - application_rule
+      - network_rule
+      - nat_rule
+    - name: collection_name
+      description: "The name of the rule collection that contains the rules."
+      required: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+      type: Number
+    - name: all_results
+      description: Whether to retrieve all results by overriding the default limit.
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+        - "false"
+        - "true"
+    outputs:
+      - contextPath: Azure.Firewall.Rules.name
+        description: The name of the rule.
+        type: String
+      - contextPath: Azure.Firewall.Rules.description
+        description: The description of the rule.
+        type: String
+      - contextPath: Azure.Firewall.Rules.ruleType
+        description: The type of the rule.
+        type: String
+      - contextPath: Azure.Firewall.Rules.protocols
+        description: The protocols of the rule.
+        type: Unknown
+      - contextPath: Azure.Firewall.Rules.sourceAddresses
+        description: The source addresses of the rule.
+        type: Unknown
+      - contextPath: Azure.Firewall.Rules.destinationAddresses
+        description: The destination addresses of the rule.
+        type: Unknown
+      - contextPath: Azure.Firewall.Rules.destinationPorts
+        description: The destination ports of the rule.
+        type: Unknown
+      - contextPath: Azure.Firewall.Rules.sourceIpGroups
+        description: The source IP groups of the rule.
+        type: Unknown
+      - contextPath: Azure.Firewall.Rules.destinationIpGroups
+        description: The destination IP groups of the rule.
+        type: Unknown
+      - contextPath: Azure.Firewall.Rules.destinationFqdns
+        description: The destination FQDNs of the rule.
+        type: Unknown
+      - contextPath: Azure.Firewall.Rules.targetFqdns
+        description: The target FQDNs of the rule.
+        type: Unknown
+  - name: azure-firewall-rule-get
+    description: "Gets the properties of a given Azure firewall or firewall policy rule. You must provide exactly one of the arguments firewall_name or policy_name. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/read."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: "The name of the resource group."
+      required: true
+    - name: firewall_name
+      description: "The name of the Azure firewall that contains the rule. You must provide exactly one of firewall_name or policy_name."
+      required: false
+    - name: policy_name
+      description: "The name of the Azure firewall policy that contains the rule. You must provide exactly one of firewall_name or policy_name."
+      required: false
+    - name: rule_type
+      description: The rule type to retrieve. Required when the firewall_name argument is provided.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - application_rule
+      - network_rule
+      - nat_rule
+    - name: collection_name
+      description: "The name of the rule collection that contains the rule."
+      required: true
+    - name: rule_name
+      description: "The name of the rule to retrieve."
+      required: true
+    outputs:
+      - contextPath: Azure.Firewall.Rules.name
+        description: The name of the rule.
+        type: String
+      - contextPath: Azure.Firewall.Rules.description
+        description: The description of the rule.
+        type: String
+      - contextPath: Azure.Firewall.Rules.ruleType
+        description: The type of the rule.
+        type: String
+      - contextPath: Azure.Firewall.Rules.protocols
+        description: The protocols of the rule.
+        type: Unknown
+      - contextPath: Azure.Firewall.Rules.sourceAddresses
+        description: The source addresses of the rule.
+        type: Unknown
+      - contextPath: Azure.Firewall.Rules.destinationAddresses
+        description: The destination addresses of the rule.
+        type: Unknown
+      - contextPath: Azure.Firewall.Rules.destinationPorts
+        description: The destination ports of the rule.
+        type: Unknown
+      - contextPath: Azure.Firewall.Rules.sourceIpGroups
+        description: The source IP groups of the rule.
+        type: Unknown
+      - contextPath: Azure.Firewall.Rules.destinationIpGroups
+        description: The destination IP groups of the rule.
+        type: Unknown
+      - contextPath: Azure.Firewall.Rules.destinationFqdns
+        description: The destination FQDNs of the rule.
+        type: Unknown
+      - contextPath: Azure.Firewall.Rules.targetFqdns
+        description: The target FQDNs of the rule.
+        type: Unknown
+  - name: azure-firewall-service-tag-list
+    description: "Lists the service tag information resources of a given location. Use the next_token argument to view the next page of results. Required permission: Microsoft.Network/locations/serviceTagDetails/read."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: "The location that is used as a reference for the service tags version. For example: eastus."
+      required: true
+    - name: next_token
+      description: "The token for the next set of items to return, used for pagination. The token is the value of Azure.Firewall.ServiceTagsNextToken from the previous response."
+      required: false
+    outputs:
+      - contextPath: Azure.Firewall.ServiceTags.id
+        description: The ID of the service tag.
+        type: String
+      - contextPath: Azure.Firewall.ServiceTags.name
+        description: The name of the service tag.
+        type: String
+      - contextPath: Azure.Firewall.ServiceTags.serviceTagChangeNumber
+        description: The iteration number of the service tag object.
+        type: String
+      - contextPath: Azure.Firewall.ServiceTags.properties.changeNumber
+        description: The iteration number of the service tag properties.
+        type: String
+      - contextPath: Azure.Firewall.ServiceTags.properties.region
+        description: The region of the service tag.
+        type: String
+      - contextPath: Azure.Firewall.ServiceTags.properties.systemService
+        description: The system service of the service tag.
+        type: String
+      - contextPath: Azure.Firewall.ServiceTags.properties.addressPrefixes
+        description: The list of IP address prefixes of the service tag.
+        type: Unknown
+      - contextPath: Azure.Firewall.ServiceTags.properties.state
+        description: The state of the service tag.
+        type: String
+      - contextPath: Azure.Firewall.ServiceTagsNextToken
+        description: The URI to fetch the next page of service tags. Run the same command with the next_token argument to get the next page of service tags.
+        type: String
   isfetch: false
   runonce: false
   script: '-'
