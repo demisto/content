@@ -10848,6 +10848,543 @@ script:
     quickaction: true
     prettyname: Enable SSL on Postgres Server
     deprecated: true
+  - name: azure-firewall-network-rule-collection-create
+    description: "Create a network rule collection, holding a single network rule, in an Azure Firewall or in a firewall policy. Exactly one of the arguments 'firewall_name' or 'policy' must be provided. Required permissions for a firewall: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write. Required permissions for a policy: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: firewall_name
+      description: The name of the Azure Firewall in which to create the network rule collection. Provide either this argument or the 'policy' argument.
+      type: String
+    - name: policy
+      description: The name of the firewall policy in which to create the network rule collection. Provide either this argument or the 'firewall_name' argument.
+      type: String
+    - name: collection_name
+      description: The name of the network rule collection to create.
+      type: String
+      required: true
+    - name: collection_priority
+      description: The priority of the network rule collection. The minimum value is 100 and the maximum value is 65000.
+      type: Number
+      required: true
+    - name: action
+      description: The action type of the network rule collection.
+      auto: PREDEFINED
+      predefined:
+        - Allow
+        - Deny
+      type: String
+      required: true
+    - name: rule_name
+      description: The name of the network rule to create in the collection.
+      type: String
+      required: true
+    - name: description
+      description: The description of the created network rule.
+      type: String
+    - name: protocols
+      description: A comma-separated list of protocols for the created network rule.
+      auto: PREDEFINED
+      predefined:
+        - TCP
+        - UDP
+        - ICMP
+        - Any
+      isArray: true
+      required: true
+    - name: source_type
+      description: The source type of the created network rule.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+      type: String
+      required: true
+    - name: source_ips
+      description: A comma-separated list of source IP addresses for the created network rule. Must be provided when the 'source_type' argument is 'ip_address'.
+      isArray: true
+    - name: source_ip_group_ids
+      description: A comma-separated list of source IP group IDs for the created network rule. Must be provided when the 'source_type' argument is 'ip_group'.
+      isArray: true
+    - name: destination_type
+      description: The destination type of the created network rule.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+        - service_tag
+        - fqdn
+      type: String
+      required: true
+    - name: destinations
+      description: A comma-separated list of destinations for the created network rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs, and FQDN addresses.
+      isArray: true
+      required: true
+    - name: destination_ports
+      description: A comma-separated list of destination ports for the created network rule.
+      isArray: true
+      required: true
+    outputs:
+    - contextPath: Azure.Firewall.Firewalls.name
+      description: The name of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.id
+      description: The ID of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.type
+      description: The type of the Azure Firewall resource.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.location
+      description: The location of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.etag
+      description: The ETag of the Azure Firewall, used to prevent overwriting concurrent updates.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.provisioningState
+      description: The provisioning state of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.networkRuleCollections
+      description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
+      type: Unknown
+    - contextPath: Azure.Firewall.RuleCollectionGroups.name
+      description: The name of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.id
+      description: The ID of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.type
+      description: The type of the firewall policy rule collection group resource.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.etag
+      description: The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.properties.priority
+      description: The priority of the firewall policy rule collection group.
+      type: Number
+    - contextPath: Azure.Firewall.RuleCollectionGroups.properties.provisioningState
+      description: The provisioning state of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.properties.ruleCollections
+      description: The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection.
+      type: Unknown
+  - name: azure-firewall-network-rule-collection-update
+    description: "Update the priority or the action of a network rule collection in an Azure Firewall or in a firewall policy. Exactly one of the arguments 'firewall_name' or 'policy' must be provided. Required permissions for a firewall: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write. Required permissions for a policy: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: firewall_name
+      description: The name of the Azure Firewall that contains the network rule collection. Provide either this argument or the 'policy' argument.
+      type: String
+    - name: policy
+      description: The name of the firewall policy that contains the network rule collection. Provide either this argument or the 'firewall_name' argument.
+      type: String
+    - name: collection_name
+      description: The name of the network rule collection to update.
+      type: String
+      required: true
+    - name: priority
+      description: The new priority of the network rule collection. The minimum value is 100 and the maximum value is 65000. At least one of the arguments 'priority' or 'action' must be provided.
+      type: Number
+    - name: action
+      description: The new action type of the network rule collection. At least one of the arguments 'priority' or 'action' must be provided.
+      auto: PREDEFINED
+      predefined:
+        - Allow
+        - Deny
+      type: String
+    outputs:
+    - contextPath: Azure.Firewall.Firewalls.name
+      description: The name of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.id
+      description: The ID of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.type
+      description: The type of the Azure Firewall resource.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.location
+      description: The location of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.etag
+      description: The ETag of the Azure Firewall, used to prevent overwriting concurrent updates.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.provisioningState
+      description: The provisioning state of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.networkRuleCollections
+      description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
+      type: Unknown
+    - contextPath: Azure.Firewall.RuleCollectionGroups.name
+      description: The name of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.id
+      description: The ID of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.type
+      description: The type of the firewall policy rule collection group resource.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.etag
+      description: The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.properties.priority
+      description: The priority of the firewall policy rule collection group.
+      type: Number
+    - contextPath: Azure.Firewall.RuleCollectionGroups.properties.provisioningState
+      description: The provisioning state of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.properties.ruleCollections
+      description: The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection.
+      type: Unknown
+  - name: azure-firewall-network-rule-collection-delete
+    description: "Delete a network rule collection from an Azure Firewall or from a firewall policy. Exactly one of the arguments 'firewall_name' or 'policy' must be provided. Required permissions for a firewall: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write. Required permission for a policy: Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: firewall_name
+      description: The name of the Azure Firewall that contains the network rule collection. Provide either this argument or the 'policy' argument.
+      type: String
+    - name: policy
+      description: The name of the firewall policy that contains the network rule collection. Provide either this argument or the 'firewall_name' argument.
+      type: String
+    - name: collection_name
+      description: The name of the network rule collection to delete.
+      type: String
+      required: true
+    outputs:
+    - contextPath: Azure.Firewall.Firewalls.name
+      description: The name of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.id
+      description: The ID of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.type
+      description: The type of the Azure Firewall resource.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.location
+      description: The location of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.etag
+      description: The ETag of the Azure Firewall, used to prevent overwriting concurrent updates.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.provisioningState
+      description: The provisioning state of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.networkRuleCollections
+      description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
+      type: Unknown
+  - name: azure-firewall-network-rule-create
+    description: "Create a network rule in an existing network rule collection of an Azure Firewall or of a firewall policy. Exactly one of the arguments 'firewall_name' or 'policy' must be provided. Required permissions for a firewall: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write. Required permissions for a policy: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: firewall_name
+      description: The name of the Azure Firewall that contains the network rule collection. Provide either this argument or the 'policy' argument.
+      type: String
+    - name: policy
+      description: The name of the firewall policy that contains the network rule collection. Provide either this argument or the 'firewall_name' argument.
+      type: String
+    - name: collection_name
+      description: The name of the network rule collection in which to create the network rule.
+      type: String
+      required: true
+    - name: rule_name
+      description: The name of the network rule to create.
+      type: String
+      required: true
+    - name: description
+      description: The description of the created network rule.
+      type: String
+    - name: protocols
+      description: A comma-separated list of protocols for the created network rule.
+      auto: PREDEFINED
+      predefined:
+        - TCP
+        - UDP
+        - ICMP
+        - Any
+      isArray: true
+      required: true
+    - name: source_type
+      description: The source type of the created network rule.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+      type: String
+      required: true
+    - name: source_ips
+      description: A comma-separated list of source IP addresses for the created network rule. Must be provided when the 'source_type' argument is 'ip_address'.
+      isArray: true
+    - name: source_ip_group_ids
+      description: A comma-separated list of source IP group IDs for the created network rule. Must be provided when the 'source_type' argument is 'ip_group'.
+      isArray: true
+    - name: destination_type
+      description: The destination type of the created network rule.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+        - service_tag
+        - fqdn
+      type: String
+      required: true
+    - name: destinations
+      description: A comma-separated list of destinations for the created network rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs, and FQDN addresses.
+      isArray: true
+      required: true
+    - name: destination_ports
+      description: A comma-separated list of destination ports for the created network rule.
+      isArray: true
+      required: true
+    outputs:
+    - contextPath: Azure.Firewall.Firewalls.name
+      description: The name of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.id
+      description: The ID of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.type
+      description: The type of the Azure Firewall resource.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.location
+      description: The location of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.etag
+      description: The ETag of the Azure Firewall, used to prevent overwriting concurrent updates.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.provisioningState
+      description: The provisioning state of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.networkRuleCollections
+      description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
+      type: Unknown
+    - contextPath: Azure.Firewall.RuleCollectionGroups.name
+      description: The name of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.id
+      description: The ID of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.type
+      description: The type of the firewall policy rule collection group resource.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.etag
+      description: The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.properties.priority
+      description: The priority of the firewall policy rule collection group.
+      type: Number
+    - contextPath: Azure.Firewall.RuleCollectionGroups.properties.provisioningState
+      description: The provisioning state of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.properties.ruleCollections
+      description: The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection.
+      type: Unknown
+  - name: azure-firewall-network-rule-update
+    description: "Update a network rule in a network rule collection of an Azure Firewall or of a firewall policy. Only the provided properties are replaced, the rest of the rule configuration is kept as is. Exactly one of the arguments 'firewall_name' or 'policy' must be provided. Required permissions for a firewall: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write. Required permissions for a policy: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: firewall_name
+      description: The name of the Azure Firewall that contains the network rule collection. Provide either this argument or the 'policy' argument.
+      type: String
+    - name: policy
+      description: The name of the firewall policy that contains the network rule collection. Provide either this argument or the 'firewall_name' argument.
+      type: String
+    - name: collection_name
+      description: The name of the network rule collection that contains the network rule.
+      type: String
+      required: true
+    - name: rule_name
+      description: The name of the network rule to update.
+      type: String
+      required: true
+    - name: description
+      description: The new description of the network rule.
+      type: String
+    - name: protocols
+      description: A comma-separated list of protocols that replaces the protocols of the network rule.
+      auto: PREDEFINED
+      predefined:
+        - TCP
+        - UDP
+        - ICMP
+        - Any
+      isArray: true
+    - name: source_type
+      description: The new source type of the network rule. When provided, the matching source argument must be provided as well.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+      type: String
+    - name: source_ips
+      description: A comma-separated list of source IP addresses that replaces the sources of the network rule. Must be provided when the 'source_type' argument is 'ip_address'.
+      isArray: true
+    - name: source_ip_group_ids
+      description: A comma-separated list of source IP group IDs that replaces the sources of the network rule. Must be provided when the 'source_type' argument is 'ip_group'.
+      isArray: true
+    - name: destination_type
+      description: The new destination type of the network rule. Must be provided when the 'destinations' argument is provided.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+        - service_tag
+        - fqdn
+      type: String
+    - name: destinations
+      description: A comma-separated list of destinations that replaces the destinations of the network rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs, and FQDN addresses.
+      isArray: true
+    - name: destination_ports
+      description: A comma-separated list of destination ports that replaces the destination ports of the network rule.
+      isArray: true
+    outputs:
+    - contextPath: Azure.Firewall.Firewalls.name
+      description: The name of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.id
+      description: The ID of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.type
+      description: The type of the Azure Firewall resource.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.location
+      description: The location of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.etag
+      description: The ETag of the Azure Firewall, used to prevent overwriting concurrent updates.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.provisioningState
+      description: The provisioning state of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.networkRuleCollections
+      description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
+      type: Unknown
+    - contextPath: Azure.Firewall.RuleCollectionGroups.name
+      description: The name of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.id
+      description: The ID of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.type
+      description: The type of the firewall policy rule collection group resource.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.etag
+      description: The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.properties.priority
+      description: The priority of the firewall policy rule collection group.
+      type: Number
+    - contextPath: Azure.Firewall.RuleCollectionGroups.properties.provisioningState
+      description: The provisioning state of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.properties.ruleCollections
+      description: The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection.
+      type: Unknown
+  - name: azure-firewall-network-rule-delete
+    description: "Delete network rules from a network rule collection of an Azure Firewall or of a firewall policy. Exactly one of the arguments 'firewall_name' or 'policy' must be provided. Required permissions for a firewall: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write. Required permissions for a policy: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: firewall_name
+      description: The name of the Azure Firewall that contains the network rule collection. Provide either this argument or the 'policy' argument.
+      type: String
+    - name: policy
+      description: The name of the firewall policy that contains the network rule collection. Provide either this argument or the 'firewall_name' argument.
+      type: String
+    - name: collection_name
+      description: The name of the network rule collection that contains the network rules.
+      type: String
+      required: true
+    - name: rule_names
+      description: A comma-separated list of network rule names to delete from the collection.
+      isArray: true
+      required: true
+    outputs:
+    - contextPath: Azure.Firewall.Firewalls.name
+      description: The name of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.id
+      description: The ID of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.type
+      description: The type of the Azure Firewall resource.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.location
+      description: The location of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.etag
+      description: The ETag of the Azure Firewall, used to prevent overwriting concurrent updates.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.provisioningState
+      description: The provisioning state of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.networkRuleCollections
+      description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
+      type: Unknown
+    - contextPath: Azure.Firewall.RuleCollectionGroups.name
+      description: The name of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.id
+      description: The ID of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.type
+      description: The type of the firewall policy rule collection group resource.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.etag
+      description: The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.properties.priority
+      description: The priority of the firewall policy rule collection group.
+      type: Number
+    - contextPath: Azure.Firewall.RuleCollectionGroups.properties.provisioningState
+      description: The provisioning state of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.Firewall.RuleCollectionGroups.properties.ruleCollections
+      description: The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection.
+      type: Unknown
   - name: azure-compute-vm-list
     description: "Lists all the virtual machines in the specified subscription. Use the next_token argument to view the next page of results. Required Permissions: Microsoft.Compute/virtualMachines/read."
     arguments:
