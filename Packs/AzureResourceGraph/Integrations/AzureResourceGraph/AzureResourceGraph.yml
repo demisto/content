@@ -46,7 +46,7 @@ configuration:
   name: private_key
   type: 14
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
-  hidden: true
+  required: false
   section: Connect
 - display: Use Gov Account Settings
   name: gov_account
@@ -111,7 +111,7 @@ script:
       description: Data returned from query.
       type: String
     description: 'Executes a given Azure Resource Graph Query. (Ex: query="Resources | project name, type | limit 5 | order by name asc").'
-  dockerimage: demisto/crypto:1.0.0.10120494
+  dockerimage: demisto/crypto:1.0.0.12833174
   runonce: false
   script: ''
   subtype: python3
