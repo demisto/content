@@ -514,6 +514,322 @@ class Client(BaseClient):
 
         return self._http_request(method="DELETE", url_suffix=url_suffix, resp_type="response", return_empty_response=True)
 
+    def cloudflare_waf_ruleset_rule_create_request(
+        self,
+        ruleset_id: str,
+        rule: dict[str, Any],
+        zone_id: str = None,
+        account_id: str = None,
+        dry_run: bool = None,
+    ) -> dict[str, Any]:
+        """Create a new rule in a ruleset.
+
+        Args:
+            ruleset_id (str): The ruleset identifier.
+            rule (dict): The single rule object to add. This is the request body.
+            zone_id (str, optional): Zone identifier. If provided, creates a zone-level ruleset rule.
+                If not provided, creates an account-level ruleset rule.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+            dry_run (bool, optional): If True, validates the rule without applying it.
+
+        Returns:
+            dict: API response from Cloudflare (the full parent ruleset).
+        """
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/{ruleset_id}/rules"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/{ruleset_id}/rules"
+
+        params = {"dry_run": "true"} if dry_run else None
+
+        return self._http_request(method="POST", url_suffix=url_suffix, json_data=rule, params=params)
+
+    def cloudflare_waf_ruleset_rule_update_request(
+        self,
+        ruleset_id: str,
+        rule_id: str,
+        rule: dict[str, Any],
+        zone_id: str = None,
+        account_id: str = None,
+        dry_run: bool = None,
+    ) -> dict[str, Any]:
+        """Update an existing rule in a ruleset. Replaces the whole rule.
+
+        Args:
+            ruleset_id (str): The ruleset identifier.
+            rule_id (str): The rule identifier.
+            rule (dict): The full rule object. This is the request body.
+            zone_id (str, optional): Zone identifier. If provided, updates a zone-level ruleset rule.
+                If not provided, updates an account-level ruleset rule.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+            dry_run (bool, optional): If True, validates the rule without applying it.
+
+        Returns:
+            dict: API response from Cloudflare (the full parent ruleset).
+        """
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/{ruleset_id}/rules/{rule_id}"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/{ruleset_id}/rules/{rule_id}"
+
+        params = {"dry_run": "true"} if dry_run else None
+
+        return self._http_request(method="PATCH", url_suffix=url_suffix, json_data=rule, params=params)
+
+    def cloudflare_waf_ruleset_rule_delete_request(
+        self,
+        ruleset_id: str,
+        rule_id: str,
+        zone_id: str = None,
+        account_id: str = None,
+        dry_run: bool = None,
+    ) -> dict[str, Any]:
+        """Delete a rule from a ruleset.
+
+        Args:
+            ruleset_id (str): The ruleset identifier.
+            rule_id (str): The rule identifier.
+            zone_id (str, optional): Zone identifier. If provided, deletes a zone-level ruleset rule.
+                If not provided, deletes an account-level ruleset rule.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+            dry_run (bool, optional): If True, validates the deletion without applying it.
+
+        Returns:
+            dict: API response from Cloudflare.
+        """
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/{ruleset_id}/rules/{rule_id}"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/{ruleset_id}/rules/{rule_id}"
+
+        params = {"dry_run": "true"} if dry_run else None
+
+        return self._http_request(
+            method="DELETE",
+            url_suffix=url_suffix,
+            params=params,
+            resp_type="response",
+            return_empty_response=True,
+        )
+
+    def cloudflare_waf_ruleset_entrypoint_get_request(
+        self,
+        phase: str,
+        zone_id: str = None,
+        account_id: str = None,
+    ) -> dict[str, Any]:
+        """Get the entry point ruleset for a given phase.
+
+        Args:
+            phase (str): The phase of the ruleset. Mapped into the {ruleset_phase} path segment.
+            zone_id (str, optional): Zone identifier. If provided, gets a zone-level entry point ruleset.
+                If not provided, gets an account-level entry point ruleset.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+
+        Returns:
+            dict: API response from Cloudflare (the full entry point ruleset).
+        """
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/phases/{phase}/entrypoint"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/phases/{phase}/entrypoint"
+
+        return self._http_request(method="GET", url_suffix=url_suffix)
+
+    def cloudflare_waf_ruleset_entrypoint_update_request(
+        self,
+        phase: str,
+        zone_id: str = None,
+        account_id: str = None,
+        name: str = None,
+        description: str = None,
+        rules: list = None,
+        dry_run: bool = None,
+    ) -> dict[str, Any]:
+        """Update the entry point ruleset for a given phase, creating a new version.
+
+        Args:
+            phase (str): The phase of the ruleset. Mapped into the {ruleset_phase} path segment.
+            zone_id (str, optional): Zone identifier. If provided, updates a zone-level entry point ruleset.
+                If not provided, updates an account-level entry point ruleset.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+            name (str, optional): The human-readable name of the ruleset.
+            description (str, optional): A description of the ruleset.
+            rules (list, optional): The list of rules that replaces all existing entry-point rules.
+            dry_run (bool, optional): If True, validates the update without applying it.
+
+        Returns:
+            dict: API response from Cloudflare (the full entry point ruleset).
+        """
+        json_data = assign_params(name=name, description=description, rules=rules)
+
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/phases/{phase}/entrypoint"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/phases/{phase}/entrypoint"
+
+        params = {"dry_run": "true"} if dry_run else None
+
+        return self._http_request(method="PUT", url_suffix=url_suffix, json_data=json_data, params=params)
+
+    def cloudflare_waf_ruleset_version_list_request(
+        self,
+        ruleset_id: str,
+        zone_id: str = None,
+        account_id: str = None,
+    ) -> dict[str, Any]:
+        """List all versions of a ruleset.
+
+        Args:
+            ruleset_id (str): The ruleset identifier.
+            zone_id (str, optional): Zone identifier. If provided, lists zone-level ruleset versions.
+                If not provided, lists account-level ruleset versions.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+
+        Returns:
+            dict: API response from Cloudflare (an array of ruleset header objects).
+        """
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/{ruleset_id}/versions"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/{ruleset_id}/versions"
+
+        return self._http_request(method="GET", url_suffix=url_suffix)
+
+    def cloudflare_waf_ruleset_version_get_request(
+        self,
+        ruleset_id: str,
+        version: str,
+        zone_id: str = None,
+        account_id: str = None,
+    ) -> dict[str, Any]:
+        """Get a specific version of a ruleset.
+
+        Args:
+            ruleset_id (str): The ruleset identifier.
+            version (str): The version of the ruleset. Mapped into the {ruleset_version} path segment.
+            zone_id (str, optional): Zone identifier. If provided, gets a zone-level ruleset version.
+                If not provided, gets an account-level ruleset version.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+
+        Returns:
+            dict: API response from Cloudflare (the full ruleset at that version).
+        """
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/{ruleset_id}/versions/{version}"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/{ruleset_id}/versions/{version}"
+
+        return self._http_request(method="GET", url_suffix=url_suffix)
+
+    def cloudflare_waf_ruleset_version_delete_request(
+        self,
+        ruleset_id: str,
+        version: str,
+        zone_id: str = None,
+        account_id: str = None,
+        dry_run: bool = None,
+    ) -> dict[str, Any]:
+        """Delete a specific version of a ruleset.
+
+        Args:
+            ruleset_id (str): The ruleset identifier.
+            version (str): The version of the ruleset. Mapped into the {ruleset_version} path segment.
+            zone_id (str, optional): Zone identifier. If provided, deletes a zone-level ruleset version.
+                If not provided, deletes an account-level ruleset version.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+            dry_run (bool, optional): If True, validates the deletion without applying it.
+
+        Returns:
+            dict: API response from Cloudflare.
+        """
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/{ruleset_id}/versions/{version}"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/{ruleset_id}/versions/{version}"
+
+        params = {"dry_run": "true"} if dry_run else None
+
+        return self._http_request(
+            method="DELETE",
+            url_suffix=url_suffix,
+            params=params,
+            resp_type="response",
+            return_empty_response=True,
+        )
+
+    def cloudflare_waf_ruleset_entrypoint_version_list_request(
+        self,
+        phase: str,
+        zone_id: str = None,
+        account_id: str = None,
+    ) -> dict[str, Any]:
+        """List all versions of the entry point ruleset for a given phase.
+
+        Args:
+            phase (str): The phase of the ruleset. Mapped into the {ruleset_phase} path segment.
+            zone_id (str, optional): Zone identifier. If provided, lists zone-level entry point ruleset versions.
+                If not provided, lists account-level entry point ruleset versions.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+
+        Returns:
+            dict: API response from Cloudflare (an array of ruleset header objects).
+        """
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/phases/{phase}/entrypoint/versions"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/phases/{phase}/entrypoint/versions"
+
+        return self._http_request(method="GET", url_suffix=url_suffix)
+
+    def cloudflare_waf_ruleset_entrypoint_version_get_request(
+        self,
+        phase: str,
+        version: str,
+        zone_id: str = None,
+        account_id: str = None,
+    ) -> dict[str, Any]:
+        """Get a specific version of the entry point ruleset for a given phase.
+
+        Args:
+            phase (str): The phase of the ruleset. Mapped into the {ruleset_phase} path segment.
+            version (str): The version of the ruleset. Mapped into the {ruleset_version} path segment.
+            zone_id (str, optional): Zone identifier. If provided, gets a zone-level entry point ruleset version.
+                If not provided, gets an account-level entry point ruleset version.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+
+        Returns:
+            dict: API response from Cloudflare (the full entry point ruleset at that version).
+        """
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/phases/{phase}/entrypoint/versions/{version}"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/phases/{phase}/entrypoint/versions/{version}"
+
+        return self._http_request(method="GET", url_suffix=url_suffix)
+
+    def cloudflare_waf_ruleset_rule_list_by_tag_request(
+        self,
+        ruleset_id: str,
+        version: str,
+        tag: str,
+        account_id: str = None,
+    ) -> dict[str, Any]:
+        """List the rules of a managed ruleset version filtered by tag. Account scope only.
+
+        Args:
+            ruleset_id (str): The ruleset identifier.
+            version (str): The version of the ruleset. Mapped into the {ruleset_version} path segment.
+            tag (str): The tag/category of the rules. Mapped into the {rule_tag} path segment.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+
+        Returns:
+            dict: API response from Cloudflare (the managed ruleset; rules present only on a tag match).
+        """
+        url_suffix = f"accounts/{account_id or self.account_id}/rulesets/{ruleset_id}/versions/{version}/by_tag/{tag}"
+
+        return self._http_request(method="GET", url_suffix=url_suffix)
+
 
 def validate_pagination_arguments(page: int = None, page_size: int = None, limit: int = None):
     """Validate pagination arguments according to their default.
@@ -617,6 +933,30 @@ def arg_to_boolean(arg: str) -> Optional[bool]:
         Optional[bool]: The argument boolean value.
     """
     return argToBoolean(arg) if arg else None
+
+
+def _resolve_scope_ids(args: dict[str, Any], client: "Client") -> tuple[str | None, str]:
+    """Return (zone_id, account_id) resolved from args with client fallback.
+
+    Args take priority over client defaults. Raises ValueError if both are
+    supplied (mutually exclusive) or if neither resolves to a value.
+
+    Returns:
+        tuple[str | None, str]: (zone_id, account_id); zone_id may be None.
+    """
+    has_zone = "zone_id" in args
+    has_account = "account_id" in args
+
+    if has_zone and has_account:
+        raise ValueError("zone_id and account_id are mutually exclusive. Provide only one.")
+
+    zone_id = args["zone_id"] if has_zone else client.zone_id
+    account_id = args["account_id"] if has_account else client.account_id
+
+    if not zone_id and not account_id:
+        raise ValueError("Either zone_id or account_id must be provided (via argument or instance configuration).")
+
+    return zone_id, account_id
 
 
 def cloudflare_waf_firewall_rule_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1329,8 +1669,6 @@ def cloudflare_waf_ruleset_get_command(client: Client, args: dict[str, Any]) -> 
     if not ruleset_id:
         raise ValueError("ruleset_id is required.")
     zone_id = args.get("zone_id", client.zone_id)
-    if not zone_id:
-        raise ValueError("zone_id is required.")
 
     response = client.cloudflare_waf_ruleset_get_request(ruleset_id, zone_id=zone_id)
 
@@ -1392,8 +1730,6 @@ def cloudflare_waf_ruleset_create_command(client: Client, args: dict[str, Any]) 
     if not phase:
         raise ValueError("phase is required.")
     zone_id = args.get("zone_id", client.zone_id)
-    if not zone_id:
-        raise ValueError("zone_id is required.")
     description = args.get("description")
     rules_json = args.get("rules")
 
@@ -1455,8 +1791,6 @@ def cloudflare_waf_ruleset_update_command(client: Client, args: dict[str, Any]) 
     if not ruleset_id:
         raise ValueError("ruleset_id is required.")
     zone_id = args.get("zone_id", client.zone_id)
-    if not zone_id:
-        raise ValueError("zone_id is required.")
 
     name = args.get("name")
     description = args.get("description")
@@ -1502,12 +1836,534 @@ def cloudflare_waf_ruleset_delete_command(client: Client, args: dict[str, Any]) 
     if not ruleset_id:
         raise ValueError("ruleset_id is required.")
     zone_id = args.get("zone_id", client.zone_id)
-    if not zone_id:
-        raise ValueError("zone_id is required.")
 
     client.cloudflare_waf_ruleset_delete_request(ruleset_id, zone_id=zone_id)
 
     return CommandResults(readable_output=f"Ruleset {ruleset_id} was successfully deleted.")
+
+
+def _ruleset_readable_output(name: str, result: dict[str, Any]) -> str:
+    """Build the readable output for a full ruleset (header table plus rules table).
+
+    Args:
+        name (str): The header table name.
+        result (dict): The full ruleset returned by the API.
+
+    Returns:
+        str: The markdown readable output (ruleset header table plus rules table).
+    """
+    ruleset = {
+        "id": result.get("id"),
+        "name": result.get("name"),
+        "kind": result.get("kind"),
+        "phase": result.get("phase"),
+        "description": result.get("description"),
+        "version": result.get("version"),
+        "last_updated": result.get("last_updated"),
+    }
+
+    rules = result.get("rules", [])
+
+    readable_output = tableToMarkdown(
+        name=name,
+        t=ruleset,
+        headers=["id", "name", "kind", "phase", "description", "version", "last_updated"],
+        headerTransform=string_to_table_header,
+    )
+
+    if rules:
+        readable_output += "\n" + tableToMarkdown(
+            name="Ruleset rules",
+            t=rules,
+            headers=["id", "action", "expression", "description", "enabled", "version", "ref"],
+            headerTransform=string_to_table_header,
+        )
+
+    return readable_output
+
+
+def cloudflare_waf_ruleset_rule_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create a new rule in a ruleset at the account or zone level.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    ruleset_id = args.get("ruleset_id")
+    if not ruleset_id:
+        raise ValueError("ruleset_id is required.")
+    rule_json = args.get("rule")
+    if not rule_json:
+        raise ValueError("rule is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+    dry_run = arg_to_boolean(args.get("dry_run"))  # type: ignore[arg-type]
+
+    try:
+        rule = json.loads(rule_json)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Failed to parse rule JSON: {e}")
+
+    response = client.cloudflare_waf_ruleset_rule_create_request(
+        ruleset_id=ruleset_id,
+        rule=rule,
+        zone_id=zone_id,
+        account_id=account_id,
+        dry_run=dry_run,
+    )
+
+    output = response.get("result", {})
+
+    readable_output = _ruleset_readable_output("Ruleset details", output)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CloudflareWAF.Ruleset",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
+def cloudflare_waf_ruleset_rule_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Update an existing rule in a ruleset. Replaces the whole rule.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    ruleset_id = args.get("ruleset_id")
+    if not ruleset_id:
+        raise ValueError("ruleset_id is required.")
+    rule_id = args.get("rule_id")
+    if not rule_id:
+        raise ValueError("rule_id is required.")
+    rule_json = args.get("rule")
+    if not rule_json:
+        raise ValueError("rule is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+    dry_run = arg_to_boolean(args.get("dry_run"))  # type: ignore[arg-type]
+
+    try:
+        rule = json.loads(rule_json)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Failed to parse rule JSON: {e}")
+
+    response = client.cloudflare_waf_ruleset_rule_update_request(
+        ruleset_id=ruleset_id,
+        rule_id=rule_id,
+        rule=rule,
+        zone_id=zone_id,
+        account_id=account_id,
+        dry_run=dry_run,
+    )
+
+    output = response.get("result", {})
+
+    readable_output = _ruleset_readable_output("Ruleset details", output)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CloudflareWAF.Ruleset",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
+def cloudflare_waf_ruleset_rule_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Delete a rule from a ruleset.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: readable outputs for XSOAR.
+    """
+    ruleset_id = args.get("ruleset_id")
+    if not ruleset_id:
+        raise ValueError("ruleset_id is required.")
+    rule_id = args.get("rule_id")
+    if not rule_id:
+        raise ValueError("rule_id is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+    dry_run = arg_to_boolean(args.get("dry_run"))  # type: ignore[arg-type]
+
+    client.cloudflare_waf_ruleset_rule_delete_request(
+        ruleset_id=ruleset_id,
+        rule_id=rule_id,
+        zone_id=zone_id,
+        account_id=account_id,
+        dry_run=dry_run,
+    )
+
+    return CommandResults(readable_output=f"Rule {rule_id} was successfully deleted from ruleset {ruleset_id}.")
+
+
+def cloudflare_waf_ruleset_entrypoint_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get the entry point ruleset for a specific phase at the account or zone level.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    phase = args.get("phase")
+    if not phase:
+        raise ValueError("phase is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+
+    response = client.cloudflare_waf_ruleset_entrypoint_get_request(
+        phase=phase,
+        zone_id=zone_id,
+        account_id=account_id,
+    )
+
+    output = response.get("result", {})
+
+    readable_output = _ruleset_readable_output("Ruleset details", output)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CloudflareWAF.Ruleset",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
+def cloudflare_waf_ruleset_entrypoint_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Update the entry point ruleset for a specific phase. When rules are provided,
+        they replace all existing entry-point rules.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    phase = args.get("phase")
+    if not phase:
+        raise ValueError("phase is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+    dry_run = arg_to_boolean(args.get("dry_run"))  # type: ignore[arg-type]
+
+    name = args.get("name")
+    description = args.get("description")
+    rules_json = args.get("rules")
+
+    rules = None
+    if rules_json:
+        try:
+            rules = json.loads(rules_json)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Failed to parse rules JSON: {e}")
+
+    response = client.cloudflare_waf_ruleset_entrypoint_update_request(
+        phase=phase,
+        zone_id=zone_id,
+        account_id=account_id,
+        name=name,
+        description=description,
+        rules=rules,
+        dry_run=dry_run,
+    )
+
+    output = response.get("result", {})
+
+    readable_output = _ruleset_readable_output("Ruleset details", output)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CloudflareWAF.Ruleset",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
+def cloudflare_waf_ruleset_version_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List all versions of a ruleset at the account or zone level.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    ruleset_id = args.get("ruleset_id")
+    if not ruleset_id:
+        raise ValueError("ruleset_id is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+    all_results = arg_to_boolean(args.get("all_results"))  # type: ignore[arg-type]
+    limit = arg_to_number(args.get("limit", 50))
+    if limit is not None and limit <= 0:
+        raise ValueError("limit must be a positive integer.")
+
+    response = client.cloudflare_waf_ruleset_version_list_request(
+        ruleset_id=ruleset_id,
+        zone_id=zone_id,
+        account_id=account_id,
+    )
+
+    output = response.get("result", [])
+    if not all_results:
+        output = output[:limit]
+
+    readable_output = tableToMarkdown(
+        name="Ruleset versions",
+        t=output,
+        headers=["id", "name", "kind", "phase", "description", "source", "version", "last_updated"],
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CloudflareWAF.Ruleset",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
+def cloudflare_waf_ruleset_version_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a specific version of a ruleset, including its rules.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    ruleset_id = args.get("ruleset_id")
+    if not ruleset_id:
+        raise ValueError("ruleset_id is required.")
+    version = args.get("version")
+    if not version:
+        raise ValueError("version is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+
+    response = client.cloudflare_waf_ruleset_version_get_request(
+        ruleset_id=ruleset_id,
+        version=version,
+        zone_id=zone_id,
+        account_id=account_id,
+    )
+
+    output = response.get("result", {})
+
+    readable_output = _ruleset_readable_output("Ruleset details", output)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CloudflareWAF.Ruleset",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
+def cloudflare_waf_ruleset_version_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Delete a specific version of a ruleset.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: readable outputs for XSOAR.
+    """
+    ruleset_id = args.get("ruleset_id")
+    if not ruleset_id:
+        raise ValueError("ruleset_id is required.")
+    version = args.get("version")
+    if not version:
+        raise ValueError("version is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+    dry_run = arg_to_boolean(args.get("dry_run"))  # type: ignore[arg-type]
+
+    client.cloudflare_waf_ruleset_version_delete_request(
+        ruleset_id=ruleset_id,
+        version=version,
+        zone_id=zone_id,
+        account_id=account_id,
+        dry_run=dry_run,
+    )
+
+    return CommandResults(readable_output=f"Version {version} of ruleset {ruleset_id} was successfully deleted.")
+
+
+def cloudflare_waf_ruleset_entrypoint_version_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List all versions of the entry point ruleset for a specific phase at the account or zone level.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    phase = args.get("phase")
+    if not phase:
+        raise ValueError("phase is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+    all_results = arg_to_boolean(args.get("all_results"))  # type: ignore[arg-type]
+    limit = arg_to_number(args.get("limit", 50))
+    if limit is not None and limit <= 0:
+        raise ValueError("limit must be a positive integer.")
+
+    response = client.cloudflare_waf_ruleset_entrypoint_version_list_request(
+        phase=phase,
+        zone_id=zone_id,
+        account_id=account_id,
+    )
+
+    output = response.get("result", [])
+    if not all_results:
+        output = output[:limit]
+
+    readable_output = tableToMarkdown(
+        name="Entry point ruleset versions",
+        t=output,
+        headers=["id", "name", "kind", "phase", "description", "source", "version", "last_updated"],
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CloudflareWAF.Ruleset",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
+def cloudflare_waf_ruleset_entrypoint_version_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a specific version of the entry point ruleset for a phase, including its rules.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    phase = args.get("phase")
+    if not phase:
+        raise ValueError("phase is required.")
+    version = args.get("version")
+    if not version:
+        raise ValueError("version is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+
+    response = client.cloudflare_waf_ruleset_entrypoint_version_get_request(
+        phase=phase,
+        version=version,
+        zone_id=zone_id,
+        account_id=account_id,
+    )
+
+    output = response.get("result", {})
+
+    readable_output = _ruleset_readable_output("Ruleset details", output)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CloudflareWAF.Ruleset",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
+def cloudflare_waf_ruleset_rule_list_by_tag_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List the rules of a managed ruleset filtered by tag/category. Account scope only.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    ruleset_id = args.get("ruleset_id")
+    if not ruleset_id:
+        raise ValueError("ruleset_id is required.")
+    version = args.get("version")
+    if not version:
+        raise ValueError("version is required.")
+    tag = args.get("tag")
+    if not tag:
+        raise ValueError("tag is required.")
+
+    account_id = args.get("account_id") or client.account_id
+    if not account_id:
+        raise ValueError("account_id is required (via argument or instance configuration).")
+
+    response = client.cloudflare_waf_ruleset_rule_list_by_tag_request(
+        ruleset_id=ruleset_id,
+        version=version,
+        tag=tag,
+        account_id=account_id,
+    )
+
+    output = response.get("result", {})
+
+    ruleset = {
+        "id": output.get("id"),
+        "name": output.get("name"),
+        "description": output.get("description"),
+        "kind": output.get("kind"),
+        "phase": output.get("phase"),
+        "source": output.get("source"),
+        "version": output.get("version"),
+        "last_updated": output.get("last_updated"),
+    }
+
+    readable_output = tableToMarkdown(
+        name="Managed ruleset",
+        t=ruleset,
+        headers=["id", "name", "description", "kind", "phase", "source", "version", "last_updated"],
+        headerTransform=string_to_table_header,
+    )
+
+    rules = output.get("rules")
+    if rules:
+        readable_output += "\n" + tableToMarkdown(
+            name="Matched rules",
+            t=rules,
+            headers=["id", "description", "action", "categories", "enabled"],
+            headerTransform=string_to_table_header,
+        )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CloudflareWAF.Ruleset",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
 
 
 def test_module(client: Client):
@@ -1648,6 +2504,17 @@ def main() -> None:
         "cloudflare-waf-ruleset-create": cloudflare_waf_ruleset_create_command,
         "cloudflare-waf-ruleset-update": cloudflare_waf_ruleset_update_command,
         "cloudflare-waf-ruleset-delete": cloudflare_waf_ruleset_delete_command,
+        "cloudflare-waf-ruleset-rule-create": cloudflare_waf_ruleset_rule_create_command,
+        "cloudflare-waf-ruleset-rule-update": cloudflare_waf_ruleset_rule_update_command,
+        "cloudflare-waf-ruleset-rule-delete": cloudflare_waf_ruleset_rule_delete_command,
+        "cloudflare-waf-ruleset-entrypoint-get": cloudflare_waf_ruleset_entrypoint_get_command,
+        "cloudflare-waf-ruleset-entrypoint-update": cloudflare_waf_ruleset_entrypoint_update_command,
+        "cloudflare-waf-ruleset-version-list": cloudflare_waf_ruleset_version_list_command,
+        "cloudflare-waf-ruleset-version-get": cloudflare_waf_ruleset_version_get_command,
+        "cloudflare-waf-ruleset-version-delete": cloudflare_waf_ruleset_version_delete_command,
+        "cloudflare-waf-ruleset-entrypoint-version-list": cloudflare_waf_ruleset_entrypoint_version_list_command,
+        "cloudflare-waf-ruleset-entrypoint-version-get": cloudflare_waf_ruleset_entrypoint_version_get_command,
+        "cloudflare-waf-ruleset-rule-list-by-tag": cloudflare_waf_ruleset_rule_list_by_tag_command,
     }
     try:
         credentials = get_headers(params)
