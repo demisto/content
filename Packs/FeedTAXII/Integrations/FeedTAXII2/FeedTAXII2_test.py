@@ -23,6 +23,51 @@ class TestFetchIndicators:
     Scenario: Test fetch_indicators_command
     """
 
+    STABLE_INDICATORS = [
+        {"value": "1.1.1.1", "type": "IP", "rawJSON": {"id": "indicator--panda-1", "modified": "2023-01-01T00:00:00.000000Z"}},
+        {"value": "2.2.2.2", "type": "IP", "rawJSON": {"id": "indicator--panda-2", "modified": "2023-01-01T00:00:00.000000Z"}},
+    ]
+
+    @pytest.mark.parametrize(
+        "fetch_full_feed, expected_indicator_count",
+        [
+            pytest.param(True, 2, id="full_feed_returns_all_indicators_even_when_unmodified"),
+            pytest.param(False, 0, id="incremental_feed_skips_unmodified_indicators"),
+        ],
+    )
+    def test_full_feed_skips_deduplication_filter(self, mocker, fetch_full_feed, expected_indicator_count):
+        """
+        Scenario: Test that fetch_indicators_command skips the deduplication filter when Full Feed Fetch is enabled.
+
+        Given:
+        - A single collection with 2 stable indicators (not modified since the previous fetch).
+        - A last_run context that already contains those 2 indicators with the same modified date.
+        - Case 1: fetch_full_feed is True.
+        - Case 2: fetch_full_feed is False.
+
+        When:
+        - fetch_indicators_command is called.
+
+        Then:
+        - Case 1: All 2 indicators are returned (deduplication filter is skipped in full feed mode).
+        - Case 2: 0 indicators are returned (deduplication filter removes unchanged indicators in incremental mode).
+        """
+        mock_client = Taxii2FeedClient(url="", collection_to_fetch="default", proxies=[], verify=False, objects_to_fetch=[])
+        mock_client.collections = [MockCollection("col-1", "default")]
+        mock_client.collection_to_fetch = mock_client.collections[0]
+
+        mocker.patch.object(mock_client, "build_iterator", return_value=self.STABLE_INDICATORS)
+
+        last_run = {
+            "latest_indicators": [
+                {"indicator--panda-1": "2023-01-01T00:00:00.000000Z"},
+                {"indicator--panda-2": "2023-01-01T00:00:00.000000Z"},
+            ]
+        }
+
+        indicators, _ = fetch_indicators_command(mock_client, "1 day", -1, last_run, fetch_full_feed=fetch_full_feed)
+        assert len(indicators) == expected_indicator_count
+
     def test_single_no_context(self, mocker):
         """
         Scenario: Test single collection fetch with no last run
