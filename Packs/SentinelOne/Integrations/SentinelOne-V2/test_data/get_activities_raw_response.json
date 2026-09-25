@@ -1,0 +1,83 @@
+{
+    "data": [
+        {
+            "accountId": "111111111111111111",
+            "accountName": "TestAccount",
+            "activityType": 6,
+            "activityUuid": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+            "agentId": null,
+            "agentUpdatedVersion": null,
+            "comments": null,
+            "createdAt": "2026-01-01T00:00:00.000000Z",
+            "data": {
+                "accountId": 111111111111111111,
+                "accountName": "TestAccount",
+                "bundleMessage": null,
+                "expirationMessage": null,
+                "externalServiceId": null,
+                "fullScopeDetails": "Account TestAccount",
+                "fullScopeDetailsPath": "Global / TestAccount",
+                "groupName": null,
+                "ipAddress": null,
+                "moduleMessage": null,
+                "nameMessage": null,
+                "oldAccountName": "TestAccount",
+                "realUser": null,
+                "scopeLevel": "Account",
+                "scopeName": "TestAccount",
+                "settingMessage": null,
+                "siteName": null,
+                "username": "testuser"
+            },
+            "description": null,
+            "groupId": null,
+            "groupName": null,
+            "hash": null,
+            "id": "222222222222222222",
+            "osFamily": null,
+            "primaryDescription": "The management user testuser updated TestAccount account.",
+            "secondaryDescription": null,
+            "siteId": null,
+            "siteName": null,
+            "threatId": null,
+            "updatedAt": "2026-01-01T00:00:00.000000Z",
+            "userId": null
+        },
+        {
+            "accountId": "111111111111111111",
+            "accountName": "TestAccount",
+            "activityType": 7,
+            "activityUuid": "ffffffff-gggg-hhhh-iiii-jjjjjjjjjjjj",
+            "agentId": null,
+            "agentUpdatedVersion": null,
+            "comments": null,
+            "createdAt": "2026-01-01T00:01:00.000000Z",
+            "data": {
+                "accountId": 111111111111111111,
+                "accountName": "TestAccount",
+                "fullScopeDetails": "Account TestAccount",
+                "fullScopeDetailsPath": "Global / TestAccount",
+                "scopeLevel": "Account",
+                "scopeName": "TestAccount",
+                "username": "testuser"
+            },
+            "description": null,
+            "groupId": null,
+            "groupName": null,
+            "hash": null,
+            "id": "333333333333333333",
+            "osFamily": null,
+            "primaryDescription": "The management user testuser performed an action on TestAccount account.",
+            "secondaryDescription": null,
+            "siteId": null,
+            "siteName": null,
+            "threatId": null,
+            "updatedAt": "2026-01-01T00:01:00.000000Z",
+            "userId": null
+        }
+    ],
+    "pagination": {
+        "totalItems": 2,
+        "nextCursor": null
+    }
+}

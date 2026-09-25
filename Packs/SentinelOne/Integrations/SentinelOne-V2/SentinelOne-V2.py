@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import io
 import json
+import time
 import requests
 import traceback
 from datetime import datetime
@@ -80,6 +81,10 @@ UAM_ANALYST_VERDICT = {
 UAM_ANALYST_VERDICT_INCOMING = {v: k for k, v in UAM_ANALYST_VERDICT.items()}
 
 UAM_SEVERITY_MAPPING = {"CRITICAL": 4, "HIGH": 3, "MEDIUM": 2, "LOW": 1, "INFO": 0.5}
+
+# Delay the UAM fetch window by this amount to allow S1 indexing to complete before querying.
+# UAM team confirmed alert indexing takes "a few seconds to a minute" after creation.
+UAM_FETCH_DELAY_MS = 5 * 60 * 1000  # 5 minutes in milliseconds
 
 """ HELPER FUNCTIONS """
 
@@ -306,7 +311,7 @@ class Client(BaseClient):
             includeHidden=include_hidden,
             created_at__lt=created_before,
             threatIds=argToList(threats_ids),
-            activityTypes=argToList(activity_types),
+            activityTypes=activity_types,
             userIds=argToList(user_ids),
             created_at__gte=created_from,
             createdAt_between=created_between,
@@ -598,6 +603,188 @@ class Client(BaseClient):
 
         response = self._http_request(method="GET", url_suffix=endpoint_url, params=params, ok_codes=ok_codes)
         return response.get("data", {})
+
+    def get_unified_exclusions_request(
+        self,
+        ids: list | None = None,
+        account_ids: list | None = None,
+        site_ids: list | None = None,
+        os_types: list | None = None,
+        mode_type: list | None = None,
+        value_contains: str | None = None,
+        exclusion_name_contains: str | None = None,
+        include_children: bool | None = None,
+        include_parents: bool | None = None,
+        tenant: bool | None = None,
+        limit: int = 10,
+        cursor: str | None = None,
+    ) -> dict:
+        params = assign_params(
+            ids=ids,
+            accountIds=account_ids,
+            siteIds=site_ids,
+            osTypes=os_types,
+            modeType=mode_type,
+            value__contains=value_contains,
+            exclusionName__contains=exclusion_name_contains,
+            includeChildren=include_children,
+            includeParents=include_parents,
+            tenant=tenant,
+            limit=limit,
+            cursor=cursor,
+        )
+        return self._http_request(method="GET", url_suffix="unified-exclusions", params=params)
+
+    def get_alert_with_raw_indicators_graphql_req(self, alert_id: str) -> dict:
+        graphql_endpoint = "unifiedalerts/graphql"
+
+        demisto.debug(f"Fetching alert with raw indicators, alert_id: {alert_id}")
+
+        query = f"""
+            query AlertWithRawIndicators {{
+                alertWithRawIndicators(id: "{alert_id}") {{
+                    hasNextPage
+                    rawIndicators
+                    eventSearchParams {{
+                        accountId
+                        startTime
+                        endTime
+                        filter
+                        type
+                    }}
+                    alert {{
+                        id
+                        name
+                        severity
+                        classification
+                        description
+                        status
+                        analystVerdict
+                        confidenceLevel
+                        primaryIndicatorType
+                        rawData
+                        result
+                        storylineId
+                        attackSurfaces
+                        createdAt
+                        detectedAt
+                        firstSeenAt
+                        lastSeenAt
+                        updatedAt
+                        externalId
+                        indicators {{
+                            id
+                            type
+                            severity
+                            primary
+                            eventTime
+                            attacks {{
+                                tactic {{
+                                    name
+                                    uid
+                                }}
+                                technique {{
+                                    name
+                                    uid
+                                }}
+                            }}
+                        }}
+                        asset {{
+                            id
+                            name
+                            osType
+                            osVersion
+                            agentUuid
+                            agentVersion
+                            lastLoggedInUser
+                            status
+                        }}
+                        detectionSource {{
+                            product
+                            vendor
+                        }}
+                        process {{
+                            cmdLine
+                            username
+                            file {{
+                                name
+                                path
+                                sha1
+                                sha256
+                            }}
+                        }}
+                        observables {{
+                            name
+                            type
+                            value
+                        }}
+                        detectionTime {{
+                            scope {{
+                                accountId
+                                accountName
+                                siteId
+                                siteName
+                                groupId
+                                groupName
+                            }}
+                        }}
+                    }}
+                }}
+            }}
+        """
+        response = self._http_request(
+            method="POST",
+            url_suffix=graphql_endpoint,
+            json_data={"query": query},
+        )
+        return response.get("data", {}).get("alertWithRawIndicators", {})
+
+    def create_unified_exclusion_request(
+        self,
+        exclusion_name: str,
+        os_type: str,
+        mode_type: str,
+        exclusion_type: str,
+        value: str | None,
+        scope_level: str,
+        reason: str,
+        threat_type: str,
+        scope_level_id: str | None = None,
+        description: str | None = None,
+        engines: str | None = None,
+        path_exclusion_type: str | None = None,
+        sha256_value: str | None = None,
+        child_process: bool | None = None,
+    ) -> dict:
+        payload = {
+            "filter": assign_params(
+                scopeLevel=scope_level,
+                scopeLevelId=scope_level_id,
+            ),
+            "data": assign_params(
+                exclusionName=exclusion_name,
+                osType=os_type,
+                modeType=mode_type,
+                type=exclusion_type,
+                value=value,
+                reason=reason,
+                description=description,
+                threatType=threat_type,
+                engines=engines,
+                pathExclusionType=path_exclusion_type,
+                sha256Value=sha256_value,
+                childProcess=child_process,
+            ),
+        }
+        response = self._http_request(method="POST", url_suffix="unified-exclusions", json_data=payload)
+        if "data" in response:
+            return response.get("data")[0]
+        return {}
+
+    def delete_unified_exclusion_request(self, exclusions: list[dict]) -> dict:
+        body = {"data": {"exclusions": exclusions}}
+        response = self._http_request(method="DELETE", url_suffix="unified-exclusions", json_data=body, ok_codes=[200])
+        return response.get("data") or {}
 
     def create_exclusion_item_request(
         self,
@@ -991,7 +1178,9 @@ class Client(BaseClient):
         pagination = response.get("pagination")
         return alerts, pagination
 
-    def get_uam_alerts_graphql_req(self, timestamp, view_type, limit, cursor=None, filter_by_updated_at=False):
+    def get_uam_alerts_graphql_req(
+        self, timestamp, view_type, limit, cursor=None, filter_by_updated_at=False, end_timestamp=None
+    ):
         graphql_endpoint = "unifiedalerts/graphql"
 
         after_clause = f'after: "{cursor}"' if cursor else "after: null"
@@ -1002,7 +1191,12 @@ class Client(BaseClient):
         sort_field = "updatedAt" if filter_by_updated_at else "createdAt"
         use_case = "mirroring (updatedAt)" if filter_by_updated_at else "polling (createdAt)"
 
-        demisto.debug(f"Fetching UAM alerts for {use_case}, timestamp: {timestamp}")
+        if end_timestamp:
+            date_time_range = f"{{ start: {timestamp} end: {end_timestamp} }}"
+        else:
+            date_time_range = f"{{ start: {timestamp} }}"
+
+        demisto.debug(f"Fetching UAM alerts for {use_case}, from: {timestamp}, to: {end_timestamp or 'now'}")
 
         query = f"""
             query Alerts {{
@@ -1014,9 +1208,7 @@ class Client(BaseClient):
                 filters: [
                 {{
                     fieldId: "{filter_field}"
-                    dateTimeRange: {{
-                    start: {timestamp}
-                    }}
+                    dateTimeRange: {date_time_range}
                 }}
                 ]
             ) {{
@@ -3530,6 +3722,176 @@ def get_white_list_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def get_unified_exclusions_command(client: Client, args: dict) -> CommandResults:
+    """
+    List all unified exclusions matching the input filter (v2.1 unified-exclusions endpoint).
+    """
+    context_entries = []
+
+    ids = argToList(args.get("ids", []))
+    account_ids = argToList(args.get("account_ids", []))
+    site_ids = argToList(args.get("site_ids", []))
+    os_types = argToList(args.get("os_types", []))
+    mode_type = argToList(args.get("mode_type", []))
+    value_contains = args.get("value_contains")
+    exclusion_name_contains = args.get("exclusion_name_contains")
+    include_children = argToBoolean(args.get("include_children", False))
+    include_parents = argToBoolean(args.get("include_parents", False))
+    tenant = argToBoolean(args.get("tenant")) if args.get("tenant") else None
+    limit = int(args.get("limit", 10))
+    cursor = args.get("cursor")
+
+    response = client.get_unified_exclusions_request(
+        ids=ids or None,
+        account_ids=account_ids or None,
+        site_ids=site_ids or None,
+        os_types=os_types or None,
+        mode_type=mode_type or None,
+        value_contains=value_contains,
+        exclusion_name_contains=exclusion_name_contains,
+        include_children=include_children,
+        include_parents=include_parents,
+        tenant=tenant,
+        limit=limit,
+        cursor=cursor,
+    )
+
+    exclusion_items = response.get("data", [])
+
+    for exclusion_item in exclusion_items:
+        context_entries.append(
+            {
+                "ID": exclusion_item.get("id"),
+                "Name": exclusion_item.get("exclusionName"),
+                "Type": exclusion_item.get("type"),
+                "ModeType": exclusion_item.get("modeType"),
+                "Value": exclusion_item.get("value"),
+                "OsType": exclusion_item.get("osType"),
+                "Description": exclusion_item.get("description"),
+                "Source": exclusion_item.get("source"),
+                "CreatedAt": exclusion_item.get("createdAt"),
+                "UpdatedAt": exclusion_item.get("updatedAt"),
+                "UserName": exclusion_item.get("userName"),
+                "ThreatType": exclusion_item.get("threatType"),
+                "Engines": exclusion_item.get("engines"),
+            }
+        )
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Sentinel One - Listing unified exclusion items",
+            context_entries,
+            removeNull=True,
+            metadata="Provides summary information and details for all the unified exclusion items"
+            " that matched your search criteria.",
+        ),
+        outputs_prefix="SentinelOne.UnifiedExclusions",
+        outputs_key_field="ID",
+        outputs=context_entries,
+        raw_response=response,
+    )
+
+
+def create_unified_exclusion_command(client: Client, args: dict) -> CommandResults:
+    """
+    Create a unified exclusion using type + value (e.g. path, hash, certificate).
+    Uses the v2.1 unified-exclusions endpoint.
+    """
+    exclusion_name = args["exclusion_name"]
+    os_type = args["os_type"]
+    mode_type = args["mode_type"]
+    exclusion_type = args["exclusion_type"]
+    value = args.get("value")
+    scope_level = args["scope_level"]
+    scope_level_id = args.get("scope_level_id")
+    reason = args["reason"]
+    description = args.get("description")
+    threat_type = args["threat_type"]
+    engines = args.get("engines")
+    path_exclusion_type = args.get("path_exclusion_type")
+    sha256_value = args.get("sha256_value")
+    child_process = argToBoolean(args.get("child_process")) if args.get("child_process") else None
+
+    if scope_level != "tenant" and not scope_level_id:
+        raise DemistoException("scope_level_id is required for non-tenant scope levels.")
+
+    new_item = client.create_unified_exclusion_request(
+        exclusion_name=exclusion_name,
+        os_type=os_type,
+        mode_type=mode_type,
+        exclusion_type=exclusion_type,
+        value=value,
+        scope_level=scope_level,
+        reason=reason,
+        scope_level_id=scope_level_id,
+        description=description,
+        threat_type=threat_type,
+        engines=engines,
+        path_exclusion_type=path_exclusion_type,
+        sha256_value=sha256_value,
+        child_process=child_process,
+    )
+
+    context_entry: dict = {}
+    title = "Sentinel One - Create Unified Exclusion"
+
+    if new_item:
+        title += "\nThe exclusion item was successfully created."
+        context_entry = {
+            "ID": new_item.get("id"),
+            "Name": new_item.get("exclusionName"),
+            "Type": new_item.get("type"),
+            "Value": new_item.get("value"),
+            "ModeType": new_item.get("modeType"),
+            "OsType": new_item.get("osType"),
+            "Description": new_item.get("description"),
+            "ThreatType": new_item.get("threatType"),
+            "Engines": new_item.get("engines"),
+            "PathExclusionType": new_item.get("pathExclusionType"),
+            "Sha256Value": new_item.get("sha256Value"),
+            "Source": new_item.get("source"),
+            "ScopeName": new_item.get("scopeName"),
+            "ScopePath": new_item.get("scopePath"),
+            "CreatedAt": new_item.get("createdAt"),
+            "UpdatedAt": new_item.get("updatedAt"),
+            "UserName": new_item.get("userName"),
+        }
+
+    return CommandResults(
+        readable_output=tableToMarkdown(title, context_entry, removeNull=True, headerTransform=pascalToSpace),
+        outputs_prefix="SentinelOne.UnifiedExclusions",
+        outputs_key_field="ID",
+        outputs=context_entry,
+        raw_response=new_item,
+    )
+
+
+def delete_unified_exclusion_command(client: Client, args: dict) -> CommandResults:
+    """
+    Delete unified exclusion items by IDs and types (v2.1 unified-exclusions endpoint).
+    """
+    ids = argToList(args.get("ids", []))
+    types = argToList(args.get("exclusion_types", []))
+
+    if not ids:
+        raise DemistoException("You must provide at least one exclusion ID to delete.")
+    if len(ids) != len(types):
+        raise DemistoException("The number of ids and exclusion_types must match.")
+
+    exclusions = [{"id": exc_id, "type": exc_type} for exc_id, exc_type in zip(ids, types)]
+
+    response = client.delete_unified_exclusion_request(exclusions=exclusions)
+
+    affected = response.get("affected", 0)
+
+    return CommandResults(
+        readable_output=f"Sentinel One - Unified Exclusions Deleted\n{affected} exclusion item(s) successfully deleted.",
+        outputs_prefix="SentinelOne.UnifiedExclusions.Deleted",
+        outputs={"Affected": affected},
+        raw_response=response,
+    )
+
+
 def get_item_ids_from_whitelist(client: Client, item: str, exclusion_type: str, os_type: str = None) -> list[str | None]:
     """
     Return the IDs of the hash from the white. Helper function for remove_item_from_whitelist
@@ -5747,33 +6109,238 @@ def fetch_uam_alerts(client: Client, args):
     """
     Fetch UAM alerts for polling/incident creation using createdAt filtering.
     This ensures new alerts are discovered during regular polling cycles.
+
+    The query window ends at (now - UAM_FETCH_DELAY_MS) so that alerts have
+    enough time to be indexed by SentinelOne before we query them.
     """
     incidents = []
-    uam_current_fetch = args.get("uam_current_fetch")
+    uam_last_fetch = args.get("uam_last_fetch")
+    uam_query_to = args.get("uam_query_to")
 
     fetch_limit = args.get("fetch_limit")
     view_type = args.get("fetch_uam_alert_type")
 
     if not view_type:
-        return [], uam_current_fetch
+        return [], uam_last_fetch
 
-    # Use createdAt filtering for polling - catches new alerts only
+    if uam_query_to <= uam_last_fetch:
+        # Window end is before window start — first_fetch_time is too recent.
+        # Wait until now-5min has passed first_fetch_time before querying.
+        demisto.debug(f"UAM fetch skipped: uam_query_to ({uam_query_to}) <= uam_last_fetch ({uam_last_fetch})")
+        return [], uam_last_fetch
+
+    # Use createdAt filtering for polling with a shifted end time to avoid missing
+    # alerts that have not yet been indexed at query time.
     uam_alerts, page_info = client.get_uam_alerts_graphql_req(
-        args.get("uam_last_fetch"), view_type, fetch_limit, filter_by_updated_at=False
+        uam_last_fetch, view_type, fetch_limit, filter_by_updated_at=False, end_timestamp=uam_query_to
     )
 
+    last_incident_date = uam_last_fetch
     for alert in uam_alerts:
         alert.update(get_mirroring_fields(args))
         incident = to_incident("UAM Alert", alert)
         date_occurred_dt = parse(incident["occurred"])
         incident_date = int(date_occurred_dt.timestamp() * 1000)
-        if incident_date > args.get("uam_last_fetch"):
+        if incident_date > uam_last_fetch:
             incidents.append(incident)
+        if incident_date > last_incident_date:
+            last_incident_date = incident_date
 
-        if incident_date > uam_current_fetch:
-            uam_current_fetch = incident_date
+    # If we received a full page there may be more alerts in the window — advance to the
+    # last seen alert's date so the next run continues from there (handles backfill / catch-up).
+    # If the page was partial the window is exhausted — advance to uam_query_to so the
+    # window slides forward and we do not re-query the same period.
+    fetch_limit_int = int(fetch_limit) if fetch_limit else 1000
+    if len(uam_alerts) >= fetch_limit_int and last_incident_date > uam_last_fetch:
+        return incidents, last_incident_date
+    return incidents, uam_query_to
 
-    return incidents, uam_current_fetch
+
+def get_alert_with_raw_indicators_command(client: Client, args: dict) -> CommandResults:
+    alert_id = args["alert_id"]
+    result = client.get_alert_with_raw_indicators_graphql_req(alert_id)
+
+    alert = result.get("alert") or {}
+    raw_indicators = result.get("rawIndicators") or []
+    event_search_params = result.get("eventSearchParams") or {}
+
+    indicators = [
+        {
+            "ID": ind.get("id"),
+            "Type": ind.get("type"),
+            "Severity": ind.get("severity"),
+            "Primary": ind.get("primary"),
+            "EventTime": ind.get("eventTime"),
+            "Attacks": ind.get("attacks"),
+        }
+        for ind in (alert.get("indicators") or [])
+        if ind and ind.get("id")
+    ]
+
+    context_entry = {
+        "ID": alert.get("id"),
+        "Name": alert.get("name"),
+        "Severity": alert.get("severity"),
+        "Classification": alert.get("classification"),
+        "Description": alert.get("description"),
+        "Status": alert.get("status"),
+        "AnalystVerdict": alert.get("analystVerdict"),
+        "ConfidenceLevel": alert.get("confidenceLevel"),
+        "PrimaryIndicatorType": alert.get("primaryIndicatorType"),
+        "Result": alert.get("result"),
+        "StorylineId": alert.get("storylineId"),
+        "AttackSurfaces": alert.get("attackSurfaces"),
+        "CreatedAt": alert.get("createdAt"),
+        "DetectedAt": alert.get("detectedAt"),
+        "FirstSeenAt": alert.get("firstSeenAt"),
+        "LastSeenAt": alert.get("lastSeenAt"),
+        "UpdatedAt": alert.get("updatedAt"),
+        "ExternalId": alert.get("externalId"),
+        "Indicators": indicators,
+        "RawIndicators": raw_indicators,
+        "RawData": alert.get("rawData"),
+        "EventSearchParams": event_search_params,
+        "Asset": alert.get("asset"),
+        "DetectionSource": alert.get("detectionSource"),
+        "Process": alert.get("process"),
+        "Observables": alert.get("observables"),
+        "DetectionTime": alert.get("detectionTime"),
+    }
+
+    readable = tableToMarkdown(
+        "SentinelOne - Alert With Raw Indicators",
+        {
+            "ID": alert.get("id"),
+            "Name": alert.get("name"),
+            "Severity": alert.get("severity"),
+            "Classification": alert.get("classification"),
+            "Status": alert.get("status"),
+            "AnalystVerdict": alert.get("analystVerdict"),
+            "ConfidenceLevel": alert.get("confidenceLevel"),
+            "Result": alert.get("result"),
+            "CreatedAt": alert.get("createdAt"),
+            "DetectedAt": alert.get("detectedAt"),
+        },
+        headers=[
+            "ID",
+            "Name",
+            "Severity",
+            "Classification",
+            "Status",
+            "AnalystVerdict",
+            "ConfidenceLevel",
+            "Result",
+            "CreatedAt",
+            "DetectedAt",
+        ],
+        removeNull=True,
+    )
+    if alert.get("asset"):
+        asset = alert.get("asset", {})
+        readable += tableToMarkdown(
+            "Asset",
+            [
+                {
+                    "Name": asset.get("name"),
+                    "OS Type": asset.get("osType"),
+                    "OS Version": asset.get("osVersion"),
+                    "Last User": asset.get("lastLoggedInUser"),
+                    "Status": asset.get("status"),
+                }
+            ],
+            headers=["Name", "OS Type", "OS Version", "Last User", "Status"],
+            removeNull=True,
+        )
+    if alert.get("detectionSource"):
+        readable += tableToMarkdown(
+            "Detection Source",
+            [alert.get("detectionSource")],
+            headers=["product", "vendor"],
+            removeNull=True,
+        )
+    if alert.get("process"):
+        process = alert.get("process", {})
+        file_info = process.get("file", {}) or {}
+        readable += tableToMarkdown(
+            "Process",
+            [
+                {
+                    "Username": process.get("username"),
+                    "File Name": file_info.get("name"),
+                    "File Path": file_info.get("path"),
+                    "SHA256": file_info.get("sha256"),
+                }
+            ],
+            headers=["Username", "File Name", "File Path", "SHA256"],
+            removeNull=True,
+        )
+    if alert.get("observables"):
+        readable += tableToMarkdown(
+            "Observables",
+            alert.get("observables"),
+            headers=["name", "type", "value"],
+            removeNull=True,
+        )
+    if (alert.get("detectionTime") or {}).get("scope"):
+        scope = (alert.get("detectionTime") or {}).get("scope", {})
+        readable += tableToMarkdown(
+            "Detection Scope",
+            [{"Account": scope.get("accountName"), "Site": scope.get("siteName"), "Group": scope.get("groupName")}],
+            headers=["Account", "Site", "Group"],
+            removeNull=True,
+        )
+    if indicators:
+        readable += tableToMarkdown(
+            "Indicators",
+            indicators,
+            headers=["ID", "Type", "Severity", "Primary"],
+            removeNull=True,
+        )
+    raw_data = alert.get("rawData") or {}
+    related_events = (raw_data.get("finding_info") or {}).get("related_events") or []
+    if related_events:
+        readable += tableToMarkdown(
+            "Related Events",
+            [
+                {
+                    "Type": e.get("type"),
+                    "Time": e.get("time"),
+                    "Severity": e.get("severity"),
+                    "UID": e.get("uid"),
+                }
+                for e in related_events
+            ],
+            headers=["Type", "Time", "Severity", "UID"],
+            removeNull=True,
+        )
+    if raw_indicators:
+        raw_indicator_rows = [
+            {
+                "Event ID": ind.get("event.id"),
+                "Event Time": ind.get("event.time"),
+                "Indicator Name": ind.get("indicator.name"),
+                "Category": ind.get("indicator.category"),
+                "Metadata": ind.get("indicator.metadata"),
+                "Process": ind.get("src.process.name"),
+                "Command Line": ind.get("src.process.cmdline"),
+                "Endpoint": ind.get("endpoint.name"),
+            }
+            for ind in raw_indicators
+        ]
+        readable += tableToMarkdown(
+            f"Raw Indicators ({len(raw_indicators)} event(s))",
+            raw_indicator_rows,
+            headers=["Event ID", "Event Time", "Indicator Name", "Category", "Metadata", "Process", "Command Line", "Endpoint"],
+            removeNull=True,
+        )
+
+    return CommandResults(
+        readable_output=readable,
+        outputs_prefix="SentinelOne.AlertWithRawIndicators",
+        outputs_key_field="ID",
+        outputs=context_entry,
+        raw_response=result,
+    )
 
 
 def fetch_handler(client: Client, args):
@@ -5811,8 +6378,12 @@ def fetch_handler(client: Client, args):
     uam_current_fetch = uam_last_fetch
     last_fetch_date_string = timestamp_to_datestring(last_fetch, "%Y-%m-%dT%H:%M:%S.%fZ")
 
+    # Shift UAM query window into the past so alerts have time to be indexed by S1 before we query.
+    uam_query_to = int(time.time() * 1000) - UAM_FETCH_DELAY_MS
+
     args["last_fetch"] = last_fetch
     args["uam_last_fetch"] = uam_last_fetch
+    args["uam_query_to"] = uam_query_to
     args["last_fetch_date_string"] = last_fetch_date_string
     args["current_fetch"] = current_fetch
     args["uam_current_fetch"] = uam_current_fetch
@@ -6035,6 +6606,10 @@ def main():
             "sentinelone-update-uam-alert-verdict": update_uam_alert_analyst_verdict,
             "sentinelone-export-full-threat-timeline": export_full_threat_timeline,
             "sentinelone-export-threat-events": export_threat_events,
+            "sentinelone-get-unified-exclusions": get_unified_exclusions_command,
+            "sentinelone-create-unified-exclusion": create_unified_exclusion_command,
+            "sentinelone-delete-unified-exclusions": delete_unified_exclusion_command,
+            "sentinelone-get-alert-with-raw-indicators": get_alert_with_raw_indicators_command,
         },
         "commands_with_params": {
             "get-remote-data": get_remote_data_command,

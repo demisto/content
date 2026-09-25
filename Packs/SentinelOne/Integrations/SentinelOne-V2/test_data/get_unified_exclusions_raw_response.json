@@ -1,0 +1,26 @@
+{
+    "data": [
+        {
+            "id": "2543493559305834189",
+            "exclusionName": "test api",
+            "type": "path",
+            "value": "ffffffffffffffffffffffffffffffffffffffff",
+            "modeType": "suppression",
+            "osType": "windows",
+            "description": "TEST",
+            "threatType": "EDR",
+            "engines": "suppress",
+            "pathExclusionType": "file",
+            "source": "user",
+            "scopeName": "account",
+            "scopePath": "Global\\SentinelOne",
+            "createdAt": "2026-08-11T08:27:40.176838Z",
+            "updatedAt": "2026-08-11T08:27:40.206134Z",
+            "userName": "sentinelone"
+        }
+    ],
+    "pagination": {
+        "totalItems": 1,
+        "nextCursor": null
+    }
+}
