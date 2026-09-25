@@ -1419,7 +1419,7 @@ script:
     - contextPath: ThreatGrid.DomainAssociatedIp.ips
       description: The associated IP.
       type: String
-  dockerimage: demisto/python3:3.12.13.10325753
+  dockerimage: demisto/python3:3.12.14.13053055
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
