@@ -1,0 +1,33 @@
+[
+    {
+        "Type": 1,
+        "ContentsFormat": "json",
+        "Contents": {
+            "name": "organizations/123456789012/sources/1122334455667788990/locations/global/findings/bc5a86da657611ebb979005056a5924e",
+            "canonicalName": "organizations/123456789012/sources/1122334455667788990/findings/bc5a86da657611ebb979005056a5924e",
+            "parent": "organizations/123456789012/sources/1122334455667788990",
+            "resourceName": "//cloudresourcemanager.googleapis.com/projects/123456789012",
+            "state": "ACTIVE",
+            "category": "Persistence: IAM Anomalous Grant",
+            "severity": "HIGH",
+            "mute": "UNMUTED",
+            "muteInfo": {
+                "staticMute": {
+                    "state": "UNMUTED",
+                    "applyTime": "2026-07-29T09:15:20.123Z"
+                }
+            },
+            "eventTime": "2026-07-28T11:00:00.000Z",
+            "createTime": "2026-07-28T11:05:00.000Z",
+            "externalUri": "https://console.cloud.google.com/security/command-center"
+        },
+        "HumanReadable": "### The finding has been unmuted successfully\n|Organization ID|Name|Mute|State|\n|---|---|---|---|\n| 123456789012 | [bc5a86da657611ebb979005056a5924e](https://console.cloud.google.com) | UNMUTED | ACTIVE |\n",
+        "EntryContext": {
+            "GoogleCloudSCC.FindingV2(val.name === obj.name)": {
+                "name": "organizations/123456789012/sources/1122334455667788990/locations/global/findings/bc5a86da657611ebb979005056a5924e",
+                "mute": "UNMUTED",
+                "state": "ACTIVE"
+            }
+        }
+    }
+]
