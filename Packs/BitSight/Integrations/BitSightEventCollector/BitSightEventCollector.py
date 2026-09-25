@@ -16,6 +16,13 @@ PRODUCT = "Bitsight"
 BITSIGHT_DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_MAX_FETCH = 1000
 GET_EVENTS_LOOKBACK_DAYS = 2
+# Deterministic sort so newly-created findings always append at the tail of the
+# result set. Without this the API returns findings in an unspecified (severity-based)
+# order, which makes offset-based pagination skip new findings that sort before the
+# current offset cursor. See XSUP-77274.
+FINDINGS_SORT = "first_seen"
+# Cap the dedup memory kept in last_run so the state object cannot grow unbounded.
+MAX_DEDUP_KEYS = 20000
 
 # Bitsight headers per existing integration
 CALLING_PLATFORM_VERSION = "XSIAM"
@@ -59,9 +66,18 @@ class Client(BaseClient):
             "last_seen_lte": last_seen_lte,
             "unsampled": "true",
             "expand": "attributed_companies",
+            # Force a deterministic ascending order by first_seen so new findings always
+            # append at the tail. This is required for offset pagination to be correct
+            # (see XSUP-77274). Without it, the API's default ordering is unstable and
+            # new findings can be silently skipped by the advancing offset cursor.
+            "sort": FINDINGS_SORT,
             "limit": limit,
             "offset": offset,
         }
+        demisto.debug(
+            f"BitSight: requesting findings guid={guid} first_seen_gte={first_seen_gte} "
+            f"last_seen_lte={last_seen_lte} sort={FINDINGS_SORT} limit={limit} offset={offset}"
+        )
         return self._http_request(method="GET", url_suffix=f"v1/companies/{encode_string_results(guid)}/findings", params=params)
 
 
@@ -140,8 +156,8 @@ def fetch_events(
 
     Returns:
         tuple[list[dict[str, Any]], dict[str, Any], list[str]]: A tuple containing:
-            - list of events
-            - updated last_run dictionary with incremented offset
+            - list of events (already de-duplicated against previously sent findings)
+            - updated last_run dictionary with incremented offset and dedup keys
             - list of finding IDs that lack date fields (for error handling by caller)
     """
     if "offset" in last_run:
@@ -157,26 +173,82 @@ def fetch_events(
         else:
             first_fetch_date = to_bitsight_date(int(current_time.timestamp()))
 
+    # Previously-sent finding keys (rolledup_observation_id + "-#-" + first_seen).
+    # Used as a safety net so that even if the API ordering shifts, we never re-send
+    # (or, combined with the deterministic sort, never skip) a finding. See XSUP-77274.
+    already_fetched_findings: list[str] = last_run.get("already_fetched_findings") or []
+    already_fetched_set = set(already_fetched_findings)
+
     # Always use same starting date, current date as end
     first_seen_gte = first_fetch_date
     last_seen_lte = to_bitsight_date(int(datetime.now().timestamp()))
+
+    demisto.debug(
+        f"BitSight: fetch_events start first_fetch={first_fetch_date} offset={offset} "
+        f"max_fetch={max_fetch} known_dedup_keys={len(already_fetched_set)}"
+    )
 
     res = client.get_company_findings(
         guid, first_seen_gte=first_seen_gte, last_seen_lte=last_seen_lte, limit=max_fetch, offset=offset
     )
     findings = res.get("results", [])
 
-    events, missing_date_findings = findings_to_events(findings)
+    # Log the API-level pagination metadata so we can tell, on failure, whether the current
+    # window still has more pages than this single fetch pulled (i.e. offset hasn't reached
+    # a given finding's page yet). See XSUP-77274.
+    api_count = res.get("count")
+    api_links = res.get("links") or {}
+    demisto.debug(
+        f"BitSight: API response count={api_count} returned={len(findings)} "
+        f"has_next={bool(api_links.get('next'))} offset={offset} limit={max_fetch}"
+    )
 
-    # Update last_run with incremented offset (matches Performance Management pattern)
-    # Note: Although the API returns pagination links (next/previous) in rare cases of very large amounts of data,
-    # we ignore them since our offset-based approach will automatically fetch remaining data in subsequent calls
+    # Log the identities of every raw finding returned so we can confirm whether a specific
+    # finding (e.g. a reported-missing rolledup_observation_id) was actually returned by the
+    # API on this page, versus never returned at all.
+    raw_finding_keys = [f"{f.get('rolledup_observation_id', '')}-#-{f.get('first_seen', '')}" for f in findings]
+    demisto.debug(f"BitSight: raw finding keys returned this page: {raw_finding_keys}")
+
+    all_events, missing_date_findings = findings_to_events(findings)
+    if missing_date_findings:
+        demisto.debug(f"BitSight: findings missing first_seen date (no _time set): {missing_date_findings}")
+
+    # De-duplicate: only send findings we have not already sent, keyed by
+    # rolledup_observation_id + first_seen (creation day). This mirrors the proven
+    # pattern used by the BitSight Performance Management integration.
+    events: list[dict[str, Any]] = []
+    duplicate_keys: list[str] = []
+    for event in all_events:
+        key = f"{event.get('rolledup_observation_id', '')}-#-{event.get('first_seen', '')}"
+        if key in already_fetched_set:
+            duplicate_keys.append(key)
+            continue
+        events.append(event)
+        already_fetched_set.add(key)
+        already_fetched_findings.append(key)
+
+    # Advance offset by the number of RAW findings returned by the API (not the number
+    # of de-duplicated events) so pagination keeps moving forward through the result set.
     # See: https://help.bitsighttech.com/hc/en-us/articles/360050111794-Pagination
-    new_offset = offset + len(events)
+    new_offset = offset + len(all_events)
+
+    # Bound the dedup memory so last_run cannot grow without limit.
+    if len(already_fetched_findings) > MAX_DEDUP_KEYS:
+        already_fetched_findings = already_fetched_findings[-MAX_DEDUP_KEYS:]
+
     new_last_run: dict[str, Any] = {
         "first_fetch": first_fetch_date,
         "offset": new_offset,
+        "already_fetched_findings": already_fetched_findings,
     }
+
+    demisto.debug(
+        f"BitSight: fetch_events done raw_findings={len(all_events)} new_events={len(events)} "
+        f"skipped_duplicates={len(duplicate_keys)} new_offset={new_offset} "
+        f"total_dedup_keys={len(already_fetched_findings)}"
+    )
+    if duplicate_keys:
+        demisto.debug(f"BitSight: skipped duplicate finding keys: {duplicate_keys}")
 
     return events, new_last_run, missing_date_findings
 
