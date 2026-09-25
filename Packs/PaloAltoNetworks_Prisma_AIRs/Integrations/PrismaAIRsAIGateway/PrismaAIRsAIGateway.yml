@@ -454,6 +454,9 @@ script:
     - contextPath: PrismaAIRs.AIGatewayDeployment.status
       description: The deployment status.
       type: String
+    - contextPath: PrismaAIRs.AIGatewayDeployment.connection_status
+      description: The deployment connection health (for example, healthy or unknown).
+      type: String
   - name: prisma-airs-aigateway-deployments-create
     description: Creates a deployment on the AI Gateway admin plane.
     arguments:
