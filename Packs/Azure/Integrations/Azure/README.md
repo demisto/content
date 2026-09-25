@@ -3124,3 +3124,64 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+### azure-aks-managed-cluster-list
+
+***
+Gets a list of managed clusters in the specified subscription. Required permission: Microsoft.ContainerService/managedClusters/read.
+
+#### Base Command
+
+`azure-aks-managed-cluster-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.AKS.ManagedCluster.id | String | The resource ID. |
+| Azure.AKS.ManagedCluster.location | String | The resource location. |
+| Azure.AKS.ManagedCluster.name | String | The resource name. |
+| Azure.AKS.ManagedCluster.tags | Unknown | The resource tags. |
+| Azure.AKS.ManagedCluster.type | String | The resource type. |
+| Azure.AKS.ManagedCluster.properties.provisioningState | String | The current deployment or provisioning state, which only appears in the response. |
+| Azure.AKS.ManagedCluster.properties.kubernetesVersion | String | The version of Kubernetes specified when creating the managed cluster. |
+| Azure.AKS.ManagedCluster.properties.maxAgentPools | Number | The maximum number of agent pools for the managed cluster. |
+| Azure.AKS.ManagedCluster.properties.dnsPrefix | String | The DNS prefix specified when creating the managed cluster. |
+| Azure.AKS.ManagedCluster.properties.fqdn | String | The FQDN for the master pool. |
+| Azure.AKS.ManagedCluster.properties.nodeResourceGroup | String | The name of the resource group containing agent pool nodes. |
+| Azure.AKS.ManagedCluster.properties.enableRBAC | Boolean | Whether to enable Kubernetes Role-Based Access Control \(RBAC\). |
+| Azure.AKS.ManagedCluster.properties.agentPoolProfiles | Unknown | The agent pool profiles, including name, count, VM size, max pods, OS type, provisioning state, and orchestrator version. |
+| Azure.AKS.ManagedCluster.properties.networkProfile | Unknown | The network configuration, including the network plugin, pod CIDR, service CIDR, and DNS service IP. |
+| Azure.AKS.ManagedCluster.properties.addonProfiles.omsagent | Unknown | The Operations Management Suite Agent add-on configuration, including whether it is enabled and the Log Analytics workspace resource ID. |
+| Azure.AKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting | Unknown | The HTTP application routing add-on configuration, including whether it is enabled and the DNS zone name. |
+
+### azure-aks-managed-cluster-addon-update
+
+***
+Updates a managed cluster with the specified configuration. Required permissions: Microsoft.ContainerService/managedClusters/read, Microsoft.ContainerService/managedClusters/write.
+
+#### Base Command
+
+`azure-aks-managed-cluster-addon-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_name | The name of the managed cluster resource. Can be retrieved using the azure-aks-managed-cluster-list command. | Required |
+| location | The resource location. Can be retrieved using the azure-aks-managed-cluster-list command. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilse, brazilsouth, canadacentral, canadaeast, centralfrance, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, germanyn, germanywc, japaneast, japanwest, koreacentral, koreasouth, northcentralus, northeurope, norwaye, norwayw, southafricanorth, southafricawest, southcentralus, southeastasia, southfrance, southindia, switzerlandn, switzerlandw, uaecentral, uaenorth, uknorth, uksouth, uksouth2, ukwest, westcentralus, westeurope, westindia, westus, westus2. | Required |
+| http_application_routing_enabled | Whether to configure ingress with automatic public DNS name creation. Possible values are: true, false. | Optional |
+| monitoring_agent_enabled | Whether to turn on Log Analytics monitoring. If enabled and monitoring_resource_name is not specified, will use the currently configured workspace resource ID. Possible values are: true, false. | Optional |
+| monitoring_resource_name | The name of an existing Log Analytics workspace to use for storing monitoring data. Can be retrieved in the Log Analytics workspace from the Azure portal. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
+
+#### Context Output
+
+There is no context output for this command.

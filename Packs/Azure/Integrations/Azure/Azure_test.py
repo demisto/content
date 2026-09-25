@@ -25,6 +25,8 @@ from Azure import (
     update_key_vault_command,
     sql_db_threat_policy_update_command,
     sql_db_tde_set_command,
+    aks_clusters_list_command,
+    aks_cluster_addon_update_command,
     cosmosdb_update_command,
     remove_member_from_group_command,
     get_azure_client,
@@ -862,6 +864,279 @@ def test_sql_db_tde_set_command(mocker, client, mock_params):
 
     # Verify results
     assert "Updated SQL database test-db of the server test-server" in result.readable_output
+
+
+def test_aks_clusters_list_command(mocker, client, mock_params):
+    """
+    Given: An Azure client whose aks_clusters_list returns a list of managed clusters.
+    When: The aks_clusters_list_command function is called.
+    Then: The function returns CommandResults with the clusters and the Azure.AKS.ManagedCluster prefix.
+    """
+    from CommonServerPython import CommandResults
+
+    api_response = util_load_json("test_data/aks_clusters_list_response.json")
+    mocker.patch.object(client, "aks_clusters_list", return_value=api_response)
+
+    args = {"subscription_id": "mock_subscription_id"}
+    result = aks_clusters_list_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.AKS.ManagedCluster"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == api_response.get("value")
+
+
+def test_aks_clusters_list_command_no_results(mocker, client, mock_params):
+    """
+    Given: An Azure client whose aks_clusters_list returns an empty cluster list.
+    When: The aks_clusters_list_command function is called.
+    Then: The function returns CommandResults with empty outputs.
+    """
+    from CommonServerPython import CommandResults
+
+    mocker.patch.object(client, "aks_clusters_list", return_value={"value": []})
+
+    args = {"subscription_id": "mock_subscription_id"}
+    result = aks_clusters_list_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == []
+
+
+def test_aks_cluster_addon_update_command(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to update a managed cluster addon with monitoring enabled.
+    When: The aks_cluster_addon_update_command function is called with valid snake_case args.
+    Then: The client method is invoked with the parsed boolean args and a success message is returned.
+    """
+    mock_update = mocker.patch.object(client, "aks_cluster_addon_update", return_value=None)
+
+    args = {
+        "resource_name": "mock_cluster_name",
+        "location": "eastus",
+        "monitoring_agent_enabled": "true",
+        "subscription_id": "mock_subscription_id",
+        "resource_group_name": "mock_resource_group",
+    }
+    result = aks_cluster_addon_update_command(client, mock_params, args)
+
+    mock_update.assert_called_once()
+    call_kwargs = mock_update.call_args.kwargs
+    assert call_kwargs["resource_name"] == "mock_cluster_name"
+    assert call_kwargs["monitoring_agent_enabled"] is True
+    assert call_kwargs["http_application_routing_enabled"] is None
+    assert result.readable_output == "The request to update the managed cluster was sent successfully."
+
+
+def test_aks_cluster_addon_update_command_http_routing(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to update a managed cluster with HTTP application routing enabled.
+    When: The aks_cluster_addon_update_command function is called with http_application_routing_enabled set.
+    Then: The client method is invoked with the parsed boolean and monitoring left as None.
+    """
+    mock_update = mocker.patch.object(client, "aks_cluster_addon_update", return_value=None)
+
+    args = {
+        "resource_name": "mock_cluster_name",
+        "location": "eastus",
+        "http_application_routing_enabled": "false",
+        "subscription_id": "mock_subscription_id",
+        "resource_group_name": "mock_resource_group",
+    }
+    result = aks_cluster_addon_update_command(client, mock_params, args)
+
+    mock_update.assert_called_once()
+    call_kwargs = mock_update.call_args.kwargs
+    assert call_kwargs["http_application_routing_enabled"] is False
+    assert call_kwargs["monitoring_agent_enabled"] is None
+    assert call_kwargs["monitoring_resource_name"] is None
+    assert result.readable_output == "The request to update the managed cluster was sent successfully."
+
+
+def test_azure_client_aks_clusters_list(mocker, client):
+    """
+    Given: An Azure client and a subscription ID.
+    When: The aks_clusters_list method is called.
+    Then: The function makes a GET call to the managed clusters URL with the AKS api-version.
+    """
+    mock_response = {"value": [{"id": "mock_cluster_id", "name": "mock_cluster"}]}
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    result = client.aks_clusters_list(subscription_id="mock_subscription_id")
+
+    expected_url = f"{PREFIX_URL_AZURE}mock_subscription_id/providers/Microsoft.ContainerService/managedClusters"
+    client.http_request.assert_called_once()
+    call_args = client.http_request.call_args
+    assert call_args[0][0] == "GET"
+    assert call_args[1]["full_url"] == expected_url
+    assert "api-version" in call_args[1]["params"]
+    assert result == mock_response
+
+
+def test_azure_client_aks_clusters_list_error(mocker, client):
+    """
+    Given: An Azure client whose http_request raises an error.
+    When: The aks_clusters_list method is called.
+    Then: The error is routed through handle_azure_error.
+    """
+    mocker.patch.object(client, "http_request", side_effect=Exception("403 Forbidden"))
+    mock_handle = mocker.patch.object(client, "handle_azure_error")
+
+    client.aks_clusters_list(subscription_id="mock_subscription_id")
+
+    mock_handle.assert_called_once()
+    assert mock_handle.call_args.kwargs["api_function_name"] == "aks_clusters_list"
+    assert mock_handle.call_args.kwargs["subscription_id"] == "mock_subscription_id"
+
+
+def test_azure_client_aks_cluster_get(mocker, client):
+    """
+    Given: An Azure client and cluster identifiers.
+    When: The aks_cluster_get method is called.
+    Then: The function makes a GET call to the managed cluster URL with the AKS api-version.
+    """
+    mock_response = {"id": "mock_cluster_id", "name": "mock_cluster"}
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    result = client.aks_cluster_get(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        resource_name="mock_cluster",
+    )
+
+    expected_url = (
+        f"{PREFIX_URL_AZURE}mock_subscription_id/resourceGroups/mock_resource_group"
+        "/providers/Microsoft.ContainerService/managedClusters/mock_cluster"
+    )
+    client.http_request.assert_called_once()
+    call_args = client.http_request.call_args
+    assert call_args[0][0] == "GET"
+    assert call_args[1]["full_url"] == expected_url
+    assert "api-version" in call_args[1]["params"]
+    assert result == mock_response
+
+
+def test_azure_client_aks_cluster_get_error(mocker, client):
+    """
+    Given: An Azure client whose http_request raises an error.
+    When: The aks_cluster_get method is called.
+    Then: The error is routed through handle_azure_error with the resource details.
+    """
+    mocker.patch.object(client, "http_request", side_effect=Exception("404 Not Found"))
+    mock_handle = mocker.patch.object(client, "handle_azure_error")
+
+    client.aks_cluster_get(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        resource_name="mock_cluster",
+    )
+
+    mock_handle.assert_called_once()
+    assert mock_handle.call_args.kwargs["api_function_name"] == "aks_cluster_get"
+    assert mock_handle.call_args.kwargs["resource_name"] == "mock_cluster"
+
+
+def test_azure_client_aks_cluster_addon_update_http_routing(mocker, client):
+    """
+    Given: An Azure client and an HTTP application routing update.
+    When: The aks_cluster_addon_update method is called with http_application_routing_enabled.
+    Then: The PUT body contains the httpApplicationRouting addon profile and no omsagent profile.
+    """
+    mocker.patch.object(client, "http_request", return_value={})
+
+    client.aks_cluster_addon_update(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        resource_name="mock_cluster",
+        location="eastus",
+        http_application_routing_enabled=True,
+    )
+
+    call_args = client.http_request.call_args
+    assert call_args[0][0] == "PUT"
+    json_data = call_args[1]["json_data"]
+    assert json_data["location"] == "eastus"
+    addon_profiles = json_data["properties"]["addonProfiles"]
+    assert addon_profiles["httpApplicationRouting"] == {"enabled": True}
+    assert "omsagent" not in addon_profiles
+
+
+def test_azure_client_aks_cluster_addon_update_monitoring_with_resource(mocker, client):
+    """
+    Given: An Azure client and a monitoring update that specifies a monitoring workspace name.
+    When: The aks_cluster_addon_update method is called with monitoring_resource_name.
+    Then: The omsagent profile is built with a constructed Log Analytics workspace resource ID.
+    """
+    mocker.patch.object(client, "http_request", return_value={})
+    mock_get = mocker.patch.object(client, "aks_cluster_get")
+
+    client.aks_cluster_addon_update(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        resource_name="mock_cluster",
+        location="eastus",
+        monitoring_agent_enabled=True,
+        monitoring_resource_name="mock_workspace",
+    )
+
+    mock_get.assert_not_called()
+    omsagent = client.http_request.call_args[1]["json_data"]["properties"]["addonProfiles"]["omsagent"]
+    assert omsagent["enabled"] is True
+    workspace_id = omsagent["config"]["logAnalyticsWorkspaceResourceID"]
+    assert "mock_subscription_id" in workspace_id
+    assert workspace_id.endswith("mock_workspace")
+
+
+def test_azure_client_aks_cluster_addon_update_monitoring_without_resource(mocker, client):
+    """
+    Given: An Azure client and a monitoring update with no workspace name provided.
+    When: The aks_cluster_addon_update method is called without monitoring_resource_name.
+    Then: The existing workspace resource ID is read from the cluster via aks_cluster_get.
+    """
+    mocker.patch.object(client, "http_request", return_value={})
+    mocker.patch.object(
+        client,
+        "aks_cluster_get",
+        return_value={
+            "properties": {
+                "addonProfiles": {"omsagent": {"config": {"logAnalyticsWorkspaceResourceID": "mock_existing_workspace_id"}}}
+            }
+        },
+    )
+
+    client.aks_cluster_addon_update(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        resource_name="mock_cluster",
+        location="eastus",
+        monitoring_agent_enabled=True,
+    )
+
+    client.aks_cluster_get.assert_called_once_with("mock_subscription_id", "mock_resource_group", "mock_cluster")
+    omsagent = client.http_request.call_args[1]["json_data"]["properties"]["addonProfiles"]["omsagent"]
+    assert omsagent["config"]["logAnalyticsWorkspaceResourceID"] == "mock_existing_workspace_id"
+
+
+def test_azure_client_aks_cluster_addon_update_error(mocker, client):
+    """
+    Given: An Azure client whose http_request raises an error.
+    When: The aks_cluster_addon_update method is called.
+    Then: The error is routed through handle_azure_error.
+    """
+    mocker.patch.object(client, "http_request", side_effect=Exception("400 Bad Request"))
+    mock_handle = mocker.patch.object(client, "handle_azure_error")
+
+    client.aks_cluster_addon_update(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        resource_name="mock_cluster",
+        location="eastus",
+        http_application_routing_enabled=True,
+    )
+
+    mock_handle.assert_called_once()
+    assert mock_handle.call_args.kwargs["api_function_name"] == "aks_cluster_addon_update"
+    assert mock_handle.call_args.kwargs["resource_name"] == "mock_cluster"
 
 
 def test_cosmosdb_update_command(mocker, client, mock_params):
