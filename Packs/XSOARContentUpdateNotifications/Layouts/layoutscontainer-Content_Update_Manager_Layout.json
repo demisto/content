@@ -208,6 +208,25 @@
  "edit": {
   "sections": [
    {
+	"description": "",
+	"fields": [
+		{
+			"fieldId": "incident_owner",
+			"isVisible": true
+		},
+		{
+			"fieldId": "incident_type",
+			"isVisible": true
+		}
+	],
+	"isVisible": true,
+	"name": "Basic Information",
+	"query": null,
+	"queryType": "",
+	"readOnly": false,
+	"type": ""
+   },
+   {
     "description": "Please ensure to provide an instance name for which to use to check updates against.",
     "fields": [
      {
