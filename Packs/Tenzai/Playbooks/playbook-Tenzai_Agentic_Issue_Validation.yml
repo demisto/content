@@ -1,0 +1,438 @@
+id: Tenzai Agentic Issue Validation
+version: -1
+name: Tenzai Agentic Issue Validation
+description: |-
+  Validates an ASM-discovered exposure with Tenzai's agentic penetration testing.
+  Triggers a Tenzai validation assessment, polls until it completes, fetches the verdict,
+  and records the verdict in the Tenzai issue fields. It does not change the issue severity.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3f1c0a10-0000-4000-8000-000000000000
+    type: start
+    task:
+      id: 3f1c0a10-0000-4000-8000-000000000000
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 3f1c0a10-0000-4000-8000-000000000001
+    type: regular
+    task:
+      id: 3f1c0a10-0000-4000-8000-000000000001
+      version: -1
+      name: Start Tenzai validation
+      description: Triggers a Tenzai validation assessment for the exposure, stores its id, and marks the issue Running.
+      scriptName: StartAgenticValidation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      service_id:
+        complex:
+          root: alert
+          accessor: asmserviceid
+      exposure_name:
+        complex:
+          root: alert
+          accessor: name
+      alert_internal_id:
+        complex:
+          root: alert
+          accessor: id
+      issue_description:
+        complex:
+          root: alert
+          accessor: details
+      cve_id:
+        complex:
+          root: alert
+          accessor: xdmvulnerabilitycveid
+      rule_id:
+        complex:
+          root: alert
+          accessor: ruleid
+      poll:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 3f1c0a10-0000-4000-8000-000000000002
+    type: regular
+    task:
+      id: 3f1c0a10-0000-4000-8000-000000000002
+      version: -1
+      name: Poll Tenzai validation status
+      description: Polls the Tenzai assessment until it reaches a terminal state (Complete or Error).
+      script: Tenzai|||tenzai-get-scan
+      type: regular
+      iscommand: true
+      brand: Tenzai
+    nexttasks:
+      '#none#':
+      - "3"
+      '#error#':
+      - "9"
+    scriptarguments:
+      id:
+        complex:
+          root: Tenzai.Scan
+          accessor: id
+      interval_in_seconds:
+        simple: ${inputs.PollingInterval}
+      timeout_in_seconds:
+        simple: ${inputs.PollingTimeout}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 3f1c0a10-0000-4000-8000-000000000003
+    type: regular
+    task:
+      id: 3f1c0a10-0000-4000-8000-000000000003
+      version: -1
+      name: Fetch result and write the verdict
+      description: >-
+        Fetches the terminal Tenzai verdict (scoped to this alert's exposure lead via the carried
+        correlation keys) and writes it to the issue through the shared writer — scalar fields, the
+        findings grid (with per-finding attribution), the timeline, and the cleared boolean verdict.
+        This is the same write path the ad-hoc button uses, so both paths persist identical results.
+      scriptName: StartAgenticValidation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      scan_id_internal:
+        complex:
+          root: Tenzai.Scan
+          accessor: id
+      write_only:
+        simple: "true"
+      alert_id:
+        complex:
+          root: Tenzai.Scan
+          accessor: alert_id
+      cve:
+        complex:
+          root: Tenzai.Scan
+          accessor: cve
+      rule_id:
+        complex:
+          root: Tenzai.Scan
+          accessor: rule_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 3f1c0a10-0000-4000-8000-000000000007
+    type: title
+    task:
+      id: 3f1c0a10-0000-4000-8000-000000000007
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 3f1c0a10-0000-4000-8000-000000000008
+    type: condition
+    task:
+      id: 3f1c0a10-0000-4000-8000-000000000008
+      version: -1
+      name: Is a Tenzai integration instance enabled?
+      description: Checks that an enabled Tenzai integration instance exists before running the Tenzai tasks. If none is available, the playbook ends without changing the issue.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "10"
+    scriptarguments:
+      brandname:
+        simple: Tenzai
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 3f1c0a10-0000-4000-8000-000000000009
+    type: regular
+    task:
+      id: 3f1c0a10-0000-4000-8000-000000000009
+      version: -1
+      name: Mark the assessment status Error
+      description: Sets the Tenzai Assessment Status to Error when polling fails or times out, so the issue does not stay Running and can be re-run.
+      script: '|||setIncident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      tenzaiassessmentstatus:
+        simple: Error
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 3f1c0a10-0000-4000-8000-000000000010
+    type: condition
+    task:
+      id: 3f1c0a10-0000-4000-8000-000000000010
+      version: -1
+      name: Is analyst approval required?
+      description: Branches on the RequireAnalystApproval input. When false, the playbook starts Tenzai validation immediately; when true, it waits for an analyst to approve active testing.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "Approval required":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "Approval required"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.RequireAnalystApproval
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 3f1c0a10-0000-4000-8000-000000000011
+    type: condition
+    task:
+      id: 3f1c0a10-0000-4000-8000-000000000011
+      version: -1
+      name: Approve Tenzai active testing?
+      description: |-
+        Manual approval gate. Tenzai validation runs ACTIVE penetration testing against the live production
+        asset and consumes Tenzai credits. ASM attribution can occasionally be wrong, so an analyst must
+        confirm the target and the exposure before testing starts. Approve to start validation, or Reject to
+        end without testing.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "Approve":
+      - "1"
+      "Reject":
+      - "7"
+    separatecontext: false
+    message:
+      to:
+      subject:
+      body:
+        simple: |-
+          Approve Tenzai active penetration testing against this asset?
+
+          This starts ACTIVE testing against the live production asset and consumes Tenzai credits. Confirm the target and exposure are correct (ASM attribution can occasionally be wrong) before approving.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1340,
+        "width": 1055,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: RequireAnalystApproval
+  value:
+    simple: "true"
+  required: false
+  description: When true (default), the playbook pauses for an analyst to approve before Tenzai starts active testing, because validation runs live penetration testing against the production asset and consumes Tenzai credits. Set to false to start validation automatically without approval.
+  playbookInputQuery:
+- key: PollingInterval
+  value:
+    simple: "60"
+  required: false
+  description: The interval, in seconds, between Tenzai scan status polls.
+  playbookInputQuery:
+- key: PollingTimeout
+  value:
+    simple: "3600"
+  required: false
+  description: The maximum time, in seconds, to wait for the Tenzai scan to reach a terminal state before giving up.
+  playbookInputQuery:
+outputs: []
+fromversion: 6.10.0
+marketplaces:
+- platform
+- marketplacev2
+tests:
+- No tests (auto formatted)
