@@ -374,10 +374,20 @@ class SlackAssistantHandler(AssistantMessagingHandler):
                 return {"ts": response.get("ts")}
             return {}
         except SlackApiError as e:
-            # If blocks or attachments are invalid, send as plain text so the message isn't lost.
             error_str = str(e)
-            if "invalid_blocks" in error_str or "invalid_attachments" in error_str:
-                demisto.error(f"Invalid blocks/attachments format, sending as plain text: {e}")
+            # msg_blocks_too_long means the blocks payload is too large for a single message.
+            # Try to split it across several messages so the formatted response is preserved
+            # instead of being degraded to plain text.
+            if "msg_blocks_too_long" in error_str:
+                demisto.error(f"Blocks too long for a single message, splitting: {e}")
+                split_result = self._post_agent_response_split(channel_id, thread_id, blocks, attachments)
+                if split_result is not None:
+                    return split_result
+            # For invalid blocks/attachments (or if splitting still failed), send the message
+            # as plain text so it isn't lost.
+            block_errors = ("invalid_blocks", "invalid_attachments", "msg_blocks_too_long")
+            if any(err in error_str for err in block_errors):
+                demisto.error(f"Blocks/attachments rejected by Slack, sending as plain text: {e}")
                 if fallback_text:
                     response = send_message_to_destinations(
                         [channel_id], fallback_text, thread_id, bot_name=AssistantMessages.BOT_DISPLAY_NAME
@@ -385,6 +395,69 @@ class SlackAssistantHandler(AssistantMessagingHandler):
                     if response:
                         return {"ts": response.get("ts")}
             raise
+
+    def _post_agent_response_split(
+        self, channel_id: str, thread_id: str, blocks: list, attachments: list
+    ) -> dict | None:
+        """
+        Sends an oversized agent response across several messages, respecting Slack's
+        per-message block limit.
+
+        Handles both delivery shapes used by the assistant:
+        - Model/final responses use top-level ``blocks``.
+        - Step/error responses wrap their blocks inside a single ``attachments`` entry.
+
+        Args:
+            channel_id: The channel ID.
+            thread_id: The thread ID.
+            blocks: Top-level message blocks (empty for step/error messages).
+            attachments: Message attachments (empty for model/final messages).
+
+        Returns:
+            The response dict of the first successfully sent chunk (with its ``ts``),
+            or None if splitting is not possible (so the caller can fall back to plain text).
+        """
+        block_chunks, attachment_template = self._build_chunks_for_split(blocks, attachments)
+        if not block_chunks or len(block_chunks) < 2:
+            # Nothing to gain from splitting (single chunk would still be too long).
+            return None
+
+        first_response: dict | None = None
+        for chunk in block_chunks:
+            chunk_blocks, chunk_attachments = self._wrap_chunk(chunk, attachment_template)
+            try:
+                response = send_message_to_destinations(
+                    [channel_id], "", thread_id, chunk_blocks, chunk_attachments,
+                    bot_name=AssistantMessages.BOT_DISPLAY_NAME,
+                )
+            except SlackApiError as chunk_error:
+                demisto.error(f"Failed to send split chunk, aborting split: {chunk_error}")
+                return None
+            if response and first_response is None:
+                first_response = {"ts": response.get("ts")}
+        return first_response
+
+    @staticmethod
+    def _build_chunks_for_split(blocks: list, attachments: list) -> tuple[list[list], dict | None]:
+        """
+        Determines the blocks to split and (for attachment-based messages) the attachment
+        wrapper to reuse for each chunk.
+
+        Returns:
+            Tuple of (block_chunks, attachment_template). attachment_template is None when
+            the message uses top-level blocks.
+        """
+        if attachments and isinstance(attachments[0], dict) and attachments[0].get("blocks"):
+            attachment_template = {k: v for k, v in attachments[0].items() if k != "blocks"}
+            return split_blocks_into_chunks(attachments[0]["blocks"]), attachment_template
+        return split_blocks_into_chunks(blocks or []), None
+
+    @staticmethod
+    def _wrap_chunk(chunk: list, attachment_template: dict | None) -> tuple[list, list]:
+        """Wraps a block chunk back into the (blocks, attachments) shape it originated from."""
+        if attachment_template is not None:
+            return [], [{**attachment_template, "blocks": chunk}]
+        return chunk, []
 
     def update_context(self, context_updates: dict):
         """
