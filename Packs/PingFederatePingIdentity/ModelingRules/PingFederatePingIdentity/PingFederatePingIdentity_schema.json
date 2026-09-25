@@ -1,0 +1,104 @@
+{
+    "ping_identity_pingfederate_raw": {
+        "rt": {
+            "type": "string",
+            "is_array": false
+        },
+        "msg": {
+            "type": "string",
+            "is_array": false
+        },
+        "src": {
+            "type": "string",
+            "is_array": false
+        },
+        "duid": {
+            "type": "string",
+            "is_array": false
+        },
+        "dvchost": {
+            "type": "string",
+            "is_array": false
+        },
+        "externalId": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefName": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefVersion": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefSeverity": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceVendor": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceProduct": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceVersion": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefDeviceEventClassId": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs1": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs1Label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs2": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs2Label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs3": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs3Label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs4": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs4Label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs5": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs5Label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs6": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs6Label": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
