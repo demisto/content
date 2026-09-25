@@ -1,0 +1,20 @@
+{
+    "data": [
+        {
+            "id": "200",
+            "name": "Malware Detection",
+            "type": "Malware",
+            "severity": 3,
+            "status": 0,
+            "owner": "admin",
+            "occurred": "2026-09-10T14:00:00Z",
+            "created": "2026-09-10T14:00:00Z",
+            "modified": "2026-09-10T14:30:00Z",
+            "closed": "",
+            "closeReason": "",
+            "details": "Malware detected on endpoint",
+            "labels": [],
+            "CustomFields": {}
+        }
+    ]
+}

@@ -1,0 +1,2 @@
+!xsoar6-get-incidents limit="10"
+!xsoar6-get-incident incident_id="200"

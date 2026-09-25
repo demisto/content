@@ -1,0 +1,15 @@
+{
+    "name": "XSOAR Incident Exporter",
+    "description": "Export XSOAR 6 incidents to Cortex XSIAM via push (Insert Parsed Alerts API) or pull (fetch-incidents) workflows.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "jhueby",
+    "url": "https://github.com/jhueby/Xporter",
+    "email": "",
+    "categories": ["Utilities"],
+    "tags": [],
+    "useCases": ["Incident Response"],
+    "keywords": ["export", "incidents", "migration", "xsoar", "xsiam", "xporter"],
+    "created": "2026-09-15T00:00:00Z",
+    "marketplaces": ["xsoar", "marketplacev2"]
+}
