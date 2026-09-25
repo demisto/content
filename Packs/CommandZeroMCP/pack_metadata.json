@@ -1,0 +1,31 @@
+{
+    "name": "Command Zero MCP",
+    "description": "Connect Cortex Agentic AI to the Command Zero Model Context Protocol (MCP) server to search questions, run investigations, and read investigation reports.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "serverMinVersion": "8.13.0",
+    "author": "Command Zero",
+    "url": "https://cmdzero.io",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Command Zero",
+        "MCP",
+        "Investigation"
+    ],
+    "marketplaces": [
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "cloud",
+        "cloud_runtime_security",
+        "cloud_posture",
+        "xsiam",
+        "edr"
+    ]
+}

@@ -1,0 +1,82 @@
+category: Utilities
+provider: Command Zero
+sectionorder:
+- Connect
+commonfields:
+  id: Command Zero MCP
+  version: -1
+configuration:
+- name: region
+  section: Connect
+  display: Region
+  type: 15
+  required: true
+  defaultvalue: North America
+  options:
+  - North America
+  - European Union
+  additionalinfo: The region that hosts your Command Zero organization.
+- name: auth_code
+  type: 9
+  displaypassword: Authorization code
+  hiddenusername: true
+  section: Connect
+  additionalinfo: Run the command-zero-mcp-generate-login-url command to obtain the Authorization code.
+- name: server_url
+  section: Connect
+  display: Custom Server URL
+  type: 0
+  advanced: true
+  additionalinfo: Overrides the Region parameter. Use only when instructed by Command Zero.
+- name: redirect_uri
+  section: Connect
+  display: Redirect URI
+  defaultvalue: https://oproxy.demisto.ninja/authcode
+  type: 0
+  advanced: true
+  additionalinfo: The URI registered with Command Zero to receive the authorization code.
+- name: custom_headers
+  section: Connect
+  display: Custom headers
+  type: 12
+  advanced: true
+  additionalinfo: |-
+    Add custom headers to be sent with each request.
+    Enter each header on a new line in the format: HeaderName: HeaderValue.
+- name: insecure
+  section: Connect
+  display: Trust any certificate (not secure)
+  type: 8
+  advanced: true
+description: Use this integration to connect securely with the Command Zero Model Context Protocol (MCP) server and access its investigation tools in real time.
+display: Command Zero MCP
+name: Command Zero MCP
+script:
+  commands:
+  - arguments: []
+    description: Retrieves a list of available tools in the Command Zero MCP server.
+    name: list-tools
+    hidden: true
+    outputs: []
+  - arguments:
+    - name: name
+      description: The name of the tool to call.
+      required: true
+    - name: arguments
+      description: Parameters for the tool execution.
+    description: Calls a specific tool on the Command Zero MCP server with optional input parameters.
+    name: call-tool
+    hidden: true
+    outputs: []
+  - description: Test the authentication configuration with the Command Zero MCP server.
+    name: command-zero-mcp-auth-test
+  - description: Generate an authentication login URL.
+    name: command-zero-mcp-generate-login-url
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/mcp:1.0.0.10120494
+  mcp: true
+fromversion: 8.13.0
+tests:
+- No tests (auto formatted)
