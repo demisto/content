@@ -865,7 +865,7 @@ class TestJiraEditIssueCommand:
             DemistoException,
             match=(
                 "When using the `issue_json` argument, additional arguments cannot be used "
-                "except `issue_id`, `issue_key`, `status`, `transition`, and `action` arguments.ֿֿֿ"
+                "except `issue_id`, `issue_key`, `status`, `transition`, and `action` arguments."
                 "\n see the argument description"
             ),
         ):
@@ -2404,7 +2404,11 @@ class TestJiraGetRemoteData:
             attachment_tag_from_jira="",
             comment_tag_from_jira="comment from jira",
             user_timezone_name=user_timezone,
-            incident_modified_date=dateparser.parse("2023-04-01"),
+            # Built the same way get_remote_data_command builds it (TIMEZONE + RETURN_AS_TIMEZONE_AWARE), so it's
+            # comparable against Jira's comment timestamps, which always carry an explicit UTC offset.
+            incident_modified_date=dateparser.parse(
+                "2023-04-01", settings={"TIMEZONE": user_timezone, "RETURN_AS_TIMEZONE_AWARE": True}
+            ),
             fetch_comments=True,
             fetch_attachments=False,
         )
@@ -2426,12 +2430,78 @@ class TestJiraGetRemoteData:
         assert parsed_entries == expected_parsed_entries
         assert dateparser_parse_mocker.call_args[1]["settings"]["TIMEZONE"] == user_timezone
 
+    def test_get_comment_entries_naive_last_update_vs_aware_comment_timestamp(self, mocker):
+        """
+        Given:
+            - A Jira client, an incident last-update timestamp in the "naive" shape (no UTC offset) that the
+            platform commonly sends as the get-remote-data 'lastUpdate' arg, and Jira comments whose timestamps
+            always carry an explicit UTC offset (Jira's actual API format)
+        When:
+            - get_updated_remote_data compares the comment's updated time against the incident's last-update time
+            to decide whether the comment is new enough to mirror in
+        Then:
+            - The comparison does not raise (offset-naive vs. offset-aware datetimes are not directly comparable),
+            and the comment newer than the incident's last update is still mirrored in as a Note.
+            Regression test: previously, incident_modified_date was parsed without RETURN_AS_TIMEZONE_AWARE, so a
+            naive 'lastUpdate' string stayed naive while Jira's offset-bearing comment timestamps parsed as
+            timezone-aware. Comparing them raised a TypeError that aborted the entire get-remote-data call,
+            silently dropping all comments, attachments, and field updates for that poll - not just the comment.
+        """
+        from JiraV3 import get_updated_remote_data
+
+        comments_entries = [
+            {"Comment": "Old comment", "Updated": "2024-01-10T09:00:00.000+0200", "UpdateUser": "User 1"},
+            {"Comment": "New comment", "Updated": "2024-01-20T09:00:00.000+0200", "UpdateUser": "User 2"},
+        ]
+        client = jira_base_client_mock()
+        mocker.patch("JiraV3.get_comments_entries_for_fetched_incident", return_value=comments_entries)
+        mocker.patch("JiraV3.get_attachments_entries_for_fetched_incident", return_value=[])
+        user_timezone = "Asia/Jerusalem"
+        # Intentionally no UTC offset, mirroring the raw 'lastUpdate' shape the platform sends in practice, and
+        # built the same way get_remote_data_command builds incident_modified_date in production.
+        incident_modified_date = dateparser.parse(
+            "2024-01-15 00:00:00", settings={"TIMEZONE": user_timezone, "RETURN_AS_TIMEZONE_AWARE": True}
+        )
+        updated_incident: Dict[str, Any] = {}
+        parsed_entries = get_updated_remote_data(
+            client=client,
+            issue={},
+            updated_incident=updated_incident,
+            issue_id="1234",
+            mirror_resolved_issue=False,
+            attachment_tag_from_jira="",
+            comment_tag_from_jira="comment from jira",
+            user_timezone_name=user_timezone,
+            incident_modified_date=incident_modified_date,
+            fetch_comments=True,
+            fetch_attachments=False,
+        )
+        assert parsed_entries == [
+            {
+                "Type": 1,
+                "Contents": "New comment\nJira Author: User 2",
+                "ContentsFormat": "text",
+                "Tags": ["comment from jira"],
+                "Note": True,
+            }
+        ]
+
     @pytest.mark.parametrize(
         "issue, should_be_closed",
         [
+            # Original shape (backwards compatibility): literal status name "Done", no statusCategory in the payload.
             ({"id": "1234", "fields": {"status": {"name": "Done"}, "resolutiondate": ""}}, True),
             ({"id": "1234", "fields": {"status": {"name": "Fixed"}, "resolutiondate": "2023-01-01"}}, True),
             ({"id": "1234", "fields": {"status": {"name": "Fixed"}, "resolutiondate": ""}}, False),
+            # New: a custom terminal status name is recognized via Jira's own "Done" status category, without
+            # requiring the literal name "Done" or any per-instance configuration.
+            (
+                {
+                    "id": "1234",
+                    "fields": {"status": {"name": "Won't Fix", "statusCategory": {"key": "done"}}, "resolutiondate": ""},
+                },
+                True,
+            ),
         ],
     )
     def test_close_incident_entry(self, mocker, issue, should_be_closed):
@@ -2439,8 +2509,9 @@ class TestJiraGetRemoteData:
         Given:
             - A Jira client
         When
-            - When the mirror in mechanism is called, which calls the get-remote-data command, and
-            the remote Jira issue has been marked as resolved, or status has been changed to Done
+            - When the mirror in mechanism is called, which calls the get-remote-data command, and the remote Jira
+            issue's status category has been changed to Done (regardless of the status's literal name), or the
+            issue has been marked as resolved
         Then
             - Validate that correct entry is returned, which contains data about closing the incident in XSOAR
         """
