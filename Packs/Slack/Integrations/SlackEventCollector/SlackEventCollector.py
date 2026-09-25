@@ -13,9 +13,15 @@ class Config:
 
     # Recommended page size by Slack for the Audit Logs API.
     API_PAGE_SIZE = 200
-    # The maximum time range (in seconds) to fetch in a single run to avoid
-    # timeouts / out-of-memory when a very large backlog needs to be collected.
-    DEFAULT_MAX_FETCH_WINDOW = 24 * 60 * 60  # 1 day
+    # Default number of events to collect per fetch cycle when no `limit` is configured.
+    # Mirrors the `limit` parameter's default value in the integration YAML.
+    DEFAULT_LIMIT = 2000
+    # The maximum time range (in seconds) covered by a single fetch window. Kept small so a
+    # single window on a high-volume workspace never holds enough events to blow the Docker
+    # timeout while paginating it. When a run fills the `limit` (i.e. more events remain) the
+    # collector re-triggers immediately (nextTrigger=0) to keep draining without waiting for
+    # the next scheduled interval.
+    DEFAULT_MAX_FETCH_WINDOW = 5 * 60  # 5 minutes
     # Maximum number of forward windows a single fetch run may walk. This bounds the run's
     # duration / number of API calls when a large backlog needs to be backfilled; the remaining
     # windows are covered by subsequent runs.
@@ -267,7 +273,7 @@ def fetch_slack_events(client: Client, params: dict, last_run: dict) -> list[dic
     """
     if last_run is None:
         last_run = {}
-    limit = arg_to_number(params.get("limit")) or 1000
+    limit = arg_to_number(params.get("limit")) or Config.DEFAULT_LIMIT
     upper_bound = arg_to_timestamp(params.get("latest")) or get_now_timestamp()
 
     oldest_ts = arg_to_timestamp(params.get("oldest"))
@@ -275,6 +281,13 @@ def fetch_slack_events(client: Client, params: dict, last_run: dict) -> list[dic
         return_error("The 'oldest' argument must be earlier than or equal to the 'latest' argument.")
 
     demisto.debug(f"Starting Slack event collection cycle. limit={limit}, upper_bound={upper_bound}, last_run={last_run}")
+    # Backlog lag: how far behind 'now' the collector currently is. This is the key health signal
+    # for this collector - a steadily growing lag means events are arriving faster than they can be
+    # drained (the timeout/backlog failure mode). Logged explicitly so it can be seen at a glance
+    # without cross-referencing last_fetched_time against upper_bound by hand.
+    if (last_fetched_time := last_run.get("last_fetched_time")) is not None:
+        lag_seconds = upper_bound - last_fetched_time
+        demisto.debug(f"Backlog lag before fetch: {lag_seconds} seconds (~{lag_seconds / 3600:.1f} hours behind 'now').")
     extra_params = {
         "action": params.get("action"),
         "actor": params.get("actor"),
@@ -357,9 +370,9 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
     # Drive the cycle purely from the command arguments with a fresh run state, keeping the
     # command independent of the collector's persisted state and free of side effects on it.
     run_state: dict = {}
-    demisto.debug("slack-get-events invoked; running an argument-driven collection cycle with a fresh run state.")
+    demisto.debug("[Get Events] slack-get-events invoked; running an argument-driven collection cycle with a fresh run state.")
     events = fetch_slack_events(client, args, run_state)
-    demisto.debug(f"slack-get-events retrieved {len(events)} events.")
+    demisto.debug(f"[Get Events] slack-get-events retrieved {len(events)} events.")
     results = CommandResults(
         readable_output=tableToMarkdown(
             "Slack Audit Logs",
@@ -376,8 +389,13 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
 
 def fetch_events_command(client: Client, params: dict, last_run: dict) -> tuple[list, dict]:
     """
-    Collects log events from Slack for the automated `fetch-events` collector and
-    updates the lastRun object so subsequent runs continue where this one stopped.
+    Collects log events from Slack for the automated `fetch-events` collector and updates the
+    lastRun so subsequent runs continue where this one stopped.
+
+    When a run fills the `limit` (more events still remain), it sets `nextTrigger=0` so the
+    platform re-invokes fetch-events immediately instead of waiting for the next interval,
+    draining a backlog quickly while each run stays within the Docker timeout. Otherwise
+    `nextTrigger` is cleared and the collector reverts to its normal fetch interval.
 
     Args:
         client (Client): the client implementing the API to Slack.
@@ -390,7 +408,23 @@ def fetch_events_command(client: Client, params: dict, last_run: dict) -> tuple[
     """
     if last_run is None:
         last_run = {}
+    limit = arg_to_number(params.get("limit")) or Config.DEFAULT_LIMIT
     events_to_send = fetch_slack_events(client, params, last_run)
+
+    # A full batch (>= limit) means more events remain, so re-trigger immediately.
+    if len(events_to_send) >= limit:
+        last_run["nextTrigger"] = "0"
+        demisto.debug(
+            f"[Fetch] Sent {len(events_to_send)} event(s); filled the limit ({limit}), more remain - "
+            f"setting nextTrigger=0 to re-run immediately."
+        )
+    else:
+        last_run.pop("nextTrigger", None)
+        demisto.debug(
+            f"[Fetch] Sent {len(events_to_send)} event(s); below the limit ({limit}), caught up - "
+            f"next run follows the normal fetch interval."
+        )
+
     return events_to_send, last_run
 
 

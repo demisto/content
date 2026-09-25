@@ -181,6 +181,9 @@ def test_get_events_runs_fetch_cycle_oldest_first(mocker):
     from SlackEventCollector import get_events_command
 
     mocker.patch("SlackEventCollector.get_now_timestamp", return_value=1000)
+    # The mock returns the same page regardless of oldest/latest, so keep the whole
+    # [oldest, now] range inside a single window (one API query) to match that assumption.
+    mocker.patch("SlackEventCollector.Config.DEFAULT_MAX_FETCH_WINDOW", 10_000)
     mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(
         Client,
@@ -252,6 +255,9 @@ def test_first_fetch_sends_oldest_first_within_timeframe(mocker):
     from SlackEventCollector import fetch_events_command
 
     mocker.patch("SlackEventCollector.get_now_timestamp", return_value=1000)
+    # The mock returns the same page regardless of oldest/latest, so keep the whole
+    # [oldest, now] range inside a single window (one API query) to match that assumption.
+    mocker.patch("SlackEventCollector.Config.DEFAULT_MAX_FETCH_WINDOW", 10_000)
     mocker.patch.object(
         Client,
         "_http_request",
@@ -365,6 +371,9 @@ def test_fetch_events_dedups_boundary_ids(mocker):
     from SlackEventCollector import fetch_events_command
 
     mocker.patch("SlackEventCollector.get_now_timestamp", return_value=1000)
+    # The mock returns the same page regardless of oldest/latest, so keep the whole
+    # [last_fetched_time, now] range inside a single window (one API query) to match that.
+    mocker.patch("SlackEventCollector.Config.DEFAULT_MAX_FETCH_WINDOW", 10_000)
     mocker.patch.object(
         Client,
         "_http_request",
@@ -401,6 +410,10 @@ def test_fetch_events_paginates_within_window(mocker):
     from SlackEventCollector import fetch_events_command
 
     mocker.patch("SlackEventCollector.get_now_timestamp", return_value=1000)
+    # Both pages belong to ONE window (cursor pagination), so keep the whole [oldest, now]
+    # range inside a single window; otherwise the walk would query a second window and the
+    # finite side_effect would be exhausted.
+    mocker.patch("SlackEventCollector.Config.DEFAULT_MAX_FETCH_WINDOW", 10_000)
     page1 = make_page(
         [
             {"id": "6", "date_create": 600},
@@ -641,6 +654,9 @@ def test_fetch_events_keeps_earlier_pages_when_a_later_page_fails(mocker):
     from SlackEventCollector import fetch_events_command
 
     mocker.patch("SlackEventCollector.get_now_timestamp", return_value=1000)
+    # Both pages belong to ONE window; keep the whole [oldest, now] range inside a single
+    # window so the walk does not query a second window and exhaust the finite side_effect.
+    mocker.patch("SlackEventCollector.Config.DEFAULT_MAX_FETCH_WINDOW", 10_000)
     # Later-page failures are logged at error level; mock it so the captured-output guard passes.
     mocker.patch.object(demisto, "error")
     page1 = make_page(
@@ -702,6 +718,9 @@ def test_fetch_events_handles_none_last_run(mocker):
     from SlackEventCollector import fetch_events_command
 
     mocker.patch("SlackEventCollector.get_now_timestamp", return_value=1000)
+    # The mock returns the same page regardless of oldest/latest, so keep the whole
+    # [oldest, now] range inside a single window (one API query) to match that assumption.
+    mocker.patch("SlackEventCollector.Config.DEFAULT_MAX_FETCH_WINDOW", 10_000)
     mocker.patch.object(
         Client,
         "_http_request",
@@ -754,6 +773,84 @@ def test_fetch_events_caps_number_of_windows_per_run(mocker):
 
 
 """ Unit tests for pure helpers """
+
+
+def test_get_now_timestamp_returns_current_unix_seconds():
+    """
+    Given:
+        - The real clock (get_now_timestamp is NOT mocked here).
+    When:
+        - Calling get_now_timestamp().
+    Then:
+        - It returns the current time as an int unix timestamp (seconds), within a
+          tight tolerance of the wall clock.
+    """
+    import time as _time
+
+    from SlackEventCollector import get_now_timestamp
+
+    before = int(_time.time())
+    now = get_now_timestamp()
+    after = int(_time.time())
+
+    assert isinstance(now, int)
+    assert before <= now <= after
+
+
+def test_arg_to_timestamp_passes_through_int_values():
+    """
+    Given:
+        - An 'oldest'/'latest' value that is already an int (unix seconds).
+    When:
+        - Converting it with arg_to_timestamp.
+    Then:
+        - The int is returned unchanged (no date parsing needed).
+    """
+    from SlackEventCollector import arg_to_timestamp
+
+    assert arg_to_timestamp(1234) == 1234
+
+
+def test_add_time_to_events_skips_event_without_date_create():
+    """
+    Given:
+        - An event with a 'date_create' and another WITHOUT one.
+    When:
+        - Adding the '_time' field.
+    Then:
+        - The dated event gets '_time'; the event with no 'date_create' is skipped
+          (no '_time' added, no crash).
+    """
+    from SlackEventCollector import add_time_to_events
+
+    events = [{"id": "1", "date_create": 100}, {"id": "2"}]  # second has no date_create
+    add_time_to_events(events)
+
+    assert "_time" in events[0]
+    assert "_time" not in events[1]
+
+
+def test_fetch_slack_events_treats_none_last_run_as_empty(mocker):
+    """
+    Given:
+        - fetch_slack_events is called directly with last_run=None.
+    When:
+        - Running the collection cycle.
+    Then:
+        - None is treated as an empty last run (no crash) and events are returned normally.
+    """
+    from SlackEventCollector import fetch_slack_events
+
+    mocker.patch("SlackEventCollector.get_now_timestamp", return_value=1000)
+    mocker.patch("SlackEventCollector.Config.DEFAULT_MAX_FETCH_WINDOW", 10_000)
+    mocker.patch.object(
+        Client,
+        "_http_request",
+        return_value=make_page([{"id": "1", "date_create": 500}]),
+    )
+    events = fetch_slack_events(Client(base_url=""), params={"limit": 10, "oldest": "100"}, last_run=None)
+
+    assert [e["id"] for e in events] == ["1"]
 
 
 def test_filter_already_fetched_returns_unchanged_when_no_boundary_ids():
@@ -913,6 +1010,9 @@ def test_fetch_events_rate_limited_later_page_retains_events_and_logs_error(mock
     from SlackEventCollector import fetch_events_command
 
     mocker.patch("SlackEventCollector.get_now_timestamp", return_value=1000)
+    # Both pages belong to ONE window; keep the whole [oldest, now] range inside a single
+    # window so the walk does not query a second window and exhaust the finite side_effect.
+    mocker.patch("SlackEventCollector.Config.DEFAULT_MAX_FETCH_WINDOW", 10_000)
     error_log = mocker.patch.object(demisto, "error")
     page1 = make_page([{"id": "1", "date_create": 100}], next_cursor="page2")
     mocker.patch.object(
@@ -944,6 +1044,9 @@ def test_fetch_events_limit_zero_defaults_to_1000(mocker):
     from SlackEventCollector import fetch_events_command
 
     mocker.patch("SlackEventCollector.get_now_timestamp", return_value=1000)
+    # The mock returns the same page regardless of oldest/latest, so keep the whole
+    # [oldest, now] range inside a single window (one API query) to match that assumption.
+    mocker.patch("SlackEventCollector.Config.DEFAULT_MAX_FETCH_WINDOW", 10_000)
     mocker.patch.object(
         Client,
         "_http_request",
@@ -1183,3 +1286,71 @@ def test_fetch_events_no_oldest_arg_skips_range_validation(mocker):
 
     return_error.assert_not_called()  # no 'oldest' arg -> guard is a no-op
     assert [e["id"] for e in events] == ["a"]
+
+
+def test_fetch_events_sets_next_trigger_when_limit_reached(mocker):
+    """
+    Given:
+        - A window holding more events than the limit (limit=2, three new events available).
+    When:
+        - Running fetch_events_command (the automated collector).
+    Then:
+        - The run fills the limit (there are still more events to drain), so lastRun carries
+          nextTrigger=0, instructing the platform to re-invoke fetch-events immediately instead
+          of waiting for the next scheduled interval. (Regression guard for the backlog-stall
+          timeout: a busy backlog must keep draining across back-to-back runs.)
+    """
+    from SlackEventCollector import fetch_events_command
+
+    mocker.patch("SlackEventCollector.get_now_timestamp", return_value=1000)
+    mocker.patch.object(
+        Client,
+        "_http_request",
+        return_value=make_page(
+            [
+                {"id": "3", "date_create": 300},
+                {"id": "2", "date_create": 200},
+                {"id": "1", "date_create": 100},
+            ]
+        ),
+    )
+    events, last_run = fetch_events_command(
+        Client(base_url=""),
+        params={"limit": 2, "oldest": "100"},
+        last_run={},
+    )
+
+    assert len(events) == 2  # a full batch was returned
+    assert last_run.get("nextTrigger") == "0"  # more events remain -> re-trigger immediately
+
+
+def test_fetch_events_clears_next_trigger_when_caught_up(mocker):
+    """
+    Given:
+        - A window holding fewer events than the limit (limit=10, one event available), and a
+          lastRun that still carries a stale nextTrigger from a previous busy run.
+    When:
+        - Running fetch_events_command.
+    Then:
+        - The run does NOT fill the limit (caught up), so nextTrigger is cleared and the
+          collector reverts to its normal fetch interval.
+    """
+    from SlackEventCollector import fetch_events_command
+
+    mocker.patch("SlackEventCollector.get_now_timestamp", return_value=1000)
+    # The mock returns the same page regardless of oldest/latest, so keep the whole
+    # [oldest, now] range inside a single window (one API query) to match that assumption.
+    mocker.patch("SlackEventCollector.Config.DEFAULT_MAX_FETCH_WINDOW", 10_000)
+    mocker.patch.object(
+        Client,
+        "_http_request",
+        return_value=make_page([{"id": "1", "date_create": 100}]),
+    )
+    events, last_run = fetch_events_command(
+        Client(base_url=""),
+        params={"limit": 10, "oldest": "100"},
+        last_run={"nextTrigger": "0"},
+    )
+
+    assert len(events) == 1  # fewer than the limit -> caught up
+    assert "nextTrigger" not in last_run  # stale nextTrigger cleared
