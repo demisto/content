@@ -33,7 +33,6 @@
     "tags": [],
     "url": "https://support.vectra.ai",
     "useCases": [],
-    "defaultDataSource": "VectraAIEventCollector",
     "dependencies": {
         "CoreAlertFields": {
             "mandatory": true,

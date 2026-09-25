@@ -2,7 +2,7 @@
     "name": "Cisco ETD Connector",
     "description": "Cisco Email Threat Defense (ETD) integration for Cortex XSIAM providing ETD message event log ingestion, email threat analytics.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Nusummit",
     "url": "",
     "email": "",
@@ -27,7 +27,6 @@
     "githubUser": [
         "ashwinidoddamani"
     ],
-    "defaultDataSource": "CiscoETDConnector",
     "supportedModules": [
         "xsiam"
     ]

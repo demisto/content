@@ -2,7 +2,7 @@
     "name": "Zoom",
     "description": "Use the Zoom integration manage your Zoom users and meetings",
     "support": "xsoar",
-    "currentVersion": "1.6.45",
+    "currentVersion": "1.6.46",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -18,7 +18,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "ZoomEventCollector",
     "supportedModules": [
         "agentix",
         "xsiam",
