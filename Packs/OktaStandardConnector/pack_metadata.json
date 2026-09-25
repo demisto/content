@@ -16,8 +16,7 @@
     "keywords": [],
     "githubUser": [],
     "marketplaces": [
-        "platform",
-        "marketplacev2"
+        "platform"
     ],
     "supportedModules": [
         "agentix",
