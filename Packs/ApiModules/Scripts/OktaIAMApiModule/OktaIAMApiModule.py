@@ -410,10 +410,13 @@ def test_module(client, is_fetch, fetch_query_filter, auto_generate_query_filter
             get_query_filter(context)  # will raise an exception if configuration doesn't exist
         elif not fetch_query_filter:
             raise DemistoException(FETCH_QUERY_EXCEPTION_MSG)
-    try:
-        dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)  # type: ignore
-    except AttributeError:
-        raise DemistoException("First fetch timestamp parameter is not in the correct format.")
+    # The Standard Connector shape has no fetch, so `first_fetch` is not configured at all.
+    # Only validate the timestamp when one was actually provided.
+    if first_fetch_str:
+        try:
+            dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)  # type: ignore
+        except AttributeError:
+            raise DemistoException("First fetch timestamp parameter is not in the correct format.")
 
     client.test_connection()
 

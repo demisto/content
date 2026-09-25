@@ -667,3 +667,51 @@ def test_main_missing_token_raises_when_ucp_off(mocker):
         OktaIAMApiModule.run_okta_iam_integration()
 
     assert str(e.value) == "Missing API token."
+
+
+def test_test_module_without_first_fetch_param(mocker):
+    """
+    Given: The Standard Connector shape, where the 'first_fetch' parameter does not exist
+           at all, so params.get("first_fetch") returns None.
+    When: The test-module command runs.
+    Then: It succeeds instead of raising 'Input type must be str' from dateparser.
+    """
+    from OktaIAMApiModule import test_module
+
+    client = mocker.Mock()
+    results = mocker.patch("OktaIAMApiModule.return_results")
+
+    test_module(
+        client,
+        is_fetch=False,
+        fetch_query_filter=None,
+        auto_generate_query_filter=None,
+        context={},
+        first_fetch_str=None,
+    )
+
+    client.test_connection.assert_called_once()
+    results.assert_called_once_with("ok")
+
+
+def test_test_module_validates_first_fetch_when_provided(mocker):
+    """
+    Given: A fetch-capable instance with an unparsable 'first_fetch' value.
+    When: The test-module command runs.
+    Then: The original validation error is still raised (behavior preserved).
+    """
+    from OktaIAMApiModule import test_module
+
+    client = mocker.Mock()
+
+    with pytest.raises(DemistoException) as e:
+        test_module(
+            client,
+            is_fetch=False,
+            fetch_query_filter=None,
+            auto_generate_query_filter=None,
+            context={},
+            first_fetch_str="not-a-real-timestamp",
+        )
+
+    assert "First fetch timestamp parameter is not in the correct format." in str(e.value)
