@@ -83,3 +83,4 @@ triggers:
         action:
           hidden: true
           required: false
+excludefromtightlycoupled: true
