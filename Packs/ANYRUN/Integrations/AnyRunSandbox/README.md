@@ -39,7 +39,7 @@ Integration is officially supported from XSOAR 8.x
 | **Parameter**                                                                                                   | **Description**                                                                                                                                                 | **Required** |
 |-----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
 | Password                                                                                                        | ANY.RUN API-KEY without prefix.                                                                                                                                 | True |
-| Root URL                                                                                                        | Base domain for the ANY.RUN connection. By default, the domain is any.run.                                                                                      | False |
+| Base domain                                                                                                        | Base domain for the ANY.RUN connection. By default, the domain is any.run.                                                                                      | False |
 
 ## Commands
 
