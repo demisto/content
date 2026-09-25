@@ -843,6 +843,78 @@ Set the status of one or more detection alerts.
 >|---|---|
 >| 2 | 2 |
 
+### es-kibana-endpoint-isolate
+
+***
+Isolate an endpoint from the network. The endpoint remains isolated until it's released.
+
+#### Base Command
+
+`es-kibana-endpoint-isolate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information. | Optional |
+| endpoint_ids | Endpoint IDs to isolate. A maximum of 250 IDs can be specified. | Required |
+| agent_type | The type of agent on which to run the isolation action. | Optional |
+| alert_ids | Alert IDs associated with the action. A maximum of 50 IDs can be specified. | Optional |
+| case_ids | Case IDs in which to log the action. A maximum of 50 IDs can be specified. | Optional |
+| comment | An optional comment for the isolation action. Maximum length is 30,000 characters. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.EndpointIsolationAction.action | String | The response action ID. |
+| Elasticsearch.Kibana.EndpointIsolationAction.data.agents | String | The agent IDs to which the response action was sent. |
+| Elasticsearch.Kibana.EndpointIsolationAction.data.agentState | Unknown | The response action state for each agent ID. |
+| Elasticsearch.Kibana.EndpointIsolationAction.data.agentType | String | The agent type. |
+| Elasticsearch.Kibana.EndpointIsolationAction.data.command | String | The response action command. |
+| Elasticsearch.Kibana.EndpointIsolationAction.data.createdBy | String | The user who created the response action. |
+| Elasticsearch.Kibana.EndpointIsolationAction.data.hosts | Unknown | The host names associated with the agent IDs. |
+| Elasticsearch.Kibana.EndpointIsolationAction.data.isCompleted | Boolean | Whether the response action is complete. |
+| Elasticsearch.Kibana.EndpointIsolationAction.data.isExpired | Boolean | Whether the response action is expired. |
+| Elasticsearch.Kibana.EndpointIsolationAction.data.outputs | Unknown | The response action outputs for each agent ID. |
+| Elasticsearch.Kibana.EndpointIsolationAction.data.startedAt | Date | The response action start time. |
+| Elasticsearch.Kibana.EndpointIsolationAction.data.status | String | The response action status. |
+| Elasticsearch.Kibana.EndpointIsolationAction.data.wasSuccessful | Boolean | Whether the response action was successful. |
+
+#### Command Example
+
+```!es-kibana-endpoint-isolate endpoint_ids="endpoint-1,endpoint-2" agent_type="endpoint" comment="Isolating as initial response"```
+
+#### Context Example
+
+```json
+{
+    "Elasticsearch": {
+        "Kibana": {
+            "EndpointIsolationAction": {
+                "action": "action-1",
+                "data": {
+                    "agents": ["endpoint-1", "endpoint-2"],
+                    "agentType": "endpoint",
+                    "command": "isolate",
+                    "isCompleted": false,
+                    "status": "pending",
+                    "wasSuccessful": false
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Kibana Endpoint Isolation Action
+>
+>|Action ID|Agent type|Command|Status|Is Completed|Was Successful|
+>|---|---|---|---|---|---|
+>| action-1 | endpoint | isolate | pending | false | false |
+
 ### es-kibana-case-create
 
 ***

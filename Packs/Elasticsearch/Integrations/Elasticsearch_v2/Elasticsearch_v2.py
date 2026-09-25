@@ -2636,6 +2636,48 @@ def exception_list_item_to_hr(item: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def es_kibana_endpoint_isolate_command(args: Dict[str, Any], proxies) -> CommandResults:
+    endpoint_ids = argToList(args.get("endpoint_ids"))
+    if not endpoint_ids:
+        raise DemistoException('The "endpoint_ids" argument is required.')
+
+    body: Dict[str, Any] = {"endpoint_ids": endpoint_ids}
+    for arg_name in ("alert_ids", "case_ids"):
+        if args.get(arg_name):
+            body[arg_name] = argToList(args[arg_name])
+    for arg_name in ("agent_type", "comment"):
+        if args.get(arg_name):
+            body[arg_name] = args[arg_name]
+
+    space_id = args.get("space_id")
+    response = kibana_http_request("POST", "/api/endpoint/action/isolate", space_id=space_id, json_data=body, proxies=proxies)
+
+    response_data = response.get("data", {})
+    hr = {
+        "Action ID": response.get("action") or response_data.get("id"),
+        "Agents": response_data.get("agents"),
+        "Agent State": response_data.get("agentState"),
+        "Agent type": response_data.get("agentType"),
+        "Command": response_data.get("command"),
+        "Created by": response_data.get("createdBy"),
+        "Hosts": response_data.get("hosts"),
+        "Is Completed": response_data.get("isCompleted"),
+        "Is Expired": response_data.get("isExpired"),
+        "Outputs": response_data.get("outputs"),
+        "Started at": response_data.get("startedAt"),
+        "Status": response_data.get("status"),
+        "Was Successful": response_data.get("wasSuccessful"),
+    }
+    readable_output = tableToMarkdown("Kibana Endpoint Isolation Action", hr, removeNull=True, headers=list(hr.keys()))
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Elasticsearch.Kibana.EndpointIsolationAction",
+        outputs=response,
+        outputs_key_field="action",
+        raw_response=response,
+    )
+
+
 """KIBANA SECURITY ELASTIC ENDPOINT EXCEPTIONS COMMANDS (es-kibana-endpoint-exception-list-item-*)"""
 
 
@@ -4272,6 +4314,8 @@ def main():  # pragma: no cover
             return_results(es_kibana_rule_alert_unmute_command(args, proxies))
         elif demisto.command() == "es-kibana-detection-alert-status-set":
             return_results(es_kibana_detection_alert_status_set_command(args, proxies))
+        elif demisto.command() == "es-kibana-endpoint-isolate":
+            return_results(es_kibana_endpoint_isolate_command(args, proxies))
         elif demisto.command() == "es-kibana-endpoint-exception-list-item-create":
             return_results(es_kibana_endpoint_exception_list_item_create_command(args, proxies))
         elif demisto.command() == "es-kibana-endpoint-exception-list-item-update":
