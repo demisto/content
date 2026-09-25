@@ -1,0 +1,164 @@
+{
+    "circleci_pipelines_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "state": {
+            "type": "string",
+            "is_array": false
+        },
+        "project_slug": {
+            "type": "string",
+            "is_array": false
+        },
+        "circleci_org_slug": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "errors": {
+            "type": "string",
+            "is_array": false
+        },
+        "trigger": {
+            "type": "string",
+            "is_array": false
+        },
+        "trigger_parameters": {
+            "type": "string",
+            "is_array": false
+        }
+    },
+    "circleci_webhooks_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "name": {
+            "type": "string",
+            "is_array": false
+        },
+        "url": {
+            "type": "string",
+            "is_array": false
+        },
+        "events": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "circleci_project_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "created_at": {
+            "type": "datetime",
+            "is_array": false
+        }
+    },
+    "circleci_triggers_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "name": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "description": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_source": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_preset": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "circleci_project_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "pipeline_definition_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "created_at": {
+            "type": "datetime",
+            "is_array": false
+        }
+    },
+    "circleci_context_envvars_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "name": {
+            "type": "string",
+            "is_array": false
+        },
+        "variable": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "context_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "circleci_org_slug": {
+            "type": "string",
+            "is_array": false
+        },
+        "created_at": {
+            "type": "datetime",
+            "is_array": false
+        }
+    },
+    "circleci_project_settings_raw": {
+        "forks_receive_secret_env_vars": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "build_fork_prs": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "disable_ssh": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "write_settings_requires_admin": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "circleci_project_slug": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
