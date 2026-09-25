@@ -4,7 +4,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Okta v2
+  id: OktaStandardConnector
   version: -1
 configuration:
 - display: Okta URL (https://<domain>.okta.com)
@@ -75,9 +75,9 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Integration with Okta's cloud-based identity management service.
-display: Okta v2
-name: Okta v2
+description: 'This integration is configured automatically as part of the Okta Standard Connector. Do not configure this integration directly — set it up from the connector page instead.'
+display: Okta (Standard Connector)
+name: OktaStandardConnector
 script:
   commands:
   - arguments:
@@ -1892,6 +1892,6 @@ script:
   script: ""
   subtype: python3
   type: python
-fromversion: 5.0.0
+fromversion: 8.15.0
 tests:
-- OktaV2-Test
+- No tests

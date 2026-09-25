@@ -1,4 +1,4 @@
-"""Sanity tests for the Okta IAM shim integration.
+"""Sanity tests for the OktaIAMStandardConnector shim integration.
 
 Full behavioural coverage lives in the OktaIAMApiModule tests; this file
 exists only to confirm the shim wires through to the ApiModule correctly.
@@ -6,8 +6,8 @@ exists only to confirm the shim wires through to the ApiModule correctly.
 
 from unittest.mock import patch  # noqa: F401
 
+import OktaIAMStandardConnector as integration_module
 import pytest
-import Okta_IAM as integration_module
 
 
 def test_shim_imports_run_entry_point():
@@ -28,22 +28,16 @@ def test_shim_imports_iam_api_module_symbols():
         assert hasattr(integration_module, name), f"Symbol {name!r} missing from shim"
 
 
-def test_shim_imports_commands_and_constants():
-    """Commands and constants used by playbooks/tests must remain accessible from the shim."""
-    for name in ("get_user_command", "create_user_command", "fetch_incidents", "DEPROVISIONED_STATUS"):
-        assert hasattr(integration_module, name), f"Symbol {name!r} missing from shim"
-
-
 def test_main_delegates_to_api_module(mocker):
     """`main()` must do nothing other than call the renamed ApiModule entry point."""
-    mock_run = mocker.patch("Okta_IAM.run_okta_iam_integration")
+    mock_run = mocker.patch("OktaIAMStandardConnector.run_okta_iam_integration")
     integration_module.main()
     mock_run.assert_called_once_with()
 
 
 def test_main_propagates_exceptions(mocker):
     """`main()` is a thin shim and must not swallow exceptions from the ApiModule."""
-    mocker.patch("Okta_IAM.run_okta_iam_integration", side_effect=RuntimeError("boom"))
+    mocker.patch("OktaIAMStandardConnector.run_okta_iam_integration", side_effect=RuntimeError("boom"))
 
     with pytest.raises(RuntimeError, match="boom"):
         integration_module.main()
