@@ -183,7 +183,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If "true", the search job retains raw messages so they can be retrieved alongside aggregate records. Set to "false" to improve performance for aggregate-only queries where raw messages are not needed. Default is "true".
+      description: Whether the search job retains raw messages so they can be retrieved alongside aggregate records. Set to "false" to improve performance for aggregate-only queries where raw messages are not needed.
       defaultValue: "true"
     outputs:
     - contextPath: Search.Messages
