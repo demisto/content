@@ -24,6 +24,33 @@ class AuthType(Enum):
     NO_AUTH = 3
 
 
+def resolve_ucp_auth_type(default=AuthType.API_TOKEN):
+    """
+    Map the UCP-brokered credential to an AuthType (OAUTH for oauth2*, API_TOKEN for api_key).
+
+    Args:
+        default (AuthType): The AuthType to return when UCP auth is off (legacy path).
+
+    Returns:
+        AuthType: The AuthType matching the brokered credential, or default when UCP is off.
+
+    Raises:
+        DemistoException: When UCP is active but the brokered envelope type is unrecognized.
+    """
+    if not should_use_ucp_auth():
+        return default
+    creds = get_ucp_credentials()
+    cred_type = creds.get("type") if isinstance(creds, dict) else None
+    if cred_type and str(cred_type).startswith("oauth2"):
+        return AuthType.OAUTH
+    if cred_type == "api_key":
+        return AuthType.API_TOKEN
+    raise DemistoException(
+        "UCP authentication failed: the system does not recognize the authentication method "
+        "(unrecognized credential type {!r}).".format(cred_type)
+    )
+
+
 class OktaClient(BaseClient):
     def __init__(
         self,
@@ -62,24 +89,27 @@ class OktaClient(BaseClient):
 
         missing_required_params = []
 
-        if self.auth_type == AuthType.API_TOKEN and not api_token:
-            raise ValueError("API token is missing")
+        # Under UCP the legacy auth params are not in demisto.params(), so skip these presence
+        # checks; BaseClient injects the brokered credential at request time instead.
+        if not should_use_ucp_auth():
+            if self.auth_type == AuthType.API_TOKEN and not api_token:
+                raise ValueError("API token is missing")
 
-        if self.auth_type == AuthType.OAUTH:
-            if not self.client_id:
-                missing_required_params.append("Client ID")
+            if self.auth_type == AuthType.OAUTH:
+                if not self.client_id:
+                    missing_required_params.append("Client ID")
 
-            if not self.scopes:
-                missing_required_params.append("Scopes")
+                if not self.scopes:
+                    missing_required_params.append("Scopes")
 
-            if not self.jwt_algorithm:
-                missing_required_params.append("JWT algorithm")
+                if not self.jwt_algorithm:
+                    missing_required_params.append("JWT algorithm")
 
-            if not self.private_key:
-                missing_required_params.append("Private key")
+                if not self.private_key:
+                    missing_required_params.append("Private key")
 
-            if missing_required_params:
-                raise ValueError(f'Required OAuth parameters are missing: {", ".join(missing_required_params)}')
+                if missing_required_params:
+                    raise ValueError(f"Required OAuth parameters are missing: {', '.join(missing_required_params)}")
 
     def assign_app_role(self, client_id: str, role: str, auth_type: AuthType) -> dict:
         """
@@ -222,6 +252,22 @@ class OktaClient(BaseClient):
         headers = raw_response.headers
         self.request_metadata = self.get_rate_limit_context(headers)
 
+    def _apply_ucp_api_key(self, credentials, ctx):
+        """
+        Override BaseClient._apply_ucp_api_key to place the brokered API token using Okta's
+        ``SSWS`` scheme instead of the default ``Bearer`` scheme.
+
+        Args:
+            credentials (dict): The brokered credentials from getUCPCredentials().
+            ctx (UcpRequestContext): The request context to mutate.
+        """
+        api_key_data = credentials.get("api_key", credentials)
+        key = api_key_data.get("key", "")
+        if not key:
+            demisto.error("[UCP][OktaApiModule] API key is empty in UCP credentials")
+            raise UcpException
+        ctx.headers["Authorization"] = f"SSWS {key}"
+
     def http_request(self, auth_type: AuthType | None = None, resp_type: str = "json", **kwargs):
         """
         Override BaseClient._http_request() to automatically add authentication headers.
@@ -233,15 +279,18 @@ class OktaClient(BaseClient):
         auth_type = auth_type if auth_type is not None else self.auth_type
         auth_headers = {}
 
-        if auth_type == AuthType.OAUTH:
-            auth_headers["Authorization"] = f"Bearer {self.get_token()}"
-
-        elif auth_type == AuthType.API_TOKEN:
-            auth_headers["Authorization"] = f"SSWS {self.api_token}"
+        # Under UCP the platform brokers the credential and BaseClient injects the header;
+        # build the legacy header only when UCP is off (also covers the grouped connector).
+        if not should_use_ucp_auth():
+            if auth_type == AuthType.OAUTH:
+                auth_headers["Authorization"] = f"Bearer {self.get_token()}"
+            elif auth_type == AuthType.API_TOKEN:
+                auth_headers["Authorization"] = f"SSWS {self.api_token}"
 
         original_headers = kwargs.get("headers") or self._headers or {}
         kwargs["headers"] = {**auth_headers, **original_headers}
         response = self._http_request(resp_type="response", **kwargs)
+
         self.parse_response_headers(response)
 
         resp_type = resp_type.lower()
