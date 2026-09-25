@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 import itertools
 import json
 import re
@@ -57,6 +58,7 @@ from MicrosoftGraphSecurity import (
     _extract_filename_from_headers,
     _download_operation_export_file,
     export_result_ediscovery_data_command,
+    to_utc_datetime,
 )
 
 client_mocker = MsGraphClient(
@@ -461,12 +463,632 @@ def test_fetch_alerts_does_not_mutate_last_run(mocker):
     assert new_last_run.get("time") == "2020-04-20T11:00:00.0000000Z"
 
 
+def test_fetch_alerts_subsecond_ordering_and_deduplication(mocker):
+    """
+    Given:
+    - 10 alerts occurring within the exact same second with varying fractional seconds,
+      including one ending in 'Z' (e.g. 12:40:42Z) and others with microsecond precision.
+    - Multiple alerts sharing identical timestamps.
+
+    When:
+    - Running fetch_alerts across two consecutive runs.
+
+    Then:
+    - Alerts are sorted chronologically: '12:40:42Z' (12:40:42.000Z) is not placed after '12:40:42.23Z'.
+    - The true latest timestamp ('12:40:42.23Z') is recorded as new_last_run['time'].
+    - In Run 2, alerts sharing that same timestamp are deduplicated by ID, and new alerts are fetched.
+    """
+    timestamps = [
+        "2026-09-08T12:40:41.99Z",
+        "2026-09-08T12:40:42.0066667Z",
+        "2026-09-08T12:40:42.01Z",
+        "2026-09-08T12:40:42.1133333Z",
+        "2026-09-08T12:40:42.1133333Z",
+        "2026-09-08T12:40:42.11Z",
+        "2026-09-08T12:40:42.11Z",
+        "2026-09-08T12:40:42.2266667Z",
+        "2026-09-08T12:40:42.23Z",
+        "2026-09-08T12:40:42Z",
+    ]
+    mock_alerts = [
+        {"id": f"alert_{i}", "createdDateTime": ts, "title": f"alert_{i}", "severity": "medium"}
+        for i, ts in enumerate(timestamps)
+    ]
+    mocker.patch.object(client_mocker, "search_alerts", return_value={"value": mock_alerts})
+
+    # Run 1: initial fetch with last_run starting before second 42
+    alerts_run1, last_run1 = fetch_alerts(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=10,
+        extra_filter="",
+        service_sources="",
+        last_run={"time": "2026-09-08T12:40:41.99Z", "last_fetched_ids": ["alert_0"]},
+    )
+    assert len(alerts_run1) == 9
+    assert last_run1["time"] == "2026-09-08T12:40:42.23Z"
+    assert "alert_8" in last_run1.get("last_fetched_ids", [])
+
+    # Run 2: next fetch cycle with mock_alerts[8] (same timestamp) and a new alert in next second
+    new_alert = {"id": "alert_new", "createdDateTime": "2026-09-08T12:40:43.00Z", "title": "new", "severity": "high"}
+    mocker.patch.object(client_mocker, "search_alerts", return_value={"value": [mock_alerts[8], new_alert]})
+
+    alerts_run2, last_run2 = fetch_alerts(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=10,
+        extra_filter="",
+        service_sources="",
+        last_run=last_run1,
+    )
+    assert len(alerts_run2) == 1
+    assert json.loads(alerts_run2[0]["rawJSON"])["id"] == "alert_new"
+    assert "id" not in alerts_run2[0]
+    assert last_run2["time"] == "2026-09-08T12:40:43.00Z"
+
+
+def test_fetch_incidents_subsecond_ordering_and_deduplication(mocker):
+    """
+    Given:
+    - 10 incidents occurring within the exact same second with varying fractional seconds,
+      including one ending in 'Z' (e.g. 12:40:42Z) and others with microsecond precision.
+    - Multiple incidents sharing identical timestamps.
+
+    When:
+    - Running fetch_incidents across two consecutive runs.
+
+    Then:
+    - Incidents are sorted chronologically: '12:40:42Z' is not placed last.
+    - The latest timestamp is recorded as new_last_run['time'].
+    - In Run 2, incidents sharing that timestamp are deduplicated by ID, and new incidents are fetched.
+    """
+    timestamps = [
+        "2026-09-08T12:40:41.99Z",
+        "2026-09-08T12:40:42.0066667Z",
+        "2026-09-08T12:40:42.01Z",
+        "2026-09-08T12:40:42.1133333Z",
+        "2026-09-08T12:40:42.1133333Z",
+        "2026-09-08T12:40:42.11Z",
+        "2026-09-08T12:40:42.11Z",
+        "2026-09-08T12:40:42.2266667Z",
+        "2026-09-08T12:40:42.23Z",
+        "2026-09-08T12:40:42Z",
+    ]
+    mock_incidents = [
+        {"id": f"incident_{i}", "createdDateTime": ts, "displayName": f"incident_{i}", "severity": "medium", "alerts": []}
+        for i, ts in enumerate(timestamps)
+    ]
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value={"value": mock_incidents})
+
+    # Run 1
+    incidents_run1, last_run1 = fetch_incidents(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=10,
+        extra_filter="",
+        last_run={"time": "2026-09-08T12:40:41.99Z", "last_fetched_ids": ["incident_0"]},
+    )
+    assert len(incidents_run1) == 9
+    assert last_run1["time"] == "2026-09-08T12:40:42.23Z"
+    assert "incident_8" in last_run1.get("last_fetched_ids", [])
+
+    # Run 2
+    new_incident = {
+        "id": "incident_new",
+        "createdDateTime": "2026-09-08T12:40:43.00Z",
+        "displayName": "new",
+        "severity": "high",
+        "alerts": [],
+    }
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value={"value": [mock_incidents[8], new_incident]})
+
+    incidents_run2, last_run2 = fetch_incidents(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=10,
+        extra_filter="",
+        last_run=last_run1,
+    )
+    assert len(incidents_run2) == 1
+    assert json.loads(incidents_run2[0]["rawJSON"])["id"] == "incident_new"
+    assert "id" not in incidents_run2[0]
+    assert last_run2["time"] == "2026-09-08T12:40:43.00Z"
+
+
+def test_fetch_alerts_same_timestamp_pagination_across_runs(mocker):
+    """
+    Given:
+    - 4 alerts sharing the exact same timestamp, with fetch_limit=2.
+
+    When:
+    - Running fetch_alerts across consecutive runs.
+
+    Then:
+    - Run 1 fetches first 2 alerts and sets last_fetched_ids to [a1, a2].
+    - Run 2 fetches the remaining 2 alerts and unions last_fetched_ids to [a1, a2, a3, a4].
+    - Run 3 returns 0 alerts without duplicating any.
+    """
+    ts = "2026-09-08T12:40:42.500Z"
+    all_alerts = [{"id": f"alert_{i}", "createdDateTime": ts, "title": f"alert_{i}", "severity": "medium"} for i in range(1, 5)]
+    mocker.patch.object(client_mocker, "search_alerts", return_value={"value": all_alerts})
+
+    # Run 1: limit 2
+    alerts1, last_run1 = fetch_alerts(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=2,
+        extra_filter="",
+        service_sources="",
+        last_run={},
+    )
+    assert len(alerts1) == 2
+    assert [json.loads(a["rawJSON"])["id"] for a in alerts1] == ["alert_1", "alert_2"]
+    assert all("id" not in a for a in alerts1)
+    assert set(last_run1["last_fetched_ids"]) == {"alert_1", "alert_2"}
+
+    # Run 2: limit 2, same search response returned
+    alerts2, last_run2 = fetch_alerts(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=2,
+        extra_filter="",
+        service_sources="",
+        last_run=last_run1,
+    )
+    assert len(alerts2) == 2
+    assert [json.loads(a["rawJSON"])["id"] for a in alerts2] == ["alert_3", "alert_4"]
+    assert all("id" not in a for a in alerts2)
+    assert set(last_run2["last_fetched_ids"]) == {"alert_1", "alert_2", "alert_3", "alert_4"}
+
+    # Run 3: all 4 are in last_fetched_ids, so none are fetched
+    alerts3, last_run3 = fetch_alerts(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=2,
+        extra_filter="",
+        service_sources="",
+        last_run=last_run2,
+    )
+    assert len(alerts3) == 0
+
+
+def test_fetch_incidents_same_timestamp_pagination_across_runs(mocker):
+    """
+    Given:
+    - 4 incidents sharing the exact same timestamp, with fetch_limit=2.
+
+    When:
+    - Running fetch_incidents across consecutive runs.
+
+    Then:
+    - Run 1 fetches first 2 incidents and sets last_fetched_ids to [inc_1, inc_2].
+    - Run 2 fetches the remaining 2 incidents and unions last_fetched_ids to [inc_1, inc_2, inc_3, inc_4].
+    - Run 3 returns 0 incidents without duplicating any.
+    """
+    ts = "2026-09-08T12:40:42.500Z"
+    all_incidents = [
+        {"id": f"inc_{i}", "createdDateTime": ts, "displayName": f"inc_{i}", "severity": "medium", "alerts": []}
+        for i in range(1, 5)
+    ]
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value={"value": all_incidents})
+
+    # Run 1: limit 2
+    inc1, last_run1 = fetch_incidents(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=2,
+        extra_filter="",
+        last_run={},
+    )
+    assert len(inc1) == 2
+    assert [json.loads(i["rawJSON"])["id"] for i in inc1] == ["inc_1", "inc_2"]
+    assert all("id" not in i for i in inc1)
+    assert set(last_run1["last_fetched_ids"]) == {"inc_1", "inc_2"}
+
+    # Run 2: limit 2
+    inc2, last_run2 = fetch_incidents(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=2,
+        extra_filter="",
+        last_run=last_run1,
+    )
+    assert len(inc2) == 2
+    assert [json.loads(i["rawJSON"])["id"] for i in inc2] == ["inc_3", "inc_4"]
+    assert all("id" not in i for i in inc2)
+    assert set(last_run2["last_fetched_ids"]) == {"inc_1", "inc_2", "inc_3", "inc_4"}
+
+    # Run 3: all 4 are in last_fetched_ids
+    inc3, last_run3 = fetch_incidents(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=2,
+        extra_filter="",
+        last_run=last_run2,
+    )
+    assert len(inc3) == 0
+
+
+def test_fetch_upgrade_migration_without_last_fetched_ids(mocker):
+    """
+    Given:
+    - An existing deployment upgrading to 2.6.2 where last_run only contains {"time": "..."}
+      without 'last_fetched_ids'.
+    - An API response containing items with the exact boundary timestamp as well as strictly newer items.
+
+    When:
+    - Running fetch_incidents and fetch_alerts with this legacy last_run.
+
+    Then:
+    - Items with the exact boundary timestamp are skipped.
+    - Strictly newer items are ingested.
+    - 'last_fetched_ids' is properly populated for subsequent runs so future same-timestamp items deduplicate correctly.
+    """
+    ts_boundary = "2026-09-08T12:00:00.000000Z"
+    ts_newer = "2026-09-08T12:00:01.000000Z"
+
+    # Test for fetch_incidents
+    incidents_payload = [
+        {"id": "inc_boundary_1", "createdDateTime": ts_boundary, "displayName": "inc_b1", "severity": "medium", "alerts": []},
+        {"id": "inc_boundary_2", "createdDateTime": ts_boundary, "displayName": "inc_b2", "severity": "medium", "alerts": []},
+        {"id": "inc_newer_1", "createdDateTime": ts_newer, "displayName": "inc_new1", "severity": "high", "alerts": []},
+    ]
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value={"value": incidents_payload})
+
+    incidents_run1, last_run1 = fetch_incidents(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=10,
+        extra_filter="",
+        last_run={"time": ts_boundary},  # No 'last_fetched_ids' key
+    )
+    assert len(incidents_run1) == 1
+    assert json.loads(incidents_run1[0]["rawJSON"])["id"] == "inc_newer_1"
+    assert "id" not in incidents_run1[0]
+    assert last_run1["time"] == ts_newer
+    assert last_run1["last_fetched_ids"] == ["inc_newer_1"]
+
+    # Test for fetch_alerts
+    alerts_payload = [
+        {"id": "alert_boundary_1", "createdDateTime": ts_boundary, "title": "alert_b1", "severity": "medium"},
+        {"id": "alert_boundary_2", "createdDateTime": ts_boundary, "title": "alert_b2", "severity": "medium"},
+        {"id": "alert_newer_1", "createdDateTime": ts_newer, "title": "alert_new1", "severity": "high"},
+    ]
+    mocker.patch.object(client_mocker, "search_alerts", return_value={"value": alerts_payload})
+
+    alerts_run1, last_run_alert1 = fetch_alerts(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=10,
+        extra_filter="",
+        service_sources="",
+        last_run={"time": ts_boundary},  # No 'last_fetched_ids' key
+    )
+    assert len(alerts_run1) == 1
+    assert json.loads(alerts_run1[0]["rawJSON"])["id"] == "alert_newer_1"
+    assert "id" not in alerts_run1[0]
+    assert last_run_alert1["time"] == ts_newer
+    assert last_run_alert1["last_fetched_ids"] == ["alert_newer_1"]
+
+
+def test_fetch_boundary_deduplication_3_at_t_and_1_at_t_plus_1(mocker):
+    """
+    Given:
+    - 3 alerts sharing timestamp T and 1 alert with timestamp T+1.
+    - Fetch limit is 2.
+
+    When:
+    - Running fetch_alerts across consecutive runs.
+
+    Then:
+    - Run 1 ingests 2 boundary alerts at timestamp T up to fetch limit.
+    - Run 2 correctly skips the 2 already-fetched IDs at timestamp T, ingesting the 3rd alert at T
+      and the 4th alert at T+1.
+    """
+    ts_t = "2026-09-08T12:00:00.000Z"
+    ts_t_plus_1 = "2026-09-08T12:00:01.000Z"
+
+    all_alerts = [
+        {"id": "alert_1", "createdDateTime": ts_t, "title": "alert_1", "severity": "low"},
+        {"id": "alert_2", "createdDateTime": ts_t, "title": "alert_2", "severity": "low"},
+        {"id": "alert_3", "createdDateTime": ts_t, "title": "alert_3", "severity": "medium"},
+        {"id": "alert_4", "createdDateTime": ts_t_plus_1, "title": "alert_4", "severity": "high"},
+    ]
+    mocker.patch.object(client_mocker, "search_alerts", return_value={"value": all_alerts})
+
+    # Run 1: limit 2 -> Ingest alert_1, alert_2 at timestamp T
+    alerts_run1, last_run1 = fetch_alerts(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=2,
+        extra_filter="",
+        service_sources="",
+        last_run={},
+    )
+    assert len(alerts_run1) == 2
+    assert [json.loads(a["rawJSON"])["id"] for a in alerts_run1] == ["alert_1", "alert_2"]
+    assert last_run1["time"] == ts_t
+    assert set(last_run1["last_fetched_ids"]) == {"alert_1", "alert_2"}
+
+    # Run 2: limit 2 with last_run1 -> skips alert_1, alert_2; ingests alert_3 (at T) and alert_4 (at T+1)
+    alerts_run2, last_run2 = fetch_alerts(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=2,
+        extra_filter="",
+        service_sources="",
+        last_run=last_run1,
+    )
+    assert len(alerts_run2) == 2
+    assert [json.loads(a["rawJSON"])["id"] for a in alerts_run2] == ["alert_3", "alert_4"]
+    assert last_run2["time"] == ts_t_plus_1
+    assert last_run2["last_fetched_ids"] == ["alert_4"]
+
+
+def test_fetch_malformed_missing_none_timestamps(mocker):
+    """
+    Given:
+    - Incidents / alerts with None, missing 'createdDateTime', or unparseable timestamp strings.
+
+    When:
+    - to_utc_datetime is called directly and fetch_incidents / fetch_alerts are executed.
+
+    Then:
+    - to_utc_datetime gracefully returns None without raising exceptions.
+    - Sorting gracefully handles None by defaulting to UTC datetime.min without crashing.
+    - All items are processed and ingested cleanly.
+    """
+    # Direct to_utc_datetime edge case checks
+    assert to_utc_datetime(None) is None
+    assert to_utc_datetime("") is None
+    assert to_utc_datetime("not-a-timestamp") is None
+    assert to_utc_datetime(["invalid", "type"]) is None
+    assert to_utc_datetime({}) is None
+
+    # Test fetch_incidents with malformed, missing, None timestamps
+    items = [
+        {"id": "inc_none", "createdDateTime": None, "displayName": "None Date", "severity": "low", "alerts": []},
+        {"id": "inc_missing", "displayName": "Missing Date", "severity": "low", "alerts": []},
+        {
+            "id": "inc_invalid",
+            "createdDateTime": "unparseable-date",
+            "displayName": "Invalid Date",
+            "severity": "low",
+            "alerts": [],
+        },
+        {
+            "id": "inc_valid",
+            "createdDateTime": "2026-09-08T12:00:00.000Z",
+            "displayName": "Valid Date",
+            "severity": "high",
+            "alerts": [],
+        },
+    ]
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value={"value": items})
+
+    incidents, new_last_run = fetch_incidents(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=10,
+        extra_filter="",
+        last_run={},
+    )
+    assert len(incidents) == 4
+    # The valid item with true timestamp is sorted to the end
+    assert json.loads(incidents[-1]["rawJSON"])["id"] == "inc_valid"
+    assert new_last_run["time"] == "2026-09-08T12:00:00.000Z"
+    assert new_last_run["last_fetched_ids"] == ["inc_valid"]
+
+    # Test fetch_alerts with malformed, missing, None timestamps
+    alert_items = [
+        {"id": "a_none", "createdDateTime": None, "title": "None Date", "severity": "low"},
+        {"id": "a_missing", "title": "Missing Date", "severity": "low"},
+        {"id": "a_invalid", "createdDateTime": "unparseable-date", "title": "Invalid Date", "severity": "low"},
+        {"id": "a_valid", "createdDateTime": "2026-09-08T12:00:00.000Z", "title": "Valid Date", "severity": "high"},
+    ]
+    mocker.patch.object(client_mocker, "search_alerts", return_value={"value": alert_items})
+
+    alerts, new_last_run_alerts = fetch_alerts(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=10,
+        extra_filter="",
+        service_sources="",
+        last_run={},
+    )
+    assert len(alerts) == 4
+    assert json.loads(alerts[-1]["rawJSON"])["id"] == "a_valid"
+    assert new_last_run_alerts["time"] == "2026-09-08T12:00:00.000Z"
+    assert new_last_run_alerts["last_fetched_ids"] == ["a_valid"]
+
+
+def test_fetch_timezone_offset_normalization(mocker):
+    """
+    Given:
+    - Alerts with timestamps having non-UTC offsets (e.g., +02:00, -04:00, and Z).
+
+    When:
+    - Running fetch_alerts.
+
+    Then:
+    - Timestamps are normalized to UTC datetimes.
+    - Alerts are sorted chronologically rather than lexicographically:
+      +02:00 (12:30 UTC) comes before Z (13:00 UTC), which comes before -04:00 (15:00 UTC).
+    """
+    # Offset +02:00 is 12:30 UTC
+    dt_plus2 = to_utc_datetime("2026-09-08T14:30:00+02:00")
+    # Z is 13:00 UTC
+    dt_z = to_utc_datetime("2026-09-08T13:00:00Z")
+    # Offset -04:00 is 15:00 UTC
+    dt_minus4 = to_utc_datetime("2026-09-08T11:00:00-04:00")
+
+    assert dt_plus2 is not None
+    assert dt_z is not None
+    assert dt_minus4 is not None
+    assert dt_plus2.tzinfo == timezone.utc  # noqa: UP017
+    assert dt_z.tzinfo == timezone.utc  # noqa: UP017
+    assert dt_minus4.tzinfo == timezone.utc  # noqa: UP017
+    assert dt_plus2 < dt_z < dt_minus4
+
+    # API returns items where lexicographical order ("11:00..." < "13:00..." < "14:30...") differs from chronological
+    alerts_payload = [
+        {"id": "alert_minus4", "createdDateTime": "2026-09-08T11:00:00-04:00", "title": "minus4", "severity": "low"},
+        {"id": "alert_plus2", "createdDateTime": "2026-09-08T14:30:00+02:00", "title": "plus2", "severity": "low"},
+        {"id": "alert_z", "createdDateTime": "2026-09-08T13:00:00Z", "title": "z", "severity": "low"},
+    ]
+    mocker.patch.object(client_mocker, "search_alerts", return_value={"value": alerts_payload})
+
+    alerts, new_last_run = fetch_alerts(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=10,
+        extra_filter="",
+        service_sources="",
+        last_run={},
+    )
+    # Chronological order must be: plus2 (12:30 UTC), z (13:00 UTC), minus4 (15:00 UTC)
+    ingested_ids = [json.loads(a["rawJSON"])["id"] for a in alerts]
+    assert ingested_ids == ["alert_plus2", "alert_z", "alert_minus4"]
+    assert new_last_run["time"] == "2026-09-08T11:00:00-04:00"
+    assert new_last_run["last_fetched_ids"] == ["alert_minus4"]
+
+
+def test_fetch_empty_api_response_retains_last_run_state(mocker):
+    """
+    Given:
+    - An empty response (0 incidents/alerts) from the API.
+
+    When:
+    - Running fetch_incidents and fetch_alerts with an existing last_run.
+
+    Then:
+    - Both functions return an empty list.
+    - last_run retains its previous 'time' and 'last_fetched_ids' state without modification or corruption.
+    """
+    initial_last_run = {
+        "time": "2026-09-08T12:00:00.000Z",
+        "last_fetched_ids": ["item_prev_1", "item_prev_2"],
+    }
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value={"value": []})
+    mocker.patch.object(client_mocker, "search_alerts", return_value={"value": []})
+
+    incidents, new_last_run_inc = fetch_incidents(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=10,
+        extra_filter="",
+        last_run=initial_last_run,
+    )
+    assert len(incidents) == 0
+    assert new_last_run_inc == initial_last_run
+
+    alerts, new_last_run_alerts = fetch_alerts(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=10,
+        extra_filter="",
+        service_sources="",
+        last_run=initial_last_run,
+    )
+    assert len(alerts) == 0
+    assert new_last_run_alerts == initial_last_run
+
+
+def test_fetch_realistic_pagination_simulation(mocker):
+    """
+    Given:
+    - A mock server dataset of 5 incidents where the API respects $top and 'createdDateTime ge <time>' filter.
+
+    When:
+    - Simulating sequential fetch cycles with fetch_limit=2.
+
+    Then:
+    - Each fetch cycle queries with the last_run timestamp, skips already-seen IDs, and ingests new items.
+    - All 5 items are ingested sequentially without duplicates or missing items.
+    """
+    dataset = [
+        {"id": f"inc_{i}", "createdDateTime": ts, "displayName": f"inc_{i}", "severity": "low", "alerts": []}
+        for i, ts in enumerate(
+            [
+                "2026-09-08T10:00:00.000Z",
+                "2026-09-08T10:05:00.000Z",
+                "2026-09-08T10:10:00.000Z",
+                "2026-09-08T10:15:00.000Z",
+                "2026-09-08T10:20:00.000Z",
+            ],
+            start=1,
+        )
+    ]
+
+    def mock_get_incidents(url_suffix, timeout, headers=None):
+        top_match = re.search(r"\$top=(\d+)", url_suffix)
+        top = int(top_match.group(1)) if top_match else len(dataset)
+
+        ge_match = re.search(r"createdDateTime ge ([^\s&]+)", url_suffix)
+        if ge_match:
+            time_from_str = ge_match.group(1)
+            time_from_dt = to_utc_datetime(time_from_str) or datetime.min.replace(tzinfo=timezone.utc)  # noqa: UP017
+            filtered = [
+                item
+                for item in dataset
+                if (to_utc_datetime(item["createdDateTime"]) or datetime.min.replace(tzinfo=timezone.utc)) >= time_from_dt  # noqa: UP017
+            ]
+        else:
+            filtered = dataset
+
+        return {"value": filtered[:top]}
+
+    mocker.patch.object(client_mocker, "get_incidents_request", side_effect=mock_get_incidents)
+
+    all_ingested_ids = []
+    current_last_run = {"time": "2026-09-08T09:59:00.000Z", "last_fetched_ids": []}
+
+    # Run cycles until all items are ingested
+    for _ in range(5):
+        incidents, current_last_run = fetch_incidents(
+            client_mocker,
+            fetch_time="1 hour",
+            fetch_limit=2,
+            extra_filter="",
+            last_run=current_last_run,
+        )
+        if not incidents:
+            break
+        all_ingested_ids.extend([json.loads(i["rawJSON"])["id"] for i in incidents])
+
+    assert all_ingested_ids == ["inc_1", "inc_2", "inc_3", "inc_4", "inc_5"]
+    assert current_last_run["time"] == "2026-09-08T10:20:00.000Z"
+    assert current_last_run["last_fetched_ids"] == ["inc_5"]
+
+
+def test_create_search_alerts_filters_orderby():
+    """
+    Given:
+    - Arguments for create_search_alerts_filters.
+
+    When:
+    - Calling with is_fetch=True vs is_fetch=False.
+
+    Then:
+    - is_fetch=True includes "$orderby": "createdDateTime asc".
+    - is_fetch=False does NOT include "$orderby".
+    """
+    params_fetch = create_search_alerts_filters({}, is_fetch=True)
+    assert params_fetch.get("$orderby") == "createdDateTime asc"
+
+    params_no_fetch = create_search_alerts_filters({}, is_fetch=False)
+    assert "$orderby" not in params_no_fetch
+
+
 @pytest.mark.parametrize(
     "args, expected_params, is_fetch",
     [
         (
             {"filter": "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
-            {"$filter": "(Category eq 'Malware' and Severity eq 'High') and status eq 'resolved'"},
+            {
+                "$filter": "(Category eq 'Malware' and Severity eq 'High') and status eq 'resolved'",
+                "$orderby": "createdDateTime asc",
+            },
             True,
         ),
         (
