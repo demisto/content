@@ -1,0 +1,444 @@
+{
+    "gitbook_invites_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "invite_target": {
+            "type": "string",
+            "is_array": false
+        },
+        "is_privileged_role": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "object": {
+            "type": "string",
+            "is_array": false
+        },
+        "organization_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "redundant": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "role": {
+            "type": "string",
+            "is_array": false
+        },
+        "snapshot_at": {
+            "type": "int",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        }
+    },
+    "gitbook_members_raw": {
+        "disabled": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "is_privileged_role": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "joinedAt": {
+            "type": "int",
+            "is_array": false
+        },
+        "lastSeenAt": {
+            "type": "int",
+            "is_array": false
+        },
+        "object": {
+            "type": "string",
+            "is_array": false
+        },
+        "organization_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "role": {
+            "type": "string",
+            "is_array": false
+        },
+        "sites": {
+            "type": "float",
+            "is_array": false
+        },
+        "snapshot_at": {
+            "type": "int",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "spaces": {
+            "type": "float",
+            "is_array": false
+        },
+        "sso": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "teams": {
+            "type": "float",
+            "is_array": false
+        },
+        "user_displayName": {
+            "type": "string",
+            "is_array": false
+        },
+        "user_email": {
+            "type": "string",
+            "is_array": false
+        },
+        "user_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "uses_sso": {
+            "type": "boolean",
+            "is_array": false
+        }
+    },
+    "gitbook_sites_raw": {
+        "appliedType": {
+            "type": "string",
+            "is_array": false
+        },
+        "basename": {
+            "type": "string",
+            "is_array": false
+        },
+        "createdAt": {
+            "type": "int",
+            "is_array": false
+        },
+        "defaultLevel": {
+            "type": "string",
+            "is_array": false
+        },
+        "icon": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "is_publicly_visible": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "object": {
+            "type": "string",
+            "is_array": false
+        },
+        "organization_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "permission_access": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "permission_admin": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "permission_editAdaptiveSchema": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "permission_installIntegration": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "permission_view": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "permission_viewAdaptiveSchema": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "published": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "siteSpaces": {
+            "type": "float",
+            "is_array": false
+        },
+        "snapshot_at": {
+            "type": "int",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "title": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "urls_app": {
+            "type": "string",
+            "is_array": false
+        },
+        "visibility": {
+            "type": "string",
+            "is_array": false
+        }
+    },
+    "gitbook_installations_raw": {
+        "can_inject_script": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "can_write_content": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "createdAt": {
+            "type": "int",
+            "is_array": false
+        },
+        "external_ids": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "integration_description": {
+            "type": "string",
+            "is_array": false
+        },
+        "integration_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "integration_owner_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "integration_owner_title": {
+            "type": "string",
+            "is_array": false
+        },
+        "integration_scope_count": {
+            "type": "float",
+            "is_array": false
+        },
+        "integration_scopes": {
+            "type": "string",
+            "is_array": false
+        },
+        "integration_target": {
+            "type": "string",
+            "is_array": false
+        },
+        "integration_title": {
+            "type": "string",
+            "is_array": false
+        },
+        "integration_verified": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "integration_version": {
+            "type": "float",
+            "is_array": false
+        },
+        "integration_visibility": {
+            "type": "string",
+            "is_array": false
+        },
+        "organization_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "site_selection": {
+            "type": "string",
+            "is_array": false
+        },
+        "snapshot_at": {
+            "type": "int",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "space_selection": {
+            "type": "string",
+            "is_array": false
+        },
+        "spaces": {
+            "type": "float",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "target_organization": {
+            "type": "string",
+            "is_array": false
+        },
+        "updatedAt": {
+            "type": "int",
+            "is_array": false
+        },
+        "urls_app": {
+            "type": "string",
+            "is_array": false
+        }
+    },
+    "gitbook_git_sync_raw": {
+        "git_installationId": {
+            "type": "string",
+            "is_array": false
+        },
+        "git_installationProvider": {
+            "type": "string",
+            "is_array": false
+        },
+        "git_installationStatus": {
+            "type": "string",
+            "is_array": false
+        },
+        "git_integration": {
+            "type": "string",
+            "is_array": false
+        },
+        "git_operation_state": {
+            "type": "string",
+            "is_array": false
+        },
+        "git_repoName": {
+            "type": "string",
+            "is_array": false
+        },
+        "git_repository_named": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "git_state": {
+            "type": "string",
+            "is_array": false
+        },
+        "git_sync_configured": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "git_updatedAt": {
+            "type": "string",
+            "is_array": false
+        },
+        "git_url": {
+            "type": "string",
+            "is_array": false
+        },
+        "organization_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "snapshot_at": {
+            "type": "int",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "space_changeRequests": {
+            "type": "float",
+            "is_array": false
+        },
+        "space_changeRequestsDraft": {
+            "type": "float",
+            "is_array": false
+        },
+        "space_changeRequestsOpen": {
+            "type": "float",
+            "is_array": false
+        },
+        "space_comments": {
+            "type": "float",
+            "is_array": false
+        },
+        "space_createdAt": {
+            "type": "int",
+            "is_array": false
+        },
+        "space_defaultLevel": {
+            "type": "string",
+            "is_array": false
+        },
+        "space_editMode": {
+            "type": "string",
+            "is_array": false
+        },
+        "space_emoji": {
+            "type": "string",
+            "is_array": false
+        },
+        "space_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "space_internal_poweredByV2": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "space_internal_singleWebsocket": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "space_object": {
+            "type": "string",
+            "is_array": false
+        },
+        "space_organization": {
+            "type": "string",
+            "is_array": false
+        },
+        "space_parent": {
+            "type": "string",
+            "is_array": false
+        },
+        "space_revision": {
+            "type": "string",
+            "is_array": false
+        },
+        "space_title": {
+            "type": "string",
+            "is_array": false
+        },
+        "space_updatedAt": {
+            "type": "int",
+            "is_array": false
+        },
+        "space_visibility": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
