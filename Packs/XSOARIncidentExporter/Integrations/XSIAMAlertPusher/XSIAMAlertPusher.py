@@ -39,15 +39,24 @@ class XSIAMClient(BaseClient):
         )
 
 
-class XSOAR6Client(BaseClient):
+class XSOARClient(BaseClient):
 
-    def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool):
-        headers = {
+    def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool,
+                 api_key_id: str = ''):
+        headers: dict[str, str] = {
             'Authorization': api_key,
             'Content-Type': 'application/json',
             'Accept': 'application/json',
         }
+        if api_key_id:
+            headers['x-xdr-auth-id'] = api_key_id
+        self._is_xsoar8 = bool(api_key_id)
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
+
+    def _incident_url_suffix(self, path: str) -> str:
+        if self._is_xsoar8:
+            return f'/xsoar/public/v1{path}'
+        return path
 
     def search_incidents(self, query: str = '', size: int = 100, page: int = 0,
                          from_date: str | None = None, to_date: str | None = None) -> list:
@@ -67,7 +76,7 @@ class XSOAR6Client(BaseClient):
         }
         response = self._http_request(
             method='POST',
-            url_suffix='/incidents/search',
+            url_suffix=self._incident_url_suffix('/incidents/search'),
             json_data=body,
         )
         return response.get('data') or []
@@ -183,7 +192,7 @@ def map_incident_to_alert(incident: dict, elevate_low: bool = False, timestamp_o
     }
 
 
-def search_incidents(xsoar_client: XSOAR6Client, query: str | None, max_incidents: int,
+def search_incidents(xsoar_client: XSOARClient, query: str | None, max_incidents: int,
                      from_date: str | None = None, to_date: str | None = None) -> list[dict]:
     all_incidents: list[dict] = []
     page = 0
@@ -203,7 +212,7 @@ def search_incidents(xsoar_client: XSOAR6Client, query: str | None, max_incident
     return all_incidents[:max_incidents]
 
 
-def push_incidents_command(xsiam_client: XSIAMClient, xsoar_client: XSOAR6Client,
+def push_incidents_command(xsiam_client: XSIAMClient, xsoar_client: XSOARClient,
                            args: dict, default_query: str | None,
                            default_max: int, elevate_low: bool = False,
                            timestamp_offset: int = 0) -> CommandResults:
@@ -238,7 +247,7 @@ def push_incidents_command(xsiam_client: XSIAMClient, xsoar_client: XSOAR6Client
     )
 
 
-def push_single_incident_command(xsiam_client: XSIAMClient, xsoar_client: XSOAR6Client,
+def push_single_incident_command(xsiam_client: XSIAMClient, xsoar_client: XSOARClient,
                                   args: dict, elevate_low: bool = False,
                                   timestamp_offset: int = 0) -> CommandResults:
     incident_id = args.get('incident_id')
@@ -270,7 +279,7 @@ def push_single_incident_command(xsiam_client: XSIAMClient, xsoar_client: XSOAR6
     )
 
 
-def sync_new_incidents_command(xsiam_client: XSIAMClient, xsoar_client: XSOAR6Client,
+def sync_new_incidents_command(xsiam_client: XSIAMClient, xsoar_client: XSOARClient,
                                args: dict, default_query: str | None,
                                default_max: int, elevate_low: bool = False,
                                timestamp_offset: int = 0) -> CommandResults:
@@ -329,7 +338,7 @@ def reset_sync_command() -> CommandResults:
     return CommandResults(readable_output='Sync state has been reset. Next sync will send all incidents.')
 
 
-def test_module(xsiam_client: XSIAMClient, xsoar_client: XSOAR6Client) -> str:
+def test_module(xsiam_client: XSIAMClient, xsoar_client: XSOARClient) -> str:
     xsoar_client.search_incidents(size=1)
     xsiam_client.insert_parsed_alerts([])
     return 'ok'
@@ -345,6 +354,7 @@ def main() -> None:  # pragma: no cover
     xsiam_api_key_id = params.get('xsiam_api_key_id', '')
     xsoar_url = params.get('xsoar_url', '').rstrip('/')
     xsoar_api_key = (params.get('xsoar_api_key') or {}).get('password', '')
+    xsoar_api_key_id = params.get('xsoar_api_key_id', '')
     verify = not argToBoolean(params.get('insecure', False))
     proxy = argToBoolean(params.get('proxy', False))
     default_max = arg_to_number(params.get('max_incidents')) or 100
@@ -359,9 +369,9 @@ def main() -> None:  # pragma: no cover
             base_url=xsiam_url, api_key=xsiam_api_key,
             api_key_id=xsiam_api_key_id, verify=verify, proxy=proxy,
         )
-        xsoar_client = XSOAR6Client(
+        xsoar_client = XSOARClient(
             base_url=xsoar_url, api_key=xsoar_api_key,
-            verify=verify, proxy=proxy,
+            verify=verify, proxy=proxy, api_key_id=xsoar_api_key_id,
         )
 
         if command == 'test-module':

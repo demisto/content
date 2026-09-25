@@ -10,20 +10,29 @@ from typing import Any
 urllib3.disable_warnings()
 
 
-class XSOAR6Client(BaseClient):
+class XSOARClient(BaseClient):
 
-    def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool):
-        headers = {
+    def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool,
+                 api_key_id: str = ''):
+        headers: dict[str, str] = {
             "Authorization": api_key,
             "Content-Type": "application/json",
             "Accept": "application/json",
         }
+        if api_key_id:
+            headers["x-xdr-auth-id"] = api_key_id
+        self._is_xsoar8 = bool(api_key_id)
         super().__init__(
             base_url=base_url,
             headers=headers,
             verify=verify,
             proxy=proxy,
         )
+
+    def _url_suffix(self, path: str) -> str:
+        if self._is_xsoar8:
+            return f"/xsoar/public/v1{path}"
+        return path
 
     def search_incidents(
         self,
@@ -50,7 +59,7 @@ class XSOAR6Client(BaseClient):
 
         response = self._http_request(
             method="POST",
-            url_suffix="/incidents/search",
+            url_suffix=self._url_suffix("/incidents/search"),
             json_data=body,
         )
 
@@ -64,7 +73,7 @@ class XSOAR6Client(BaseClient):
         try:
             response = self._http_request(
                 method="POST",
-                url_suffix=f"/investigation/{incident_id}",
+                url_suffix=self._url_suffix(f"/investigation/{incident_id}"),
                 json_data={},
             )
             return response if isinstance(response, list) else []
@@ -94,7 +103,7 @@ def map_xsoar_incident_to_xsiam(incident: dict, incident_type: str | None = None
     return mapped
 
 
-def test_module(client: XSOAR6Client) -> str:
+def test_module(client: XSOARClient) -> str:
     try:
         client.search_incidents(size=1)
         return "ok"
@@ -103,7 +112,7 @@ def test_module(client: XSOAR6Client) -> str:
 
 
 def fetch_incidents(
-    client: XSOAR6Client,
+    client: XSOARClient,
     max_fetch: int,
     first_fetch: str,
     query: str,
@@ -168,7 +177,7 @@ def fetch_incidents(
     demisto.incidents(incidents)
 
 
-def get_incidents_command(client: XSOAR6Client, args: dict) -> CommandResults:
+def get_incidents_command(client: XSOARClient, args: dict) -> CommandResults:
     query = args.get("query", "")
     limit = arg_to_number(args.get("limit", "50")) or 50
     from_date = args.get("from_date")
@@ -205,7 +214,7 @@ def get_incidents_command(client: XSOAR6Client, args: dict) -> CommandResults:
     )
 
 
-def get_incident_command(client: XSOAR6Client, args: dict) -> CommandResults:
+def get_incident_command(client: XSOARClient, args: dict) -> CommandResults:
     incident_id = args.get("incident_id", "")
     if not incident_id:
         raise DemistoException("incident_id is required.")
@@ -238,6 +247,7 @@ def main() -> None:  # pragma: no cover
     base_url = params.get("url", "").rstrip("/")
     api_creds = params.get("api_key", {})
     api_key = api_creds.get("password", "") if isinstance(api_creds, dict) else api_creds
+    api_key_id = params.get("api_key_id", "")
     verify = not argToBoolean(params.get("insecure", True))
     proxy = argToBoolean(params.get("proxy", False))
     max_fetch = arg_to_number(params.get("max_fetch", "50")) or 50
@@ -248,11 +258,12 @@ def main() -> None:  # pragma: no cover
     demisto.debug(f"XSOAR6Collector: command={command}")
 
     try:
-        client = XSOAR6Client(
+        client = XSOARClient(
             base_url=base_url,
             api_key=api_key,
             verify=verify,
             proxy=proxy,
+            api_key_id=api_key_id,
         )
 
         if command == "test-module":

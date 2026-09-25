@@ -5,24 +5,30 @@ name: Xporter
 display: Xporter
 category: Utilities
 provider: Palo Alto Networks
-description: Pushes XSOAR 6 incidents to Cortex XSIAM as parsed alerts using the Insert Parsed Alerts API.
+description: Pushes XSOAR 6 or XSOAR 8 incidents to Cortex XSIAM as parsed alerts using the Insert Parsed Alerts API.
 sectionorder:
   - Connect
   - Collect
 configuration:
-  - display: XSOAR 6 Server URL
+  - display: XSOAR Server URL
     name: xsoar_url
     type: 0
     required: true
     section: Connect
-    additionalinfo: The URL of the XSOAR 6 server (e.g., https://192.168.1.215).
+    additionalinfo: The URL of the XSOAR server. For XSOAR 6 use the server IP/hostname (e.g., https://192.168.1.215). For XSOAR 8 use the API URL (e.g., https://api-{tenant}.xdr.us.paloaltonetworks.com).
   - display: ""
-    displaypassword: XSOAR 6 API Key
+    displaypassword: XSOAR API Key
     name: xsoar_api_key
     type: 9
     required: true
     hiddenusername: true
     section: Connect
+  - display: XSOAR API Key ID (XSOAR 8 only)
+    name: xsoar_api_key_id
+    type: 0
+    required: false
+    section: Connect
+    additionalinfo: Required for XSOAR 8. Leave blank for XSOAR 6. The numeric API Key ID from XSOAR 8 Settings > API Keys.
   - display: XSIAM API URL
     name: xsiam_url
     type: 0

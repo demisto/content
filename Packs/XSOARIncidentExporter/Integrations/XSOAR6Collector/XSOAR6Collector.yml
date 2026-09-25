@@ -2,26 +2,32 @@ commonfields:
   id: XSOAR6Collector
   version: -1
 name: XSOAR6Collector
-display: XSOAR 6 Incident Collector
+display: XSOAR Incident Collector
 category: Utilities
 provider: Palo Alto Networks
-description: Fetches incidents from a remote Cortex XSOAR 6 instance into Cortex XSIAM.
+description: Fetches incidents from a remote Cortex XSOAR 6 or XSOAR 8 instance into Cortex XSIAM.
 sectionorder:
   - Connect
   - Collect
 configuration:
-  - display: XSOAR 6 Server URL
+  - display: XSOAR Server URL
     name: url
     type: 0
     required: true
     section: Connect
-    additionalinfo: "The XSOAR 6 server URL (e.g. https://192.168.1.215)."
-  - displaypassword: XSOAR 6 API Key
+    additionalinfo: "The XSOAR server URL. For XSOAR 6 use the server IP/hostname (e.g., https://192.168.1.215). For XSOAR 8 use the API URL (e.g., https://api-{tenant}.xdr.us.paloaltonetworks.com)."
+  - displaypassword: XSOAR API Key
     name: api_key
     type: 9
     required: true
     hiddenusername: true
     section: Connect
+  - display: XSOAR API Key ID (XSOAR 8 only)
+    name: api_key_id
+    type: 0
+    required: false
+    section: Connect
+    additionalinfo: Required for XSOAR 8. Leave blank for XSOAR 6. The numeric API Key ID from XSOAR 8 Settings > API Keys.
   - display: Trust any certificate (not secure)
     name: insecure
     type: 8
