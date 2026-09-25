@@ -1,23 +1,26 @@
 Triages a Panorays "Self Company" finding incident end-to-end without depending on any specific external ITSM tool.
 
 Flow:
-1. Checks for an existing open (or pending) incident on the same Panorays Finding ID. If found, only the newer
+1. Verifies the Panorays Findings API integration instance is enabled. If it is not, the incident is routed to
+   a manual review task instead of being triaged automatically against an unreachable integration.
+2. Checks for an existing open (or pending) incident on the same Panorays Finding ID. If found, only the newer
    of the two incidents (by incident ID) closes itself as a duplicate, so two near-simultaneous incidents for
    the same finding can't both close in favor of the other.
-2. Branches on finding severity.
-   - Low / Informational: auto-closed, no action required (closeReason/closeNotes configurable via inputs).
+3. Branches on finding severity.
+   - Low / Informational (INFO): auto-closed, no action required (closeReason/closeNotes configurable via inputs).
    - Medium: a Cortex XSOAR task is created for an analyst to review, after a summary is printed to the War Room.
-   - Critical / High: a notification is sent (via whatever mail/chat integration implementing the generic
-     send-notification command is enabled) and a remediation task with an SLA is created natively in Cortex
+   - Critical / High: a notification is sent (via whatever chat integration implementing the generic
+     send-notification command is enabled - e.g. Slack, Microsoft Teams, Mattermost; email-only integrations
+     such as Gmail/EWS are not covered) and a remediation task with an SLA is created natively in Cortex
      XSOAR, after a summary is printed to the War Room.
    - Any other/unexpected value (including empty): a summary is printed to the War Room and the incident is
      routed to a manual review task instead of being auto-closed, since this field is free-form text from the
      API with no normalization.
-3. Remediation is tracked entirely with native Cortex XSOAR tasks - this pack does not assume a specific
+4. Remediation is tracked entirely with native Cortex XSOAR tasks - this pack does not assume a specific
    external ticketing product. See the README for how to extend this playbook with your own ITSM hand-off.
-4. Reminds the analyst to update the finding status back in Panorays once resolved (a future
+5. Reminds the analyst to update the finding status back in Panorays once resolved (a future
    panorays-finding-update command can automate this step).
-5. All paths converge on a final "Done" task.
+6. All paths converge on a final "Done" task.
 
 ## Dependencies
 
@@ -33,6 +36,7 @@ This playbook does not use any integrations.
 
 ### Scripts
 
+* IsIntegrationAvailable
 * PanoraysCheckOlderDuplicate
 
 ### Commands

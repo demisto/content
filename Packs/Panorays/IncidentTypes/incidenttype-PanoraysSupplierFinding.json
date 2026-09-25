@@ -1,22 +1,24 @@
 {
-    "id": "Panorays Finding",
+    "id": "Panorays Supplier Finding",
     "version": -1,
+    "name": "Panorays Supplier Finding",
+    "prevName": "Panorays Supplier Finding",
     "color": "#295AFF",
-    "name": "Panorays Finding",
-    "prevName": "Panorays Finding",
     "hours": 0,
     "days": 0,
     "weeks": 0,
+    "autorun": false,
+    "closureScript": "",
+    "preProcessingScript": "",
     "system": false,
     "readonly": false,
-    "fromVersion": "6.0.0",
-    "playbookId": "Panorays Finding - Triage and Response",
-    "autorun": true,
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
-    }
+    },
+    "fromVersion": "6.10.0",
+    "layout": "Panorays Supplier Finding"
 }
