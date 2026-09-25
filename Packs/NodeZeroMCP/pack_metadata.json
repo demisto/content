@@ -1,24 +1,29 @@
 {
-    "name": "NodeZero",
-    "description": "Horizon3 NodeZero autonomous pentest platform. Fetches high/critical weaknesses as incidents.",
+    "name": "NodeZero MCP",
+    "description": "This content pack integrates Cortex XSOAR with the NodeZero MCP server by Horizon3. It automatically discovers NodeZero's autonomous pentesting tools and exposes them as agentic system actions, enabling Cortex agents to launch pentests, retrieve findings, and trigger remediation workflows without manual configuration.",
     "support": "partner",
     "currentVersion": "1.0.1",
+    "serverMinVersion": "6.1.0",
     "author": "Horizon3",
-    "url": "https://horizon3.ai",
+    "url": "https://www.horizon3.ai",
     "email": "support@horizon3.ai",
     "categories": [
-        "Vulnerability Management"
+        "Vulnerability Management",
+        "Utilities"
     ],
     "tags": [
         "Security",
         "Attack",
         "Breach Simulation"
     ],
-    "useCases": [],
+    "useCases": [
+        "Vulnerability Management"
+    ],
     "keywords": [
         "NodeZero",
         "Horizon3",
         "pentest",
+        "mcp",
         "autonomous penetration testing",
         "vulnerability management"
     ],
@@ -35,6 +40,6 @@
         "support@horizon3.ai"
     ],
     "githubUser": [
-        "h3-ryan"
+        "zach-shute-horizon3ai"
     ]
 }
