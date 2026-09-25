@@ -72,6 +72,72 @@ Update a security rule. If one does not exist, it will be created. The command i
 | Azure.NSGRule.priority | Number | The rule's priority. Can be from 100 to 4096. |
 | Azure.NSGRule.direction | String | The rule's direction. Can be "Inbound" or "Outbound". |
 
+### azure-storage-account-list
+
+***
+Lists storage accounts, or retrieves a single storage account when an account name is provided. Required permission: Microsoft.Storage/storageAccounts/read.
+
+#### Base Command
+
+`azure-storage-account-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The resource group name. | Required |
+| account_name | The storage account name. When provided, retrieves the specified storage account only; otherwise all storage accounts in the resource group are listed. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Storage.StorageAccounts.id | String | Fully qualified resource ID for the storage account. |
+| Azure.Storage.StorageAccounts.name | String | The name of the storage account. |
+| Azure.Storage.StorageAccounts.type | String | The resource type. |
+| Azure.Storage.StorageAccounts.location | String | The geo-location where the resource lives. |
+| Azure.Storage.StorageAccounts.kind | String | The kind of the storage account. |
+| Azure.Storage.StorageAccounts.sku.name | String | The SKU name of the storage account. |
+| Azure.Storage.StorageAccounts.sku.tier | String | The SKU tier of the storage account. |
+| Azure.Storage.StorageAccounts.properties.provisioningState | String | The status of the storage account at the time the operation was called. |
+| Azure.Storage.StorageAccounts.properties.statusOfPrimary | String | The status indicating whether the primary location of the storage account is available or unavailable. |
+| Azure.Storage.StorageAccounts.properties.statusOfSecondary | String | The status indicating whether the secondary location of the storage account is available or unavailable. |
+
+### azure-storage-blob-container-list
+
+***
+Lists blob containers, or retrieves a single blob container when a container name is provided. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/read.
+
+#### Base Command
+
+`azure-storage-blob-container-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The resource group name. | Required |
+| account_name | The storage account name. | Required |
+| container_name | The container name. When provided, retrieves the specified container only; otherwise all containers in the storage account are listed. | Optional |
+| include_deleted | Whether to include soft-deleted blob containers in the response. Possible values are: true, false. | Optional |
+| maxpagesize | The maximum number of containers that the server returns per page. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Storage.BlobContainers.id | String | Fully qualified resource ID for the resource. |
+| Azure.Storage.BlobContainers.name | String | The name of the resource. |
+| Azure.Storage.BlobContainers.type | String | The resource type. |
+| Azure.Storage.BlobContainers.properties.publicAccess | String | Specifies whether data in the container may be accessed publicly and the access level. |
+| Azure.Storage.BlobContainers.properties.leaseStatus | String | The lease status of the container. |
+| Azure.Storage.BlobContainers.properties.leaseState | String | The lease state of the container. |
+| Azure.Storage.BlobContainers.properties.lastModifiedTime | Date | Returns the date and time the container was last modified. |
+| Azure.Storage.BlobContainers.properties.hasImmutabilityPolicy | Boolean | The hasImmutabilityPolicy property is set to true by SRP if an ImmutabilityPolicy exists for this container, and false if it does not. |
+| Azure.Storage.BlobContainers.properties.hasLegalHold | Boolean | The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared. |
+
 ### azure-storage-account-update
 
 ***
