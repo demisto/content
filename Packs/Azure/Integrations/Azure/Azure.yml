@@ -11035,6 +11035,579 @@ script:
       - contextPath: Azure.Compute.VirtualMachinesNextToken
         description: The URI to fetch the next page of VMs. Run the same command with the next_token argument to get the next page of VMs.
         type: String
+# azure-vn-firewall-policy-create
+  - name: azure-vn-firewall-policy-create
+    description: "Creates a firewall policy. This command only creates the policy resource. To attach the policy to a firewall, run the azure-vn-firewall-policy-attach command. Required permissions: Microsoft.Network/firewallPolicies/read, Microsoft.Network/firewallPolicies/write."
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: resource_group_name
+        description: The name of the resource group.
+        required: true
+      - name: policy_name
+        description: The name of the firewall policy to create.
+        required: true
+      - name: location
+        description: The region location of the firewall policy resource.
+        required: true
+      - name: tier
+        description: The tier of the firewall policy.
+        required: true
+        defaultValue: Standard
+        auto: PREDEFINED
+        predefined:
+          - Standard
+          - Premium
+          - Basic
+      - name: threat_intelligence_mode
+        description: The operation mode for threat intelligence.
+        auto: PREDEFINED
+        predefined:
+          - Alert
+          - Deny
+          - "Off"
+      - name: ips
+        description: The comma-separated list of IP addresses for the threat intelligence allow list.
+        isArray: true
+      - name: domains
+        description: 'The comma-separated list of fully qualified domain names for the threat intelligence allow list (for example, "*.microsoft.com,email.college.edu").'
+        isArray: true
+      - name: base_policy_id
+        description: The ID of the parent firewall policy from which rules are inherited.
+      - name: enable_proxy
+        description: Whether to enable the DNS proxy on the firewalls attached to the firewall policy.
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+      - name: dns_servers
+        description: The comma-separated list of custom DNS servers.
+        isArray: true
+    outputs:
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.id
+        description: The firewall policy resource ID.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.name
+        description: The firewall policy resource name.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.type
+        description: The firewall policy resource type.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.location
+        description: The firewall policy resource location.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.etag
+        description: The unique read-only string that changes whenever the resource is updated.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.tags
+        description: The firewall policy resource tags.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.identity
+        description: The managed identity of the firewall policy, containing the type, principalId, tenantId, and userAssignedIdentities fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.provisioningState
+        description: The provisioning state of the firewall policy resource. Possible values are Succeeded, Updating, Deleting, or Failed.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelMode
+        description: The operation mode for threat intelligence.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelWhitelist
+        description: The threat intelligence allow list object, containing the ipAddresses and fqdns fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.dnsSettings
+        description: The DNS settings object, containing the servers, enableProxy, and requireProxyForNetworkRules fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.sku
+        description: The SKU object of the firewall policy, containing the tier field.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.basePolicy
+        description: The parent firewall policy object from which rules are inherited, containing the id field.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.firewalls
+        description: The list of references to the Azure firewalls that the firewall policy is associated with.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.childPolicies
+        description: The list of references to the child firewall policies.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.ruleCollectionGroups
+        description: The list of references to the rule collection groups of the firewall policy.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.size
+        description: The size of the firewall policy, in MB (for example, 0.5MB).
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.insights
+        description: The insights settings of the firewall policy, containing the isEnabled, retentionDays, and logAnalyticsResources fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.snat
+        description: The private IP address ranges to which traffic is not SNATed, containing the privateRanges and autoLearnPrivateRanges fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.sql
+        description: The SQL settings of the firewall policy, containing the allowSqlRedirect field.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.explicitProxy
+        description: The explicit proxy settings of the firewall policy, containing the enableExplicitProxy, httpPort, httpsPort, enablePacFile, pacFilePort, and pacFile fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.intrusionDetection
+        description: The intrusion detection settings of the firewall policy, containing the mode, profile, and configuration fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.transportSecurity
+        description: The TLS inspection settings of the firewall policy, containing the certificateAuthority field.
+        type: Unknown
+# azure-vn-firewall-policy-update
+  - name: azure-vn-firewall-policy-update
+    description: "Updates a firewall policy. Only the provided arguments are updated. Required permissions: Microsoft.Network/firewallPolicies/read, Microsoft.Network/firewallPolicies/write."
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: resource_group_name
+        description: The name of the resource group.
+        required: true
+      - name: policy_name
+        description: The name of the firewall policy to update.
+        required: true
+      - name: threat_intelligence_mode
+        description: The operation mode for threat intelligence.
+        auto: PREDEFINED
+        predefined:
+          - Alert
+          - Deny
+          - "Off"
+      - name: ips
+        description: The comma-separated list of IP addresses for the threat intelligence allow list.
+        isArray: true
+      - name: domains
+        description: 'The comma-separated list of fully qualified domain names for the threat intelligence allow list (for example, "*.microsoft.com,email.college.edu").'
+        isArray: true
+      - name: base_policy_id
+        description: The ID of the parent firewall policy from which rules are inherited.
+      - name: enable_proxy
+        description: Whether to enable the DNS proxy on the firewalls attached to the firewall policy.
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+      - name: dns_servers
+        description: The comma-separated list of custom DNS servers.
+        isArray: true
+    outputs:
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.id
+        description: The firewall policy resource ID.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.name
+        description: The firewall policy resource name.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.type
+        description: The firewall policy resource type.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.location
+        description: The firewall policy resource location.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.etag
+        description: The unique read-only string that changes whenever the resource is updated.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.tags
+        description: The firewall policy resource tags.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.identity
+        description: The managed identity of the firewall policy, containing the type, principalId, tenantId, and userAssignedIdentities fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.provisioningState
+        description: The provisioning state of the firewall policy resource. Possible values are Succeeded, Updating, Deleting, or Failed.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelMode
+        description: The operation mode for threat intelligence.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelWhitelist
+        description: The threat intelligence allow list object, containing the ipAddresses and fqdns fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.dnsSettings
+        description: The DNS settings object, containing the servers, enableProxy, and requireProxyForNetworkRules fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.sku
+        description: The SKU object of the firewall policy, containing the tier field.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.basePolicy
+        description: The parent firewall policy object from which rules are inherited, containing the id field.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.firewalls
+        description: The list of references to the Azure firewalls that the firewall policy is associated with.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.childPolicies
+        description: The list of references to the child firewall policies.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.ruleCollectionGroups
+        description: The list of references to the rule collection groups of the firewall policy.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.size
+        description: The size of the firewall policy, in MB (for example, 0.5MB).
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.insights
+        description: The insights settings of the firewall policy, containing the isEnabled, retentionDays, and logAnalyticsResources fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.snat
+        description: The private IP address ranges to which traffic is not SNATed, containing the privateRanges and autoLearnPrivateRanges fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.sql
+        description: The SQL settings of the firewall policy, containing the allowSqlRedirect field.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.explicitProxy
+        description: The explicit proxy settings of the firewall policy, containing the enableExplicitProxy, httpPort, httpsPort, enablePacFile, pacFilePort, and pacFile fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.intrusionDetection
+        description: The intrusion detection settings of the firewall policy, containing the mode, profile, and configuration fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.transportSecurity
+        description: The TLS inspection settings of the firewall policy, containing the certificateAuthority field.
+        type: Unknown
+# azure-vn-firewall-policy-get
+  - name: azure-vn-firewall-policy-get
+    description: "Retrieves a firewall policy. Required permission: Microsoft.Network/firewallPolicies/read."
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: resource_group_name
+        description: The name of the resource group.
+        required: true
+      - name: policy_name
+        description: The name of the firewall policy to retrieve.
+        required: true
+    outputs:
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.id
+        description: The firewall policy resource ID.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.name
+        description: The firewall policy resource name.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.type
+        description: The firewall policy resource type.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.location
+        description: The firewall policy resource location.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.etag
+        description: The unique read-only string that changes whenever the resource is updated.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.tags
+        description: The firewall policy resource tags.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.identity
+        description: The managed identity of the firewall policy, containing the type, principalId, tenantId, and userAssignedIdentities fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.provisioningState
+        description: The provisioning state of the firewall policy resource. Possible values are Succeeded, Updating, Deleting, or Failed.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelMode
+        description: The operation mode for threat intelligence.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelWhitelist
+        description: The threat intelligence allow list object, containing the ipAddresses and fqdns fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.dnsSettings
+        description: The DNS settings object, containing the servers, enableProxy, and requireProxyForNetworkRules fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.sku
+        description: The SKU object of the firewall policy, containing the tier field.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.basePolicy
+        description: The parent firewall policy object from which rules are inherited, containing the id field.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.firewalls
+        description: The list of references to the Azure firewalls that the firewall policy is associated with.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.childPolicies
+        description: The list of references to the child firewall policies.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.ruleCollectionGroups
+        description: The list of references to the rule collection groups of the firewall policy.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.size
+        description: The size of the firewall policy, in MB (for example, 0.5MB).
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.insights
+        description: The insights settings of the firewall policy, containing the isEnabled, retentionDays, and logAnalyticsResources fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.snat
+        description: The private IP address ranges to which traffic is not SNATed, containing the privateRanges and autoLearnPrivateRanges fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.sql
+        description: The SQL settings of the firewall policy, containing the allowSqlRedirect field.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.explicitProxy
+        description: The explicit proxy settings of the firewall policy, containing the enableExplicitProxy, httpPort, httpsPort, enablePacFile, pacFilePort, and pacFile fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.intrusionDetection
+        description: The intrusion detection settings of the firewall policy, containing the mode, profile, and configuration fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.transportSecurity
+        description: The TLS inspection settings of the firewall policy, containing the certificateAuthority field.
+        type: Unknown
+# azure-vn-firewall-policy-delete
+  - name: azure-vn-firewall-policy-delete
+    description: "Deletes a firewall policy resource. Required permission: Microsoft.Network/firewallPolicies/delete."
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: resource_group_name
+        description: The name of the resource group.
+        required: true
+      - name: policy_name
+        description: The name of the firewall policy to delete.
+        required: true
+    outputs: [] # No outputs are returned in the response.
+# azure-vn-firewall-policy-list
+  - name: azure-vn-firewall-policy-list
+    description: "Lists the firewall policies in a resource group. Use the next_token argument to view the next page of results. Required permission: Microsoft.Network/firewallPolicies/read."
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: resource_group_name
+        description: The name of the resource group.
+        required: true
+      - name: next_token
+        description: The URI to fetch the next page of results, as returned in the Azure.VirtualNetworks.FirewallPoliciesNextToken output of a previous run.
+        required: false
+    outputs:
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.id
+        description: The firewall policy resource ID.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.name
+        description: The firewall policy resource name.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.type
+        description: The firewall policy resource type.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.location
+        description: The firewall policy resource location.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.etag
+        description: The unique read-only string that changes whenever the resource is updated.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.tags
+        description: The firewall policy resource tags.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.identity
+        description: The managed identity of the firewall policy, containing the type, principalId, tenantId, and userAssignedIdentities fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.provisioningState
+        description: The provisioning state of the firewall policy resource. Possible values are Succeeded, Updating, Deleting, or Failed.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelMode
+        description: The operation mode for threat intelligence.
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelWhitelist
+        description: The threat intelligence allow list object, containing the ipAddresses and fqdns fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.dnsSettings
+        description: The DNS settings object, containing the servers, enableProxy, and requireProxyForNetworkRules fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.sku
+        description: The SKU object of the firewall policy, containing the tier field.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.basePolicy
+        description: The parent firewall policy object from which rules are inherited, containing the id field.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.firewalls
+        description: The list of references to the Azure firewalls that the firewall policy is associated with.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.childPolicies
+        description: The list of references to the child firewall policies.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.ruleCollectionGroups
+        description: The list of references to the rule collection groups of the firewall policy.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.size
+        description: The size of the firewall policy, in MB (for example, 0.5MB).
+        type: String
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.insights
+        description: The insights settings of the firewall policy, containing the isEnabled, retentionDays, and logAnalyticsResources fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.snat
+        description: The private IP address ranges to which traffic is not SNATed, containing the privateRanges and autoLearnPrivateRanges fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.sql
+        description: The SQL settings of the firewall policy, containing the allowSqlRedirect field.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.explicitProxy
+        description: The explicit proxy settings of the firewall policy, containing the enableExplicitProxy, httpPort, httpsPort, enablePacFile, pacFilePort, and pacFile fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.intrusionDetection
+        description: The intrusion detection settings of the firewall policy, containing the mode, profile, and configuration fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPolicies.properties.transportSecurity
+        description: The TLS inspection settings of the firewall policy, containing the certificateAuthority field.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.FirewallPoliciesNextToken
+        description: The URI to fetch the next page of firewall policies. Run the same command with the next_token argument to get the next page of firewall policies.
+        type: String
+# azure-vn-firewall-policy-attach
+  - name: azure-vn-firewall-policy-attach
+    description: "Attaches a firewall policy to a firewall. The policy and the firewall must belong to the same tier. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write, Microsoft.Network/firewallPolicies/join/action."
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: resource_group_name
+        description: The name of the resource group.
+        required: true
+      - name: firewall_name
+        description: The name of the firewall to which the policy is attached.
+        required: true
+      - name: policy_id
+        description: The ID of the firewall policy to attach.
+        required: true
+    outputs:
+      - contextPath: Azure.VirtualNetworks.Firewalls.id
+        description: The firewall resource ID.
+        type: String
+      - contextPath: Azure.VirtualNetworks.Firewalls.name
+        description: The firewall resource name.
+        type: String
+      - contextPath: Azure.VirtualNetworks.Firewalls.type
+        description: The firewall resource type.
+        type: String
+      - contextPath: Azure.VirtualNetworks.Firewalls.location
+        description: The firewall resource location.
+        type: String
+      - contextPath: Azure.VirtualNetworks.Firewalls.etag
+        description: The unique read-only string that changes whenever the resource is updated.
+        type: String
+      - contextPath: Azure.VirtualNetworks.Firewalls.tags
+        description: The firewall resource tags.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.zones
+        description: The list of availability zones denoting where the resource needs to come from.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.provisioningState
+        description: The provisioning state of the firewall resource. Possible values are Succeeded, Updating, Deleting, or Failed.
+        type: String
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.threatIntelMode
+        description: The operation mode for threat intelligence.
+        type: String
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.firewallPolicy
+        description: The firewall policy object associated with the firewall, containing the id field.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.sku
+        description: The SKU object of the firewall, containing the name and tier fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.ipConfigurations
+        description: The IP configurations of the firewall resource.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.hubIPAddresses
+        description: The IP addresses associated with the firewall resource.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.virtualHub
+        description: The virtual hub object to which the firewall belongs, containing the id field.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.managementIpConfiguration
+        description: The management IP configuration of the firewall resource, which is used for forced tunneling.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.applicationRuleCollections
+        description: The list of application rule collections of the firewall resource. Returned only when the firewall is not managed by a firewall policy.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.natRuleCollections
+        description: The list of NAT rule collections of the firewall resource. Returned only when the firewall is not managed by a firewall policy.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.networkRuleCollections
+        description: The list of network rule collections of the firewall resource. Returned only when the firewall is not managed by a firewall policy.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.ipGroups
+        description: The list of IP groups associated with the firewall resource.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.autoscaleConfiguration
+        description: The autoscale settings of the firewall resource, containing the minCapacity and maxCapacity fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.additionalProperties
+        description: The additional properties used to further configure the firewall resource.
+        type: Unknown
+# azure-vn-firewall-policy-detach
+  - name: azure-vn-firewall-policy-detach
+    description: "Detaches the firewall policy from a firewall. The command detaches the policy from the firewall, but does not delete the policy. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write."
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: resource_group_name
+        description: The name of the resource group.
+        required: true
+      - name: firewall_name
+        description: The name of the firewall from which the policy is detached.
+        required: true
+    outputs:
+      - contextPath: Azure.VirtualNetworks.Firewalls.id
+        description: The firewall resource ID.
+        type: String
+      - contextPath: Azure.VirtualNetworks.Firewalls.name
+        description: The firewall resource name.
+        type: String
+      - contextPath: Azure.VirtualNetworks.Firewalls.type
+        description: The firewall resource type.
+        type: String
+      - contextPath: Azure.VirtualNetworks.Firewalls.location
+        description: The firewall resource location.
+        type: String
+      - contextPath: Azure.VirtualNetworks.Firewalls.etag
+        description: The unique read-only string that changes whenever the resource is updated.
+        type: String
+      - contextPath: Azure.VirtualNetworks.Firewalls.tags
+        description: The firewall resource tags.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.zones
+        description: The list of availability zones denoting where the resource needs to come from.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.provisioningState
+        description: The provisioning state of the firewall resource. Possible values are Succeeded, Updating, Deleting, or Failed.
+        type: String
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.threatIntelMode
+        description: The operation mode for threat intelligence.
+        type: String
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.firewallPolicy
+        description: The firewall policy object associated with the firewall, containing the id field.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.sku
+        description: The SKU object of the firewall, containing the name and tier fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.ipConfigurations
+        description: The IP configurations of the firewall resource.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.hubIPAddresses
+        description: The IP addresses associated with the firewall resource.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.virtualHub
+        description: The virtual hub object to which the firewall belongs, containing the id field.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.managementIpConfiguration
+        description: The management IP configuration of the firewall resource, which is used for forced tunneling.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.applicationRuleCollections
+        description: The list of application rule collections of the firewall resource. Returned only when the firewall is not managed by a firewall policy.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.natRuleCollections
+        description: The list of NAT rule collections of the firewall resource. Returned only when the firewall is not managed by a firewall policy.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.networkRuleCollections
+        description: The list of network rule collections of the firewall resource. Returned only when the firewall is not managed by a firewall policy.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.ipGroups
+        description: The list of IP groups associated with the firewall resource.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.autoscaleConfiguration
+        description: The autoscale settings of the firewall resource, containing the minCapacity and maxCapacity fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.Firewalls.properties.additionalProperties
+        description: The additional properties used to further configure the firewall resource.
+        type: Unknown
   isfetch: false
   runonce: false
   script: '-'

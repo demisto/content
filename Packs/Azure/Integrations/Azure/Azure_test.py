@@ -7598,3 +7598,690 @@ def test_extract_fallback_prefix_returns_empty_for_unknown_handler():
 
     # When / Then: the unknown name yields nothing, and no error is raised
     assert extract_fallback_prefix("no_such_command", symbol_index) == set()
+
+
+# ---------------------------------------------------------------------------
+# Firewall policy commands
+# ---------------------------------------------------------------------------
+
+
+def test_firewall_policy_create_command_success(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_create_or_update returns a created firewall policy.
+    When:
+        - firewall_policy_create_command is called with the policy name, location, tier and
+          the optional threat intelligence, DNS and base policy arguments.
+    Then:
+        - The command returns CommandResults under the Azure.VirtualNetworks.FirewallPolicies prefix, and the
+          request body carries the location together with the translated properties.
+    """
+    from Azure import firewall_policy_create_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_create_or_update.return_value = {
+        "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/firewallPolicies/policy1",
+        "name": "policy1",
+        "location": "eastus",
+        "properties": {"provisioningState": "Succeeded", "threatIntelMode": "Alert", "sku": {"tier": "Standard"}},
+    }
+
+    args = {
+        "policy_name": "policy1",
+        "location": "eastus",
+        "tier": "Standard",
+        "threat_intelligence_mode": "Alert",
+        "ips": "1.1.1.1,2.2.2.2",
+        "domains": "*.microsoft.com",
+        "base_policy_id": "base-policy-id",
+        "enable_proxy": "true",
+        "dns_servers": "8.8.8.8",
+    }
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_create_command(client, params, args)
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicies"
+    assert result.outputs_key_field == "id"
+    assert "Successfully created firewall policy policy1" in result.readable_output
+    call_kwargs = client.firewall_policy_create_or_update.call_args[1]
+    assert call_kwargs["policy_name"] == "policy1"
+    assert call_kwargs["policy_data"] == {
+        "location": "eastus",
+        "properties": {
+            "threatIntelMode": "Alert",
+            "threatIntelWhitelist": {"ipAddresses": ["1.1.1.1", "2.2.2.2"], "fqdns": ["*.microsoft.com"]},
+            "dnsSettings": {"servers": ["8.8.8.8"], "enableProxy": True},
+            "basePolicy": {"id": "base-policy-id"},
+            "sku": {"tier": "Standard"},
+        },
+    }
+
+
+def test_firewall_policy_create_command_only_required_arguments(mocker):
+    """
+    Given:
+        - An AzureClient and only the required create arguments, with no optional
+          threat intelligence, DNS or base policy arguments.
+    When:
+        - firewall_policy_create_command is called.
+    Then:
+        - The unset optional keys are dropped from the request body, so the API receives
+          only the location and the SKU tier.
+    """
+    from Azure import firewall_policy_create_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_create_or_update.return_value = {"id": "policy-id", "name": "policy1"}
+
+    args = {"policy_name": "policy1", "location": "eastus", "tier": "Premium"}
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    firewall_policy_create_command(client, params, args)
+
+    call_kwargs = client.firewall_policy_create_or_update.call_args[1]
+    assert call_kwargs["policy_data"] == {"location": "eastus", "properties": {"sku": {"tier": "Premium"}}}
+
+
+def test_firewall_policy_create_command_permission_error(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_create_or_update raises a permission error,
+          mirroring the error the client layer raises after handle_azure_error.
+    When:
+        - firewall_policy_create_command is called.
+    Then:
+        - The error propagates to main() rather than being swallowed by the command.
+    """
+    from Azure import firewall_policy_create_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_create_or_update.side_effect = DemistoException(
+        'Failed to access Firewall Policy "policy1": 403 Forbidden'
+    )
+
+    args = {"policy_name": "policy1", "location": "eastus", "tier": "Standard"}
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    with pytest.raises(DemistoException, match="403 Forbidden"):
+        firewall_policy_create_command(client, params, args)
+
+
+def test_firewall_policy_update_command_success(mocker):
+    """
+    Given:
+        - An AzureClient returning an existing firewall policy, and update arguments for the
+          threat intelligence mode, allow lists, base policy and DNS settings.
+    When:
+        - firewall_policy_update_command is called.
+    Then:
+        - The existing policy is fetched, the provided fields are merged into its properties,
+          and the merged object is sent back to the API.
+    """
+    from Azure import firewall_policy_update_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_get.return_value = {
+        "id": "policy-id",
+        "name": "policy1",
+        "location": "eastus",
+        "properties": {"threatIntelMode": "Off", "sku": {"tier": "Standard"}},
+    }
+    client.firewall_policy_create_or_update.return_value = {
+        "id": "policy-id",
+        "name": "policy1",
+        "properties": {"threatIntelMode": "Deny", "provisioningState": "Succeeded"},
+    }
+
+    args = {
+        "policy_name": "policy1",
+        "threat_intelligence_mode": "Deny",
+        "ips": "1.1.1.1",
+        "domains": "*.microsoft.com",
+        "base_policy_id": "base-policy-id",
+        "enable_proxy": "false",
+        "dns_servers": "8.8.8.8",
+    }
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_update_command(client, params, args)
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicies"
+    assert "Successfully updated firewall policy policy1" in result.readable_output
+    client.firewall_policy_get.assert_called_once_with(subscription_id="sub1", resource_group_name="rg1", policy_name="policy1")
+    sent_properties = client.firewall_policy_create_or_update.call_args[1]["policy_data"]["properties"]
+    assert sent_properties == {
+        "threatIntelMode": "Deny",
+        "sku": {"tier": "Standard"},
+        "threatIntelWhitelist": {"ipAddresses": ["1.1.1.1"], "fqdns": ["*.microsoft.com"]},
+        "basePolicy": {"id": "base-policy-id"},
+        "dnsSettings": {"enableProxy": False, "servers": ["8.8.8.8"]},
+    }
+
+
+def test_firewall_policy_update_command_leaves_unprovided_fields_unchanged(mocker):
+    """
+    Given:
+        - An AzureClient returning an existing firewall policy, and no optional update arguments.
+    When:
+        - firewall_policy_update_command is called.
+    Then:
+        - The existing properties are sent back untouched, so a partial update never clears a
+          field the user did not provide.
+    """
+    from Azure import firewall_policy_update_command
+
+    client = mocker.MagicMock()
+    existing_properties = {
+        "threatIntelMode": "Alert",
+        "threatIntelWhitelist": {"ipAddresses": ["1.1.1.1"]},
+        "sku": {"tier": "Standard"},
+    }
+    client.firewall_policy_get.return_value = {"id": "policy-id", "name": "policy1", "properties": existing_properties}
+    client.firewall_policy_create_or_update.return_value = {"id": "policy-id", "name": "policy1"}
+
+    args = {"policy_name": "policy1"}
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    firewall_policy_update_command(client, params, args)
+
+    assert client.firewall_policy_create_or_update.call_args[1]["policy_data"]["properties"] == existing_properties
+
+
+def test_firewall_policy_update_command_preserves_sibling_nested_fields(mocker):
+    """
+    Given:
+        - An AzureClient returning a policy whose dnsSettings already holds custom servers, and an
+          update that sets only enable_proxy.
+    When:
+        - firewall_policy_update_command is called.
+    Then:
+        - enableProxy is updated while the existing servers are preserved, proving the nested
+          properties are merged rather than replaced wholesale.
+    """
+    from Azure import firewall_policy_update_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_get.return_value = {
+        "id": "policy-id",
+        "name": "policy1",
+        "properties": {"dnsSettings": {"servers": ["8.8.8.8"], "enableProxy": True}},
+    }
+    client.firewall_policy_create_or_update.return_value = {"id": "policy-id", "name": "policy1"}
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    firewall_policy_update_command(client, params, {"policy_name": "policy1", "enable_proxy": "false"})
+
+    sent_properties = client.firewall_policy_create_or_update.call_args[1]["policy_data"]["properties"]
+    assert sent_properties["dnsSettings"] == {"servers": ["8.8.8.8"], "enableProxy": False}
+
+
+def test_firewall_policy_update_command_not_found_error(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_get raises a not-found error for the policy.
+    When:
+        - firewall_policy_update_command is called.
+    Then:
+        - The error propagates and no update request is sent.
+    """
+    from Azure import firewall_policy_update_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_get.side_effect = ValueError('Firewall Policy "policy1" was not found.')
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    with pytest.raises(ValueError, match="was not found"):
+        firewall_policy_update_command(client, params, {"policy_name": "policy1"})
+
+    client.firewall_policy_create_or_update.assert_not_called()
+
+
+def test_firewall_policy_get_command_success(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_get returns a firewall policy.
+    When:
+        - firewall_policy_get_command is called with the policy name.
+    Then:
+        - The policy is returned under the Azure.VirtualNetworks.FirewallPolicies prefix, matching the prefix
+          used by the list command for the same resource.
+    """
+    from Azure import firewall_policy_get_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_get.return_value = {
+        "id": "policy-id",
+        "name": "policy1",
+        "location": "eastus",
+        "properties": {
+            "provisioningState": "Succeeded",
+            "threatIntelMode": "Alert",
+            "sku": {"tier": "Standard"},
+            "firewalls": [{"id": "firewall-id"}],
+        },
+    }
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_get_command(client, params, {"policy_name": "policy1"})
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicies"
+    assert result.outputs["name"] == "policy1"
+    assert "Firewall policy policy1" in result.readable_output
+    client.firewall_policy_get.assert_called_once_with(subscription_id="sub1", resource_group_name="rg1", policy_name="policy1")
+
+
+def test_firewall_policy_get_command_not_found_error(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_get raises a not-found error.
+    When:
+        - firewall_policy_get_command is called.
+    Then:
+        - The error propagates to main() instead of returning an empty result.
+    """
+    from Azure import firewall_policy_get_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_get.side_effect = ValueError('Firewall Policy "policy1" was not found.')
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    with pytest.raises(ValueError, match="was not found"):
+        firewall_policy_get_command(client, params, {"policy_name": "policy1"})
+
+
+def test_firewall_policy_delete_command_status_codes(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_delete returns each of the status codes the
+          Azure delete endpoint may answer with.
+    When:
+        - firewall_policy_delete_command is called for each status code.
+    Then:
+        - 202 reports an asynchronous delete, 204 reports the policy does not exist, and 200
+          reports a successful delete.
+    """
+    from Azure import firewall_policy_delete_command
+
+    client = mocker.MagicMock()
+    response = mocker.Mock()
+    client.firewall_policy_delete.return_value = response
+
+    args = {"policy_name": "policy1"}
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    response.status_code = 202
+    assert "will complete asynchronously" in firewall_policy_delete_command(client, params, args).readable_output
+
+    response.status_code = 204
+    assert "does not exist" in firewall_policy_delete_command(client, params, args).readable_output
+
+    response.status_code = 200
+    assert "was successfully deleted" in firewall_policy_delete_command(client, params, args).readable_output
+
+    client.firewall_policy_delete.assert_called_with(subscription_id="sub1", resource_group_name="rg1", policy_name="policy1")
+
+
+def test_firewall_policy_delete_command_permission_error(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_delete raises a permission error.
+    When:
+        - firewall_policy_delete_command is called.
+    Then:
+        - The error propagates to main() rather than being reported as a successful delete.
+    """
+    from Azure import firewall_policy_delete_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_delete.side_effect = DemistoException('Failed to access Firewall Policy "policy1": 403 Forbidden')
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    with pytest.raises(DemistoException, match="403 Forbidden"):
+        firewall_policy_delete_command(client, params, {"policy_name": "policy1"})
+
+
+def test_firewall_policy_list_command_success(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_list returns a page of firewall policies
+          together with a nextLink.
+    When:
+        - firewall_policy_list_command is called.
+    Then:
+        - The policies are returned under the Azure.VirtualNetworks.FirewallPolicies DT path, and the
+          continuation token is emitted as FirewallPoliciesNextToken.
+    """
+    from Azure import firewall_policy_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_list.return_value = {
+        "value": [{"id": "policy-id", "name": "policy1", "properties": {"provisioningState": "Succeeded"}}],
+        "nextLink": "next_token_value",
+    }
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_list_command(client, params, {})
+
+    assert result.outputs == {
+        "Azure.VirtualNetworks.FirewallPolicies(val.id && val.id == obj.id)": [
+            {"id": "policy-id", "name": "policy1", "properties": {"provisioningState": "Succeeded"}}
+        ],
+        "Azure.VirtualNetworks(true)": {"FirewallPoliciesNextToken": "next_token_value"},
+    }
+    client.firewall_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="rg1", next_token="")
+
+
+def test_firewall_policy_list_command_no_policies(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_list returns no firewall policies.
+    When:
+        - firewall_policy_list_command is called.
+    Then:
+        - A no-results message naming the resource group is returned, and neither context nor a
+          raw response is written.
+    """
+    from Azure import firewall_policy_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_list.return_value = {"value": [], "nextLink": None}
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_list_command(client, params, {})
+
+    assert result.readable_output == "No firewall policies were found in resource group 'rg1'."
+    assert result.outputs is None
+    assert result.raw_response is None
+
+
+def test_firewall_policy_list_command_clears_stale_next_token(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_list returns the last page, so the response
+          carries no nextLink.
+    When:
+        - firewall_policy_list_command is called.
+    Then:
+        - FirewallPoliciesNextToken is still written, as None, so a token left in the context by a
+          previous run is cleared rather than being silently reused.
+    """
+    from Azure import firewall_policy_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_list.return_value = {"value": [{"id": "policy-id", "name": "policy1"}]}
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_list_command(client, params, {})
+
+    assert result.outputs["Azure.VirtualNetworks(true)"] == {"FirewallPoliciesNextToken": None}
+
+
+def test_firewall_policy_list_command_forwards_next_token(mocker):
+    """
+    Given:
+        - An AzureClient returning a page of firewall policies, and a next_token argument
+          pointing at that page.
+    When:
+        - firewall_policy_list_command is called with next_token.
+    Then:
+        - The next_token is forwarded to the client and every policy on the page is returned.
+    """
+    from Azure import firewall_policy_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_list.return_value = {
+        "value": [{"id": "policy-1", "name": "policy1"}, {"id": "policy-2", "name": "policy2"}]
+    }
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_list_command(client, params, {"next_token": "next_token_value"})
+
+    client.firewall_policy_list.assert_called_once_with(
+        subscription_id="sub1", resource_group_name="rg1", next_token="next_token_value"
+    )
+    assert result.outputs["Azure.VirtualNetworks.FirewallPolicies(val.id && val.id == obj.id)"] == [
+        {"id": "policy-1", "name": "policy1"},
+        {"id": "policy-2", "name": "policy2"},
+    ]
+
+
+def test_firewall_policy_list_command_fetches_a_single_page(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_list returns a page that carries a nextLink.
+    When:
+        - firewall_policy_list_command is called.
+    Then:
+        - Only that page is requested, and the nextLink is surfaced for the caller to pass back
+          as next_token rather than being followed internally.
+    """
+    from Azure import firewall_policy_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_list.side_effect = [
+        {"value": [{"id": "policy-1", "name": "policy1"}], "nextLink": "page_2_token"},
+        {"value": [{"id": "policy-2", "name": "policy2"}], "nextLink": "page_3_token"},
+    ]
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_list_command(client, params, {})
+
+    client.firewall_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="rg1", next_token="")
+    assert result.outputs["Azure.VirtualNetworks.FirewallPolicies(val.id && val.id == obj.id)"] == [
+        {"id": "policy-1", "name": "policy1"}
+    ]
+    assert result.outputs["Azure.VirtualNetworks(true)"] == {"FirewallPoliciesNextToken": "page_2_token"}
+
+
+def test_firewall_policy_attach_command_success(mocker):
+    """
+    Given:
+        - An AzureClient returning an existing firewall, and the ID of the policy to attach.
+    When:
+        - firewall_policy_attach_command is called.
+    Then:
+        - The firewall is fetched, its firewallPolicy property is set to the given policy ID,
+          and the updated firewall is returned under the Azure.VirtualNetworks.Firewalls prefix.
+    """
+    from Azure import firewall_policy_attach_command
+
+    client = mocker.MagicMock()
+    client.firewall_get.return_value = {
+        "id": "firewall-id",
+        "name": "firewall1",
+        "location": "eastus",
+        "properties": {"provisioningState": "Succeeded"},
+    }
+    client.firewall_update.return_value = {
+        "id": "firewall-id",
+        "name": "firewall1",
+        "properties": {"firewallPolicy": {"id": "policy-id"}, "provisioningState": "Updating"},
+    }
+
+    args = {"firewall_name": "firewall1", "policy_id": "policy-id"}
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_attach_command(client, params, args)
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.Firewalls"
+    assert "Successfully attached the firewall policy to firewall firewall1" in result.readable_output
+    sent_firewall = client.firewall_update.call_args[1]["firewall_data"]
+    assert sent_firewall["properties"]["firewallPolicy"] == {"id": "policy-id"}
+
+
+def test_firewall_policy_attach_command_firewall_not_found_error(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_get raises a not-found error for the firewall.
+    When:
+        - firewall_policy_attach_command is called.
+    Then:
+        - The error propagates and no update request is sent.
+    """
+    from Azure import firewall_policy_attach_command
+
+    client = mocker.MagicMock()
+    client.firewall_get.side_effect = ValueError('Firewall "firewall1" was not found.')
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    with pytest.raises(ValueError, match="was not found"):
+        firewall_policy_attach_command(client, params, {"firewall_name": "firewall1", "policy_id": "policy-id"})
+
+    client.firewall_update.assert_not_called()
+
+
+def test_firewall_policy_detach_command_success(mocker):
+    """
+    Given:
+        - An AzureClient returning a firewall that has a firewall policy attached.
+    When:
+        - firewall_policy_detach_command is called.
+    Then:
+        - The firewallPolicy property is removed from the firewall before the update is sent,
+          and the updated firewall is returned under the Azure.VirtualNetworks.Firewalls prefix.
+    """
+    from Azure import firewall_policy_detach_command
+
+    client = mocker.MagicMock()
+    client.firewall_get.return_value = {
+        "id": "firewall-id",
+        "name": "firewall1",
+        "location": "eastus",
+        "properties": {"firewallPolicy": {"id": "policy-id"}, "provisioningState": "Succeeded"},
+    }
+    client.firewall_update.return_value = {
+        "id": "firewall-id",
+        "name": "firewall1",
+        "properties": {"provisioningState": "Updating"},
+    }
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_detach_command(client, params, {"firewall_name": "firewall1"})
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.Firewalls"
+    assert "Successfully detached the firewall policy from firewall firewall1" in result.readable_output
+    assert "firewallPolicy" not in client.firewall_update.call_args[1]["firewall_data"]["properties"]
+
+
+def test_firewall_policy_detach_command_no_policy_attached(mocker):
+    """
+    Given:
+        - An AzureClient returning a firewall that has no firewall policy attached.
+    When:
+        - firewall_policy_detach_command is called.
+    Then:
+        - The update is still sent without raising, so detaching an already detached firewall
+          is a no-op rather than an error.
+    """
+    from Azure import firewall_policy_detach_command
+
+    client = mocker.MagicMock()
+    client.firewall_get.return_value = {"id": "firewall-id", "name": "firewall1", "properties": {}}
+    client.firewall_update.return_value = {"id": "firewall-id", "name": "firewall1", "properties": {}}
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_detach_command(client, params, {"firewall_name": "firewall1"})
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.Firewalls"
+    client.firewall_update.assert_called_once()
+
+
+def test_firewall_policy_detach_command_permission_error(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_update raises a permission error.
+    When:
+        - firewall_policy_detach_command is called.
+    Then:
+        - The error propagates to main() rather than being reported as a successful detach.
+    """
+    from Azure import firewall_policy_detach_command
+
+    client = mocker.MagicMock()
+    client.firewall_get.return_value = {"id": "firewall-id", "name": "firewall1", "properties": {}}
+    client.firewall_update.side_effect = DemistoException('Failed to access Firewall "firewall1": 403 Forbidden')
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    with pytest.raises(DemistoException, match="403 Forbidden"):
+        firewall_policy_detach_command(client, params, {"firewall_name": "firewall1"})
+
+
+def test_firewall_policy_create_or_update_client_error_is_handled(mocker):
+    """
+    Given:
+        - An AzureClient whose http_request raises a 403 error.
+    When:
+        - firewall_policy_create_or_update is called.
+    Then:
+        - handle_azure_error is invoked with the firewall_policy_create_or_update API function
+          name, so the missing permission can be resolved from API_FUNCTION_TO_PERMISSIONS.
+    """
+    client = AzureClient(app_id="app", subscription_id="sub1", resource_group_name="rg1")
+    mocker.patch.object(client, "http_request", side_effect=Exception("403 Forbidden"))
+    handle_error = mocker.patch.object(client, "handle_azure_error")
+
+    client.firewall_policy_create_or_update(
+        subscription_id="sub1", resource_group_name="rg1", policy_name="policy1", policy_data={}
+    )
+
+    assert handle_error.call_args[1]["api_function_name"] == "firewall_policy_create_or_update"
+    assert handle_error.call_args[1]["resource_type"] == "Firewall Policy"
+
+
+def test_firewall_get_client_error_is_handled(mocker):
+    """
+    Given:
+        - An AzureClient whose http_request raises a 404 error.
+    When:
+        - firewall_get is called.
+    Then:
+        - handle_azure_error is invoked with the firewall_get API function name and the
+          firewall resource details.
+    """
+    client = AzureClient(app_id="app", subscription_id="sub1", resource_group_name="rg1")
+    mocker.patch.object(client, "http_request", side_effect=Exception("404 Not Found"))
+    handle_error = mocker.patch.object(client, "handle_azure_error")
+
+    client.firewall_get(subscription_id="sub1", resource_group_name="rg1", firewall_name="firewall1")
+
+    assert handle_error.call_args[1]["api_function_name"] == "firewall_get"
+    assert handle_error.call_args[1]["resource_name"] == "firewall1"
+
+
+def test_firewall_policy_list_client_uses_next_token(mocker):
+    """
+    Given:
+        - An AzureClient and a next_token pointing at the next page of firewall policies.
+    When:
+        - firewall_policy_list is called with and without the next_token.
+    Then:
+        - Without a token the resource group URL and the api-version are used, and with a token
+          the token itself is requested with no extra parameters.
+    """
+    client = AzureClient(app_id="app", subscription_id="sub1", resource_group_name="rg1")
+    http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.firewall_policy_list(subscription_id="sub1", resource_group_name="rg1")
+    first_call = http_request.call_args[1]
+    assert first_call["full_url"].endswith("/resourceGroups/rg1/providers/Microsoft.Network/firewallPolicies")
+    assert first_call["params"] == {"api-version": Azure.FIREWALL_API_VERSION}
+
+    client.firewall_policy_list(subscription_id="sub1", resource_group_name="rg1", next_token="next_token_value")
+    second_call = http_request.call_args[1]
+    assert second_call["full_url"] == "next_token_value"
+    assert second_call["params"] == {}
