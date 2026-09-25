@@ -1,0 +1,67 @@
+comment: |-
+  Layout-button automation: approves or rejects a Group-IB DRP violation.
+
+  The decision is sent through the instance that fetched the incident (its sourceInstance), or through
+  the only active instance; the "using" argument overrides both.
+
+  Approving does not close the incident by default: the takedown continues in DRP afterwards, and the
+  incident is closed later, once DRP reports the violation as resolved (resolved, or solved on older API
+  versions) or handed to legal (legal). With "Close the incident when a violation is approved" enabled on
+  the instance, the automation closes the incident as Resolved at once. Rejecting always closes the
+  incident as False Positive, since DRP does nothing more with a rejected violation, and expires the
+  indicator created from the violation when GIB DRP Expire Indicator On Close is set.
+
+  On success it records the new approve state on the incident, so the Approve Violation and Reject
+  Violation layout buttons - which are shown only while GIB DRP Approve State is under_review -
+  stop offering a decision that has already been made.
+
+  This automation runs using the default Limited User role, unless you explicitly change the
+  permissions.
+commonfields:
+  id: GIBDRPResolveViolation
+  version: -1
+args:
+- name: status
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - approve
+  - reject
+  description: Whether to approve or reject the violation.
+- name: id
+  required: false
+  description: Group-IB DRP violation ID. Defaults to the incident's GIB DRP ID field.
+- name: using
+  required: false
+  description: Name of the Group-IB Digital Risk Protection integration instance to use. Defaults to the instance that fetched the incident, or to the only active instance.
+outputs:
+- contextPath: GIBDRP.ViolationResolution.id
+  description: Group-IB DRP violation ID that was resolved.
+  type: String
+- contextPath: GIBDRP.ViolationResolution.status
+  description: The status the violation was set to.
+  type: String
+- contextPath: GIBDRP.ViolationResolution.approveState
+  description: The approve state the violation moved to (approved or rejected).
+  type: String
+- contextPath: GIBDRP.ViolationResolution.incidentUpdated
+  description: Whether the new approve state was recorded on the incident.
+  type: Boolean
+- contextPath: GIBDRP.ViolationResolution.incidentClosed
+  description: Whether the incident was closed with the decision (always on reject, on approve as configured on the instance).
+  type: Boolean
+- contextPath: GIBDRP.ViolationResolution.indicatorExpired
+  description: Whether the indicator created from the violation was expired with the rejection.
+  type: Boolean
+dockerimage: demisto/python3:3.12.14.12343672
+enabled: true
+name: GIBDRPResolveViolation
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- drp
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
