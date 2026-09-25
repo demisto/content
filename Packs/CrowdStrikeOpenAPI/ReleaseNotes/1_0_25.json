@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Deprecated the cs-query-devices-by-filter-scroll command, which relied on the vendor-deprecated devices/queries/devices-scroll/v1 endpoint. Migrate to the cs-query-devices-combined command."
+}
