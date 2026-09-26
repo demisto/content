@@ -1,0 +1,202 @@
+category: Analytics & SIEM
+provider: TypeSafe AI
+commonfields:
+  id: TypeSafe Jev
+  version: -1
+sectionorder:
+- Connect
+configuration:
+- defaultvalue: https://api.typesafe.ai
+  display: Server URL
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- display: ''
+  displaypassword: API Key
+  hiddenusername: true
+  name: apikey
+  required: true
+  section: Connect
+  type: 9
+  additionalinfo: TypeSafe API key used to authenticate Jev requests. Generate or manage keys in the TypeSafe console.
+- additionalinfo: Default Jev model. Use a pinned version when playbook thresholds have been validated against that version.
+  defaultvalue: jev-latest
+  display: Model
+  name: model-select
+  options:
+  - jev-latest
+  - jev-preview
+  - jev-1.13.0
+  required: false
+  section: Connect
+  type: 15
+- additionalinfo: Optional model name that overrides the selected model.
+  advanced: true
+  display: Model (optional free text override)
+  name: model-freetext
+  required: false
+  section: Connect
+  type: 0
+- additionalinfo: HTTP request timeout in seconds.
+  advanced: true
+  defaultvalue: '30'
+  display: Request timeout
+  name: timeout
+  required: true
+  section: Connect
+  type: 0
+- display: Trust any certificate (not secure)
+  advanced: true
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- display: Use system proxy settings
+  advanced: true
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+description: Use TypeSafe Jev typed judgments and calibrated probabilities in Cortex XSIAM and XSOAR playbooks.
+display: TypeSafe Jev
+name: TypeSafe Jev
+script:
+  commands:
+  - arguments:
+    - description: Text or JSON state to evaluate. Valid JSON is sent as structured state; other values are sent as text.
+      name: state
+      required: true
+    - description: JSON object whose keys are question IDs and whose values are TypeSafe Noul, Choice, or Score question definitions.
+      name: questions
+      required: true
+    - description: Optional model override for this request.
+      name: model
+    description: Evaluate a state against one or more typed TypeSafe questions in a single request.
+    name: jev-evaluate
+    outputs:
+    - contextPath: TypeSafeJev.Evaluation.model
+      description: Versioned model that handled the request.
+      type: String
+    - contextPath: TypeSafeJev.Evaluation.answers
+      description: Typed answers keyed by the submitted question IDs.
+      type: Dictionary
+    - contextPath: TypeSafeJev.Evaluation.usage.input_tokens
+      description: Number of input tokens used by the request.
+      type: Number
+    - contextPath: TypeSafeJev.Evaluation.usage.output_tokens
+      description: Number of output tokens reported for the request.
+      type: Number
+  - arguments:
+    - description: Text or JSON state to evaluate.
+      name: state
+      required: true
+    - description: A narrow yes/no judgment to make about the state.
+      name: instructions
+      required: true
+    - description: Optional description of what a yes result means.
+      name: true_criteria
+    - description: Optional description of what a no result means.
+      name: false_criteria
+    - description: Optional model override for this request.
+      name: model
+    description: Evaluate one yes/no judgment and return the probability that the answer is yes.
+    name: jev-noul
+    outputs:
+    - contextPath: TypeSafeJev.Noul.model
+      description: Versioned model that handled the request.
+      type: String
+    - contextPath: TypeSafeJev.Noul.probability
+      description: Probability of yes, from 0 to 1.
+      type: Number
+    - contextPath: TypeSafeJev.Noul.usage
+      description: Token usage for the request.
+      type: Dictionary
+  - arguments:
+    - description: Text or JSON state to evaluate.
+      name: state
+      required: true
+    - description: The decision Jev should make about the state.
+      name: instructions
+      required: true
+    - description: JSON object mapping each option name to its description or null. Include a no-match option when appropriate.
+      name: criteria
+      required: true
+    - description: Optional model override for this request.
+      name: model
+    description: Select one option from a defined set and return the complete probability distribution.
+    name: jev-choice
+    outputs:
+    - contextPath: TypeSafeJev.Choice.model
+      description: Versioned model that handled the request.
+      type: String
+    - contextPath: TypeSafeJev.Choice.choice
+      description: Selected option.
+      type: String
+    - contextPath: TypeSafeJev.Choice.probabilities
+      description: Probability distribution over all supplied options.
+      type: Dictionary
+    - contextPath: TypeSafeJev.Choice.confidence
+      description: Confidence derived from the probability distribution.
+      type: Number
+    - contextPath: TypeSafeJev.Choice.usage
+      description: Token usage for the request.
+      type: Dictionary
+  - arguments:
+    - description: Text or JSON state to evaluate.
+      name: state
+      required: true
+    - description: The dimension Jev should score about the state.
+      name: instructions
+      required: true
+    - description: JSON array of two to ten ordered, standalone level descriptions.
+      name: criteria
+      required: true
+    - description: Optional model override for this request.
+      name: model
+    description: Score state against ordered levels and return the weighted score and probability distribution.
+    name: jev-score
+    outputs:
+    - contextPath: TypeSafeJev.Score.model
+      description: Versioned model that handled the request.
+      type: String
+    - contextPath: TypeSafeJev.Score.score
+      description: Probability-weighted score across the ordered levels.
+      type: Number
+    - contextPath: TypeSafeJev.Score.legend
+      description: Mapping from numeric level to its description.
+      type: Dictionary
+    - contextPath: TypeSafeJev.Score.probabilities
+      description: Probability distribution over the levels.
+      type: Dictionary
+    - contextPath: TypeSafeJev.Score.confidence
+      description: Confidence derived from the probability distribution.
+      type: Number
+    - contextPath: TypeSafeJev.Score.usage
+      description: Token usage for the request.
+      type: Dictionary
+  - arguments: []
+    description: List model aliases available to the configured TypeSafe account.
+    name: jev-list-models
+    outputs:
+    - contextPath: TypeSafeJev.Model.name
+      description: Model name or alias.
+      type: String
+    - contextPath: TypeSafeJev.Model.description
+      description: Model description.
+      type: String
+    - contextPath: TypeSafeJev.Model.release_date
+      description: Model release date.
+      type: Date
+  dockerimage: demisto/python3:3.12.13.10116658
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2
+- platform

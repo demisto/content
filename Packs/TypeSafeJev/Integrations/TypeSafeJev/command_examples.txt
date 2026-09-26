@@ -1,0 +1,5 @@
+!jev-noul state="Suspicious PowerShell launched from Word" instructions="Does the activity strongly indicate malicious execution?"
+!jev-choice state="A user reports a duplicate credit card charge" instructions="Which response queue should receive this incident?" criteria="{\"fraud\":\"Unauthorized or suspicious payment activity\",\"billing\":\"Duplicate or incorrect legitimate charge\",\"other\":\"None of the above\"}"
+!jev-score state="Repeated failed logins followed by a successful login from a new country" instructions="Rate the security risk" criteria="[\"Low risk\",\"Moderate risk\",\"High risk\",\"Critical risk\"]"
+!jev-evaluate state="{\"alert\":{\"name\":\"Impossible travel\",\"severity\":\"high\"}}" questions="{\"needs_review\":{\"type\":\"noul\",\"instructions\":\"Does `alert` require analyst review?\"}}"
+!jev-list-models
