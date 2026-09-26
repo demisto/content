@@ -1,0 +1,3 @@
+!zero-networks-segment-asset-search fqdn="server.domain.local"
+!zero-networks-segment-asset-quarantine fqdn="server.domain.local"
+!zero-networks-segment-asset-unquarantine asset_id="a:a:JF2xro6g"
