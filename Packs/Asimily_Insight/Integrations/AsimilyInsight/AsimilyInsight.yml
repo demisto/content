@@ -270,6 +270,27 @@ script:
     - contextPath: AsimilyInsight.Asset.asimilydeviceifusingendpointsecurity
       description: Asimily Device If Using Endpoint Security.
       type: boolean
+    - contextPath: AsimilyInsight.Asset.asimilydevicenasip
+      description: Asimily Device NAS IP.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydevicenasport
+      description: Asimily Device NAS Port.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydevicelocationlastlocatedat
+      description: Asimily Device Location Last Located At.
+      type: date
+    - contextPath: AsimilyInsight.Asset.asimilydevicelocationaccesspoint
+      description: Asimily Device Location Access Point.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydevicelocationcampus
+      description: Asimily Device Location Campus.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydevicelocationbuilding
+      description: Asimily Device Location Building.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydevicelocationfloor
+      description: Asimily Device Location Floor.
+      type: string
   - arguments:
     - description: The MAC Address of Asimily Asset.
       name: mac_addr
