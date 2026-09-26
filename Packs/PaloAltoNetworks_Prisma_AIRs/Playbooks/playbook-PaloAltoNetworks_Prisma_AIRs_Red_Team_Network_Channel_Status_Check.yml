@@ -1,0 +1,881 @@
+description: |-
+  Checks the health of the Prisma AIRS Red Team network broker channels for a single integration instance: flags any offline channels and any online channels whose connected clients are running an outdated version, reports the offenders to the War Room as human-readable tables, optionally emails notifications, and closes the incident when there is nothing to remediate.
+
+  Flow - pull the deployment statistics (current client_version and online/total counts) and list every network channel. Offline channels (status OFFLINE) are treated as a problem; DRAFT ("not yet completed") channels are informational and are not alerted. Channels with at least one outdated connected client (outdated_clients_count >= 1) are treated as a problem; the report shows each channel's oldest_client_version and the current client_version to upgrade to. Each check is independently gated by an input (NotifyOffline / NotifyOutdated) so you can tune what the playbook investigates and alerts on.
+
+  Auto-close vs. manual close - when nothing needs remediation the incident closes automatically (closeReason "Resolved", closeNotes "Completed") so a recurring job leaves no open incidents. When at least one offline or outdated problem is found the playbook pauses on a manual "Validate remediation and approve to close" task so an analyst can confirm the fix before the incident is closed.
+
+  Clone-per-tenant - every integration command is pinned to the instance named in the InstanceName input via the universal "using" argument, so this playbook can be duplicated and pointed at a different Prisma AIRS Red Team instance (tenant) without editing any task. Leave InstanceName empty to use the single enabled instance.
+id: PaloAltoNetworks_Prisma_AIRs_Red_Team_Network_Channel_Status_Check
+inputs:
+- key: InstanceName
+  value: {}
+  required: false
+  description: The Prisma AIRS Red Team integration instance name to run every command against (universal "using" argument). Leave empty to use the single enabled instance. Set this (and clone the playbook) to check a different tenant.
+  playbookInputQuery:
+- key: MaxChannels
+  value:
+    simple: "1000"
+  required: false
+  description: The maximum number of network channels to inventory (passed to the list command's limit argument). Raise this if a tenant has more channels than the default.
+  playbookInputQuery:
+- key: NotifyOffline
+  value:
+    simple: "true"
+  required: false
+  description: Whether to investigate and alert on offline channels. One of "true" or "false". When false, offline channels are ignored and never block auto-close.
+  playbookInputQuery:
+- key: NotifyOutdated
+  value:
+    simple: "true"
+  required: false
+  description: Whether to investigate and alert on channels with outdated connected clients. One of "true" or "false". When false, outdated clients are ignored and never block auto-close.
+  playbookInputQuery:
+- key: NotificationRecipients
+  value: {}
+  required: false
+  description: Comma-separated email address(es) to notify. If left empty, no email is sent (offenders are still reported to the War Room). Requires a configured mail-sender integration on the tenant.
+  playbookInputQuery:
+- key: EmailSubjectPrefix
+  value:
+    simple: '[Prisma AIRS Red Team]'
+  required: false
+  description: Prefix added to notification email subjects. Useful for per-tenant mailbox filtering.
+  playbookInputQuery:
+name: PaloAltoNetworks_Prisma_AIRs_Red_Team_Network_Channel_Status_Check
+outputs:
+- contextPath: PrismaAIRs.RedTeamNetworkChannelStats
+  description: The network channel deployment statistics (current client_version, online/total counts, deployment info).
+  type: unknown
+- contextPath: PrismaAIRs.RedTeamNetworkChannel
+  description: The inventory of network broker channels returned by the list step.
+  type: unknown
+- contextPath: PrismaAIRs.RedTeamOfflineChannel
+  description: The subset of channels whose status is OFFLINE.
+  type: unknown
+- contextPath: PrismaAIRs.RedTeamOutdatedChannel
+  description: The subset of channels with at least one connected client running an outdated version.
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e2f3a4b5-0001-4e5f-9a0b-1c2d3e4f7001
+    type: start
+    task:
+      id: e2f3a4b5-0001-4e5f-9a0b-1c2d3e4f7001
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: e2f3a4b5-0002-4e5f-9a0b-1c2d3e4f7002
+    type: regular
+    task:
+      id: e2f3a4b5-0002-4e5f-9a0b-1c2d3e4f7002
+      version: -1
+      name: prisma-airs-redteam-network-channels-stats
+      description: Retrieves the network channel deployment statistics, including the current client_version and online/total channel counts.
+      script: '|||prisma-airs-redteam-network-channels-stats'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      using:
+        simple: ${inputs.InstanceName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e2f3a4b5-0003-4e5f-9a0b-1c2d3e4f7003
+    type: regular
+    task:
+      id: e2f3a4b5-0003-4e5f-9a0b-1c2d3e4f7003
+      version: -1
+      name: prisma-airs-redteam-network-channels-list
+      description: Lists the network broker channels (status, connected/outdated client counts, oldest_client_version).
+      script: '|||prisma-airs-redteam-network-channels-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      limit:
+        complex:
+          root: inputs.MaxChannels
+      using:
+        simple: ${inputs.InstanceName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: e2f3a4b5-0004-4e5f-9a0b-1c2d3e4f7004
+    type: regular
+    task:
+      id: e2f3a4b5-0004-4e5f-9a0b-1c2d3e4f7004
+      version: -1
+      name: Filter offline channels
+      description: Keep only the channels whose status is OFFLINE under PrismaAIRs.RedTeamOfflineChannel. DRAFT (not yet completed) channels are treated as informational and excluded.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.RedTeamOfflineChannel
+      value:
+        complex:
+          root: PrismaAIRs.RedTeamNetworkChannel
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PrismaAIRs.RedTeamNetworkChannel.status
+                iscontext: true
+              right:
+                value:
+                  simple: OFFLINE
+              ignorecase: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e2f3a4b5-0005-4e5f-9a0b-1c2d3e4f7005
+    type: regular
+    task:
+      id: e2f3a4b5-0005-4e5f-9a0b-1c2d3e4f7005
+      version: -1
+      name: Filter channels with outdated clients
+      description: Keep only the channels with at least one connected client running an outdated version (outdated_clients_count >= 1) under PrismaAIRs.RedTeamOutdatedChannel.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.RedTeamOutdatedChannel
+      value:
+        complex:
+          root: PrismaAIRs.RedTeamNetworkChannel
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: PrismaAIRs.RedTeamNetworkChannel.outdated_clients_count
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e2f3a4b5-0006-4e5f-9a0b-1c2d3e4f7006
+    type: condition
+    task:
+      id: e2f3a4b5-0006-4e5f-9a0b-1c2d3e4f7006
+      version: -1
+      name: Alert on offline channels?
+      description: Branch to the offline reporting path only when offline alerting is enabled (NotifyOffline is true) AND at least one channel is offline.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.NotifyOffline
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      - - operator: isExists
+          left:
+            value:
+              simple: PrismaAIRs.RedTeamOfflineChannel
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: e2f3a4b5-0007-4e5f-9a0b-1c2d3e4f7007
+    type: regular
+    task:
+      id: e2f3a4b5-0007-4e5f-9a0b-1c2d3e4f7007
+      version: -1
+      name: Report offline channels to War Room
+      description: Writes the offline channels to the War Room as a human-readable table.
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      title:
+        simple: Offline Red Team network channels
+      columns:
+        simple: name,status,last_online_at,connected_clients_count,uuid
+      data:
+        complex:
+          root: PrismaAIRs.RedTeamOfflineChannel
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e2f3a4b5-0008-4e5f-9a0b-1c2d3e4f7008
+    type: regular
+    task:
+      id: e2f3a4b5-0008-4e5f-9a0b-1c2d3e4f7008
+      version: -1
+      name: Mark problem found (offline)
+      description: Records that at least one problem was found so the incident routes to the manual approve-to-close gate instead of auto-closing.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.RedTeamStatusProblem
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: e2f3a4b5-0009-4e5f-9a0b-1c2d3e4f7009
+    type: condition
+    task:
+      id: e2f3a4b5-0009-4e5f-9a0b-1c2d3e4f7009
+      version: -1
+      name: Email offline notification?
+      description: Send an offline-channel email only when at least one recipient is configured. The offline channels have already been reported to the War Room.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.NotificationRecipients
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: e2f3a4b5-0010-4e5f-9a0b-1c2d3e4f7010
+    type: regular
+    task:
+      id: e2f3a4b5-0010-4e5f-9a0b-1c2d3e4f7010
+      version: -1
+      name: send-mail (offline)
+      description: Emails the offline-channel summary to the configured recipients via the tenant's mail-sender integration.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      to:
+        complex:
+          root: inputs.NotificationRecipients
+      subject:
+        simple: ${inputs.EmailSubjectPrefix} Offline Red Team network channel(s) detected
+      body:
+        complex:
+          root: PrismaAIRs.RedTeamOfflineChannel
+          transformers:
+          - operator: FormatTemplate
+            args:
+              template:
+                value:
+                  simple: |-
+                    Name: ${.name}
+                    Status: ${.status}
+                    Last online: ${.last_online_at}
+                    Connected clients: ${.connected_clients_count}
+                    Features:
+                    - CUSTOM_TARGET_ADAPTER: ${.features.CUSTOM_TARGET_ADAPTER}
+                    - REST: ${.features.REST}
+                    - STREAMING: ${.features.STREAMING}
+                    - WEBSOCKET: ${.features.WEBSOCKET}
+                    - WEBSOCKET_STREAMING: ${.features.WEBSOCKET_STREAMING}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: "\n\n"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: e2f3a4b5-0011-4e5f-9a0b-1c2d3e4f7011
+    type: condition
+    task:
+      id: e2f3a4b5-0011-4e5f-9a0b-1c2d3e4f7011
+      version: -1
+      name: Alert on outdated clients?
+      description: Branch to the outdated-client reporting path only when outdated alerting is enabled (NotifyOutdated is true) AND at least one channel has outdated connected clients.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.NotifyOutdated
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      - - operator: isExists
+          left:
+            value:
+              simple: PrismaAIRs.RedTeamOutdatedChannel
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: e2f3a4b5-0012-4e5f-9a0b-1c2d3e4f7012
+    type: regular
+    task:
+      id: e2f3a4b5-0012-4e5f-9a0b-1c2d3e4f7012
+      version: -1
+      name: Report outdated clients to War Room
+      description: Writes the channels with outdated connected clients to the War Room as a human-readable table, titled with the current client_version to upgrade to.
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      title:
+        complex:
+          root: PrismaAIRs.RedTeamNetworkChannelStats.client_version
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Outdated Red Team channel clients - upgrade to version '
+              suffix: {}
+      columns:
+        simple: name,oldest_client_version,outdated_clients_count,connected_clients_count,uuid
+      data:
+        complex:
+          root: PrismaAIRs.RedTeamOutdatedChannel
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: e2f3a4b5-0013-4e5f-9a0b-1c2d3e4f7013
+    type: regular
+    task:
+      id: e2f3a4b5-0013-4e5f-9a0b-1c2d3e4f7013
+      version: -1
+      name: Mark problem found (outdated)
+      description: Records that at least one problem was found so the incident routes to the manual approve-to-close gate instead of auto-closing.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.RedTeamStatusProblem
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: e2f3a4b5-0014-4e5f-9a0b-1c2d3e4f7014
+    type: condition
+    task:
+      id: e2f3a4b5-0014-4e5f-9a0b-1c2d3e4f7014
+      version: -1
+      name: Email outdated notification?
+      description: Send an outdated-client email only when at least one recipient is configured. The outdated channels have already been reported to the War Room.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.NotificationRecipients
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: e2f3a4b5-0015-4e5f-9a0b-1c2d3e4f7015
+    type: regular
+    task:
+      id: e2f3a4b5-0015-4e5f-9a0b-1c2d3e4f7015
+      version: -1
+      name: send-mail (outdated)
+      description: Emails the outdated-client summary to the configured recipients via the tenant's mail-sender integration.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      to:
+        complex:
+          root: inputs.NotificationRecipients
+      subject:
+        simple: ${inputs.EmailSubjectPrefix} Outdated Red Team channel clients detected - upgrade to ${PrismaAIRs.RedTeamNetworkChannelStats.client_version}
+      body:
+        complex:
+          root: PrismaAIRs.RedTeamOutdatedChannel
+          transformers:
+          - operator: FormatTemplate
+            args:
+              template:
+                value:
+                  simple: |-
+                    Name: ${.name}
+                    Status: ${.status}
+                    Oldest client version: ${.oldest_client_version}
+                    Outdated clients: ${.outdated_clients_count}
+                    Connected clients: ${.connected_clients_count}
+                    Features:
+                    - CUSTOM_TARGET_ADAPTER: ${.features.CUSTOM_TARGET_ADAPTER}
+                    - REST: ${.features.REST}
+                    - STREAMING: ${.features.STREAMING}
+                    - WEBSOCKET: ${.features.WEBSOCKET}
+                    - WEBSOCKET_STREAMING: ${.features.WEBSOCKET_STREAMING}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: "\n\n"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: e2f3a4b5-0016-4e5f-9a0b-1c2d3e4f7016
+    type: condition
+    task:
+      id: e2f3a4b5-0016-4e5f-9a0b-1c2d3e4f7016
+      version: -1
+      name: Any problem found?
+      description: If any offline or outdated problem was recorded, route to the manual approve-to-close gate. Otherwise nothing needs remediation and the incident closes automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: PrismaAIRs.RedTeamStatusProblem
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: e2f3a4b5-0017-4e5f-9a0b-1c2d3e4f7017
+    type: regular
+    task:
+      id: e2f3a4b5-0017-4e5f-9a0b-1c2d3e4f7017
+      version: -1
+      name: Validate remediation and approve to close
+      description: |-
+        Manual approval gate for the problem path. Investigate the channels reported in the War Room ("Offline Red Team network channels" and/or "Outdated Red Team channel clients") tables, remediate or acknowledge them, then complete this task to approve closing the incident.
+
+        The incident will NOT close automatically while a problem was detected - it stays open for investigation until this step is completed.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: e2f3a4b5-0018-4e5f-9a0b-1c2d3e4f7018
+    type: regular
+    task:
+      id: e2f3a4b5-0018-4e5f-9a0b-1c2d3e4f7018
+      version: -1
+      name: Close incident
+      description: Closes the incident once the run has completed without errors, so a recurring job does not leave open incidents behind.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeNotes:
+        simple: Completed
+      closeReason:
+        simple: Resolved
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: e2f3a4b5-0019-4e5f-9a0b-1c2d3e4f7019
+    type: title
+    task:
+      id: e2f3a4b5-0019-4e5f-9a0b-1c2d3e4f7019
+      version: -1
+      name: No offline or outdated channels - nothing to remediate
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3040,
+        "width": 820,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.10.0
+tests:
+- No tests
+version: -1
