@@ -1520,7 +1520,7 @@ script:
     - contextPath: CloudflareWAF.Ruleset.rules.categories
       description: The categories or tags that the rule carries.
       type: Unknown
-  dockerimage: demisto/python3:3.12.13.10404775
+  dockerimage: demisto/python3:3.12.14.13053055
   runonce: false
   script: '-'
   subtype: python3
