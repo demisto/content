@@ -11036,16 +11036,19 @@ script:
         description: The URI to fetch the next page of VMs. Run the same command with the next_token argument to get the next page of VMs.
         type: String
   - name: azure-log-analytics-saved-searches-list
-    description: "Gets the saved searches of a Log Analytics workspace. Required Permission: Microsoft.OperationalInsights/workspaces/savedSearches/read."
+    description: "Gets the saved searches of a Log Analytics workspace. Required permission: Microsoft.OperationalInsights/workspaces/savedSearches/read."
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: "The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration."
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: workspace_name
-      description: "The name of the Log Analytics workspace."
+      description: The name of the Log Analytics workspace.
+      required: true
     outputs:
     - contextPath: Azure.LogAnalytics.SavedSearches.id
       description: The fully qualified resource ID for the resource.
@@ -11057,7 +11060,7 @@ script:
       description: The ETag of the saved search.
       type: String
     - contextPath: Azure.LogAnalytics.SavedSearches.type
-      description: The type of the resource.
+      description: The resource type.
       type: String
     - contextPath: Azure.LogAnalytics.SavedSearches.properties.category
       description: The category of the saved search.
@@ -11084,7 +11087,7 @@ script:
       description: The Azure Resource Manager metadata containing createdBy and modifiedBy information.
       type: Unknown
   - name: azure-log-analytics-saved-search-get
-    description: "Gets a specified saved search from a Log Analytics workspace. Required Permission: Microsoft.OperationalInsights/workspaces/savedSearches/read."
+    description: "Gets a specified saved search from a Log Analytics workspace. Required permission: Microsoft.OperationalInsights/workspaces/savedSearches/read."
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -11094,9 +11097,12 @@ script:
       description: The ID of the saved search.
       required: true
     - name: resource_group_name
-      description: "The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration."
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: workspace_name
-      description: "The name of the Log Analytics workspace."
+      description: The name of the Log Analytics workspace.
+      required: true
     outputs:
     - contextPath: Azure.LogAnalytics.SavedSearches.id
       description: The fully qualified resource ID for the resource.
@@ -11108,7 +11114,7 @@ script:
       description: The ETag of the saved search.
       type: String
     - contextPath: Azure.LogAnalytics.SavedSearches.type
-      description: The type of the resource.
+      description: The resource type.
       type: String
     - contextPath: Azure.LogAnalytics.SavedSearches.properties.category
       description: The category of the saved search.
@@ -11135,7 +11141,7 @@ script:
       description: The Azure Resource Manager metadata containing createdBy and modifiedBy information.
       type: Unknown
   - name: azure-log-analytics-saved-search-create-update
-    description: "Creates or updates a saved search in a Log Analytics workspace. Required Permissions: Microsoft.OperationalInsights/workspaces/savedSearches/read, Microsoft.OperationalInsights/workspaces/savedSearches/write."
+    description: "Creates or updates a saved search in a Log Analytics workspace. Required permissions: Microsoft.OperationalInsights/workspaces/savedSearches/read, Microsoft.OperationalInsights/workspaces/savedSearches/write."
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -11155,16 +11161,19 @@ script:
     - name: function_alias
       description: The function alias if the query serves as a function.
     - name: function_parameters
-      description: "The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'."
+      description: "The optional function parameters if the query serves as a function. The value should be in the following format: param-name1:type1 = default_value1, param-name2:type2 = default_value2."
     - name: query
       description: The query expression for the saved search.
       required: true
     - name: tags
-      description: "The tags attached to the saved search. Value should be in the following format: 'name=value;name=value'."
+      description: "The tags attached to the saved search. The value should be in the following format: name=value;name=value."
     - name: resource_group_name
-      description: "The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration."
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: workspace_name
-      description: "The name of the Log Analytics workspace."
+      description: The name of the Log Analytics workspace.
+      required: true
     outputs:
     - contextPath: Azure.LogAnalytics.SavedSearches.id
       description: The fully qualified resource ID for the resource.
@@ -11176,7 +11185,7 @@ script:
       description: The ETag of the saved search.
       type: String
     - contextPath: Azure.LogAnalytics.SavedSearches.type
-      description: The type of the resource.
+      description: The resource type.
       type: String
     - contextPath: Azure.LogAnalytics.SavedSearches.properties.category
       description: The category of the saved search.
@@ -11203,7 +11212,7 @@ script:
       description: The Azure Resource Manager metadata containing createdBy and modifiedBy information.
       type: Unknown
   - name: azure-log-analytics-saved-search-delete
-    description: "Deletes a specified saved search in a Log Analytics workspace. Required Permission: Microsoft.OperationalInsights/workspaces/savedSearches/delete."
+    description: "Deletes a specified saved search in a Log Analytics workspace. Required permission: Microsoft.OperationalInsights/workspaces/savedSearches/delete."
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -11213,18 +11222,23 @@ script:
       description: The ID of the saved search.
       required: true
     - name: resource_group_name
-      description: "The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration."
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: workspace_name
-      description: "The name of the Log Analytics workspace."
+      description: The name of the Log Analytics workspace.
+      required: true
   - name: azure-log-analytics-workspaces-list
-    description: "Gets Log Analytics workspaces in a resource group. Required Permission: Microsoft.OperationalInsights/workspaces/read."
+    description: "Gets Log Analytics workspaces in a resource group. Required permission: Microsoft.OperationalInsights/workspaces/read."
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: "The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration."
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     outputs:
     - contextPath: Azure.LogAnalytics.Workspaces.id
       description: The fully qualified resource ID for the resource.
@@ -11233,13 +11247,13 @@ script:
       description: The name of the resource.
       type: String
     - contextPath: Azure.LogAnalytics.Workspaces.type
-      description: The type of the resource.
+      description: The resource type.
       type: String
     - contextPath: Azure.LogAnalytics.Workspaces.location
       description: The geo-location where the resource lives.
       type: String
     - contextPath: Azure.LogAnalytics.Workspaces.etag
-      description: The etag of the workspace.
+      description: The ETag of the workspace.
       type: String
     - contextPath: Azure.LogAnalytics.Workspaces.identity
       description: The identity of the resource.
@@ -11248,13 +11262,13 @@ script:
       description: The resource tags.
       type: Unknown
     - contextPath: Azure.LogAnalytics.Workspaces.properties.createdDate
-      description: The workspace creation date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time when the workspace was created in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Azure.LogAnalytics.Workspaces.properties.customerId
       description: The ID associated with the workspace.
       type: String
     - contextPath: Azure.LogAnalytics.Workspaces.properties.defaultDataCollectionRuleResourceId
-      description: The resource ID of the default Data Collection Rule to use for this workspace.
+      description: The resource ID of the default data collection rule to use for this workspace.
       type: String
     - contextPath: Azure.LogAnalytics.Workspaces.properties.failover
       description: The workspace failover properties.
@@ -11266,7 +11280,7 @@ script:
       description: Whether customer managed storage is mandatory for query management.
       type: Boolean
     - contextPath: Azure.LogAnalytics.Workspaces.properties.modifiedDate
-      description: The workspace modification date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time when the workspace was modified in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Azure.LogAnalytics.Workspaces.properties.privateLinkScopedResources
       description: The list of linked private link scope resources.
@@ -11296,7 +11310,7 @@ script:
       description: The Azure Resource Manager metadata containing createdBy and modifiedBy information.
       type: Unknown
   - name: azure-log-analytics-table-get
-    description: "Gets a Log Analytics workspace table (search job). Required Permission: Microsoft.OperationalInsights/workspaces/tables/read."
+    description: "Gets a Log Analytics workspace table (search job). Required permission: Microsoft.OperationalInsights/workspaces/tables/read."
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -11304,10 +11318,14 @@ script:
       required:platform: true
     - name: table_name
       description: "The name of the table. Example value: AuditLogs_SRCH."
+      required: true
     - name: resource_group_name
-      description: "The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration."
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: workspace_name
-      description: "The name of the Log Analytics workspace."
+      description: The name of the Log Analytics workspace.
+      required: true
     outputs:
     - contextPath: Azure.LogAnalytics.Tables.id
       description: The fully qualified resource ID for the resource.
@@ -11316,31 +11334,31 @@ script:
       description: The name of the resource.
       type: String
     - contextPath: Azure.LogAnalytics.Tables.type
-      description: The type of the resource.
+      description: The resource type.
       type: String
     - contextPath: Azure.LogAnalytics.Tables.properties.archiveRetentionInDays
-      description: The tables long-term retention in days. Calculated as (totalRetentionInDays-retentionInDays).
+      description: The table's long-term retention in days. Calculated as (totalRetentionInDays-retentionInDays).
       type: Number
     - contextPath: Azure.LogAnalytics.Tables.properties.lastPlanModifiedDate
-      description: The timestamp that table plan was last modified (UTC) in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time when the table plan was last modified (UTC) in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
       type: String
     - contextPath: Azure.LogAnalytics.Tables.properties.plan
-      description: The instruction for the system on how to handle and charge the logs ingested to this table.
+      description: The instruction for the system on how to handle and charge the logs ingested into this table.
       type: String
     - contextPath: Azure.LogAnalytics.Tables.properties.protectionLevel
       description: The protection level of the table. Determines the default data access isolation behavior.
       type: String
     - contextPath: Azure.LogAnalytics.Tables.properties.provisioningState
-      description: The table's current provisioning state. If set to 'updating', indicates a resource lock due to ongoing operation, forbidding any update to the table until the ongoing operation is concluded.
+      description: The table's current provisioning state. If set to updating, it indicates a resource lock due to an ongoing operation, forbidding any update to the table until the ongoing operation is concluded.
       type: String
     - contextPath: Azure.LogAnalytics.Tables.properties.restoredLogs
-      description: The parameters of the restore operation that initiated this table.
+      description: The parameters of the restore operation that created the table.
       type: Unknown
     - contextPath: Azure.LogAnalytics.Tables.properties.resultStatistics
       description: The search job execution statistics.
       type: Unknown
     - contextPath: Azure.LogAnalytics.Tables.properties.retentionInDays
-      description: "In Analytics table: the tables analytics retention in days, between 4 and 730. Setting this property to -1 will default to the workspace retention. In Basic and Auxiliary table: read only property."
+      description: "The table's analytics retention in days for Analytics tables, between 4 and 730. Setting this property to -1 defaults to the workspace retention. For Basic and Auxiliary tables, this is a read-only property."
       type: Number
     - contextPath: Azure.LogAnalytics.Tables.properties.retentionInDaysAsDefault
       description: Whether the value originates from workspace retention in days (true) or is customer specific (false).
@@ -11349,10 +11367,10 @@ script:
       description: The table schema.
       type: Unknown
     - contextPath: Azure.LogAnalytics.Tables.properties.searchResults
-      description: The parameters of the search job that initiated this table.
+      description: The parameters of the search job that initiated the table.
       type: Unknown
     - contextPath: Azure.LogAnalytics.Tables.properties.totalRetentionInDays
-      description: The table total retention in days, between 4 and 4383. Setting this property to -1 will default to retentionInDays.
+      description: The table's total retention in days, between 4 and 4383. Setting this property to -1 defaults to retentionInDays.
       type: Number
     - contextPath: Azure.LogAnalytics.Tables.properties.totalRetentionInDaysAsDefault
       description: Whether the value originates from retention in days (true) or is customer specific (false).
@@ -11361,7 +11379,7 @@ script:
       description: The Azure Resource Manager metadata containing createdBy and modifiedBy information.
       type: Unknown
   - name: azure-log-analytics-table-run
-    description: "Runs a search job to fetch records from large datasets into a new search results table in your workspace, and polls until the table is provisioned. Required Permissions: Microsoft.OperationalInsights/workspaces/tables/read, Microsoft.OperationalInsights/workspaces/tables/write, Microsoft.OperationalInsights/workspaces/searchJobs/write."
+    description: "Runs a search job to fetch records from large datasets into a new search results table in the workspace, and polls until the table is provisioned. Required permissions: Microsoft.OperationalInsights/workspaces/tables/read, Microsoft.OperationalInsights/workspaces/tables/write, Microsoft.OperationalInsights/workspaces/searchJobs/write."
     polling: true
     arguments:
     - name: subscription_id
@@ -11369,19 +11387,19 @@ script:
       required: false
       required:platform: true
     - name: table_name
-      description: "The name of the table to add. Must contain '_SRCH' suffix. Example value: AuditLogs_SRCH."
+      description: The name of the table to add. Must contain the _SRCH suffix. For example, AuditLogs_SRCH.
       required: true
     - name: limit
-      description: The maximum number of records in the result set, up to one million records.
+      description: The maximum number of records to return in the result set.
       defaultValue: '50'
     - name: query
-      description: "The log query written in KQL format to retrieve data. Search job queries must always start with a table name."
+      description: The log query written in KQL format to retrieve data. Search job queries must start with a table name.
       required: true
     - name: start_search_time
-      description: "The start of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as '2023-10-31T00:00:00Z'."
+      description: The start of the time range to search. The value can be in minutes, days, weeks, or  ISO 8601 format (for example, 2023-10-31T00:00:00Z).
       defaultValue: '1 day'
     - name: end_search_time
-      description: "The end of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as '2023-10-31T00:00:00Z'."
+      description: The end of the time range to search. The value can be in minutes, days, weeks, or ISO 8601 format (for example, 2023-10-31T00:00:00Z).
       defaultValue: now
     - name: timeout
       description: The timeout in seconds until polling ends.
@@ -11390,16 +11408,19 @@ script:
       description: The interval in seconds between each poll.
       defaultValue: '60'
     - name: first_run
-      description: Whether the current execution is the initial run. Used internally, do not set manually.
+      description: Whether the current execution is the initial run. Used internally. Do not set manually.
       hidden: true
       defaultValue: 'true'
     - name: hide_polling_output
       description: Whether to hide the polling message and only print the final status at the end.
       hidden: true
     - name: resource_group_name
-      description: "The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration."
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: workspace_name
-      description: "The name of the Log Analytics workspace."
+      description: The name of the Log Analytics workspace.
+      required: true
     outputs:
     - contextPath: Azure.LogAnalytics.Tables.TableName
       description: The table name.
@@ -11408,18 +11429,22 @@ script:
       description: The query that was used to create the table.
       type: String
   - name: azure-log-analytics-table-delete
-    description: "Deletes a Log Analytics workspace table (search job). Required Permission: Microsoft.OperationalInsights/workspaces/tables/delete."
+    description: "Deletes a Log Analytics workspace table (search job). Required permission: Microsoft.OperationalInsights/workspaces/tables/delete."
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: table_name
-      description: "The name of the table. Must contain '_SRCH' suffix. Example value: AuditLogs_SRCH."
+      description: The name of the table. Must contain the _SRCH suffix. For example, AuditLogs_SRCH.
+      required: true
     - name: resource_group_name
-      description: "The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration."
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: workspace_name
-      description: "The name of the Log Analytics workspace."
+      description: The name of the Log Analytics workspace.
+      required: true
   isfetch: false
   runonce: false
   script: '-'
