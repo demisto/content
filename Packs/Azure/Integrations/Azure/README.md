@@ -3144,8 +3144,6 @@ Lists the rules of an Azure firewall rule collection or of a firewall policy rul
 | policy_name | The name of the Azure firewall policy that contains the rules. You must provide exactly one of firewall_name or policy_name. | Optional |
 | rule_type | The rule type to retrieve. Required when the firewall_name argument is provided. Possible values are: application_rule, network_rule, nat_rule. | Optional |
 | collection_name | The name of the rule collection that contains the rules. | Required |
-| limit | The maximum number of records to return. Default is 50. | Optional |
-| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. Default is false. | Optional |
 
 #### Context Output
 

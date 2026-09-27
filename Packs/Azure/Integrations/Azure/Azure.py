@@ -5915,8 +5915,6 @@ def firewall_rule_list_command(client: AzureClient, params: dict[str, Any], args
     policy_name: str = args.get("policy_name", "")
     rule_type = args.get("rule_type", "")
     collection_name = args.get("collection_name", "")
-    all_results = argToBoolean(args.get("all_results", "false"))
-    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
 
     validate_firewall_or_policy_provided(firewall_name, policy_name)
 
@@ -5944,9 +5942,6 @@ def firewall_rule_list_command(client: AzureClient, params: dict[str, Any], args
                 f"No rules were found in the '{collection_name}' rule collection of '{firewall_name or policy_name}'."
             )
         )
-
-    if not all_results:
-        rules = rules[:limit]
 
     readable_output = tableToMarkdown(
         f"{firewall_name or policy_name} {collection_name} Rules List",

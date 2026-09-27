@@ -8148,67 +8148,6 @@ def test_firewall_rule_collection_list_command_policy_displays_all_collections(m
     assert "nat-collection" in result.readable_output
 
 
-def test_firewall_rule_list_command_limit(mocker):
-    """
-    Given:
-        - A collection that contains more rules than the requested limit.
-    When:
-        - Calling firewall_rule_list_command with the limit argument.
-    Then:
-        - Ensure only the requested number of rules is returned.
-    """
-    from Azure import firewall_rule_list_command
-
-    client = mocker.MagicMock()
-    client.firewall_get_request.return_value = FIREWALL_RESPONSE
-
-    result = firewall_rule_list_command(
-        client,
-        {},
-        {
-            "subscription_id": "sub1",
-            "resource_group_name": "rg1",
-            "firewall_name": "fw1",
-            "rule_type": "network_rule",
-            "collection_name": "collection1",
-            "limit": "1",
-        },
-    )
-
-    assert result.outputs == [{"name": "rule1"}]
-
-
-def test_firewall_rule_list_command_all_results(mocker):
-    """
-    Given:
-        - A collection that contains more rules than the requested limit, and the all_results argument.
-    When:
-        - Calling firewall_rule_list_command.
-    Then:
-        - Ensure the limit is ignored and all the rules are returned.
-    """
-    from Azure import firewall_rule_list_command
-
-    client = mocker.MagicMock()
-    client.firewall_get_request.return_value = FIREWALL_RESPONSE
-
-    result = firewall_rule_list_command(
-        client,
-        {},
-        {
-            "subscription_id": "sub1",
-            "resource_group_name": "rg1",
-            "firewall_name": "fw1",
-            "rule_type": "network_rule",
-            "collection_name": "collection1",
-            "limit": "1",
-            "all_results": "true",
-        },
-    )
-
-    assert result.outputs == [{"name": "rule1"}, {"name": "rule2"}]
-
-
 def test_firewall_rule_get_command_firewall(mocker):
     """
     Given:
