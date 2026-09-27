@@ -7634,6 +7634,28 @@ FRONT_DOOR_POLICY = {
 }
 
 
+@pytest.mark.parametrize(
+    "policy_settings, expected_state",
+    [
+        ({"mode": "Prevention", "state": "Enabled"}, "Enabled"),
+        ({"mode": "Prevention", "enabledState": "Disabled"}, "Disabled"),
+    ],
+    ids=["application_gateway_state", "front_door_enabled_state"],
+)
+def test_waf_policies_to_table_policy_state(policy_settings, expected_state):
+    """
+    Given: A WAF policy whose state is reported as "state" (Application Gateway) or as
+           "enabledState" (Front Door).
+    When: waf_policies_to_table is called.
+    Then: The PolicyState column holds the state in both cases.
+    """
+    from Azure import waf_policies_to_table
+
+    rows = waf_policies_to_table([{"name": "policy1", "properties": {"policySettings": policy_settings}}])
+
+    assert rows[0]["PolicyState"] == expected_state
+
+
 def test_waf_policy_get_command_success(mocker):
     """
     Given: An AzureClient whose waf_policy_get returns a WAF policy.
@@ -7674,15 +7696,16 @@ def test_waf_policy_list_command_success(mocker):
     assert result.outputs["Azure.WAF.Policies(val.id && val.id == obj.id)"] == [WAF_POLICY]
     assert result.outputs["Azure.WAF(true)"] == {"PoliciesNextToken": "next-page-token"}
     assert "policy1" in result.readable_output
+    assert "PoliciesNextToken: next-page-token" in result.readable_output
     mock_client.waf_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="rg1", next_token="")
 
 
-def test_waf_policy_list_command_subscription_scope_and_limit(mocker):
+def test_waf_policy_list_command_subscription_scope(mocker):
     """
-    Given: No resource group, and more policies returned than the requested limit.
-    When: waf_policy_list_command is called with limit=1.
+    Given: No resource group, and several policies returned by the API.
+    When: waf_policy_list_command is called.
     Then: The client is called with an empty resource group, so the whole subscription is
-          listed, and only the requested number of policies is returned.
+          listed, and all the returned policies are placed in the context outputs.
     """
     from Azure import waf_policy_list_command
 
@@ -7690,9 +7713,9 @@ def test_waf_policy_list_command_subscription_scope_and_limit(mocker):
     second_policy = {**WAF_POLICY, "name": "policy2", "id": "policy2-id"}
     mock_client.waf_policy_list.return_value = {"value": [WAF_POLICY, second_policy]}
 
-    result = waf_policy_list_command(mock_client, {}, {"subscription_id": "sub1", "limit": "1"})
+    result = waf_policy_list_command(mock_client, {}, {"subscription_id": "sub1"})
 
-    assert result.outputs["Azure.WAF.Policies(val.id && val.id == obj.id)"] == [WAF_POLICY]
+    assert result.outputs["Azure.WAF.Policies(val.id && val.id == obj.id)"] == [WAF_POLICY, second_policy]
     mock_client.waf_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="", next_token="")
 
 
@@ -7789,6 +7812,7 @@ def test_waf_front_door_policy_get_command_success(mocker):
     assert result.outputs_prefix == "Azure.WAF.FrontDoorPolicies"
     assert result.outputs == FRONT_DOOR_POLICY
     assert "fdpolicy1" in result.readable_output
+    assert "Policy State" in result.readable_output
     mock_client.waf_front_door_policy_get.assert_called_once_with(
         policy_name="fdpolicy1", subscription_id="sub1", resource_group_name="rg1"
     )
@@ -7810,6 +7834,7 @@ def test_waf_front_door_policy_list_command_success(mocker):
 
     assert result.outputs["Azure.WAF.FrontDoorPolicies(val.id && val.id == obj.id)"] == [FRONT_DOOR_POLICY]
     assert result.outputs["Azure.WAF(true)"] == {"FrontDoorPoliciesNextToken": "next-page-token"}
+    assert "FrontDoorPoliciesNextToken: next-page-token" in result.readable_output
     mock_client.waf_front_door_policy_list.assert_called_once_with(
         subscription_id="sub1", resource_group_name="rg1", next_token=""
     )

@@ -512,6 +512,8 @@ COSMOS_DB_API_VERSION = "2024-11-15"
 PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
 NSG_API_VERSION = "2025-01-01"
+# Application Gateway and Front Door WAF policies are served by two separate resource providers,
+# each with its own independently released API version, so these two versions intentionally differ.
 WAF_POLICY_API_VERSION = "2025-05-01"
 WAF_FRONT_DOOR_POLICY_API_VERSION = "2022-05-01"
 WAF_POLICY_PATH = "providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
@@ -5777,6 +5779,9 @@ def waf_policies_to_table(policies: list[dict]) -> list[dict]:
     for policy in policies:
         properties = policy.get("properties", {})
         policy_settings = properties.get("policySettings", {})
+        # Application Gateway WAF policies expose the state as "state", while Front Door WAF
+        # policies expose the same information as "enabledState".
+        policy_state = policy_settings.get("state") or policy_settings.get("enabledState")
         rows.append(
             {
                 "Name": policy.get("name"),
@@ -5785,7 +5790,7 @@ def waf_policies_to_table(policies: list[dict]) -> list[dict]:
                 "ProvisioningState": properties.get("provisioningState"),
                 "ResourceState": properties.get("resourceState"),
                 "PolicyMode": policy_settings.get("mode"),
-                "PolicyState": policy_settings.get("state"),
+                "PolicyState": policy_state,
                 "ID": policy.get("id"),
             }
         )
@@ -5846,20 +5851,20 @@ def waf_policy_list_command(client: AzureClient, params: dict[str, Any], args: d
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = args.get("resource_group_name") or params.get("resource_group_name") or ""
     next_token = args.get("next_token", "")
-    limit = arg_to_number(args.get("limit")) or int(DEFAULT_LIMIT)
 
     response = client.waf_policy_list(
         subscription_id=subscription_id, resource_group_name=resource_group_name, next_token=next_token
     )
-    policies = response.get("value", [])[:limit]
+    policies = response.get("value", [])
 
     if not policies:
         scope = f"resource group '{resource_group_name}'" if resource_group_name else f"subscription '{subscription_id}'"
         return CommandResults(readable_output=f"No WAF policies were found in {scope}.")
 
+    response_next_token = response.get("nextLink")
     outputs = {
         "Azure.WAF.Policies(val.id && val.id == obj.id)": policies,
-        "Azure.WAF(true)": {"PoliciesNextToken": response.get("nextLink")},
+        "Azure.WAF(true)": {"PoliciesNextToken": response_next_token},
     }
 
     readable_output = tableToMarkdown(
@@ -5867,6 +5872,7 @@ def waf_policy_list_command(client: AzureClient, params: dict[str, Any], args: d
         t=waf_policies_to_table(policies),
         removeNull=True,
         headerTransform=pascalToSpace,
+        metadata=f"PoliciesNextToken: {response_next_token}" if response_next_token else None,
     )
 
     return CommandResults(outputs=outputs, readable_output=readable_output, raw_response=response)
@@ -6008,20 +6014,20 @@ def waf_front_door_policy_list_command(client: AzureClient, params: dict[str, An
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = args.get("resource_group_name") or params.get("resource_group_name") or ""
     next_token = args.get("next_token", "")
-    limit = arg_to_number(args.get("limit")) or int(DEFAULT_LIMIT)
 
     response = client.waf_front_door_policy_list(
         subscription_id=subscription_id, resource_group_name=resource_group_name, next_token=next_token
     )
-    policies = response.get("value", [])[:limit]
+    policies = response.get("value", [])
 
     if not policies:
         scope = f"resource group '{resource_group_name}'" if resource_group_name else f"subscription '{subscription_id}'"
         return CommandResults(readable_output=f"No Front Door WAF policies were found in {scope}.")
 
+    response_next_token = response.get("nextLink")
     outputs = {
         "Azure.WAF.FrontDoorPolicies(val.id && val.id == obj.id)": policies,
-        "Azure.WAF(true)": {"FrontDoorPoliciesNextToken": response.get("nextLink")},
+        "Azure.WAF(true)": {"FrontDoorPoliciesNextToken": response_next_token},
     }
 
     readable_output = tableToMarkdown(
@@ -6029,6 +6035,7 @@ def waf_front_door_policy_list_command(client: AzureClient, params: dict[str, An
         t=waf_policies_to_table(policies),
         removeNull=True,
         headerTransform=pascalToSpace,
+        metadata=f"FrontDoorPoliciesNextToken: {response_next_token}" if response_next_token else None,
     )
 
     return CommandResults(outputs=outputs, readable_output=readable_output, raw_response=response)

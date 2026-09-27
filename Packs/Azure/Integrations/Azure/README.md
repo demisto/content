@@ -3174,7 +3174,6 @@ Lists the Application Gateway Web Application Firewall (WAF) policies of a resou
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group to list policies from. When not provided, the policies of the entire subscription are listed. | Optional |
-| limit | The maximum number of policies to return. Valid range is 1-1000. Default is 50. | Optional |
 | next_token | The URI to fetch the next page of results. Use the value of Azure.WAF.PoliciesNextToken from the previous response. | Optional |
 
 #### Context Output
@@ -3306,7 +3305,6 @@ Lists the Front Door Web Application Firewall (WAF) policies of a resource group
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group to list policies from. When not provided, the policies of the entire subscription are listed. | Optional |
-| limit | The maximum number of policies to return. Valid range is 1-1000. Default is 50. | Optional |
 | next_token | The URI to fetch the next page of results. Use the value of Azure.WAF.FrontDoorPoliciesNextToken from the previous response. | Optional |
 
 #### Context Output
@@ -3346,7 +3344,7 @@ Creates or updates a Front Door Web Application Firewall (WAF) policy. An existi
 | managed_rules | The managed rules of the policy, as a JSON string. For example: {"managedRuleSets": [{"ruleSetType": "DefaultRuleSet", "ruleSetVersion": "1.0"}]}. | Required |
 | policy_settings | The policy settings, as a JSON string. For example: {"mode": "Prevention", "enabledState": "Enabled"}. | Optional |
 | custom_rules | The custom rules of the policy, as a JSON string. For example: {"rules": []}. | Optional |
-| location | The Azure region of the policy. Front Door WAF policies are global resources, so this defaults to "Global". Default is Global. | Optional |
+| location | The Azure region of the policy. Front Door WAF policies are global resources. Default is Global. | Optional |
 | sku | The pricing tier of the policy. Possible values are: Classic_AzureFrontDoor, Standard_AzureFrontDoor, Premium_AzureFrontDoor. Default is Classic_AzureFrontDoor. | Optional |
 | tags | The tags to assign to the policy, as a JSON string. For example: {"env": "prod"}. | Optional |
 | etag | The ETag of the policy, used to prevent overwriting concurrent updates. | Optional |

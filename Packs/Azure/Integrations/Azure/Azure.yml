@@ -11095,10 +11095,6 @@ script:
     - name: resource_group_name
       description: The name of the resource group to list policies from. When not provided, the policies of the entire subscription are listed.
       required: false
-    - name: limit
-      description: The maximum number of policies to return. Valid range is 1-1000.
-      required: false
-      defaultValue: '50'
     - name: next_token
       description: The URI to fetch the next page of results. Use the value of Azure.WAF.PoliciesNextToken from the previous response.
       required: false
@@ -11286,10 +11282,6 @@ script:
     - name: resource_group_name
       description: The name of the resource group to list policies from. When not provided, the policies of the entire subscription are listed.
       required: false
-    - name: limit
-      description: The maximum number of policies to return. Valid range is 1-1000.
-      required: false
-      defaultValue: '50'
     - name: next_token
       description: The URI to fetch the next page of results. Use the value of Azure.WAF.FrontDoorPoliciesNextToken from the previous response.
       required: false
@@ -11356,7 +11348,7 @@ script:
       description: 'The custom rules of the policy, as a JSON string. For example: {"rules": []}.'
       required: false
     - name: location
-      description: The Azure region of the policy. Front Door WAF policies are global resources, so this defaults to "Global".
+      description: The Azure region of the policy. Front Door WAF policies are global resources.
       required: false
       defaultValue: Global
     - name: sku
