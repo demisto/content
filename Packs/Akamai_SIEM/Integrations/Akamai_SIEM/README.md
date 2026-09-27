@@ -40,8 +40,8 @@ A WAF (web application firewall) is a filter that protects against HTTP applicat
     | Config ids to fetch | True | Your Akamai security configuration ID(s). Multiple IDs can be separated by semicolons (e.g., 12345;2345;3456). Config IDs are unique to your account. |
     | Incident type | False | |
     | First fetch timestamp | False | |
-    | Fetch limit | False | Limit on the number of incidents retrieved in a single fetch. The maximum is 80k.|
-    | Akamai Page size | False | The number of events to fetch per request to akamai (multiple requests are made for each fetch). If you're getting aggregated delays, increase the number. The maximum is 80,000. |
+    | Incident fetch limit | False | The maximum total number of incidents to retrieve per fetch. The maximum is 2000. |
+    | Events fetch limit | False | The maximum total number of events to retrieve per fetch. The maximum is 80k. |
     | Skip events decoding | False | Use this parameter to avoid decoding the http message and attack data fields and speed up the ingestion rate. |
     | Long running instance | False | This is a beta feature for high performance fetch events. Use this param only if advised by CS. Make sure this feature is not used with fetch events configured in the integration params and that there's no config ID used for 2 different instances / features. |
     | Page Size - high performance mode | False | The number of events to fetch per request to akamai Default is 200k, maximum is 600k as per Akamai documentation. Use this only when using the long running beta feature. |
@@ -271,14 +271,13 @@ Get security events from Akamai WAF.
 ## receiving 416 error code / aggregated delay when fetching events
 
 This may be due to not querying for enough events per interval / request.
-The proposed solution in that case is to use the two parameters **Fetch limit** and **Akamai Page size**.
-**Fetch limit** is the number of total events we want to retrieve each fetch interval. Note that the maximum allowed value is 80k.
+The proposed solution in that case is to increase the **Events fetch limit** parameter.
+**Events fetch limit** is the number of total events we want to retrieve each fetch interval. Note that the maximum allowed value is 80k.
 Note that in cases where the ingestion rate from the Akamai API is higher, the integration will detect it and trigger the next fetch immediately.
 
-**Akamai Page size** configures the number of events to retrieve per request. Note that the maximum allowed value is 80k.
-A single fetch interval may execute multiple requests, so configure **Akamai Page size** < **Fetch limit**
+A single fetch interval may execute multiple requests, each retrieving up to 20k events per request.
 
-If after readjusting the limits you keep encounter errors, please refer to the support.
+If after readjusting the limit you keep encountering errors, please contact support.
 
 ### Known limitations
 
@@ -286,3 +285,15 @@ If after readjusting the limits you keep encounter errors, please refer to the s
 
 Due to limitations from Akamai, the config ID can only be configured on one instance on the same machine or on different machines (i.e. the same config ID can't be configured both on dev and prod tenants or twice on the same tenant).
 Configuring on multiple machines may lead to duplications or missing events.
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require the **Cortex XSIAM** license:
+
+- Fetch Events
+- Skip events decoding
+- Long running instance
+
+</~PLATFORM>

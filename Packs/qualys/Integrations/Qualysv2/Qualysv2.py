@@ -34,6 +34,20 @@ ASSET_SIZE_LIMIT = 10**6  # 1MB
 TEST_FROM_DATE = "one day"
 FETCH_ASSETS_COMMAND_TIME_OUT = 180
 QIDS_BATCH_SIZE = 500
+# Retry configuration for Qualys rate-limit (HTTP 409, Error Code 1965) responses.
+RATE_LIMIT_STATUS_CODE = 409
+RATE_LIMIT_TO_WAIT_HEADER = "X-RateLimit-ToWait-Sec"
+RATE_LIMIT_WAIT_BUFFER_SEC = 2
+RATE_LIMIT_MAX_WAIT_SEC = 45
+RATE_LIMIT_DEFAULT_WAIT_SEC = 30
+
+# Retry configuration for Qualys concurrency-limit (HTTP 409, Error Code 1960) responses.
+# 1960 means a previous long-running instance of this API is still executing on Qualys' side.
+# Unlike the 1965 rate-limit, the `X-RateLimit-ToWait-Sec` header is unreliable here (returns 0),
+# so we back off by a fixed interval to let the previous instance finish before retrying.
+CONCURRENCY_LIMIT_ERROR_CODE = "1960"
+CONCURRENCY_LIMIT_WAIT_SEC = 60
+CONCURRENCY_LIMIT_MAX_RETRIES = 2
 
 ASSETS_DATE_FORMAT = "%Y-%m-%d"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
@@ -794,8 +808,8 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
         "resp_type": "text",
     },
     "test-module": {
-        "api_route": API_SUFFIX + "/scan/?action=list",
-        "call_method": "POST",
+        "api_route": API_SUFFIX_SCAN + "/scan/?action=list",
+        "call_method": "GET",
         "resp_type": "text",
     },
     "qualys-host-list-detection": {
@@ -1625,6 +1639,8 @@ class Client(BaseClient):
                 "If this error was produced by a schedule-scan-create, "
                 "please execute it again with IP list of less than 5000 characters\n\n"
             )
+        if res.status_code == 409:
+            err_msg += "Rate limit reached - the Qualys API rate limit was exceeded.\n"
         err_msg += f"Error in API call [{res.status_code}] - {res.reason}"
         try:
             simple_response = get_simple_response_from_raw(parse_raw_response(res.text))
@@ -1639,6 +1655,39 @@ class Client(BaseClient):
                 err_msg += f"\n{res.text}"
                 raise DemistoException(err_msg, res=res)
         raise DemistoException(err_msg, res=res)
+
+    def _http_request_with_rate_limit_retry(self, **kwargs):
+        """
+        Wraps _http_request and retries once on a Qualys rate-limit (HTTP 409) response.
+        Qualys returns a custom `X-RateLimit-ToWait-Sec` header indicating how long to
+        wait before retrying, so we honor that value (with a buffer and a cap) instead
+        of relying on static backoff.
+        """
+        try:
+            return self._http_request(**kwargs)
+        except DemistoException as exc:
+            response = exc.res
+            if getattr(response, "status_code", None) != RATE_LIMIT_STATUS_CODE:
+                raise
+            wait_seconds = self._get_rate_limit_wait_seconds(response)
+            demisto.debug(
+                f"[HTTP Error] Hit Qualys rate limit (HTTP {RATE_LIMIT_STATUS_CODE}). "
+                f"Waiting {wait_seconds}s before retrying once."
+            )
+            time.sleep(wait_seconds)  # pylint: disable=E9003
+        # Single retry after waiting; let any error propagate to the caller.
+        return self._http_request(**kwargs)
+
+    @staticmethod
+    def _get_rate_limit_wait_seconds(response) -> int:
+        """Read X-RateLimit-ToWait-Sec from the response, add a buffer, and cap the result."""
+        headers = getattr(response, "headers", {}) or {}
+        raw_wait = headers.get(RATE_LIMIT_TO_WAIT_HEADER, RATE_LIMIT_DEFAULT_WAIT_SEC)
+        try:
+            wait_seconds = int(raw_wait) + RATE_LIMIT_WAIT_BUFFER_SEC
+        except (TypeError, ValueError):
+            wait_seconds = RATE_LIMIT_DEFAULT_WAIT_SEC + RATE_LIMIT_WAIT_BUFFER_SEC
+        return min(wait_seconds, RATE_LIMIT_MAX_WAIT_SEC)
 
     @logger
     def command_http_request(self, command_api_data: dict[str, str]) -> Union[str, bytes]:
@@ -1680,7 +1729,7 @@ class Client(BaseClient):
         if next_page:
             params["id_max"] = next_page
 
-        response = self._http_request(
+        response = self._http_request_with_rate_limit_retry(
             method="GET",
             url_suffix=urljoin(API_SUFFIX, "activity_log/?action=list"),  # Activity log is not deprecated; stays on v2.0
             resp_type="text/csv",
@@ -1729,16 +1778,7 @@ class Client(BaseClient):
         # Read Timeout does *not* specify request max execution time! Handle using a timed thread (via `ThreadPoolExecutor`)
 
         try:
-            response = self._http_request(
-                method="GET",
-                url_suffix=urljoin(
-                    API_SUFFIX_DETECTION, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"
-                ),
-                resp_type="text",
-                params=params,
-                timeout=timeout,
-                error_handler=self.error_handler,
-            )
+            response = self._request_host_list_with_concurrency_retry(params, timeout)
 
         # Handle response timeout (`ReadTimeout`) or response ending prematurely (`ChunkedEncodingError`)
         except (requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError) as e:
@@ -1746,8 +1786,85 @@ class Client(BaseClient):
             set_new_limit = True
             response = ""
 
-        demisto.debug(f"Got host list detections response length of {len(response)} characters. Used query params: {params}.")
+        # Handle Qualys concurrency limit (HTTP 409, Error Code 1960): a previous long-running instance
+        # of this API is still executing. After exhausting in-run retries, defer to the next fetch with a
+        # reduced limit instead of failing the whole fetch (which would restart the snapshot from scratch).
+        except DemistoException as e:
+            if not self._is_concurrency_limit_error(getattr(e, "res", None)):
+                raise
+            demisto.debug(
+                f"Qualys concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}) still active after retries. "
+                f"Trying again in the next fetch with a reduced limit. Error: {str(e)}\n{traceback.format_exc()}"
+            )
+            set_new_limit = True
+            response = ""
+
+        if not set_new_limit:
+            demisto.debug(f"Got host list detections response length of {len(response)} characters. Used query params: {params}.")
         return response, set_new_limit
+
+    def _request_host_list_with_concurrency_retry(self, params: dict[str, Any], timeout: tuple[int, int]) -> str:
+        """Perform the host-list-detection request, retrying on Qualys concurrency-limit (Error Code 1960).
+
+        Qualys allows only one running instance of this API per account. If a previous (possibly timed-out)
+        instance is still executing, Qualys returns HTTP 409 with Error Code 1960. The `X-RateLimit-ToWait-Sec`
+        header is unreliable for this case, so we back off by a fixed interval before retrying.
+
+        Args:
+            params (dict[str, Any]): Query params for the request.
+            timeout (tuple[int, int]): (connection, read) timeout for the request.
+
+        Returns:
+            str: The raw response text.
+
+        Raises:
+            DemistoException: For non-1960 errors, or a 1960 error after retries are exhausted.
+        """
+        url_suffix = urljoin(API_SUFFIX_DETECTION, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1")
+        for attempt in range(CONCURRENCY_LIMIT_MAX_RETRIES + 1):
+            try:
+                return self._http_request(
+                    method="GET",
+                    url_suffix=url_suffix,
+                    resp_type="text",
+                    params=params,
+                    timeout=timeout,
+                    error_handler=self.error_handler,
+                )
+            except DemistoException as e:
+                if not self._is_concurrency_limit_error(getattr(e, "res", None)) or attempt == CONCURRENCY_LIMIT_MAX_RETRIES:
+                    raise
+                demisto.debug(
+                    f"Hit Qualys concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}). "
+                    f"Waiting {CONCURRENCY_LIMIT_WAIT_SEC}s before retry {attempt + 1}/{CONCURRENCY_LIMIT_MAX_RETRIES}. "
+                    f"Error: {str(e)}\n{traceback.format_exc()}"
+                )
+                time.sleep(CONCURRENCY_LIMIT_WAIT_SEC)  # pylint: disable=E9003
+        # Unreachable: the loop either returns or raises, but keeps type checkers satisfied.
+        raise DemistoException(f"Qualys concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}) not resolved.")
+
+    @staticmethod
+    def _is_concurrency_limit_error(response: Optional[requests.Response]) -> bool:
+        """Return True if the response is a Qualys concurrency-limit error (HTTP 409, Error Code 1960)."""
+        if response is None:
+            demisto.debug("No response object available; cannot be a concurrency-limit error.")
+            return False
+        status_code = response.status_code
+        if status_code != RATE_LIMIT_STATUS_CODE:
+            demisto.debug(f"Response status code {status_code} is not a concurrency-limit status ({RATE_LIMIT_STATUS_CODE}).")
+            return False
+        try:
+            simple_response = get_simple_response_from_raw(parse_raw_response(response.text))
+            error_code = simple_response.get("CODE") if simple_response else None
+            is_concurrency_limit = bool(simple_response) and error_code == CONCURRENCY_LIMIT_ERROR_CODE
+            demisto.debug(
+                f"Checked response for concurrency limit: status_code={status_code}, error_code={error_code}, "
+                f"is_concurrency_limit={is_concurrency_limit}."
+            )
+            return is_concurrency_limit
+        except Exception as e:
+            demisto.debug(f"Failed to parse response while checking for concurrency limit: {str(e)}\n{traceback.format_exc()}")
+            return False
 
     def get_vulnerabilities(self, since_datetime: str | None = None, detection_qids: str | None = None) -> str:
         """

@@ -961,3 +961,5 @@ supportedModules:
 - agentix
 - cloud
 - xsiam
+- edr
+- cloud_runtime_security

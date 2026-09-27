@@ -7,7 +7,8 @@
         "Doppel Alert Email",
         "Doppel Alert Mobile_Apps",
         "Doppel Alert Paid_Ads",
-        "Doppel Alert Social_Media"
+        "Doppel Alert Social_Media",
+        "Doppel Alert Telco"
     ],
     "caseInsensitive": true,
     "cliName": "doppelbrand",
@@ -32,5 +33,9 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

@@ -2418,3 +2418,103 @@ def test_parse_json_arg_invalid_json_raises():
     msg = str(exc_info.value)
     assert "myarg" in msg
     assert "valid JSON" in msg
+
+
+def test_send_mail_with_attach_cids_uses_cid_labels_not_file_ids(mocker):
+    """
+    Given:
+      - send-mail command with attachIDs (War Room file IDs) and attachCIDs (CID labels)
+      - The HTML body references inline images via CID (e.g., <img src="cid:mylogo"/>)
+
+    When:
+      - Sending a mail with inline image attachments
+
+    Then:
+      - The attachCIDs values should be used as contentId labels (not as file IDs for getFilePath)
+      - The files referenced by attachIDs should be marked as inline when they have a corresponding CID
+      - No call to getFilePath should be made with CID labels
+      - The email should be sent successfully with inline images
+    """
+    client = self_deployed_client()
+
+    args = {
+        "to": ["recipient@example.com"],
+        "htmlBody": '<html><body>Hello <img src="cid:mylogo"/> World</body></html>',
+        "subject": "test with inline CID",
+        "from": "sender@example.com",
+        "attachIDs": "15@8",
+        "attachCIDs": "mylogo",
+    }
+
+    # Mock getFilePath to return a valid file for the War Room file ID "15@8"
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "test_data/plant.jpg", "name": "plant.jpg"},
+    )
+
+    with requests_mock.Mocker() as request_mocker:
+        mocker.patch.object(client, "get_access_token")
+        send_mail_mocker = request_mocker.post(f"https://graph.microsoft.com/v1.0/users/{args['from']}/SendMail")
+
+        send_email_command(client, args)
+
+        assert send_mail_mocker.called
+        message = send_mail_mocker.last_request.json().get("message")
+        assert message
+        message_attachments = message.get("attachments", [])
+
+        # Verify the attachment is marked as inline with the correct CID
+        assert len(message_attachments) == 1
+        attachment = message_attachments[0]
+        assert attachment["isInline"] is True
+        assert attachment["contentId"] == "mylogo"
+        assert attachment["name"] == "plant.jpg"
+
+    # Verify getFilePath was called with the War Room file ID, NOT the CID label
+    demisto.getFilePath.assert_called_once_with("15@8")
+
+
+def test_send_mail_with_attach_ids_no_cids_are_not_inline(mocker):
+    """
+    Given:
+      - send-mail command with attachIDs but no attachCIDs
+
+    When:
+      - Sending a mail with regular (non-inline) attachments
+
+    Then:
+      - The attachments should NOT be marked as inline
+      - The contentId should be the file ID (backward compatibility)
+    """
+    client = self_deployed_client()
+
+    args = {
+        "to": ["recipient@example.com"],
+        "htmlBody": "<html><body>Hello World</body></html>",
+        "subject": "test without CIDs",
+        "from": "sender@example.com",
+        "attachIDs": "15@8",
+    }
+
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "test_data/plant.jpg", "name": "plant.jpg"},
+    )
+
+    with requests_mock.Mocker() as request_mocker:
+        mocker.patch.object(client, "get_access_token")
+        send_mail_mocker = request_mocker.post(f"https://graph.microsoft.com/v1.0/users/{args['from']}/SendMail")
+
+        send_email_command(client, args)
+
+        assert send_mail_mocker.called
+        message = send_mail_mocker.last_request.json().get("message")
+        assert message
+        message_attachments = message.get("attachments", [])
+
+        assert len(message_attachments) == 1
+        attachment = message_attachments[0]
+        assert attachment["isInline"] is False
+        assert attachment["contentId"] == "15@8"

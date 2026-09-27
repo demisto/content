@@ -134,16 +134,19 @@ class Client:
                 "sysparm_display_value": "false",
                 "sysparm_limit": limit,
                 "sysparm_offset": offset,
-                # Use timestamp-based query with descending ordering (newest first) to match
-                # current implementation for the other event types.
-                "sysparm_query": f"ORDERBYDESCsys_created_on^sys_created_on>{from_time}",
+                # Use ascending ordering (oldest first), consistent with the other event types.
+                # This is required so the last returned event is the newest one: the fetch's
+                # last-run timestamp and the de-duplication boundary logic both assume ascending
+                # order. Descending order pinned last_fetch_time to the oldest record, which kept
+                # re-fetching the same window and produced duplicate events (XSUP-71435 follow-up).
+                "sysparm_query": f"ORDERBYsys_created_on^sys_created_on>{from_time}",
             }
         else:
             # Standard query for other log types
             api_query_params = {
                 "sysparm_limit": limit,
                 "sysparm_offset": offset,
-                "sysparm_query": f"sys_created_on>{from_time}",
+                "sysparm_query": f"ORDERBYsys_created_on^sys_created_on>{from_time}",
             }
 
         full_url = self._get_api_url(log_type)
@@ -459,6 +462,11 @@ def module_of_testing(client: Client, log_types: list[LogType]) -> str:  # pragm
     """
     Test API connectivity and authentication.
 
+    Runs the exact same fetch flow used by the collector (fetch_events_command) so the connection
+    test validates the real code path. To keep the test lightweight and avoid heavy queries on large
+    instances, the per-log-type fetch limits are temporarily capped at a single record for the
+    duration of the test.
+
     Returns "ok" if the connection to the service is successful and the integration functions correctly.
     Raises exceptions if the test fails.
 
@@ -470,7 +478,14 @@ def module_of_testing(client: Client, log_types: list[LogType]) -> str:  # pragm
         str: "ok" if the test passed; any exception raised will indicate failure.
     """
 
-    _, _ = fetch_events_command(client, {}, log_types=log_types)
+    # Temporarily cap the fetch limits to a single record so the test exercises the real fetch flow
+    # without pulling a large result set or risking a transaction timeout on large instances.
+    original_fetch_limits = client.fetch_limits
+    client.fetch_limits = {log_type: 1 for log_type in LogType}
+    try:
+        _, _ = fetch_events_command(client, {}, log_types=log_types)
+    finally:
+        client.fetch_limits = original_fetch_limits
     return "ok"
 
 

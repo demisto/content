@@ -30,6 +30,28 @@ DATABASE = PARAMS.get("database")
 SCHEMA = PARAMS.get("schema")
 ROLE = PARAMS.get("role")
 INSECURE = PARAMS.get("insecure", False)
+OAUTH_CLIENT_ID = PARAMS.get("oauth_client_id")
+OAUTH_CLIENT_SECRET = PARAMS.get("oauth_client_secret", {}).get("password")
+OAUTH_TOKEN_URL = PARAMS.get("oauth_token_url")
+OAUTH_SCOPE_RAW = PARAMS.get("oauth_scope", "")
+
+
+def parse_oauth_scope(raw_scope: str) -> str | None:
+    """Convert a comma-separated scope string to space-separated as required by the Snowflake API.
+
+    Args:
+        raw_scope: Comma-separated scope string (e.g. "scope1,scope2,scope3").
+
+    Returns:
+        Space-separated scope string, or None if the input is empty.
+    """
+    if not raw_scope:
+        return None
+    result = " ".join(scope.strip() for scope in raw_scope.split(",") if scope.strip())
+    return result or None
+
+
+OAUTH_SCOPE = parse_oauth_scope(OAUTH_SCOPE_RAW)
 # How much time before the first fetch to retrieve incidents
 IS_FETCH = PARAMS.get("isFetch")
 FETCH_TIME = PARAMS.get("fetch_time")
@@ -215,17 +237,45 @@ def get_connection_params(args):  # pylint: disable=W9014
         Snowflake connection params
     """
     params: dict = {}
-    set_provided(params, "user", USER)
-    set_provided(params, "password", PASSWORD)
+
+    # Validate that at least one authentication method is configured
+    has_oauth = any([OAUTH_CLIENT_ID, OAUTH_TOKEN_URL, OAUTH_CLIENT_SECRET, OAUTH_SCOPE])
+    has_certificate = bool(CERTIFICATE)
+    has_password = bool(PASSWORD)
+    if not any([has_oauth, has_certificate, has_password]):
+        raise ValueError(
+            "No authentication method configured. Please provide one of: "
+            "Credentials (username/password), Certificate (key pair), or OAuth parameters."
+        )
+
+    if not USER:
+        raise ValueError("Username is required for all authentication methods (username/password, key pair, and OAuth).")
+
+    set_provided(params, "user", USER)  # user value is required for all authentication methods
     set_provided(params, "account", ACCOUNT)
-    set_provided(params, "authenticator", AUTHENTICATOR)
     set_provided(params, "region", REGION)
     set_provided(params, "insecure_mode", INSECURE)
     set_provided(params, "warehouse", args.get("warehouse"), WAREHOUSE)
     set_provided(params, "database", args.get("database"), DATABASE)
     set_provided(params, "schema", args.get("schema"), SCHEMA)
     set_provided(params, "role", args.get("role"), ROLE)
-    if CERTIFICATE:
+
+    if has_oauth:
+        if not all([OAUTH_CLIENT_ID, OAUTH_TOKEN_URL, OAUTH_CLIENT_SECRET]):
+            raise ValueError("OAuth Client ID, Client Secret, and Token URL must all be provided for OAuth authentication.")
+
+        # ── OAuth (External OAuth, Client Credentials grant) ──
+        # The snowflake-connector-python natively supports the client credentials flow.
+        # Override the authenticator with the OAuth-specific value.
+        set_provided(params, "authenticator", "OAUTH_CLIENT_CREDENTIALS")
+        set_provided(params, "oauth_client_id", OAUTH_CLIENT_ID)
+        set_provided(params, "oauth_client_secret", OAUTH_CLIENT_SECRET)
+        set_provided(params, "oauth_token_request_url", OAUTH_TOKEN_URL)
+        set_provided(params, "oauth_scope", OAUTH_SCOPE)
+
+    elif has_certificate:
+        set_provided(params, "authenticator", AUTHENTICATOR)
+        # ── Key Pair authentication ──
         p_key = serialization.load_pem_private_key(CERTIFICATE, password=CERT_PASSWORD, backend=default_backend())
         pkb = p_key.private_bytes(
             encoding=serialization.Encoding.DER,
@@ -233,6 +283,11 @@ def get_connection_params(args):  # pylint: disable=W9014
             encryption_algorithm=serialization.NoEncryption(),
         )
         params["private_key"] = pkb
+
+    else:  # Username + Password
+        set_provided(params, "authenticator", AUTHENTICATOR)
+        set_provided(params, "password", PASSWORD)
+
     return params
 
 
@@ -312,7 +367,7 @@ def fetch_incidents():
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
-    args = {"rows": MAX_ROWS, "query": FETCH_QUERY}
+    args = {"limit": MAX_ROWS, "query": FETCH_QUERY}
     column_descriptions, data = snowflake_query(args)
     data.sort(key=lambda k: k[DATETIME_COLUMN])
     # convert the data/events to demisto incidents

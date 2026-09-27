@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from CommonServerPython import *  # noqa: F401
 
 TABLE = []
@@ -15,13 +15,18 @@ def scrape_kos():
     soup = BeautifulSoup(response.text, "html.parser")
 
     for article in soup.select(".entry-title"):
+        link_tag = article.find("a")
+        if not isinstance(link_tag, Tag):  # Title without a link - skip to keep titles and links aligned
+            continue
         title = article.get_text().strip()
         articles.append(title)
-        link = article.find("a").attrs["href"]
+        link = link_tag.attrs["href"]
         links.append(link)
 
     for date in soup.select(".adt"):
-        dates.append(date.find("span").get_text().strip())
+        date_span = date.find("span")
+        if isinstance(date_span, Tag):
+            dates.append(date_span.get_text().strip())
 
     return list(zip(articles, list(zip(links, dates))))
 
@@ -54,8 +59,11 @@ def scrape_tp():
     soup = BeautifulSoup(response.text, "html.parser")
 
     for article in soup.select(".c-card__title"):
+        link_tag = article.find("a")
+        if not isinstance(link_tag, Tag):  # Title without a link - skip to keep titles and links aligned
+            continue
         articles.append(article.get_text().strip())
-        links.append(article.find("a").attrs["href"])
+        links.append(link_tag.attrs["href"])
 
     for date in soup.select(".c-card__time"):
         dates.append(date.get_text().strip())

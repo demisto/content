@@ -112,14 +112,14 @@
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "unknown, informational, low, medium, high"
+                                            "simple": "unknown,informational,low,medium,high"
                                         }
                                     },
                                     "mapped_values": {
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "Unknown, Informational, Low, Medium, High"
+                                            "simple": "Unknown,Informational,Low,Medium,High"
                                         }
                                     }
                                 },

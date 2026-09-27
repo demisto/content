@@ -61,7 +61,7 @@ outputs:
   description: A success message if the command runs successfully, otherwise a message that contains the error.
   type: String
 - contextPath: QuarantineFile.Brand
-  description: The integration that executed the command.
+  description: The integration that executed the command. On the Cortex platform, the Core action runs as a Builtin command and is reported as "Cortex Builtin".
   type: String
 - contextPath: QuarantineFile.EndpointID
   description: The endpoint_id which the command was executed on.
@@ -72,7 +72,7 @@ type: python
 subtype: python3
 compliantpolicies:
 - Quarantine File
-dockerimage: demisto/python3:3.12.13.9059085
+dockerimage: demisto/python3:3.12.13.10404775
 fromversion: 6.10.0
 polling: true
 tests:

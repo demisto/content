@@ -330,7 +330,7 @@ def test_get_nsg_rules_error(mocker):
     """Tests that get_nsg_rules raises DemistoException when the command returns an error.
 
     Given:
-        - A mocked error response from azure-nsg-security-rules-list
+        - A mocked error response from azure-vn-security-rules-list
     When:
         - Calling get_nsg_rules
     Then:
@@ -349,7 +349,7 @@ def test_get_nsg_rules_no_inbound_rules(mocker):
     """Tests that get_nsg_rules raises DemistoException when no inbound rules are found.
 
     Given:
-        - A valid response from azure-nsg-security-rules-list with only outbound rules
+        - A valid response from azure-vn-security-rules-list with only outbound rules
     When:
         - Calling get_nsg_rules
     Then:
@@ -387,7 +387,7 @@ def test_get_nsg_rules_empty_result(mocker):
     """Tests that get_nsg_rules raises DemistoException when the command returns an empty list.
 
     Given:
-        - An empty list response from azure-nsg-security-rules-list
+        - An empty list response from azure-vn-security-rules-list
     When:
         - Calling get_nsg_rules
     Then:

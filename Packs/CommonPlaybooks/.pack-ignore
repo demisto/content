@@ -143,3 +143,12 @@ ignore=GR107
 
 [file:playbook-Endpoint_Enrichment_-_Generic_v2.1_6_8.yml]
 ignore=RM116
+
+[file:playbook-Eradication_Plan_-_Delete_File.yml]
+ignore=GR109
+
+[file:playbook-Eradication_Plan_-_Terminate_Process.yml]
+ignore=GR109
+
+[file:playbook-Get_prevalence_for_IOCs.yml]
+ignore=GR109

@@ -1,0 +1,40 @@
+{
+    "lookout_mobile_endpoint_security_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "change_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "enterprise_guid": {
+            "type": "string",
+            "is_array": false
+        },
+        "threat": {
+            "type": "string",
+            "is_array": false
+        },
+        "audit": {
+            "type": "string",
+            "is_array": false
+        },
+        "device": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor": {
+            "type": "string",
+            "is_array": false
+        },
+        "target": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

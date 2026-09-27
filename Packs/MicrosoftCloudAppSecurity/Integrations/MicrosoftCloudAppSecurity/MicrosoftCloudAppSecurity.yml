@@ -77,6 +77,13 @@ configuration:
   type: 13
   section: Connect
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -891,7 +898,7 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: The number of users in the user group.
       type: Number
-  dockerimage: demisto/crypto:1.0.0.8187750
+  dockerimage: demisto/crypto:1.0.0.10120494
   isfetch: true
   runonce: false
   script: '-'

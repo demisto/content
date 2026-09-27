@@ -309,12 +309,20 @@ def test_nginx_log_process(nginx_cleanup, mocker: MockerFixture):
     sleep(0.5)  # give nginx time to start
     # create a request to get a log line
     requests.get("http://localhost:12345/nginx-test?unit_testing")
-    sleep(0.2)
-    mocker.patch.object(demisto, "info")
+    # Poll until nginx has flushed the access-log line to the (test-redirected)
+    # log before invoking nginx_log_process. A fixed short sleep is racy: if the
+    # line isn't on disk yet, nginx_log_process sees an empty log, logs nothing,
+    # and demisto.debug.call_args is None.
+    for _ in range(50):
+        if Path(module.NGINX_SERVER_ACCESS_LOG).exists() and Path(module.NGINX_SERVER_ACCESS_LOG).stat().st_size:
+            break
+        sleep(0.1)
+    mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "error")
     module.nginx_log_process(NGINX_PROCESS)
+    # The nginx access log line is emitted via demisto.debug.
     # call_args is tuple (args list, kwargs). we only need the args
-    arg = demisto.info.call_args[0][0]
+    arg = demisto.debug.call_args[0][0]
     assert "nginx access log" in arg
     assert "unit_testing" in arg
     # make sure old file was removed
@@ -559,12 +567,16 @@ def test_normalize_nginx_time_invalid_raises(value):
 def test_create_nginx_server_conf_renders_seconds_for_all_five_params(tmp_path: Path, mocker):
     """
     Given:  a params dict that mixes nginx-native, human-readable and bare-integer
-            forms across all five cache_* params (plus a "timeout" of 3600s that
-            should floor-bump the lock + refresh values).
+            forms across the cache_* time params (plus a "timeout" of 3600s that
+            should floor-bump cache_refresh_rate).
     When:   create_nginx_server_conf renders the nginx server config.
-    Then:   every rendered cache directive is in the safe "<int>s" form, and no
+    Then:   every rendered cache-time directive is in the safe "<int>s" form, and no
             occurrence of any human-readable unit word or original input token
             survives into the rendered conf.
+
+    Note:   the two-tier design NO LONGER emits proxy_cache_lock_timeout /
+            proxy_cache_lock_age (concurrency is controlled by Tier-2 limit_conn,
+            not by a cache lock), so those directives must be ABSENT.
     """
     from NGINXApiModule import create_nginx_server_conf
 
@@ -576,8 +588,6 @@ def test_create_nginx_server_conf_renders_seconds_for_all_five_params(tmp_path: 
         params={
             "timeout": "3600",
             "cache_refresh_rate": "12 hours",
-            "cache_lock_timeout": "1h",
-            "cache_lock_age": "30m",
             "cache_404_ttl": "5 minutes",
             "cache_default_ttl": "300",
         },
@@ -587,20 +597,108 @@ def test_create_nginx_server_conf_renders_seconds_for_all_five_params(tmp_path: 
 
     # cache_refresh_rate = "12 hours" -> 43200s (>= timeout, not floor-bumped)
     assert "proxy_cache_valid 200 301 302 43200s;" in conf
-    # cache_lock_timeout = "1h" = 3600s == timeout (not bumped, already at floor)
-    assert "proxy_cache_lock_timeout 3600s;" in conf
-    # cache_lock_age = "30m" = 1800s < timeout (3600s) -> floor-bumped to "3600s"
-    assert "proxy_cache_lock_age 3600s;" in conf
     # cache_404_ttl = "5 minutes" -> 300s
     assert "proxy_cache_valid 404 300s;" in conf
     # cache_default_ttl = "300" -> 300s
     assert "proxy_cache_valid any 300s;" in conf
 
+    # The cache-lock tuning directives are no longer part of the two-tier design.
+    assert "proxy_cache_lock_timeout" not in conf
+    assert "proxy_cache_lock_age" not in conf
+
     # Hardening: none of the original unit words / non-normalized tokens may
     # survive into the rendered conf — those are exactly the failure surfaces
     # that crashed `nginx -T` in the documented incident.
-    for forbidden in ("hours", "minutes", "12h", "30m", "5 minutes"):
+    for forbidden in ("hours", "minutes", "12h", "5 minutes"):
         assert forbidden not in conf, f"Rendered conf must not contain non-normalized substring {forbidden!r}: {conf}"
+
+
+def test_create_nginx_server_conf_renders_two_tier_fail_fast(tmp_path: Path, mocker):
+    """
+    Given:  a default params dict.
+    When:   create_nginx_server_conf renders the nginx server config.
+    Then:   the rendered conf implements the TWO-TIER fail-fast design:
+              * a per-URI limit_conn zone keyed on $request_uri,
+              * Tier 2 rejects concurrent same-URI cold-miss fetches (limit_conn 1
+                + limit_conn_status 429) and does NOT cache,
+              * Tier 1 turns OFF the inherited cache lock so misses fall through to
+                Tier 2 instead of queueing.
+    """
+    from NGINXApiModule import create_nginx_server_conf
+
+    mocker.patch.object(demisto, "callingContext", return_value={"context": {}})
+    conf_file = str(tmp_path / "nginx-test-server.conf")
+    create_nginx_server_conf(conf_file, 12345, params={})
+    with open(conf_file) as f:
+        conf = f.read()
+
+    # Per-URI concurrency zone (keyed on the resource, not the client).
+    assert "limit_conn_zone $request_uri zone=concurrent_conn_zone:1m;" in conf
+    # Tier 2 fail-fast: one build per URI, extras rejected with 429, no caching.
+    assert "limit_conn concurrent_conn_zone 1;" in conf
+    assert "limit_conn_status 429;" in conf
+    assert "proxy_cache off;" in conf
+    # Tier 1 must DISABLE the inherited cache lock so cold misses reach Tier 2
+    # (the fail-fast limiter) instead of queueing behind proxy_cache_lock.
+    assert "proxy_cache_lock off;" in conf
+    # The queueing lock must NOT be enabled anywhere as a directive.
+    assert "proxy_cache_lock on;" not in conf
+
+
+def test_create_nginx_server_conf_never_caches_transient_statuses(tmp_path: Path, mocker):
+    """
+    Given:  a default params dict.
+    When:   create_nginx_server_conf renders the nginx server config.
+    Then:   transient responses are excluded from caching so a slow/failed build
+            cannot poison the URI: the fail-fast 429 and the upstream 5xx/504
+            family both get "0s" validity (overriding the `any` catch-all), while
+            proxy_cache_use_stale + background_update still allow serving a GOOD
+            stale copy on timeout.
+    """
+    from NGINXApiModule import create_nginx_server_conf
+
+    mocker.patch.object(demisto, "callingContext", return_value={"context": {}})
+    conf_file = str(tmp_path / "nginx-test-server.conf")
+    create_nginx_server_conf(conf_file, 12345, params={})
+    with open(conf_file) as f:
+        conf = f.read()
+
+    # Never cache the fail-fast rejection or upstream errors/timeouts.
+    assert "proxy_cache_valid 429 0s;" in conf
+    assert "proxy_cache_valid 500 502 503 504 0s;" in conf
+    # Stale-serving of a previously-cached GOOD copy is still enabled.
+    assert "proxy_cache_use_stale" in conf
+    assert "proxy_cache_background_update on;" in conf
+
+
+def test_create_nginx_server_conf_two_server_blocks_and_ports(tmp_path: Path, mocker):
+    """
+    Given:  a listening port of 12345.
+    When:   create_nginx_server_conf renders the nginx server config.
+    Then:   two server blocks are emitted — Tier 1 public on the given port, and
+            Tier 2 internal on loopback at fetchport (= serverport + 1 = port + 2)
+            — and Tier 2 proxies on to the gevent app at serverport (= port + 1).
+    """
+    from NGINXApiModule import create_nginx_server_conf
+
+    mocker.patch.object(demisto, "callingContext", return_value={"context": {}})
+    conf_file = str(tmp_path / "nginx-test-server.conf")
+    port = 12345
+    create_nginx_server_conf(conf_file, port, params={})
+    with open(conf_file) as f:
+        conf = f.read()
+
+    serverport = port + 1  # gevent app
+    fetchport = serverport + 1  # Tier-2 internal fetch server
+
+    # Exactly two `server {` blocks (Tier 1 + Tier 2).
+    assert conf.count("server {") == 2
+    # Tier 1 listens on the public port; Tier 2 on loopback:fetchport.
+    assert f"listen {port} default_server" in conf
+    assert f"listen localhost:{fetchport};" in conf
+    # Tier 1 proxies misses to Tier 2; Tier 2 proxies to the gevent app.
+    assert f"proxy_pass http://localhost:{fetchport}/;" in conf
+    assert f"proxy_pass http://localhost:{serverport}/;" in conf
 
 
 def test_create_nginx_server_conf_rejects_invalid_param(tmp_path: Path, mocker, monkeypatch):

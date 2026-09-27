@@ -52,10 +52,14 @@ alter
     get_latitude = json_extract_scalar(customData, "$.geoip_latitude"),
     get_longitude = json_extract_scalar(customData, "$.geoip_longitude")
 | alter
+    get_mfa_result = json_extract_scalar(customData, "$.mfa_result")
+| alter
     get_outcome = if(
         get_success = "True", XDM_CONST.OUTCOME_SUCCESS,
         auditCode = "IDP2005" and get_cookie_session != null, XDM_CONST.OUTCOME_SUCCESS,
         auditCode = "IDP2009", XDM_CONST.OUTCOME_SUCCESS,
+        lowercase(message) = "cloud.core.mfasummary" and get_mfa_result = "Success", XDM_CONST.OUTCOME_SUCCESS,
+        lowercase(message) = "cloud.core.login.multifactorchallenge", XDM_CONST.OUTCOME_PARTIAL,
         XDM_CONST.OUTCOME_FAILED
     )
 | alter
@@ -76,13 +80,7 @@ alter
         "password"
     ),
     xdm.event.outcome = get_outcome,
-    xdm.event.outcome_reason = if(
-        get_outcome = XDM_CONST.OUTCOME_SUCCESS, null,
-        get_failure_reason contains "abandoned", "mfa_expired",
-        get_failure_reason contains "Internal error", "OTHER",
-        get_denied_by_user = "True", "user_reject",
-        "failed_login"
-    ),
+    xdm.event.outcome_reason = get_failure_reason,
     xdm.source.ipv4 = get_source_ip,
     xdm.source.port = to_integer(0),
     xdm.source.user_agent = get_user_agent,
@@ -111,7 +109,7 @@ alter
     xdm.target.port = to_integer(0),
     xdm.target.resource.name = get_entity_name,
     xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
-    xdm.network.session_id = get_session_id,
+    xdm.network.session_id = customData,
     xdm.session_context_id = coalesce(get_session_id, get_session_guid),
     xdm.logon.type = if(message = "Cloud.Core.O365WsTrustLogin", XDM_CONST.LOGON_TYPE_SERVICE, XDM_CONST.LOGON_TYPE_INTERACTIVE),
     xdm.auth.service = if(
@@ -120,6 +118,7 @@ alter
         "IDP"
     ),
     xdm.auth.privilege_level = if(
+        username = "SYSTEM$", XDM_CONST.PRIVILEGE_LEVEL_SYSTEM,
         get_roles contains "sysadmin", XDM_CONST.PRIVILEGE_LEVEL_ADMIN,
         get_roles contains "Admin", XDM_CONST.PRIVILEGE_LEVEL_ADMIN,
         XDM_CONST.PRIVILEGE_LEVEL_USER
