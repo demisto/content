@@ -1,5 +1,5 @@
 args:
-- description: List of URLs to block. The scheme is stripped before the URL is submitted to the firewall.
+- description: A comma-separated list of URLs to block. The scheme is stripped before the URL is submitted to the firewall.
   isArray: true
   name: url_list
   required: true
@@ -20,7 +20,7 @@ args:
 - defaultValue: 'Cortex - Block URL profile'
   description: The name of the PAN-OS URL Filtering security profile which blocks the custom URL category.
   name: url_filtering_profile
-- description: Panorama log forwarding object name. Indicates what type of Log Forwarding setting will be specified in the PAN-OS custom rules.
+- description: The Panorama log forwarding object name. Indicates what type of Log Forwarding setting will be specified in the PAN-OS custom rules.
   name: log_forwarding_name
 - defaultValue: 'cortex-blocked-urls'
   description: The designated tag name for the objects the script creates.
@@ -39,13 +39,13 @@ args:
   predefined:
   - 'true'
   - 'false'
-- description: Commit job ID to use in polling commands. (automatically filled by polling).
+- description: The commit job ID to use in polling commands (automatically filled by polling).
   name: commit_job_id
   hidden: true
-- description: Push job ID to use in polling commands. (automatically filled by polling).
+- description: The push job ID to use in polling commands (automatically filled by polling).
   name: push_job_id
   hidden: true
-comment: The script blocks a list of URLs in supported integrations.
+comment: Blocks a list of URLs in supported integrations.
 commonfields:
   id: block-url
   version: -1
