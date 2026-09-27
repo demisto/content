@@ -11039,12 +11039,13 @@ script:
     description: "Creates a virtual machine instance with the specified OS image. Required Permissions: Microsoft.Compute/virtualMachines/write."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: "The name of the resource group to which the new virtual machine will belong."
-      required: true
+      description: The name of the resource group to which the new virtual machine will belong. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: virtual_machine_name
       description: "The name of the virtual machine to create."
       required: true
@@ -11140,6 +11141,7 @@ script:
     - name: admin_password
       description: "The admin password to use when creating the virtual machine."
       required: false
+      secret: true
     outputs:
       - contextPath: Azure.Compute.VirtualMachines.id
         description: The ID of the resource.
@@ -11176,14 +11178,16 @@ script:
         type: Unknown
   - name: azure-compute-vm-delete
     description: "Deallocates and deletes a specified virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/deallocate/action, Microsoft.Compute/virtualMachines/delete."
+    execution: true
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: "The name of the resource group to which the virtual machine belongs."
-      required: true
+      description: The name of the resource group to which the virtual machine belongs. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: virtual_machine_name
       description: "The name of the virtual machine to delete. To see all the virtual machines with their associated names for a specific resource group, run the azure-compute-vm-list command."
       required: true
@@ -11192,12 +11196,13 @@ script:
     description: "Creates a virtual machine network interface. Required Permissions: Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/networkSecurityGroups/join/action."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: "The name of the resource group to which the new network interface will belong."
-      required: true
+      description: The name of the resource group to which the new network interface will belong. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: nic_name
       description: "The network interface name."
       required: true

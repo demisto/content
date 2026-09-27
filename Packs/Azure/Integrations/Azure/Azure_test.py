@@ -7738,8 +7738,11 @@ def test_create_vm_command_invalid_os_image(mocker):
         "os_image": "Not A Real Image",
     }
 
-    with pytest.raises(DemistoException, match="Invalid value entered for the 'os_image' argument"):
+    with pytest.raises(DemistoException) as exc_info:
         create_vm_command(client, {}, args)
+
+    assert "Invalid value 'Not A Real Image' entered for the 'os_image' argument" in str(exc_info.value)
+    assert "ubuntu server 18.04 lts" in str(exc_info.value)
 
     client.create_vm_request.assert_not_called()
 

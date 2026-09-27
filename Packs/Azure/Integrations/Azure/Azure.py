@@ -5084,7 +5084,7 @@ def assign_image_attributes(image: str) -> tuple[Any, Any, Any, Any]:
     image_properties = IMAGES.get(image.lower())
     if not image_properties:
         raise DemistoException(
-            "Invalid value entered for the 'os_image' argument. Only values from the provided options are accepted."
+            f"Invalid value '{image}' entered for the 'os_image' argument. Valid values are: {list(IMAGES.keys())}."
         )
     return (
         image_properties.get("sku"),
@@ -5111,8 +5111,8 @@ def create_vm_parameters(args: dict[str, Any], subscription_id: str, resource_gr
     publisher = args.get("publisher")
     version = args.get("version")
     offer = args.get("offer")
-    vm_name = args.get("virtual_machine_name")
-    nic_name = args.get("nic_name")
+    vm_name = args["virtual_machine_name"]
+    nic_name = args["nic_name"]
 
     if not image and not (sku and publisher and version and offer):
         raise DemistoException(
@@ -5128,28 +5128,30 @@ def create_vm_parameters(args: dict[str, Any], subscription_id: str, resource_gr
         f"networkInterfaces/{nic_name}"
     )
 
-    return {
-        "location": args.get("virtual_machine_location"),
-        "properties": {
-            "hardwareProfile": {"vmSize": args.get("vm_size")},
-            "storageProfile": {
-                "imageReference": {"sku": sku, "publisher": publisher, "version": version, "offer": offer},
-                "osDisk": {
-                    "caching": "ReadWrite",
-                    "managedDisk": {"storageAccountType": "Standard_LRS"},
-                    "name": vm_name,
-                    "createOption": "FromImage",
+    return remove_empty_elements(
+        {
+            "location": args.get("virtual_machine_location"),
+            "properties": {
+                "hardwareProfile": {"vmSize": args.get("vm_size")},
+                "storageProfile": {
+                    "imageReference": {"sku": sku, "publisher": publisher, "version": version, "offer": offer},
+                    "osDisk": {
+                        "caching": "ReadWrite",
+                        "managedDisk": {"storageAccountType": "Standard_LRS"},
+                        "name": vm_name,
+                        "createOption": "FromImage",
+                    },
                 },
+                "osProfile": {
+                    "adminUsername": args.get("admin_username"),
+                    "computerName": vm_name,
+                    "adminPassword": args.get("admin_password"),
+                },
+                "networkProfile": {"networkInterfaces": [{"id": full_nic_id, "properties": {"primary": "true"}}]},
             },
-            "osProfile": {
-                "adminUsername": args.get("admin_username"),
-                "computerName": vm_name,
-                "adminPassword": args.get("admin_password"),
-            },
-            "networkProfile": {"networkInterfaces": [{"id": full_nic_id, "properties": {"primary": "true"}}]},
-        },
-        "name": vm_name,
-    }
+            "name": vm_name,
+        }
+    )
 
 
 def create_nic_parameters(args: dict[str, Any], subscription_id: str, resource_group_name: str) -> dict[str, Any]:
@@ -5176,7 +5178,7 @@ def create_nic_parameters(args: dict[str, Any], subscription_id: str, resource_g
 
     subnet_id = (
         f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/"
-        f"virtualNetworks/{args.get('vnet_name')}/subnets/{args.get('subnet_name')}"
+        f"virtualNetworks/{args['vnet_name']}/subnets/{args['subnet_name']}"
     )
     network_security_group_id = (
         f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/"
