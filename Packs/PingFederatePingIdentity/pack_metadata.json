@@ -12,15 +12,10 @@
     "tags": [
         "IAM"
     ],
-    "useCases": [],
-    "keywords": [
-        "Ping Identity",
-        "PingFederate",
-        "SSO",
-        "SAML",
-        "OAuth",
-        "WS-Federation"
+    "useCases": [
+        "Identity And Access Management"
     ],
+    "keywords": [],
     "marketplaces": [
         "marketplacev2",
         "platform"
