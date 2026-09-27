@@ -36,6 +36,8 @@ To collect the PingFederate audit log, configure PingFederate to write the audit
 3. Verify that the audit log pattern includes at least the `rt`, `msg`, `src`, `duid`, `dvchost`, `externalId` and `cs1`-`cs6` fields together with their `cs1Label`-`cs6Label` labels.
 4. Restart the PingFederate service.
 
+For more information, see the [Writing the audit log in CEF](https://docs.pingidentity.com/pingfederate/13.1/administrators_reference_guide/pf_writin_audit_log_cef.html) documentation.
+
 ### Broker VM
 
 To create or configure the Broker VM, see the [Broker VM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Broker-VM) documentation.
