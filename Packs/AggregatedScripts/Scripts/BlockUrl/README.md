@@ -1,4 +1,4 @@
-The script blocks a list of URLs in supported integrations.
+Blocks a list of URLs in supported integrations.
 
 ## Script Data
 
@@ -35,17 +35,17 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| url_list | List of URLs to block. The scheme is stripped before the URL is submitted to the firewall. |
+| url_list | A comma-separated list of URLs to block. The scheme is stripped before the URL is submitted to the firewall. |
 | brands | Which integration brands to run the command for. If not provided, the command will run for all available integrations.<br/>For multi-select provide a comma-separated list. |
 | rule_name | The name of the security rule which will be created in the relevant products. |
 | url_category | The name of the PAN-OS custom URL category which holds the blocked URLs. |
 | url_filtering_profile | The name of the PAN-OS URL Filtering security profile which blocks the custom URL category. |
-| log_forwarding_name | Panorama log forwarding object name. Indicates what type of Log Forwarding setting will be specified in the PAN-OS custom rules. |
+| log_forwarding_name | The Panorama log forwarding object name. Indicates what type of Log Forwarding setting will be specified in the PAN-OS custom rules. |
 | tag | The designated tag name for the objects the script creates. |
 | auto_commit | Whether to commit the new rule. |
 | verbose | Whether to retrieve a human-readable entry for every command or only the final result. True retrieves a human-readable entry for every command. False retrieves a human-readable entry only for the final result. |
-| commit_job_id | Commit job ID to use in polling commands. \(automatically filled by polling\). |
-| push_job_id | Push job ID to use in polling commands. \(automatically filled by polling\). |
+| commit_job_id | The commit job ID to use in polling commands \(automatically filled by polling\). |
+| push_job_id | The push job ID to use in polling commands \(automatically filled by polling\). |
 
 ## Outputs
 
