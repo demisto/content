@@ -499,7 +499,7 @@ COSMOS_DB_API_VERSION = "2024-11-15"
 PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
 NSG_API_VERSION = "2025-01-01"
-FIREWALL_API_VERSION = "2024-05-01"
+FIREWALL_API_VERSION = "2025-09-01"
 
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
 # get_command_and_token_scopes.
@@ -2894,7 +2894,7 @@ class AzureClient:
             A dictionary containing the list of the policy rule collection groups.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/firewall/firewall-policy-rule-collection-groups/list
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/firewall-policy-rule-collection-groups/list?view=rest-virtualnetwork-2025-09-01&tabs=HTTP
         """
         if next_token:
             demisto.debug(f"using {next_token=} for retrieving the next page of results.")
@@ -2934,7 +2934,7 @@ class AzureClient:
             A dictionary containing the policy rule collection group information.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/firewall/firewall-policy-rule-collection-groups/get
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/firewall-policy-rule-collection-groups/get?view=rest-virtualnetwork-2025-09-01&tabs=HTTP
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
@@ -3152,6 +3152,165 @@ def update_nic_properties(args: dict, params: dict, properties: dict):
     if remove_network_security_group:
         demisto.debug(f"Removing the network security group {properties.get('networkSecurityGroup')}")
         properties.pop("networkSecurityGroup", None)
+
+
+def filter_policy_rule_collections(rule_collection_groups: list, rule_type: str) -> list:
+    """
+    Filters firewall policy rule collection groups by the given rule type.
+
+    Args:
+        rule_collection_groups (list): The rule collection groups from the API response.
+        rule_type (str): The rule type to filter by.
+
+    Returns:
+        list: The rule collection groups matching the given rule type.
+    """
+    collection_type = {
+        "network_rule": "FirewallPolicyFilterRuleCollection",
+        "application_rule": "FirewallPolicyFilterRuleCollection",
+        "nat_rule": "FirewallPolicyNatRuleCollection",
+    }.get(rule_type, "")
+    rule_key = {"network_rule": "NetworkRule", "application_rule": "ApplicationRule", "nat_rule": "NatRule"}.get(rule_type, "")
+    filtered = []
+
+    for collection_group in rule_collection_groups:
+        rule_collections = dict_safe_get(collection_group, ["properties", "ruleCollections"], [])
+        if not isinstance(rule_collections, list) or not rule_collections:
+            continue
+        # A rule collection group can hold several rule collections, so all of them are checked for a match.
+        if any(
+            rule_collection.get("ruleCollectionType") == collection_type
+            and any(rule.get("ruleType") == rule_key for rule in rule_collection.get("rules") or [])
+            for rule_collection in rule_collections
+        ):
+            filtered.append(collection_group)
+
+    return filtered
+
+
+def validate_firewall_or_policy_provided(firewall_name: str, policy_name: str) -> None:
+    """
+    Validates that exactly one of the firewall name or the policy name was provided.
+
+    Args:
+        firewall_name (str): The name of the Azure firewall given in the command arguments.
+        policy_name (str): The name of the Azure firewall policy given in the command arguments.
+
+    Raises:
+        DemistoException: If none of the arguments or both of them were provided.
+    """
+    if not firewall_name and not policy_name:
+        raise DemistoException("One of the arguments 'firewall_name' or 'policy_name' must be provided.")
+
+    if firewall_name and policy_name:
+        raise DemistoException("Only one of the arguments 'firewall_name' or 'policy_name' can be provided.")
+
+
+def get_rules_of_collection(rule_collections: list, collection_name: str) -> list:
+    """
+    Retrieves the rules of the firewall rule collection with the given name.
+
+    Args:
+        rule_collections (list): The firewall rule collections from the API response.
+        collection_name (str): The name of the rule collection containing the rules.
+
+    Returns:
+        list: The rules of the matching rule collection, or an empty list if there is no such collection.
+    """
+    return next(
+        (
+            dict_safe_get(collection, ["properties", "rules"], [])
+            for collection in rule_collections
+            if collection.get("name") == collection_name
+        ),
+        [],
+    )
+
+
+def get_firewall_rule_collections(
+    client: AzureClient, subscription_id: str, resource_group_name: str, firewall_name: str, rule_type: str
+) -> tuple[dict, list]:
+    """
+    Retrieves the rule collections of the given type from an Azure firewall.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        subscription_id (str): The ID of the Azure subscription.
+        resource_group_name (str): The name of the resource group containing the firewall.
+        firewall_name (str): The name of the firewall containing the rule collections.
+        rule_type (str): The rule collection type to retrieve.
+
+    Returns:
+        tuple[dict, list]: The API response and the matching rule collections.
+    """
+    response = client.firewall_get_request(subscription_id, resource_group_name, firewall_name)
+    rule_collection_key = {
+        "network_rule": "networkRuleCollections",
+        "application_rule": "applicationRuleCollections",
+        "nat_rule": "natRuleCollections",
+    }.get(rule_type, "")
+    rule_collections = dict_safe_get(response, ["properties", rule_collection_key], [])
+
+    return response, rule_collections
+
+
+def get_policy_rule_collection_rules(
+    client: AzureClient, subscription_id: str, resource_group_name: str, policy_name: str, collection_name: str
+) -> tuple[dict, list]:
+    """
+    Retrieves the rules of a firewall policy rule collection group.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        subscription_id (str): The ID of the Azure subscription.
+        resource_group_name (str): The name of the resource group containing the policy.
+        policy_name (str): The name of the policy containing the rule collection group.
+        collection_name (str): The name of the rule collection group containing the rules.
+
+    Returns:
+        tuple[dict, list]: The API response and the rules of the rule collection group.
+    """
+    response = client.firewall_policy_rule_collection_get_request(
+        subscription_id, resource_group_name, policy_name, collection_name
+    )
+    rules: list = []
+    rule_collections = dict_safe_get(response, ["properties", "ruleCollections"], [])
+
+    if isinstance(rule_collections, list):
+        # A rule collection group can hold several rule collections, so the rules of all of them are aggregated.
+        for rule_collection in rule_collections:
+            rules.extend(rule_collection.get("rules") or [])
+
+    return response, rules
+
+
+def build_firewall_readable_data(firewalls: list) -> list:
+    """
+    Builds the human readable rows of the Azure firewall commands.
+
+    Args:
+        firewalls (list): The Azure firewalls from the API response.
+
+    Returns:
+        list: The rows to display in the war room.
+    """
+    readable_data = []
+    for firewall in firewalls:
+        properties = firewall.get("properties", {})
+        ip_configurations = properties.get("ipConfigurations") or [{}]
+        readable_data.append(
+            {
+                "name": firewall.get("name"),
+                "id": firewall.get("id"),
+                "location": firewall.get("location"),
+                "subnet": dict_safe_get(ip_configurations[0], ["properties", "subnet", "id"]),
+                "threatIntelMode": properties.get("threatIntelMode"),
+                "privateIPAddress": dict_safe_get(ip_configurations[0], ["properties", "privateIPAddress"]),
+                "provisioningState": properties.get("provisioningState"),
+            }
+        )
+
+    return readable_data
 
 
 """ COMMAND FUNCTIONS """
@@ -5571,165 +5730,6 @@ def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: 
         outputs=outputs,
         raw_response=res,
     )
-
-
-def filter_policy_rule_collections(rule_collection_groups: list, rule_type: str) -> list:
-    """
-    Filters firewall policy rule collection groups by the given rule type.
-
-    Args:
-        rule_collection_groups (list): The rule collection groups from the API response.
-        rule_type (str): The rule type to filter by.
-
-    Returns:
-        list: The rule collection groups matching the given rule type.
-    """
-    collection_type = {
-        "network_rule": "FirewallPolicyFilterRuleCollection",
-        "application_rule": "FirewallPolicyFilterRuleCollection",
-        "nat_rule": "FirewallPolicyNatRuleCollection",
-    }.get(rule_type, "")
-    rule_key = {"network_rule": "NetworkRule", "application_rule": "ApplicationRule", "nat_rule": "NatRule"}.get(rule_type, "")
-    filtered = []
-
-    for collection_group in rule_collection_groups:
-        rule_collections = dict_safe_get(collection_group, ["properties", "ruleCollections"], [])
-        if not isinstance(rule_collections, list) or not rule_collections:
-            continue
-        # A rule collection group can hold several rule collections, so all of them are checked for a match.
-        if any(
-            rule_collection.get("ruleCollectionType") == collection_type
-            and any(rule.get("ruleType") == rule_key for rule in rule_collection.get("rules") or [])
-            for rule_collection in rule_collections
-        ):
-            filtered.append(collection_group)
-
-    return filtered
-
-
-def validate_firewall_or_policy_provided(firewall_name: str, policy_name: str) -> None:
-    """
-    Validates that exactly one of the firewall name or the policy name was provided.
-
-    Args:
-        firewall_name (str): The name of the Azure firewall given in the command arguments.
-        policy_name (str): The name of the Azure firewall policy given in the command arguments.
-
-    Raises:
-        DemistoException: If none of the arguments or both of them were provided.
-    """
-    if not firewall_name and not policy_name:
-        raise DemistoException("One of the arguments 'firewall_name' or 'policy_name' must be provided.")
-
-    if firewall_name and policy_name:
-        raise DemistoException("Only one of the arguments 'firewall_name' or 'policy_name' can be provided.")
-
-
-def get_rules_of_collection(rule_collections: list, collection_name: str) -> list:
-    """
-    Retrieves the rules of the firewall rule collection with the given name.
-
-    Args:
-        rule_collections (list): The firewall rule collections from the API response.
-        collection_name (str): The name of the rule collection containing the rules.
-
-    Returns:
-        list: The rules of the matching rule collection, or an empty list if there is no such collection.
-    """
-    return next(
-        (
-            dict_safe_get(collection, ["properties", "rules"], [])
-            for collection in rule_collections
-            if collection.get("name") == collection_name
-        ),
-        [],
-    )
-
-
-def get_firewall_rule_collections(
-    client: AzureClient, subscription_id: str, resource_group_name: str, firewall_name: str, rule_type: str
-) -> tuple[dict, list]:
-    """
-    Retrieves the rule collections of the given type from an Azure firewall.
-
-    Args:
-        client (AzureClient): The authenticated Azure client used to make API requests.
-        subscription_id (str): The ID of the Azure subscription.
-        resource_group_name (str): The name of the resource group containing the firewall.
-        firewall_name (str): The name of the firewall containing the rule collections.
-        rule_type (str): The rule collection type to retrieve.
-
-    Returns:
-        tuple[dict, list]: The API response and the matching rule collections.
-    """
-    response = client.firewall_get_request(subscription_id, resource_group_name, firewall_name)
-    rule_collection_key = {
-        "network_rule": "networkRuleCollections",
-        "application_rule": "applicationRuleCollections",
-        "nat_rule": "natRuleCollections",
-    }.get(rule_type, "")
-    rule_collections = dict_safe_get(response, ["properties", rule_collection_key], [])
-
-    return response, rule_collections
-
-
-def get_policy_rule_collection_rules(
-    client: AzureClient, subscription_id: str, resource_group_name: str, policy_name: str, collection_name: str
-) -> tuple[dict, list]:
-    """
-    Retrieves the rules of a firewall policy rule collection group.
-
-    Args:
-        client (AzureClient): The authenticated Azure client used to make API requests.
-        subscription_id (str): The ID of the Azure subscription.
-        resource_group_name (str): The name of the resource group containing the policy.
-        policy_name (str): The name of the policy containing the rule collection group.
-        collection_name (str): The name of the rule collection group containing the rules.
-
-    Returns:
-        tuple[dict, list]: The API response and the rules of the rule collection group.
-    """
-    response = client.firewall_policy_rule_collection_get_request(
-        subscription_id, resource_group_name, policy_name, collection_name
-    )
-    rules: list = []
-    rule_collections = dict_safe_get(response, ["properties", "ruleCollections"], [])
-
-    if isinstance(rule_collections, list):
-        # A rule collection group can hold several rule collections, so the rules of all of them are aggregated.
-        for rule_collection in rule_collections:
-            rules.extend(rule_collection.get("rules") or [])
-
-    return response, rules
-
-
-def build_firewall_readable_data(firewalls: list) -> list:
-    """
-    Builds the human readable rows of the Azure firewall commands.
-
-    Args:
-        firewalls (list): The Azure firewalls from the API response.
-
-    Returns:
-        list: The rows to display in the war room.
-    """
-    readable_data = []
-    for firewall in firewalls:
-        properties = firewall.get("properties", {})
-        ip_configurations = properties.get("ipConfigurations") or [{}]
-        readable_data.append(
-            {
-                "name": firewall.get("name"),
-                "id": firewall.get("id"),
-                "location": firewall.get("location"),
-                "subnet": dict_safe_get(ip_configurations[0], ["properties", "subnet", "id"]),
-                "threatIntelMode": properties.get("threatIntelMode"),
-                "privateIPAddress": dict_safe_get(ip_configurations[0], ["properties", "privateIPAddress"]),
-                "provisioningState": properties.get("provisioningState"),
-            }
-        )
-
-    return readable_data
 
 
 def firewall_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
