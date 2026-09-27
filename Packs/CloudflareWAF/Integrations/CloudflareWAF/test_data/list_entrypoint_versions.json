@@ -1,0 +1,37 @@
+{
+    "result": [
+        {
+            "id": "entrypoint_id_1",
+            "name": "Cloudflare Managed Entry Point",
+            "kind": "zone",
+            "phase": "http_request_firewall_managed",
+            "description": "Entry point ruleset for the managed phase",
+            "source": "firewall_managed",
+            "version": "1",
+            "last_updated": "2023-01-15T10:00:00Z"
+        },
+        {
+            "id": "entrypoint_id_1",
+            "name": "Cloudflare Managed Entry Point",
+            "kind": "zone",
+            "phase": "http_request_firewall_managed",
+            "description": "Entry point ruleset for the managed phase",
+            "source": "firewall_managed",
+            "version": "2",
+            "last_updated": "2023-02-20T14:30:00Z"
+        },
+        {
+            "id": "entrypoint_id_1",
+            "name": "Cloudflare Managed Entry Point",
+            "kind": "zone",
+            "phase": "http_request_firewall_managed",
+            "description": "Entry point ruleset for the managed phase",
+            "source": "firewall_managed",
+            "version": "3",
+            "last_updated": "2023-03-25T09:15:00Z"
+        }
+    ],
+    "success": true,
+    "errors": [],
+    "messages": []
+}

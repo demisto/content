@@ -1,3 +1,4 @@
+import io
 import json
 from urllib.parse import urlencode, urljoin
 
@@ -1323,7 +1324,7 @@ def test_send_alert_attachment_command(requests_mock, mocker):
     requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
     client = build_zf_client()
     spy_send_attachment = mocker.spy(client, "send_alert_attachment")
-    mocker.patch("builtins.open", mocker.mock_open(read_data="data"))
+    mocker.patch("builtins.open", return_value=io.BytesIO(b"data"))
     mocker.patch.object(
         demisto,
         "getFilePath",
