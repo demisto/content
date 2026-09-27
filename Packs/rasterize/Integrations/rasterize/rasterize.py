@@ -2298,8 +2298,7 @@ def perform_rasterize(
                 demisto.debug(f"perform_rasterize: released rasterize lock. {path=}")
             except Exception as unlock_ex:
                 demisto.debug(
-                    f"perform_rasterize: error releasing rasterize lock: {unlock_ex}. {path=}\n"
-                    f"Trace:{traceback.format_exc()}"
+                    f"perform_rasterize: error releasing rasterize lock: {unlock_ex}. {path=}\n" f"Trace:{traceback.format_exc()}"
                 )
             finally:
                 # Always close the descriptor, even if the explicit unlock failed —
