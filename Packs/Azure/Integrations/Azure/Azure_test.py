@@ -7598,3 +7598,406 @@ def test_extract_fallback_prefix_returns_empty_for_unknown_handler():
 
     # When / Then: the unknown name yields nothing, and no error is raised
     assert extract_fallback_prefix("no_such_command", symbol_index) == set()
+
+
+def test_create_vm_command_success(mocker):
+    """
+    Given:
+        - Valid arguments for creating a virtual machine using an os_image.
+    When:
+        - Calling create_vm_command.
+    Then:
+        - Ensure the command returns the expected CommandResults object with the created VM details.
+    """
+    from Azure import create_vm_command
+
+    mocker.patch.object(demisto, "command", return_value="azure-compute-vm-create")
+    client = mocker.MagicMock()
+    client.create_vm_request.return_value = {
+        "name": "Test-VM",
+        "location": "westus",
+        "properties": {
+            "vmId": "vm-id-1",
+            "provisioningState": "Creating",
+            "storageProfile": {"osDisk": {"diskSizeGB": 30, "osType": "Windows"}},
+        },
+    }
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "virtual_machine_name": "Test-VM",
+        "virtual_machine_location": "westus",
+        "nic_name": "nic1",
+        "vm_size": "Standard_D1_v2",
+        "os_image": "Ubuntu Server 18.04 LTS",
+    }
+
+    result = create_vm_command(client, {}, args)
+
+    assert result.outputs_prefix == "Azure.Compute.VirtualMachines"
+    assert result.outputs_key_field == "id"
+    # The full API response is returned so the context shape matches azure-compute-vm-get/-list.
+    assert result.outputs == client.create_vm_request.return_value
+    assert result.outputs["properties"]["vmId"] == "vm-id-1"
+    assert 'Created Virtual Machine "Test-VM"' in result.readable_output
+    assert "Creating" in result.readable_output
+    client.create_vm_request.assert_called_once()
+
+
+def test_create_vm_command_builds_expected_payload(mocker):
+    """
+    Given:
+        - Valid arguments for creating a virtual machine using an os_image.
+    When:
+        - Calling create_vm_command.
+    Then:
+        - Ensure the payload sent to the API contains the image attributes resolved from the os_image
+          and the fully qualified network interface ID.
+    """
+    from Azure import create_vm_command
+
+    mocker.patch.object(demisto, "command", return_value="azure-compute-vm-create")
+    client = mocker.MagicMock()
+    client.create_vm_request.return_value = {"name": "Test-VM", "properties": {}}
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "virtual_machine_name": "Test-VM",
+        "virtual_machine_location": "westus",
+        "nic_name": "nic1",
+        "vm_size": "Standard_D1_v2",
+        "os_image": "Ubuntu Server 18.04 LTS",
+        "admin_username": "user",
+        "admin_password": "pass",
+    }
+
+    create_vm_command(client, {}, args)
+
+    payload = client.create_vm_request.call_args[0][3]
+    image_reference = payload["properties"]["storageProfile"]["imageReference"]
+    assert image_reference == {"sku": "18.04-LTS", "publisher": "Canonical", "version": "latest", "offer": "UbuntuServer"}
+    assert payload["properties"]["networkProfile"]["networkInterfaces"][0]["id"] == (
+        "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/nic1"
+    )
+    assert payload["properties"]["osProfile"]["adminUsername"] == "user"
+
+
+def test_create_vm_command_missing_image_arguments(mocker):
+    """
+    Given:
+        - Arguments that contain neither os_image nor the full group of sku, publisher, version and offer.
+    When:
+        - Calling create_vm_command.
+    Then:
+        - Ensure a DemistoException is raised and no API call is made.
+    """
+    from Azure import create_vm_command
+
+    mocker.patch.object(demisto, "command", return_value="azure-compute-vm-create")
+    client = mocker.MagicMock()
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "virtual_machine_name": "Test-VM",
+        "virtual_machine_location": "westus",
+        "nic_name": "nic1",
+        "vm_size": "Standard_D1_v2",
+        "sku": "2016-Datacenter",
+    }
+
+    with pytest.raises(DemistoException, match="You must enter a value for the 'os_image' argument"):
+        create_vm_command(client, {}, args)
+
+    client.create_vm_request.assert_not_called()
+
+
+def test_create_vm_command_invalid_os_image(mocker):
+    """
+    Given:
+        - An os_image value that is not one of the supported images.
+    When:
+        - Calling create_vm_command.
+    Then:
+        - Ensure a DemistoException is raised and no API call is made.
+    """
+    from Azure import create_vm_command
+
+    mocker.patch.object(demisto, "command", return_value="azure-compute-vm-create")
+    client = mocker.MagicMock()
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "virtual_machine_name": "Test-VM",
+        "virtual_machine_location": "westus",
+        "nic_name": "nic1",
+        "vm_size": "Standard_D1_v2",
+        "os_image": "Not A Real Image",
+    }
+
+    with pytest.raises(DemistoException, match="Invalid value entered for the 'os_image' argument"):
+        create_vm_command(client, {}, args)
+
+    client.create_vm_request.assert_not_called()
+
+
+def test_create_vm_command_with_explicit_image_attributes(mocker):
+    """
+    Given:
+        - Arguments that specify sku, publisher, version and offer instead of os_image.
+    When:
+        - Calling create_vm_command.
+    Then:
+        - Ensure the explicit image attributes are used in the payload sent to the API.
+    """
+    from Azure import create_vm_command
+
+    mocker.patch.object(demisto, "command", return_value="azure-compute-vm-create")
+    client = mocker.MagicMock()
+    client.create_vm_request.return_value = {"name": "Test-VM", "properties": {}}
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "virtual_machine_name": "Test-VM",
+        "virtual_machine_location": "westus",
+        "nic_name": "nic1",
+        "vm_size": "Standard_D1_v2",
+        "sku": "2016-Datacenter",
+        "publisher": "MicrosoftWindowsServer",
+        "version": "latest",
+        "offer": "WindowsServer",
+    }
+
+    create_vm_command(client, {}, args)
+
+    image_reference = client.create_vm_request.call_args[0][3]["properties"]["storageProfile"]["imageReference"]
+    assert image_reference == {
+        "sku": "2016-Datacenter",
+        "publisher": "MicrosoftWindowsServer",
+        "version": "latest",
+        "offer": "WindowsServer",
+    }
+
+
+def test_delete_vm_command_success(mocker):
+    """
+    Given:
+        - Valid arguments for deleting a virtual machine.
+    When:
+        - Calling delete_vm_command.
+    Then:
+        - Ensure the command returns a CommandResults object confirming the deletion was initiated.
+    """
+    from Azure import delete_vm_command
+
+    client = mocker.MagicMock()
+    client.delete_vm_request.return_value = mocker.MagicMock(status_code=202)
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1", "virtual_machine_name": "test-vm"}
+
+    result = delete_vm_command(client, {}, args)
+
+    assert result.readable_output == '"test-vm" VM Deletion Successfully Initiated'
+    client.delete_vm_request.assert_called_once_with("sub1", "rg1", "test-vm")
+
+
+def test_delete_vm_command_resolves_params(mocker):
+    """
+    Given:
+        - Arguments without subscription_id and resource_group_name, which are configured as instance parameters.
+    When:
+        - Calling delete_vm_command.
+    Then:
+        - Ensure the values are resolved from the params and passed to the client.
+    """
+    from Azure import delete_vm_command
+
+    client = mocker.MagicMock()
+
+    args = {"virtual_machine_name": "test-vm"}
+    params = {"subscription_id": "param-sub", "resource_group_name": "param-rg"}
+
+    delete_vm_command(client, params, args)
+
+    client.delete_vm_request.assert_called_once_with("param-sub", "param-rg", "test-vm")
+
+
+def test_delete_vm_command_error_propagates(mocker):
+    """
+    Given:
+        - A client whose delete_vm_request raises an exception, as happens when the VM does not exist.
+    When:
+        - Calling delete_vm_command.
+    Then:
+        - Ensure the exception propagates to the caller and is not swallowed by the command function.
+    """
+    from Azure import delete_vm_command
+
+    client = mocker.MagicMock()
+    client.delete_vm_request.side_effect = DemistoException("Resource not found")
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1", "virtual_machine_name": "missing-vm"}
+
+    with pytest.raises(DemistoException, match="Resource not found"):
+        delete_vm_command(client, {}, args)
+
+
+def test_create_network_interface_command_success(mocker):
+    """
+    Given:
+        - Valid arguments for creating a network interface.
+    When:
+        - Calling create_network_interface_command.
+    Then:
+        - Ensure the command returns the expected CommandResults object with the created NIC details.
+    """
+    from Azure import create_network_interface_command
+
+    mocker.patch.object(demisto, "command", return_value="azure-vn-network-interface-create")
+    client = mocker.MagicMock()
+    client.create_network_interface_request.return_value = {
+        "name": "Test-NIC",
+        "id": "nic-id-1",
+        "location": "westus",
+        "properties": {
+            "provisioningState": "Succeeded",
+            "dnsSettings": {"internalDomainNameSuffix": "example.net"},
+            "ipConfigurations": [
+                {
+                    "name": "ipconfig1",
+                    "id": "ipconfig-id-1",
+                    "properties": {"privateIPAddress": "10.0.0.4", "subnet": {"id": "subnet-id-1"}},
+                }
+            ],
+        },
+    }
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "nic_name": "Test-NIC",
+        "nic_location": "westus",
+        "vnet_name": "vnet1",
+        "subnet_name": "subnet1",
+        "ip_config_name": "ipconfig1",
+    }
+
+    result = create_network_interface_command(client, {}, args)
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.NetworkInterfaces"
+    assert result.outputs_key_field == "id"
+    # The full API response is returned so the context shape matches azure-vn-network-interface-get/-update.
+    assert result.outputs == client.create_network_interface_request.return_value
+    assert result.outputs["id"] == "nic-id-1"
+    assert 'Created Network Interface "Test-NIC"' in result.readable_output
+    assert "10.0.0.4" in result.readable_output
+    client.create_network_interface_request.assert_called_once()
+
+
+def test_create_network_interface_command_static_without_ip(mocker):
+    """
+    Given:
+        - A Static address_assignment_method without a private_ip_address value.
+    When:
+        - Calling create_network_interface_command.
+    Then:
+        - Ensure a DemistoException is raised and no API call is made.
+    """
+    from Azure import create_network_interface_command
+
+    mocker.patch.object(demisto, "command", return_value="azure-vn-network-interface-create")
+    client = mocker.MagicMock()
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "nic_name": "Test-NIC",
+        "nic_location": "westus",
+        "vnet_name": "vnet1",
+        "subnet_name": "subnet1",
+        "ip_config_name": "ipconfig1",
+        "address_assignment_method": "Static",
+    }
+
+    with pytest.raises(DemistoException, match="private_ip_address"):
+        create_network_interface_command(client, {}, args)
+
+    client.create_network_interface_request.assert_not_called()
+
+
+def test_create_network_interface_command_with_network_security_group(mocker):
+    """
+    Given:
+        - Arguments that include a network_security_group and a Static private IP address.
+    When:
+        - Calling create_network_interface_command.
+    Then:
+        - Ensure the payload contains the fully qualified network security group ID, the subnet ID and
+          the static private IP address.
+    """
+    from Azure import create_network_interface_command
+
+    mocker.patch.object(demisto, "command", return_value="azure-vn-network-interface-create")
+    client = mocker.MagicMock()
+    client.create_network_interface_request.return_value = {"name": "Test-NIC", "properties": {}}
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "nic_name": "Test-NIC",
+        "nic_location": "westus",
+        "vnet_name": "vnet1",
+        "subnet_name": "subnet1",
+        "ip_config_name": "ipconfig1",
+        "address_assignment_method": "Static",
+        "private_ip_address": "10.0.0.5",
+        "network_security_group": "nsg1",
+    }
+
+    create_network_interface_command(client, {}, args)
+
+    payload = client.create_network_interface_request.call_args[0][3]
+    assert payload["properties"]["networkSecurityGroup"]["id"] == (
+        "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1"
+    )
+    ip_config_properties = payload["properties"]["ipConfigurations"][0]["properties"]
+    assert ip_config_properties["privateIPAddress"] == "10.0.0.5"
+    assert ip_config_properties["privateIPAllocationMethod"] == "Static"
+    assert ip_config_properties["subnet"]["id"] == (
+        "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1/subnets/subnet1"
+    )
+
+
+def test_create_network_interface_command_omits_empty_security_group(mocker):
+    """
+    Given:
+        - Arguments that do not include a network_security_group.
+    When:
+        - Calling create_network_interface_command.
+    Then:
+        - Ensure the empty networkSecurityGroup key is stripped from the payload rather than sent as null.
+    """
+    from Azure import create_network_interface_command
+
+    mocker.patch.object(demisto, "command", return_value="azure-vn-network-interface-create")
+    client = mocker.MagicMock()
+    client.create_network_interface_request.return_value = {"name": "Test-NIC", "properties": {}}
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "nic_name": "Test-NIC",
+        "nic_location": "westus",
+        "vnet_name": "vnet1",
+        "subnet_name": "subnet1",
+        "ip_config_name": "ipconfig1",
+    }
+
+    create_network_interface_command(client, {}, args)
+
+    payload = client.create_network_interface_request.call_args[0][3]
+    assert "networkSecurityGroup" not in payload["properties"]
