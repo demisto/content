@@ -7663,7 +7663,7 @@ def test_storage_account_list_command_no_results(mocker):
     """
     Given: An Azure client mock returning an empty storage account list.
     When: storage_account_list_command is called.
-    Then: It returns CommandResults with an empty outputs list and no rows in the table.
+    Then: It returns CommandResults with a "No storage accounts were found." readable output.
     """
     from Azure import storage_account_list_command
 
@@ -7676,9 +7676,7 @@ def test_storage_account_list_command_no_results(mocker):
     result: CommandResults = storage_account_list_command(mock_client, params, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.Storage.StorageAccounts"
-    assert result.outputs == []
-    assert "Azure Storage Account List" in result.readable_output
+    assert result.readable_output == "No storage accounts were found."
 
 
 def test_storage_account_list_command_error_response(mocker):
@@ -7762,7 +7760,7 @@ def test_storage_blob_containers_list_command_no_results(mocker):
     """
     Given: An Azure client mock returning an empty blob container list.
     When: storage_blob_containers_list_command is called.
-    Then: It returns CommandResults with an empty outputs list and no rows in the table.
+    Then: It returns CommandResults with a "No blob containers were found." readable output.
     """
     from Azure import storage_blob_containers_list_command
 
@@ -7775,9 +7773,7 @@ def test_storage_blob_containers_list_command_no_results(mocker):
     result: CommandResults = storage_blob_containers_list_command(mock_client, params, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.Storage.BlobContainers"
-    assert result.outputs == []
-    assert "Azure Storage Blob Containers List" in result.readable_output
+    assert result.readable_output == "No blob containers were found."
 
 
 def test_storage_blob_containers_list_command_error_response(mocker):

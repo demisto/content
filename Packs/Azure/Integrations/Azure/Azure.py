@@ -890,7 +890,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def storage_account_list_request(self, account_name: str, resource_group_name: str, subscription_id: str) -> dict:
+    def storage_account_list_request(self, account_name: str, resource_group_name: str, subscription_id: str):
         """
         Send the get storage account/s request to the API.
 
@@ -927,7 +927,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def storage_blob_containers_list_request(self, subscription_id: str, resource_group_name: str, args: dict) -> dict:
+    def storage_blob_containers_list_request(self, subscription_id: str, resource_group_name: str, args: dict):
         """
         Send the get blob container/s request to the API.
 
@@ -3167,6 +3167,9 @@ def storage_account_list_command(client: AzureClient, params: dict, args: dict) 
     )
     accounts = response.get("value", [response])
 
+    if not accounts:
+        return CommandResults(readable_output="No storage accounts were found.", raw_response=response)
+
     readable_output = []
     for account in accounts:
         account_subscription_id, resource_group, _ = extract_azure_resource_info(account.get("id", ""))
@@ -3222,6 +3225,9 @@ def storage_blob_containers_list_command(client: AzureClient, params: dict, args
         subscription_id=subscription_id, resource_group_name=resource_group_name, args=args
     )
     containers = response.get("value", [response])
+
+    if not containers:
+        return CommandResults(readable_output="No blob containers were found.", raw_response=response)
 
     readable_output = []
     for container in containers:

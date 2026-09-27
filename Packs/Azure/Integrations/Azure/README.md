@@ -122,7 +122,7 @@ Lists blob containers, or retrieves a single blob container when a container nam
 | account_name | The storage account name. | Required |
 | container_name | The container name. When provided, retrieves the specified container only; otherwise all containers in the storage account are listed. | Optional |
 | include_deleted | Whether to include soft-deleted blob containers in the response. Possible values are: true, false. | Optional |
-| maxpagesize | The maximum number of containers that the server returns per page. | Optional |
+| maxpagesize | The maximum number of containers that the server returns per page (for example, 100). | Optional |
 
 #### Context Output
 

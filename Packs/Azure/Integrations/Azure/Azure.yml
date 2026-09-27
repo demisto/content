@@ -926,7 +926,7 @@ script:
       predefined:
         - 'true'
         - 'false'
-    - description: The maximum number of containers that the server returns per page.
+    - description: The maximum number of containers that the server returns per page (for example, 100).
       name: maxpagesize
     outputs:
     - contextPath: Azure.Storage.BlobContainers.id
