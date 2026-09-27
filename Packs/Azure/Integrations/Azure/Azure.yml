@@ -11039,12 +11039,13 @@ script:
     description: "Retrieves an Application Gateway Web Application Firewall (WAF) policy by name. Required Permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group containing the policy. Optional when configured in the integration instance.
+      description: The name of the resource group containing the policy. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
+      required:platform: true
     - name: policy_name
       description: The name of the WAF policy to retrieve.
       required: true
@@ -11089,11 +11090,11 @@ script:
     description: "Lists the Application Gateway Web Application Firewall (WAF) policies of a resource group, or of the whole subscription when no resource group is given. Required Permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group to list policies from. When not provided, the policies of the entire subscription are listed.
+      description: The name of the resource group to list policies from. When not provided, the policies of the entire subscription are listed. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
     - name: next_token
       description: The URI to fetch the next page of results. Use the value of Azure.WAF.PoliciesNextToken from the previous response.
@@ -11142,12 +11143,13 @@ script:
     description: "Creates or updates an Application Gateway Web Application Firewall (WAF) policy. An existing policy with the same name is overwritten. Required Permissions: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read, Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/write."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group to create the policy in. Optional when configured in the integration instance.
+      description: The name of the resource group to create the policy in. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
+      required:platform: true
     - name: policy_name
       description: The name of the WAF policy to create or update.
       required: true
@@ -11210,12 +11212,13 @@ script:
     description: "Deletes an Application Gateway Web Application Firewall (WAF) policy. Required Permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group containing the policy. Optional when configured in the integration instance.
+      description: The name of the resource group containing the policy. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
+      required:platform: true
     - name: policy_name
       description: The name of the WAF policy to delete.
       required: true
@@ -11223,12 +11226,13 @@ script:
     description: "Retrieves a Front Door Web Application Firewall (WAF) policy by name. Required Permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group containing the policy. Optional when configured in the integration instance.
+      description: The name of the resource group containing the policy. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
+      required:platform: true
     - name: policy_name
       description: The name of the Front Door WAF policy to retrieve.
       required: true
@@ -11276,11 +11280,11 @@ script:
     description: "Lists the Front Door Web Application Firewall (WAF) policies of a resource group, or of the whole subscription when no resource group is given. Required Permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group to list policies from. When not provided, the policies of the entire subscription are listed.
+      description: The name of the resource group to list policies from. When not provided, the policies of the entire subscription are listed. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
     - name: next_token
       description: The URI to fetch the next page of results. Use the value of Azure.WAF.FrontDoorPoliciesNextToken from the previous response.
@@ -11329,12 +11333,13 @@ script:
     description: "Creates or updates a Front Door Web Application Firewall (WAF) policy. An existing policy with the same name is overwritten. Required Permissions: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read, Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/write."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group to create the policy in. Optional when configured in the integration instance.
+      description: The name of the resource group to create the policy in. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
+      required:platform: true
     - name: policy_name
       description: The name of the Front Door WAF policy to create or update.
       required: true
@@ -11407,12 +11412,13 @@ script:
     description: "Deletes a Front Door Web Application Firewall (WAF) policy. Required Permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/delete."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group containing the policy. Optional when configured in the integration instance.
+      description: The name of the resource group containing the policy. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
+      required:platform: true
     - name: policy_name
       description: The name of the Front Door WAF policy to delete.
       required: true

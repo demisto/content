@@ -3138,8 +3138,8 @@ Retrieves an Application Gateway Web Application Firewall (WAF) policy by name. 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group containing the policy. Optional when configured in the integration instance. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group containing the policy. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | policy_name | The name of the WAF policy to retrieve. | Required |
 
 #### Context Output
@@ -3172,8 +3172,8 @@ Lists the Application Gateway Web Application Firewall (WAF) policies of a resou
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group to list policies from. When not provided, the policies of the entire subscription are listed. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group to list policies from. When not provided, the policies of the entire subscription are listed. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | next_token | The URI to fetch the next page of results. Use the value of Azure.WAF.PoliciesNextToken from the previous response. | Optional |
 
 #### Context Output
@@ -3207,8 +3207,8 @@ Creates or updates an Application Gateway Web Application Firewall (WAF) policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group to create the policy in. Optional when configured in the integration instance. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group to create the policy in. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | policy_name | The name of the WAF policy to create or update. | Required |
 | location | The Azure region of the policy, for example "westus2". | Required |
 | managed_rules | The managed rules of the policy, as a JSON string. For example: {"managedRuleSets": [{"ruleSetType": "OWASP", "ruleSetVersion": "3.2"}]}. | Required |
@@ -3247,8 +3247,8 @@ Deletes an Application Gateway Web Application Firewall (WAF) policy. Required P
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group containing the policy. Optional when configured in the integration instance. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group containing the policy. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | policy_name | The name of the WAF policy to delete. | Required |
 
 #### Context Output
@@ -3268,8 +3268,8 @@ Retrieves a Front Door Web Application Firewall (WAF) policy by name. Required P
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group containing the policy. Optional when configured in the integration instance. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group containing the policy. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | policy_name | The name of the Front Door WAF policy to retrieve. | Required |
 
 #### Context Output
@@ -3303,8 +3303,8 @@ Lists the Front Door Web Application Firewall (WAF) policies of a resource group
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group to list policies from. When not provided, the policies of the entire subscription are listed. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group to list policies from. When not provided, the policies of the entire subscription are listed. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | next_token | The URI to fetch the next page of results. Use the value of Azure.WAF.FrontDoorPoliciesNextToken from the previous response. | Optional |
 
 #### Context Output
@@ -3338,8 +3338,8 @@ Creates or updates a Front Door Web Application Firewall (WAF) policy. An existi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group to create the policy in. Optional when configured in the integration instance. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group to create the policy in. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | policy_name | The name of the Front Door WAF policy to create or update. | Required |
 | managed_rules | The managed rules of the policy, as a JSON string. For example: {"managedRuleSets": [{"ruleSetType": "DefaultRuleSet", "ruleSetVersion": "1.0"}]}. | Required |
 | policy_settings | The policy settings, as a JSON string. For example: {"mode": "Prevention", "enabledState": "Enabled"}. | Optional |
@@ -3379,8 +3379,8 @@ Deletes a Front Door Web Application Firewall (WAF) policy. Required Permission:
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group containing the policy. Optional when configured in the integration instance. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group containing the policy. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | policy_name | The name of the Front Door WAF policy to delete. | Required |
 
 #### Context Output
