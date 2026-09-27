@@ -7,14 +7,13 @@ The script blocks a list of URLs in supported integrations.
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Cortex XSOAR Version | 6.1.0 |
+| Cortex XSOAR Version | 6.10.0 |
 
 ## Dependencies
 
 ---
 This script uses the following commands and scripts.
 
-* Panorama
 * pan-os
 * pan-os-apply-security-profile
 * pan-os-commit
@@ -22,6 +21,7 @@ This script uses the following commands and scripts.
 * pan-os-create-rule
 * pan-os-create-tag
 * pan-os-edit-custom-url-category
+* pan-os-edit-rule
 * pan-os-get-custom-url-category
 * pan-os-get-url-filter
 * pan-os-list-rules
@@ -36,7 +36,7 @@ This script uses the following commands and scripts.
 | **Argument Name** | **Description** |
 | --- | --- |
 | url_list | List of URLs to block. The scheme is stripped before the URL is submitted to the firewall. |
-| brands | Which integrations brands to run the command for. If not provided, the command will run for all available integrations.<br/>For multi-select provide a comma-separated list. |
+| brands | Which integration brands to run the command for. If not provided, the command will run for all available integrations.<br/>For multi-select provide a comma-separated list. |
 | rule_name | The name of the security rule which will be created in the relevant products. |
 | url_category | The name of the PAN-OS custom URL category which holds the blocked URLs. |
 | url_filtering_profile | The name of the PAN-OS URL Filtering security profile which blocks the custom URL category. |

@@ -4,7 +4,7 @@ args:
   name: url_list
   required: true
 - description: |-
-    Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
+    Which integration brands to run the command for. If not provided, the command will run for all available integrations.
     For multi-select provide a comma-separated list.
   isArray: true
   name: brands
