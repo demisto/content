@@ -1532,7 +1532,7 @@ There is no context output for this command.
 ### cloudflare-waf-ruleset-version-delete
 
 ***
-Deletes a specific version of a ruleset.
+Deletes a specific version of a ruleset. Known limitation: deleting a version that does not exist or was already deleted returns a success response rather than an error.
 
 #### Base Command
 

@@ -1307,7 +1307,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Deletes a specific version of a ruleset.
+    description: 'Deletes a specific version of a ruleset. Known limitation: deleting a version that does not exist or was already deleted returns a success response rather than an error.'
     execution: true
     name: cloudflare-waf-ruleset-version-delete
     outputs: []
