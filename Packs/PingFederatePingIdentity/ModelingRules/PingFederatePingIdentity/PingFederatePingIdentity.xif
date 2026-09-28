@@ -77,6 +77,7 @@ alter
     xdm.source.identity.identifier = coalesce(tmp_attr_saml_subject, if(duid != "", duid, null)),
     xdm.source.identity.first_name = tmp_attr_first_name,
     xdm.source.identity.last_name = tmp_attr_last_name,
+    xdm.source.identity.title = tmp_attr_title,
     xdm.source.identity.groups = tmp_groups,
     xdm.source.identity.roles = tmp_attr_roles,
     xdm.source.identity.identity_type = if(tmp_username != null or tmp_upn != null, XDM_CONST.IDENTITY_TYPE_USER, XDM_CONST.IDENTITY_TYPE_UNKNOWN),
