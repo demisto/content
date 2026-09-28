@@ -1,4 +1,5 @@
 fromversion: 6.10.0
+toversion: 8.14.0
 id: BeyondTrust_PRA_ModelingRule
 name: BeyondTrust Privileged Remote Access Modeling Rule
 rules: ''

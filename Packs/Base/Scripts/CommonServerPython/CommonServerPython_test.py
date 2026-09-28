@@ -12371,6 +12371,18 @@ def ucp_metadata_multi():
 
 
 @pytest.fixture()
+def ucp_metadata_passthrough_unmatched():
+    """Single passthrough profile whose capability no command maps to (XSUP-76663)."""
+    return load_ucp_test_data('ucp_metadata.json', key='passthrough_unmatched_capability')
+
+
+@pytest.fixture()
+def ucp_metadata_multi_no_automation():
+    """Multi-profile UCP metadata with no automation-and-remediation profile."""
+    return load_ucp_test_data('ucp_metadata.json', key='multi_profile_no_automation')
+
+
+@pytest.fixture()
 def ucp_creds_oauth2():
     """OAuth2 UCP credentials."""
     return load_ucp_test_data('ucp_credentials.json', key='oauth2')
@@ -12619,6 +12631,282 @@ class TestUcpCapabilityResolution:
             'fetch-indicators': 'threat-intelligence-and-enrichment',
             'fetch-assets': 'fetch-assets-and-vulnerabilities',
         }
+
+
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
+class TestUcpCapabilityReconciliation:
+    """Tests for reconciling the command-derived capability against the
+    capabilities the connector's connection profiles actually declare.
+
+    A capability that no profile provides cannot select a profile, which leaves
+    _select_ucp_profiles empty and blinds _ucp_auth_is_passthrough -- the
+    XSUP-76663 failure mode. Each test pairs the resolved capability with the
+    should_use_ucp_auth() decision it drives.
+    """
+
+    @staticmethod
+    def _metadata(*profiles):
+        """UCP metadata carrying *profiles*, each a (capability, type) pair."""
+        return {
+            'connectorId': 'test-connector',
+            'connectionProfiles': [
+                {'capability': capability, 'type': profile_type,
+                 'method_unique_id': 'method-{}'.format(index), 'sub_capabilities': []}
+                for index, (capability, profile_type) in enumerate(profiles)
+            ],
+        }
+
+    @pytest.fixture()
+    def ucp_env(self, mocker):
+        """Silence debug logging and reset the interpolation flag."""
+        mocker.patch.object(demisto, 'debug')
+        original = CommonServerPython._UCP_AUTH_PARAMS_INJECTED
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = False
+        yield
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = original
+
+    # ── no profiles to reconcile against ──
+
+    def test_resolve_capability_no_profiles_returns_default(self, mocker, ucp_env):
+        """An empty connectionProfiles list leaves the command mapping untouched."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value={'connectionProfiles': []})
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+
+    def test_resolve_capability_empty_metadata_returns_default(self, mocker, ucp_env):
+        """Empty metadata (non-UCP mode) leaves the command mapping untouched."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value={})
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+
+    def test_resolve_capability_profiles_without_capability_key_ignored(self, mocker, ucp_env):
+        """Profiles carrying no capability contribute nothing to reconcile against."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value={'connectionProfiles': [{'method_unique_id': 'A'}]})
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+
+    # ── XSUP-76663: single passthrough profile, unmatched capability ──
+
+    def test_xsup_76663_single_passthrough_profile_unmatched_capability(
+            self, mocker, ucp_env, ucp_metadata_passthrough_unmatched):
+        """test-module on a feed connector must not apply UCP credentials.
+
+        The connector declares only threat-intelligence-and-enrichment via a
+        passthrough profile. test-module maps to automation-and-remediation,
+        which no profile provides, so without reconciliation no profile is
+        selected, _ucp_auth_is_passthrough() sees nothing, should_use_ucp_auth()
+        returns True and the passthrough envelope reaches the dispatcher.
+        """
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_passthrough_unmatched)
+
+        assert CommonServerPython.resolve_ucp_capability() == 'threat-intelligence-and-enrichment'
+        assert CommonServerPython._ucp_auth_is_passthrough() is True
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_xsup_76663_get_indicators_command_same_outcome(
+            self, mocker, ucp_env, ucp_metadata_passthrough_unmatched):
+        """A vendor-specific get-indicators command behaves exactly like test-module."""
+        mocker.patch.object(demisto, 'command', return_value='webex-get-indicators')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_passthrough_unmatched)
+
+        assert CommonServerPython.resolve_ucp_capability() == 'threat-intelligence-and-enrichment'
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    # ── single profile, unmatched capability, dispatcher-supported type ──
+
+    def test_resolve_capability_single_non_passthrough_unmatched(self, mocker, ucp_env):
+        """A typed profile still authenticates; reconciliation only fixes which profile is found."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('threat-intelligence-and-enrichment', 'api_key')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'threat-intelligence-and-enrichment'
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    # ── capability already matches: reconciliation is a no-op ──
+
+    def test_resolve_capability_matching_default_passthrough(self, mocker, ucp_env):
+        """A profile already on the default capability is selected unchanged."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('automation-and-remediation', 'passthrough')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_resolve_capability_matching_default_typed(self, mocker, ucp_env):
+        """The normal dispatcher path stays intact."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('automation-and-remediation', 'api_key')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    def test_resolve_capability_command_match_passthrough_profile(self, mocker, ucp_env):
+        """An explicit command mapping wins when a profile provides it."""
+        mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('threat-intelligence-and-enrichment', 'passthrough')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'threat-intelligence-and-enrichment'
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_resolve_capability_command_match_typed_profile(self, mocker, ucp_env):
+        """An explicit command mapping wins for dispatcher-supported types too."""
+        mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('threat-intelligence-and-enrichment', 'api_key')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'threat-intelligence-and-enrichment'
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    # ── command maps, but no profile provides the mapped capability ──
+
+    def test_resolve_capability_command_maps_but_profile_lacks_it_passthrough(self, mocker, ucp_env):
+        """A mapped-but-unavailable capability reconciles rather than selecting nothing.
+
+        fetch-incidents maps to fetch-issues, which this connector does not
+        provide. Keying reconciliation on "the command matched the mapping"
+        instead of "the capability is available" would leave this broken.
+        """
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('log-collection', 'passthrough')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'log-collection'
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_resolve_capability_command_maps_but_profile_lacks_it_typed(self, mocker, ucp_env):
+        """Same reconciliation for a dispatcher-supported type."""
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('log-collection', 'plain')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'log-collection'
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    # ── multiple profiles ──
+
+    def test_resolve_capability_multi_profile_prefers_automation_passthrough(self, mocker, ucp_env):
+        """The automation capability is preferred over other available ones."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('log-collection', 'api_key'),
+                                                        ('automation-and-remediation', 'passthrough')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_resolve_capability_multi_profile_prefers_automation_typed(self, mocker, ucp_env):
+        """Preferring automation does not disable dispatcher auth by itself."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('log-collection', 'api_key'),
+                                                        ('automation-and-remediation', 'oauth2')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    def test_resolve_capability_multi_profile_no_automation_uses_first(
+            self, mocker, ucp_env, ucp_metadata_multi_no_automation):
+        """Without the automation capability, the first profile's capability wins.
+
+        This keeps capability resolution aligned with get_ucp_method_unique_id's
+        first-profile fallback, so both pick the same profile.
+        """
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi_no_automation)
+
+        assert CommonServerPython.resolve_ucp_capability() == 'fetch-issues'
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    def test_resolve_capability_multi_profile_no_automation_first_is_passthrough(self, mocker, ucp_env):
+        """First-profile selection also governs the passthrough decision."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('fetch-issues', 'passthrough'),
+                                                        ('log-collection', 'api_key')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'fetch-issues'
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    # ── interpolation short-circuits the auth decision ──
+
+    def test_should_use_ucp_auth_false_when_params_already_interpolated(self, mocker, ucp_env):
+        """An interpolated profile has already supplied its credentials."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('log-collection', 'api_key')))
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = True
+
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_mapping_present_but_nothing_interpolated_falls_back_to_passthrough_guard(self, mocker, ucp_env):
+        """A mapping that resolves no values must not leave the dispatcher exposed.
+
+        The injected flag stays False because nothing was interpolated, so the
+        passthrough guard is the only thing standing between a passthrough
+        profile and the dispatcher.
+        """
+        metadata = {
+            'connectorId': 'test-connector',
+            'connectionProfiles': [
+                {'capability': 'threat-intelligence-and-enrichment', 'type': 'passthrough',
+                 'method_unique_id': 'A', 'sub_capabilities': [],
+                 'metadata': {'xsoar': {'interpolation_mapping': 'absent:credentials.password'}}},
+            ],
+        }
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=metadata)
+        mocker.patch.object(CommonServerPython, 'get_ucp_credentials',
+                            return_value={'type': 'passthrough', 'passthrough': {'parameters': {}}})
+        demisto.callingContext = {'params': {}}
+
+        assert CommonServerPython.interpolate_ucp_params() is False
+        assert CommonServerPython._UCP_AUTH_PARAMS_INJECTED is False
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    # ── metadata access must never break resolution ──
+
+    def test_resolve_capability_metadata_raises_falls_back_to_command_mapping(self, mocker, ucp_env):
+        """A metadata failure degrades to the command mapping instead of propagating."""
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', side_effect=Exception('boom'))
+        error_mock = mocker.patch.object(demisto, 'error')
+        assert CommonServerPython.resolve_ucp_capability() == 'fetch-issues'
+        assert error_mock.call_count == 1
+        assert 'could not read profiles' in error_mock.call_args[0][0]
+
+    def test_resolve_capability_metadata_attribute_error_falls_back(self, mocker, ucp_env):
+        """Servers without unifiedConnectorMetadata() keep the legacy mapping."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', side_effect=AttributeError)
+        error_mock = mocker.patch.object(demisto, 'error')
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+        assert error_mock.call_count == 1
+        assert 'could not read profiles' in error_mock.call_args[0][0]
+
+    def testget_configured_ucp_capabilities_returns_declared_order(self, mocker, ucp_env,
+                                                             ucp_metadata_multi_no_automation):
+        """Capabilities are reported in connectionProfiles order."""
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi_no_automation)
+        assert CommonServerPython.get_configured_ucp_capabilities() == ['fetch-issues', 'log-collection']
+
+    # ── reconciliation is not bypassed by an explicit command argument ──
+
+    def test_resolve_capability_explicit_command_also_reconciles(self, mocker, ucp_env):
+        """An explicitly passed command reconciles just like demisto.command().
+
+        'test-module' maps to the default capability whether the caller supplies
+        it or not, so skipping reconciliation for explicit callers would
+        reintroduce XSUP-76663 through every such call site.
+        """
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('log-collection', 'passthrough')))
+        assert CommonServerPython.resolve_ucp_capability(command='test-module') == 'log-collection'
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -13215,6 +13503,60 @@ class TestUcpCredentialApplication:
         creds = {'type': 'kerberos', 'kerberos': {'ticket': 'abc'}}
         with pytest.raises(CommonServerPython.UcpException):
             client._apply_ucp_credentials(creds, ctx)
+
+    # ── passthrough: the integration owns the credential ──
+
+    def test_dispatch_passthrough_is_noop(self, mocker):
+        """A passthrough envelope must leave the request exactly as it was.
+
+        Passthrough exists so that UCP credentials are NOT applied; raising here
+        turns a valid configuration into an opaque authentication error.
+        """
+        mocker.patch.object(demisto, 'debug')
+        client = self._make_client()
+        ctx = self._make_ctx()
+        ctx.headers['Accept'] = 'application/json'
+        creds = {'type': 'passthrough', 'passthrough': {'parameters': {'api_key': 'should-not-be-used'}}}
+
+        assert client._apply_ucp_credentials(creds, ctx) is None
+        assert ctx.headers == {'Accept': 'application/json'}
+        assert ctx.auth is None
+        assert ctx.params == {}
+
+    def test_dispatch_passthrough_logs_debug_not_error(self, mocker):
+        """Reaching the dispatcher with passthrough is diagnosable but not an error."""
+        debug_mock = mocker.patch.object(demisto, 'debug')
+        error_mock = mocker.patch.object(demisto, 'error')
+        client = self._make_client()
+        ctx = self._make_ctx()
+
+        client._apply_ucp_credentials({'type': 'passthrough'}, ctx)
+
+        assert 'passthrough' in debug_mock.call_args[0][0]
+        error_mock.assert_not_called()
+
+    def test_inject_passthrough_direct_call_does_not_raise(self, mocker, ucp_clean_cache):
+        """_inject_ucp_credentials is safe even when should_use_ucp_auth() is bypassed.
+
+        Integrations may call the injection flow directly, so the guard cannot
+        live only in should_use_ucp_auth().
+        """
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value={
+            'connectionProfiles': [
+                {'capability': 'automation-and-remediation', 'type': 'passthrough',
+                 'method_unique_id': 'abc123', 'sub_capabilities': []},
+            ],
+        })
+        mocker.patch.object(demisto, 'getUCPCredentials',
+                            return_value={'type': 'passthrough', 'passthrough': {'parameters': {}}})
+        client = self._make_client()
+        ctx = self._make_ctx()
+
+        assert client._inject_ucp_credentials(ctx) == 'abc123'
+        assert ctx.headers == {}
+        assert ctx.auth is None
 
     def test_existing_headers_preserved(self, ucp_creds_oauth2):
         """UCP credential injection should preserve existing headers."""
@@ -13864,6 +14206,30 @@ class TestUcpNonUcpRegression:
             client._http_request('GET', url_suffix='/test')
 
         inject_spy.assert_not_called()
+
+    def test_no_injection_for_passthrough_with_unmatched_capability(
+            self, mocker, ucp_metadata_passthrough_unmatched, ucp_clean_cache, ucp_reset_injected_flag):
+        """End-to-end XSUP-76663: no credential fetch, no injection, no auth header.
+
+        The connector's only profile is passthrough under a capability the
+        command does not map to. The request must go out untouched.
+        """
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_passthrough_unmatched)
+        creds_mock = mocker.patch.object(demisto, 'getUCPCredentials', return_value={})
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = False
+
+        with requests_mock.Mocker() as m:
+            m.get('https://example.com/api/test', json={'ok': True}, status_code=200)
+            client = CommonServerPython.BaseClient(base_url='https://example.com/api')
+            inject_spy = mocker.patch.object(client, '_inject_ucp_credentials')
+            client._http_request('GET', url_suffix='/test')
+            request_headers = m.last_request.headers
+
+        inject_spy.assert_not_called()
+        creds_mock.assert_not_called()
+        assert 'Authorization' not in request_headers
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
