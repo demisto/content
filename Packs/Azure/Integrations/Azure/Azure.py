@@ -3178,6 +3178,84 @@ def update_nic_properties(args: dict, params: dict, properties: dict):
         properties.pop("networkSecurityGroup", None)
 
 
+def validate_firewall_target(firewall_name: str, policy: str) -> None:
+    """
+    Validate that exactly one target was provided for a firewall network rule command.
+    Without this validation, providing neither argument falls through to the firewall policy flow with an empty
+    policy name, and providing both silently ignores the firewall policy.
+
+    Args:
+        firewall_name: The name of the Azure Firewall.
+        policy: The name of the firewall policy.
+
+    Raises:
+        ValueError: If both arguments were provided or if neither was provided.
+    """
+    if firewall_name and policy:
+        raise ValueError('Only one of the "firewall_name" or "policy" arguments can be provided, but both were provided.')
+    if not firewall_name and not policy:
+        raise ValueError('One of the "firewall_name" or "policy" arguments must be provided, but neither was provided.')
+
+
+def validate_firewall_network_rule_source_and_destination(
+    source_type: str,
+    source_ips: list,
+    source_ip_group_ids: list,
+    destination_type: str,
+    destinations: list,
+) -> None:
+    """
+    Validate that the source and destination arguments of a network rule are consistent with their selected types.
+    Without this validation a value that does not match the selected type is silently dropped, and a rule with no
+    source or no destination is sent to Azure.
+
+    Args:
+        source_type: The source type of the rule, either "ip_address" or "ip_group".
+        source_ips: The source IP addresses of the rule.
+        source_ip_group_ids: The source IP group IDs of the rule.
+        destination_type: The destination type of the rule.
+        destinations: The destinations of the rule.
+
+    Raises:
+        ValueError: If a type is unknown, if the argument matching a provided type is empty, or if an argument that
+            does not match the provided type was supplied.
+    """
+    source_arguments = {"ip_address": ("source_ips", source_ips), "ip_group": ("source_ip_group_ids", source_ip_group_ids)}
+
+    if source_type:
+        if source_type not in source_arguments:
+            raise ValueError(
+                f'The "source_type" argument must be one of {", ".join(source_arguments)}, but "{source_type}" was provided.'
+            )
+        matching_argument, matching_values = source_arguments[source_type]
+        if not matching_values:
+            raise ValueError(
+                f'The "{matching_argument}" argument must be provided when the "source_type" argument is "{source_type}".'
+            )
+        for other_type, (other_argument, other_values) in source_arguments.items():
+            if other_type != source_type and other_values:
+                raise ValueError(
+                    f'The "{other_argument}" argument cannot be provided when the "source_type" argument is "{source_type}".'
+                )
+    elif source_ips or source_ip_group_ids:
+        raise ValueError(
+            'The "source_type" argument must be provided when the "source_ips" or "source_ip_group_ids" argument is provided.'
+        )
+
+    if destination_type:
+        if destination_type not in FIREWALL_NETWORK_RULE_DESTINATION_FIELDS:
+            raise ValueError(
+                f'The "destination_type" argument must be one of {", ".join(FIREWALL_NETWORK_RULE_DESTINATION_FIELDS)}, '
+                f'but "{destination_type}" was provided.'
+            )
+        if not destinations:
+            raise ValueError(
+                f'The "destinations" argument must be provided when the "destination_type" argument is "{destination_type}".'
+            )
+    elif destinations:
+        raise ValueError('The "destination_type" argument must be provided when the "destinations" argument is provided.')
+
+
 def build_firewall_network_rule(
     rule_name: str,
     description: str | None,
@@ -3207,7 +3285,17 @@ def build_firewall_network_rule(
 
     Return:
         A dictionary containing the network rule object.
+
+    Raises:
+        ValueError: If the source or the destination arguments are inconsistent with their selected types.
     """
+    validate_firewall_network_rule_source_and_destination(
+        source_type=source_type,
+        source_ips=source_ips,
+        source_ip_group_ids=source_ip_group_ids,
+        destination_type=destination_type,
+        destinations=destinations,
+    )
     rule: dict[str, Any] = {
         "name": rule_name,
         "description": description,
@@ -3266,22 +3354,25 @@ def find_firewall_network_rule_collection(collections: list, collection_name: st
 
 def get_policy_network_rule_collection(collection_group: dict, collection_name: str) -> dict:
     """
-    Extract the rule collection out of a firewall policy rule collection group.
+    Find a rule collection by name within a firewall policy rule collection group.
+    A rule collection group can legitimately hold several rule collections, so the requested one is matched by name
+    rather than assuming the group holds a single collection.
 
     Args:
         collection_group: The firewall policy rule collection group.
-        collection_name: The name of the rule collection, used for the error message.
+        collection_name: The name of the rule collection to find.
 
     Return:
-        The rule collection held by the rule collection group.
+        The matching rule collection.
 
     Raises:
-        ValueError: If the rule collection group holds no rule collection.
+        ValueError: If the rule collection was not found in the rule collection group.
     """
     rule_collections = dict_safe_get(collection_group, ["properties", "ruleCollections"], [])
-    if not rule_collections:
-        raise ValueError(f'Network rule collection "{collection_name}" was not found in the policy.')
-    return rule_collections[0]
+    for rule_collection in rule_collections:
+        if rule_collection.get("name") == collection_name:
+            return rule_collection
+    raise ValueError(f'Network rule collection "{collection_name}" was not found in the policy.')
 
 
 def firewall_policy_network_rule_collection_exists(
@@ -3299,6 +3390,9 @@ def firewall_policy_network_rule_collection_exists(
 
     Return:
         True if the rule collection group exists, False if Azure reported it as not found.
+
+    Raises:
+        ValueError: If the lookup failed for any reason other than the rule collection group not being found.
     """
     try:
         client.firewall_policy_rule_collection_group_get(
@@ -3307,8 +3401,12 @@ def firewall_policy_network_rule_collection_exists(
             policy_name=policy,
             collection_name=collection_name,
         )
-    except ValueError:
+    except ValueError as e:
         # handle_azure_error raises ValueError for a 404, which simply means the collection name is available.
+        # Any other ValueError is a real failure and must be surfaced rather than reported as "does not exist".
+        error_msg = str(e).lower()
+        if "404" not in error_msg and "not found" not in error_msg:
+            raise
         demisto.debug(f"Network rule collection {collection_name} does not exist in policy {policy}.")
         return False
     return True
@@ -4982,11 +5080,15 @@ def firewall_network_rule_collection_create_command(
 
     Return:
         CommandResults with the updated firewall or rule collection group.
+
+    Raises:
+        ValueError: If neither or both of the "firewall_name" and "policy" arguments were provided.
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     firewall_name = args.get("firewall_name", "")
     policy = args.get("policy", "")
+    validate_firewall_target(firewall_name=firewall_name, policy=policy)
     collection_name = args.get("collection_name", "")
     collection_priority = arg_to_number(args.get("collection_priority"))
     action = args.get("action", "")
@@ -5095,11 +5197,15 @@ def firewall_network_rule_collection_update_command(
 
     Return:
         CommandResults with the updated firewall or rule collection group.
+
+    Raises:
+        ValueError: If neither or both of the "firewall_name" and "policy" arguments were provided.
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     firewall_name = args.get("firewall_name", "")
     policy = args.get("policy", "")
+    validate_firewall_target(firewall_name=firewall_name, policy=policy)
     collection_name = args.get("collection_name", "")
     priority = arg_to_number(args.get("priority"))
     action = args.get("action")
@@ -5165,11 +5271,15 @@ def firewall_network_rule_collection_delete_command(
 
     Return:
         CommandResults with the updated firewall, or a success message for a firewall policy.
+
+    Raises:
+        ValueError: If neither or both of the "firewall_name" and "policy" arguments were provided.
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     firewall_name = args.get("firewall_name", "")
     policy = args.get("policy", "")
+    validate_firewall_target(firewall_name=firewall_name, policy=policy)
     collection_name = args.get("collection_name", "")
 
     if firewall_name:
@@ -5215,11 +5325,15 @@ def firewall_network_rule_create_command(client: AzureClient, params: dict[str, 
 
     Return:
         CommandResults with the updated firewall or rule collection group.
+
+    Raises:
+        ValueError: If neither or both of the "firewall_name" and "policy" arguments were provided.
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     firewall_name = args.get("firewall_name", "")
     policy = args.get("policy", "")
+    validate_firewall_target(firewall_name=firewall_name, policy=policy)
     collection_name = args.get("collection_name", "")
     rule_name = args.get("rule_name", "")
     description = args.get("description")
@@ -5306,11 +5420,16 @@ def firewall_network_rule_update_command(client: AzureClient, params: dict[str, 
 
     Return:
         CommandResults with the updated firewall or rule collection group.
+
+    Raises:
+        ValueError: If the source or the destination arguments are inconsistent with their selected types.
+        ValueError: If neither or both of the "firewall_name" and "policy" arguments were provided.
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     firewall_name = args.get("firewall_name", "")
     policy = args.get("policy", "")
+    validate_firewall_target(firewall_name=firewall_name, policy=policy)
     collection_name = args.get("collection_name", "")
     rule_name = args.get("rule_name", "")
     description = args.get("description")
@@ -5321,6 +5440,14 @@ def firewall_network_rule_update_command(client: AzureClient, params: dict[str, 
     destination_type = args.get("destination_type", "")
     destinations = argToList(args.get("destinations"))
     destination_ports = argToList(args.get("destination_ports"))
+
+    validate_firewall_network_rule_source_and_destination(
+        source_type=source_type,
+        source_ips=source_ips,
+        source_ip_group_ids=source_ip_group_ids,
+        destination_type=destination_type,
+        destinations=destinations,
+    )
 
     # Only the provided properties are replaced, so the unset ones are pruned rather than overwriting Azure with nulls.
     update_fields = remove_empty_elements(
@@ -5391,11 +5518,15 @@ def firewall_network_rule_delete_command(client: AzureClient, params: dict[str, 
 
     Return:
         CommandResults with the updated firewall or rule collection group.
+
+    Raises:
+        ValueError: If neither or both of the "firewall_name" and "policy" arguments were provided.
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     firewall_name = args.get("firewall_name", "")
     policy = args.get("policy", "")
+    validate_firewall_target(firewall_name=firewall_name, policy=policy)
     collection_name = args.get("collection_name", "")
     rule_names = argToList(args.get("rule_names"))
 

@@ -10862,10 +10862,10 @@ script:
       required: false
       required:platform: true
     - name: firewall_name
-      description: The name of the Azure Firewall in which to create the network rule collection. Provide either this argument or the 'policy' argument.
+      description: The name of the Azure Firewall in which to create the network rule collection. Exactly one of this argument or the 'policy' argument must be provided.
       type: String
     - name: policy
-      description: The name of the firewall policy in which to create the network rule collection. Provide either this argument or the 'firewall_name' argument.
+      description: The name of the firewall policy in which to create the network rule collection. Exactly one of this argument or the 'firewall_name' argument must be provided.
       type: String
     - name: collection_name
       description: The name of the network rule collection to create.
@@ -10989,10 +10989,10 @@ script:
       required: false
       required:platform: true
     - name: firewall_name
-      description: The name of the Azure Firewall that contains the network rule collection. Provide either this argument or the 'policy' argument.
+      description: The name of the Azure Firewall that contains the network rule collection. Exactly one of this argument or the 'policy' argument must be provided.
       type: String
     - name: policy
-      description: The name of the firewall policy that contains the network rule collection. Provide either this argument or the 'firewall_name' argument.
+      description: The name of the firewall policy that contains the network rule collection. Exactly one of this argument or the 'firewall_name' argument must be provided.
       type: String
     - name: collection_name
       description: The name of the network rule collection to update.
@@ -11065,10 +11065,10 @@ script:
       required: false
       required:platform: true
     - name: firewall_name
-      description: The name of the Azure Firewall that contains the network rule collection. Provide either this argument or the 'policy' argument.
+      description: The name of the Azure Firewall that contains the network rule collection. Exactly one of this argument or the 'policy' argument must be provided.
       type: String
     - name: policy
-      description: The name of the firewall policy that contains the network rule collection. Provide either this argument or the 'firewall_name' argument.
+      description: The name of the firewall policy that contains the network rule collection. Exactly one of this argument or the 'firewall_name' argument must be provided.
       type: String
     - name: collection_name
       description: The name of the network rule collection to delete.
@@ -11110,10 +11110,10 @@ script:
       required: false
       required:platform: true
     - name: firewall_name
-      description: The name of the Azure Firewall that contains the network rule collection. Provide either this argument or the 'policy' argument.
+      description: The name of the Azure Firewall that contains the network rule collection. Exactly one of this argument or the 'policy' argument must be provided.
       type: String
     - name: policy
-      description: The name of the firewall policy that contains the network rule collection. Provide either this argument or the 'firewall_name' argument.
+      description: The name of the firewall policy that contains the network rule collection. Exactly one of this argument or the 'firewall_name' argument must be provided.
       type: String
     - name: collection_name
       description: The name of the network rule collection in which to create the network rule.
@@ -11225,10 +11225,10 @@ script:
       required: false
       required:platform: true
     - name: firewall_name
-      description: The name of the Azure Firewall that contains the network rule collection. Provide either this argument or the 'policy' argument.
+      description: The name of the Azure Firewall that contains the network rule collection. Exactly one of this argument or the 'policy' argument must be provided.
       type: String
     - name: policy
-      description: The name of the firewall policy that contains the network rule collection. Provide either this argument or the 'firewall_name' argument.
+      description: The name of the firewall policy that contains the network rule collection. Exactly one of this argument or the 'firewall_name' argument must be provided.
       type: String
     - name: collection_name
       description: The name of the network rule collection that contains the network rule.
@@ -11335,10 +11335,10 @@ script:
       required: false
       required:platform: true
     - name: firewall_name
-      description: The name of the Azure Firewall that contains the network rule collection. Provide either this argument or the 'policy' argument.
+      description: The name of the Azure Firewall that contains the network rule collection. Exactly one of this argument or the 'policy' argument must be provided.
       type: String
     - name: policy
-      description: The name of the firewall policy that contains the network rule collection. Provide either this argument or the 'firewall_name' argument.
+      description: The name of the firewall policy that contains the network rule collection. Exactly one of this argument or the 'firewall_name' argument must be provided.
       type: String
     - name: collection_name
       description: The name of the network rule collection that contains the network rules.

@@ -3053,10 +3053,10 @@ Create a network rule collection, holding a single network rule, in an Azure Fir
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. | Required |
-| firewall_name | The name of the Azure Firewall in which to create the network rule collection. Provide either this argument or the 'policy' argument. | Optional |
-| policy | The name of the firewall policy in which to create the network rule collection. Provide either this argument or the 'firewall_name' argument. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| firewall_name | The name of the Azure Firewall in which to create the network rule collection. Exactly one of this argument or the 'policy' argument must be provided. | Optional |
+| policy | The name of the firewall policy in which to create the network rule collection. Exactly one of this argument or the 'firewall_name' argument must be provided. | Optional |
 | collection_name | The name of the network rule collection to create. | Required |
 | collection_priority | The priority of the network rule collection. The minimum value is 100 and the maximum value is 65000. | Required |
 | action | The action type of the network rule collection. Possible values are: Allow, Deny. | Required |
@@ -3102,10 +3102,10 @@ Update the priority or the action of a network rule collection in an Azure Firew
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. | Required |
-| firewall_name | The name of the Azure Firewall that contains the network rule collection. Provide either this argument or the 'policy' argument. | Optional |
-| policy | The name of the firewall policy that contains the network rule collection. Provide either this argument or the 'firewall_name' argument. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| firewall_name | The name of the Azure Firewall that contains the network rule collection. Exactly one of this argument or the 'policy' argument must be provided. | Optional |
+| policy | The name of the firewall policy that contains the network rule collection. Exactly one of this argument or the 'firewall_name' argument must be provided. | Optional |
 | collection_name | The name of the network rule collection to update. | Required |
 | priority | The new priority of the network rule collection. The minimum value is 100 and the maximum value is 65000. At least one of the arguments 'priority' or 'action' must be provided. | Optional |
 | action | The new action type of the network rule collection. At least one of the arguments 'priority' or 'action' must be provided. Possible values are: Allow, Deny. | Optional |
@@ -3142,10 +3142,10 @@ Delete a network rule collection from an Azure Firewall or from a firewall polic
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. | Required |
-| firewall_name | The name of the Azure Firewall that contains the network rule collection. Provide either this argument or the 'policy' argument. | Optional |
-| policy | The name of the firewall policy that contains the network rule collection. Provide either this argument or the 'firewall_name' argument. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| firewall_name | The name of the Azure Firewall that contains the network rule collection. Exactly one of this argument or the 'policy' argument must be provided. | Optional |
+| policy | The name of the firewall policy that contains the network rule collection. Exactly one of this argument or the 'firewall_name' argument must be provided. | Optional |
 | collection_name | The name of the network rule collection to delete. | Required |
 
 #### Context Output
@@ -3173,10 +3173,10 @@ Create a network rule in an existing network rule collection of an Azure Firewal
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. | Required |
-| firewall_name | The name of the Azure Firewall that contains the network rule collection. Provide either this argument or the 'policy' argument. | Optional |
-| policy | The name of the firewall policy that contains the network rule collection. Provide either this argument or the 'firewall_name' argument. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| firewall_name | The name of the Azure Firewall that contains the network rule collection. Exactly one of this argument or the 'policy' argument must be provided. | Optional |
+| policy | The name of the firewall policy that contains the network rule collection. Exactly one of this argument or the 'firewall_name' argument must be provided. | Optional |
 | collection_name | The name of the network rule collection in which to create the network rule. | Required |
 | rule_name | The name of the network rule to create. | Required |
 | description | The description of the created network rule. | Optional |
@@ -3220,10 +3220,10 @@ Update a network rule in a network rule collection of an Azure Firewall or of a 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. | Required |
-| firewall_name | The name of the Azure Firewall that contains the network rule collection. Provide either this argument or the 'policy' argument. | Optional |
-| policy | The name of the firewall policy that contains the network rule collection. Provide either this argument or the 'firewall_name' argument. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| firewall_name | The name of the Azure Firewall that contains the network rule collection. Exactly one of this argument or the 'policy' argument must be provided. | Optional |
+| policy | The name of the firewall policy that contains the network rule collection. Exactly one of this argument or the 'firewall_name' argument must be provided. | Optional |
 | collection_name | The name of the network rule collection that contains the network rule. | Required |
 | rule_name | The name of the network rule to update. | Required |
 | description | The new description of the network rule. | Optional |
@@ -3267,10 +3267,10 @@ Delete network rules from a network rule collection of an Azure Firewall or of a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. | Required |
-| firewall_name | The name of the Azure Firewall that contains the network rule collection. Provide either this argument or the 'policy' argument. | Optional |
-| policy | The name of the firewall policy that contains the network rule collection. Provide either this argument or the 'firewall_name' argument. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| firewall_name | The name of the Azure Firewall that contains the network rule collection. Exactly one of this argument or the 'policy' argument must be provided. | Optional |
+| policy | The name of the firewall policy that contains the network rule collection. Exactly one of this argument or the 'firewall_name' argument must be provided. | Optional |
 | collection_name | The name of the network rule collection that contains the network rules. | Required |
 | rule_names | A comma-separated list of network rule names to delete from the collection. | Required |
 

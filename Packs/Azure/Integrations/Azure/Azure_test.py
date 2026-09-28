@@ -6284,6 +6284,28 @@ def policy_collection_group(rules: list | None = None) -> dict:
     }
 
 
+def policy_collection_group_with_multiple_collections() -> dict:
+    """Return a firewall policy rule collection group holding several rule collections."""
+    collection_group = policy_collection_group()
+    collection_group["properties"]["ruleCollections"] = [
+        {
+            "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+            "name": "other-collection",
+            "priority": 100,
+            "action": {"type": "Allow"},
+            "rules": [{"name": "other-rule", "description": "other"}],
+        },
+        {
+            "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+            "name": "my-collection",
+            "priority": 200,
+            "action": {"type": "Allow"},
+            "rules": [{"name": "my-rule", "description": "original"}],
+        },
+    ]
+    return collection_group
+
+
 def test_firewall_network_rule_collection_create_command_firewall(mocker):
     """
     Given: An AzureClient whose firewall holds no matching network rule collection.
@@ -6403,6 +6425,336 @@ def test_firewall_network_rule_collection_create_command_already_exists(mocker):
     with pytest.raises(ValueError, match='Network rule collection "my-collection" already exists'):
         firewall_network_rule_collection_create_command(client=client, params={}, args=args)
     client.firewall_update.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "overrides, expected_error",
+    [
+        pytest.param(
+            {"source_type": "ip_group", "source_ips": ["10.0.0.1"], "source_ip_group_ids": []},
+            'The "source_ip_group_ids" argument must be provided when the "source_type" argument is "ip_group".',
+            id="ip_group_without_group_ids",
+        ),
+        pytest.param(
+            {"source_type": "ip_address", "source_ips": [], "source_ip_group_ids": ["group-id"]},
+            'The "source_ips" argument must be provided when the "source_type" argument is "ip_address".',
+            id="ip_address_without_ips",
+        ),
+        pytest.param(
+            {"source_type": "ip_address", "source_ips": ["10.0.0.1"], "source_ip_group_ids": ["group-id"]},
+            'The "source_ip_group_ids" argument cannot be provided when the "source_type" argument is "ip_address".',
+            id="both_source_arguments",
+        ),
+        pytest.param(
+            {"source_type": "", "source_ips": ["10.0.0.1"]},
+            'The "source_type" argument must be provided when the "source_ips" or "source_ip_group_ids" argument is provided.',
+            id="source_without_type",
+        ),
+        pytest.param(
+            {"source_type": "subnet"},
+            'The "source_type" argument must be one of ip_address, ip_group, but "subnet" was provided.',
+            id="unknown_source_type",
+        ),
+        pytest.param(
+            {"destination_type": "fqdn", "destinations": []},
+            'The "destinations" argument must be provided when the "destination_type" argument is "fqdn".',
+            id="destination_type_without_destinations",
+        ),
+        pytest.param(
+            {"destination_type": "", "destinations": ["10.0.0.2"]},
+            'The "destination_type" argument must be provided when the "destinations" argument is provided.',
+            id="destinations_without_type",
+        ),
+        pytest.param(
+            {"destination_type": "subnet", "destinations": ["10.0.0.2"]},
+            'The "destination_type" argument must be one of ip_address, ip_group, service_tag, fqdn, '
+            'but "subnet" was provided.',
+            id="unknown_destination_type",
+        ),
+    ],
+)
+def test_validate_firewall_network_rule_source_and_destination_invalid(overrides, expected_error):
+    """
+    Given: Source and destination arguments that are inconsistent with their selected types.
+    When: validate_firewall_network_rule_source_and_destination is called.
+    Then: A ValueError naming the offending argument is raised.
+    """
+    from Azure import validate_firewall_network_rule_source_and_destination
+
+    kwargs = {
+        "source_type": "ip_address",
+        "source_ips": ["10.0.0.1"],
+        "source_ip_group_ids": [],
+        "destination_type": "ip_address",
+        "destinations": ["10.0.0.2"],
+    } | overrides
+
+    with pytest.raises(ValueError) as excinfo:
+        validate_firewall_network_rule_source_and_destination(**kwargs)
+    assert str(excinfo.value) == expected_error
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        pytest.param(
+            {
+                "source_type": "ip_address",
+                "source_ips": ["10.0.0.1"],
+                "source_ip_group_ids": [],
+                "destination_type": "fqdn",
+                "destinations": ["example.com"],
+            },
+            id="ip_address_source_and_fqdn_destination",
+        ),
+        pytest.param(
+            {
+                "source_type": "ip_group",
+                "source_ips": [],
+                "source_ip_group_ids": ["group-id"],
+                "destination_type": "service_tag",
+                "destinations": ["ApiManagement"],
+            },
+            id="ip_group_source_and_service_tag_destination",
+        ),
+        pytest.param(
+            {
+                "source_type": "",
+                "source_ips": [],
+                "source_ip_group_ids": [],
+                "destination_type": "",
+                "destinations": [],
+            },
+            id="no_source_or_destination_supplied_on_update",
+        ),
+    ],
+)
+def test_validate_firewall_network_rule_source_and_destination_valid(kwargs):
+    """
+    Given: Source and destination arguments that are consistent with their selected types.
+    When: validate_firewall_network_rule_source_and_destination is called.
+    Then: No error is raised.
+    """
+    from Azure import validate_firewall_network_rule_source_and_destination
+
+    validate_firewall_network_rule_source_and_destination(**kwargs)
+
+
+def test_firewall_network_rule_collection_create_command_mismatched_source(mocker):
+    """
+    Given: An AzureClient and a create request whose source_type does not match the supplied source argument.
+    When: firewall_network_rule_collection_create_command is called.
+    Then: A ValueError is raised and the firewall is never read or updated.
+    """
+    from Azure import AzureClient, firewall_network_rule_collection_create_command
+
+    client = mocker.Mock(spec=AzureClient)
+
+    args = {
+        **FIREWALL_ARGS,
+        "firewall_name": "xsoar-firewall",
+        "collection_name": "my-collection",
+        "collection_priority": "105",
+        "action": "Allow",
+        "rule_name": "my-rule",
+        "protocols": "TCP",
+        "source_type": "ip_group",
+        "source_ips": "10.0.0.1",
+        "destination_type": "ip_address",
+        "destinations": "10.0.0.2",
+        "destination_ports": "8080",
+    }
+
+    with pytest.raises(ValueError, match='The "source_ip_group_ids" argument must be provided'):
+        firewall_network_rule_collection_create_command(client=client, params={}, args=args)
+    client.firewall_get.assert_not_called()
+    client.firewall_update.assert_not_called()
+
+
+def test_firewall_network_rule_update_command_mismatched_destination(mocker):
+    """
+    Given: An AzureClient and an update request that supplies destinations without a destination_type.
+    When: firewall_network_rule_update_command is called.
+    Then: A ValueError is raised and the firewall is never read or updated.
+    """
+    from Azure import AzureClient, firewall_network_rule_update_command
+
+    client = mocker.Mock(spec=AzureClient)
+
+    args = {
+        **FIREWALL_ARGS,
+        "firewall_name": "xsoar-firewall",
+        "collection_name": "my-collection",
+        "rule_name": "my-rule",
+        "destinations": "10.0.0.2",
+    }
+
+    with pytest.raises(ValueError, match='The "destination_type" argument must be provided'):
+        firewall_network_rule_update_command(client=client, params={}, args=args)
+    client.firewall_get.assert_not_called()
+    client.firewall_update.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "firewall_name, policy, expected_error",
+    [
+        pytest.param(
+            "xsoar-firewall",
+            "my-policy",
+            'Only one of the "firewall_name" or "policy" arguments can be provided, but both were provided.',
+            id="both_provided",
+        ),
+        pytest.param(
+            "",
+            "",
+            'One of the "firewall_name" or "policy" arguments must be provided, but neither was provided.',
+            id="neither_provided",
+        ),
+    ],
+)
+def test_validate_firewall_target_invalid(firewall_name, policy, expected_error):
+    """
+    Given: Both or neither of the firewall_name and policy arguments.
+    When: validate_firewall_target is called.
+    Then: A ValueError explaining which of the two targets is expected is raised.
+    """
+    from Azure import validate_firewall_target
+
+    with pytest.raises(ValueError) as excinfo:
+        validate_firewall_target(firewall_name=firewall_name, policy=policy)
+    assert str(excinfo.value) == expected_error
+
+
+@pytest.mark.parametrize(
+    "firewall_name, policy",
+    [
+        pytest.param("xsoar-firewall", "", id="firewall_only"),
+        pytest.param("", "my-policy", id="policy_only"),
+    ],
+)
+def test_validate_firewall_target_valid(firewall_name, policy):
+    """
+    Given: Exactly one of the firewall_name and policy arguments.
+    When: validate_firewall_target is called.
+    Then: No error is raised.
+    """
+    from Azure import validate_firewall_target
+
+    validate_firewall_target(firewall_name=firewall_name, policy=policy)
+
+
+@pytest.mark.parametrize(
+    "command_name",
+    [
+        "firewall_network_rule_collection_create_command",
+        "firewall_network_rule_collection_update_command",
+        "firewall_network_rule_collection_delete_command",
+        "firewall_network_rule_create_command",
+        "firewall_network_rule_update_command",
+        "firewall_network_rule_delete_command",
+    ],
+)
+def test_firewall_commands_require_exactly_one_target(mocker, command_name):
+    """
+    Given: An AzureClient and a request that provides neither a firewall_name nor a policy.
+    When: Any of the firewall network rule commands is called.
+    Then: A ValueError is raised and no Azure resource is read or written.
+    """
+    import Azure
+    from Azure import AzureClient
+
+    client = mocker.Mock(spec=AzureClient)
+    command = getattr(Azure, command_name)
+
+    with pytest.raises(ValueError, match='One of the "firewall_name" or "policy" arguments must be provided'):
+        command(client=client, params={}, args=dict(FIREWALL_ARGS))
+
+    client.firewall_get.assert_not_called()
+    client.firewall_update.assert_not_called()
+    client.firewall_policy_rule_collection_group_get.assert_not_called()
+    client.firewall_policy_rule_collection_group_create_or_update.assert_not_called()
+    client.firewall_policy_rule_collection_group_delete.assert_not_called()
+
+
+def test_get_policy_network_rule_collection_matches_by_name():
+    """
+    Given: A rule collection group holding several rule collections, where the requested one is not the first.
+    When: get_policy_network_rule_collection is called with the requested collection name.
+    Then: The collection matching the name is returned rather than the first one in the group.
+    """
+    from Azure import get_policy_network_rule_collection
+
+    collection_group = policy_collection_group_with_multiple_collections()
+
+    rule_collection = get_policy_network_rule_collection(collection_group, "my-collection")
+
+    assert rule_collection["name"] == "my-collection"
+    assert rule_collection["priority"] == 200
+
+
+def test_get_policy_network_rule_collection_not_found():
+    """
+    Given: A rule collection group that does not hold a rule collection with the requested name.
+    When: get_policy_network_rule_collection is called.
+    Then: A ValueError is raised instead of silently returning an unrelated collection.
+    """
+    from Azure import get_policy_network_rule_collection
+
+    collection_group = policy_collection_group_with_multiple_collections()
+
+    with pytest.raises(ValueError, match='Network rule collection "not-exists" was not found in the policy.'):
+        get_policy_network_rule_collection(collection_group, "not-exists")
+
+
+def test_firewall_network_rule_update_command_policy_multiple_collections(mocker):
+    """
+    Given: An AzureClient whose policy rule collection group holds several rule collections.
+    When: firewall_network_rule_update_command is called for a rule in the second collection.
+    Then: Only the matching collection is updated and the other collection is left untouched.
+    """
+    from Azure import AzureClient, firewall_network_rule_update_command
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_policy_rule_collection_group_get.return_value = policy_collection_group_with_multiple_collections()
+    client.firewall_policy_rule_collection_group_create_or_update.return_value = policy_collection_group()
+
+    args = {
+        **FIREWALL_ARGS,
+        "policy": "my-policy",
+        "collection_name": "my-collection",
+        "rule_name": "my-rule",
+        "description": "updated",
+    }
+
+    firewall_network_rule_update_command(client=client, params={}, args=args)
+
+    sent_group = client.firewall_policy_rule_collection_group_create_or_update.call_args.kwargs["collection_data"]
+    other_collection, updated_collection = sent_group["properties"]["ruleCollections"]
+    assert updated_collection["name"] == "my-collection"
+    assert updated_collection["rules"][0]["description"] == "updated"
+    assert other_collection["name"] == "other-collection"
+    assert other_collection["rules"][0]["description"] == "other"
+
+
+def test_firewall_policy_network_rule_collection_exists_propagates_non_404_error(mocker):
+    """
+    Given: An AzureClient whose rule collection group lookup fails with an error that is not a 404.
+    When: firewall_policy_network_rule_collection_exists is called.
+    Then: The error is propagated instead of being reported as a missing rule collection group.
+    """
+    from Azure import AzureClient, firewall_policy_network_rule_collection_exists
+
+    client = mocker.Mock(spec=AzureClient)
+    client.firewall_policy_rule_collection_group_get.side_effect = ValueError("500 Internal Server Error")
+
+    with pytest.raises(ValueError, match="500 Internal Server Error"):
+        firewall_policy_network_rule_collection_exists(
+            client=client,
+            subscription_id="sub-id",
+            resource_group_name="rg",
+            policy="my-policy",
+            collection_name="my-collection",
+        )
 
 
 def test_firewall_network_rule_collection_update_command_firewall(mocker):
