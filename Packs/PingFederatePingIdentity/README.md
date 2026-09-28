@@ -27,7 +27,7 @@ The modeling rule maps the PingFederate audit log events that are written in CEF
 
 ## Collect Events from PingFederate
 
-To collect the PingFederate audit log, configure PingFederate to write the audit log in CEF format and forward it to Cortex using a Broker VM.
+To collect the PingFederate audit log, configure PingFederate to write the audit log in CEF format and forward it to Cortex XSIAM using a Broker VM.
 
 ### Configure PingFederate to Write the Audit Log in CEF
 

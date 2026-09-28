@@ -57,7 +57,7 @@ alter
         tmp_event_name),
     xdm.event.operation = if(
         tmp_event_name in ("AUTHN_ATTEMPT", "AUTHN_SESSION_CREATED", "AUTHN_SESSION_USED", "SSO", "OAuth"), XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
-        tmp_event_name in ("AUTHN_SESSIONS_DELETED", "SLO", "SRI_REVOKED"), XDM_CONST.OPERATION_TYPE_DELETE,
+        tmp_event_name in ("AUTHN_SESSIONS_DELETED", "SRI_REVOKED"), XDM_CONST.OPERATION_TYPE_DELETE,
         XDM_CONST.OPERATION_TYPE_AUTHENTICATION),
     xdm.event.operation_sub_type = tmp_event_name,
     xdm.auth.auth_method = tmp_protocol, // SAML20, WSFED or OAuth20.
@@ -72,6 +72,14 @@ alter
     xdm.source.user.groups = tmp_groups,
     xdm.source.user.roles = tmp_attr_roles,
     xdm.source.user.identity_type = if(tmp_username != null or tmp_upn != null, XDM_CONST.IDENTITY_TYPE_USER, XDM_CONST.IDENTITY_TYPE_UNKNOWN),
+    xdm.source.identity.username = tmp_username,
+    xdm.source.identity.upn = tmp_upn,
+    xdm.source.identity.identifier = coalesce(tmp_attr_saml_subject, if(duid != "", duid, null)),
+    xdm.source.identity.first_name = tmp_attr_first_name,
+    xdm.source.identity.last_name = tmp_attr_last_name,
+    xdm.source.identity.groups = tmp_groups,
+    xdm.source.identity.roles = tmp_attr_roles,
+    xdm.source.identity.identity_type = if(tmp_username != null or tmp_upn != null, XDM_CONST.IDENTITY_TYPE_USER, XDM_CONST.IDENTITY_TYPE_UNKNOWN),
     xdm.target.host.hostname = dvchost,
     xdm.target.host.fqdn = if(dvchost contains ".", dvchost, null),
     xdm.target.url = tmp_target_application_url;
