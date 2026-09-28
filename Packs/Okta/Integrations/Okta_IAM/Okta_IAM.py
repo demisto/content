@@ -39,9 +39,38 @@ class Client(BaseClient):
     Okta IAM Client class that implements logic to authenticate with Okta.
     """
 
+    def _apply_ucp_api_key(self, credentials, ctx):
+        """
+        Override BaseClient._apply_ucp_api_key to place the brokered API token using Okta's
+        ``SSWS`` scheme instead of the default ``Bearer`` scheme.
+
+        Args:
+            credentials (dict): The brokered credentials from getUCPCredentials().
+            ctx (UcpRequestContext): The request context to mutate.
+        """
+        api_key_data = credentials.get("api_key", credentials)
+        key = api_key_data.get("key", "")
+        if not key:
+            demisto.error("[UCP][Okta_IAM] API key is empty in UCP credentials")
+            raise UcpException
+        ctx.headers["Authorization"] = f"SSWS {key}"
+
     def test_connection(self):
+        # ``users/me`` has no user under an OAuth app token (403 E0000005), so when UCP brokers an
+        # oauth2 credential probe the user-list endpoint instead (envelope type read directly).
         uri = "users/me"
-        self._http_request(method="GET", url_suffix=uri)
+        try:
+            if should_use_ucp_auth():
+                creds = get_ucp_credentials()
+                cred_type = creds.get("type") if isinstance(creds, dict) else None
+                if cred_type and str(cred_type).startswith("oauth2"):
+                    uri = "users"
+        except Exception as e:
+            demisto.debug(f"[UCP][Okta_IAM] test_connection could not read envelope type: {e}")
+        if uri == "users":
+            self._http_request(method="GET", url_suffix=uri, params={"limit": 1})
+        else:
+            self._http_request(method="GET", url_suffix=uri)
 
     def get_user(self, filter_name: str, filter_value: str):
         filter_name = filter_name if filter_name == "id" else f"profile.{filter_name}"
@@ -91,9 +120,24 @@ class Client(BaseClient):
         return okta_fields
 
     def http_request(self, method, url_suffix, full_url=None, params=None, data=None, headers=None):
+        full_url = full_url if full_url else urljoin(self._base_url, url_suffix)
+
+        # Under UCP route through BaseClient._http_request so the brokered credential is injected;
+        # resp_type="response" preserves the requests.Response return contract callers rely on.
+        if should_use_ucp_auth():
+            return self._http_request(
+                method=method,
+                url_suffix=url_suffix if not full_url else "",
+                full_url=full_url,
+                params=params,
+                json_data=data,
+                headers=headers,
+                resp_type="response",
+                ok_codes=None,
+            )
+
         if headers is None:
             headers = self._headers
-        full_url = full_url if full_url else urljoin(self._base_url, url_suffix)
 
         res = requests.request(method, full_url, verify=self._verify, headers=headers, params=params, json=data)
         return res
@@ -348,10 +392,10 @@ def get_error_details(res):
     Returns:
         (str) The parsed error details.
     """
-    error_msg = f'{res.get("errorSummary")}. '
+    error_msg = f"{res.get('errorSummary')}. "
     causes = ""
     for idx, cause in enumerate(res.get("errorCauses", []), 1):
-        causes += f'{idx}. {cause.get("errorSummary")}\n'
+        causes += f"{idx}. {cause.get('errorSummary')}\n"
     if causes:
         error_msg += f"Reason:\n{causes}"
     return error_msg
@@ -854,7 +898,9 @@ def main():
     base_url = urljoin(params["url"].strip("/"), "/api/v1/")
     token = params.get("credentials", {}).get("password", "") or params.get("apitoken", "")
 
-    if not token:
+    # Under UCP the brokered credential is not in demisto.params(), so skip this presence gate;
+    # BaseClient injects the credential at request time instead.
+    if not should_use_ucp_auth() and not token:
         raise ValueError("Missing API token.")
 
     mapper_in = params.get("mapper-in")
@@ -877,7 +923,11 @@ def main():
     fetch_query_filter = params.get("fetch_query_filter")
     context = demisto.getIntegrationContext()
 
-    headers = {"Content-Type": "application/json", "Accept": "application/json", "Authorization": f"SSWS {token}"}
+    # Under UCP do NOT set the legacy SSWS header or it overwrites the brokered one and 401s;
+    # set it only when UCP is off (which includes the coexisting grouped connector).
+    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    if not should_use_ucp_auth():
+        headers["Authorization"] = f"SSWS {token}"
 
     client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, headers=headers, ok_codes=(200,))
 

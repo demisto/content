@@ -26,6 +26,7 @@ from Okta_v2 import (
     verify_push_factor_command,
     verify_mfa_status_command,
     extract_user_and_factor_id_from_url,
+    reset_auth_command,
 )
 
 client = Client(base_url="demisto.com", api_token="XXX")
@@ -1438,3 +1439,50 @@ def test_clear_user_sessions_without_oauth_tokens(mocker):
         resp_type="text",
     )
     assert "TestUserID789" in readable_output
+
+
+def test_reset_auth_command_ucp(mocker):
+    """
+    Given:
+        - An instance running under the Unified Connector Platform (should_use_ucp_auth() is True).
+    When:
+        - Running okta-auth-reset (reset_auth_command).
+    Then:
+        - The UCP credential cache is invalidated for the resolved method_unique_id.
+        - The legacy integration context is NOT cleared.
+    """
+    import Okta_v2
+
+    mocker.patch.object(Okta_v2, "should_use_ucp_auth", return_value=True)
+    mocker.patch.object(Okta_v2, "get_ucp_method_unique_id", return_value="mid-123")
+    mock_invalidate = mocker.patch.object(Okta_v2, "invalidate_ucp_credentials")
+    mock_reset_context = mocker.patch.object(Okta_v2, "reset_integration_context")
+
+    result = reset_auth_command(client, {})
+
+    mock_invalidate.assert_called_once_with("mid-123")
+    mock_reset_context.assert_not_called()
+    assert "cleared successfully" in result.readable_output
+
+
+def test_reset_auth_command_legacy(mocker):
+    """
+    Given:
+        - An instance NOT running under UCP (should_use_ucp_auth() is False) - grouped/legacy path.
+    When:
+        - Running okta-auth-reset (reset_auth_command).
+    Then:
+        - The legacy integration context is cleared.
+        - The UCP credential cache is NOT invalidated.
+    """
+    import Okta_v2
+
+    mocker.patch.object(Okta_v2, "should_use_ucp_auth", return_value=False)
+    mock_invalidate = mocker.patch.object(Okta_v2, "invalidate_ucp_credentials")
+    mock_reset_context = mocker.patch.object(Okta_v2, "reset_integration_context")
+
+    result = reset_auth_command(client, {})
+
+    mock_reset_context.assert_called_once()
+    mock_invalidate.assert_not_called()
+    assert "cleared successfully" in result.readable_output

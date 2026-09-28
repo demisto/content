@@ -1197,7 +1197,12 @@ def create_group_command(client, args):
 
 
 def reset_auth_command(client, args):
-    reset_integration_context()
+    # Under UCP the token is cached per method_unique_id in CSP, not the integration context;
+    # invalidate the UCP cache. Off UCP (grouped/legacy), clear the integration context as before.
+    if should_use_ucp_auth():
+        invalidate_ucp_credentials(get_ucp_method_unique_id())
+    else:
+        reset_integration_context()
     return CommandResults(readable_output="Authentication data cleared successfully.")
 
 
@@ -1307,7 +1312,11 @@ def main():
             proxy=params.get("proxy", False),
             ok_codes=(200, 201, 204),
             api_token=params.get("credentials", {}).get("password") or params.get("apitoken"),
-            auth_type=AuthType.OAUTH if argToBoolean(params.get("use_oauth", False)) else AuthType.API_TOKEN,
+            # Under UCP derive the auth type from the brokered envelope (an OAuth app token has no
+            # "me" user); fall back to the legacy `use_oauth` param when UCP is off.
+            auth_type=resolve_ucp_auth_type(
+                default=AuthType.OAUTH if argToBoolean(params.get("use_oauth", False)) else AuthType.API_TOKEN
+            ),
             client_id=params.get("client_id"),
             scopes=OAUTH_TOKEN_SCOPES,
             private_key=params.get("private_key"),
