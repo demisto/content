@@ -1,144 +1,152 @@
-# TypeSafe Jev
+Use TypeSafe Jev typed judgments and calibrated probabilities in Cortex XSIAM and XSOAR playbooks.
+This integration was integrated and tested with version xx of TypeSafe Jev.
 
-This integration connects Cortex XSIAM/XSOAR playbooks to TypeSafe's Jev
-System One API.
+## Configure TypeSafe Jev in Cortex
 
-## Configure the integration
 
-| Parameter | Required | Description |
+| **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | Yes | TypeSafe API base URL. Keep `https://api.typesafe.ai`. |
-| API Key | Yes | TypeSafe API key. Stored as a password-type parameter. |
-| Model | No | Defaults to `jev-latest`. Pin a version if thresholds were tuned against it. |
-| Request timeout | Yes | HTTP request timeout in seconds. |
-| Trust any certificate | No | Disables TLS verification. Not recommended. |
-| Use system proxy settings | No | Uses the Cortex proxy configuration. |
-
-Click **Test** to validate the API key and connection.
+| Server URL |  | True |
+| API Key | The TypeSafe API key used to authenticate Jev requests. Generate or manage keys in the TypeSafe console. | True |
+| Model | The default Jev model. Use a pinned version when playbook thresholds have been validated against that version. | False |
+| Model (optional free text override) | The optional model name that overrides the selected model. | False |
+| Request timeout | The HTTP request timeout in seconds. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
 ## Commands
 
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### jev-evaluate
 
-Evaluates text or JSON state against a JSON map of TypeSafe questions. This is
-the most flexible command and supports several questions in one request.
+***
+Evaluate a state against one or more typed TypeSafe questions in a single request.
+
+#### Base Command
+
+`jev-evaluate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| state | The text or JSON state to evaluate. Valid JSON is sent as structured state; other values are sent as text. | Required | 
+| questions | The JSON object whose keys are question IDs and whose values are TypeSafe Noul, Choice, or Score question definitions. | Required | 
+| model | The optional model override for this request. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TypeSafeJev.Evaluation.model | String | The versioned model that handled the request. | 
+| TypeSafeJev.Evaluation.answers | Unknown | The typed answers keyed by the submitted question IDs. | 
+| TypeSafeJev.Evaluation.usage.input_tokens | Number | The number of input tokens used by the request. | 
+| TypeSafeJev.Evaluation.usage.output_tokens | Number | The number of output tokens reported for the request. | 
 
 ### jev-noul
 
-Evaluates one yes/no judgment. The `probability` output is the probability of
-yes on a scale from 0 to 1. Noul does not have a separate confidence value.
+***
+Evaluate one yes/no judgment and return the probability that the answer is yes.
+
+#### Base Command
+
+`jev-noul`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| state | The text or JSON state to evaluate. | Required | 
+| instructions | The narrow yes/no judgment to make about the state. | Required | 
+| true_criteria | The optional description of what a yes result means. | Optional | 
+| false_criteria | The optional description of what a no result means. | Optional | 
+| model | The optional model override for this request. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TypeSafeJev.Noul.model | String | The versioned model that handled the request. | 
+| TypeSafeJev.Noul.probability | Number | The probability of yes, from 0 to 1. | 
+| TypeSafeJev.Noul.usage | Unknown | The token usage for the request. | 
 
 ### jev-choice
 
-Selects one option from the supplied JSON object. Returns the selected option,
-the full probability distribution, and confidence.
+***
+Select one option from a defined set and return the complete probability distribution.
+
+#### Base Command
+
+`jev-choice`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| state | The text or JSON state to evaluate. | Required | 
+| instructions | The decision Jev should make about the state. | Required | 
+| criteria | The JSON object mapping each option name to its description or null. Include a no-match option when appropriate. | Required | 
+| model | The optional model override for this request. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TypeSafeJev.Choice.model | String | The versioned model that handled the request. | 
+| TypeSafeJev.Choice.choice | String | The selected option. | 
+| TypeSafeJev.Choice.probabilities | Unknown | The probability distribution over all supplied options. | 
+| TypeSafeJev.Choice.confidence | Number | The confidence derived from the probability distribution. | 
+| TypeSafeJev.Choice.usage | Unknown | The token usage for the request. | 
 
 ### jev-score
 
-Scores state against an ordered JSON array of two to ten level descriptions.
-Returns the probability-weighted score, legend, full distribution, and
-confidence.
+***
+Score state against ordered levels and return the weighted score and probability distribution.
+
+#### Base Command
+
+`jev-score`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| state | The text or JSON state to evaluate. | Required | 
+| instructions | The dimension Jev should score about the state. | Required | 
+| criteria | The JSON array of two to ten ordered, standalone level descriptions. | Required | 
+| model | The optional model override for this request. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TypeSafeJev.Score.model | String | The versioned model that handled the request. | 
+| TypeSafeJev.Score.score | Number | The probability-weighted score across the ordered levels. | 
+| TypeSafeJev.Score.legend | Unknown | The mapping from numeric level to its description. | 
+| TypeSafeJev.Score.probabilities | Unknown | The probability distribution over the levels. | 
+| TypeSafeJev.Score.confidence | Number | The confidence derived from the probability distribution. | 
+| TypeSafeJev.Score.usage | Unknown | The token usage for the request. | 
 
 ### jev-list-models
 
-Lists model aliases available to the configured TypeSafe account.
+***
+List model aliases available to the configured TypeSafe account.
 
-## Command examples
+#### Base Command
 
-Run the commands from a case or Playground War Room after enabling an
-integration instance.
+`jev-list-models`
 
-### Evaluate multiple typed questions
+#### Input
 
-```text
-!jev-evaluate state="{\"alert\":{\"name\":\"Impossible travel\",\"severity\":\"high\"}}" questions="{\"needs_review\":{\"type\":\"noul\",\"instructions\":\"Does `alert` require analyst review?\"},\"response_route\":{\"type\":\"choice\",\"instructions\":\"Which route best fits `alert`?\",\"criteria\":{\"investigate\":\"Suspicious activity requiring investigation\",\"close\":\"Expected or benign activity\"}}}"
-```
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
-### Evaluate a yes/no judgment
+#### Context Output
 
-```text
-!jev-noul state="Suspicious PowerShell launched from Microsoft Word" instructions="Does this activity strongly indicate malicious execution?"
-```
-
-### Select one response route
-
-```text
-!jev-choice state="A user reports a duplicate credit card charge" instructions="Which response queue should receive this incident?" criteria="{\"fraud\":\"Unauthorized or suspicious payment activity\",\"billing\":\"Duplicate or incorrect legitimate charge\",\"other\":\"None of the above\"}"
-```
-
-### Score security risk
-
-```text
-!jev-score state="Repeated failed logins followed by a successful login from a new country" instructions="Rate the security risk" criteria="[\"Low risk\",\"Moderate risk\",\"High risk\",\"Critical risk\"]"
-```
-
-### List available models
-
-```text
-!jev-list-models
-```
-
-The War Room CLI requires double quotes around values containing spaces. For a
-JSON argument, escape its inner double quotes as `\"`. In a playbook task,
-enter the JSON directly in the argument field without CLI escaping.
-
-## Example XSIAM playbook configuration
-
-After configuring and testing the integration instance, add an **Automation**
-task to a playbook and select `jev-choice`. A separate automation script is not
-required.
-
-Create a playbook input named `IncidentText` and map it to the incident field
-Jev should examine, such as the incident details. Set the command arguments:
-
-| Argument | Value |
-| --- | --- |
-| `state` | `${inputs.IncidentText}` |
-| `instructions` | `Which response route best matches the security incident described in the state?` |
-| `criteria` | `{"isolate_endpoint":"Strong evidence of active endpoint compromise requiring containment","investigate":"Suspicious activity requiring analyst investigation","close_benign":"Expected or clearly benign activity","manual_review":"Evidence is insufficient, ambiguous, or does not fit another option"}` |
-| `model` | `jev-1.13.0` (optional; pin after validating thresholds) |
-
-Use these context outputs in the following conditional tasks:
-
-```text
-TypeSafeJev.Choice.choice
-TypeSafeJev.Choice.probabilities
-TypeSafeJev.Choice.confidence
-TypeSafeJev.Choice.model
-TypeSafeJev.Choice.usage
-```
-
-Illustrative branching policy:
-
-```text
-IF TypeSafeJev.Choice.choice == "isolate_endpoint"
-AND TypeSafeJev.Choice.confidence >= 0.90
-    -> request approval, then run containment
-
-ELSE IF TypeSafeJev.Choice.choice == "investigate"
-AND TypeSafeJev.Choice.confidence >= 0.70
-    -> continue investigation
-
-ELSE
-    -> analyst review
-```
-
-The schema is predictable: `choice` is one of the supplied criteria keys,
-`probabilities` contains the distribution over those keys, and `confidence` is
-between 0 and 1. The judgment is probabilistic; validate thresholds on your own
-incidents and retain analyst approval for high-impact actions.
-
-### Test from the War Room
-
-```text
-!jev-choice state="Suspicious PowerShell launched by Microsoft Word" instructions="Which response route best matches this security incident?" criteria="{\"isolate_endpoint\":\"Strong evidence of active endpoint compromise requiring containment\",\"investigate\":\"Suspicious activity requiring analyst investigation\",\"close_benign\":\"Expected or clearly benign activity\",\"manual_review\":\"Insufficient or ambiguous evidence\"}"
-```
-
-## Playbook guidance
-
-- Keep deterministic rules and remediation actions in the playbook.
-- Ask one narrow judgment per question and batch independent questions that use
-  the same state.
-- Use explicit thresholds tested on your own incidents.
-- Route uncertain and high-impact cases to an analyst.
-- Do not send secrets or unnecessary incident data to the API.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TypeSafeJev.Model.name | String | The model name or alias. | 
+| TypeSafeJev.Model.description | String | The model description. | 
+| TypeSafeJev.Model.release_date | Date | The model release date. | 

@@ -9,7 +9,7 @@ DEFAULT_BASE_URL = "https://api.typesafe.ai"
 DEFAULT_MODEL = "jev-latest"
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     """HTTP client for the TypeSafe System One API."""
 
     def __init__(
@@ -244,35 +244,35 @@ def test_module(client: Client) -> str:
 
 def main() -> None:
     params = demisto.params()
-    api_key_param = params.get("apikey")
-    api_key = api_key_param.get("password") if isinstance(api_key_param, dict) else api_key_param
+    api_key = params.get("apikey", {}).get("password")
     if not api_key:
         return_error("API Key is required.")
         return
 
-    selected_model = params.get("model-freetext") or params.get("model-select") or DEFAULT_MODEL
+    selected_model = params.get("model_freetext") or params.get("model_select") or DEFAULT_MODEL
     client = Client(
         base_url=params.get("url", DEFAULT_BASE_URL),
         api_key=api_key,
         model=selected_model,
         verify=not params.get("insecure", False),
         proxy=params.get("proxy", False),
-        timeout=int(params.get("timeout", 30)),
+        timeout=arg_to_number(params.get("timeout", 30)),
     )
 
     command = demisto.command()
+    args = demisto.args()
     demisto.debug(f"Command being called is {command}")
     try:
         if command == "test-module":
             return_results(test_module(client))
         elif command == "jev-evaluate":
-            return_results(evaluate_command(client, demisto.args()))
+            return_results(evaluate_command(client, args))
         elif command == "jev-noul":
-            return_results(noul_command(client, demisto.args()))
+            return_results(noul_command(client, args))
         elif command == "jev-choice":
-            return_results(choice_command(client, demisto.args()))
+            return_results(choice_command(client, args))
         elif command == "jev-score":
-            return_results(score_command(client, demisto.args()))
+            return_results(score_command(client, args))
         elif command == "jev-list-models":
             return_results(list_models_command(client))
         else:

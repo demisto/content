@@ -3,7 +3,7 @@
     "description": "Use TypeSafe Jev typed judgments and calibrated probabilities in Cortex XSIAM and XSOAR playbooks.",
     "support": "community",
     "currentVersion": "1.0.0",
-    "author": "Community",
+    "author": "Kristian Juoperi",
     "url": "https://docs.typesafe.ai/",
     "email": "",
     "created": "2026-09-22T00:00:00Z",
