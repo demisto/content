@@ -19,7 +19,7 @@ It retrieves a JSON Web Token (`session_jwt`) and caches it in integration conte
 You can configure the integration to fetch alerts, incidents, or both using the **Vega Entities to fetch** parameter.
 
 - **Alerts**: Fetches Vega alerts. You can filter the fetched alerts by specific severities (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`), statuses (`Open`,`In Progress`, `Peer Review`, `Resolved`), and verdicts (`Malicious`, `Suspicious`, `Benign`, `Inconclusive`, `N/A`).
-- **Incidents**: Fetches Vega incidents. You can filter the fetched incidents by specific severities (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`), statuses (`New`, `Investigating`, `On Hold`, `External Escalation`, `Resolved`, `Reopened`, `Review Recommended`, `Response Required`, `Under Review`), and verdicts (`Malicious`, `Suspicious`, `Benign`, `Inconclusive`, `N/A`).
+- **Incidents**: Fetches Vega incidents. You can filter the fetched incidents by specific severities (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`), user statuses (`Open`, `In Review`, `On Hold`, `Resolved`), investigation statuses (`Pending`/`NEW`, `Investigating`, `Completed`, `Failed`), and verdicts (`Malicious`, `Suspicious`, `Benign`, `Inconclusive`, `N/A`). If a status filter is left empty, all values for that filter are fetched.
 - **Backfill Days**: Select how many days before today to retrieve alerts and incidents on the very first run (0–365). Use `0` for today only; the default is `30`.
 
 ### Mirroring
@@ -27,5 +27,5 @@ You can configure the integration to fetch alerts, incidents, or both using the 
 - **Vega to Cortex XSOAR** mirroring is always enabled for fetched Vega alerts and incidents.
 - **Cortex XSOAR to Vega** mirroring is controlled by **Enable XSOAR to Vega mirroring** in the **Autoclosure** section (enabled by default).
 - Mirrored fields for alerts: status, severity, verdict, verdict reasoning, and comments.
-- Mirrored fields for incidents: severity, status, verdict, verdict reasoning, and comments.
+- Mirrored fields for incidents: severity, user status, verdict, verdict reasoning, and comments. Investigation status is synced from Vega and is not sent back on update.
 - Use the **Vega New Comment** field in the Comment section to add a comment from Cortex XSOAR that will be created in Vega.

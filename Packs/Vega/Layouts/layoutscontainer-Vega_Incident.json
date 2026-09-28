@@ -454,10 +454,19 @@
 							},
 							{
 								"endCol": 2,
+								"fieldId": "vegainvestigationstatus",
+								"height": 53,
+								"id": "7c4e1a92-6b18-4f0d-9c33-1a8e5d2b64f0",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
 								"fieldId": "externallink",
 								"height": 53,
 								"id": "0aaefba2-9893-4edc-bcda-562d402d2b90",
-								"index": 6,
+								"index": 7,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -743,6 +752,10 @@
                         "isVisible": true
                     },
                     {
+                        "fieldId": "vegainvestigationstatus",
+                        "isVisible": true
+                    },
+                    {
                         "fieldId": "vegatimelineevents",
                         "isVisible": true
                     },
@@ -950,6 +963,10 @@
                     },
                     {
                         "fieldId": "vegaincidentstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "vegainvestigationstatus",
                         "isVisible": true
                     },
                     {

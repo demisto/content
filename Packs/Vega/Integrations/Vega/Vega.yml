@@ -189,27 +189,35 @@ configuration:
       - HIGH
       - CRITICAL
     defaultvalue: LOW,MEDIUM,HIGH,CRITICAL
-  - display: Incident Statuses to fetch
+  - display: Incident User Statuses to fetch
     additionalinfo: >-
-      The statuses by which to filter incidents. If empty, all statuses are fetched.
-      Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
-      Filter incidents by status. If empty, all statuses are fetched.
+      The analyst user statuses by which to filter incidents. If empty, all user statuses are fetched.
       Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
     name: incident_statuses
     type: 16
     section: Collect
     required: false
     options:
+      - OPEN
+      - IN REVIEW
+      - ON HOLD
+      - RESOLVED
+    defaultvalue: OPEN,IN REVIEW,ON HOLD,RESOLVED
+  - display: Incident Investigation Statuses to fetch
+    additionalinfo: >-
+      The Vega investigation statuses by which to filter incidents. If empty, all investigation statuses are fetched.
+      NEW is shown as Pending in Vega. Any custom values entered outside the available options are ignored
+      and will not affect the fetch cycle.
+    name: incident_investigation_statuses
+    type: 16
+    section: Collect
+    required: false
+    options:
       - NEW
       - INVESTIGATING
-      - ON HOLD
-      - EXTERNAL ESCALATION
-      - RESOLVED
-      - REOPENED
-      - REVIEW RECOMMENDED
-      - RESPONSE REQUIRED
-      - UNDER REVIEW
-    defaultvalue: NEW,INVESTIGATING,ON HOLD,EXTERNAL ESCALATION,RESOLVED,REOPENED,REVIEW RECOMMENDED,RESPONSE REQUIRED,UNDER REVIEW
+      - COMPLETED
+      - FAILED
+    defaultvalue: NEW,INVESTIGATING,COMPLETED,FAILED
   - display: Incident Verdicts to fetch
     additionalinfo: >-
       The verdicts by which to filter incidents. If empty, all verdicts are fetched.
@@ -448,18 +456,13 @@ script:
           isArray: true
           hidden: true
         - name: status
-          description: The target Vega incident status.
+          description: The target Vega incident user status.
           auto: PREDEFINED
           predefined:
-            - NEW
-            - INVESTIGATING
+            - OPEN
+            - IN REVIEW
             - ON HOLD
-            - EXTERNAL ESCALATION
             - RESOLVED
-            - REOPENED
-            - REVIEW RECOMMENDED
-            - RESPONSE REQUIRED
-            - UNDER REVIEW
         - name: verdict
           description: The target Vega incident verdict.
           auto: PREDEFINED
@@ -485,14 +488,17 @@ script:
           description: A comma-separated list of email addresses to assign to the Vega incident.
           isArray: true
       description: >-
-        Immediately update Vega incident status, verdict, verdict reasoning, severity, assignee emails,
+        Immediately update Vega incident user status, verdict, verdict reasoning, severity, assignee emails,
         and/or comment on the Vega platform and sync the open Cortex XSOAR investigation when run from a Vega Incident investigation.
       outputs:
         - contextPath: Vega.Incident.id
           description: Updated Vega incident ID.
           type: String
         - contextPath: Vega.Incident.status
-          description: Updated Vega incident status.
+          description: Updated Vega incident user status.
+          type: String
+        - contextPath: Vega.Incident.investigationStatus
+          description: Vega investigation status returned by the update.
           type: String
         - contextPath: Vega.Incident.verdict
           description: Updated Vega incident verdict.

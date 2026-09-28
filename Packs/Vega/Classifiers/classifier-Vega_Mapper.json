@@ -104,6 +104,9 @@
                 "Vega Incident Status": {
                     "simple": "status"
                 },
+                "Vega Investigation Status": {
+                    "simple": "investigationStatus"
+                },
                 "Vega Assignee": {
                     "simple": "assignee.displayName"
                 },

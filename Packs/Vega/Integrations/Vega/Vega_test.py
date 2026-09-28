@@ -111,7 +111,9 @@ from Vega import (
     filter_alert_verdicts,
     filter_incident_severities,
     filter_incident_statuses,
+    filter_incident_investigation_statuses,
     filter_incident_verdicts,
+    _build_incidents_query_variables,
     resolve_has_related_incidents,
     TEST_CONNECTION_ACCESS_KEY_ERROR,
     TEST_CONNECTION_ACCESS_KEY_ID_ERROR,
@@ -963,17 +965,47 @@ def test_filter_alert_statuses_maps_display_and_ignores_invalid():
 
 
 def test_filter_incident_statuses_maps_display_and_ignores_invalid():
-    assert filter_incident_statuses(["NEW", "ON HOLD", "UNDER REVIEW"]) == [
-        "NEW",
+    assert filter_incident_statuses(["OPEN", "IN REVIEW", "ON HOLD", "RESOLVED"]) == [
+        "OPEN",
+        "IN_REVIEW",
         "ON_HOLD",
-        "UNDER_REVIEW",
+        "RESOLVED",
     ]
-    assert filter_incident_statuses(["EXTERNAL_ESCALATION", "review recommended"]) == [
-        "EXTERNAL_ESCALATION",
-        "REVIEW_RECOMMENDED",
-    ]
-    assert filter_incident_statuses(["NEW", "invalid"]) == ["NEW"]
+    assert filter_incident_statuses(["IN_REVIEW", "on hold"]) == ["IN_REVIEW", "ON_HOLD"]
+    assert filter_incident_statuses(["OPEN", "invalid"]) == ["OPEN"]
+    assert filter_incident_statuses(["NEW", "INVESTIGATING"]) is None
     assert filter_incident_statuses([]) is None
+
+
+def test_filter_incident_investigation_statuses_maps_display_and_uses_all_when_empty():
+    assert filter_incident_investigation_statuses(["NEW", "PENDING", "INVESTIGATING", "COMPLETED", "FAILED"]) == [
+        "NEW",
+        "INVESTIGATING",
+        "COMPLETED",
+        "FAILED",
+    ]
+    assert filter_incident_investigation_statuses(["pending", "invalid"]) == ["NEW"]
+    assert filter_incident_investigation_statuses([]) is None
+    assert filter_incident_investigation_statuses(None) is None
+
+
+def test_build_incidents_query_variables_uses_user_and_investigation_status():
+    variables = _build_incidents_query_variables(
+        statuses=["OPEN", "RESOLVED"],
+        investigation_statuses=["NEW", "INVESTIGATING"],
+        offset=0,
+    )
+
+    assert variables["userStatuses"] == ["OPEN", "RESOLVED"]
+    assert variables["investigationStatuses"] == ["NEW", "INVESTIGATING"]
+    assert "statuses" not in variables
+
+
+def test_build_incidents_query_variables_omits_empty_status_filters():
+    variables = _build_incidents_query_variables(offset=0)
+
+    assert "userStatuses" not in variables
+    assert "investigationStatuses" not in variables
 
 
 def test_filter_severities_accepts_valid_and_ignores_invalid():
@@ -1061,7 +1093,7 @@ def test_normalize_vega_status_for_display_maps_api_values():
     assert _normalize_vega_status_for_display("PEER_REVIEW", "alert") == "PEER REVIEW"
     assert _normalize_vega_status_for_display("OPEN", "alert") == "OPEN"
     assert _normalize_vega_status_for_display("ON_HOLD", "incident") == "ON HOLD"
-    assert _normalize_vega_status_for_display("EXTERNAL_ESCALATION", "incident") == "EXTERNAL ESCALATION"
+    assert _normalize_vega_status_for_display("IN_REVIEW", "incident") == "IN REVIEW"
     assert _normalize_vega_status_for_display("IN PROGRESS", "alert") == "IN PROGRESS"
 
 
@@ -1070,9 +1102,14 @@ def test_format_raw_entity_for_xsoar_normalizes_status_for_dropdown():
     _format_raw_entity_for_xsoar(alert)
     assert alert["status"] == "IN PROGRESS"
 
-    incident = {"vegaEntityType": "Vega Incident", "status": "UNDER_REVIEW"}
+    incident = {
+        "vegaEntityType": "Vega Incident",
+        "userStatus": "IN_REVIEW",
+        "investigationStatus": "PENDING",
+    }
     _format_raw_entity_for_xsoar(incident)
-    assert incident["status"] == "UNDER REVIEW"
+    assert incident["status"] == "IN REVIEW"
+    assert incident["investigationStatus"] == "NEW"
 
 
 def test_validate_backfill_days_rejects_out_of_range():
@@ -2623,18 +2660,18 @@ def test_update_incident_command_no_args_uses_layout_fields(mocker):
             "type": "Vega Incident",
             "CustomFields": {
                 "vegaincidentid": "inc-1",
-                VEGA_INCIDENT_STATUS_FIELD: "UNDER REVIEW",
+                VEGA_INCIDENT_STATUS_FIELD: "IN REVIEW",
                 "vegaverdict": "SUSPICIOUS",
             },
         },
     )
     mock_client = mocker.Mock(spec=Client)
     mock_client.update_incidents.return_value = {
-        "incidents": [{"incidentId": "inc-1", "status": "UNDER_REVIEW", "verdict": "SUSPICIOUS"}]
+        "incidents": [{"incidentId": "inc-1", "userStatus": "IN_REVIEW", "verdict": "SUSPICIOUS"}]
     }
     mock_client.get_incident_by_id.return_value = {
         "id": "inc-1",
-        "status": "UNDER_REVIEW",
+        "userStatus": "IN_REVIEW",
         "verdict": "SUSPICIOUS",
     }
 
@@ -2643,7 +2680,7 @@ def test_update_incident_command_no_args_uses_layout_fields(mocker):
     mock_client.update_incidents.assert_called_once_with(
         {
             "incidentIds": ["inc-1"],
-            "status": "UNDER_REVIEW",
+            "userStatus": "IN_REVIEW",
             "verdict": {"value": "SUSPICIOUS", "reasoning": ""},
         }
     )
@@ -2807,7 +2844,7 @@ def test_update_incident_command_updates_multiple_incidents(mocker):
     mock_client.update_incidents.assert_called_once_with(
         {
             "incidentIds": ["inc-1", "inc-2"],
-            "status": "RESOLVED",
+            "userStatus": "RESOLVED",
             "verdict": {"value": "MALICIOUS", "reasoning": ""},
         }
     )
@@ -2832,7 +2869,7 @@ def test_update_incident_command_accepts_incident_id_alias(mocker):
         mock_client,
         {
             "incident_id": ["inc-1", "inc-2"],
-            "status": "INVESTIGATING",
+            "status": "IN REVIEW",
             "verdict": "SUSPICIOUS",
         },
     )
@@ -2840,7 +2877,7 @@ def test_update_incident_command_accepts_incident_id_alias(mocker):
     mock_client.update_incidents.assert_called_once_with(
         {
             "incidentIds": ["inc-1", "inc-2"],
-            "status": "INVESTIGATING",
+            "userStatus": "IN_REVIEW",
             "verdict": {"value": "SUSPICIOUS", "reasoning": ""},
         }
     )
@@ -2875,7 +2912,7 @@ def test_update_incident_command_updates_with_comment(mocker):
         mock_client,
         {
             "incident_ids": "inc-1",
-            "status": "INVESTIGATING",
+            "status": "IN REVIEW",
             "verdict": "SUSPICIOUS",
             "comment": "Reviewed in XSOAR",
         },
@@ -2884,7 +2921,7 @@ def test_update_incident_command_updates_with_comment(mocker):
     mock_client.update_incidents.assert_called_once_with(
         {
             "incidentIds": ["inc-1"],
-            "status": "INVESTIGATING",
+            "userStatus": "IN_REVIEW",
             "verdict": {"value": "SUSPICIOUS", "reasoning": ""},
             "comment": "Reviewed in XSOAR",
         }
@@ -4608,14 +4645,14 @@ def test_update_remote_system_command_updates_incident_from_custom_fields_delta(
             "incidentChanged": "true",
             "delta": {
                 "CustomFields": {
-                    "vegaincidentstatus": "UNDER REVIEW",
+                    "vegaincidentstatus": "IN REVIEW",
                     "vegaverdict": "BENIGN",
                 }
             },
             "data": {
                 "type": "Vega Incident",
                 "CustomFields": {
-                    "vegaincidentstatus": "UNDER REVIEW",
+                    "vegaincidentstatus": "IN REVIEW",
                     "vegaverdict": "BENIGN",
                 },
             },
@@ -4625,7 +4662,7 @@ def test_update_remote_system_command_updates_incident_from_custom_fields_delta(
     mock_client.update_incidents.assert_called_once_with(
         {
             "incidentIds": ["inc-1"],
-            "status": "UNDER_REVIEW",
+            "userStatus": "IN_REVIEW",
             "verdict": {"value": "BENIGN", "reasoning": ""},
         }
     )
@@ -4720,15 +4757,15 @@ def test_update_remote_system_command_updates_incident_from_delta_status_field(m
         {
             "remoteId": "inc-1",
             "incidentChanged": "true",
-            "delta": {"vegaincidentstatus": "UNDER REVIEW"},
-            "data": {"CustomFields": {"vegaincidentstatus": "INVESTIGATING"}},
+            "delta": {"vegaincidentstatus": "IN REVIEW"},
+            "data": {"CustomFields": {"vegaincidentstatus": "OPEN"}},
         },
     )
 
     mock_client.update_incidents.assert_called_once_with(
         {
             "incidentIds": ["inc-1"],
-            "status": "UNDER_REVIEW",
+            "userStatus": "IN_REVIEW",
         }
     )
     mock_client.update_alerts.assert_not_called()

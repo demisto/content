@@ -22,7 +22,8 @@ This is the default integration for this content pack when configured by the Dat
 | Alert Verdicts to fetch | The verdicts by which to filter alerts. If empty, all verdicts are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
 | Has related incidents | The filter for alerts based on whether they have related incidents. Select Yes to fetch alerts with related incidents, No to fetch alerts without related incidents, or both to fetch all alerts. At least one option must be selected. Filter alerts by whether they have related incidents. Select Yes to fetch alerts with related incidents, No to fetch alerts without related incidents, or both to fetch all alerts. At least one option must be selected. | True |
 | Incident Severities to fetch | The severities by which to filter incidents. If empty, all severities are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. Filter incidents by severity. If empty, all severities are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
-| Incident Statuses to fetch | The statuses by which to filter incidents. If empty, all statuses are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. Filter incidents by status. If empty, all statuses are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
+| Incident User Statuses to fetch | The analyst user statuses by which to filter incidents. If empty, all user statuses are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
+| Incident Investigation Statuses to fetch | The Vega investigation statuses by which to filter incidents. If empty, all investigation statuses are fetched. NEW is shown as Pending in Vega. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
 | Incident Verdicts to fetch | The verdicts by which to filter incidents. If empty, all verdicts are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. Filter incidents by verdict. If empty, all verdicts are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
 | Incident type |  | False |
 | Trust any certificate (not secure) |  | False |
@@ -152,7 +153,7 @@ Immediately update Vega alert status, severity, verdict, verdict reasoning, assi
 ### vega-update-incident
 
 ***
-Immediately update Vega incident status, verdict, verdict reasoning, severity, assignee emails, and/or comment on the Vega platform and sync the open Cortex XSOAR investigation when run from a Vega Incident investigation.
+Immediately update Vega incident user status, verdict, verdict reasoning, severity, assignee emails, and/or comment on the Vega platform and sync the open Cortex XSOAR investigation when run from a Vega Incident investigation.
 
 #### Base Command
 
@@ -163,7 +164,7 @@ Immediately update Vega incident status, verdict, verdict reasoning, severity, a
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_ids | A comma-separated list of Vega incident IDs to update. Accepts a comma-separated list or repeated values (for example, incident_ids=inc-1,inc-2). Use this to update incidents directly from the war room without opening an investigation. When omitted, the incident ID is resolved from the current Vega Incident investigation. One or more Vega incident IDs to update. Accepts a comma-separated list or repeated values (for example, incident_ids=inc-1,inc-2). Use this to update incidents directly from the war room without opening an investigation. When omitted, the incident ID is resolved from the current Vega Incident investigation. | Optional |
-| status | The target Vega incident status. Possible values are: NEW, INVESTIGATING, ON HOLD, EXTERNAL ESCALATION, RESOLVED, REOPENED, REVIEW RECOMMENDED, RESPONSE REQUIRED, UNDER REVIEW. | Optional |
+| status | The target Vega incident user status. Possible values are: OPEN, IN REVIEW, ON HOLD, RESOLVED. | Optional |
 | verdict | The target Vega incident verdict. Possible values are: MALICIOUS, SUSPICIOUS, BENIGN, INCONCLUSIVE, NA. | Optional |
 | severity | The target Vega incident severity. Possible values are: LOW, MEDIUM, HIGH, CRITICAL. | Optional |
 | verdict_reasoning | The target Vega incident verdict reasoning. | Optional |
@@ -175,7 +176,8 @@ Immediately update Vega incident status, verdict, verdict reasoning, severity, a
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Vega.Incident.id | String | Updated Vega incident ID. |
-| Vega.Incident.status | String | Updated Vega incident status. |
+| Vega.Incident.status | String | Updated Vega incident user status. |
+| Vega.Incident.investigationStatus | String | Vega investigation status returned by the update. |
 | Vega.Incident.verdict | String | Updated Vega incident verdict. |
 | Vega.Incident.severity | String | Updated Vega incident severity. |
 | Vega.Incident.assignee | String | Updated Vega incident assignee email, display name, or user ID. |

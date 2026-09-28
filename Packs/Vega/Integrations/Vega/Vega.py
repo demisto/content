@@ -60,6 +60,7 @@ MIRROR_ENTITY_SUFFIX_INCIDENT = "incident"
 VEGA_ALERT_STATUS_FIELD = "vegastatus"
 VEGA_ALERT_SEVERITY_FIELD = "vegaalertseverity"
 VEGA_INCIDENT_STATUS_FIELD = "vegaincidentstatus"
+VEGA_INVESTIGATION_STATUS_FIELD = "vegainvestigationstatus"
 VEGA_SEVERITY_FIELD = "vegaseverity"
 VEGA_VERDICT_FIELD = "vegaverdict"
 VEGA_VERDICT_REASONING_FIELD = "vegaverdictreasoning"
@@ -113,20 +114,7 @@ OUTGOING_MIRROR_FIELD_LABELS: tuple[str, ...] = (
 VALID_OUTGOING_MIRROR_FIELD_LABELS = frozenset(OUTGOING_MIRROR_FIELD_LABELS)
 VEGA_CLOSE_STATUSES = frozenset({"RESOLVED"})
 VEGA_ALERT_OPEN_STATUSES = frozenset({"REOPENED", "OPEN", "NEW", "INVESTIGATING", "IN_PROGRESS", "PEER_REVIEW"})
-VEGA_INCIDENT_OPEN_STATUSES = frozenset(
-    {
-        "REOPENED",
-        "OPEN",
-        "NEW",
-        "INVESTIGATING",
-        "IN_PROGRESS",
-        "ON_HOLD",
-        "EXTERNAL_ESCALATION",
-        "REVIEW_RECOMMENDED",
-        "RESPONSE_REQUIRED",
-        "UNDER_REVIEW",
-    }
-)
+VEGA_INCIDENT_OPEN_STATUSES = frozenset({"OPEN", "IN_REVIEW", "ON_HOLD"})
 
 RATE_LIMIT_MAX_RETRIES = 10
 RATE_LIMIT_INITIAL_WAIT_SECONDS = 2
@@ -206,29 +194,20 @@ ALERT_STATUS_DISPLAY_TO_API: dict[str, str] = {
     "RESOLVED": "RESOLVED",
 }
 
-VALID_INCIDENT_STATUSES = frozenset(
-    {
-        "NEW",
-        "INVESTIGATING",
-        "ON_HOLD",
-        "EXTERNAL_ESCALATION",
-        "RESOLVED",
-        "REOPENED",
-        "REVIEW_RECOMMENDED",
-        "RESPONSE_REQUIRED",
-        "UNDER_REVIEW",
-    }
-)
+VALID_INCIDENT_STATUSES = frozenset({"OPEN", "IN_REVIEW", "ON_HOLD", "RESOLVED"})
 INCIDENT_STATUS_DISPLAY_TO_API: dict[str, str] = {
-    "NEW": "NEW",
-    "INVESTIGATING": "INVESTIGATING",
+    "OPEN": "OPEN",
+    "IN REVIEW": "IN_REVIEW",
     "ON HOLD": "ON_HOLD",
-    "EXTERNAL ESCALATION": "EXTERNAL_ESCALATION",
     "RESOLVED": "RESOLVED",
-    "REOPENED": "REOPENED",
-    "REVIEW RECOMMENDED": "REVIEW_RECOMMENDED",
-    "RESPONSE REQUIRED": "RESPONSE_REQUIRED",
-    "UNDER REVIEW": "UNDER_REVIEW",
+}
+VALID_INCIDENT_INVESTIGATION_STATUSES = frozenset({"NEW", "INVESTIGATING", "COMPLETED", "FAILED"})
+INCIDENT_INVESTIGATION_STATUS_DISPLAY_TO_API: dict[str, str] = {
+    "NEW": "NEW",
+    "PENDING": "NEW",
+    "INVESTIGATING": "INVESTIGATING",
+    "COMPLETED": "COMPLETED",
+    "FAILED": "FAILED",
 }
 
 VALID_SEVERITIES = frozenset({"LOW", "MEDIUM", "HIGH", "CRITICAL"})
@@ -301,20 +280,26 @@ GET_ALERT_MIRROR_QUERY = (
 GET_INCIDENT_MIRROR_QUERY = (
     "query GetIncidents($incidentIds: [ID!], $from: Time, $limit: Int, $offset: Int) { "
     " getIncidents(incidentIds: $incidentIds, from: $from, limit: $limit, offset: $offset) { "
-    "  incidents { id status severity verdict verdictReasoning lastUpdated "
+    "  incidents { id userStatus investigationStatus severity verdict verdictReasoning lastUpdated "
     "   comments { text addedBy addedAt } } "
     "  total limit offset "
     "  error { code message } } }"
 )
 
 GET_INCIDENTS_QUERY = (
-    "query GetIncidents($incidentNames: [String!], $incidentIds: [ID!], $severities: [IncidentSeverity!], "
-    "$statuses: [IncidentStatusPublic!], $verdicts: [IncidentVerdictPublic!], "
-    "$from: Time, $updatedFrom: Time, $updatedTo: Time, $limit: Int, $offset: Int) { "
-    " getIncidents(incidentNames: $incidentNames, incidentIds: $incidentIds, severities: $severities, "
-    "statuses: $statuses, verdicts: $verdicts, from: $from, updatedFrom: $updatedFrom, "
-    "updatedTo: $updatedTo, limit: $limit, offset: $offset) { "
-    "  incidents { id name createdBy createdAt lastUpdated severity status dataSources verdict verdictReasoning "
+    "query GetIncidents($incidentNames: [String!], $nameContains: String, $incidentIds: [ID!], "
+    "$vegaIncidentIds: [String!], $severities: [IncidentSeverity!], "
+    "$investigationStatuses: [IncidentInvestigationStatusPublic!], $userStatuses: [IncidentUserStatusPublic!], "
+    "$verdicts: [IncidentVerdictPublic!], $assets: [String!], $from: Time, $to: Time, "
+    "$updatedFrom: Time, $updatedTo: Time, $sortBy: IncidentSortFieldPublic, $sortOrder: SortOrderPublic, "
+    "$limit: Int, $offset: Int) { "
+    " getIncidents(incidentNames: $incidentNames, nameContains: $nameContains, incidentIds: $incidentIds, "
+    "vegaIncidentIds: $vegaIncidentIds, severities: $severities, investigationStatuses: $investigationStatuses, "
+    "userStatuses: $userStatuses, verdicts: $verdicts, assets: $assets, from: $from, to: $to, "
+    "updatedFrom: $updatedFrom, updatedTo: $updatedTo, sortBy: $sortBy, sortOrder: $sortOrder, "
+    "limit: $limit, offset: $offset) { "
+    "  incidents { id vegaUniqueIncidentId name createdBy createdAt lastUpdated severity "
+    "   investigationStatus userStatus dataSources verdict verdictReasoning "
     "   assignee { userId displayName email } "
     "   assignees { userId displayName email } "
     "   comments { text addedBy addedAt } "
@@ -322,7 +307,9 @@ GET_INCIDENTS_QUERY = (
     "   alerts { alertId name createdAt } "
     "   recommendedActions { name description actionKey targetParams } "
     "   investigationPlan { stepName stepConclusion cells { cellName query queryId } } "
-    "   link } "
+    "   labels { id categoryId name color usageCount } "
+    "   skills { id name version } "
+    "   link href } "
     "  total limit offset "
     "  error { code message } } }"
 )
@@ -356,7 +343,7 @@ UPDATE_ALERTS_MUTATION = (
 UPDATE_INCIDENTS_MUTATION = (
     "mutation UpdateIncidents($input: UpdateIncidentsInput!) { "
     " updateIncidents(input: $input) { "
-    "  incidents { incidentId incidentName status "
+    "  incidents { incidentId incidentName investigationStatus userStatus "
     "   assignee { userId displayName email } "
     "   assignees { userId displayName email } "
     "   verdict verdictReasoning updatedAt } "
@@ -499,8 +486,16 @@ def filter_alert_statuses(values: list[str] | None) -> list[str] | None:
 
 
 def filter_incident_statuses(values: list[str] | None) -> list[str] | None:
-    """Validate incident status filters and return Vega API status values."""
+    """Validate incident user-status filters and return Vega API userStatus values."""
     return _filter_fetch_values(values, VALID_INCIDENT_STATUSES, INCIDENT_STATUS_DISPLAY_TO_API)
+
+
+def filter_incident_investigation_statuses(values: list[str] | None) -> list[str] | None:
+    """Validate incident investigation-status filters and return Vega API values.
+
+    An empty selection returns None so the fetch omits the filter and Vega returns every status.
+    """
+    return _filter_fetch_values(values, VALID_INCIDENT_INVESTIGATION_STATUSES, INCIDENT_INVESTIGATION_STATUS_DISPLAY_TO_API)
 
 
 def filter_alert_severities(values: list[str] | None) -> list[str] | None:
@@ -645,6 +640,7 @@ def _build_incidents_query_variables(
     *,
     severities: list[str] | None = None,
     statuses: list[str] | None = None,
+    investigation_statuses: list[str] | None = None,
     verdicts: list[str] | None = None,
     from_time: str | None = None,
     updated_from: str | None = None,
@@ -653,14 +649,19 @@ def _build_incidents_query_variables(
     limit: int | None = None,
     offset: int = 0,
 ) -> dict[str, Any]:
-    """Build GraphQL variables for the getIncidents query."""
+    """Build GraphQL variables for the getIncidents query.
+
+    Empty user-status and investigation-status filters are omitted so Vega returns all values.
+    """
     variables: dict[str, Any] = {"offset": offset}
     if limit is not None:
         variables["limit"] = limit
     if severities:
         variables["severities"] = severities
     if statuses:
-        variables["statuses"] = statuses
+        variables["userStatuses"] = statuses
+    if investigation_statuses:
+        variables["investigationStatuses"] = investigation_statuses
     if verdicts:
         variables["verdicts"] = verdicts
     if from_time:
@@ -927,6 +928,7 @@ class Client(BaseClient):
         self,
         severities: list[str] | None = None,
         statuses: list[str] | None = None,
+        investigation_statuses: list[str] | None = None,
         verdicts: list[str] | None = None,
         from_time: str | None = None,
         updated_from: str | None = None,
@@ -939,6 +941,7 @@ class Client(BaseClient):
         variables = _build_incidents_query_variables(
             severities=severities,
             statuses=statuses,
+            investigation_statuses=investigation_statuses,
             verdicts=verdicts,
             from_time=from_time,
             updated_from=updated_from,
@@ -1597,6 +1600,7 @@ def _collect_incident_custom_fields(incident: dict[str, Any]) -> dict[str, Any]:
         VEGA_ALERT_STATUS_FIELD,
         VEGA_ALERT_SEVERITY_FIELD,
         VEGA_INCIDENT_STATUS_FIELD,
+        VEGA_INVESTIGATION_STATUS_FIELD,
         "vegaverdict",
         "vegaverdictreasoning",
         VEGA_SEVERITY_FIELD,
@@ -2404,6 +2408,12 @@ def _build_vega_incident_custom_fields(raw: dict) -> dict[str, str]:
     incident_id = _normalize_entity_id(raw)
     if incident_id:
         custom_fields["vegaincidentid"] = incident_id
+    status = raw.get("status")
+    if status is not None and str(status).strip():
+        custom_fields[VEGA_INCIDENT_STATUS_FIELD] = str(status)
+    investigation_status = raw.get("investigationStatus")
+    if investigation_status is not None and str(investigation_status).strip():
+        custom_fields[VEGA_INVESTIGATION_STATUS_FIELD] = str(investigation_status)
     created_at = raw.get("createdAt")
     if created_at:
         custom_fields["vegacreatedat"] = str(created_at)
@@ -2517,8 +2527,13 @@ def _format_raw_entity_for_xsoar(raw: dict) -> None:
     entity_type = raw.get("vegaEntityType")
     if entity_type == "Vega Alert" and raw.get("status") is not None:
         raw["status"] = _normalize_vega_status_for_display(str(raw["status"]), MIRROR_ENTITY_SUFFIX_ALERT)
-    elif entity_type == "Vega Incident" and raw.get("status") is not None:
-        raw["status"] = _normalize_vega_status_for_display(str(raw["status"]), MIRROR_ENTITY_SUFFIX_INCIDENT)
+    elif entity_type == "Vega Incident":
+        _apply_incident_user_status(raw)
+        if raw.get("status") is not None:
+            raw["status"] = _normalize_vega_status_for_display(str(raw["status"]), MIRROR_ENTITY_SUFFIX_INCIDENT)
+        investigation_status = raw.get("investigationStatus")
+        if investigation_status is not None and str(investigation_status).strip():
+            raw["investigationStatus"] = _normalize_investigation_status_for_display(str(investigation_status))
 
     if raw.get("verdict") is not None or raw.get("userVerdict") is not None:
         raw["verdict"] = _normalize_vega_verdict_for_display(_extract_vega_verdict_from_entity(raw))
@@ -2592,6 +2607,36 @@ def _normalize_vega_severity_for_display(severity: Any) -> str:
     return normalized if normalized in VALID_SEVERITIES else normalized
 
 
+def _apply_incident_user_status(entity: dict[str, Any]) -> None:
+    """Copy userStatus onto status so incident status handling uses the analyst status."""
+    user_status = entity.get("userStatus")
+    if user_status is not None and str(user_status).strip():
+        entity["status"] = user_status
+
+
+def _incident_mirror_status(entity: dict[str, Any]) -> str:
+    """Return the incident user status used for close, reopen, and field sync."""
+    user_status = entity.get("userStatus")
+    if user_status is not None and str(user_status).strip():
+        return str(user_status)
+    return str(entity.get("status") or "")
+
+
+def _normalize_investigation_status_for_api(status: str) -> str:
+    """Map an investigation status label to the GraphQL API enum."""
+    normalized = str(status or "").strip().upper()
+    return INCIDENT_INVESTIGATION_STATUS_DISPLAY_TO_API.get(normalized, normalized.replace(" ", "_"))
+
+
+def _normalize_investigation_status_for_display(status: str) -> str:
+    """Map a Vega investigation status to the incident-field dropdown value."""
+    normalized = _normalize_investigation_status_for_api(status)
+    api_to_display: dict[str, str] = {}
+    for display, api_value in INCIDENT_INVESTIGATION_STATUS_DISPLAY_TO_API.items():
+        api_to_display.setdefault(api_value, display)
+    return api_to_display.get(normalized, normalized.replace("_", " "))
+
+
 def _normalize_vega_status_for_api(status: str, entity_type: str) -> str:
     """Map a Vega status value to the GraphQL API enum format."""
     normalized = str(status or "").strip().upper()
@@ -2633,7 +2678,7 @@ def _build_close_reopen_sync_entries(status: str, entity_type_suffix: str) -> li
                 "Note": True,
             }
         )
-    elif api_status in {"REOPENED", "OPEN", "NEW", "INVESTIGATING", "IN_PROGRESS"}:
+    elif api_status in {"REOPENED", "OPEN", "NEW", "INVESTIGATING", "IN_PROGRESS", "IN_REVIEW", "ON_HOLD"}:
         entries.append(
             {
                 "Type": EntryType.NOTE,
@@ -2741,7 +2786,7 @@ def _build_direct_incident_update_payload(args: dict[str, Any]) -> dict[str, Any
     update_input: dict[str, Any] = {}
     status = args.get("status") or args.get("incident_status")
     if status is not None and str(status).strip():
-        update_input["status"] = _validate_incident_status_value(str(status))
+        update_input["userStatus"] = _validate_incident_status_value(str(status))
     verdict = args.get("verdict")
     verdict_reasoning = args.get("verdict_reasoning")
     if verdict is not None and str(verdict).strip():
@@ -2805,9 +2850,12 @@ def _format_push_incident_output(
         severity_value = requested_severity
     output: dict[str, str] = {
         "id": str(incident.get("incidentId") or incident.get("id") or ""),
-        "status": _normalize_vega_status_for_display(str(incident.get("status") or ""), MIRROR_ENTITY_SUFFIX_INCIDENT),
+        "status": _normalize_vega_status_for_display(_incident_mirror_status(incident), MIRROR_ENTITY_SUFFIX_INCIDENT),
         "verdict": _normalize_vega_verdict_for_display(incident.get("verdict")),
     }
+    investigation_status = incident.get("investigationStatus")
+    if investigation_status is not None and str(investigation_status).strip():
+        output["investigationStatus"] = _normalize_investigation_status_for_display(str(investigation_status))
     if severity_value is not None:
         output["severity"] = _normalize_vega_severity_for_display(severity_value)
     assignee = _format_assignee_output(incident.get("assignee"))
@@ -3500,6 +3548,7 @@ def _normalize_incident_api_entity(entity: dict[str, Any]) -> dict[str, Any]:
         normalized["lastUpdated"] = normalized["lastUpdate"]
     if normalized.get("alertCount") is not None and normalized.get("alertsCount") is None:
         normalized["alertsCount"] = normalized["alertCount"]
+    _apply_incident_user_status(normalized)
     return normalized
 
 
@@ -3591,6 +3640,7 @@ def _build_fetch_filter_fingerprint(
     statuses: list[str] | None,
     verdicts: list[str] | None,
     has_related_incidents: bool | None = None,
+    investigation_statuses: list[str] | None = None,
 ) -> str:
     """Build a stable fingerprint for fetch filter parameters."""
     payload: dict[str, Any] = {
@@ -3600,6 +3650,8 @@ def _build_fetch_filter_fingerprint(
     }
     if has_related_incidents is not None:
         payload["hasRelatedIncidents"] = has_related_incidents
+    if investigation_statuses is not None:
+        payload["investigationStatuses"] = sorted(investigation_statuses)
     return json.dumps(payload, sort_keys=True)
 
 
@@ -4114,10 +4166,21 @@ def _build_mirror_entity_custom_fields(entity: dict[str, Any], entity_type_suffi
             if vega_alert_id and str(vega_alert_id).strip():
                 custom_fields["vegaalertid"] = str(vega_alert_id).strip()
 
-    status = entity.get("status")
-    if status is not None and str(status).strip():
+    status = (
+        _incident_mirror_status(entity)
+        if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT
+        else str(entity.get("status") or "")
+    )
+    if status.strip():
         status_field = VEGA_ALERT_STATUS_FIELD if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT else VEGA_INCIDENT_STATUS_FIELD
-        custom_fields[status_field] = _normalize_vega_status_for_display(str(status), entity_type_suffix)
+        custom_fields[status_field] = _normalize_vega_status_for_display(status, entity_type_suffix)
+
+    if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
+        investigation_status = entity.get("investigationStatus")
+        if investigation_status is not None and str(investigation_status).strip():
+            custom_fields[VEGA_INVESTIGATION_STATUS_FIELD] = _normalize_investigation_status_for_display(
+                str(investigation_status)
+            )
 
     if entity.get("severity") is not None:
         severity_field = VEGA_ALERT_SEVERITY_FIELD if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT else VEGA_SEVERITY_FIELD
@@ -4168,7 +4231,7 @@ def _build_mirror_sync_object(
         "vegaEntityType": vega_entity_type,
         "CustomFields": custom_fields,
     }
-    for key in ("status", "severity", "verdict", "verdictReasoning"):
+    for key in ("status", "severity", "verdict", "verdictReasoning", "investigationStatus"):
         value = raw.get(key)
         if value is not None and str(value).strip() != "":
             sync_object[key] = value
@@ -4190,7 +4253,20 @@ def _build_incoming_status_sync_entries(
     if not _entity_updated_after(entity, entity_type_suffix, last_update):
         return []
 
-    api_status = _normalize_vega_status_for_api(str(entity.get("status") or ""), entity_type_suffix)
+    raw_status = (
+        _incident_mirror_status(entity)
+        if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT
+        else str(entity.get("status") or "")
+    )
+    api_status = _normalize_vega_status_for_api(raw_status, entity_type_suffix)
+    if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT and api_status in VEGA_INCIDENT_OPEN_STATUSES:
+        return [
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {"dbotIncidentReopen": True},
+                "ContentsFormat": EntryFormat.JSON,
+            }
+        ]
     if api_status in VEGA_CLOSE_STATUSES:
         return [
             {
@@ -4493,7 +4569,17 @@ def _enrich_mirror_incident_entity(client: Client, entity: dict[str, Any], last_
     if not isinstance(details, dict) or not details:
         return entity
 
-    for key in ("verdictReasoning", "verdict", "comments", "status", "severity", "lastUpdated", "userVerdict"):
+    for key in (
+        "verdictReasoning",
+        "verdict",
+        "comments",
+        "status",
+        "userStatus",
+        "investigationStatus",
+        "severity",
+        "lastUpdated",
+        "userVerdict",
+    ):
         if key in details and details[key] is not None:
             entity[key] = details[key]
     return _normalize_incident_api_entity(entity)
@@ -4654,13 +4740,13 @@ def _build_outgoing_incident_mirror_update(
 
     if OUTGOING_MIRROR_FIELD_STATUS in active_fields:
         if inc_status == IncidentStatus.DONE:
-            update_input["status"] = "RESOLVED"
+            update_input["userStatus"] = "RESOLVED"
         else:
             status = _mirror_delta_changed_value(VEGA_INCIDENT_STATUS_FIELD, delta, entity_type_suffix)
             if status is None or not str(status).strip():
                 status = _mirror_delta_changed_value(VEGA_ALERT_STATUS_FIELD, delta, entity_type_suffix)
             if status is not None and str(status).strip():
-                update_input["status"] = _validate_incident_status_value(str(status))
+                update_input["userStatus"] = _validate_incident_status_value(str(status))
 
     if OUTGOING_MIRROR_FIELD_SEVERITY in active_fields:
         severity = _mirror_delta_changed_value(VEGA_SEVERITY_FIELD, delta, entity_type_suffix)
@@ -4978,6 +5064,7 @@ def _ingest_fetched_incidents(
     incidents_fetch_config: str,
     incident_severities: list[str] | None,
     incident_statuses: list[str] | None,
+    incident_investigation_statuses: list[str] | None,
     incident_verdicts: list[str] | None,
     limit: int,
     backfill_days: str | int | None = None,
@@ -5003,6 +5090,7 @@ def _ingest_fetched_incidents(
             entities_key="incidents",
             severities=incident_severities,
             statuses=incident_statuses,
+            investigation_statuses=incident_investigation_statuses,
             verdicts=incident_verdicts,
         )
 
@@ -5153,6 +5241,7 @@ def fetch_incidents_command(
     integration_url: str | None = None,
     max_fetch: int = DEFAULT_MAX_FETCH,
     lookback_minutes: int = DEFAULT_LOOKBACK_MINUTES,
+    incident_investigation_statuses: list[str] | None = None,
 ) -> tuple[dict, list[dict]]:
     xsoar_incidents: list[dict] = []
     next_run: dict = dict(last_run)
@@ -5166,7 +5255,12 @@ def fetch_incidents_command(
         alert_verdicts,
         has_related_incidents,
     )
-    incidents_fetch_config = _build_fetch_filter_fingerprint(incident_severities, incident_statuses, incident_verdicts)
+    incidents_fetch_config = _build_fetch_filter_fingerprint(
+        incident_severities,
+        incident_statuses,
+        incident_verdicts,
+        investigation_statuses=incident_investigation_statuses,
+    )
 
     remaining = max_fetch
     working_run = last_run
@@ -5195,6 +5289,7 @@ def fetch_incidents_command(
             incidents_fetch_config=incidents_fetch_config,
             incident_severities=incident_severities,
             incident_statuses=incident_statuses,
+            incident_investigation_statuses=incident_investigation_statuses,
             incident_verdicts=incident_verdicts,
             limit=remaining,
             backfill_days=backfill_days,
@@ -5246,6 +5341,7 @@ def fetch_incidents_command(
             incidents_fetch_config=incidents_fetch_config,
             incident_severities=incident_severities,
             incident_statuses=incident_statuses,
+            incident_investigation_statuses=incident_investigation_statuses,
             incident_verdicts=incident_verdicts,
             limit=remaining,
             backfill_days=backfill_days,
@@ -5317,6 +5413,9 @@ def _parse_vega_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         "has_related_incidents": resolve_has_related_incidents(argToList(params.get("alert_has_related_incidents"))),
         "incident_severities": filter_incident_severities(argToList(params.get("incident_severities")) or None),
         "incident_statuses": filter_incident_statuses(argToList(params.get("incident_statuses")) or None),
+        "incident_investigation_statuses": filter_incident_investigation_statuses(
+            argToList(params.get("incident_investigation_statuses")) or None
+        ),
         "incident_verdicts": filter_incident_verdicts(argToList(params.get("incident_verdicts")) or None),
         "backfill_days": backfill_days,
         "first_fetch_time": parse_backfill_days(backfill_days),
@@ -5370,6 +5469,7 @@ def _dispatch_vega_command(client: Client, command: str, config: dict[str, Any])
             has_related_incidents=config["has_related_incidents"],
             incident_severities=config["incident_severities"],
             incident_statuses=config["incident_statuses"],
+            incident_investigation_statuses=config["incident_investigation_statuses"],
             incident_verdicts=config["incident_verdicts"],
             first_fetch_time=config["first_fetch_time"],
             backfill_days=config["backfill_days"],
