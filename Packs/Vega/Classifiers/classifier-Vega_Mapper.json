@@ -132,6 +132,9 @@
                     "simple": "vegaIncidentFindings"
                 },
                 "Vega Assets": {
+                    "simple": "typedAssets"
+                },
+                "Vega Assets Value": {
                     "simple": "assets"
                 },
                 "Vega Observables": {

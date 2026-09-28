@@ -1,0 +1,32 @@
+{
+    "id": "incident_vegaassetsvalue",
+    "version": -1,
+    "name": "Vega Assets Value",
+    "ownerOnly": false,
+    "description": "Raw asset values involved in this incident.",
+    "cliName": "vegaassetsvalue",
+    "type": "multiSelect",
+    "openEnded": true,
+    "selectValues": [],
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Vega Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

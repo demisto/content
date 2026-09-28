@@ -5,7 +5,7 @@
     "ownerOnly": false,
     "description": "Observable indicators (IP addresses, domains, hashes) associated with this incident.",
     "cliName": "vegaobservables",
-    "type": "shortText",
+    "type": "grid",
     "closeForm": false,
     "editForm": false,
     "required": false,
@@ -17,6 +17,7 @@
     "content": true,
     "group": 0,
     "hidden": false,
+    "openEnded": false,
     "associatedTypes": [
         "Vega Incident"
     ],
@@ -24,6 +25,23 @@
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "value",
+            "displayName": "Value",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 400,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {}
+    ],
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.10.0"

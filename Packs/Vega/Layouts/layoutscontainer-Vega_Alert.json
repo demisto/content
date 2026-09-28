@@ -393,20 +393,11 @@
 								"endCol": 3,
 								"fieldId": "vegamitreattack",
 								"height": 106,
-								"id": "23c75671-398d-4056-84ba-7d497b6e6406",
+								"id": "107dc38c-7a6d-40ef-bff7-df78019620fb",
 								"index": 1,
 								"listId": "kmppymlq3f-0aa82e68-9bb3-4b07-89a7-cdc083bf6679",
 								"sectionItemType": "field",
 								"startCol": 2
-							},
-							{
-								"endCol": 4,
-								"fieldId": "vegadatasources",
-								"height": 53,
-								"id": "7741f7ec-5e02-4c4b-8a5d-a5fa73abe9c0",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 3
 							},
 							{
 								"dropEffect": "move",
@@ -414,7 +405,18 @@
 								"fieldId": "vegaverdictreasoning",
 								"height": 106,
 								"id": "c8f4a2b1-6d3e-4f5a-9b7c-1e2d3f4a5b6c",
-								"index": 1,
+								"index": 0,
+								"listId": "kmppymlq3f-0aa82e68-9bb3-4b07-89a7-cdc083bf6679",
+								"sectionItemType": "field",
+								"startCol": 3
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "vegadatasources",
+								"height": 106,
+								"id": "c4053879-48d5-4a70-9db9-1b4320f9373c",
+								"index": 3,
 								"listId": "kmppymlq3f-0aa82e68-9bb3-4b07-89a7-cdc083bf6679",
 								"sectionItemType": "field",
 								"startCol": 3
@@ -436,7 +438,7 @@
 								"fieldId": "externallink",
 								"height": 53,
 								"id": "3a33a757-4cf8-4eb9-8d82-0a081faf752e",
-								"index": 2,
+								"index": 1,
 								"listId": "kmppymlq3f-0aa82e68-9bb3-4b07-89a7-cdc083bf6679",
 								"sectionItemType": "field",
 								"startCol": 4

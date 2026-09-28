@@ -318,7 +318,7 @@ GET_INCIDENTS_QUERY = (
     "   assignee { userId displayName email } "
     "   assignees { userId displayName email } "
     "   comments { text addedBy addedAt } "
-    "   incidentSummary incidentFindings assets observables alertsCount "
+    "   incidentSummary incidentFindings assets typedAssets { value type } observables alertsCount "
     "   alerts { alertId name createdAt } "
     "   recommendedActions { name description actionKey targetParams } "
     "   investigationPlan { stepName stepConclusion cells { cellName query queryId } } "
@@ -1928,16 +1928,6 @@ def _normalize_list_items(value: Any) -> list[str]:
     return items
 
 
-def _format_bullet_list(value: Any, empty_display: str | None = None) -> Any:
-    """Format a list field as newline-separated bullet points."""
-    if value is None or not isinstance(value, list) or not value:
-        return empty_display if empty_display is not None else value
-    items = _normalize_list_items(value)
-    if not items:
-        return empty_display if empty_display is not None else value
-    return "\n".join(f"• {item}" for item in items)
-
-
 def _ensure_recommended_action_description_newline(description: Any) -> str:
     """Ensure a recommended-action description ends with a newline for XSOAR grid wrapping."""
     text = str(description or "")
@@ -1947,9 +1937,34 @@ def _ensure_recommended_action_description_newline(description: Any) -> str:
 
 
 VEGA_EMPTY_FIELD_DISPLAY = "N/A"
-VEGA_NO_ASSETS_DISPLAY = "No assets present."
-VEGA_NO_OBSERVABLES_DISPLAY = "No observables present."
 VEGA_NO_RECOMMENDED_ACTIONS_DISPLAY = "No recommended Actions found"
+
+
+def _format_typed_assets_for_grid(typed_assets: Any) -> list[dict[str, str]]:
+    """Map Vega typedAssets objects to Vega Assets grid rows."""
+    if not isinstance(typed_assets, list):
+        return []
+
+    rows: list[dict[str, str]] = []
+    for item in typed_assets:
+        if not isinstance(item, dict):
+            continue
+        asset_type = str(item.get("type") or "").strip()
+        value = str(item.get("value") or "").strip()
+        if not asset_type and not value:
+            continue
+        rows.append({"type": asset_type, "value": value})
+    return rows
+
+
+def _format_string_list_for_grid(values: Any) -> list[dict[str, str]]:
+    """Map a list of strings to single-column grid rows keyed by value."""
+    return [{"value": item} for item in _normalize_list_items(values)]
+
+
+def _format_observables_for_grid(observables: Any) -> list[dict[str, str]]:
+    """Map a list of observable strings to Vega Observables grid rows."""
+    return _format_string_list_for_grid(observables)
 
 
 def _format_recommended_actions_for_grid(actions: Any) -> Any:
@@ -2026,8 +2041,8 @@ def _get_first_mitre_value(mitre: dict, keys: tuple[str, ...]) -> Any:
     return None
 
 
-def _format_mitre_attack(mitre: Any) -> str | None:
-    """Merge MITRE tactics and techniques into a newline-separated bullet list."""
+def _format_mitre_attack(mitre: Any) -> list[str] | None:
+    """Merge MITRE tactics and techniques into a raw list of labels."""
     if not isinstance(mitre, dict):
         return None
     tactics = _get_first_mitre_value(mitre, MITRE_TACTIC_KEYS)
@@ -2035,7 +2050,7 @@ def _format_mitre_attack(mitre: Any) -> str | None:
     items = _normalize_list_items(tactics) + _normalize_list_items(techniques)
     if not items:
         return None
-    return "\n".join(f"• {item}" for item in items)
+    return items
 
 
 def _apply_vega_mitre_attack_format(raw: dict) -> None:
@@ -2053,7 +2068,7 @@ def _apply_vega_mitre_attack_format(raw: dict) -> None:
 
     mitre_attack = _format_mitre_attack(mitre_payload)
     if mitre_attack:
-        raw["vegaMitreAttack"] = mitre_attack
+        raw["vegaMitreAttack"] = _format_string_list_for_grid(mitre_attack)
 
 
 def _build_vega_alert_custom_fields(raw: dict) -> dict[str, Any]:
@@ -2064,7 +2079,7 @@ def _build_vega_alert_custom_fields(raw: dict) -> dict[str, Any]:
         custom_fields["alertid"] = str(alert_uuid).strip()
     mitre_attack = raw.get("vegaMitreAttack")
     if mitre_attack:
-        custom_fields["vegamitreattack"] = str(mitre_attack)
+        custom_fields["vegamitreattack"] = mitre_attack if isinstance(mitre_attack, list) else str(mitre_attack)
     created_at = raw.get("createdAt")
     if created_at:
         custom_fields["vegacreatedat"] = str(created_at)
@@ -2520,16 +2535,15 @@ def _format_raw_entity_for_xsoar(raw: dict) -> None:
         raw["detectionDescription"] = _empty_to_na(raw.get("detectionDescription"))
         raw["detectionQuery"] = _format_vega_detection_query_for_display(raw.get("detectionQuery"))
 
-    if "dataSources" in raw:
-        raw["dataSources"] = _format_bullet_list(raw.get("dataSources"))
-
     assets = raw.get("assets")
     observables = raw.get("observables")
-
-    if "assets" in raw:
-        raw["assets"] = _format_bullet_list(assets, VEGA_NO_ASSETS_DISPLAY)
+    if "typedAssets" in raw:
+        raw["typedAssets"] = _format_typed_assets_for_grid(raw.get("typedAssets"))
+    if "dataSources" in raw:
+        raw["dataSources"] = _format_string_list_for_grid(raw.get("dataSources"))
     if "observables" in raw:
-        raw["observables"] = _format_bullet_list(observables, VEGA_NO_OBSERVABLES_DISPLAY)
+        raw["observables"] = _format_observables_for_grid(observables)
+
     findings_source = raw.get("keyFindings") or raw.get("incidentFindings")
     if findings_source is not None:
         raw["vegaIncidentFindings"] = _format_key_findings_html(findings_source, assets, observables)

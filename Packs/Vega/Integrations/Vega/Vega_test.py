@@ -28,7 +28,6 @@ from Vega import (
     _build_vega_incident_custom_fields,
     _fetch_paginated_entities,
     _is_retryable_http_error,
-    _format_bullet_list,
     _format_key_findings_html,
     _format_raw_entity_for_xsoar,
     _format_recommended_actions_for_grid,
@@ -1097,13 +1096,6 @@ def test_parse_backfill_days_defaults_when_none():
     assert (today_start - parsed).days == 30
 
 
-def test_format_bullet_list():
-    assert _format_bullet_list(["CloudTrail", "VPC Flow Logs"]) == "• CloudTrail\n• VPC Flow Logs"
-    assert _format_bullet_list([]) == []
-    assert _format_bullet_list(None) is None
-    assert _format_bullet_list("already formatted") == "already formatted"
-
-
 def test_format_recommended_actions_for_grid_empty_shows_placeholder():
     assert _format_recommended_actions_for_grid([]) == [{"name": VEGA_NO_RECOMMENDED_ACTIONS_DISPLAY}]
     assert _format_recommended_actions_for_grid(None) == [{"name": VEGA_NO_RECOMMENDED_ACTIONS_DISPLAY}]
@@ -1167,7 +1159,7 @@ def test_format_raw_entity_for_xsoar_alert():
     }
     _format_raw_entity_for_xsoar(alert)
 
-    assert alert["dataSources"] == "• CloudTrail\n• GuardDuty"
+    assert alert["dataSources"] == [{"value": "CloudTrail"}, {"value": "GuardDuty"}]
     assert alert["detectionDescription"] == "N/A"
     assert alert["detectionQuery"] == "N/A"
     assert alert["verdictReasoning"] == "N/A"
@@ -1224,16 +1216,13 @@ def test_format_raw_entity_for_xsoar_alert_empty_detection_fields():
 def test_format_mitre_attack():
     assert _format_mitre_attack(None) is None
     assert _format_mitre_attack({}) is None
-    assert (
-        _format_mitre_attack(
-            {
-                "mitreTactics": ["Discovery"],
-                "mitreTechniques": ["Cloud Infrastructure Discovery"],
-            }
-        )
-        == "• Discovery\n• Cloud Infrastructure Discovery"
-    )
-    assert _format_mitre_attack({"mitreTactics": "Discovery", "mitreTechniques": "T1526"}) == "• Discovery\n• T1526"
+    assert _format_mitre_attack(
+        {
+            "mitreTactics": ["Discovery"],
+            "mitreTechniques": ["Cloud Infrastructure Discovery"],
+        }
+    ) == ["Discovery", "Cloud Infrastructure Discovery"]
+    assert _format_mitre_attack({"mitreTactics": "Discovery", "mitreTechniques": "T1526"}) == ["Discovery", "T1526"]
 
 
 def test_format_raw_entity_for_xsoar_mitre_attack():
@@ -1243,7 +1232,7 @@ def test_format_raw_entity_for_xsoar_mitre_attack():
     }
     _format_raw_entity_for_xsoar(alert)
 
-    assert alert["vegaMitreAttack"] == "• Discovery\n• T1526"
+    assert alert["vegaMitreAttack"] == [{"value": "Discovery"}, {"value": "T1526"}]
 
 
 def test_format_mitre_attack_object_items():
@@ -1251,7 +1240,7 @@ def test_format_mitre_attack_object_items():
         "mitreTactics": [{"name": "Discovery", "id": "TA0007"}],
         "mitreTechniques": [{"techniqueName": "Cloud Infrastructure Discovery", "techniqueId": "T1526"}],
     }
-    assert _format_mitre_attack(mitre) == "• Discovery\n• Cloud Infrastructure Discovery"
+    assert _format_mitre_attack(mitre) == ["Discovery", "Cloud Infrastructure Discovery"]
 
 
 def test_alert_to_incident_sets_vega_mitre_attack():
@@ -1265,8 +1254,8 @@ def test_alert_to_incident_sets_vega_mitre_attack():
     xsoar_incident = alert_to_incident(alert)
     raw = json.loads(xsoar_incident["rawJSON"])
 
-    assert raw["vegaMitreAttack"] == "• Discovery\n• T1526"
-    assert xsoar_incident["CustomFields"]["vegamitreattack"] == "• Discovery\n• T1526"
+    assert raw["vegaMitreAttack"] == [{"value": "Discovery"}, {"value": "T1526"}]
+    assert xsoar_incident["CustomFields"]["vegamitreattack"] == [{"value": "Discovery"}, {"value": "T1526"}]
     assert xsoar_incident["CustomFields"]["vegacreatedat"] == TIMESTAMP_T1
 
 
@@ -1320,14 +1309,16 @@ def test_format_raw_entity_for_xsoar_incident():
         "id": "inc-1",
         "dataSources": ["CloudTrail"],
         "assets": ["i-12345"],
+        "typedAssets": [{"value": "i-12345", "type": "HOST"}],
         "observables": ["10.0.0.1"],
         "incidentFindings": ["Instance i-12345 connected to 10.0.0.1"],
     }
     _format_raw_entity_for_xsoar(incident)
 
-    assert incident["dataSources"] == "• CloudTrail"
-    assert incident["assets"] == "• i-12345"
-    assert incident["observables"] == "• 10.0.0.1"
+    assert incident["dataSources"] == [{"value": "CloudTrail"}]
+    assert incident["assets"] == ["i-12345"]
+    assert incident["typedAssets"] == [{"type": "HOST", "value": "i-12345"}]
+    assert incident["observables"] == [{"value": "10.0.0.1"}]
     assert "vegaIncidentFindings" in incident
     assert "background:#000000" in incident["vegaIncidentFindings"]
     assert "i-12345" in incident["vegaIncidentFindings"]
@@ -1347,7 +1338,7 @@ def test_alert_to_incident_formats_raw_json(mocker):
     xsoar_incident = alert_to_incident(alert, integration_url="https://api.vega.io")
     raw = json.loads(xsoar_incident["rawJSON"])
 
-    assert raw["dataSources"] == "• CloudTrail"
+    assert raw["dataSources"] == [{"value": "CloudTrail"}]
     assert raw["vegaEntityType"] == "Vega Alert"
     assert raw["link"] == "https://app.vega.io/incidents/alerts/investigation/alert-1"
     assert raw["detectionDescription"] == "N/A"
@@ -1386,8 +1377,8 @@ def test_incident_to_xsoar_incident_formats_raw_json():
     xsoar_incident = incident_to_xsoar_incident(incident)
     raw = json.loads(xsoar_incident["rawJSON"])
 
-    assert raw["assets"] == "• host-1"
-    assert raw["observables"] == "• host-1"
+    assert raw["assets"] == ["host-1"]
+    assert raw["observables"] == [{"value": "host-1"}]
     assert "vegaIncidentFindings" in raw
     assert "Activity detected on" in raw["vegaIncidentFindings"]
     assert "host-1" in raw["vegaIncidentFindings"]
@@ -1618,8 +1609,8 @@ def test_format_raw_entity_for_xsoar_prefers_key_findings():
     }
     _format_raw_entity_for_xsoar(incident)
 
-    assert incident["assets"] == "No assets present."
-    assert incident["observables"] == "No observables present."
+    assert incident["assets"] == []
+    assert incident["observables"] == []
     assert "Detail finding" in incident["vegaIncidentFindings"]
     assert "List finding" not in incident["vegaIncidentFindings"]
 
