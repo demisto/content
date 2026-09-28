@@ -93,16 +93,16 @@ Lists storage accounts, or retrieves a single storage account when an account na
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Storage.StorageAccounts.id | String | The fully qualified resource ID for the storage account. |
+| Azure.Storage.StorageAccounts.id | String | The fully qualified resource ID of the storage account. |
 | Azure.Storage.StorageAccounts.name | String | The name of the storage account. |
 | Azure.Storage.StorageAccounts.type | String | The resource type. |
 | Azure.Storage.StorageAccounts.location | String | The geo-location where the resource lives. |
-| Azure.Storage.StorageAccounts.kind | String | The kind of the storage account. |
+| Azure.Storage.StorageAccounts.kind | String | The kind of storage account. |
 | Azure.Storage.StorageAccounts.sku.name | String | The SKU name of the storage account. |
 | Azure.Storage.StorageAccounts.sku.tier | String | The SKU tier of the storage account. |
-| Azure.Storage.StorageAccounts.properties.provisioningState | String | The status of the storage account at the time the operation was called. |
-| Azure.Storage.StorageAccounts.properties.statusOfPrimary | String | The status indicating whether the primary location of the storage account is available or unavailable. |
-| Azure.Storage.StorageAccounts.properties.statusOfSecondary | String | The status indicating whether the secondary location of the storage account is available or unavailable. |
+| Azure.Storage.StorageAccounts.properties.provisioningState | String | The status of the storage account when the operation was called. |
+| Azure.Storage.StorageAccounts.properties.statusOfPrimary | String | The status indicating whether the primary location of the storage account is available. |
+| Azure.Storage.StorageAccounts.properties.statusOfSecondary | String | The status indicating whether the secondary location of the storage account is available. |
 
 ### azure-storage-blob-container-list
 
@@ -128,15 +128,15 @@ Lists blob containers, or retrieves a single blob container when a container nam
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Storage.BlobContainers.id | String | The fully qualified resource ID for the resource. |
+| Azure.Storage.BlobContainers.id | String | The fully qualified resource ID of the resource. |
 | Azure.Storage.BlobContainers.name | String | The name of the resource. |
 | Azure.Storage.BlobContainers.type | String | The resource type. |
-| Azure.Storage.BlobContainers.properties.publicAccess | String | The access level and whether data in the container may be accessed publicly. |
+| Azure.Storage.BlobContainers.properties.publicAccess | String | The access level, which specifies whether data in the container can be accessed publicly. |
 | Azure.Storage.BlobContainers.properties.leaseStatus | String | The lease status of the container. |
 | Azure.Storage.BlobContainers.properties.leaseState | String | The lease state of the container. |
-| Azure.Storage.BlobContainers.properties.lastModifiedTime | Date | The date and time the container was last modified in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| Azure.Storage.BlobContainers.properties.hasImmutabilityPolicy | Boolean | Whether an ImmutabilityPolicy exists for this container. |
-| Azure.Storage.BlobContainers.properties.hasLegalHold | Boolean | Whether at least one legal hold tag exists for this container. |
+| Azure.Storage.BlobContainers.properties.lastModifiedTime | Date | The date and time when the container was last modified, in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| Azure.Storage.BlobContainers.properties.hasImmutabilityPolicy | Boolean | Whether an ImmutabilityPolicy exists for the container. |
+| Azure.Storage.BlobContainers.properties.hasLegalHold | Boolean | Whether at least one legal hold tag exists for the container. |
 
 ### azure-storage-account-update
 
