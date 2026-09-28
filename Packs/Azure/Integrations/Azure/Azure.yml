@@ -3399,10 +3399,10 @@ script:
     name: azure-sql-db-transparent-data-encryption-set
     outputs: [] # has no outputs for this command from response
   - name: azure-aks-managed-cluster-list
-    description: Gets a list of managed clusters in the specified subscription. Requires the following permission: Microsoft.ContainerService/managedClusters/read.
+    description: "Gets a list of managed clusters in the specified subscription. Requires the following permission: Microsoft.ContainerService/managedClusters/read."
     arguments:
-    - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-      name: subscription_id
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     outputs:
@@ -3460,15 +3460,16 @@ script:
     - contextPath: Azure.AKS.ManagedCluster.properties.addonProfiles
       description: The managed cluster add-on profiles, including the Operations Management Suite Agent and HTTP application routing configurations.
       type: Unknown
+
   - name: azure-aks-managed-cluster-addon-update
-    description: "Updates a managed cluster with the specified configuration. Requires the following permissions: Microsoft.ContainerService/managedClusters/read, Microsoft.ContainerService/managedClusters/write.
+    description: "Updates a managed cluster with the specified configuration. Requires the following permissions: Microsoft.ContainerService/managedClusters/read, Microsoft.ContainerService/managedClusters/write."
     arguments:
-    - description: The name of the managed cluster resource. Can be retrieved using the azure-aks-managed-cluster-list command.
-      name: resource_name
+    - name: resource_name
+      description: The name of the managed cluster resource. Can be retrieved using the azure-aks-managed-cluster-list command.
       required: true
-    - auto: PREDEFINED
+    - name: location
       description: The resource location. Can be retrieved using the azure-aks-managed-cluster-list command.
-      name: location
+      auto: PREDEFINED
       predefined:
       - 'australiacentral'
       - 'australiacentral2'
@@ -3516,28 +3517,29 @@ script:
       - westus
       - westus2
       required: true
-    - description: Whether to configure ingress with automatic public DNS name creation.
-      name: http_application_routing_enabled
+    - name: http_application_routing_enabled
+      description: Whether to configure ingress with automatic public DNS name creation.
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - description: Whether to turn on Log Analytics monitoring. If enabled and monitoring_resource_name is not specified, it uses the currently configured workspace resource ID.
-      name: monitoring_agent_enabled
+    - name: monitoring_agent_enabled
+      description: Whether to turn on Log Analytics monitoring. If enabled and monitoring_resource_name is not specified, it uses the currently configured workspace resource ID.
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - description: The name of an existing Log Analytics workspace to use for storing monitoring data. Can be retrieved in the Log Analytics workspace from the Azure portal.
-      name: monitoring_resource_name
-    - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-      name: subscription_id
+    - name: monitoring_resource_name
+      description: The name of an existing Log Analytics workspace to use for storing monitoring data. Can be retrieved in the Log Analytics workspace from the Azure portal.
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
-    - description: The name of the resource group.
-      name: resource_group_name
+    - name: resource_group_name
+      description: The name of the resource group.
       required: true
     outputs: []
+
   - arguments:
     - description: Cosmos DB database account name.
       name: account_name
