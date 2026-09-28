@@ -1701,7 +1701,7 @@ script:
     - contextPath: Netskope.URLLookup.url_lists.name
       description: The name of a matched custom URL list.
       type: string
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/fastapi:0.125.0.10158186
   runonce: false
   script: ''
   subtype: python3

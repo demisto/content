@@ -736,8 +736,8 @@ def _list_profiles(client: Client, profile_type: str, args: dict[str, Any]) -> C
         # change the query's meaning.
         validate_profile_name(name)
         offset = 0
-        elements = []
-        raw_responses = []
+        elements: list[dict[str, Any]] = []
+        raw_responses: list[dict[str, Any]] = []
         while True:
             response = client.list_profiles(profile_type, {"offset": offset, "limit": MAX_PROFILE_PAGE_SIZE})
             raw_responses.append(response)

@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime, timezone
 from unittest.mock import patch
 from urllib.parse import parse_qs
 
@@ -205,7 +206,14 @@ def test_find_device(client, requests_mock):
     mock_response = util_load_json("find_device_response")
     requests_mock.get(f"{SERVER_URL}api/v2/events/datasearch/clientstatus", json=mock_response)
 
-    result = find_device(client, {"start_time": "1773101400", "end_time": "1773187800"})
+    with patch(
+        "NetskopeV2.arg_to_datetime",
+        side_effect=[
+            datetime.fromtimestamp(1773101400, tz=timezone.utc),
+            datetime.fromtimestamp(1773187800, tz=timezone.utc),
+        ],
+    ):
+        result = find_device(client, {"start_time": "1773101400", "end_time": "1773187800"})
 
     assert result.outputs == mock_response["result"]
 

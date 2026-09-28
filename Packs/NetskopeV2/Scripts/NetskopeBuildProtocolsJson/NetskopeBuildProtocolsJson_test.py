@@ -1,3 +1,4 @@
+import NetskopeBuildProtocolsJson
 from NetskopeBuildProtocolsJson import build_protocols_json
 
 
@@ -37,3 +38,47 @@ def test_build_protocols_json_no_ports():
         - An empty string is returned (leaves "protocols" unset rather than an empty array).
     """
     assert build_protocols_json([], "tcp") == ""
+
+
+def test_main_builds_protocols_json(mocker):
+    """
+    Given:
+        - Ports containing whitespace and an uppercase protocol type.
+    When:
+        - Running the automation entry point.
+    Then:
+        - The arguments are normalized and the generated JSON is returned in context.
+    """
+    mocker.patch.object(
+        NetskopeBuildProtocolsJson.demisto,
+        "args",
+        return_value={"ports": "443, 8080", "protocol_type": "TCP"},
+    )
+    return_results = mocker.patch.object(NetskopeBuildProtocolsJson, "return_results")
+
+    NetskopeBuildProtocolsJson.main()
+
+    command_results = return_results.call_args.args[0]
+    assert command_results.outputs == {
+        "ProtocolsJson": '[{"type": "tcp", "port": "443"}, {"type": "tcp", "port": "8080"}]'
+    }
+    assert "2 port(s)" in command_results.readable_output
+
+
+def test_main_without_ports_returns_empty_output(mocker):
+    """
+    Given:
+        - No ports and no protocol type.
+    When:
+        - Running the automation entry point.
+    Then:
+        - The automation returns an empty ProtocolsJson value without failing.
+    """
+    mocker.patch.object(NetskopeBuildProtocolsJson.demisto, "args", return_value={})
+    return_results = mocker.patch.object(NetskopeBuildProtocolsJson, "return_results")
+
+    NetskopeBuildProtocolsJson.main()
+
+    command_results = return_results.call_args.args[0]
+    assert command_results.outputs == {"ProtocolsJson": ""}
+    assert "No ports provided" in command_results.readable_output

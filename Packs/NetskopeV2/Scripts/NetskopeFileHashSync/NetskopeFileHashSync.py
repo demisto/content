@@ -13,7 +13,9 @@ DEFAULT_INDICATOR_QUERY = "reputation:Bad and expirationStatus:active"
 
 
 def is_valid_hash(value: str | None) -> bool:
-    return bool(value) and bool(MD5_PATTERN.match(value) or SHA256_PATTERN.match(value))
+    if not value:
+        return False
+    return bool(MD5_PATTERN.match(value) or SHA256_PATTERN.match(value))
 
 
 def extract_hashes(ioc: dict) -> list:
