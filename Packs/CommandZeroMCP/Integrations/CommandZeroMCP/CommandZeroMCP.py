@@ -5,21 +5,13 @@ from MCPApiModule import *
 import asyncio
 
 
-from urllib.parse import unquote
-
-
 REGION_URLS = {
     "North America": "https://mcp.cmdzero.io/",
     "European Union": "https://mcp.eu.cmdzero.io/",
 }
-COMMAND_ZERO_AUTH_TYPE = AuthMethods.DYNAMIC_CLIENT_REGISTRATION.value
-COMMAND_PREFIX = "command-zero-mcp"
+COMMAND_ZERO_AUTH_TYPE = AuthMethods.BEARER.value
+ORG_ID_HEADER = "X-Org-ID"
 SERVER_NAME = "Command Zero MCP"
-NO_LOGIN_SESSION_MESSAGE = (
-    "No Command Zero login session was found for this instance. "
-    f"Run the **!{COMMAND_PREFIX}-generate-login-url** command, sign in, copy the new Authorization code into the "
-    f"instance configuration, and run **!{COMMAND_PREFIX}-auth-test** within two minutes."
-)
 
 
 def get_base_url(params: dict[str, Any]) -> str:
@@ -34,9 +26,13 @@ def get_base_url(params: dict[str, Any]) -> str:
     return REGION_URLS[region]
 
 
-def has_login_session() -> bool:
-    """Returns True when a login URL was generated for this instance, which stores the discovered token endpoint."""
-    return bool(get_integration_context().get("token_endpoint"))
+def get_headers(params: dict[str, Any]) -> dict[str, str]:
+    """Returns the custom headers, adding the organization ID header when an organization ID is set."""
+    headers = parse_custom_headers(params.get("custom_headers") or "")
+    org_id = (params.get("org_id") or "").strip()
+    if org_id:
+        headers[ORG_ID_HEADER] = org_id
+    return headers
 
 
 async def main() -> None:  # pragma: no cover
@@ -46,39 +42,22 @@ async def main() -> None:  # pragma: no cover
 
     client = None
     try:
-        auth_code = unquote(params.get("auth_code", {}).get("password") or "")
-        redirect_uri = params.get("redirect_uri") or REDIRECT_URI
+        api_key = params.get("api_key", {}).get("password") or ""
+        if not api_key:
+            raise DemistoException("An API key is required. Enter your Command Zero API key in the instance configuration.")
 
         client = Client(
             base_url=get_base_url(params),
-            command_prefix=COMMAND_PREFIX,
             auth_type=COMMAND_ZERO_AUTH_TYPE,
-            auth_code=auth_code,
-            redirect_uri=redirect_uri,
-            custom_headers=parse_custom_headers(params.get("custom_headers") or ""),
+            token=api_key,
+            custom_headers=get_headers(params),
             verify=not argToBoolean(params.get("insecure") or False),
         )
         demisto.debug(f"Command being called is {command}")
 
         if command == "test-module":
-            raise DemistoException(
-                "\nTest module is unavailable for this integration. "
-                f"Please use the **!{COMMAND_PREFIX}-auth-test** command to test "
-                "connectivity after setting the Authorization Code.",
-            )
-
-        elif command == f"{COMMAND_PREFIX}-generate-login-url":
-            result = await generate_login_url(client._oauth_handler, auth_type=COMMAND_ZERO_AUTH_TYPE, redirect_uri=redirect_uri)
+            result = await client.test_connection()
             return_results(result)
-
-        elif command == f"{COMMAND_PREFIX}-auth-test" and not has_login_session():
-            demisto.debug("No login session found, generating a login URL instead of testing authentication.")
-            result = await generate_login_url(client._oauth_handler, auth_type=COMMAND_ZERO_AUTH_TYPE, redirect_uri=redirect_uri)
-            result.readable_output = f"No Command Zero login session was found for this instance.\n\n{result.readable_output}"
-            return_results(result)
-
-        elif not has_login_session():
-            raise DemistoException(NO_LOGIN_SESSION_MESSAGE)
 
         elif command == "list-tools":
             result = await client.list_tools(SERVER_NAME)
@@ -86,10 +65,6 @@ async def main() -> None:  # pragma: no cover
 
         elif command == "call-tool":
             result = await client.call_tool(args["name"], args.get("arguments", ""))
-            return_results(result)
-
-        elif command == f"{COMMAND_PREFIX}-auth-test":
-            result = await client.test_connection(auth_test=True)
             return_results(result)
 
         else:

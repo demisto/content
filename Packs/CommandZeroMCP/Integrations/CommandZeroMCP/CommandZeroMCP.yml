@@ -16,25 +16,24 @@ configuration:
   - North America
   - European Union
   additionalinfo: The region that hosts your Command Zero organization.
-- name: auth_code
+- name: api_key
   type: 9
-  displaypassword: Authorization code
+  displaypassword: API Key
   hiddenusername: true
   section: Connect
-  additionalinfo: Run the command-zero-mcp-generate-login-url command to obtain the Authorization code.
+  required: true
+  additionalinfo: The Command Zero API key. The integration can perform only the actions allowed by the key's role.
+- name: org_id
+  section: Connect
+  display: Organization ID
+  type: 0
+  additionalinfo: The ID of the Command Zero organization to connect to. Required only if the API key has access to more than one organization.
 - name: server_url
   section: Connect
   display: Custom Server URL
   type: 0
   advanced: true
   additionalinfo: Overrides the Region parameter. Use only when instructed by Command Zero.
-- name: redirect_uri
-  section: Connect
-  display: Redirect URI
-  defaultvalue: https://oproxy.demisto.ninja/authcode
-  type: 0
-  advanced: true
-  additionalinfo: The URI registered with Command Zero to receive the authorization code.
 - name: custom_headers
   section: Connect
   display: Custom headers
@@ -68,10 +67,6 @@ script:
     name: call-tool
     hidden: true
     outputs: []
-  - description: Test the authentication configuration with the Command Zero MCP server.
-    name: command-zero-mcp-auth-test
-  - description: Generate an authentication login URL.
-    name: command-zero-mcp-generate-login-url
   script: '-'
   type: python
   subtype: python3
