@@ -2140,6 +2140,11 @@ class AzureClient:
                     .get("config", {})
                     .get("logAnalyticsWorkspaceResourceID")
                 )
+            if monitoring_agent_enabled and not workspace_resource_id:
+                raise DemistoException(
+                    "Unable to enable monitoring: no Log Analytics workspace is currently configured for the cluster. "
+                    "Provide the monitoring_resource_name argument to specify a workspace."
+                )
             addon_profiles["omsagent"] = {
                 "enabled": monitoring_agent_enabled,
                 "config": {"logAnalyticsWorkspaceResourceID": workspace_resource_id},

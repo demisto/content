@@ -1,7 +1,7 @@
 {
   "value": [
     {
-      "id": "/subscriptions/mock_subid/providers/Microsoft.ContainerService/managedClusters",
+      "id": "/subscriptions/mock_subid/resourceGroups/mock_rg/providers/Microsoft.ContainerService/managedClusters/mock_cluster_name",
       "location": "eastus",
       "name": "mock_cluster_name",
       "tags": {
@@ -26,13 +26,27 @@
             "orchestratorVersion": "1.9.6"
           }
         ],
+        "linuxProfile": {
+          "adminUsername": "azureuser",
+          "ssh": {
+            "publicKeys": [
+              {
+                "keyData": "ssh-rsa AAAAB3NzaC1mock"
+              }
+            ]
+          }
+        },
+        "servicePrincipalProfile": {
+          "clientId": "mock_client_id"
+        },
         "nodeResourceGroup": "MC_rg1_clustername1_location1",
         "enableRBAC": false,
+        "diskEncryptionSetID": "/subscriptions/mock_subid/resourceGroups/mock_rg/providers/Microsoft.Compute/diskEncryptionSets/mock_des",
         "networkProfile": {
           "networkPlugin": "kubenet",
-          "podCidr": "10.244.0.0/16",
-          "serviceCidr": "10.0.0.0/16",
-          "dnsServiceIP": "10.0.0.10"
+          "podCidr": "mock_pod_cidr",
+          "serviceCidr": "mock_service_cidr",
+          "dnsServiceIP": "mock_dns_service_ip"
         },
         "addonProfiles": {
           "omsagent": {

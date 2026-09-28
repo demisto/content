@@ -3439,15 +3439,12 @@ script:
     - contextPath: Azure.AKS.ManagedCluster.properties.agentPoolProfiles
       description: The agent pool profiles, including name, count, VM size, max pods, OS type, provisioning state, and orchestrator version.
       type: Unknown
-    - contextPath: Azure.AKS.ManagedCluster.properties.linuxProfile.adminUsername
-      description: The name of the administrator account.
-      type: String
-    - contextPath: Azure.AKS.ManagedCluster.properties.linuxProfile.ssh
-      description: The SSH configuration, including the certificate public keys used to authenticate with VMs through SSH.
+    - contextPath: Azure.AKS.ManagedCluster.properties.linuxProfile
+      description: The Linux profile, including the administrator account name and the SSH public keys used to authenticate with VMs.
       type: Unknown
-    - contextPath: Azure.AKS.ManagedCluster.properties.servicePrincipalProfile.clientId
-      description: The ID for the service principal.
-      type: String
+    - contextPath: Azure.AKS.ManagedCluster.properties.servicePrincipalProfile
+      description: The service principal profile, including the client ID for the service principal.
+      type: Unknown
     - contextPath: Azure.AKS.ManagedCluster.properties.nodeResourceGroup
       description: The name of the resource group containing agent pool nodes.
       type: String
@@ -3460,11 +3457,8 @@ script:
     - contextPath: Azure.AKS.ManagedCluster.properties.networkProfile
       description: The network configuration, including the network plugin, pod CIDR, service CIDR, and DNS service IP.
       type: Unknown
-    - contextPath: Azure.AKS.ManagedCluster.properties.addonProfiles.omsagent
-      description: The Operations Management Suite Agent add-on configuration, including whether it is enabled and the Log Analytics workspace resource ID.
-      type: Unknown
-    - contextPath: Azure.AKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting
-      description: The HTTP application routing add-on configuration, including whether it is enabled and the DNS zone name.
+    - contextPath: Azure.AKS.ManagedCluster.properties.addonProfiles
+      description: The managed cluster add-on profiles, including the Operations Management Suite Agent and HTTP application routing configurations.
       type: Unknown
   - name: azure-aks-managed-cluster-addon-update
     description: "Updates a managed cluster with the specified configuration. Required permissions: Microsoft.ContainerService/managedClusters/read, Microsoft.ContainerService/managedClusters/write."

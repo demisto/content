@@ -3158,8 +3158,7 @@ Gets a list of managed clusters in the specified subscription. Required permissi
 | Azure.AKS.ManagedCluster.properties.enableRBAC | Boolean | Whether to enable Kubernetes Role-Based Access Control \(RBAC\). |
 | Azure.AKS.ManagedCluster.properties.agentPoolProfiles | Unknown | The agent pool profiles, including name, count, VM size, max pods, OS type, provisioning state, and orchestrator version. |
 | Azure.AKS.ManagedCluster.properties.networkProfile | Unknown | The network configuration, including the network plugin, pod CIDR, service CIDR, and DNS service IP. |
-| Azure.AKS.ManagedCluster.properties.addonProfiles.omsagent | Unknown | The Operations Management Suite Agent add-on configuration, including whether it is enabled and the Log Analytics workspace resource ID. |
-| Azure.AKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting | Unknown | The HTTP application routing add-on configuration, including whether it is enabled and the DNS zone name. |
+| Azure.AKS.ManagedCluster.properties.addonProfiles | Unknown | The managed cluster add-on profiles, including the Operations Management Suite Agent and HTTP application routing configurations. |
 
 ### azure-aks-managed-cluster-addon-update
 

@@ -1139,6 +1139,26 @@ def test_azure_client_aks_cluster_addon_update_error(mocker, client):
     assert mock_handle.call_args.kwargs["resource_name"] == "mock_cluster"
 
 
+def test_azure_client_aks_cluster_addon_update_monitoring_no_existing_workspace(mocker, client):
+    """
+    Given: An Azure client, a monitoring enable request with no workspace name, and a cluster
+           that has no existing Log Analytics workspace configured.
+    When: The aks_cluster_addon_update method is called.
+    Then: A DemistoException is raised prompting for the monitoring_resource_name argument.
+    """
+    mocker.patch.object(client, "http_request", return_value={})
+    mocker.patch.object(client, "aks_cluster_get", return_value={"properties": {}})
+
+    with pytest.raises(DemistoException, match="no Log Analytics workspace is currently configured"):
+        client.aks_cluster_addon_update(
+            subscription_id="mock_subscription_id",
+            resource_group_name="mock_resource_group",
+            resource_name="mock_cluster",
+            location="eastus",
+            monitoring_agent_enabled=True,
+        )
+
+
 def test_cosmosdb_update_command(mocker, client, mock_params):
     """
     Given: An Azure client and a request to update Cosmos DB settings.
