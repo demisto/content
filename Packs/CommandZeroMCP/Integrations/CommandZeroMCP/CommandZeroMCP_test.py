@@ -1,11 +1,11 @@
 import pytest
 from pytest_mock import MockerFixture
-from CommandZeroMCP import main, get_base_url
-from CommonServerPython import CommandResults, DemistoException
+from CommandZeroMCP import main, get_base_url, get_headers
+from CommonServerPython import DemistoException
 import demistomock as demisto
 
 
-DEFAULT_PARAMS = {"region": "North America", "auth_code": {"password": "test_code"}}
+DEFAULT_PARAMS = {"region": "North America", "api_key": {"password": "test_api_key"}, "org_id": "test-org"}
 
 
 def mock_client(mocker: MockerFixture, **methods):
@@ -21,20 +21,10 @@ def mock_client(mocker: MockerFixture, **methods):
     return mocker.patch("CommandZeroMCP.Client", return_value=client)
 
 
-def mock_command(
-    mocker: MockerFixture,
-    command: str,
-    args: dict | None = None,
-    params: dict | None = None,
-    integration_context: dict | None = None,
-):
-    """Mocks the command inputs. By default, the instance has a login session with a stored token endpoint."""
-    mocker.patch.object(demisto, "params", return_value=params or DEFAULT_PARAMS)
+def mock_command(mocker: MockerFixture, command: str, args: dict | None = None, params: dict | None = None):
+    mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS if params is None else params)
     mocker.patch.object(demisto, "args", return_value=args or {})
     mocker.patch.object(demisto, "command", return_value=command)
-    if integration_context is None:
-        integration_context = {"token_endpoint": "https://mcp.cmdzero.io/oauth/token"}
-    mocker.patch("CommandZeroMCP.get_integration_context", return_value=integration_context)
 
 
 class TestGetBaseUrl:
@@ -65,50 +55,87 @@ class TestGetBaseUrl:
             get_base_url({"region": "Antarctica"})
 
 
+class TestGetHeaders:
+    """Unit tests for building the request headers."""
+
+    @pytest.mark.parametrize(
+        "params, expected_headers",
+        [
+            ({}, {}),
+            ({"org_id": " test-org "}, {"X-Org-ID": "test-org"}),
+            ({"custom_headers": "X-Test: value"}, {"X-Test": "value"}),
+            (
+                {"org_id": "test-org", "custom_headers": "X-Org-ID: other\nX-Test: value"},
+                {"X-Org-ID": "test-org", "X-Test": "value"},
+            ),
+        ],
+    )
+    def test_get_headers(self, params: dict, expected_headers: dict):
+        """Given: Organization ID and custom headers parameters.
+        When: Building the request headers.
+        Then: The organization ID header is added when set and takes precedence over a custom header with the same name.
+        """
+        assert get_headers(params) == expected_headers
+
+
 class TestMain:
     """Unit tests for the main function of CommandZeroMCP."""
 
     @pytest.mark.asyncio
-    async def test_test_module_command(self, mocker: MockerFixture):
-        """Given: The test-module command is called.
-        When: Main function processes the command.
-        Then: An error is returned indicating test module is unavailable.
-        """
-        mock_client(mocker)
-        mock_command(mocker, "test-module")
-        mock_return_error = mocker.patch("CommandZeroMCP.return_error")
-
-        await main()
-
-        assert "Test module is unavailable for this integration" in mock_return_error.call_args[0][0]
-
-    @pytest.mark.asyncio
     async def test_client_configuration(self, mocker: MockerFixture):
-        """Given: The European Union region, an encoded auth code, and custom headers.
+        """Given: The European Union region, an API key, and an organization ID.
         When: Main function creates the client.
-        Then: The client is created with the region URL, decoded auth code, default redirect URI, and parsed headers.
+        Then: The client uses Bearer authentication with the API key, the region URL, and the organization ID header.
         """
 
         async def mock_test_connection(auth_test=False):
             return "ok"
 
         client_class = mock_client(mocker, test_connection=mock_test_connection)
-        params = {
-            "region": "European Union",
-            "auth_code": {"password": "abc%3D"},
-            "custom_headers": "X-Test: value",
-        }
-        mock_command(mocker, "command-zero-mcp-auth-test", params=params)
+        mock_command(mocker, "test-module", params=DEFAULT_PARAMS | {"region": "European Union"})
         mocker.patch("CommandZeroMCP.return_results")
 
         await main()
 
         client_kwargs = client_class.call_args.kwargs
         assert client_kwargs["base_url"] == "https://mcp.eu.cmdzero.io/"
-        assert client_kwargs["auth_code"] == "abc="
-        assert client_kwargs["redirect_uri"] == "https://oproxy.demisto.ninja/authcode"
-        assert client_kwargs["custom_headers"] == {"X-Test": "value"}
+        assert client_kwargs["auth_type"] == "Bearer"
+        assert client_kwargs["token"] == "test_api_key"
+        assert client_kwargs["custom_headers"] == {"X-Org-ID": "test-org"}
         assert client_kwargs["verify"] is True
+
+    @pytest.mark.asyncio
+    async def test_test_module_command(self, mocker: MockerFixture):
+        """Given: The test-module command is called.
+        When: Main function processes the command.
+        Then: The connection is tested and 'ok' is returned.
+        """
+
+        async def mock_test_connection(auth_test=False):
+            return "ok"
+
+        mock_client(mocker, test_connection=mock_test_connection)
+        mock_command(mocker, "test-module")
+        mock_return_results = mocker.patch("CommandZeroMCP.return_results")
+
+        await main()
+
+        mock_return_results.assert_called_once_with("ok")
+
+    @pytest.mark.asyncio
+    async def test_missing_api_key(self, mocker: MockerFixture):
+        """Given: No API key is configured.
+        When: Main function processes a command.
+        Then: An error is returned asking for the API key, and no client is created.
+        """
+        client_class = mock_client(mocker)
+        mock_command(mocker, "test-module", params={"region": "North America"})
+        mock_return_error = mocker.patch("CommandZeroMCP.return_error")
+
+        await main()
+
+        assert "An API key is required" in mock_return_error.call_args[0][0]
+        client_class.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_list_tools_command(self, mocker: MockerFixture):
@@ -145,62 +172,6 @@ class TestMain:
         await main()
 
         mock_return_results.assert_called_once_with({"name": "get_caller_identity", "arguments": "{}"})
-
-    @pytest.mark.asyncio
-    async def test_generate_login_url_command(self, mocker: MockerFixture):
-        """Given: The command-zero-mcp-generate-login-url command is called with a custom redirect URI.
-        When: Main function processes the command.
-        Then: The login URL is generated with Dynamic Client Registration and the custom redirect URI.
-        """
-        mock_client(mocker)
-        mock_generate_login_url = mocker.patch("CommandZeroMCP.generate_login_url", return_value={"login_url": "url"})
-        mock_command(mocker, "command-zero-mcp-generate-login-url", params=DEFAULT_PARAMS | {"redirect_uri": "http://localhost"})
-        mock_return_results = mocker.patch("CommandZeroMCP.return_results")
-
-        await main()
-
-        mock_return_results.assert_called_once_with({"login_url": "url"})
-        assert mock_generate_login_url.call_args.kwargs == {
-            "auth_type": "OAuth 2.0 Dynamic Client Registration",
-            "redirect_uri": "http://localhost",
-        }
-
-    @pytest.mark.asyncio
-    async def test_auth_test_without_login_session(self, mocker: MockerFixture):
-        """Given: The instance has no login session stored in the integration context.
-        When: The command-zero-mcp-auth-test command is called.
-        Then: A login URL is generated and returned instead of attempting a token exchange.
-        """
-        client_class = mock_client(mocker)
-        mocker.patch(
-            "CommandZeroMCP.generate_login_url",
-            return_value=CommandResults(readable_output="### Authorization instructions"),
-        )
-        mock_command(mocker, "command-zero-mcp-auth-test", integration_context={})
-        mock_return_results = mocker.patch("CommandZeroMCP.return_results")
-
-        await main()
-
-        readable_output = mock_return_results.call_args[0][0].readable_output
-        assert readable_output.startswith("No Command Zero login session was found for this instance.")
-        assert "### Authorization instructions" in readable_output
-        client_class.return_value.test_connection.assert_not_called()
-
-    @pytest.mark.asyncio
-    async def test_call_tool_without_login_session(self, mocker: MockerFixture):
-        """Given: The instance has no login session stored in the integration context.
-        When: The call-tool command is called.
-        Then: An error is returned instructing the user to generate a login URL.
-        """
-        mock_client(mocker)
-        mock_command(mocker, "call-tool", args={"name": "get_caller_identity"}, integration_context={})
-        mock_return_error = mocker.patch("CommandZeroMCP.return_error")
-
-        await main()
-
-        error_message = mock_return_error.call_args[0][0]
-        assert "No Command Zero login session was found for this instance" in error_message
-        assert "!command-zero-mcp-generate-login-url" in error_message
 
     @pytest.mark.asyncio
     async def test_unknown_command(self, mocker: MockerFixture):
