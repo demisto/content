@@ -444,6 +444,19 @@ def test_google_gemini_send_message_command_default_values(client_fixture):
     call_args = client_fixture._http_request.call_args[1]["json_data"]
     assert call_args["generationConfig"]["maxOutputTokens"] == 1024
     assert call_args["generationConfig"]["temperature"] == 0.5
+    assert result.outputs["MaxTokens"] == 1024
+
+
+def test_google_gemini_send_message_command_max_tokens_override(client_fixture):
+    """Test that max_tokens overrides the instance-level value for one command execution"""
+    client_fixture._http_request.return_value = MOCK_SUCCESSFUL_CHAT_RESPONSE
+    args = {"prompt": "Test prompt", "max_tokens": "2048"}
+
+    result = GoogleGemini.google_gemini_send_message_command(client_fixture, args)
+
+    call_args = client_fixture._http_request.call_args[1]["json_data"]
+    assert call_args["generationConfig"]["maxOutputTokens"] == 2048
+    assert result.outputs["MaxTokens"] == 2048
 
 
 def test_google_gemini_send_message_command_save_conversation_false(client_fixture, mocker):

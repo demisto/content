@@ -110,10 +110,11 @@ When `save_conversation` is enabled, the integration automatically:
 
 For more information, see the [Google AI documentation](https://ai.google.dev/) or contact the pack maintainer.
 
-### Pack Contributors:
+### Pack Contributors
 
 ---
- - Mu Wang
- - Brad Reimers
+
+- Mu Wang
+- Brad Reimers
 
 Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).

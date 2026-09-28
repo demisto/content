@@ -199,20 +199,23 @@ class Client(BaseClient):
         contents: list[dict[str, Any]],
         model: str | None = None,
         temperature: float | None = None,
+        max_tokens: int | None = None,
     ) -> dict[str, Any]:
         """Send prebuilt contents to the Gemini generateContent endpoint.
 
         :param contents: Conversation contents in Gemini format (history + prompt).
         :param model: The Gemini model to use (defaults to instance default).
         :param temperature: Per-call temperature override (defaults to instance default).
+        :param max_tokens: Per-call maximum output token override (defaults to instance default).
         :return: Dictionary containing the API response.
         """
         selected_model = model or self.model
         selected_temperature = temperature if temperature is not None else self.temperature
+        selected_max_tokens = max_tokens if max_tokens is not None else self.max_tokens
 
         # Build generation config using instance defaults
         generation_config = assign_params(
-            maxOutputTokens=self.max_tokens, temperature=selected_temperature, topP=self.top_p, topK=self.top_k
+            maxOutputTokens=selected_max_tokens, temperature=selected_temperature, topP=self.top_p, topK=self.top_k
         )
 
         request_body = {"contents": contents, "generationConfig": generation_config}
@@ -230,6 +233,7 @@ class Client(BaseClient):
         model: str | None = None,
         history: list[dict[str, Any]] | None = None,
         temperature: float | None = None,
+        max_tokens: int | None = None,
     ) -> dict[str, Any]:
         """Send a chat message to the Gemini API with optional conversation history.
 
@@ -248,10 +252,11 @@ class Client(BaseClient):
         :param model: The Gemini model to use (defaults to instance default).
         :param history: Optional conversation history in Gemini format.
         :param temperature: Per-call temperature override (defaults to instance default).
+        :param max_tokens: Per-call maximum output token override (defaults to instance default).
         :return: Dictionary containing the API response.
         """
         contents = self.build_contents(prompt, history)
-        return self.generate_content(contents, model, temperature)
+        return self.generate_content(contents, model, temperature, max_tokens)
 
 
 def _truncate_to_token_budget(
@@ -321,7 +326,7 @@ def google_gemini_send_message_command(client: Client, args: dict[str, Any]):
 
     :param client: Google Gemini API client.
     :param args: Dictionary of command arguments (prompt, model, history, save_conversation, temperature,
-        max_input_tokens, truncate).
+        max_tokens, max_input_tokens, truncate).
     :return: CommandResults object(s) with outputs and readable representation.
     """
     prompt = str(args.get("prompt", ""))
@@ -331,6 +336,9 @@ def google_gemini_send_message_command(client: Client, args: dict[str, Any]):
     temperature = arg_to_float(args.get("temperature"))
     if temperature is None:
         temperature = 0.5
+    max_tokens = arg_to_number(args.get("max_tokens"))
+    if max_tokens is None:
+        max_tokens = client.max_tokens
     max_input_tokens = arg_to_number(args.get("max_input_tokens"))
     truncate = argToBoolean(args.get("truncate", False))
 
@@ -385,7 +393,7 @@ def google_gemini_send_message_command(client: Client, args: dict[str, Any]):
                 )
             contents, input_token_count, truncated = _truncate_to_token_budget(client, contents, model, max_input_tokens)
 
-    response = client.generate_content(contents, model, temperature)
+    response = client.generate_content(contents, model, temperature, max_tokens)
 
     content = ""
     finish_reason = ""
@@ -407,6 +415,7 @@ def google_gemini_send_message_command(client: Client, args: dict[str, Any]):
         "Response": content,
         "Model": model or client.model,
         "Temperature": temperature,
+        "MaxTokens": max_tokens,
         "InputTokenCount": usage_metadata.get("promptTokenCount"),
         "OutputTokenCount": usage_metadata.get("candidatesTokenCount"),
         "TotalTokenCount": usage_metadata.get("totalTokenCount"),

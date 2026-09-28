@@ -74,6 +74,7 @@ Send a prompt to Google Gemini and receive an AI-generated response.
 | history | Conversation history in JSON format for maintaining context across multiple interactions | Optional |
 | save_conversation | Whether to automatically save and retrieve conversation history (default: false) | Optional |
 | temperature | Overrides the instance-level Temperature parameter for this specific request (default: 0.5) | Optional |
+| max_tokens | Overrides the instance-level maximum output tokens for this request. If omitted, the instance-level value is used | Optional |
 | max_input_tokens | Maximum number of input tokens (prompt + history combined) allowed for this request. If exceeded and truncate=false, the command returns an error | Optional |
 | truncate | If true and max_input_tokens is exceeded, automatically truncates the oldest history first, then the prompt, to fit the budget (default: false) | Optional |
 
@@ -85,6 +86,7 @@ Send a prompt to Google Gemini and receive an AI-generated response.
 | GoogleGemini.Chat.Response | String | The AI model's response |
 | GoogleGemini.Chat.Model | String | The model used for generation |
 | GoogleGemini.Chat.Temperature | Number | The temperature parameter used for response generation |
+| GoogleGemini.Chat.MaxTokens | Number | The maximum number of output tokens configured for the request |
 | GoogleGemini.Chat.History | Array | Complete conversation history (when save_conversation=true) |
 | GoogleGemini.Chat.ConversationId | String | A unique identifier, used to identify the chat session |
 | GoogleGemini.Chat.InputTokenCount | Number | The number of input (prompt) tokens consumed by the request |
@@ -103,6 +105,8 @@ Send a prompt to Google Gemini and receive an AI-generated response.
 ```!google-gemini-send-message prompt="What are the next investigation steps?" save_conversation=true```
 
 ```!google-gemini-send-message prompt="Brainstorm creative phishing detection rules" temperature=1.2```
+
+```!google-gemini-send-message prompt="Provide a detailed incident summary" max_tokens=2048```
 
 ```!google-gemini-send-message prompt="Summarize the incident" history='[{"role": "user", "parts": [{"text": "Hello"}]}, {"role": "model", "parts": [{"text": "Hi there! How can I help you?"}]}]' max_input_tokens=8000 truncate=true```
 
