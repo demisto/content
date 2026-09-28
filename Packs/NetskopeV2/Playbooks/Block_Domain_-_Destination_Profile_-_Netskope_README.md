@@ -10,8 +10,9 @@ casing (e.g. "Regex" instead of "regex") getting rejected by the create command.
 when a new profile actually needs to be created - it's skipped entirely when appending to a
 profile that already exists (its match type was already fixed at creation).
 
-Profile names are unique in Netskope, so an exact-match lookup (name eq "<ProfileName>") returns
-at most one profile - no manual ID lookup needed, just the profile's display name.
+The integration performs the profile-name lookup safely by retrieving profile pages and
+comparing names locally, without interpolating ProfileName into an API filter. No manual ID
+lookup is needed; provide only the profile's display name.
 
 IMPORTANT: unlike the URL List and File Hash List "append" behavior, Netskope's destination
 profile values "append" operation has no server-side dedup - calling it twice with the same

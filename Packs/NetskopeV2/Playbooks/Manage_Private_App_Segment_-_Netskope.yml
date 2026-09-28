@@ -15,27 +15,26 @@ description: |-
     only the fields you provide among AppName/Host/Ports/PublisherNames/Tags are changed, the
     rest are left as-is. HostsToAdd/PortsToAdd/TagsToAdd append to the current host/protocols/tags
     instead of replacing them; HostsToRemove/PortsToRemove/TagsToRemove remove specific values from
-    the current host/protocols/tags instead of requiring you to retype everything else. Task #70
-    fetches the app's current state and applies these merges before the PATCH is sent.
+    the current host/protocols/tags instead of requiring you to retype everything else. The
+    playbook fetches the app's current state and applies these merges before the PATCH is sent.
   - "delete": permanently deletes the private app identified by AppID or AppName.
 
   The playbook uses the modify operation for partial updates and supports adding or removing
   individual field values without replacing the whole object.
 
   For modify/delete, you can provide AppID directly, or leave it blank and provide AppName
-  instead - netskopev2-list-private-apps has no name filter argument at all, so task #30 fetches
-  every private app and resolves AppName to an ID itself (also handling the "[app_name]"
+  instead - netskopev2-list-private-apps has no name filter argument, so the playbook fetches every
+  private app and resolves AppName to an ID itself (also handling the "[app_name]"
   bracket-wrapping Netskope applies in list responses). If no app or more than one app matches
   that name, the playbook stops with a clear error rather than guessing.
 
   Similarly, PublisherNames takes plain publisher names (e.g. "AWS-NPA") instead of requiring you
-  to already know each publisher_id - netskopev2-list-publishers also has no name filter, so
-  tasks #40 (create) / #42 (modify, only if PublisherNames was provided) resolve each name and
-  build the {"publisher_id": ..., "publisher_name": ...} JSON array the create/update commands
-  expect.
+  to already know each publisher_id - netskopev2-list-publishers also has no name filter, so the
+  playbook resolves each name and builds the {"publisher_id": ..., "publisher_name": ...} JSON
+  array the create/update commands expect.
 
-  Ports takes a comma-separated list of port numbers. Task #50 builds the object array expected by
-  the create and update commands, which validate that protocols is an array of objects.
+  Ports takes a comma-separated list of port numbers. The playbook builds the object array expected
+  by the create and update commands, which validate that protocols is an array of objects.
   Host already accepts multiple comma-separated values directly (e.g. "10.0.0.1,10.0.0.2") - no
   lookup or building needed for that one.
 starttaskid: "0"
@@ -270,7 +269,7 @@ tasks:
       id: 6705939c-f708-491b-a535-753486a5dcc0
       version: -1
       name: Create Private App
-      description: Create a new private app (ZTNA/NPA segment) with the given host, protocols, and publishers (resolved from PublisherNames by task #40).
+      description: Create a new private app (ZTNA/NPA segment) with the given host, protocols, and publishers resolved from PublisherNames.
       script: "|||netskopev2-create-private-app"
       type: regular
       iscommand: true
@@ -315,7 +314,7 @@ tasks:
       id: 9e43d45a-2f61-46ef-bec8-5bddb2f80c5c
       version: -1
       name: Modify Private App
-      description: Update the existing private app (segment) identified by AppID (or looked up by AppName via task #30) - only the fields provided among AppName/Host or HostsToAdd/HostsToRemove/Protocols or PortsToAdd/PortsToRemove/PublisherNames/Tags or TagsToAdd/TagsToRemove are changed. Host, protocols, and tags come from task #70, which adds/removes the requested values against the app's current values instead of replacing them wholesale, when those inputs are used.
+      description: Update the existing private app (segment) identified by AppID or looked up by AppName. Only provided fields are changed. When additive or removal inputs are used, the requested values are merged with the app's current host, protocol, and tag values instead of replacing them wholesale.
       script: "|||netskopev2-update-private-app"
       type: regular
       iscommand: true
@@ -363,7 +362,7 @@ tasks:
       id: f03421ad-9d08-483f-895b-58a9c4ebad0b
       version: -1
       name: Delete Private App
-      description: Permanently delete the private app (segment) identified by AppID (or looked up by AppName via task #30).
+      description: Permanently delete the private app (segment) identified by AppID or looked up by AppName.
       script: "|||netskopev2-delete-private-app"
       type: regular
       iscommand: true
@@ -890,7 +889,7 @@ inputs:
 - key: Ports
   value: {}
   required: false
-  description: Comma-separated port numbers (e.g. "443,8080,22") - no need to hand-write the {type, port} JSON array yourself, task   #50 builds it. Required for Action=create, optional for Action=modify (leave blank to keep the current protocols).
+  description: Comma-separated port numbers (e.g. "443,8080,22"). The playbook builds the required protocol object array. Required for Action=create; optional for Action=modify (leave blank to keep the current protocols).
   playbookInputQuery:
 - key: ProtocolType
   value:
@@ -901,27 +900,27 @@ inputs:
 - key: HostsToAdd
   value: {}
   required: false
-  description: Action=modify only. Comma-separated hosts to add to the app's existing host list (e.g. "10.0.0.5") without discarding the current ones - task   #70 fetches the current host and merges. Unlike Host (which replaces the whole field), this is additive. Leave blank to not touch the host at all during modify.
+  description: Action=modify only. Comma-separated hosts to add to the app's existing host list (e.g. "10.0.0.5") without discarding the current ones. Unlike Host (which replaces the whole field), this is additive. Leave blank to keep the host unchanged.
   playbookInputQuery:
 - key: PortsToAdd
   value: {}
   required: false
-  description: Action=modify only. Comma-separated ports to add to the app's existing protocols (e.g. "8080") without discarding the current ones - task   #70 fetches the current protocols and merges, using ProtocolType for the new entries. Unlike Ports (which replaces the whole field), this is additive. Leave blank to not touch protocols at all during modify.
+  description: Action=modify only. Comma-separated ports to add to the app's existing protocols (e.g. "8080") without discarding the current ones. ProtocolType is used for new entries. Unlike Ports (which replaces the whole field), this is additive. Leave blank to keep protocols unchanged.
   playbookInputQuery:
 - key: HostsToRemove
   value: {}
   required: false
-  description: Action=modify only. Comma-separated hosts to remove from the app's existing host list (e.g. "10.0.0.5") without discarding the rest - task   #70 fetches the current host and removes just these entries. Leave blank to not remove any host during modify.
+  description: Action=modify only. Comma-separated hosts to remove from the app's existing host list (e.g. "10.0.0.5") without discarding the rest. Leave blank to keep the host list unchanged.
   playbookInputQuery:
 - key: PortsToRemove
   value: {}
   required: false
-  description: Action=modify only. Comma-separated ports to remove from the app's existing protocols (e.g. "8080") without discarding the rest - task   #70 fetches the current protocols and removes just the matching port entries. Leave blank to not remove any port during modify.
+  description: Action=modify only. Comma-separated ports to remove from the app's existing protocols (e.g. "8080") without discarding the rest. Leave blank to keep protocols unchanged.
   playbookInputQuery:
 - key: PublisherNames
   value: {}
   required: false
-  description: Comma-separated publisher names (e.g. "AWS-NPA") - no need to know publisher_id. netskopev2-list-publishers has no name filter, so tasks   #40/#42 fetch all publishers and resolve each name themselves, building the JSON array the create/update commands expect. Required for Action=create, optional for Action=modify (leave blank to keep the current publishers).
+  description: Comma-separated publisher names (e.g. "AWS-NPA"). The playbook fetches publishers and resolves each name, so publisher IDs are not required. Required for Action=create; optional for Action=modify (leave blank to keep the current publishers).
   playbookInputQuery:
 - key: Tags
   value: {}
@@ -931,12 +930,12 @@ inputs:
 - key: TagsToAdd
   value: {}
   required: false
-  description: Action=modify only. Comma-separated tags to add to the app's existing tags (e.g. "test") without discarding the current ones - task   #70 fetches the current tags and merges. Unlike Tags (which replaces the whole field), this is additive. Leave blank to not touch tags at all during modify.
+  description: Action=modify only. Comma-separated tags to add to the app's existing tags (e.g. "test") without discarding the current ones. Unlike Tags (which replaces the whole field), this is additive. Leave blank to keep tags unchanged.
   playbookInputQuery:
 - key: TagsToRemove
   value: {}
   required: false
-  description: Action=modify only. Comma-separated tag names to remove from the app's existing tags without discarding the rest - task   #70 fetches the current tags and removes just these entries. Leave blank to not remove any tag during modify.
+  description: Action=modify only. Comma-separated tag names to remove from the app's existing tags without discarding the rest. Leave blank to keep tags unchanged.
   playbookInputQuery:
 outputs: []
 tests:
