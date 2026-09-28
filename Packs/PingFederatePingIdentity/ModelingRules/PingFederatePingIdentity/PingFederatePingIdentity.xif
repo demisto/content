@@ -3,11 +3,11 @@
 // cs1..cs6 are CEF custom string fields whose meaning is given by the matching cs*Label field,
 // therefore every custom string field is resolved through its label rather than by position.
 alter
-    tmp_target_application_url = if(cs1Label = "Target Application URL" and cs1 != "", cs1, null),
-    tmp_protocol = if(cs3Label = "Protocol" and cs3 != "", cs3, null),
-    tmp_role = if(cs4Label = "Role" and cs4 != "", cs4, null),
-    tmp_sp_local_user_id = if(cs5Label = "SP Local User ID" and cs5 != "", cs5, null),
-    tmp_attributes = if(cs6Label = "Attributes" and cs6 != "", cs6, null),
+    tmp_target_application_url = if(lowercase(cs1Label) = "target application url" and cs1 != "", cs1, null),
+    tmp_protocol = if(lowercase(cs3Label) = "protocol" and cs3 != "", cs3, null),
+    tmp_role = if(lowercase(cs4Label) = "role" and cs4 != "", cs4, null),
+    tmp_sp_local_user_id = if(lowercase(cs5Label) = "sp local user id" and cs5 != "", cs5, null),
+    tmp_attributes = if(lowercase(cs6Label) = "attributes" and cs6 != "", cs6, null),
     tmp_status = lowercase(msg),
     tmp_event_name = coalesce(cefName, cefDeviceEventClassId)
 | alter
@@ -80,6 +80,4 @@ alter
     xdm.source.identity.groups = tmp_groups,
     xdm.source.identity.roles = tmp_attr_roles,
     xdm.source.identity.identity_type = if(tmp_username != null or tmp_upn != null, XDM_CONST.IDENTITY_TYPE_USER, XDM_CONST.IDENTITY_TYPE_UNKNOWN),
-    xdm.target.host.hostname = dvchost,
-    xdm.target.host.fqdn = if(dvchost contains ".", dvchost, null),
     xdm.target.url = tmp_target_application_url;

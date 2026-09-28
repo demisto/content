@@ -40,7 +40,7 @@ For more information, see the [Writing the audit log in CEF](https://docs.pingid
 
 ### Broker VM
 
-To create or configure the Broker VM, see the [Broker VM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Broker-VM) documentation.
+To create or configure the Broker VM, see the [Broker VM](https://cortex-docs.paloaltonetworks.com/cortex-xsiam/configure-cortex-xsiam/data-management/broker-vm/set-up-and-configure-broker-vm) documentation.
 
 Follow these steps to configure the Broker VM to receive the PingFederate audit log:
 
