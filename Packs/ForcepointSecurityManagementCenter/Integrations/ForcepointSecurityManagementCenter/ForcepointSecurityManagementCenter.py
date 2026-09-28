@@ -3,12 +3,13 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from smc import session
+from smc.administration.tasks import Task
 from smc.elements.network import IPList, DomainName, Host
 from smc.core.engine import Engine
 from smc.base.model import Element
 from smc.policy.layer3 import FirewallTemplatePolicy, FirewallPolicy
 from smc.policy.rule import IPv6Rule, Rule
-from smc.api.exceptions import ElementNotFound
+from smc.api.exceptions import ElementNotFound, TaskRunFailed
 import urllib3
 from typing import Any
 
@@ -20,6 +21,9 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 DEFAULT_LIMIT = 50
 API_VERSION = "6.10"
+
+DEFAULT_POLLING_INTERVAL_IN_SECONDS = 30
+DEFAULT_POLLING_TIMEOUT_IN_SECONDS = 600
 """ CLIENT CLASS """
 
 
@@ -819,6 +823,86 @@ def list_engine_command(args: dict[str, Any]) -> CommandResults:
     )
 
 
+@polling_function(
+    "forcepoint-smc-engine-refresh",
+    poll_message="Refreshing engines:",
+    requires_polling_arg=False,
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_POLLING_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds")) or DEFAULT_POLLING_TIMEOUT_IN_SECONDS,
+)
+def engine_refresh_command(args: dict) -> PollResult:
+    """
+    Refresh the specified engines.
+
+    This command initiates refresh tasks and polls for status until complete.
+
+    Args:
+        args: Command arguments including engine names.
+
+    Returns:
+        PollResult: Contains the refresh status or indicates to continue polling.
+    """
+    task_ids = argToList(args.get("task_ids", []))
+    engine_names = argToList(args.get("engine_name", []))
+
+    if not task_ids:
+        # first call - initiate refresh tasks
+        failed_engines = []
+
+        demisto.debug("Creating refresh tasks:")
+        for engine_name in engine_names:
+            try:
+                engine = Engine(engine_name)
+                poller = engine.refresh()
+                task_ids.append(poller.task.href)
+                demisto.debug(f"\t- (Engine: {engine_name}, Task: {poller.task.href})")
+            except TaskRunFailed:
+                failed_engines.append(engine_name)
+
+        if failed_engines:
+            raise DemistoException(
+                f"Failed to initiate refresh tasks for engines ({', '.join(failed_engines)}), refresh policy is locked."
+            )
+
+        demisto.debug("Completed task initiation.")
+        demisto.debug(f"Initiated refresh tasks for engines {', '.join(engine_names)}.")
+        demisto.debug(f"Tasks IDs: {task_ids}")
+        args["task_ids"] = task_ids
+
+    # poll for refresh status
+    completed_tasks = []
+    pending_tasks = []
+
+    demisto.debug("Restoring refresh tasks, assignments are expected to be the same as during creation:")
+    for task_id, engine_name in zip(task_ids, engine_names):
+        task = Task({"follower": task_id})
+        demisto.debug(f"\t- (Engine: {engine_name}, Task: {task_id})")
+        task = task.update_status()
+        if not task.in_progress:
+            completed_tasks.append(engine_name)
+        else:
+            pending_tasks.append((task_id, engine_name))
+
+    demisto.debug(f"Refresh status:\n{pending_tasks=}\n{completed_tasks=}")
+
+    if not pending_tasks:
+        demisto.debug("All refresh tasks are complete.")
+        return PollResult(
+            response=CommandResults(
+                readable_output=f"Existing policy on specified devices ({', '.join(engine_names)}) were refreshed successfully."
+            ),
+            continue_to_poll=False,
+        )
+
+    demisto.info(f"Refresh tasks {pending_tasks} are still in progress, continuing to poll...")
+
+    return PollResult(
+        response=CommandResults(readable_output="Refresh tasks are still in progress, continuing to poll..."),
+        continue_to_poll=True,
+        args_for_next_run=args,
+    )
+
+
 """ MAIN FUNCTION """
 
 
@@ -881,6 +965,8 @@ def main():
             return_results(delete_rule_command(demisto.args()))
         elif command == "forcepoint-smc-engine-list":
             return_results(list_engine_command(demisto.args()))
+        elif command == "forcepoint-smc-engine-refresh":
+            return_results(engine_refresh_command(demisto.args()))
     # Log exceptions and return errors
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")

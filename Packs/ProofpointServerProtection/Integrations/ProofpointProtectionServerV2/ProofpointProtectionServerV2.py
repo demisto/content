@@ -424,7 +424,7 @@ def main() -> None:
         command = demisto.command()
         params = demisto.params()
         handle_proxy()
-        timeout = arg_to_number(params.get("timeout")) or 60
+        timeout = arg_to_number(params.get("timeout") or 60)
         client = Client(
             base_url=urljoin(params["url"], "/rest/v1"),
             auth=(params["credentials"]["identifier"], params["credentials"]["password"]),

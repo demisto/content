@@ -100,7 +100,7 @@ def test_client_init():
         proxy=True,
         auth_type=GoogleGemini.AUTH_TYPE_AI_STUDIO,
         api_key="test_key",
-        model="gemini-1.5-pro",
+        model="gemini-2.5-pro",
         max_tokens=2048,
         temperature=0.8,
         top_p=0.9,
@@ -108,7 +108,7 @@ def test_client_init():
     )
 
     assert client.api_key == "test_key"
-    assert client.model == "gemini-1.5-pro"
+    assert client.model == "gemini-2.5-pro"
     assert client.max_tokens == 2048
     assert client.temperature == 0.8
     assert client.top_p == 0.9
@@ -129,7 +129,7 @@ def test_client_init_default_model():
         api_key="test_key",
     )
 
-    assert client.model == "gemini-2.5-flash-preview-05-20"
+    assert client.model == "gemini-2.5-flash"
     assert client.max_tokens == 1024
     assert client.temperature is None
     assert client.top_p is None
@@ -692,7 +692,7 @@ def test_main_model_freetext_override(mocker):
             "url": "https://generativelanguage.googleapis.com",
             "api_key": {"password": "test_api_key"},
             "model": ["gemini-2.0-flash", "test"],
-            "model-freetext": "gemini-1.5-pro",
+            "model-freetext": "gemini-2.5-pro",
             "max_tokens": "2048",
             "temperature": "0.8",
             "top_p": "0.9",
@@ -729,7 +729,7 @@ def test_send_chat_message_with_instance_parameters():
         proxy=False,
         auth_type=GoogleGemini.AUTH_TYPE_AI_STUDIO,
         api_key="test_key",
-        model="gemini-1.5-pro",
+        model="gemini-2.5-pro",
         max_tokens=2048,
         temperature=0.8,
         top_p=0.9,
@@ -761,7 +761,7 @@ def test_send_chat_message_with_optional_parameters_none():
         proxy=False,
         auth_type=GoogleGemini.AUTH_TYPE_AI_STUDIO,
         api_key="test_key",
-        model="gemini-1.5-pro",
+        model="gemini-2.5-pro",
         max_tokens=1024,
         temperature=None,
         top_p=None,

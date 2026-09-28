@@ -1,0 +1,142 @@
+{
+    "kind": "drive#driveList",
+    "nextPageToken": "myNextPageToken",
+    "drives": [
+        {
+            "kind": "drive#drive",
+            "id": "17",
+            "name": "My Drive 17",
+            "colorRgb": "#039be5",
+            "capabilities": {
+                "canAddChildren": true,
+                "canChangeCopyRequiresWriterPermissionRestriction": true,
+                "canChangeDomainUsersOnlyRestriction": true,
+                "canChangeDriveBackground": true,
+                "canChangeDriveMembersOnlyRestriction": true,
+                "canComment": true,
+                "canCopy": true,
+                "canDeleteChildren": true,
+                "canDeleteDrive": true,
+                "canDownload": true,
+                "canEdit": true,
+                "canListChildren": true,
+                "canManageMembers": true,
+                "canReadRevisions": true,
+                "canRename": true,
+                "canRenameDrive": true,
+                "canShare": true,
+                "canTrashChildren": true
+            },
+            "createdTime": "2020-11-10T07:28:48.669Z",
+            "hidden": false,
+            "restrictions": {
+                "adminManagedRestrictions": false,
+                "copyRequiresWriterPermission": false,
+                "domainUsersOnly": false,
+                "driveMembersOnly": false
+            }
+        },
+        {
+            "kind": "drive#drive",
+            "id": "18",
+            "name": "My Drive 18",
+            "colorRgb": "#689f38",
+            "capabilities": {
+                "canAddChildren": true,
+                "canChangeCopyRequiresWriterPermissionRestriction": true,
+                "canChangeDomainUsersOnlyRestriction": true,
+                "canChangeDriveBackground": true,
+                "canChangeDriveMembersOnlyRestriction": true,
+                "canComment": true,
+                "canCopy": true,
+                "canDeleteChildren": true,
+                "canDeleteDrive": true,
+                "canDownload": true,
+                "canEdit": true,
+                "canListChildren": true,
+                "canManageMembers": true,
+                "canReadRevisions": true,
+                "canRename": true,
+                "canRenameDrive": true,
+                "canShare": true,
+                "canTrashChildren": true
+            },
+            "createdTime": "2020-11-29T08:33:18.882Z",
+            "hidden": false,
+            "restrictions": {
+                "adminManagedRestrictions": false,
+                "copyRequiresWriterPermission": false,
+                "domainUsersOnly": false,
+                "driveMembersOnly": false
+            }
+        },
+        {
+            "kind": "drive#drive",
+            "id": "19",
+            "name": "My Drive 19",
+            "colorRgb": "#78909c",
+            "capabilities": {
+                "canAddChildren": true,
+                "canChangeCopyRequiresWriterPermissionRestriction": true,
+                "canChangeDomainUsersOnlyRestriction": true,
+                "canChangeDriveBackground": true,
+                "canChangeDriveMembersOnlyRestriction": true,
+                "canComment": true,
+                "canCopy": true,
+                "canDeleteChildren": true,
+                "canDeleteDrive": true,
+                "canDownload": true,
+                "canEdit": true,
+                "canListChildren": true,
+                "canManageMembers": true,
+                "canReadRevisions": true,
+                "canRename": true,
+                "canRenameDrive": true,
+                "canShare": true,
+                "canTrashChildren": true
+            },
+            "createdTime": "2021-04-07T01:34:35.746Z",
+            "hidden": false,
+            "restrictions": {
+                "adminManagedRestrictions": false,
+                "copyRequiresWriterPermission": false,
+                "domainUsersOnly": false,
+                "driveMembersOnly": false
+            }
+        },
+        {
+            "kind": "drive#drive",
+            "id": "20",
+            "name": "My Drive 20",
+            "colorRgb": "#4285f4",
+            "capabilities": {
+                "canAddChildren": true,
+                "canChangeCopyRequiresWriterPermissionRestriction": true,
+                "canChangeDomainUsersOnlyRestriction": true,
+                "canChangeDriveBackground": true,
+                "canChangeDriveMembersOnlyRestriction": true,
+                "canComment": true,
+                "canCopy": true,
+                "canDeleteChildren": true,
+                "canDeleteDrive": true,
+                "canDownload": true,
+                "canEdit": true,
+                "canListChildren": true,
+                "canManageMembers": true,
+                "canReadRevisions": true,
+                "canRename": true,
+                "canRenameDrive": true,
+                "canShare": true,
+                "canTrashChildren": true
+            },
+            "createdTime": "2021-01-27T09:16:11.807Z",
+            "hidden": false,
+            "restrictions": {
+                "adminManagedRestrictions": false,
+                "copyRequiresWriterPermission": false,
+                "domainUsersOnly": false,
+                "driveMembersOnly": false
+            }
+        }
+    ]
+}

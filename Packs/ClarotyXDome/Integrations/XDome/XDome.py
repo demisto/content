@@ -729,7 +729,7 @@ def main() -> None:
 
     demisto.debug(f"Command being called is {command}")
     try:
-        headers: dict = {"Authorization": f"Bearer {api_key}"}
+        headers: dict = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
 
         client = Client(
             base_url=base_url,

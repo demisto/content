@@ -3,20 +3,27 @@ provider: Google
 commonfields:
   id: Looker
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - display: API URL and port (e.g., https://example.looker.com:19999)
   name: url
   required: true
   type: 0
+  section: Connect
 - display: API3 Client ID
   name: client_id
-  required: true
+  required: false
+  hidden: true
   type: 0
+  section: Connect
 - display: API3 Client Secret
   name: client_secret
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: API3 Client ID
   name: credentials_api3_client
   type: 9
@@ -27,10 +34,12 @@ configuration:
   name: unsecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: Use the Looker integration to query an explore, save queries as looks, run looks, and fetch look results as incidents.
 display: Looker
 name: Looker
@@ -177,7 +186,7 @@ script:
     - contextPath: Looker.Look.LastUpdated
       description: The time that the look was last updated.
       type: Date
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10325753
   runonce: false
   script: '-'
   type: python

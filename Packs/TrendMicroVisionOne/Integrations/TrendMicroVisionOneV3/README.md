@@ -15,7 +15,7 @@ This integration was integrated and tested with version 3 API of TrendAI Vision 
 | Trust any certificate (not secure) |  | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 | Severity | Severity of the incident being fetched. | False |
-| Incident Mirroring Direction | Choose the direction to mirror incidents between XSOAR and Vision One. Options: None, Incoming, Outgoing, Incoming And Outgoing. | False |
+| Incident Mirroring Direction | Choose the direction to mirror incidents. Outgoing mirrors XSOAR changes to Vision One alerts. Cortex XSOAR only parameter. | False |
 
 ## Commands
 
@@ -167,7 +167,7 @@ Moves a message from a mailbox to the quarantine folder.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email_identifiers | List of object(s) containing `message_id` (&lt;mailMsgId&gt;), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name","description":"quarantine"}]. | Required |
+| email_identifiers | List of object(s) containing `message_id` (&lt;mailMsgId&gt;), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from TrendAI Vision One™ message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name","description":"quarantine"}]. | Required |
 
 #### Context Output
 

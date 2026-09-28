@@ -75,6 +75,9 @@ configuration:
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: stateNOT IN6,7
   display: The query to use when fetching incidents
   name: sysparm_query
@@ -112,6 +115,9 @@ configuration:
   type: 13
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Get incident attachments
   name: get_attachments
   type: 8
@@ -349,6 +355,9 @@ configuration:
   type: 19
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 0
   display: 'Advanced: Minutes to look back when fetching'
   additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
@@ -357,6 +366,30 @@ configuration:
   advanced: true
   required: false
   section: Collect
+- display: Interpret comments in a specific format
+  name: comment_format
+  section: Collect
+  defaultvalue: source
+  additionalinfo: The format of the ServiceNow comments. Default is Source, the format supplied by ServiceNow during the fetch as part of the comments data. This can be changed to a different format for all comments. Possible values are Source (default), Text, and HTML. Use HTML if an HTML editor is used within ServiceNow to add comments.
+  type: 15
+  required: false
+  options:
+  - text
+  - html
+  - source
+  hidden:
+  - marketplacev2
+  - platform
+- display: Mark attachment as note
+  name: mark_attachments_as_note
+  section: Collect
+  additionalinfo: Whether to mark file attachments from ServiceNow as notes.
+  defaultvalue: "false"
+  type: 8
+  hidden:
+  - marketplacev2
+  - platform
+  required: false
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
 display: ServiceNow v2
 name: ServiceNow v2
@@ -1977,7 +2010,7 @@ script:
       description: Ticket close code.
       type: string
 
-  dockerimage: demisto/auth-utils:1.0.0.7837600
+  dockerimage: demisto/auth-utils:1.0.0.10608895
   isfetch: true
   ismappable: true
   isremotesyncin: true

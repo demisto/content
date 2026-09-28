@@ -1,9 +1,6 @@
 Built on the industry’s most comprehensive Internet Map, the Censys Platform delivers unmatched visibility into global internet assets, adversary infrastructure, and evolving threats.
 This integration was integrated and tested with version 2.0 of Censys.
 
-Some changes have been made that might affect your existing content.
-If you are upgrading from a previous of this integration, see [Breaking Changes](#additional-considerations-for-this-version).
-
 ## Configure Censys v2 in Cortex
 
 | **Parameter** | **Description** | **Required** |
@@ -18,6 +15,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 | IP Suspicious labels | Used when \`Determine IP score by labels\` is set.<br/>Labels to classify IP as Suspicious.<br/>Input can be an array or comma-separated values. | False |
 | Malicious labels threshold | Determines the minimum number of labels returned that are classified as malicious for IP. | False |
 | Suspicious labels threshold | Determines the minimum number of labels returned that are classified as suspicious for IP. | False |
+| Use enrichment API for the ip command | When set to True, the "ip" command retrieves IP data from the Censys host enrichment API. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. |  |
 
 ## Commands
@@ -125,6 +123,382 @@ Returns detailed information for an IP address or SHA256 within the specified in
 }
 ```
 
+#### Human Readable Output
+
+>### Information for IP 8.8.8.8
+>
+>|ASN|Network|Protocols|Routing|Whois Last Updated|
+>|---|---|---|---|---|
+>| 15169 | GOOGLE - Google LLC | 53/DNS, 443/UNKNOWN, 443/HTTP, 853/UNKNOWN | 8.8.8.0/24 | 2023-12-28T00:00:00Z |
+
+#### Command example
+
+```!cen-view index=certificates query=9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc limit=1```
+
+#### Context Example
+
+```json
+{
+    "Censys": {
+        "View": {
+            "added_at": "1970-01-01T00:00:00Z",
+            "ct": {
+                "entries": {
+                    "digicert_ct1": {
+                        "added_to_ct_at": "2015-09-29T19:55:46Z",
+                        "ct_to_censys_at": "2018-07-30T04:49:40Z",
+                        "index": 165790
+                    },
+                    "google_aviator": {
+                        "index": 8713649
+                    },
+                    "google_pilot": {
+                        "added_to_ct_at": "2015-09-29T19:55:45Z",
+                        "ct_to_censys_at": "2018-07-30T15:23:48Z",
+                        "index": 9498499
+                    },
+                    "google_rocketeer": {
+                        "added_to_ct_at": "2015-09-29T19:55:45Z",
+                        "ct_to_censys_at": "2018-07-30T15:17:12Z",
+                        "index": 6663198
+                    },
+                    "nordu_ct_plausible": {
+                        "added_to_ct_at": "2015-10-19T23:17:33Z",
+                        "ct_to_censys_at": "2018-07-30T19:53:59Z",
+                        "index": 5744025
+                    },
+                    "symantec_ws_ct": {
+                        "added_to_ct_at": "2015-09-29T19:55:46Z",
+                        "ct_to_censys_at": "2018-07-30T04:22:53Z",
+                        "index": 6913
+                    }
+                }
+            },
+            "ever_seen_in_scan": true,
+            "fingerprint_md5": "0f263d5e56288c37ade29f7b9977f38d",
+            "fingerprint_sha1": "8740f09afc54752b26b295cdc6393c6b8ffd9e6a",
+            "fingerprint_sha256": "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc",
+            "modified_at": "2024-01-23T12:12:35Z",
+            "names": [
+                "*.android.com",
+                "*.appengine.google.com",
+                "*.cloud.google.com",
+                "*.google-analytics.com",
+                "*.google.ca",
+                "*.google.cl",
+                "*.google.co.in",
+                "*.google.co.jp",
+                "*.google.co.uk",
+                "*.google.com",
+                "*.google.com.ar",
+                "*.google.com.au",
+                "*.google.com.br",
+                "*.google.com.co",
+                "*.google.com.mx",
+                "*.google.com.tr",
+                "*.google.com.vn",
+                "*.google.de",
+                "*.google.es",
+                "*.google.fr",
+                "*.google.hu",
+                "*.google.it",
+                "*.google.nl",
+                "*.google.pl",
+                "*.google.pt",
+                "*.googleadapis.com",
+                "*.googleapis.cn",
+                "*.googlecommerce.com",
+                "*.googlevideo.com",
+                "*.gstatic.cn",
+                "*.gstatic.com",
+                "*.gvt1.com",
+                "*.gvt2.com",
+                "*.metric.gstatic.com",
+                "*.urchin.com",
+                "*.url.google.com",
+                "*.youtube-nocookie.com",
+                "*.youtube.com",
+                "*.youtubeeducation.com",
+                "*.ytimg.com",
+                "android.com",
+                "g.co",
+                "goo.gl",
+                "google-analytics.com",
+                "google.com",
+                "googlecommerce.com",
+                "urchin.com",
+                "youtu.be",
+                "youtube.com",
+                "youtubeeducation.com"
+            ],
+            "parent_spki_subject_fingerprint_sha256": "ec0c72ce7689150e4f62d04f51f0f19713f77cf27ff43cab4035e9e54e846aa9",
+            "parse_status": "success",
+            "parsed": {
+                "extensions": {
+                    "authority_info_access": {
+                        "issuer_urls": [
+                            "http://pki.google.com/GIAG2.crt"
+                        ],
+                        "ocsp_urls": [
+                            "http://clients1.google.com/ocsp"
+                        ]
+                    },
+                    "authority_key_id": "4add06161bbcf668b576f581b6bb621aba5a812f",
+                    "basic_constraints": {},
+                    "certificate_policies": [
+                        {
+                            "id": "1.2.3.4.5.6.7.8.9"
+                        },
+                        {
+                            "id": "1.2.3.4.5.6.7.8.10"
+                        }
+                    ],
+                    "crl_distribution_points": [
+                        "http://pki.google.com/GIAG2.crl"
+                    ],
+                    "extended_key_usage": {
+                        "client_auth": true,
+                        "server_auth": true
+                    },
+                    "key_usage": {
+                        "digital_signature": true,
+                        "value": 1
+                    },
+                    "subject_alt_name": {
+                        "dns_names": [
+                            "*.google.com",
+                            "*.android.com",
+                            "*.appengine.google.com",
+                            "*.cloud.google.com",
+                            "*.google-analytics.com",
+                            "*.google.ca",
+                            "*.google.cl",
+                            "*.google.co.in",
+                            "*.google.co.jp",
+                            "*.google.co.uk",
+                            "*.google.com.ar",
+                            "*.google.com.au",
+                            "*.google.com.br",
+                            "*.google.com.co",
+                            "*.google.com.mx",
+                            "*.google.com.tr",
+                            "*.google.com.vn",
+                            "*.google.de",
+                            "*.google.es",
+                            "*.google.fr",
+                            "*.google.hu",
+                            "*.google.it",
+                            "*.google.nl",
+                            "*.google.pl",
+                            "*.google.pt",
+                            "*.googleadapis.com",
+                            "*.googleapis.cn",
+                            "*.googlecommerce.com",
+                            "*.googlevideo.com",
+                            "*.gstatic.cn",
+                            "*.gstatic.com",
+                            "*.gvt1.com",
+                            "*.gvt2.com",
+                            "*.metric.gstatic.com",
+                            "*.urchin.com",
+                            "*.url.google.com",
+                            "*.youtube-nocookie.com",
+                            "*.youtube.com",
+                            "*.youtubeeducation.com",
+                            "*.ytimg.com",
+                            "android.com",
+                            "g.co",
+                            "goo.gl",
+                            "google-analytics.com",
+                            "google.com",
+                            "googlecommerce.com",
+                            "urchin.com",
+                            "youtu.be",
+                            "youtube.com",
+                            "youtubeeducation.com"
+                        ]
+                    },
+                    "subject_key_id": "19c6b145efc879529b4a57b15e0d543b011dce35"
+                },
+                "issuer": {
+                    "common_name": [
+                        "Google Internet Authority G2"
+                    ],
+                    "country": [
+                        "US"
+                    ],
+                    "organization": [
+                        "Google Inc"
+                    ]
+                },
+                "issuer_dn": "C=US, O=Google Inc, CN=Google Internet Authority G2",
+                "serial_number": "5878999135690490607",
+                "serial_number_hex": "51966690cda902ef",
+                "signature": {
+                    "signature_algorithm": {
+                        "name": "SHA256-RSA",
+                        "oid": "1.2.840.113549.1.1.11"
+                    },
+                    "valid": true,
+                    "value": "1e36357c79acc1c99ddec329d06a1695b2e82cc6ee884d6a699e035219fc804df3d090e7e910d88d9f2a3aa300dff16a732c33775bca074b279b6251924f597c160d3b5688b17a525da0818ed16654f7996ab2c81627ad59ee9b4be94b6c2e05873539fdb83b280cbbccf647ba1d44fb2b3beafe0efc9ba2e6258ef809a4cb0bbec54e09dd21236ca10962e6d7b1ae42328bcdc25fa57b650f8aeff1aaef90721098563e8a406567462674b39318f3a6ca54fc651d15ca8eecadff61484a9e3cb078100e6ab96d9d620798752dcf83bdd3b2be69bbdfc22c0e87aff10ce2305d855c6c9a1133e6fc207601f139f0c8fdb3dae5d21371eff9be66de79edcaef6a"
+                },
+                "subject": {
+                    "common_name": [
+                        "*.google.com"
+                    ],
+                    "country": [
+                        "US"
+                    ],
+                    "locality": [
+                        "Mountain View"
+                    ],
+                    "organization": [
+                        "Google Inc"
+                    ],
+                    "province": [
+                        "California"
+                    ]
+                },
+                "subject_dn": "C=US, ST=California, L=Mountain View, O=Google Inc, CN=*.google.com",
+                "subject_key_info": {
+                    "ecdsa": {
+                        "b": "5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b",
+                        "curve": "P-256",
+                        "gx": "6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296",
+                        "gy": "4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5",
+                        "length": 256,
+                        "n": "ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551",
+                        "p": "ffffffff00000001000000000000000000000000ffffffffffffffffffffffff",
+                        "pub": "04f680d0e5c3a1162f2420176176add7ba927c0cecb52453bfa84a16c9fe56219b1ec2b31bcf2ae30d5fb45c475edc79725bf57889a3b2a76ec940d567e66fce77",
+                        "x": "f680d0e5c3a1162f2420176176add7ba927c0cecb52453bfa84a16c9fe56219b",
+                        "y": "1ec2b31bcf2ae30d5fb45c475edc79725bf57889a3b2a76ec940d567e66fce77"
+                    },
+                    "fingerprint_sha256": "3d4a4bd778be7965e90a13ac361e1ed7836d24c15cd5c093f9cc7e7857f53ea0",
+                    "key_algorithm": {
+                        "name": "ECDSA",
+                        "oid": "1.2.840.10045.2.1"
+                    }
+                },
+                "validity_period": {
+                    "length_seconds": 7708841,
+                    "not_after": "2015-12-28T00:00:00Z",
+                    "not_before": "2015-09-29T18:39:20Z"
+                },
+                "version": 3
+            },
+            "spki_subject_fingerprint_sha256": "5eb06b1c29ced84998d3d35a80fa17d3d39e4de96d25539485aecd6360f618dc",
+            "tbs_fingerprint_sha256": "1661b59eb7d8cda44f800fabc9ef69ba01506309eedf027f2270105afd1663e4",
+            "tbs_no_ct_fingerprint_sha256": "1661b59eb7d8cda44f800fabc9ef69ba01506309eedf027f2270105afd1663e4",
+            "validated_at": "2023-09-09T05:55:46Z",
+            "validation": {
+                "apple": {
+                    "chains": [
+                        {
+                            "sha256fp": [
+                                "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb42b08",
+                                "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
+                            ]
+                        },
+                        {
+                            "sha256fp": [
+                                "9f630426df1d8abfd80ace98871ba833ab9742cb34838de2b5285ed54c0c7dcc",
+                                "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
+                            ]
+                        },
+                        {
+                            "sha256fp": [
+                                "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
+                                "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
+                            ]
+                        },
+                        {
+                            "sha256fp": [
+                                "c3f697a92a293d86f9a3ee7ccb970e20e0050b8728cc83ed1b996ce9005d4c36",
+                                "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
+                            ]
+                        }
+                    ],
+                    "ever_valid": true,
+                    "had_trusted_path": true,
+                    "parents": [
+                        "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb42b08",
+                        "9f630426df1d8abfd80ace98871ba833ab9742cb34838de2b5285ed54c0c7dcc",
+                        "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
+                        "c3f697a92a293d86f9a3ee7ccb970e20e0050b8728cc83ed1b996ce9005d4c36"
+                    ],
+                    "type": "leaf"
+                },
+                "chrome": {},
+                "microsoft": {
+                    "chains": [
+                        {
+                            "sha256fp": [
+                                "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb42b08",
+                                "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
+                            ]
+                        },
+                        {
+                            "sha256fp": [
+                                "9f630426df1d8abfd80ace98871ba833ab9742cb34838de2b5285ed54c0c7dcc",
+                                "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
+                            ]
+                        },
+                        {
+                            "sha256fp": [
+                                "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
+                                "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
+                            ]
+                        },
+                        {
+                            "sha256fp": [
+                                "c3f697a92a293d86f9a3ee7ccb970e20e0050b8728cc83ed1b996ce9005d4c36",
+                                "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
+                            ]
+                        },
+                        {
+                            "sha256fp": [
+                                "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb42b08",
+                                "3c35cc963eb004451323d3275d05b353235053490d9cd83729a2faf5e7ca1cc0",
+                                "08297a4047dba23680c731db6e317653ca7848e1bebd3a0b0179a707f92cf178"
+                            ]
+                        }
+                    ],
+                    "ever_valid": true,
+                    "had_trusted_path": true,
+                    "parents": [
+                        "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb42b08",
+                        "9f630426df1d8abfd80ace98871ba833ab9742cb34838de2b5285ed54c0c7dcc",
+                        "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
+                        "c3f697a92a293d86f9a3ee7ccb970e20e0050b8728cc83ed1b996ce9005d4c36"
+                    ],
+                    "type": "leaf"
+                },
+                "nss": {}
+            },
+            "validation_level": "ov",
+            "zlint": {
+                "failed_lints": [
+                    "n_subject_common_name_included",
+                    "w_ext_key_usage_not_critical"
+                ],
+                "notices_present": true,
+                "timestamp": "2023-09-09T05:55:46Z",
+                "version": 3,
+                "warnings_present": true
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Information for certificate
+>
+>|Added At|Browser Trust|Modified At|SHA 256|Validated At|
+>|---|---|---|---|---|
+>| 1970-01-01T00:00:00Z | nss: Invalid,<br/>microsoft: Valid,<br/>apple: Valid,<br/>chrome: Invalid | 2024-01-23T12:12:35Z | 9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc | 2023-09-09T05:55:46Z |
+
 ### cen-search
 
 ***
@@ -169,6 +543,10 @@ Return previews of hosts matching a specified search query or a list of certific
 | Censys.Search.parsed.validity_period.not_after | Date | Timestamp of when the certificate expires. Time zone is UTC. |
 | Censys.Search.parsed.validity_period.not_before | Date | Timestamp of when the certificate is first valid. Time zone is UTC. |
 | Censys.Search.parsed.issuer_dn | String | Distinguished name of the entity that has signed and issued the certificate. |
+| Censys.Search.parsed.subject.common_name | String | Common name\(s\) from the certificate subject. |
+| Censys.Search.parsed.signature.self_signed | Boolean | Whether the certificate is self-signed. |
+| Censys.Search.valid_to | String | Timestamp of when the certificate is valid to. |
+| Censys.Search.self_signed | Boolean | Whether the certificate is self-signed. |
 
 #### Command example
 
@@ -231,6 +609,14 @@ Return previews of hosts matching a specified search query or a list of certific
 }
 ```
 
+#### Human Readable Output
+
+>### Search results for query "host.services.protocol:HTTP"
+>
+>|ASN|Description|Name|
+>|---|---|---|
+>| 4766 | KIXS-AS-KR Korea Telecom | KIXS-AS-KR Korea Telecom |
+
 ### domain
 
 ***
@@ -245,6 +631,7 @@ Return all related IPs as relationships.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain | A comma-separated list of domains to check. | Required |
+| port | A comma-separated list of ports associated with the domain. Default is 80,443. | Optional |
 
 #### Context Output
 
@@ -270,6 +657,25 @@ Return all related IPs as relationships.
 | Censys.Domain.services.cert | String | The SSL/TLS certificate associated with the service associated with the domain. |
 | Censys.Domain.ip | String | The IP address associated with the domain. |
 | Censys.Domain.dns.reverse_dns.names | String | The reverse DNS names associated with the domain. |
+| Censys.Domain.hostname | String | The hostname of the web property associated with the domain. |
+| Censys.Domain.port | Number | The port number of the web property associated with the domain. |
+| Censys.Domain.labels.value | String | Labels associated with the web property. |
+| Censys.Domain.threats.name | String | Threat names associated with the web property. |
+| Censys.Domain.vulns.id | String | Vulnerability IDs associated with the web property. |
+| Censys.Domain.vulns.cvss | Number | CVSS scores for vulnerabilities associated with the web property. |
+| Censys.Domain.vulns.severity | String | Severity levels for vulnerabilities associated with the web property. |
+| Censys.Domain.software.vendor | String | Software vendors detected on the web property. |
+| Censys.Domain.software.product | String | Software products detected on the web property. |
+| Censys.Domain.software.version | String | Software versions detected on the web property. |
+| Censys.Domain.cert.fingerprint_sha256 | String | SHA-256 fingerprint of the certificate associated with the web property. |
+| Censys.Domain.cert.parsed.subject_dn | String | Subject DN of the certificate associated with the web property. |
+| Censys.Domain.cert.parsed.issuer_dn | String | Issuer DN of the certificate associated with the web property. |
+| Censys.Domain.tls.version_selected | String | TLS version selected for the web property. |
+| Censys.Domain.tls.cipher_selected | String | Cipher suite selected for the web property. |
+| Censys.Domain.endpoints.endpoint_type | String | Endpoint types associated with the web property. |
+| Censys.Domain.endpoints.path | String | Endpoint paths associated with the web property. |
+| Censys.Domain.jarm.fingerprint | String | JARM fingerprint of the web property. |
+| Censys.Domain.scan_time | String | Scan time for the web property. |
 | Domain.Name | string | The domain. |
 | Domain.Relationships.EntityA | string | The domain name. |
 | Domain.Relationships.EntityAType | string | The entity type. |
@@ -1138,468 +1544,13 @@ Return all related IPs as relationships.
 
 #### Human Readable Output
 
->### Information for IP 8.8.8.8
+>### Censys results for Domain amazon.com
 >
->|ASN|Network|Protocols|Routing|Whois Last Updated|
->|---|---|---|---|---|
->| 15169 | GOOGLE - Google LLC | 53/DNS, 443/UNKNOWN, 443/HTTP, 853/UNKNOWN | 8.8.8.0/24 | 2023-12-28T00:00:00Z |
-
-#### Command example
-
-```!cen-view index=certificates query=9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc limit=1```
-
-#### Context Example
-
-```json
-{
-    "Censys": {
-        "View": {
-            "added_at": "1970-01-01T00:00:00Z",
-            "ct": {
-                "entries": {
-                    "digicert_ct1": {
-                        "added_to_ct_at": "2015-09-29T19:55:46Z",
-                        "ct_to_censys_at": "2018-07-30T04:49:40Z",
-                        "index": 165790
-                    },
-                    "google_aviator": {
-                        "index": 8713649
-                    },
-                    "google_pilot": {
-                        "added_to_ct_at": "2015-09-29T19:55:45Z",
-                        "ct_to_censys_at": "2018-07-30T15:23:48Z",
-                        "index": 9498499
-                    },
-                    "google_rocketeer": {
-                        "added_to_ct_at": "2015-09-29T19:55:45Z",
-                        "ct_to_censys_at": "2018-07-30T15:17:12Z",
-                        "index": 6663198
-                    },
-                    "nordu_ct_plausible": {
-                        "added_to_ct_at": "2015-10-19T23:17:33Z",
-                        "ct_to_censys_at": "2018-07-30T19:53:59Z",
-                        "index": 5744025
-                    },
-                    "symantec_ws_ct": {
-                        "added_to_ct_at": "2015-09-29T19:55:46Z",
-                        "ct_to_censys_at": "2018-07-30T04:22:53Z",
-                        "index": 6913
-                    }
-                }
-            },
-            "ever_seen_in_scan": true,
-            "fingerprint_md5": "0f263d5e56288c37ade29f7b9977f38d",
-            "fingerprint_sha1": "8740f09afc54752b26b295cdc6393c6b8ffd9e6a",
-            "fingerprint_sha256": "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc",
-            "modified_at": "2024-01-23T12:12:35Z",
-            "names": [
-                "*.android.com",
-                "*.appengine.google.com",
-                "*.cloud.google.com",
-                "*.google-analytics.com",
-                "*.google.ca",
-                "*.google.cl",
-                "*.google.co.in",
-                "*.google.co.jp",
-                "*.google.co.uk",
-                "*.google.com",
-                "*.google.com.ar",
-                "*.google.com.au",
-                "*.google.com.br",
-                "*.google.com.co",
-                "*.google.com.mx",
-                "*.google.com.tr",
-                "*.google.com.vn",
-                "*.google.de",
-                "*.google.es",
-                "*.google.fr",
-                "*.google.hu",
-                "*.google.it",
-                "*.google.nl",
-                "*.google.pl",
-                "*.google.pt",
-                "*.googleadapis.com",
-                "*.googleapis.cn",
-                "*.googlecommerce.com",
-                "*.googlevideo.com",
-                "*.gstatic.cn",
-                "*.gstatic.com",
-                "*.gvt1.com",
-                "*.gvt2.com",
-                "*.metric.gstatic.com",
-                "*.urchin.com",
-                "*.url.google.com",
-                "*.youtube-nocookie.com",
-                "*.youtube.com",
-                "*.youtubeeducation.com",
-                "*.ytimg.com",
-                "android.com",
-                "g.co",
-                "goo.gl",
-                "google-analytics.com",
-                "google.com",
-                "googlecommerce.com",
-                "urchin.com",
-                "youtu.be",
-                "youtube.com",
-                "youtubeeducation.com"
-            ],
-            "parent_spki_subject_fingerprint_sha256": "ec0c72ce7689150e4f62d04f51f0f19713f77cf27ff43cab4035e9e54e846aa9",
-            "parse_status": "success",
-            "parsed": {
-                "extensions": {
-                    "authority_info_access": {
-                        "issuer_urls": [
-                            "http://pki.google.com/GIAG2.crt"
-                        ],
-                        "ocsp_urls": [
-                            "http://clients1.google.com/ocsp"
-                        ]
-                    },
-                    "authority_key_id": "4add06161bbcf668b576f581b6bb621aba5a812f",
-                    "basic_constraints": {},
-                    "certificate_policies": [
-                        {
-                            "id": "1.2.3.4.5.6.7.8.9"
-                        },
-                        {
-                            "id": "1.2.3.4.5.6.7.8.10"
-                        }
-                    ],
-                    "crl_distribution_points": [
-                        "http://pki.google.com/GIAG2.crl"
-                    ],
-                    "extended_key_usage": {
-                        "client_auth": true,
-                        "server_auth": true
-                    },
-                    "key_usage": {
-                        "digital_signature": true,
-                        "value": 1
-                    },
-                    "subject_alt_name": {
-                        "dns_names": [
-                            "*.google.com",
-                            "*.android.com",
-                            "*.appengine.google.com",
-                            "*.cloud.google.com",
-                            "*.google-analytics.com",
-                            "*.google.ca",
-                            "*.google.cl",
-                            "*.google.co.in",
-                            "*.google.co.jp",
-                            "*.google.co.uk",
-                            "*.google.com.ar",
-                            "*.google.com.au",
-                            "*.google.com.br",
-                            "*.google.com.co",
-                            "*.google.com.mx",
-                            "*.google.com.tr",
-                            "*.google.com.vn",
-                            "*.google.de",
-                            "*.google.es",
-                            "*.google.fr",
-                            "*.google.hu",
-                            "*.google.it",
-                            "*.google.nl",
-                            "*.google.pl",
-                            "*.google.pt",
-                            "*.googleadapis.com",
-                            "*.googleapis.cn",
-                            "*.googlecommerce.com",
-                            "*.googlevideo.com",
-                            "*.gstatic.cn",
-                            "*.gstatic.com",
-                            "*.gvt1.com",
-                            "*.gvt2.com",
-                            "*.metric.gstatic.com",
-                            "*.urchin.com",
-                            "*.url.google.com",
-                            "*.youtube-nocookie.com",
-                            "*.youtube.com",
-                            "*.youtubeeducation.com",
-                            "*.ytimg.com",
-                            "android.com",
-                            "g.co",
-                            "goo.gl",
-                            "google-analytics.com",
-                            "google.com",
-                            "googlecommerce.com",
-                            "urchin.com",
-                            "youtu.be",
-                            "youtube.com",
-                            "youtubeeducation.com"
-                        ]
-                    },
-                    "subject_key_id": "19c6b145efc879529b4a57b15e0d543b011dce35"
-                },
-                "issuer": {
-                    "common_name": [
-                        "Google Internet Authority G2"
-                    ],
-                    "country": [
-                        "US"
-                    ],
-                    "organization": [
-                        "Google Inc"
-                    ]
-                },
-                "issuer_dn": "C=US, O=Google Inc, CN=Google Internet Authority G2",
-                "serial_number": "5878999135690490607",
-                "serial_number_hex": "51966690cda902ef",
-                "signature": {
-                    "signature_algorithm": {
-                        "name": "SHA256-RSA",
-                        "oid": "1.2.840.113549.1.1.11"
-                    },
-                    "valid": true,
-                    "value": "1e36357c79acc1c99ddec329d06a1695b2e82cc6ee884d6a699e035219fc804df3d090e7e910d88d9f2a3aa300dff16a732c33775bca074b279b6251924f597c160d3b5688b17a525da0818ed16654f7996ab2c81627ad59ee9b4be94b6c2e05873539fdb83b280cbbccf647ba1d44fb2b3beafe0efc9ba2e6258ef809a4cb0bbec54e09dd21236ca10962e6d7b1ae42328bcdc25fa57b650f8aeff1aaef90721098563e8a406567462674b39318f3a6ca54fc651d15ca8eecadff61484a9e3cb078100e6ab96d9d620798752dcf83bdd3b2be69bbdfc22c0e87aff10ce2305d855c6c9a1133e6fc207601f139f0c8fdb3dae5d21371eff9be66de79edcaef6a"
-                },
-                "subject": {
-                    "common_name": [
-                        "*.google.com"
-                    ],
-                    "country": [
-                        "US"
-                    ],
-                    "locality": [
-                        "Mountain View"
-                    ],
-                    "organization": [
-                        "Google Inc"
-                    ],
-                    "province": [
-                        "California"
-                    ]
-                },
-                "subject_dn": "C=US, ST=California, L=Mountain View, O=Google Inc, CN=*.google.com",
-                "subject_key_info": {
-                    "ecdsa": {
-                        "b": "5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b",
-                        "curve": "P-256",
-                        "gx": "6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296",
-                        "gy": "4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5",
-                        "length": 256,
-                        "n": "ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551",
-                        "p": "ffffffff00000001000000000000000000000000ffffffffffffffffffffffff",
-                        "pub": "04f680d0e5c3a1162f2420176176add7ba927c0cecb52453bfa84a16c9fe56219b1ec2b31bcf2ae30d5fb45c475edc79725bf57889a3b2a76ec940d567e66fce77",
-                        "x": "f680d0e5c3a1162f2420176176add7ba927c0cecb52453bfa84a16c9fe56219b",
-                        "y": "1ec2b31bcf2ae30d5fb45c475edc79725bf57889a3b2a76ec940d567e66fce77"
-                    },
-                    "fingerprint_sha256": "3d4a4bd778be7965e90a13ac361e1ed7836d24c15cd5c093f9cc7e7857f53ea0",
-                    "key_algorithm": {
-                        "name": "ECDSA",
-                        "oid": "1.2.840.10045.2.1"
-                    }
-                },
-                "validity_period": {
-                    "length_seconds": 7708841,
-                    "not_after": "2015-12-28T00:00:00Z",
-                    "not_before": "2015-09-29T18:39:20Z"
-                },
-                "version": 3
-            },
-            "spki_subject_fingerprint_sha256": "5eb06b1c29ced84998d3d35a80fa17d3d39e4de96d25539485aecd6360f618dc",
-            "tbs_fingerprint_sha256": "1661b59eb7d8cda44f800fabc9ef69ba01506309eedf027f2270105afd1663e4",
-            "tbs_no_ct_fingerprint_sha256": "1661b59eb7d8cda44f800fabc9ef69ba01506309eedf027f2270105afd1663e4",
-            "validated_at": "2023-09-09T05:55:46Z",
-            "validation": {
-                "apple": {
-                    "chains": [
-                        {
-                            "sha256fp": [
-                                "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb42b08",
-                                "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                            ]
-                        },
-                        {
-                            "sha256fp": [
-                                "9f630426df1d8abfd80ace98871ba833ab9742cb34838de2b5285ed54c0c7dcc",
-                                "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                            ]
-                        },
-                        {
-                            "sha256fp": [
-                                "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
-                                "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                            ]
-                        },
-                        {
-                            "sha256fp": [
-                                "c3f697a92a293d86f9a3ee7ccb970e20e0050b8728cc83ed1b996ce9005d4c36",
-                                "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                            ]
-                        }
-                    ],
-                    "ever_valid": true,
-                    "had_trusted_path": true,
-                    "parents": [
-                        "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb42b08",
-                        "9f630426df1d8abfd80ace98871ba833ab9742cb34838de2b5285ed54c0c7dcc",
-                        "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
-                        "c3f697a92a293d86f9a3ee7ccb970e20e0050b8728cc83ed1b996ce9005d4c36"
-                    ],
-                    "type": "leaf"
-                },
-                "chrome": {},
-                "microsoft": {
-                    "chains": [
-                        {
-                            "sha256fp": [
-                                "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb42b08",
-                                "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                            ]
-                        },
-                        {
-                            "sha256fp": [
-                                "9f630426df1d8abfd80ace98871ba833ab9742cb34838de2b5285ed54c0c7dcc",
-                                "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                            ]
-                        },
-                        {
-                            "sha256fp": [
-                                "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
-                                "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                            ]
-                        },
-                        {
-                            "sha256fp": [
-                                "c3f697a92a293d86f9a3ee7ccb970e20e0050b8728cc83ed1b996ce9005d4c36",
-                                "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
-                            ]
-                        },
-                        {
-                            "sha256fp": [
-                                "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb42b08",
-                                "3c35cc963eb004451323d3275d05b353235053490d9cd83729a2faf5e7ca1cc0",
-                                "08297a4047dba23680c731db6e317653ca7848e1bebd3a0b0179a707f92cf178"
-                            ]
-                        }
-                    ],
-                    "ever_valid": true,
-                    "had_trusted_path": true,
-                    "parents": [
-                        "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb42b08",
-                        "9f630426df1d8abfd80ace98871ba833ab9742cb34838de2b5285ed54c0c7dcc",
-                        "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
-                        "c3f697a92a293d86f9a3ee7ccb970e20e0050b8728cc83ed1b996ce9005d4c36"
-                    ],
-                    "type": "leaf"
-                },
-                "nss": {}
-            },
-            "validation_level": "ov",
-            "zlint": {
-                "failed_lints": [
-                    "n_subject_common_name_included",
-                    "w_ext_key_usage_not_critical"
-                ],
-                "notices_present": true,
-                "timestamp": "2023-09-09T05:55:46Z",
-                "version": 3,
-                "warnings_present": true
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Information for certificate
+>### Enriched Web Property Data
 >
->|Added At|Browser Trust|Modified At|SHA 256|Validated At|
->|---|---|---|---|---|
->| 1970-01-01T00:00:00Z | nss: Invalid,<br/>microsoft: Valid,<br/>apple: Valid,<br/>chrome: Invalid | 2024-01-23T12:12:35Z | 9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc | 2023-09-09T05:55:46Z |
-
-### cen-search
-
-***
-Returns previews of hosts matching a specified search query, or a list of certificates that match the given query.
-
-#### Base Command
-
-`cen-search`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| query | Query used to search for hosts with matching attributes. Uses the Censys Search Language. | Required |
-| page_size | The maximum number of hits to return in each response (minimum of 0, maximum of 100). Default is 50. (Applies for the host search.) | Optional |
-| limit | The number of results to return. Default is 50. | Optional |
-| index | The index from which to retrieve data. Possible values are: ipv4, certificates. | Required |
-| fields | The fields to return. (Applies for the certificates search). | Optional |
-| page | The page to return. (Applies for the certificates search). Default is 1. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Censys.Search.autonomous_system.asn | Number | The autonomous system number \(ASN\) that the host is in. |
-| Censys.Search.autonomous_system.bgp_prefix | String | The autonomous system's CIDR. |
-| Censys.Search.autonomous_system.country_code | String | he autonomous system's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). |
-| Censys.Search.autonomous_system.description | String | A brief description of the autonomous system. |
-| Censys.Search.autonomous_system.name | String | The friendly name of the autonomous system. |
-| Censys.Search.ip | String | The host’s IP address. |
-| Censys.Search.location.continent | String | The continent of the host's detected location \(e.g., North America, Europe, Asia, South America, Africa, Oceania\). |
-| Censys.Search.location.coordinates | Unknown | The estimated coordinates of the host's detected location. |
-| Censys.Search.location.country | String | The country of the host's detected location. |
-| Censys.Search.location.country_code | String | The two-letter ISO 3166-1 alpha-2 country code of the host's detected location \(e.g., US, CN, GB, RU\). |
-| Censys.Search.location.registered_country | String | The host's registered country. |
-| Censys.Search.location.registered_country_code | String | The registered country's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). |
-| Censys.Search.location.timezone | String | The IANA time zone database name of the host's detected location. |
-| Censys.Search.services.port | Number | The port the service was reached at. |
-| Censys.Search.services.service_name | String | The name of the service on the port. This is typically the L7 protocol \(e.g., “HTTP”\); however, in the case that a more specific HTTP-based protocol is found \(e.g., Kubernetes or Prometheus\), the field will show that. This field indicates where protocol-specific data will be located. |
-| Censys.Search.services.transport_protocol | String | The transport protocol \(known in OSI model as L4\) used to contact this service \(i.e., UDP or TCP\). |
-| Censys.Search.parsed.fingerprint_sha256 | String | SHA 256 fingerprint. |
-| Censys.Search.parsed.issuer.organization | Unknown | The organization name. |
-| Censys.Search.parsed.names | Unknown | Common names for the entity. |
-| Censys.Search.parsed.subject_dn | String | Distinguished name of the entity that the certificate belongs to. |
-| Censys.Search.parsed.validity.end | Date | Timestamp of when the certificate expires. Time zone is UTC. |
-| Censys.Search.parsed.validity.start | Date | Timestamp of when the certificate is first valid. Time zone is UTC. |
-| Censys.Search.parsed.issuer_dn | String | Distinguished name of the entity that has signed and issued the certificate. |
-
-#### Command Example
-
-```!cen-search index=certificates query="parsed.issuer.common_name: \"Let's Encrypt\"" limit=1```
-
-#### Context Example
-
-```json
-{
-    "Censys": {
-        "Search": {
-            "parsed": {
-                "fingerprint_sha256": "f3ade17dffcadd9532aeb2514f10d66e22941393725aa65366ac286df9b1234",
-                "issuer": {
-                    "organization": [
-                        "Let's Encrypt"
-                    ]
-                },
-                "issuer_dn": "C=US, O=Let's Encrypt, CN=Let's Encrypt Authority X3",
-                "names": [
-                    "*.45g4rg43g4fr3434g.gb.net",
-                    "45g4rg43g4fr3434g.gb.net"
-                ],
-                "subject_dn": "CN=45g4rg43g4fr3434g.gb.net",
-                "validity": {
-                    "end": "2021-01-10T14:46:11Z",
-                    "start": "2020-10-12T14:46:11Z"
-                }
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Search results for query "parsed.issuer.common_name: "Let's Encrypt""
->
->|Issuer|Issuer DN|Names|SHA256|Subject DN|Validity|
->|---|---|---|---|---|---|
->| organization: Let's Encrypt | C=US, O=Let's Encrypt, CN=Let's Encrypt Authority X3 | *.45g4rg43g4fr3434g.gb.net,<br/>45g4rg43g4fr3434g.gb.net | f3ade17dffcadd9532aeb2514f10d66e22941393725aa65366ac286df9b442ec | CN=45g4rg43g4fr3434g.gb.net | start: 2020-10-12T14:46:11Z<br/>end: 2021-01-10T14:46:11Z |
+>|Hostname|Port|Scan Time|Endpoint Types|Endpoint Paths|Labels|Threat Names|Vulns Names|Vendors|Products|Versions|sha256|Subject DN|Issuer DN|Common Names|Not Before|Not After|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| amazon.com | 443 | 2026-03-10T07:52:06Z | HTTP | / | WEB_SERVER, HTTPS | OUTDATED_SOFTWARE | CVE-2024-11111 | f5 | nginx | 1.18.0 | 0000000000000000000000000000000000000000000000000000000000000001 | CN=example.com | C=US, O=Let's Encrypt, CN=R11 | example.com | 2025-01-03T04:11:45Z | 2025-04-03T04:11:44Z |
 
 ### ip
 
@@ -1615,12 +1566,13 @@ Runs reputation on IPs.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | IP address or a list of IP addresses to assess reputation. | Required |
+| use_enrichment_endpoint | Whether to retrieve the IP data from the Censys host enrichment API.<br/><br/>Note: This argument overrides the "Use enrichment API for the ip command" configuration parameter. Possible values are: True, False. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Censys.IP.services.port | Number   | The port number associated with the service running on the IP. |
+| Censys.IP.services.port | Number | The port number associated with the service running on the IP. |
 | Censys.IP.services.transport_protocol | String | The transport protocol used by the service running on the IP. |
 | Censys.IP.services.protocol | String | The name of the service running on the IP. |
 | Censys.IP.services.cert | String | The SSL/TLS certificate associated with the service running on the IP. |
@@ -1630,7 +1582,7 @@ Runs reputation on IPs.
 | Censys.IP.autonomous_system.description | String | Description of the autonomous system associated with the IP address. |
 | Censys.IP.autonomous_system.name | String | Name of the autonomous system associated with the IP address. |
 | Censys.IP.autonomous_system.bgp_prefix | String | BGP prefix of the autonomous system associated with the IP address. |
-| Censys.IP.autonomous_system.asn | Number | Autonomous System Number (ASN) of the autonomous system associated with the IP address. |
+| Censys.IP.autonomous_system.asn | Number | Autonomous System Number \(ASN\) of the autonomous system associated with the IP address. |
 | Censys.IP.ip | String | The IP address. |
 | Censys.IP.location.country | String | Country name of the location associated with the IP address. |
 | Censys.IP.location.timezone | String | Time zone of the location associated with the IP address. |
@@ -1640,13 +1592,83 @@ Runs reputation on IPs.
 | Censys.IP.location.continent | String | Continent name of the location associated with the IP address. |
 | Censys.IP.location.postal_code | String | Postal code of the location associated with the IP address. |
 | Censys.IP.location.city | String | City name of the location associated with the IP address. |
-| Censys.IP.location.country_code | String   | Country code of the location associated with the IP address. |
+| Censys.IP.location.country_code | String | Country code of the location associated with the IP address. |
+| Censys.IP.service_count | Number | The total number of services running on the IP address. |
+| Censys.IP.services.labels.value | String | Labels associated with services running on the IP address. |
+| Censys.IP.services.threats.name | String | Threat names associated with services running on the IP address. |
+| Censys.IP.services.vulns | String | Vulnerabilities associated with services running on the IP address. |
+| Censys.IP.services.scan_time | String | Scan time for services running on the IP address. |
+| Censys.IP.dns.names | String | DNS names associated with the IP address. |
+| Censys.IP.dns.forward_dns.names | String | Forward DNS names associated with the IP address. |
+| Censys.IP.whois.network.name | String | WHOIS network name associated with the IP address. |
+| Censys.IP.whois.network.cidrs | String | WHOIS network CIDR blocks associated with the IP address. |
+| Censys.IP.autonomous_system.organization | String | The organization of the autonomous system associated with the IP address. |
+| Censys.IP.location.registered_country | String | The registered country name of the location associated with the IP address. |
+| Censys.IP.location.registered_country_code | String | The registered country code of the location associated with the IP address. |
+| Censys.IP.reputation.score | Number | The reputation score of the IP address. |
+| Censys.IP.reputation.score_level | String | The reputation score level of the IP address. |
+| Censys.IP.reputation.model_version | String | The version of the model that calculated the reputation score of the IP address. |
+| Censys.IP.reputation.evidence.category | String | The category of the reputation evidence of the IP address. |
+| Censys.IP.reputation.evidence.evidence_score | Number | The score of the reputation evidence of the IP address. |
+| Censys.IP.reputation.evidence.additional_fields.field | String | The name of the additional field of the reputation evidence of the IP address. |
+| Censys.IP.reputation.evidence.additional_fields.value | String | The value of the additional field of the reputation evidence of the IP address. |
+| Censys.IP.reputation.evidence.external_signals.source | String | The source of the external signal of the reputation evidence of the IP address. |
+| Censys.IP.reputation.evidence.external_signals.description | String | The description of the external signal of the reputation evidence of the IP address. |
+| Censys.IP.reputation.evidence.external_signals.tlp | String | The Traffic Light Protocol \(TLP\) of the external signal of the reputation evidence of the IP address. |
+| Censys.IP.reputation.evidence.threats.threat_id | String | The ID of the threat of the reputation evidence of the IP address. |
+| Censys.IP.reputation.evidence.threats.threat_types | String | The types of the threat of the reputation evidence of the IP address. |
+| Censys.IP.reputation.evidence.threats.last_observed_time | Date | The time the threat of the reputation evidence of the IP address was last observed. |
+| Censys.IP.greynoise.actor | String | The GreyNoise actor associated with the IP address. |
+| Censys.IP.greynoise.classification | String | The GreyNoise classification of the IP address. |
+| Censys.IP.greynoise.last_observed_time | Date | The time the IP address was last observed by GreyNoise. |
+| Censys.IP.network.source | String | The source of the network classification of the IP address. |
+| Censys.IP.network.hosting | Boolean | Whether the IP address belongs to a hosting provider. |
+| Censys.IP.network.mobile | Boolean | Whether the IP address belongs to a mobile network. |
+| Censys.IP.network.mobile_info.carrier_name | String | The name of the mobile carrier of the IP address. |
+| Censys.IP.network.mobile_info.mcc | String | The Mobile Country Code \(MCC\) of the mobile network of the IP address. |
+| Censys.IP.network.mobile_info.mnc | String | The Mobile Network Code \(MNC\) of the mobile network of the IP address. |
+| Censys.IP.network.satellite | Boolean | Whether the IP address belongs to a satellite network. |
+| Censys.IP.privacy.source | String | The source of the privacy classification of the IP address. |
+| Censys.IP.privacy.anonymous | Boolean | Whether the IP address is used for anonymization. |
+| Censys.IP.privacy.proxy | Boolean | Whether the IP address is a proxy. |
+| Censys.IP.privacy.relay | Boolean | Whether the IP address is a relay. |
+| Censys.IP.privacy.vpn | Boolean | Whether the IP address is a VPN. |
+| Censys.IP.privacy.tor | Boolean | Whether the IP address is a Tor node. |
+| Censys.IP.privacy.service_provider | String | The privacy service providers associated with the IP address. |
+| Censys.IP.privacy.tor_info.relays.nickname | String | The nickname of the Tor relay of the IP address. |
+| Censys.IP.privacy.tor_info.relays.fingerprint | String | The fingerprint of the Tor relay of the IP address. |
+| Censys.IP.privacy.tor_info.relays.flags | String | The flags of the Tor relay of the IP address. |
+| Censys.IP.privacy.tor_info.relays.exit_addresses | String | The exit addresses of the Tor relay of the IP address. |
+| Censys.IP.privacy.tor_info.relays.bridge | Boolean | Whether the Tor relay of the IP address is a bridge. |
+| Censys.IP.privacy.tor_info.relays.version | String | The version of the Tor relay of the IP address. |
+| Censys.IP.privacy.tor_info.relays.platform | String | The platform of the Tor relay of the IP address. |
+| Censys.IP.privacy.tor_info.relays.contact | String | The contact of the Tor relay of the IP address. |
+| Censys.IP.third_party.mallory.uuid | String | The UUID of the MalloryAI record of the IP address. |
+| Censys.IP.third_party.mallory.first_seen_at | Date | The time the IP address was first seen by MalloryAI. |
+| Censys.IP.third_party.mallory.last_seen_at | Date | The time the IP address was last seen by MalloryAI. |
+| Censys.IP.third_party.mallory.source_count | Number | The number of MalloryAI sources that reported the IP address. |
+| Censys.IP.third_party.mallory.verdict_summary.malicious | Number | The number of MalloryAI sources that reported the IP address as malicious. |
+| Censys.IP.third_party.mallory.verdict_summary.suspicious | Number | The number of MalloryAI sources that reported the IP address as suspicious. |
+| Censys.IP.third_party.mallory.observable.name | String | The name of the MalloryAI observable of the IP address. |
+| Censys.IP.third_party.mallory.observable.type | String | The type of the MalloryAI observable of the IP address. |
+| Censys.IP.third_party.mallory.observable.description | String | The description of the MalloryAI observable of the IP address. |
+| Censys.IP.third_party.mallory.opinions.verdict | String | The verdict of the MalloryAI opinion of the IP address. |
+| Censys.IP.third_party.mallory.opinions.confidence | String | The confidence of the MalloryAI opinion of the IP address. |
+| Censys.IP.third_party.mallory.opinions.source | String | The source of the MalloryAI opinion of the IP address. |
+| Censys.IP.third_party.mallory.opinions.description | String | The description of the MalloryAI opinion of the IP address. |
+| Censys.IP.third_party.mallory.opinions.published_at | Date | The time the MalloryAI opinion of the IP address was published. |
+| Censys.IP.third_party.mallory.opinions.reference_url | String | The reference URL of the MalloryAI opinion of the IP address. |
+| Censys.IP.third_party.mallory.opinions.attributes.tags | String | The tags of the MalloryAI opinion of the IP address. |
+| Censys.IP.third_party.mallory.opinions.attributes.associated_malware | String | The malware associated with the MalloryAI opinion of the IP address. |
+| Censys.IP.third_party.mallory.opinions.attributes.associated_threat_actors | String | The threat actors associated with the MalloryAI opinion of the IP address. |
+| Censys.IP.third_party.mallory.opinions.attributes.associated_vulnerabilities | String | The vulnerabilities associated with the MalloryAI opinion of the IP address. |
+| Censys.IP.HostEnrichmentUsed | Boolean | Whether the host enrichment API was used to retrieve the data. |
 | IP.Address | unknown | The IP address. |
 | IP.ASN | unknown | The IP ASN. |
 | IP.Geo.Country | unknown | The IP country. |
 | IP.Geo.Location | unknown | The IP location. |
-| IP.UpdatedDate | unknown | The IP last update |
-| IP.Port | unknown | The IP port |
+| IP.UpdatedDate | unknown | The IP last update. |
+| IP.Port | unknown | The IP port. |
 | DBotScore.Indicator | unknown | The indicator that was tested. |
 | DBotScore.Type | unknown | The indicator type. |
 | DBotScore.Score | Number | The actual score. |
@@ -1724,8 +1746,675 @@ Runs reputation on IPs.
 
 #### Human Readable Output
 
->### censys results for IP: 8.8.8.8
+>### Censys results for IP: 8.8.8.8
 >
->| **Asn** | **Geo Country** | **Geo Latitude** | **Geo Longitude** | **Ip** | **Port** | **Reputation** | **Updated** |
->| --- | --- | --- | --- | --- | --- | --- |  --- |
->| 15169 | United States | 37.4056 | -122.0775 | 8.8.8.8 | 53, 443, 443, 853 | 0 | 2024-04-14T08:03:28.159Z |
+>### Enriched Host Data
+>
+>|IP|Labels|Service Count|Service Ports|Service Protocols|Service Transport Protocols|Reverse DNS Names|Autonomous System Name|Autonomous System ASN|City|Province|Postal Code|Country|Country Code|Continent|Latitude|Longitude|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 8.8.8.8 | database, email, file-sharing, iot, login-page | 4 | 53, 443, 443, 853 | DNS, HTTP, UNKNOWN, UNKNOWN | UDP, TCP, QUIC, TCP | dns.google | GOOGLE | 15169 | Mountain View | California | 94043 | United States | US | North America | 37.4056 | -122.0775 |
+
+### cen-host-history-list
+
+***
+Retrieve the event history for a host (IP address).
+
+#### Base Command
+
+`cen-host-history-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | Specify the IP address of a host. | Required |
+| start_time | Specify the start time of the host timeline.<br/><br/>Supported date formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-10T14:05:44Z. | Required |
+| end_time | Specify the end time of the host timeline.<br/><br/>Supported date formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-10T14:05:44Z. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Censys.HostEventHistory.ip | String | The IP address of the host. |
+| Censys.HostEventHistory.total_events | Number | The total number of events associated with the host. |
+| Censys.HostEventHistory.partial_data | Boolean | Whether the data is partial or not. |
+| Censys.HostEventHistory.events.resource.service_scanned.scan.scan_time | Date | The timestamp when the service scan was performed. |
+| Censys.HostEventHistory.events.resource.service_scanned.scan.ip | String | The IP address of the scanned service. |
+| Censys.HostEventHistory.events.resource.service_scanned.scan.port | Number | The port number of the scanned service. |
+| Censys.HostEventHistory.events.resource.service_scanned.scan.protocol | String | The protocol used by the scanned service. |
+| Censys.HostEventHistory.events.resource.service_scanned.scan.transport_protocol | String | The transport protocol used during the service scan. |
+| Censys.HostEventHistory.events.resource.service_scanned.scan.is_success | Boolean | Whether the service scan was successful or not. |
+| Censys.HostEventHistory.events.resource.service_scanned.scan.mysql.error_code | Number | The MySQL error code returned during the scan. |
+| Censys.HostEventHistory.events.resource.service_scanned.scan.mysql.error_id | String | The MySQL error identifier returned during the scan. |
+| Censys.HostEventHistory.events.resource.service_scanned.scan.mysql.error_message | String | The MySQL error message returned during the scan. |
+| Censys.HostEventHistory.events.resource.forward_dns_resolved.name | String | The domain name resolved from the forward DNS lookup. |
+| Censys.HostEventHistory.events.resource.forward_dns_resolved.resolve_time | String | The timestamp when the forward DNS resolution occurred. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.diff.additionalProp.new | String | The new value in the JARM scan difference. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.diff.additionalProp.old | String | The old value in the JARM scan difference. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.scan.cipher_and_version_fingerprint | String | The cipher and version fingerprint from the JARM scan. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.scan.fingerprint | String | The JARM fingerprint of the scanned service. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.scan.hostname | String | The hostname used in the JARM scan. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.scan.ip | String | The IP address scanned by JARM. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.scan.is_success | Boolean | Whether the JARM scan was successful or not. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.scan.port | Number | The port number scanned by JARM. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.scan.scan_time | String | The timestamp when the JARM scan was performed. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.scan.tls_extensions_sha256 | String | The SHA-256 hash of the TLS extensions from the JARM scan. |
+| Censys.HostEventHistory.events.resource.jarm_scanned.scan.transport_protocol | String | The transport protocol used during the JARM scan. |
+| Censys.HostEventHistory.events.resource.location_updated.location.city | String | The city where the host is located. |
+| Censys.HostEventHistory.events.resource.location_updated.location.continent | String | The continent where the host is located. |
+| Censys.HostEventHistory.events.resource.location_updated.location.coordinates.latitude | Number | The latitude coordinate of the host location. |
+| Censys.HostEventHistory.events.resource.location_updated.location.coordinates.longitude | Number | The longitude coordinate of the host location. |
+| Censys.HostEventHistory.events.resource.location_updated.location.country | String | The country where the host is located. |
+| Censys.HostEventHistory.events.resource.location_updated.location.country_code | String | The country code where the host is located. |
+| Censys.HostEventHistory.events.resource.location_updated.location.postal_code | String | The postal code of the host location. |
+| Censys.HostEventHistory.events.resource.location_updated.location.province | String | The province or state where the host is located. |
+| Censys.HostEventHistory.events.resource.location_updated.location.registered_country | String | The registered country of the host. |
+| Censys.HostEventHistory.events.resource.location_updated.location.registered_country_code | String | The registered country code of the host. |
+| Censys.HostEventHistory.events.resource.location_updated.location.timezone | String | The timezone of the host location. |
+| Censys.HostEventHistory.events.resource.reverse_dns_resolved.names | String | The domain names resolved from the reverse DNS lookup. |
+| Censys.HostEventHistory.events.resource.reverse_dns_resolved.resolve_time | String | The timestamp when the reverse DNS resolution occurred. |
+| Censys.HostEventHistory.events.resource.route_updated.diff.additionalProp.new | String | The new value in the route update difference. |
+| Censys.HostEventHistory.events.resource.route_updated.diff.additionalProp.old | String | The old value in the route update difference. |
+| Censys.HostEventHistory.events.resource.route_updated.route.asn | Number | The Autonomous System Number of the route. |
+| Censys.HostEventHistory.events.resource.route_updated.route.bgp_prefix | String | The BGP prefix of the route. |
+| Censys.HostEventHistory.events.resource.route_updated.route.country_code | String | The country code associated with the route. |
+| Censys.HostEventHistory.events.resource.route_updated.route.description | String | The description of the route. |
+| Censys.HostEventHistory.events.resource.route_updated.route.name | String | The name of the route. |
+| Censys.HostEventHistory.events.resource.route_updated.route.organization | String | The organization associated with the route. |
+| Censys.HostEventHistory.events.resource.whois_updated.diff.additionalProp.new | String | The new value in the WHOIS update difference. |
+| Censys.HostEventHistory.events.resource.whois_updated.diff.additionalProp.old | String | The old value in the WHOIS update difference. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.network.allocation_type | String | The allocation type of the network in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.network.cidrs | String | The CIDR blocks of the network in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.network.created | String | The creation timestamp of the network in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.network.handle | String | The handle identifier of the network in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.network.name | String | The name of the network in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.network.updated | String | The last update timestamp of the network in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.abuse_contacts.email | String | The email address of the abuse contact in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.abuse_contacts.handle | String | The handle identifier of the abuse contact in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.abuse_contacts.name | String | The name of the abuse contact in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.address | String | The address of the organization in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.admin_contacts.email | String | The email address of the admin contact in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.admin_contacts.handle | String | The handle identifier of the admin contact in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.admin_contacts.name | String | The name of the admin contact in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.city | String | The city of the organization in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.country | String | The country of the organization in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.handle | String | The handle identifier of the organization in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.name | String | The name of the organization in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.postal_code | String | The postal code of the organization in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.state | String | The state or province of the organization in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.street | String | The street address of the organization in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.tech_contacts.email | String | The email address of the technical contact in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.tech_contacts.handle | String | The handle identifier of the technical contact in WHOIS data. |
+| Censys.HostEventHistory.events.resource.whois_updated.whois.organization.tech_contacts.name | String | The name of the technical contact in WHOIS data. |
+| Censys.HostEventHistory.extensions | String | The extensions associated with the host event history. |
+
+#### Command example
+
+```!cen-host-history-list host_id=0.0.0.1 start_time="1 week" end_time="1 day"```
+
+#### Context Example
+
+```json
+{
+    "Censys": {
+        "HostEventHistory": {
+            "ip": "0.0.0.1",
+            "total_events": 8,
+            "partial_data": false,
+            "events": [
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T10:00:00.000Z",
+                        "service_scanned": {
+                            "scan": {
+                                "port": 443,
+                                "protocol": "https",
+                                "transport_protocol": "tcp"
+                            }
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T09:00:00.000Z",
+                        "reverse_dns_resolved": {
+                            "names": [
+                                "example.com",
+                                "www.example.com"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T08:00:00.000Z",
+                        "endpoint_scanned": {
+                            "scan": {
+                                "port": 8080,
+                                "endpoint_type": "http"
+                            }
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T07:00:00.000Z",
+                        "forward_dns_resolved": {
+                            "name": "test.example.com"
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T06:00:00.000Z",
+                        "jarm_scanned": {
+                            "scan": {
+                                "port": 443,
+                                "fingerprint": "0000000000000000000000000000000000000000000000000000000000001"
+                            }
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T05:00:00.000Z",
+                        "location_updated": {
+                            "location": {
+                                "city": "San Francisco",
+                                "country": "United States"
+                            }
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T04:00:00.000Z",
+                        "route_updated": {
+                            "route": {
+                                "asn": "15169",
+                                "organization": "Google LLC"
+                            }
+                        }
+                    }
+                },
+                {
+                    "resource": {
+                        "event_time": "2026-03-01T03:00:00.000Z",
+                        "whois_updated": {
+                            "whois": {
+                                "organization": {
+                                    "name": "Example Organization"
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Successfully retrieved 8 event(s) for host 0.0.0.1
+>
+>### Host History Events
+>
+>|Event Time|Resource Type|Resource Details|Link to Censys|
+>|---|---|---|---|
+>| 2026-03-01T10:00:00.000Z | service_scanned | 443/TCP/https | [View historical host on Censys platform](https://platform.censys.io/hosts/0.0.0.1?at_time=2026-03-01T10:00:00.000Z) |
+>| 2026-03-01T09:00:00.000Z | reverse_dns_resolved | example.com | [View historical host on Censys platform](https://platform.censys.io/hosts/0.0.0.1?at_time=2026-03-01T09:00:00.000Z) |
+>| 2026-03-01T08:00:00.000Z | endpoint_scanned | 8080/http | [View historical host on Censys platform](https://platform.censys.io/hosts/0.0.0.1?at_time=2026-03-01T08:00:00.000Z) |
+>| 2026-03-01T07:00:00.000Z | forward_dns_resolved | test.example.com | [View historical host on Censys platform](https://platform.censys.io/hosts/0.0.0.1?at_time=2026-03-01T07:00:00.000Z) |
+>| 2026-03-01T06:00:00.000Z | jarm_scanned | 443/0000000000000000000000000000000000000000000000000000000000001 | [View historical host on Censys platform](https://platform.censys.io/hosts/0.0.0.1?at_time=2026-03-01T06:00:00.000Z) |
+>| 2026-03-01T05:00:00.000Z | location_updated | San Francisco/United States | [View historical host on Censys platform](https://platform.censys.io/hosts/0.0.0.1?at_time=2026-03-01T05:00:00.000Z) |
+>| 2026-03-01T04:00:00.000Z | route_updated | 15169/Google LLC | [View historical host on Censys platform](https://platform.censys.io/hosts/0.0.0.1?at_time=2026-03-01T04:00:00.000Z) |
+>| 2026-03-01T03:00:00.000Z | whois_updated | Example Organization | [View historical host on Censys platform](https://platform.censys.io/hosts/0.0.0.1?at_time=2026-03-01T03:00:00.000Z) |
+
+### cen-rescan
+
+***
+Initiate a live rescan for a known host service at a specific IP and port (ip:port) or hostname and port (hostname:port).
+
+#### Base Command
+
+`cen-rescan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ioc_type | Specify the type of IOC. Possible values are: Service, Web Property. Default is Service. | Required |
+| ioc_value | Specify the value of IOC. | Required |
+| port | Specify the port number associated with the IOC. Default is 443. | Required |
+| protocol | Specify the service protocol.<br/><br/>Note: This argument is required only if the IOC type is Service. | Optional |
+| transport_protocol | Specify the transport protocol.<br/><br/>Note: This argument is required only if the IOC type is Service. Possible values are: Unknown, TCP, UDP, ICMP, QUIC. Default is Unknown. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Censys.Rescan.scan_id | String | The unique identifier for the rescan operation. |
+| Censys.Rescan.status | String | The status of the rescan \(initiated, in_progress, completed, failed\). |
+| Censys.Rescan.is_completed | Boolean | Whether the rescan has completed. |
+| Censys.Rescan.enrichment_data.ip | String | The IP address of the rescanned host. |
+| Censys.Rescan.enrichment_data.service_count | Number | The total number of services detected on the host. |
+| Censys.Rescan.enrichment_data.labels | String | Labels associated with the host. |
+| Censys.Rescan.enrichment_data.location.continent | String | The continent of the host's detected location. |
+| Censys.Rescan.enrichment_data.location.country | String | The name of the country of the host's detected location. |
+| Censys.Rescan.enrichment_data.location.country_code | String | The two-letter ISO 3166-1 alpha-2 country code of the host's detected location. |
+| Censys.Rescan.enrichment_data.location.city | String | The city of the host's detected location. |
+| Censys.Rescan.enrichment_data.location.province | String | The province or state of the host's detected location. |
+| Censys.Rescan.enrichment_data.location.postal_code | String | The postal code of the host's detected location. |
+| Censys.Rescan.enrichment_data.location.timezone | String | The timezone of the host's detected location. |
+| Censys.Rescan.enrichment_data.location.coordinates.latitude | Number | The latitude of the host's detected location. |
+| Censys.Rescan.enrichment_data.location.coordinates.longitude | Number | The longitude of the host's detected location. |
+| Censys.Rescan.enrichment_data.autonomous_system.asn | Number | The autonomous system number \(ASN\) that the host is in. |
+| Censys.Rescan.enrichment_data.autonomous_system.description | String | A brief description of the autonomous system. |
+| Censys.Rescan.enrichment_data.autonomous_system.bgp_prefix | String | The autonomous system's CIDR. |
+| Censys.Rescan.enrichment_data.autonomous_system.name | String | The friendly name of the autonomous system. |
+| Censys.Rescan.enrichment_data.autonomous_system.country_code | String | The autonomous system's two-letter, ISO 3166-1 alpha-2 country code. |
+| Censys.Rescan.enrichment_data.whois.network.handle | String | The WHOIS network handle identifier. |
+| Censys.Rescan.enrichment_data.whois.network.name | String | The WHOIS network name. |
+| Censys.Rescan.enrichment_data.whois.network.cidrs | String | The WHOIS network CIDRs. |
+| Censys.Rescan.enrichment_data.whois.network.created | Date | The creation date of the WHOIS network record. |
+| Censys.Rescan.enrichment_data.whois.network.updated | Date | The last update date of the WHOIS network record. |
+| Censys.Rescan.enrichment_data.whois.organization.handle | String | The WHOIS organization handle identifier. |
+| Censys.Rescan.enrichment_data.whois.organization.name | String | The WHOIS organization name. |
+| Censys.Rescan.enrichment_data.whois.organization.address | String | The WHOIS organization address. |
+| Censys.Rescan.enrichment_data.whois.organization.abuse_contacts | String | The WHOIS organization abuse contacts. |
+| Censys.Rescan.enrichment_data.whois.organization.admin_contacts | String | The WHOIS organization admin contacts. |
+| Censys.Rescan.enrichment_data.services | String | List of services detected on the host. |
+| Censys.Rescan.enrichment_data.services.port | Number | The port the service was reached at. |
+| Censys.Rescan.enrichment_data.services.protocol | String | The name of the service on the port. |
+| Censys.Rescan.enrichment_data.services.transport_protocol | String | The transport protocol used to contact this service. |
+| Censys.Rescan.enrichment_data.services.software | String | Software identified on the service. |
+| Censys.Rescan.enrichment_data.services.software.source | String | The source of the software identification. |
+| Censys.Rescan.enrichment_data.services.software.confidence | Number | The confidence level of the software identification. |
+| Censys.Rescan.enrichment_data.services.software.part | String | The part classification of the software in CPE format. |
+| Censys.Rescan.enrichment_data.services.software.vendor | String | The vendor of the identified software. |
+| Censys.Rescan.enrichment_data.services.software.product | String | The product name of the identified software. |
+| Censys.Rescan.enrichment_data.services.labels | String | Labels associated with the service. |
+| Censys.Rescan.enrichment_data.services.labels.value | String | The value of the service label. |
+| Censys.Rescan.enrichment_data.services.threats | String | Threats detected on the service. |
+| Censys.Rescan.enrichment_data.services.vulns | String | Vulnerabilities detected on the service. |
+| Censys.Rescan.enrichment_data.services.ip | String | The IP address of the service. |
+| Censys.Rescan.enrichment_data.services.scan_time | Date | The time when the service was scanned. |
+| Censys.Rescan.enrichment_data.services.banner | String | The banner returned by the service. |
+| Censys.Rescan.enrichment_data.services.banner_hash_sha256 | String | The SHA-256 hash of the service banner. |
+| Censys.Rescan.enrichment_data.services.banner_hex | String | The hexadecimal representation of the service banner. |
+| Censys.Rescan.enrichment_data.dns.reverse_dns.resolve_time | Date | The time when reverse DNS was resolved. |
+| Censys.Rescan.enrichment_data.dns.names | String | DNS names associated with the host. |
+| Censys.Rescan.enrichment_data.dns.forward_dns.names | String | Forward DNS names for the host. |
+| Censys.Rescan.enrichment_data.dns.reverse_dns.names | String | Reverse DNS names for the host. |
+| IP.Address | String | The IP address. |
+| IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". |
+| IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude. |
+| IP.Geo.Country | String | The country in which the IP address is located. |
+| IP.Geo.Description | String | Additional information about the location. |
+| IP.ASOwner | String | The autonomous system owner of the IP. |
+| IP.Port | String | Ports that are associated with the IP. |
+| IP.Malicious.Vendor | String | The vendor reporting the IP address as malicious. |
+| IP.Malicious.Description | String | A description explaining why the IP address was reported as malicious. |
+| Domain.Name | String | The domain name, for example: "google.com". |
+| Domain.Malicious.Vendor | String | The vendor reporting the domain as malicious. |
+| Domain.Malicious.Description | String | A description explaining why the domain was reported as malicious. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+
+#### Command example
+
+```!cen-rescan ioc_type="Service" ioc_value="0.0.0.1" port="443" protocol="HTTPS" transport_protocol="TCP"```
+
+#### Context Example
+
+```json
+{
+    "Censys": {
+        "Rescan": {
+            "ioc_value": "0.0.0.1",
+            "port": 443,
+            "status": "completed",
+            "scan_id": "00000000-0000-0000-0000-000000000001",
+            "is_completed": true,
+            "enrichment_data": {
+                "ip": "0.0.0.1",
+                "labels": [
+                    {
+                        "source": "censys",
+                        "value": "CLOUD_PROVIDER"
+                    },
+                    {
+                        "source": "censys",
+                        "value": "WEB_SERVER"
+                    }
+                ],
+                "location": {
+                    "continent": "Asia",
+                    "country": "South Korea",
+                    "country_code": "KR",
+                    "city": "Seoul",
+                    "postal_code": "03141",
+                    "timezone": "Asia/Seoul",
+                    "province": "Seoul",
+                    "coordinates": {
+                        "latitude": 37.566,
+                        "longitude": 126.9784
+                    }
+                },
+                "autonomous_system": {
+                    "asn": 12345,
+                    "description": "EXAMPLE-AS-AP Example.Co.LTD",
+                    "bgp_prefix": "0.0.0.1/24",
+                    "name": "EXAMPLE-AS-AP Example.Co.LTD",
+                    "country_code": "KR"
+                },
+                "whois": {
+                    "network": {
+                        "handle": "HK-EXAMPLE-20190703",
+                        "name": "EXAMPLE LIMITED",
+                        "cidrs": [
+                            "0.0.0.1/24"
+                        ],
+                        "created": "2024-11-26T00:00:00Z",
+                        "updated": "2025-08-18T00:00:00Z"
+                    },
+                    "organization": {
+                        "handle": "ORG-XL117-RIPE",
+                        "name": "EXAMPLE LIMITED",
+                        "address": "RM 29-33,5/F,EXAMPLE COMMERCIAL CENTRE,87-105 EXAMPLE ROAD\\n000000\\nEXAMPLE CITY\\nEXAMPLE COUNTRY",
+                        "abuse_contacts": [
+                            {
+                                "handle": "EXAMPLE-RIPE",
+                                "name": "EXAMPLE-ROLE",
+                                "email": "noc@example.com"
+                            }
+                        ],
+                        "admin_contacts": [
+                            {
+                                "handle": "EXAMPLE-RIPE",
+                                "name": "EXAMPLE-ROLE",
+                                "email": "noc@example.com"
+                            }
+                        ]
+                    }
+                },
+                "services": [
+                    {
+                        "port": 22,
+                        "protocol": "SSH",
+                        "transport_protocol": "tcp",
+                        "software": [
+                            {
+                                "source": "censys",
+                                "confidence": 0.9,
+                                "evidence": [
+                                    {
+                                        "data_path": "protocol",
+                                        "found_value": "SSH",
+                                        "literal_match": "SSH"
+                                    }
+                                ],
+                                "type": [
+                                    "REMOTE_ACCESS"
+                                ],
+                                "part": "a"
+                            }
+                        ],
+                        "labels": [
+                            {
+                                "source": "censys",
+                                "confidence": 0.9,
+                                "evidence": [
+                                    {
+                                        "data_path": "protocol",
+                                        "found_value": "SSH",
+                                        "literal_match": "SSH"
+                                    }
+                                ],
+                                "value": "REMOTE_ACCESS"
+                            }
+                        ],
+                        "threats": [
+                            {
+                                "name": "BRUTE_FORCE_ATTACK",
+                                "source": "censys"
+                            }
+                        ],
+                        "vulns": [
+                            {
+                                "id": "CVE-2023-12345",
+                                "cvss": 7.5,
+                                "severity": "HIGH"
+                            },
+                            {
+                                "id": "CVE-2023-67890",
+                                "cvss": 5.3,
+                                "severity": "MEDIUM"
+                            }
+                        ],
+                        "ip": "0.0.0.1",
+                        "scan_time": "2026-02-02T00:46:23Z",
+                        "banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u3",
+                        "banner_hash_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+                        "banner_hex": "5353482d322e302d4f70656e5353485f392e3270312044656269616e2d322b64656231327533",
+                        "ja4tscan": {
+                            "scan_time": "2026-02-01T17:09:57Z",
+                            "fingerprint": "65160_2-4-8-1-3_1460_7_1-2-4-8-16"
+                        },
+                        "ssh": {
+                            "endpoint_id": {
+                                "raw": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u3",
+                                "protocol_version": "2.0",
+                                "software_version": "OpenSSH_9.2p1",
+                                "comment": "Debian-2+deb12u3"
+                            },
+                            "kex_init_message": {
+                                "kex_algorithms": [
+                                    "example@openssh.com",
+                                    "curve25519-sha256",
+                                    "example@openssh.com"
+                                ],
+                                "host_key_algorithms": [
+                                    "rsa-sha2-512",
+                                    "rsa-sha2-256",
+                                    "ecdsa-sha2-nistp256",
+                                    "ssh-ed25519"
+                                ],
+                                "client_to_server_ciphers": [
+                                    "example@openssh.com",
+                                    "aes128-ctr"
+                                ],
+                                "server_to_client_ciphers": [
+                                    "example@openssh.com",
+                                    "aes128-ctr"
+                                ],
+                                "client_to_server_macs": [
+                                    "example@openssh.com",
+                                    "example@openssh.com"
+                                ],
+                                "server_to_client_macs": [
+                                    "example@openssh.com",
+                                    "example@openssh.com"
+                                ],
+                                "client_to_server_compression": [
+                                    "none",
+                                    "example@openssh.com"
+                                ],
+                                "server_to_client_compression": [
+                                    "none",
+                                    "example@openssh.com"
+                                ]
+                            },
+                            "algorithm_selection": {
+                                "kex_algorithm": "example@libssh.org",
+                                "host_key_algorithm": "ecdsa-sha2-nistp256",
+                                "client_to_server_cipher": "example@openssh.com",
+                                "server_to_client_cipher": "example@openssh.com",
+                                "client_to_server_mac": "example@openssh.com",
+                                "server_to_client_mac": "example@openssh.com",
+                                "client_to_server_compression": "none",
+                                "server_to_client_compression": "none"
+                            },
+                            "server_host_key": {
+                                "ecdsa_public_key": {
+                                    "b": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                                    "curve": "P256",
+                                    "gx": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                                    "gy": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                                    "length": 256,
+                                    "n": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                                    "p": "/////wAAAAEAAAAAAAAAAAAAAAD///////////////8=",
+                                    "x": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                                    "y": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+                                }
+                            },
+                            "hassh_fingerprint": "00000000000000000000000000000000"
+                        }
+                    }
+                ],
+                "service_count": 3,
+                "dns": {
+                    "names": [
+                        "example.com",
+                        "www.example.com"
+                    ],
+                    "forward_dns": {
+                        "names": [
+                            "example.com",
+                            "www.example.com",
+                            "mail.example.com"
+                        ]
+                    },
+                    "reverse_dns": {
+                        "names": [
+                            "host.example.com"
+                        ],
+                        "resolve_time": "2026-01-30T18:11:14Z"
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Scan completed successfully for 0.0.0.1:443
+>
+>### Enriched Host Data
+>
+>|IP|Labels|Service Count|Service Ports|Service Protocols|Service Transport Protocols|Service Labels|Service Vulns|Service Threats|Service Scan Times|DNS Names|Forward DNS Names|Reverse DNS Names|Network Name|CIDRs|Autonomous System Name|Autonomous System ASN|City|Province|Postal Code|Country|Country Code|Continent|Latitude|Longitude|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 0.0.0.1 | CLOUD_PROVIDER, WEB_SERVER | 3 | 22 | SSH | tcp | REMOTE_ACCESS | CVE-2023-12345, CVE-2023-67890 | BRUTE_FORCE_ATTACK | 2026-02-02T00:46:23Z | example.com, www.example.com | example.com, www.example.com, mail.example.com | host.example.com | EXAMPLE LIMITED | 0.0.0.1/24 | EXAMPLE-AS-AP Example.Co.LTD | 12345 | Seoul | Seoul | 03141 | South Korea | KR | Asia | 37.566 | 126.9784 |
+
+### cen-related-infrastructure-list
+
+***
+Initiate a CensEye (Related Infrastructure) pivot analysis job for a Host, Web Property, or SHA256 Certificate.
+
+#### Base Command
+
+`cen-related-infrastructure-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ioc_type | Specify the type of IOC. Possible values are: Host, Web Property, Certificate. Default is Host. | Required |
+| ioc_value | Specify the value of IOC.<br/><br/>Note: For Web Property IOC type, include the port in the format hostname:port (e.g., example.com:443). | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Censys.RelatedInfrastructure.job_id | String | The unique identifier for the related infrastructure job. |
+| Censys.RelatedInfrastructure.pivot_data.count | Number | The count of related infrastructure entries for this pivot. |
+| Censys.RelatedInfrastructure.pivot_data.field_value_pairs.field | String | The field name of the pivot. |
+| Censys.RelatedInfrastructure.pivot_data.field_value_pairs.value | String | The value of the pivot field. |
+| Censys.RelatedInfrastructure.status | String | The status of the job \(initiated, in_progress, completed, failed\). |
+| Censys.RelatedInfrastructure.is_completed | Boolean | Whether the job has completed. |
+| Censys.RelatedInfrastructure.ioc_value | String | The value of the IOC. |
+
+#### Command example
+
+```!cen-related-infrastructure-list ioc_type="Host" ioc_value="0.0.0.1"```
+
+#### Context Example
+
+```json
+{
+    "Censys": {
+        "RelatedInfrastructure": {
+            "ioc_value": "0.0.0.1",
+            "status": "completed",
+            "job_id": "00000000-0000-0000-0000-000000000001",
+            "is_completed": true,
+            "pivot_data": [
+                {
+                    "count": 5395,
+                    "field_value_pairs": [
+                        {
+                            "field": "host.services.banner_hash_sha256",
+                            "value": "0000000000000000000000000000000000000000000000000000000000000001"
+                        }
+                    ]
+                },
+                {
+                    "count": 123620,
+                    "field_value_pairs": [
+                        {
+                            "field": "host.services.endpoints.http.headers.key",
+                            "value": "Connection"
+                        },
+                        {
+                            "field": "host.services.endpoints.http.headers.value",
+                            "value": "close"
+                        }
+                    ]
+                },
+                {
+                    "count": 5395,
+                    "field_value_pairs": [
+                        {
+                            "field": "host.services.endpoints.banner_hash_sha256",
+                            "value": "0000000000000000000000000000000000000000000000000000000000000001"
+                        }
+                    ]
+                },
+                {
+                    "count": 36216,
+                    "field_value_pairs": [
+                        {
+                            "field": "host.services.endpoints.http.headers.key",
+                            "value": "Content-Type"
+                        },
+                        {
+                            "field": "host.services.endpoints.http.headers.value",
+                            "value": "text/plain"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Job completed successfully for 0.0.0.1
+>
+>### 4 Pivots Data
+>
+>|Key|Value|Count|See results in Censys|
+>|---|---|---|---|
+>| host.services.banner_hash_sha256 | 0000000000000000000000000000000000000000000000000000000000000001 | 5395 | [View Pivot Information on Censys platform](https://platform.censys.io/search?q=host.services.banner_hash_sha256+%3D+%220000000000000000000000000000000000000000000000000000000000000001%22) |
+>| host.services.endpoints.banner_hash_sha256 | 0000000000000000000000000000000000000000000000000000000000000001 | 5395 | [View Pivot Information on Censys platform](https://platform.censys.io/search?q=host.services.endpoints.banner_hash_sha256+%3D+%220000000000000000000000000000000000000000000000000000000000000001%22) |
+>| host.services.endpoints.http.headers.key<br/>host.services.endpoints.http.headers.value | Content-Type<br/>text/plain | 36216 | [View Pivot Information on Censys platform](https://platform.censys.io/search?q=host.services.endpoints.http.headers%3A+%28key+%3D+%22Content-Type%22+and+value+%3D+%22text%2Fplain%22%29) |
+>| host.services.endpoints.http.headers.key<br/>host.services.endpoints.http.headers.value | Connection<br/>close | 123620 | [View Pivot Information on Censys platform](https://platform.censys.io/search?q=host.services.endpoints.http.headers%3A+%28key+%3D+%22Connection%22+and+value+%3D+%22close%22%29) |

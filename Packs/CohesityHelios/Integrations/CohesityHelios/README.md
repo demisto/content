@@ -46,63 +46,20 @@ Get Cohesity Helios ransomware alerts.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CohesityHelios.RansomwareAlert.alert_id | String | Identifier for the ransomware alert. |
-| CohesityHelios.RansomwareAlert.occurrence_time | Date | Name of the detected anomalous object. |
-| CohesityHelios.RansomwareAlert.severity | String | Severity of the ransomware alert. |
-| CohesityHelios.RansomwareAlert.alert_description | String | Description for the ransomware alert. |
-| CohesityHelios.RansomwareAlert.alert_cause | String | Cause for the ransomware alert. |
-| CohesityHelios.RansomwareAlert.anomalous_object_name | String | Name of the detected anomalous object. |
-| CohesityHelios.RansomwareAlert.anomalous_object_env | String | Env of the detected anomalous object. |
-| CohesityHelios.RansomwareAlert.anomaly_strength | Number | Strength of the detected ransomware alert. |
-
-#### Command Example
-
-```!cohesity-helios-get-ransomware-alerts created_after=2021-09-26T created_before=2021-09-230T limit=2 alert_severity_list=kCritical,kInfo```
-
-#### Context Example
-
-```json
-{
-    "CohesityHelios": {
-        "RansomwareAlert": [
-            {
-                "alert_cause": "The recent protection run of Protection Group testSimJobCWWMwith job id 24248 has dramatic changes in the composition of files, which is a significant deviation from the previously observed protection runs",
-                "alert_description": "Anomalous change in file system detected on pankajk-ubuntu18-06, a symptom of potential ransomware attack on your primary environment",
-                "alert_id": "9346668452014081:1632849269030240",
-                "anomalous_object_env": "kVMware",
-                "anomalous_object_name": "pankajk-ubuntu18-06",
-                "anomaly_strength": "66",
-                "occurrence_time": "2021-09-28T17:14:29Z",
-                "severity": "kCritical"
-            },
-            {
-                "alert_cause": "The recent protection run of Protection Group testSimJobBTYAwith job id 24229 has dramatic changes in the composition of files, which is a significant deviation from the previously observed protection runs",
-                "alert_description": "Anomalous change in file system detected on pankajk-ubuntu18-05, a symptom of potential ransomware attack on your primary environment",
-                "alert_id": "2122491972847952:1632848348897740",
-                "anomalous_object_env": "kVMware",
-                "anomalous_object_name": "pankajk-ubuntu18-05",
-                "anomaly_strength": "63",
-                "occurrence_time": "2021-09-28T16:59:08Z",
-                "severity": "kCritical"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Cohesity Helios Ransomware Alerts
->
->|Alert Id|Alert Description|Alert Cause|Anomalous Object Env|Anomalous Object Name|Anomaly Strength|
->|---|---|---|---|---|---|
->| 9346668452014081:1632849269030240 | Anomalous change in file system detected on pankajk-ubuntu18-06, a symptom of potential ransomware attack on your primary environment | The recent protection run of Protection Group testSimJobCWWMwith job id 24248 has dramatic changes in the composition of files, which is a significant deviation from the previously observed protection runs | kVMware | pankajk-ubuntu18-06 | 66 |
->| 2122491972847952:1632848348897740 | Anomalous change in file system detected on pankajk-ubuntu18-05, a symptom of potential ransomware attack on your primary environment | The recent protection run of Protection Group testSimJobBTYAwith job id 24229 has dramatic changes in the composition of files, which is a significant deviation from the previously observed protection runs | kVMware | pankajk-ubuntu18-05 | 63 |
+| CohesityHelios.RansomwareAlert.alert_id | String | The identifier for the ransomware alert. |
+| CohesityHelios.RansomwareAlert.occurrence_time | Date | The timestamp when the alert occurred \(for example, 2020-01-01T00:11:22Z\). |
+| CohesityHelios.RansomwareAlert.severity | String | The severity of the ransomware alert. |
+| CohesityHelios.RansomwareAlert.alert_description | String | The description for the ransomware alert. |
+| CohesityHelios.RansomwareAlert.alert_cause | String | The cause for the ransomware alert. |
+| CohesityHelios.RansomwareAlert.cluster_id | Number | The cluster ID where the alert originated. |
+| CohesityHelios.RansomwareAlert.cluster_name | String | The cluster name where the alert originated. |
+| CohesityHelios.RansomwareAlert.entity_id | String | The entity ID \(object ID\) from the alert propertyList. |
+| CohesityHelios.RansomwareAlert.job_id | String | The job ID from the alert propertyList. |
 
 ### cohesity-helios-ignore-anomalous-object
 
 ***
-Ignore detected anomalous object.
+Ignore detected anomalous object by suppressing the alert.
 
 #### Base Command
 
@@ -112,7 +69,7 @@ Ignore detected anomalous object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_name | Anomalous object name to be ignored. Can be retrieved by running the command cohesity-helios-get-ransomware-alerts. | Required |
+| alert_id | The alert ID to suppress. | Required |
 
 #### Context Output
 
@@ -120,16 +77,16 @@ There is no context output for this command.
 
 #### Command Example
 
-```!cohesity-helios-ignore-anomalous-object  object_name=pankajk-ubuntu18-02```
+```!cohesity-helios-ignore-anomalous-object alert_id=9346668452014081:1632849269030240```
 
 #### Human Readable Output
 
->Ignored object pankajk-ubuntu18-02
+>Ignored alert 9346668452014081:1632849269030240.
 
 ### cohesity-helios-restore-latest-clean-snapshot
 
 ***
-Restore the latest clean snapshot for the given object.
+Restore the latest clean snapshot for the given object using incidence details.
 
 #### Base Command
 
@@ -139,7 +96,7 @@ Restore the latest clean snapshot for the given object.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_name | Anomalous object name to be restored. Can be retrieved by running the command cohesity-helios-get-ransomware-alerts. | Required |
+| alert_id | The alert ID to restore the latest clean snapshot for. | Required |
 
 #### Context Output
 
@@ -147,8 +104,8 @@ There is no context output for this command.
 
 #### Command Example
 
-```!cohesity-helios-restore-latest-clean-snapshot  object_name=pankajk-ubuntu18-05```
+```!cohesity-helios-restore-latest-clean-snapshot alert_id=2122491972847952:1632848348897740```
 
 #### Human Readable Output
 
->Restored object pankajk-ubuntu18-05.
+>Restored vm-ubuntu-05 \(id=object-1002\) from latest clean snapshot.

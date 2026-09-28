@@ -23,9 +23,9 @@ args:
   isArray: true
   auto: PREDEFINED
   predefined:
-    - "Cortex XDR - IR"
-    - "Cortex Core - IR"
-    - "Microsoft Defender Advanced Threat Protection"
+  - "Cortex XDR - IR"
+  - "Cortex Core - IR"
+  - "Microsoft Defender Advanced Threat Protection"
 - name: verbose
   description: Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result.
   auto: PREDEFINED
@@ -61,7 +61,7 @@ outputs:
   description: A success message if the command runs successfully, otherwise a message that contains the error.
   type: String
 - contextPath: QuarantineFile.Brand
-  description: The integration that executed the command.
+  description: The integration that executed the command. On the Cortex platform, the Core action runs as a Builtin command and is reported as "Cortex Builtin".
   type: String
 - contextPath: QuarantineFile.EndpointID
   description: The endpoint_id which the command was executed on.
@@ -71,8 +71,8 @@ timeout: '0'
 type: python
 subtype: python3
 compliantpolicies:
-  - Quarantine File
-dockerimage: demisto/python3:3.12.13.8294662
+- Quarantine File
+dockerimage: demisto/python3:3.12.13.10404775
 fromversion: 6.10.0
 polling: true
 tests:

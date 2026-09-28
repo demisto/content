@@ -339,33 +339,41 @@
                         "items":[
                             {
                                 "dropEffect":"move",
-                                "endCol":2,
-                                "fieldId":"titanurl",
-                                "height":53,
-                                "id":"042d3aa0-2815-11ec-a73f-578251800355",
-                                "index":0,
-                                "listId":"caseinfoid-e864f7a0-2818-11ec-a73f-578251800355",
-                                "sectionItemType":"field",
-                                "startCol":0
-                            },
-                            {
-                                "endCol":2,
-                                "fieldId":"titanwatchergroup",
-                                "height":53,
-                                "id":"3205bed0-281e-11ec-a73f-578251800355",
-                                "index":1,
-                                "sectionItemType":"field",
-                                "startCol":0
-                            },
-                            {
-                                "endCol":2,
-                                "fieldId":"titanwatcher",
-                                "height":22,
-                                "id":"37f75a10-281e-11ec-a73f-578251800355",
-                                "index":2,
-                                "sectionItemType":"field",
-                                "startCol":0
-                            }
+								"endCol": 2,
+								"fieldId": "intel471url",
+								"height": 53,
+								"id": "b8305db0-34d2-11f1-957b-89adef4a2f97",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "watcher",
+								"height": 53,
+								"id": "bfe21f80-34d2-11f1-957b-89adef4a2f97",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "watchergroup",
+								"height": 53,
+								"id": "c1b3f950-34d2-11f1-957b-89adef4a2f97",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "highlights",
+								"height": 22,
+								"id": "04e4bfc0-34d3-11f1-957b-89adef4a2f97",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
                         ],
                         "maxH":null,
                         "maxW":3,

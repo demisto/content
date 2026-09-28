@@ -15,6 +15,12 @@ configuration:
   type: 8
   required: false
   section: Collect
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
@@ -103,6 +109,8 @@ configuration:
   - Communities
   - Images
   - Marketplaces
+  - Reports
+  - Vulnerabilities
   type: 16
   required: false
   section: Collect
@@ -194,6 +202,12 @@ configuration:
   type: 8
   required: false
   section: Collect
+- additionalinfo: Whether to use exact matching for indicator values by default in enrichment commands (ip, domain, file, and url). This behavior can be overridden for individual commands using the exact_match argument.
+  display: Enable Exact Match for IOC Enrichment
+  name: ioc_enrichment_exact_match
+  type: 8
+  required: false
+  section: Collect
 - additionalinfo: >-
     Maximum number of entries stored per reputation command result for both relationships (e.g. related IPs)
     and enrichments (e.g. domains, emails, CVEs). Lowering this value improves performance and reduces context
@@ -202,6 +216,15 @@ configuration:
   defaultvalue: '50'
   display: Reputation commands context limit
   name: reputation_enrichments_limit
+  type: 0
+  required: false
+  section: Connect
+  advanced: true
+- additionalinfo: >-
+    The maximum number of characters retained from the message field of a community search result returned by the ip command. Lowering this value reduces context payload size, while raising it preserves more of the original content.
+  defaultvalue: '500'
+  display: Community search message max length
+  name: message_max_length
   type: 0
   required: false
   section: Connect
@@ -576,6 +599,8 @@ script:
       - Communities
       - Images
       - Marketplaces
+      - Reports
+      - Vulnerabilities
       isArray: true
     - name: tags
       description: A comma-separated list of alerts filtered by tags.
@@ -942,7 +967,6 @@ script:
       isArray: true
     - name: exact_match
       required: false
-      defaultValue: "False"
       description: Whether to perform an exact match on the IP address value.
       auto: PREDEFINED
       predefined:
@@ -1596,7 +1620,7 @@ script:
       type: string
     - contextPath: Ignite.Domain.total_sightings
       description: The total sightings of domain.
-      type: integer  
+      type: integer
     - contextPath: Domain.Malicious.Description
       description: The description of the malicious indicator.
       type: string
@@ -2109,13 +2133,13 @@ script:
       type: string
     - contextPath: Ignite.File.historical_tags
       description: The tags of File.
-      type: string 
+      type: string
     - contextPath: Ignite.File.reports.html
       description: Platform url to access the report of the indicator.
-      type: string 
+      type: string
     - contextPath: Ignite.File.reports.json
       description: API url of the report of the indicator.
-      type: string 
+      type: string
     - contextPath: Ignite.Domain.id
       description: The ID of domain.
       type: string
@@ -2241,7 +2265,7 @@ script:
       type: string
     - contextPath: Ignite.Domain.total_sightings
       description: The total sightings of domain.
-      type: integer  
+      type: integer
     - contextPath: Domain.Malicious.Description
       description: The description of the malicious indicator.
       type: string
@@ -2271,13 +2295,13 @@ script:
       type: string
     - contextPath: Ignite.Domain.historical_tags
       description: The tags of Domain.
-      type: string 
+      type: string
     - contextPath: Ignite.Domain.reports.html
       description: Platform url to access the report of the indicator.
-      type: string 
+      type: string
     - contextPath: Ignite.Domain.reports.json
       description: API url of the report of the indicator.
-      type: string 
+      type: string
     - contextPath: URL.Malicious.Description
       description: The description of the malicious indicator.
       type: string
@@ -2433,13 +2457,13 @@ script:
       type: integer
     - contextPath: Ignite.URL.historical_tags
       description: The tags of URL.
-      type: string 
+      type: string
     - contextPath: Ignite.URL.reports.html
       description: Platform url to access the report of the indicator.
-      type: string 
+      type: string
     - contextPath: Ignite.URL.reports.json
       description: API url of the report of the indicator.
-      type: string 
+      type: string
     - contextPath: IP.Address
       description: The IP address.
       type: string
@@ -2592,13 +2616,13 @@ script:
       type: integer
     - contextPath: Ignite.IP.historical_tags
       description: The tags of IP.
-      type: string 
+      type: string
     - contextPath: Ignite.IP.reports.html
       description: Platform url to access the report of the indicator.
-      type: string 
+      type: string
     - contextPath: Ignite.IP.reports.json
       description: API url of the report of the indicator.
-      type: string 
+      type: string
     description: 'Looks up details for indicators of types "URL", "Domain", "File Hash", and "IP" using their ID. The reputation of the indicator is decided from the indicator score if it is found in the Ignite IOC database.'
   - name: url
     arguments:
@@ -2609,7 +2633,6 @@ script:
       isArray: true
     - name: exact_match
       required: false
-      defaultValue: "False"
       description: Whether to perform an exact match on the URL value.
       auto: PREDEFINED
       predefined:
@@ -2821,7 +2844,6 @@ script:
       isArray: true
     - name: exact_match
       required: false
-      defaultValue: "False"
       description: Whether to perform an exact match on the domain value.
       auto: PREDEFINED
       predefined:
@@ -2995,7 +3017,7 @@ script:
       type: string
     - contextPath: Ignite.Domain.total_sightings
       description: The total sightings of domain.
-      type: integer  
+      type: integer
     - contextPath: Domain.Malicious.Description
       description: The description of the malicious indicator.
       type: string
@@ -3033,7 +3055,6 @@ script:
       isArray: true
     - name: exact_match
       required: false
-      defaultValue: "False"
       description: Whether to perform an exact match on the file hash value.
       auto: PREDEFINED
       predefined:
@@ -4188,6 +4209,9 @@ script:
     description: Retrieves detailed information about a specific CVE by its CVE ID.
   - name: flashpoint-ignite-vulnerability-list
     arguments:
+    - description: "Filter by the vulnerability IDs assigned by Flashpoint. Supports comma-separated values.\n\nExample: 463513, FP-VULN-463512."
+      name: vulnerability_ids
+      isArray: true
     - description: "Get vulnerabilities that were updated after the specified date or relative timestamp.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ."
       name: updated_after
     - description: "Get vulnerabilities that were updated before the specified date or relative timestamp.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ."
@@ -4823,7 +4847,7 @@ script:
     description: List products using provided filters.
   script: ''
   type: python
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.11879924
   isfetch: true
   runonce: false
   subtype: python3

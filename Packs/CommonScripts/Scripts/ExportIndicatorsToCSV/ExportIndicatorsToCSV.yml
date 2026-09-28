@@ -18,7 +18,7 @@ dependson:
   must:
   - core-api-post
   - core-api-get
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.13.10404775
 enabled: true
 name: ExportIndicatorsToCSV
 runas: DBotWeakRole
@@ -33,5 +33,12 @@ marketplaces:
 - xsoar
 - marketplacev2
 - platform
+supportedModules:
+- agentix
+- cloud
+- cloud_runtime_security
+- cloud_posture
+- xsiam
+- edr
 tests:
 - No tests (auto formatted)

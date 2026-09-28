@@ -27,6 +27,8 @@ DEFAULT_LIMIT = 10
 DEFAULT_REPORT_LIMIT = 5
 DEFAULT_REPUTATION_LIMIT = 5
 DEFAULT_REPUTATION_CONTEXT_LIMIT = 50  # Default max entries for both relationships and enrichments per reputation result
+DEFAULT_MESSAGE_MAX_LENGTH = 500  # Max characters to keep from a community search indicator's "message" field.
+MESSAGE_TRUNCATION_SUFFIX = "... [message truncated, full content available in raw_response]"
 MAX_PAGE_SIZE = 1000
 MAX_FETCH_LIMIT = 200
 MAX_PRODUCT = 10000
@@ -202,12 +204,15 @@ ALERT_SOURCES_MAPPING = {
     "Communities": "communities",
     "Images": "media",
     "Marketplaces": "marketplaces",
+    "Reports": "reports",
+    "Vulnerabilities": "vulnerabilities",
 }
 
 ALERT_RESOURCE_URL = {
     "communities": "/search/context/communities/{}",
     "marketplaces": "/search/context/marketplaces/{}",
     "media": "/search/results/media?include.date=all+time&include.media_id={}",
+    "reports": "/cti/intelligence/report/{}",
 }
 
 ALERT_STATUS_MAPPING = {
@@ -363,6 +368,7 @@ class Client(BaseClient):
         proxy,
         create_relationships,
         reputation_enrichments_limit: int = DEFAULT_REPUTATION_CONTEXT_LIMIT,
+        message_max_length: int = DEFAULT_MESSAGE_MAX_LENGTH,
     ):
         """Initialize class object.
 
@@ -384,6 +390,10 @@ class Client(BaseClient):
         :type reputation_enrichments_limit: ``int``
         :param reputation_enrichments_limit: Maximum number of enrichment entries stored per reputation
             command result. Lower values improve performance; higher values preserve more details.
+
+        :type message_max_length: ``int``
+        :param message_max_length: Maximum number of characters kept from a community search indicator's
+            "message" field. Lower values reduce context size; higher values preserve more content.
         """
         self.url = url
 
@@ -397,6 +407,7 @@ class Client(BaseClient):
         self.proxy = proxy
         self.create_relationships = create_relationships
         self.reputation_enrichments_limit = reputation_enrichments_limit
+        self.message_max_length = message_max_length
 
         super().__init__(base_url=self.url, headers=self.headers, verify=self.verify, proxy=self.proxy)
 
@@ -901,7 +912,7 @@ def prepare_args_for_fetch_alerts(
     return fetch_params
 
 
-def remove_duplicate_records(records: List, fetch_type: str, next_run: dict) -> List:
+def remove_duplicate_records(records: list, fetch_type: str, next_run: dict) -> list:
     """
     Check for duplicate records and remove them from the list.
 
@@ -954,10 +965,12 @@ def prepare_incidents_from_alerts_data(
         alert["tag_as_list"] = list(tags.keys())
 
         origin = alert.get("reason", {}).get("origin")
-        source = alert.get("source")
-        resource_url = alert.get("resource", {}).get("url")
+        source = alert.get("source") or ""
+        resource_url = (alert.get("resource") or {}).get("url")
         if not resource_url and origin == "searches":
             resource_url = get_resource_url(source, alert.get("resource", {}).get("id"), platform_url)
+        if source and source.lower() == "vulnerabilities":
+            resource_url = (alert.get("resource") or {}).get("ignite_search_url")
 
         alert["resource"].update({"url": resource_url})
 
@@ -1069,7 +1082,7 @@ def check_value_of_total_records(total: Any, next_run: dict) -> None:
         next_run["total"] = total
 
 
-def prepare_checkpoint_and_related_objects(hits: List, hit_ids: List, next_run: dict) -> None:
+def prepare_checkpoint_and_related_objects(hits: list, hit_ids: list, next_run: dict) -> None:
     """
     Prepare checkpoint and related objects for incidents of type compromised credentials.
 
@@ -1110,7 +1123,7 @@ def prepare_next_run_when_data_is_present(next_run: dict, start_time: str) -> No
     next_run["fetch_count"] = next_run["fetch_count"] + 1
 
 
-def prepare_next_run_when_data_is_empty(next_run: dict, hits: List) -> None:
+def prepare_next_run_when_data_is_empty(next_run: dict, hits: list) -> None:
     """
     Prepare next run when data is present.
 
@@ -1311,7 +1324,7 @@ def validate_alert_list_args(args: dict) -> dict:
     return params
 
 
-def validate_cvss_score(min_cvss: Optional[str], min_cvss_label: str, max_cvss: Optional[str], max_cvss_label: str) -> None:
+def validate_cvss_score(min_cvss: str | None, min_cvss_label: str, max_cvss: str | None, max_cvss_label: str) -> None:
     """
     Validate the CVSS score parameters.
 
@@ -1352,7 +1365,7 @@ def validate_cvss_score(min_cvss: Optional[str], min_cvss_label: str, max_cvss: 
         raise DemistoException(MESSAGES["INVALID_SCORE_RANGE"].format(min_cvss_label, max_cvss_label))
 
 
-def validate_epss_score(min_epss: Optional[str], min_epss_label: str, max_epss: Optional[str], max_epss_label: str) -> None:
+def validate_epss_score(min_epss: str | None, min_epss_label: str, max_epss: str | None, max_epss_label: str) -> None:
     """
     Validate the EPSS score parameters.
 
@@ -1394,7 +1407,7 @@ def validate_epss_score(min_epss: Optional[str], min_epss_label: str, max_epss: 
 
 
 def validate_time_range(
-    after_time: Optional[datetime], before_time: Optional[datetime], after_arg_name: str, before_arg_name: str
+    after_time: datetime | None, before_time: datetime | None, after_arg_name: str, before_arg_name: str
 ) -> None:
     """
     Validate that the 'after' timestamp is earlier than the 'before' timestamp.
@@ -1423,6 +1436,9 @@ def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
     :rtype: ``tuple[dict, dict]``
     """
     tags = argToList(args.get("tags"))
+    vulnerability_ids = [
+        vulnerability_id.replace("FP-VULN-", "") for vulnerability_id in argToList(args.get("vulnerability_ids"))
+    ]
     products = argToList(args.get("products"))
     vendors = argToList(args.get("vendors"))
     cwe_ids = argToList(args.get("cwe_ids"))
@@ -1464,6 +1480,9 @@ def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
 
     valid_cwe_ids = [cwe_id for cwe_id in cwe_ids if cwe_id.isdigit()]
     invalid_cwe_ids = [cwe_id for cwe_id in cwe_ids if not cwe_id.isdigit()]
+
+    valid_vulnerability_ids = [vulnerability_id for vulnerability_id in vulnerability_ids if vulnerability_id.isdigit()]
+    invalid_vulnerability_ids = [vulnerability_id for vulnerability_id in vulnerability_ids if not vulnerability_id.isdigit()]
 
     valid_location = [LOCATION_MAPPING[loc] for loc in locations if loc in LOCATION_MAPPING]
     invalid_location = [loc for loc in locations if loc not in LOCATION_MAPPING]
@@ -1521,6 +1540,9 @@ def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
     if invalid_cwe_ids:
         errors.append(MESSAGES["INVALID_INT_PARAMS_PROVIDED"].format(invalid_cwe_ids, "CWE IDs"))
 
+    if invalid_vulnerability_ids:
+        errors.append(MESSAGES["INVALID_INT_PARAMS_PROVIDED"].format(invalid_vulnerability_ids, "Vulnerability IDs"))
+
     if invalid_location:
         errors.append(
             MESSAGES["INVALID_MULTI_PARAMS_PROVIDED"].format(
@@ -1546,6 +1568,7 @@ def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
     # Build payload (filters and search criteria)
 
     payload = assign_params(
+        ids=",".join(valid_vulnerability_ids),
         tags=",".join(tags),
         min_epss_score=min_epss_score,
         max_epss_score=max_epss_score,
@@ -1883,12 +1906,12 @@ def get_resource_url(source: str, resource_id: str, platform_url: str):
     if not resource_id:
         raise ValueError(MESSAGES["MISSING_DATA"].format("alerts"))
 
-    resource_url = platform_url + ALERT_RESOURCE_URL[source].format(resource_id)
+    resource_url = platform_url + ALERT_RESOURCE_URL.get(source, "").format(resource_id)
 
     return resource_url
 
 
-def prepare_hr_for_alerts(alerts: List, platform_url: str) -> str:
+def prepare_hr_for_alerts(alerts: list, platform_url: str) -> str:
     """
     Prepare human readable format for alerts.
 
@@ -2025,6 +2048,21 @@ def html_to_text(html) -> str:
     text = re.sub(r"&#(\d+);", lambda m: chr(int(m.group(1))), text)
 
     return text.strip()
+
+
+def truncate_message(message: str | None, max_length: int = DEFAULT_MESSAGE_MAX_LENGTH) -> str | None:
+    """
+    Cut a free-text message down to `max_length` characters.
+
+    :param message: The raw message text to truncate.
+    :param max_length: Maximum number of characters to keep.
+
+    :return: The truncated message, unchanged if it was already short enough or not a non-empty string.
+    """
+    if not message or not isinstance(message, str) or len(message) <= max_length:
+        return message
+
+    return message[:max_length].rstrip() + MESSAGE_TRUNCATION_SUFFIX
 
 
 def prepare_hr_for_vulnerability(vulnerability: dict, platform_url: str, is_reputation: bool = False) -> str:
@@ -2720,7 +2758,7 @@ def prepare_hr_for_vendors(vendors: list[dict], platform_url: str) -> str:
     )
 
 
-def prepare_hr_for_products(products: List, platform_url: str) -> str:
+def prepare_hr_for_products(products: list, platform_url: str) -> str:
     """
     Prepare human readable format for products.
 
@@ -2921,7 +2959,7 @@ def fetch_incidents(client: Client, last_run: dict, params: dict, is_test: bool 
 
     response = client.http_request("GET", url_suffix=url_suffix, params=fetch_params["fetch_params"])
 
-    incidents: List[dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
     next_run = last_run
     start_time = fetch_params["start_time"]
 
@@ -3289,15 +3327,27 @@ def ip_lookup_command(client: Client, ip: str, exact_match: bool = False) -> Com
 
             limited_indicators = []
             for indicator in indicators:
-                for enr_key, enr_val in indicator.get("enrichments", {}).items():
+                limited_indicator = deepcopy(indicator)
+
+                for enr_key, enr_val in limited_indicator.get("enrichments", {}).items():
                     if isinstance(enr_val, list) and len(enr_val) > client.reputation_enrichments_limit:
                         demisto.debug(
                             f"Community search for IP {ip}: enrichments[{enr_key}] truncated to "
                             f"{client.reputation_enrichments_limit} entries for indicator "
-                            f"{indicator.get('id', 'unknown')}. Full data available in raw_response."
+                            f"{limited_indicator.get('id', 'unknown')}. Full data available in raw_response."
                         )
-                        indicator["enrichments"][enr_key] = enr_val[: client.reputation_enrichments_limit]
-                limited_indicators.append(indicator)
+                        limited_indicator["enrichments"][enr_key] = enr_val[: client.reputation_enrichments_limit]
+
+                raw_message = limited_indicator.get("message")
+                truncated_message = truncate_message(raw_message, client.message_max_length)
+                if truncated_message != raw_message:
+                    demisto.debug(
+                        f"Community search for IP {ip}: message truncated for indicator "
+                        f"{limited_indicator.get('id', 'unknown')}. Full content available in raw_response."
+                    )
+                    limited_indicator["message"] = truncated_message
+
+                limited_indicators.append(limited_indicator)
             command_results = CommandResults(
                 outputs_prefix=OUTPUT_PREFIX["IP_COMMUNITY_SEARCH"],
                 outputs_key_field="id",
@@ -3920,7 +3970,7 @@ def get_reports_command(client, args) -> CommandResults:
     response = client.http_request(method="GET", url_suffix=URL_SUFFIX["REPORT_SEARCH"], params=params)
     reports = deepcopy(response.get("data", []))
     human_readable = "### Ignite Intelligence reports related to search: " + report_search + "\n"
-    report_details: List[Any] = []
+    report_details: list[Any] = []
 
     if reports:
         human_readable += "Top 5 reports:\n\n"
@@ -4099,7 +4149,7 @@ def related_report_list_command(client: Client, args: dict) -> CommandResults:
     )
     reports = deepcopy(response.get("data", []))
     human_readable = "### Ignite Intelligence related reports:\n"
-    report_details: List[Any] = []
+    report_details: list[Any] = []
 
     if reports:
         human_readable += "Top 5 related reports:\n\n"
@@ -4686,6 +4736,10 @@ def main():
         or DEFAULT_REPUTATION_CONTEXT_LIMIT
     )
 
+    message_max_length = arg_to_number(params.get("message_max_length", DEFAULT_MESSAGE_MAX_LENGTH)) or DEFAULT_MESSAGE_MAX_LENGTH
+
+    config_exact_match = argToBoolean(params.get("ioc_enrichment_exact_match", False))
+
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = argToBoolean(params.get("proxy", False))
@@ -4704,7 +4758,7 @@ def main():
             "X-FP-IntegrationVersion": INTEGRATION_VERSION,
         }
         validate_params(command, params)
-        client = Client(url, headers, verify, proxy, create_relationships, reputation_enrichments_limit)
+        client = Client(url, headers, verify, proxy, create_relationships, reputation_enrichments_limit, message_max_length)
 
         COMMAND_TO_FUNCTION: dict = {
             "flashpoint-ignite-intelligence-report-search": get_reports_command,
@@ -4761,13 +4815,16 @@ def main():
                 raise ValueError(MESSAGES["MISSING_REQUIRED_ARGS"].format(command))
             indicator_list = argToList(args.get(command))
             indicator_list = [indicator.strip() for indicator in indicator_list if indicator.strip()]
-            exact_match = argToBoolean(args.get("exact_match", False))
+            if "exact_match" in args:
+                exact_match = argToBoolean(args.get("exact_match"))
+            else:
+                exact_match = config_exact_match
             results = []
             if not indicator_list:
                 raise ValueError(MESSAGES["MISSING_REQUIRED_ARGS"].format(command))
             for indicator in indicator_list:
                 arguments = (client, indicator)
-                if exact_match:
+                if exact_match and command in ("ip", "domain", "url", "file"):
                     arguments += (exact_match,)  # type: ignore
                 results.append(REPUTATION_COMMAND_TO_FUNCTION[command](*arguments))
             return_results(results)

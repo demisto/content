@@ -549,7 +549,13 @@ class TestFetchingStixObjects:
         """
         expected = CORTEX_17_IOCS_19_OBJS
         mock_client = Taxii2FeedClient(
-            url="", collection_to_fetch="", proxies=[], verify=False, tlp_color="GREEN", objects_to_fetch=[]
+            url="",
+            collection_to_fetch="",
+            proxies=[],
+            verify=False,
+            tlp_color="GREEN",
+            objects_to_fetch=[],
+            update_custom_fields=True,
         )
 
         actual = mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_17_IOCS_19_OBJS, -1)
@@ -574,7 +580,13 @@ class TestFetchingStixObjects:
         """
         expected = CORTEX_COMPLEX_20_IOCS_19_OBJS
         mock_client = Taxii2FeedClient(
-            url="", collection_to_fetch="", proxies=[], verify=False, tlp_color="GREEN", objects_to_fetch=[]
+            url="",
+            collection_to_fetch="",
+            proxies=[],
+            verify=False,
+            tlp_color="GREEN",
+            objects_to_fetch=[],
+            update_custom_fields=True,
         )
 
         actual = mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_20_IOCS_19_OBJS, -1)
@@ -599,7 +611,13 @@ class TestFetchingStixObjects:
         """
         expected = CORTEX_COMPLEX_14_IOCS_19_OBJS
         mock_client = Taxii2FeedClient(
-            url="", collection_to_fetch="", proxies=[], verify=False, skip_complex_mode=True, objects_to_fetch=[]
+            url="",
+            collection_to_fetch="",
+            proxies=[],
+            verify=False,
+            skip_complex_mode=True,
+            objects_to_fetch=[],
+            update_custom_fields=True,
         )
 
         actual = mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_20_IOCS_19_OBJS, -1)
@@ -623,7 +641,13 @@ class TestFetchingStixObjects:
 
         """
         mock_client = Taxii2FeedClient(
-            url="", collection_to_fetch="", proxies=[], verify=False, objects_to_fetch=[], enrichment_excluded=enrichment_excluded
+            url="",
+            collection_to_fetch="",
+            proxies=[],
+            verify=False,
+            objects_to_fetch=[],
+            enrichment_excluded=enrichment_excluded,
+            update_custom_fields=True,
         )
         objects_envelopes = envelopes_v21
 
@@ -658,7 +682,9 @@ class TestFetchingStixObjects:
         extension-definition objects.
 
         """
-        mock_client = Taxii2FeedClient(url="", collection_to_fetch="", proxies=[], verify=False, objects_to_fetch=[])
+        mock_client = Taxii2FeedClient(
+            url="", collection_to_fetch="", proxies=[], verify=False, objects_to_fetch=[], update_custom_fields=True
+        )
 
         result = mock_client.load_stix_objects_from_envelope(envelopes_v20)
         assert mock_client.id_to_object == id_to_object
@@ -1318,6 +1344,7 @@ class TestParsingIndicators:
             "pattern_type": "stix",
             "object_marking_refs": ["marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"],
             "labels": ["medium"],
+            "tags": [],
             "indicator_types": ["anomalous-activity"],
             "extensions": {"extension-definition--1234": {"CustomFields": {"tags": ["medium"], "description": "test"}}},
             "pattern_version": "2.1",
@@ -1326,7 +1353,6 @@ class TestParsingIndicators:
 
         indicator_obj["value"] = "test.org"
         indicator_obj["type"] = "Domain"
-        indicator_obj["tags"] = ["medium"]
         xsoar_expected_response = [
             {
                 "fields": {
@@ -1337,7 +1363,7 @@ class TestParsingIndicators:
                     "modified": "2020-05-14T00:14:05.401Z",
                     "publications": [],
                     "stixid": "indicator--1234",
-                    "tags": ["medium"],
+                    "tags": [],
                     "trafficlightprotocol": "GREEN",
                 },
                 "rawJSON": indicator_obj,
@@ -1367,7 +1393,49 @@ class TestParsingIndicators:
         taxii_2_client.tlp_color = None
         assert taxii_2_client.parse_indicator(indicator_obj) == xsoar_expected_response
         taxii_2_client.update_custom_fields = True
+        indicator_obj["tags"] = ["medium"]
         assert taxii_2_client.parse_indicator(indicator_obj) == xsoar_expected_response_with_update_custom_fields
+
+    def test_parse_indicator_blocklist_label_not_promoted_to_tag(self, taxii_2_client):
+        """
+        Given:
+         - An IP indicator from a TAXII 2 feed whose STIX object has labels: ["blocklist"].
+           This is the real-world scenario from XSUP-68198 where ~10k IPs were unexpectedly
+           tagged "blocklist" and added to an EDL without user action.
+
+        When:
+         - Parsing the indicator WITHOUT update_custom_fields enabled (default).
+
+        Then:
+         - The "blocklist" STIX label must NOT appear in the XSOAR indicator's tags field.
+         - The indicator's rawJSON still contains the original labels for reference.
+        """
+        indicator_obj = {
+            "id": "indicator--abcd-1234",
+            "pattern": "[ipv4-addr:value = '1.2.3.4']",
+            "type": "indicator",
+            "created": "2024-01-15T10:00:00.000Z",
+            "modified": "2024-01-15T10:00:00.000Z",
+            "name": "Malicious IP: 1.2.3.4",
+            "valid_from": "2024-01-15T10:00:00.000Z",
+            "pattern_type": "stix",
+            "labels": ["blocklist"],
+            "indicator_types": ["malicious-activity"],
+            "spec_version": "2.1",
+        }
+
+        taxii_2_client.tlp_color = None
+        taxii_2_client.update_custom_fields = False
+        result = taxii_2_client.parse_indicator(indicator_obj)
+
+        assert len(result) == 1
+        tags = result[0]["fields"].get("tags", [])
+        assert "blocklist" not in tags, (
+            "STIX label 'blocklist' must not be automatically promoted to an XSOAR tag. "
+            "This causes unintended EDL membership without user approval."
+        )
+        # rawJSON must still contain the original labels for auditability
+        assert result[0]["rawJSON"].get("labels") == ["blocklist"]
 
     # Parsing SDO Indicators
 
@@ -2584,6 +2652,174 @@ def test_create_indicators(mocker):
     assert iocs == expected_result
 
 
+def _build_fake_indicator_searcher(num_indicators: int, indicator_type: str = "IP"):
+    """Return an iterable that mimics IndicatorsSearcher yielding a single page of indicators."""
+
+    indicators = [
+        {
+            "value": f"1.1.1.{i}",
+            "indicator_type": indicator_type,
+            "timestamp": "2020-01-01T00:00:00Z",
+            "modified": "2020-01-01T00:00:00Z",
+        }
+        for i in range(num_indicators)
+    ]
+    return [{"iocs": indicators, "total": num_indicators}]
+
+
+def test_create_indicators_high_offset_small_limit_builds_only_window(mocker):
+    """
+    Given
+    - A searcher that returns 1000 indicators and a request for a high offset (998) with a small limit (2).
+    When
+    - Calling create_indicators with offset=998 and limit=2 (the no-cache pagination window).
+    Then
+    - Only 2 STIX objects are created (create_stix_object is called exactly limit times),
+      instead of building all offset+limit objects and discarding them.
+    """
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.5.0"})
+    client = XSOAR2STIXParser(
+        server_version="2.1",
+        fields_to_present={"name", "type"},
+        types_for_indicator_sdo=[],
+        namespace_uuid=uuid.uuid5(PAWN_UUID, "test"),
+    )
+    create_stix_object_spy = mocker.spy(client, "create_stix_object")
+
+    iocs, _, _ = client.create_indicators(
+        _build_fake_indicator_searcher(1000),
+        is_manifest=False,
+        offset=998,
+        limit=2,
+    )
+
+    assert create_stix_object_spy.call_count == 2
+    assert len(iocs) == 2
+
+
+def test_create_indicators_window_matches_full_then_slice(mocker):
+    """
+    Given
+    - A searcher that returns 10 indicators.
+    When
+    - Building all objects (offset=0, limit=-1) and manually slicing [offset:offset+limit],
+      vs. asking create_indicators to build only the [offset, offset+limit) window.
+    Then
+    - The windowed result is identical to the old build-everything-then-slice behavior.
+    """
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.5.0"})
+    offset, limit = 3, 4
+
+    client_full = XSOAR2STIXParser(
+        server_version="2.1",
+        fields_to_present={"name", "type"},
+        types_for_indicator_sdo=[],
+        namespace_uuid=uuid.uuid5(PAWN_UUID, "test"),
+    )
+    full_iocs, _, _ = client_full.create_indicators(_build_fake_indicator_searcher(10), is_manifest=False)
+    expected = full_iocs[offset : offset + limit]
+
+    client_window = XSOAR2STIXParser(
+        server_version="2.1",
+        fields_to_present={"name", "type"},
+        types_for_indicator_sdo=[],
+        namespace_uuid=uuid.uuid5(PAWN_UUID, "test"),
+    )
+    windowed_iocs, _, _ = client_window.create_indicators(
+        _build_fake_indicator_searcher(10), is_manifest=False, offset=offset, limit=limit
+    )
+
+    assert windowed_iocs == expected
+
+
+def test_create_manifest_high_offset_small_limit_builds_only_window(mocker):
+    """
+    Given
+    - A searcher that returns 1000 indicators and a manifest request for a high offset with a small limit.
+    When
+    - Calling create_indicators with is_manifest=True, offset=998, limit=2.
+    Then
+    - Only 2 manifest entries are created (create_manifest_entry is called exactly limit times).
+    """
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.5.0"})
+    client = XSOAR2STIXParser(
+        server_version="2.0",
+        fields_to_present={"name", "type"},
+        types_for_indicator_sdo=[],
+        namespace_uuid=uuid.uuid5(PAWN_UUID, "test"),
+    )
+    create_manifest_entry_spy = mocker.spy(client, "create_manifest_entry")
+
+    iocs, _, _ = client.create_indicators(
+        _build_fake_indicator_searcher(1000),
+        is_manifest=True,
+        offset=998,
+        limit=2,
+    )
+
+    assert create_manifest_entry_spy.call_count == 2
+    assert len(iocs) == 2
+
+
+def test_create_indicators_skips_file_indicators_with_unknown_hash(mocker):
+    """
+    Given
+    - A searcher that returns 'file' indicators whose value is not a valid hash (get_hash_type -> "Unknown"),
+      interleaved with valid indicators, and an offset that skips into the window.
+    When
+    - Calling create_indicators with is_manifest=False (the STIX-object flow).
+    Then
+    - file/Unknown indicators are not counted towards the offset window (create_stix_object skips them),
+      so the produced-object count matches the number of actually emitted objects.
+    """
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.5.0"})
+    client = XSOAR2STIXParser(
+        server_version="2.1",
+        fields_to_present={"name", "type"},
+        types_for_indicator_sdo=[],
+        namespace_uuid=uuid.uuid5(PAWN_UUID, "test"),
+    )
+
+    # 2 valid IPs, then a file indicator with an invalid (non-hash) value, then 2 more valid IPs.
+    ts = {"timestamp": "2020-01-01T00:00:00Z", "modified": "2020-01-01T00:00:00Z"}
+    indicators = [
+        {"value": f"1.1.1.{1}", "indicator_type": "IP", **ts},
+        {"value": f"1.1.1.{2}", "indicator_type": "IP", **ts},
+        {"value": "not-a-hash", "indicator_type": "File", **ts},
+        {"value": f"1.1.1.{3}", "indicator_type": "IP", **ts},
+        {"value": f"1.1.1.{4}", "indicator_type": "IP", **ts},
+    ]
+    searcher = [{"iocs": indicators, "total": len(indicators)}]
+
+    iocs, _, _ = client.create_indicators(searcher, is_manifest=False)
+
+    # The file/Unknown indicator produces no STIX object; only the 4 valid IPs are emitted.
+    assert len(iocs) == 4
+    assert all(ioc.get("type") != "file" for ioc in iocs)
+
+
+def test_create_indicators_default_args_build_all(mocker):
+    """
+    Given
+    - A searcher that returns 5 indicators and no offset/limit provided (default behavior).
+    When
+    - Calling create_indicators without offset/limit (as other integrations do).
+    Then
+    - All 5 objects are built (backwards compatible - no window applied).
+    """
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.5.0"})
+    client = XSOAR2STIXParser(
+        server_version="2.1",
+        fields_to_present={"name", "type"},
+        types_for_indicator_sdo=[],
+        namespace_uuid=uuid.uuid5(PAWN_UUID, "test"),
+    )
+
+    iocs, _, _ = client.create_indicators(_build_fake_indicator_searcher(5), is_manifest=False)
+
+    assert len(iocs) == 5
+
+
 def test_create_x509_certificate_subject_issuer():
     """
     Given
@@ -3353,6 +3589,7 @@ class TestTagsInRawJSON:
             tlp_color=None,
             objects_to_fetch=[],
             tags=["custom-tag"],
+            update_custom_fields=True,
         )
         indicator_obj = {
             "id": "indicator--abc123",

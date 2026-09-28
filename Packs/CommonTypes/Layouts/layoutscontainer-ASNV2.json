@@ -707,5 +707,9 @@
     "name": "ASN",
     "system": false,
     "version": -1,
-    "description": "ASN Indicator Layout"
+    "description": "ASN Indicator Layout",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

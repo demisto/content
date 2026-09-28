@@ -1,0 +1,30 @@
+{
+    "id": "incident_vegaalerteventsoffset",
+    "version": -1,
+    "name": "Vega Alert Events Offset",
+    "ownerOnly": false,
+    "description": "Pagination offset for the cached Vega alert events table.",
+    "cliName": "vegaalerteventsoffset",
+    "type": "number",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": true,
+    "associatedTypes": [
+        "Vega Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

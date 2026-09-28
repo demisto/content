@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "This release introduces new remediation playbooks that require unified cloud account connections introduced in XSIAM 3. Before installing this pack version, ensure that connections to AWS, GCP, or Azure are configured with the Automation security capability enabled according to documentation available in the [Cortex Help Center](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-3.x-Documentation/Cloud-service-provider-CSP-onboarding)."
+}

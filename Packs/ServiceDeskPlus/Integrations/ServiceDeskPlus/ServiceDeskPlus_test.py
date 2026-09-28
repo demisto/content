@@ -37,6 +37,11 @@ from test_data.response_constants import (
     RESPONSE_RESOLUTION_LIST,
     RESPONSE_UNLINK_REQUEST,
     RESPONSE_UPDATE_REQUEST,
+    RESPONSE_GET_NOTES_LIST,
+    RESPONSE_GET_NOTE,
+    RESPONSE_ADD_NOTE,
+    RESPONSE_DELETE_NOTE,
+    RESPONSE_UPDATE_NOTE,
 )
 from test_data.result_constants import (
     EXPECTED_CREATE_REQUEST,
@@ -46,6 +51,11 @@ from test_data.result_constants import (
     EXPECTED_NO_RESOLUTION_LIST,
     EXPECTED_RESOLUTION_LIST,
     EXPECTED_UPDATE_REQUEST,
+    EXPECTED_GET_NOTES_LIST,
+    EXPECTED_GET_NOTE,
+    EXPECTED_ADD_NOTE,
+    EXPECTED_DELETE_NOTE,
+    EXPECTED_UPDATE_NOTE,
 )
 
 COMMANDS_LIST_WITH_CONTEXT = [
@@ -773,3 +783,68 @@ def test_generate_refresh_token_with_regional_oauth_url(mocker, region, expected
     assert call_args[1]["url_suffix"] == ""
 
     assert "new_refresh_token" in result[0]
+
+
+def test_get_request_notes_list_command(mocker):
+    from ServiceDeskPlus import get_request_notes_list_command
+
+    client = Client("server_url", "test_oauth_url", True, False, technician_key="technician_key", on_premise=True)
+    mocker.patch.object(client, "http_request", return_value=RESPONSE_GET_NOTES_LIST)
+    args = {"request_id": "123"}
+    result = get_request_notes_list_command(client, args)
+    assert result.outputs == EXPECTED_GET_NOTES_LIST
+
+
+def test_get_request_note_command(mocker):
+    from ServiceDeskPlus import get_request_notes_list_command
+
+    client = Client("server_url", "test_oauth_url", True, False, technician_key="technician_key", on_premise=True)
+    mocker.patch.object(client, "http_request", return_value=RESPONSE_GET_NOTE)
+    args = {"request_id": "123", "request_note_id": "1"}
+    result = get_request_notes_list_command(client, args)
+    assert result.outputs == EXPECTED_GET_NOTE
+
+
+def test_add_request_note_command(mocker):
+    from ServiceDeskPlus import add_request_note_command
+
+    client = Client("server_url", "test_oauth_url", True, False, technician_key="technician_key", on_premise=True)
+    mocker.patch.object(client, "http_request", return_value=RESPONSE_ADD_NOTE)
+    args = {
+        "request_id": "123",
+        "description": "New Note",
+        "mark_first_response": "false",
+        "add_to_linked_requests": "false",
+        "notify_technician": "false",
+        "show_to_requester": "false",
+    }
+    result = add_request_note_command(client, args)
+    assert result.outputs == EXPECTED_ADD_NOTE
+
+
+def test_delete_request_note_command(mocker):
+    from ServiceDeskPlus import delete_request_note_command
+
+    client = Client("server_url", "test_oauth_url", True, False, technician_key="technician_key", on_premise=True)
+    mocker.patch.object(client, "http_request", return_value=RESPONSE_DELETE_NOTE)
+    args = {"request_id": "123", "request_note_id": "1"}
+    result = delete_request_note_command(client, args)
+    assert result.outputs == EXPECTED_DELETE_NOTE
+
+
+def test_update_request_note_command(mocker):
+    from ServiceDeskPlus import update_request_note_command
+
+    client = Client("server_url", "test_oauth_url", True, False, technician_key="technician_key", on_premise=True)
+    mocker.patch.object(client, "http_request", return_value=RESPONSE_UPDATE_NOTE)
+    args = {
+        "request_id": "123",
+        "request_note_id": "1",
+        "description": "Updated Note 1",
+        "mark_first_response": "false",
+        "add_to_linked_requests": "false",
+        "notify_technician": "false",
+        "show_to_requester": "false",
+    }
+    result = update_request_note_command(client, args)
+    assert result.outputs == EXPECTED_UPDATE_NOTE

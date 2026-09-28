@@ -98,7 +98,7 @@ Send a prompt to Google Gemini and receive an AI-generated response.
 
 ```!google-gemini-send-message prompt="What is artificial intelligence?"```
 
-```!google-gemini-send-message prompt="Analyze this suspicious email for potential threats" model="gemini-1.5-pro"```
+```!google-gemini-send-message prompt="Analyze this suspicious email for potential threats" model="gemini-2.5-pro"```
 
 ```!google-gemini-send-message prompt="Continue our previous discussion" history='[{"role": "user", "parts": [{"text": "Hello"}]}, {"role": "model", "parts": [{"text": "Hi there! How can I help you?"}]}]'```
 

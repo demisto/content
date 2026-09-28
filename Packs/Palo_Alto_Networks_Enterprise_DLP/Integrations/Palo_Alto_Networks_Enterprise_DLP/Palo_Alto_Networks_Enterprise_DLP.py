@@ -15,11 +15,11 @@ urllib3.disable_warnings()
 
 """ GLOBALS/PARAMS """
 MAX_ATTEMPTS = 3
-MAX_LAST_FETCHED_IDS = 200
 DEFAULT_MAX_FETCH = 50
 DEFAULT_BASE_URL = "https://api.dlp.paloaltonetworks.com/v1/"
 DEFAULT_AUTH_URL = "https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token"
 REPORT_URL = "public/report/{}"
+SERVICE_NAME_HEADER = "service-name"
 INCIDENTS_URL = "public/incident-notifications"
 REFRESH_TOKEN_URL = "public/oauth/refreshToken"
 UPDATE_INCIDENT_URL = "public/incident-feedback"
@@ -32,12 +32,15 @@ RESET_KEY = "reset"
 CREDENTIAL = "credential"
 IDENTIFIER = "identifier"
 PASSWORD = "password"
+USE_CLIENT_CREDENTIALS = "use_client_credentials"
 END_TIME_BUFFER = 30  # seconds
+MAX_API_CALLS_PER_FETCH = 100
 
 # Last run
 LAST_RUN_KEY = "last_run"
 START_TIMESTAMP_KEY = "start_timestamp"
-LAST_IDS_KEY = "last_ids"
+LAST_IDS_KEY = "last_ids"  # Legacy key (list[str]) — kept for migration only
+LAST_IDS_TIMESTAMPS_KEY = "last_ids_timestamps"  # New key: dict[str, int] mapping incident_id → committedAt epoch
 LOCAL_LAST_RUN: dict[str, Any] = {}  # In memory last run object during long running execution
 
 
@@ -54,17 +57,26 @@ class FeedbackStatus(Enum):
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, auth_url: str, credentials, verify: bool, proxy: bool):
+    def __init__(
+        self, base_url: str, auth_url: str, credentials, verify: bool, proxy: bool, use_client_credentials: bool = False
+    ):
         super().__init__(base_url=base_url, headers=None, verify=verify, proxy=proxy)
         self.credentials = credentials
         self.auth_url = auth_url
-        credential_name = credentials[CREDENTIAL]
-        if not credential_name:
-            self.access_token = credentials[IDENTIFIER]
-            self.refresh_token = credentials[PASSWORD]
-        else:
+        # A type 9 credentials object exposes the "credential" key (the saved-credential name) only when a
+        # credential is selected from the store. Under UCP the object is reconstructed with just
+        # "identifier"/"password", so read every key defensively instead of by subscript (XSUP-75518).
+        # Use the client-credentials flow when a saved credential is selected from the store, or in case the
+        # user selects the client credentials flow in UCP (via the Client Credentials profile).
+        self.use_client_credentials = bool(credentials.get(CREDENTIAL)) or use_client_credentials
+        if self.use_client_credentials:
+            print_debug_msg("Using client-credentials authentication flow (client id/client secret).")
             self.access_token = ""
             self._refresh_token_with_client_credentials()
+        else:
+            print_debug_msg("Using access-token/refresh-token authentication flow.")
+            self.access_token = credentials.get(IDENTIFIER, "")
+            self.refresh_token = credentials.get(PASSWORD, "")
 
     def _refresh_token(self):
         """Refreshes Access Token"""
@@ -111,7 +123,7 @@ class Client(BaseClient):
             return
         try:
             print_debug_msg(f"Got {res.status_code}, attempting to refresh access token")
-            if self.credentials[CREDENTIAL]:
+            if self.use_client_credentials:
                 print_debug_msg("Requesting access token with client id/client secret")
                 self._refresh_token_with_client_credentials()
             else:
@@ -120,18 +132,22 @@ class Client(BaseClient):
         except Exception:
             pass
 
-    def _get_dlp_api_call(self, url_suffix: str) -> tuple[dict[str, Any], int]:
+    def _get_dlp_api_call(self, url_suffix: str, extra_headers: dict[str, str] | None = None) -> tuple[dict[str, Any], int]:
         """
         Makes a HTTPS Get call on the DLP API
         Args:
             url_suffix: URL suffix for dlp api call
+            extra_headers: Optional additional request headers
         """
         count = 0
         print_debug_msg(f"Calling GET method on {self._base_url}{url_suffix}")
         while count < MAX_ATTEMPTS:
+            headers = {"Authorization": "Bearer " + self.access_token}
+            if extra_headers:
+                headers.update(extra_headers)
             res = self._http_request(
                 method="GET",
-                headers={"Authorization": "Bearer " + self.access_token},
+                headers=headers,
                 url_suffix=url_suffix,
                 ok_codes=[200, 201, 204],
                 error_handler=self._handle_4xx_errors,
@@ -189,12 +205,14 @@ class Client(BaseClient):
     def set_access_token(self, access_token):
         self.access_token = access_token
 
-    def get_dlp_report(self, report_id: str, fetch_snippets=False):
+    def get_dlp_report(self, report_id: str, fetch_snippets=False, service_name: str | None = None):
         """
         Fetches DLP reports
         Args:
             report_id: Report ID to fetch from DLP service
             fetch_snippets: if True, fetches the snippets
+            service_name: Optional DLP service the report belongs to. When omitted, the
+                service defaults to Prisma Access on the server side.
 
         Returns: DLP Report json
         """
@@ -202,7 +220,8 @@ class Client(BaseClient):
         if fetch_snippets:
             url = url + "?fetchSnippets=true"
 
-        return self._get_dlp_api_call(url)
+        extra_headers = {SERVICE_NAME_HEADER: service_name} if service_name else None
+        return self._get_dlp_api_call(url, extra_headers)
 
     def get_dlp_incidents(
         self,
@@ -396,6 +415,22 @@ def parse_dlp_report(report_json) -> CommandResults:
     )
 
 
+def get_dlp_report_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves a DLP report and parses it for display.
+    Args:
+        client: DLP client
+        args: Command arguments
+
+    Returns: DLP report results
+    """
+    report_id = args.get("report_id", "")
+    fetch_snippets = argToBoolean(args.get("fetch_snippets"))
+    service_name = args.get("service_name")
+    report_json, _ = client.get_dlp_report(report_id, fetch_snippets, service_name)
+    return parse_dlp_report(report_json)
+
+
 def test(client: Client, params: dict):
     """Test Function to test validity of access and refresh tokens"""
     dlp_regions = params.get("dlp_regions", "")
@@ -496,37 +531,56 @@ def create_incident(notification: dict, region: str, incident_type: str = "Data 
     }
 
 
-def compute_next_run(incident_ids_committed_timestamps: dict[str, int], last_run: dict[str, Any]) -> dict[str, Any]:
+def compute_next_run(
+    incident_ids_committed_timestamps: dict[str, int],
+    last_run: dict[str, Any],
+    has_new_incidents: bool,
+    last_queried_end_time: int,
+    look_back_minutes: int = 0,
+) -> dict[str, Any]:
     """
     Compute the next run state based on fetched incidents using their committed timestamps.
 
+    Retains incident IDs within the lookback retention window
+    `[max_ts - (look_back_minutes * 60 + END_TIME_BUFFER), max_ts]` so that the next
+    fetch can deduplicate incidents re-queried due to lookback.
+
+    When no new incidents were fetched, advances `start_timestamp` to `last_queried_end_time`
+    so the query window always slides forward and never grows unboundedly.
+
     Args:
-        incident_ids_committed_timestamps (dict[str, int]): Dictionary mapping incident IDs to their committedAt timestamps.
-        last_run (dict[str, Any]): Previous last run state to return if no incidents were fetched.
+        incident_ids_committed_timestamps (dict[str, int]): Mapping of incident ID → committedAt
+            epoch timestamp (seconds). Must include carry-over IDs from the previous last run.
+        last_run (dict[str, Any]): Previous last run state.
+        has_new_incidents (bool): Whether any new (non-duplicate) incidents were fetched.
+        last_queried_end_time (int): The end_time of the last queried interval. Used to advance
+            start_timestamp when no new incidents are found.
+        look_back_minutes (int): Minutes of lookback configured for the integration. Determines
+            how wide the ID retention window is. Defaults to 0.
 
     Returns:
-        dict[str, Any]: Dictionary with start_timestamp (latest committedAt) and last_ids
-                        (all incident IDs with that timestamp) for next fetch.
+        dict[str, Any]: Next run state with `start_timestamp` and `last_ids_timestamps`.
     """
-    if not incident_ids_committed_timestamps:
-        return last_run
+    if not has_new_incidents:
+        demisto.debug(
+            f"No new incidents were fetched. Advancing last run {START_TIMESTAMP_KEY} to {last_queried_end_time=} "
+            "to slide the query window forward."
+        )
+        return {**last_run, START_TIMESTAMP_KEY: last_queried_end_time}
 
     new_last_committed_timestamp = max(incident_ids_committed_timestamps.values())
-    # Filter incidents within buffer window, sort by timestamp (oldest to newest), keep newest MAX_LAST_FETCHED_IDS
-    # 30 seconds buffer taken as a safety margin to account for resolution of filtering start_timestamp
-    new_last_incident_ids = [
-        _id
-        for _id, _ in sorted(
-            (
-                (_id, ts)
-                for _id, ts in incident_ids_committed_timestamps.items()
-                if ts >= new_last_committed_timestamp - END_TIME_BUFFER
-            ),
-            key=lambda x: x[1],
-        )[-MAX_LAST_FETCHED_IDS:]
-    ]
 
-    return {START_TIMESTAMP_KEY: new_last_committed_timestamp, LAST_IDS_KEY: new_last_incident_ids}
+    # Retain IDs within (look_back_minutes * 60 + END_TIME_BUFFER) seconds of the latest timestamp
+    # so they are available for deduplication on the next fetch that re-queries the lookback window.
+    retention_cutoff = new_last_committed_timestamp - (look_back_minutes * 60 + END_TIME_BUFFER)
+    demisto.debug(f"Computing next run: {new_last_committed_timestamp=}, {look_back_minutes=}, {retention_cutoff=}.")
+
+    new_last_ids_timestamps: dict[str, int] = {
+        _id: ts for _id, ts in incident_ids_committed_timestamps.items() if ts >= retention_cutoff
+    }
+
+    demisto.debug(f"Retaining {len(new_last_ids_timestamps)} incident IDs in last run for deduplication.")
+    return {START_TIMESTAMP_KEY: new_last_committed_timestamp, LAST_IDS_TIMESTAMPS_KEY: new_last_ids_timestamps}
 
 
 def get_start_end_time_intervals(start: int, end: int, seconds_delta: int) -> list[tuple[int, int]]:
@@ -556,22 +610,51 @@ def get_start_end_time_intervals(start: int, end: int, seconds_delta: int) -> li
     return intervals
 
 
+def _migrate_last_run(last_run: dict[str, Any], start_timestamp: int) -> dict[str, int]:
+    """
+    Migrate the legacy `last_ids` list schema to the new `last_ids_timestamps` dict schema.
+
+    Legacy IDs are seeded with `start_timestamp` as a conservative deduplication baseline.
+
+    Args:
+        last_run (dict[str, Any]): Raw last run object from `demisto.getLastRun()`.
+        start_timestamp (int): Epoch timestamp (seconds) to assign to each migrated ID.
+
+    Returns:
+        dict[str, int]: Mapping of incident_id → committedAt epoch timestamp.
+    """
+    if LAST_IDS_TIMESTAMPS_KEY in last_run:
+        return dict(last_run[LAST_IDS_TIMESTAMPS_KEY])
+
+    # Legacy schema: plain list of IDs — migrate by seeding with start_timestamp
+    legacy_ids: list[str] = last_run.get(LAST_IDS_KEY) or []
+    if legacy_ids:
+        demisto.debug(
+            f"Migrating {len(legacy_ids)} legacy incident IDs from '{LAST_IDS_KEY}' "
+            f"to '{LAST_IDS_TIMESTAMPS_KEY}' schema, seeding with {start_timestamp=}."
+        )
+    return {incident_id: start_timestamp for incident_id in legacy_ids}
+
+
 def fetch_notifications(
     client: Client,
     regions: str,
     first_fetch_timestamp: int,
     incident_type: str = "Data Loss Prevention",
     max_fetch: int = DEFAULT_MAX_FETCH,
+    look_back_minutes: int = 0,
 ) -> tuple[dict, list[dict]]:
     """
-    Fetch DLP notifications using time-based queries with ID-based deduplication.
+    Fetch DLP notifications using time-based queries with ID-based deduplication and optional lookback.
 
     Args:
-        client: DLP API client.
-        regions: Comma-separated DLP regions to fetch from.
-        first_fetch_timestamp: Timestamp to use for first fetch (unix epoch seconds).
-        incident_type: Type of incident to create (default: "Data Loss Prevention").
-        max_fetch: Maximum number of incidents to fetch (default: DEFAULT_MAX_FETCH).
+        client (Client): DLP API client.
+        regions (str): Comma-separated DLP regions to fetch from.
+        first_fetch_timestamp (int): Timestamp to use for first fetch (unix epoch seconds).
+        incident_type (str): Type of incident to create (default: "Data Loss Prevention").
+        max_fetch (int): Maximum number of incidents to fetch (default: DEFAULT_MAX_FETCH).
+        look_back_minutes (int): Minutes to look back from the last committed timestamp to catch
+            late-indexed incidents. Defaults to 0 (no lookback).
 
     Returns:
         tuple[dict, list[dict]]: Next run state and list of new incidents.
@@ -583,26 +666,41 @@ def fetch_notifications(
 
     last_run = demisto.getLastRun() or {}  # May return as "None" on the first fetch
     demisto.debug(f"Got {last_run=}.")
-    last_incident_ids = last_run.get(LAST_IDS_KEY) or []
     start_timestamp = last_run.get(START_TIMESTAMP_KEY) or first_fetch_timestamp
+
+    # Apply lookback: re-query from (start_timestamp - look_back_minutes) to catch late-indexed incidents
+    effective_start_timestamp = start_timestamp - look_back_minutes * 60
+    demisto.debug(f"Lookback applied: {look_back_minutes=}, {start_timestamp=}, {effective_start_timestamp=}.")
+
     # Provide buffer to account for minor indexing delays
     end_timestamp = int(datetime.now(tz=UTC).timestamp()) - END_TIME_BUFFER
 
-    new_incidents: list[dict] = []
-    fetched_incident_ids_committed_timestamps: dict[str, int] = {
-        incident_id: start_timestamp for incident_id in last_incident_ids
-    }
+    # Migrate legacy schema and seed the deduplication accumulator with previously seen IDs
+    fetched_incident_ids_committed_timestamps: dict[str, int] = _migrate_last_run(last_run, start_timestamp)
 
-    demisto.debug(f"Starting to fetch incidents using {max_fetch=} between {start_timestamp=} and {end_timestamp=}.")
-    demisto.debug(f"Deduplicating using {len(last_incident_ids)} IDs: {last_incident_ids}.")
+    demisto.debug(f"Starting to fetch incidents using {max_fetch=} between {effective_start_timestamp=} and {end_timestamp=}.")
+    demisto.debug(
+        f"Deduplicating using {len(fetched_incident_ids_committed_timestamps)} IDs: "
+        f"{list(fetched_incident_ids_committed_timestamps.keys())}."
+    )
+
+    new_incidents: list[dict] = []
+    last_queried_end_time: int = effective_start_timestamp
+
     # Query the API in 3 minute start/end time window, this filters incidents according to their "committedAt" timestamps
-    for start_time, end_time in get_start_end_time_intervals(start_timestamp, end_timestamp, seconds_delta=180):
+    start_end_time_intervals = get_start_end_time_intervals(effective_start_timestamp, end_timestamp, seconds_delta=180)
+    for api_call_number, (start_time, end_time) in enumerate(start_end_time_intervals, start=1):
         if len(new_incidents) >= max_fetch:
             demisto.debug(f"Reached or exceeded fetch limit. Fetched {len(new_incidents)} incidents. Breaking...")
             break
 
+        if api_call_number > MAX_API_CALLS_PER_FETCH:
+            demisto.debug(f"Reached or exceeded maximum number of API calls per fetch. Fetched {len(new_incidents)} incidents. ")
+            break
+
         demisto.debug(f"Getting incidents between {start_time=} and {end_time=} from {regions=}.")
         notification_map, _ = client.get_dlp_incidents(regions, start_time, end_time)
+        last_queried_end_time = end_time
 
         notifications = [
             {**raw_notification, "region": region}
@@ -630,13 +728,19 @@ def fetch_notifications(
             new_incidents.append(incident)
             fetched_incident_ids_committed_timestamps[incident_id] = incident_committed_timestamp
 
-    demisto.debug(f"Finished fetching incidents using {max_fetch=} between {start_timestamp=} and {end_timestamp=}.")
+    demisto.debug(f"Finished fetching incidents using {max_fetch=} between {effective_start_timestamp=} and {end_timestamp=}.")
     demisto.debug(f"Fetched {len(new_incidents)} deduplicated incidents: {[inc.get('name') for inc in new_incidents]}.")
 
     demisto.debug("Updating integration context with access token.")
     demisto.setIntegrationContext({ACCESS_TOKEN: client.access_token})
 
-    next_run = compute_next_run(fetched_incident_ids_committed_timestamps, last_run)
+    next_run = compute_next_run(
+        fetched_incident_ids_committed_timestamps,
+        last_run=last_run,
+        look_back_minutes=look_back_minutes,
+        has_new_incidents=bool(new_incidents),
+        last_queried_end_time=last_queried_end_time,
+    )
     demisto.debug(f"Computed updated {next_run=}.")
     return next_run, new_incidents
 
@@ -646,8 +750,8 @@ def fetch_incidents(client: Client, params: dict) -> tuple[dict, list[dict]]:
     Fetch incidents from Palo Alto Networks Enterprise DLP using time-based queries with deduplication.
 
     Args:
-        client: DLP API client instance.
-        params: Integration instance configuration parameters.
+        client (Client): DLP API client instance.
+        params (dict): Integration instance configuration parameters.
 
     Returns:
         tuple[dict, list[dict]]: Next run state and list of fetched incidents.
@@ -660,6 +764,7 @@ def fetch_incidents(client: Client, params: dict) -> tuple[dict, list[dict]]:
     first_fetch_timestamp = int(first_fetch_datetime.timestamp())  # type: ignore
 
     max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
+    look_back_minutes = arg_to_number(params.get("look_back")) or 0
 
     return fetch_notifications(
         client=client,
@@ -667,6 +772,7 @@ def fetch_incidents(client: Client, params: dict) -> tuple[dict, list[dict]]:
         first_fetch_timestamp=first_fetch_timestamp,
         incident_type=incident_type,
         max_fetch=max_fetch,
+        look_back_minutes=look_back_minutes,
     )
 
 
@@ -722,15 +828,13 @@ def main():
         auth_url = params.get("auth_url") or DEFAULT_AUTH_URL
         verify = not params.get("insecure", True)
         proxy = params.get("proxy", False)
+        use_client_credentials = argToBoolean(params.get(USE_CLIENT_CREDENTIALS, False))
 
         demisto.info(f"Command being called is {command}.")
-        client = Client(base_url, auth_url, credentials, verify, proxy)
+        client = Client(base_url, auth_url, credentials, verify, proxy, use_client_credentials)
 
         if command == "pan-dlp-get-report":
-            report_id = args.get("report_id")
-            fetch_snippets = argToBoolean(args.get("fetch_snippets"))
-            report_json, _ = client.get_dlp_report(report_id, fetch_snippets)
-            return_results(parse_dlp_report(report_json))
+            return_results(get_dlp_report_command(client, args))
         elif command == "fetch-incidents":
             next_run, new_incidents = fetch_incidents(client, params)
             demisto.incidents(new_incidents)

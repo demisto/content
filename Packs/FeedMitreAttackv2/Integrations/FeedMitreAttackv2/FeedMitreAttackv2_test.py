@@ -449,6 +449,87 @@ def test_create_indicator_with_unknown_tactic_name(mocker):
     assert "Stealth" in entity_b_values
 
 
+def test_get_mitre_value_from_id_with_valid_ids(mocker):
+    """
+    Given:
+        Valid MITRE technique IDs (T1111 and T1111.001) that exist in the collection.
+
+    When:
+        Running mitre-get-indicator-name command.
+
+    Then:
+        Returns the correct attack pattern names, including parent: sub-technique format.
+    """
+    from FeedMitreAttackv2 import get_mitre_value_from_id
+
+    stix_objs = [parse(stix_obj_dict, allow_custom=True) for stix_obj_dict in ATTACK_PATTERNS]
+    mocker.patch("FeedMitreAttackv2.get_mitre_data_by_filter", return_value=stix_objs)
+
+    # T1111 is a top-level technique ("Active Scanning")
+    args = {"attack_ids": ["T1111"]}
+    command_results = get_mitre_value_from_id("", args)
+
+    assert command_results
+    assert command_results.outputs
+    assert command_results.outputs[0]["id"] == "T1111"
+    assert command_results.outputs[0]["value"] == "Active Scanning"
+
+
+def test_get_mitre_value_from_id_sub_technique_with_parent(mocker):
+    """
+    Given:
+        A valid MITRE sub-technique ID (T1111.001) whose parent (T1111) exists in the collection.
+
+    When:
+        Running mitre-get-indicator-name command.
+
+    Then:
+        Returns the attack pattern name in "Parent: Sub-technique" format.
+    """
+    from FeedMitreAttackv2 import get_mitre_value_from_id
+
+    stix_objs = [parse(stix_obj_dict, allow_custom=True) for stix_obj_dict in ATTACK_PATTERNS]
+    mocker.patch("FeedMitreAttackv2.get_mitre_data_by_filter", return_value=stix_objs)
+
+    # T1111.001 is "Wordlist Scanning", parent T1111 is "Active Scanning"
+    args = {"attack_ids": ["T1111.001"]}
+    command_results = get_mitre_value_from_id("", args)
+
+    assert command_results
+    assert command_results.outputs
+    assert command_results.outputs[0]["id"] == "T1111.001"
+    assert command_results.outputs[0]["value"] == "Active Scanning: Wordlist Scanning"
+
+
+def test_get_mitre_value_from_id_sub_technique_missing_parent(mocker):
+    """
+    Given:
+        A MITRE sub-technique ID whose parent technique is NOT in the collection.
+
+    When:
+        Running mitre-get-indicator-name command.
+
+    Then:
+        Does not raise an IndexError; returns the sub-technique name without parent prefix.
+    """
+    from FeedMitreAttackv2 import get_mitre_value_from_id
+
+    # Only include the sub-technique, not the parent
+    sub_technique_only = [ATTACK_PATTERNS[0]]  # T1111.001 "Wordlist Scanning", parent T1111 not included
+    stix_objs = [parse(stix_obj_dict, allow_custom=True) for stix_obj_dict in sub_technique_only]
+    mocker.patch("FeedMitreAttackv2.get_mitre_data_by_filter", return_value=stix_objs)
+
+    args = {"attack_ids": ["T1111.001"]}
+    # Should not raise IndexError
+    command_results = get_mitre_value_from_id("", args)
+
+    assert command_results
+    assert command_results.outputs
+    assert command_results.outputs[0]["id"] == "T1111.001"
+    # Without parent, name is just the sub-technique name
+    assert command_results.outputs[0]["value"] == "Wordlist Scanning"
+
+
 def test_show_feeds_command(mocker):
     """
     Given:

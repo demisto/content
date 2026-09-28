@@ -1,0 +1,21 @@
+{
+    "cliName": "panoraysfindingdescription",
+    "description": "The description of the Panorays finding.",
+    "group": 0,
+    "id": "incident_panoraysfindingdescription",
+    "name": "Panorays Finding Description",
+    "associatedTypes": [
+        "Panorays Finding"
+    ],
+    "associatedToAll": false,
+    "type": "longText",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "content": true,
+    "system": false,
+    "unsearchable": true,
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

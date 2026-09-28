@@ -55,7 +55,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "288"
+      - "337"
     scriptarguments:
       all:
         simple: "yes"
@@ -66,6 +66,45 @@ tasks:
         "position": {
           "x": -140,
           "y": -2215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "337":
+    id: "337"
+    taskid: 1a2b3c4d-5e6f-4071-8a2b-337000000001
+    type: regular
+    task:
+      id: 1a2b3c4d-5e6f-4071-8a2b-337000000001
+      version: -1
+      name: Get Active Machine
+      description: Retrieves a collection of active Windows machines to dynamically select a target machine for the test.
+      script: '|||microsoft-atp-get-machines'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "288"
+    scriptarguments:
+      health_status:
+        simple: Active
+      os_platform:
+        simple: Windows10
+      page_size:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -2095
         }
       }
     note: false
@@ -861,8 +900,10 @@ tasks:
         simple: C:\Windows\System32\taskhostw.exe
       MachineID:
         complex:
-          root: incident
-          accessor: deviceid
+          root: MicrosoftATP.Machine
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -902,7 +943,11 @@ tasks:
       - "287"
     scriptarguments:
       deviceid:
-        simple: 4cceb3c642212014e0e9553aa8b59e999ea515ff
+        complex:
+          root: MicrosoftATP.Machine
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2313,8 +2358,10 @@ tasks:
     scriptarguments:
       MachineID:
         complex:
-          root: incident
-          accessor: deviceid
+          root: MicrosoftATP.Machine
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
       paths:
         simple: C:\\Users\\Administrator\\Desktop\\test.txt
     separatecontext: false

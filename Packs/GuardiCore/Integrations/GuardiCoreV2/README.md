@@ -5,7 +5,7 @@ This integration was integrated and tested with version 3.0.0 of the GuardiCore 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL |  | True |
+| Server URL | The full URL of the GuardiCore server, including the API path suffix. For example, https://my-domain.cloud.guardicore.com/api/v3.0/. Default value is https://example.com/api/v3.0/. | True |
 | Username |  | True |
 | Password |  | True |
 | Fetch incidents |  | False |

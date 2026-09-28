@@ -16,6 +16,9 @@ from CommonServerUserPython import *  # noqa
 """ IMPORTS """
 
 
+from google.oauth2 import service_account
+from google.auth.transport.requests import Request
+
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601
 SUPPORTED_MODELS = [
@@ -29,6 +32,10 @@ SUPPORTED_MODELS = [
     "gemini-3.7-flash",
     "gemini-3.8-flash",
 ]
+AUTH_TYPE_AI_STUDIO = "AI Studio API Key"
+AUTH_TYPE_VERTEX_AI = "Vertex AI Service Account"
+VERTEX_AI_BASE_URL = "https://aiplatform.googleapis.com"
+GOOGLE_AUTH_SCOPE = "https://www.googleapis.com/auth/cloud-platform"
 
 AUTH_TYPE_AI_STUDIO = "AI Studio API Key"
 AUTH_TYPE_VERTEX_AI = "Vertex AI Service Account"

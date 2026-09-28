@@ -1419,3 +1419,359 @@ def test_message_remediation_details_get_command(mock_client, requests_mock):
     assert isinstance(result.outputs, dict)
     assert "batch_details" in result.outputs
     assert "message_details" in result.outputs
+
+
+def test_message_filter_list_command_all(requests_mock, mock_client):
+    """
+    Scenario: List all message filters (no filter_name).
+    Given:
+     - A valid client.
+     - No filter_name argument.
+    When:
+     - cisco-esa-message-filter-list is called.
+    Then:
+     - Outputs prefix is CiscoESA.MessageFilter with replace_existing=True
+       (full-array overwrite semantics; deleted filters drop out).
+     - All rows from the fixture's data array are returned.
+     - device_type=esa is passed in the underlying request.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import message_filter_list_command
+
+    mock_response = load_mock_response("message_filter_list_all.json")
+    url = f"{BASE_URL}/config/message_filters"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = message_filter_list_command(mock_client, {})
+
+    assert result.outputs_prefix == "CiscoESA.MessageFilter"
+    assert result.replace_existing is True
+    assert result.outputs == mock_response["data"]
+    assert len(result.outputs) == 3
+    assert {row["name"] for row in result.outputs} == {"F1", "F2", "F3"}
+    assert requests_mock.last_request.qs.get("device_type") == ["esa"]
+
+
+def test_message_filter_list_command_specific(requests_mock, mock_client):
+    """
+    Scenario: List a specific filter by name.
+    Given:
+     - filter_name argument.
+    When:
+     - cisco-esa-message-filter-list is called.
+    Then:
+     - Endpoint includes the filter name.
+     - Outputs prefix is CiscoESA.MessageFilter; replace_existing is False
+       (single-row lookup must not wipe the collection).
+     - Outputs contain the single returned row (no extra wrapping).
+     - Title in HR mentions the filter name.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import message_filter_list_command
+
+    mock_response = load_mock_response("message_filter_list_specific.json")
+    url = f"{BASE_URL}/config/message_filters/F1"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = message_filter_list_command(mock_client, {"filter_name": "F1"})
+
+    assert result.outputs_prefix == "CiscoESA.MessageFilter"
+    assert result.replace_existing is False
+    assert result.outputs == mock_response["data"]
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["name"] == "F1"
+    assert "F1" in result.readable_output
+
+
+def test_message_filter_list_command_emits_overwrite_dt_form(requests_mock, mock_client):
+    """
+    Scenario: List-all emits the parent-level DT-predicate context shape so the
+    server overwrites only the MessageFilter sub-key, preserving CiscoESA siblings.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import message_filter_list_command
+
+    mock_response = load_mock_response("message_filter_list_all.json")
+    url = f"{BASE_URL}/config/message_filters"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = message_filter_list_command(mock_client, {})
+    entry_context = result.to_context()["EntryContext"]
+
+    assert "CiscoESA(true)" in entry_context
+    assert list(entry_context["CiscoESA(true)"].keys()) == ["MessageFilter"]
+    assert entry_context["CiscoESA(true)"]["MessageFilter"] == mock_response["data"]
+    assert "CiscoESA.MessageFilter(true)" not in entry_context
+
+
+def test_message_filter_list_command_with_active_true_filter(requests_mock, mock_client):
+    """
+    Scenario: List filters with active=true filter applied client-side.
+    Given:
+     - Mixed-active fixture (2 active, 2 inactive rows).
+     - active='true' argument.
+    When:
+     - cisco-esa-message-filter-list is called.
+    Then:
+     - Only rows where active == 'true' are returned in outputs.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import message_filter_list_command
+
+    mock_response = load_mock_response("message_filter_list_mixed_active.json")
+    url = f"{BASE_URL}/config/message_filters"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = message_filter_list_command(mock_client, {"active": "true"})
+
+    assert len(result.outputs) == 2
+    assert all(row["active"] == "true" for row in result.outputs)
+    assert {row["name"] for row in result.outputs} == {"F1", "F3"}
+
+
+def test_message_filter_list_command_with_active_false_filter(requests_mock, mock_client):
+    """
+    Scenario: List filters with active=false filter applied client-side.
+    Given:
+     - Mixed-active fixture (2 active, 2 inactive rows).
+     - active='false' argument.
+    When:
+     - cisco-esa-message-filter-list is called.
+    Then:
+     - Only rows where active == 'false' are returned in outputs.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import message_filter_list_command
+
+    mock_response = load_mock_response("message_filter_list_mixed_active.json")
+    url = f"{BASE_URL}/config/message_filters"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = message_filter_list_command(mock_client, {"active": "false"})
+
+    assert len(result.outputs) == 2
+    assert all(row["active"] == "false" for row in result.outputs)
+    assert {row["name"] for row in result.outputs} == {"F2", "F4"}
+
+
+def test_message_filter_list_command_with_limit(requests_mock, mock_client):
+    """
+    Scenario: Truncate the list to the requested limit.
+    Given:
+     - A fixture with 3 rows.
+     - limit=1 argument.
+    When:
+     - cisco-esa-message-filter-list is called.
+    Then:
+     - Only the first row is returned.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import message_filter_list_command
+
+    mock_response = load_mock_response("message_filter_list_all.json")
+    url = f"{BASE_URL}/config/message_filters"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = message_filter_list_command(mock_client, {"limit": "1"})
+
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["name"] == "F1"
+
+
+def test_message_filter_list_command_hr_includes_invalid_reason_column(requests_mock, mock_client):
+    """
+    Scenario: HR table includes the 'Validation Warning' column when at least one row has invalid_reason.
+    Given:
+     - A fixture where some rows include the invalid_reason key.
+    When:
+     - cisco-esa-message-filter-list is called.
+    Then:
+     - The 'Validation Warning' column appears in the readable output.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import message_filter_list_command
+
+    mock_response = load_mock_response("message_filter_list_all.json")
+    url = f"{BASE_URL}/config/message_filters"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = message_filter_list_command(mock_client, {})
+
+    assert "Validation Warning" in result.readable_output
+
+
+def test_message_filter_list_command_hr_omits_invalid_reason_column(requests_mock, mock_client):
+    """
+    Scenario: HR table omits the 'Validation Warning' column when no row has invalid_reason.
+    Given:
+     - A fixture where no rows include the invalid_reason key.
+    When:
+     - cisco-esa-message-filter-list is called.
+    Then:
+     - The 'Validation Warning' column does NOT appear in the readable output.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import message_filter_list_command
+
+    mock_response = load_mock_response("message_filter_list_no_invalid.json")
+    url = f"{BASE_URL}/config/message_filters"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = message_filter_list_command(mock_client, {})
+
+    assert "Validation Warning" not in result.readable_output
+
+
+def test_message_filter_create_command_happy_path(requests_mock, mock_client):
+    """
+    Scenario: Create a new message filter — success without warning.
+    Given:
+     - filter_name, rules_and_actions, active, order arguments.
+    When:
+     - cisco-esa-message-filter-create is called.
+    Then:
+     - HR confirms the filter name was added successfully.
+     - No 'Warning:' segment appears in HR.
+     - The request body includes rules_and_actions, active, and order (no None values).
+     - device_type=esa is passed in the underlying request.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import message_filter_create_command
+
+    mock_response = load_mock_response("message_filter_create_response.json")
+    url = f"{BASE_URL}/config/message_filters/my_filter"
+    requests_mock.post(url=url, json=mock_response)
+
+    args = {
+        "filter_name": "my_filter",
+        "rules_and_actions": "if (true) { skip-filters(); }",
+        "active": "true",
+        "order": "2",
+    }
+    result = message_filter_create_command(mock_client, args)
+
+    assert "my_filter" in result.readable_output
+    assert "added successfully" in result.readable_output.lower()
+    assert "Warning:" not in result.readable_output
+
+    sent_body = requests_mock.last_request.json()["data"]
+    assert sent_body == {
+        "rules_and_actions": "if (true) { skip-filters(); }",
+        "active": "true",
+        "order": 2,
+    }
+    assert requests_mock.last_request.qs.get("device_type") == ["esa"]
+
+
+def test_message_filter_create_command_with_warning(requests_mock, mock_client):
+    """
+    Scenario: Create succeeds but the appliance returns meta.warning.
+    Given:
+     - filter_name and rules_and_actions arguments.
+     - The API returns meta.warning.
+    When:
+     - cisco-esa-message-filter-create is called.
+    Then:
+     - The command does not raise.
+     - HR contains both the success line and the warning text.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import message_filter_create_command
+
+    mock_response = load_mock_response("message_filter_create_warning.json")
+    url = f"{BASE_URL}/config/message_filters/f3"
+    requests_mock.post(url=url, json=mock_response)
+
+    args = {
+        "filter_name": "f3",
+        "rules_and_actions": "if (true) { skip-filters(); }",
+    }
+    result = message_filter_create_command(mock_client, args)
+
+    assert "f3 was added successfully" in result.readable_output
+    assert "Warning:" in result.readable_output
+    assert mock_response["meta"]["warning"] in result.readable_output
+
+
+def test_message_filter_create_command_body_drops_none_order(requests_mock, mock_client):
+    """
+    Scenario: Optional `order` is omitted by the user.
+    Given:
+     - filter_name + rules_and_actions only (no order).
+    When:
+     - cisco-esa-message-filter-create is called.
+    Then:
+     - The request body contains rules_and_actions and active but NOT 'order' (None dropped by assign_params).
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import message_filter_create_command
+
+    mock_response = load_mock_response("message_filter_create_response.json")
+    url = f"{BASE_URL}/config/message_filters/my_filter"
+    requests_mock.post(url=url, json=mock_response)
+
+    args = {
+        "filter_name": "my_filter",
+        "rules_and_actions": "if (true) { skip-filters(); }",
+    }
+    message_filter_create_command(mock_client, args)
+
+    sent_body = requests_mock.last_request.json()["data"]
+    assert "order" not in sent_body
+    assert sent_body.get("rules_and_actions") == "if (true) { skip-filters(); }"
+    assert sent_body.get("active") == "true"
+
+
+def test_message_filter_update_command_happy_path_only_active(requests_mock, mock_client):
+    """
+    Scenario: Update a filter providing only `active` (no rules_and_actions, no order).
+    Given:
+     - filter_name and active arguments only.
+    When:
+     - cisco-esa-message-filter-update is called.
+    Then:
+     - HR confirms the filter was successfully updated.
+     - The request body contains only the 'active' key.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import message_filter_update_command
+
+    mock_response = load_mock_response("message_filter_update_response.json")
+    url = f"{BASE_URL}/config/message_filters/my_filter"
+    requests_mock.put(url=url, json=mock_response)
+
+    args = {"filter_name": "my_filter", "active": "false"}
+    result = message_filter_update_command(mock_client, args)
+
+    assert "my_filter was successfully updated" in result.readable_output
+    sent_body = requests_mock.last_request.json()["data"]
+    assert sent_body == {"active": "false"}
+
+
+def test_message_filter_update_command_no_updatable_fields_raises(mock_client):
+    """
+    Scenario: Update is called without any of active/order/rules_and_actions.
+    Given:
+     - filter_name only.
+    When:
+     - cisco-esa-message-filter-update is called.
+    Then:
+     - DemistoException is raised.
+    """
+    from CommonServerPython import DemistoException
+
+    from CiscoEmailSecurityApplianceIronPortV2 import message_filter_update_command
+
+    with pytest.raises(DemistoException):
+        message_filter_update_command(mock_client, {"filter_name": "my_filter"})
+
+
+def test_message_filter_delete_command_happy_path(requests_mock, mock_client):
+    """
+    Scenario: Delete a message filter.
+    Given:
+     - filter_name argument.
+    When:
+     - cisco-esa-message-filter-delete is called.
+    Then:
+     - HR confirms deletion of the named filter.
+     - device_type=esa is passed in the underlying request.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import message_filter_delete_command
+
+    mock_response = load_mock_response("message_filter_delete_response.json")
+    url = f"{BASE_URL}/config/message_filters/F1"
+    requests_mock.delete(url=url, json=mock_response)
+
+    result = message_filter_delete_command(mock_client, {"filter_name": "F1"})
+
+    assert "F1 was deleted successfully" in result.readable_output
+    assert requests_mock.last_request.qs.get("device_type") == ["esa"]

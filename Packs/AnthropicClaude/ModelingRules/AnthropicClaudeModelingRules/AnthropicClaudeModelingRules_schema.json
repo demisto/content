@@ -1,0 +1,36 @@
+{
+    "anthropic_claude_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "url": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor": {
+            "type": "string",
+            "is_array": false
+        },
+        "status_code": {
+            "type": "string",
+            "is_array": false
+        },
+        "request_method": {
+            "type": "string",
+            "is_array": false
+        },
+        "request_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "created_at": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
