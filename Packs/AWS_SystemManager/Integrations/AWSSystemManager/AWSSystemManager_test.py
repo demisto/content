@@ -21,9 +21,11 @@ from AWSSystemManager import (
     list_documents_command,
     list_inventory_command,
     list_inventory_entry_command,
+    list_parameters_command,
     list_tags_for_resource_command,
     list_versions_association_command,
     next_token_command_result,
+    parse_parameter_filters,
     remove_tags_from_resource_command,
     run_automation_execution_command,
     run_command_command,
@@ -87,6 +89,9 @@ class MockClient:
         pass
 
     def list_tags_for_resource(self, **kwargs) -> dict:
+        pass
+
+    def describe_parameters(self, **kwargs) -> dict:
         pass
 
 
@@ -347,6 +352,79 @@ def test_get_command_status(mocker: MockerFixture) -> None:
         return_value={"Commands": [{"Status": "Success"}]},
     )
     assert get_command_status("test_id", MockClient()) == "Success"
+
+
+@pytest.mark.parametrize(
+    ("filters", "expected_results"),
+    [
+        pytest.param(None, [], id="no filters"),
+        pytest.param(
+            "key=Type,values=SecureString",
+            [{"Key": "Type", "Values": ["SecureString"]}],
+            id="single filter without an option",
+        ),
+        pytest.param(
+            "key=Name,option=Contains,values=prod",
+            [{"Key": "Name", "Values": ["prod"], "Option": "Contains"}],
+            id="single filter with an option",
+        ),
+        pytest.param(
+            "key=Name,option=BeginsWith,values=/prod,/dev",
+            [{"Key": "Name", "Values": ["/prod", "/dev"], "Option": "BeginsWith"}],
+            id="multiple values are split on comma",
+        ),
+        pytest.param(
+            "key=tag:Env,values=Production;key=Tier,values=Standard",
+            [
+                {"Key": "tag:Env", "Values": ["Production"]},
+                {"Key": "Tier", "Values": ["Standard"]},
+            ],
+            id="multiple filters, including a tag key",
+        ),
+        pytest.param(
+            "key=Tier,values=Standard;",
+            [{"Key": "Tier", "Values": ["Standard"]}],
+            id="a trailing separator is ignored",
+        ),
+    ],
+)
+def test_parse_parameter_filters(
+    filters: str | None,
+    expected_results: list[dict[str, Any]],
+) -> None:
+    """Given:
+        - filters - A raw filters argument.
+        - expected_results - The expected AWS SDK(boto3) `ParameterFilters` value.
+
+    When:
+        - Calling parse_parameter_filters(filters)
+
+    Then:
+        - The output should match expected_results.
+    """
+    assert parse_parameter_filters(filters) == expected_results
+
+
+@pytest.mark.parametrize(
+    "filters",
+    [
+        pytest.param("Name=test", id="missing the key= prefix"),
+        pytest.param("key=Name", id="missing the values pair"),
+        pytest.param("key=Name,values=test,option=Contains", id="the option pair is after the values pair"),
+    ],
+)
+def test_parse_parameter_filters_invalid_input(filters: str) -> None:
+    """Given:
+        - filters - A malformed filters argument.
+
+    When:
+        - Calling parse_parameter_filters(filters)
+
+    Then:
+        - A DemistoException explaining the expected format is raised.
+    """
+    with pytest.raises(DemistoException, match="Could not parse the filter"):
+        parse_parameter_filters(filters)
 
 
 """ Test For The Command Functions """
@@ -1108,3 +1186,130 @@ def test_cancel_command_command(
     }
     response: CommandResults = cancel_command_command(args_to_next_run, MockClient())
     assert response.readable_output == expected_message
+
+
+def test_list_parameters_command(mocker: MockerFixture) -> None:
+    """Given:
+        - mocker (MockerFixture): A mocker fixture for mocking external dependencies.
+
+    When:
+        - The list_parameters_command function is called with the provided MockClient and empty arguments.
+
+    Then:
+        - The 'describe_parameters' method of 'MockClient' is patched to return a mock describe parameters response.
+        - The 'outputs' attribute of the response is expected to match the mock describe parameters response.
+        - The 'readable_output' attribute of the response is expected to have a formatted table representation
+          of the mock describe parameters response, without a tags column.
+
+    Note:
+    ----
+        - The response is a list of CommandResults, where the first one is the parameters response.
+        - The next response, which is the NextToken response,
+            is tested in the `test_list_parameters_command_with_next_token_response` function.
+    """
+    mock_response: dict = util_load_json("test_data/describe_parameters_response.json")
+    mocker.patch.object(MockClient, "describe_parameters", return_value=mock_response)
+    response = list_parameters_command({}, MockClient())
+
+    assert response[0].outputs == mock_response["Parameters"]
+    assert response[0].readable_output == (
+        "### AWS SSM Parameters\n"
+        "|Name|Type|Data type|Tier|Version|Last modified date|Last modified user|Description|\n"
+        "|---|---|---|---|---|---|---|---|\n"
+        "| /prod/db/password | SecureString | text | Standard | 3 | 2024-01-15T10:30:00+02:00 | "
+        "arn:aws:iam::123456789012:user/admin | Production database password |\n"
+        "| /prod/app/region | String | text | Standard | 1 | 2024-02-20T08:15:00+02:00 | "
+        "arn:aws:iam::123456789012:user/admin | Default application region |\n"
+    )
+
+
+def test_list_parameters_command_with_filters(mocker: MockerFixture) -> None:
+    """Given:
+        - mocker (MockerFixture): A mocker fixture for mocking external dependencies.
+        - A `filters` argument and a `limit` argument.
+
+    When:
+        - The list_parameters_command function is called.
+
+    Then:
+        - The 'describe_parameters' method of 'MockClient' is called with the parsed `ParameterFilters`,
+          and no additional calls are made to retrieve tags.
+    """
+    mock_response: dict = util_load_json("test_data/describe_parameters_response.json")
+    mocker.patch.object(MockClient, "describe_parameters", return_value=mock_response)
+    mocker.patch.object(MockClient, "list_tags_for_resource")
+
+    list_parameters_command(
+        {"filters": "key=tag:Env,values=Production;key=Type,values=SecureString", "limit": "10"},
+        MockClient(),
+    )
+
+    MockClient.describe_parameters.assert_called_with(
+        MaxResults=10,
+        ParameterFilters=[
+            {"Key": "tag:Env", "Values": ["Production"]},
+            {"Key": "Type", "Values": ["SecureString"]},
+        ],
+    )
+    MockClient.list_tags_for_resource.assert_not_called()
+
+
+def test_list_parameters_command_with_tags(mocker: MockerFixture) -> None:
+    """Given:
+        - mocker (MockerFixture): A mocker fixture for mocking external dependencies.
+        - An `include_tags` argument set to true.
+
+    When:
+        - The list_parameters_command function is called.
+
+    Then:
+        - The 'list_tags_for_resource' method of 'MockClient' is called once per returned parameter,
+          with the Parameter resource type.
+        - The tags are added to the context output of every parameter as a raw list of Key/Value pairs.
+        - The readable output includes a tags column.
+    """
+    mock_response: dict = util_load_json("test_data/describe_parameters_response.json")
+    mocker.patch.object(MockClient, "describe_parameters", return_value=mock_response)
+    mocker.patch.object(
+        MockClient,
+        "list_tags_for_resource",
+        return_value={"TagList": [{"Key": "Env", "Value": "Production"}]},
+    )
+
+    response = list_parameters_command({"include_tags": "true"}, MockClient())
+
+    assert MockClient.list_tags_for_resource.call_count == 2
+    MockClient.list_tags_for_resource.assert_called_with(
+        ResourceType="Parameter",
+        ResourceId="/prod/app/region",
+    )
+    assert all(parameter["Tags"] == [{"Key": "Env", "Value": "Production"}] for parameter in response[0].outputs)
+    assert "Tags" in response[0].readable_output
+
+
+def test_list_parameters_command_with_next_token_response(mocker: MockerFixture) -> None:
+    """Given:
+        - mocker (MockerFixture): A mocker fixture for mocking external dependencies.
+        - The mock response from 'describe_parameters' is modified to include a "NextToken".
+        check `next_token_command_result` function for more details.
+
+    When:
+        - The list_parameters_command function is called with the provided MockClient and
+          an empty dictionary as arguments.
+
+    Then:
+        - The 'outputs' attribute of the first CommandResults is expected to be the "NextToken" value
+          from the mock response.
+
+    Note: the `test_list_parameters_command` function tests the case where the response has no NextToken,
+            the res[1] contains the parameters response.
+    """
+    mock_response: dict = util_load_json("test_data/describe_parameters_response.json")
+    mock_response["NextToken"] = "test_token"
+    mocker.patch.object(MockClient, "describe_parameters", return_value=mock_response)
+    response: list[CommandResults] = list_parameters_command({}, MockClient())
+
+    to_context = response[0].to_context()
+    assert to_context["EntryContext"] == {
+        "AWS.SSM.ParameterNextToken(val.NextToken)": {"NextToken": "test_token"},
+    }

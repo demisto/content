@@ -12,10 +12,12 @@ if TYPE_CHECKING:
     from mypy_boto3_ssm.literals import ResourceTypeForTaggingType
     from mypy_boto3_ssm.type_defs import (
         DescribeAutomationExecutionsRequestRequestTypeDef,
+        DescribeParametersRequestRequestTypeDef,
         DocumentDescriptionTypeDef,
         GetInventoryRequestRequestTypeDef,
         ListAssociationsRequestRequestTypeDef,
         ListDocumentsRequestRequestTypeDef,
+        ParameterStringFilterTypeDef,
     )
 """ CONSTANTS """
 RESOURCE_TYPE_MAP: dict[str, "ResourceTypeForTaggingType"] = {
@@ -189,6 +191,56 @@ def format_parameters_arguments(parameters: str) -> dict[str, Any]:
         for key, value in parameters.items():
             parameters_dict[key] = argToList(value)
     return parameters_dict
+
+
+def parse_parameter_filters(filters: str | None) -> list["ParameterStringFilterTypeDef"]:
+    """Formats the 'filters' argument into the AWS SDK(boto3) `ParameterFilters` format.
+
+    Args:
+    ----
+        filters (str | None): A string of ";" separated filter entries, each one a list of ","
+            separated key-value pairs, in the format `key=<key>,option=<option>,values=<value1>,<value2>`.
+            The `option` pair is optional, AWS defaults it to `Equals`.
+
+    Returns:
+    -------
+        list[ParameterStringFilterTypeDef]: A list of dictionaries in the format
+            `{"Key": <key>, "Option": <option>, "Values": [<value>]}`.
+
+    Raises:
+    ------
+        DemistoException: If one of the filter entries is not in the expected format.
+
+    Example:
+    -------
+        >>> parse_parameter_filters("key=Name,option=Contains,values=prod,dev;key=Type,values=String")
+        [
+            {'Key': 'Name', 'Values': ['prod', 'dev'], 'Option': 'Contains'},
+            {'Key': 'Type', 'Values': ['String']},
+        ]
+    """
+    # `values` is intentionally last, so that everything after it is treated as a comma separated list of values.
+    regex = re.compile(
+        r"^key=(?P<key>[\w:.\-/]+),(?:option=(?P<option>\w+),)?values=(?P<values>[ \w@,.*\-/:]+)$",
+        flags=re.I,
+    )
+    parameter_filters: list[ParameterStringFilterTypeDef] = []
+    for parameter_filter in argToList(filters, separator=";"):
+        if not parameter_filter:  # tolerate a trailing or a doubled separator
+            continue
+        if not (match := regex.match(parameter_filter.strip())):
+            raise DemistoException(
+                f"Could not parse the filter: {parameter_filter}. Please make sure you provided it like so: "
+                "key=<key>,values=<value1>,<value2>;key=<key>,option=<option>,values=<value>...",
+            )
+        parsed_filter: ParameterStringFilterTypeDef = {
+            "Key": match["key"],
+            "Values": argToList(match["values"]),
+        }
+        if option := match["option"]:
+            parsed_filter["Option"] = option
+        parameter_filters.append(parsed_filter)
+    return parameter_filters
 
 
 def format_document_version(document_version: str) -> str:
@@ -1450,6 +1502,105 @@ def cancel_command_command(args: dict[str, Any], ssm_client: "SSMClient") -> Pol
     )
 
 
+def list_parameters_command(
+    args: dict[str, Any],
+    ssm_client: "SSMClient",
+) -> list[CommandResults]:
+    """Lists the AWS SSM Parameter Store parameters using the provided SSM client and arguments.
+
+    Args:
+    ----
+        ssm_client: AWS SSM client object for making API requests.
+        args (dict): Command arguments containing filters and parameters.
+            - filters (str, optional): Filters to limit the returned parameters.
+            - include_tags (bool, optional): Whether to also retrieve the tags of every returned parameter,
+                at the cost of an additional API call per parameter. Defaults to false.
+            - limit (int, optional): Maximum number of parameters to retrieve. Defaults to 50.
+            - next_token (str, optional): Token to retrieve the next set of parameters.
+
+    Returns:
+    -------
+        list[CommandResults]: A list of CommandResults containing the parameters information,
+        and the next token if exists in the response.
+
+    Note:
+    ----
+        The AWS API returns the parameter metadata only, it never returns the parameter values.
+    """
+
+    def _parse_parameters(parameters: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        return [
+            {
+                "Name": parameter.get("Name"),
+                "Type": parameter.get("Type"),
+                "Data type": parameter.get("DataType"),
+                "Tier": parameter.get("Tier"),
+                "Version": parameter.get("Version"),
+                "Last modified date": parameter.get("LastModifiedDate"),
+                "Last modified user": parameter.get("LastModifiedUser"),
+                "Description": parameter.get("Description"),
+                "Tags": parameter.get("Tags"),
+            }
+            for parameter in parameters
+        ]
+
+    kwargs: DescribeParametersRequestRequestTypeDef = {
+        "MaxResults": arg_to_number(args.get("limit", 50)) or 50,
+    }
+
+    kwargs = update_if_value(args, kwargs, {"next_token": "NextToken"})
+
+    if parameter_filters := parse_parameter_filters(args.get("filters")):
+        kwargs["ParameterFilters"] = parameter_filters
+
+    response = ssm_client.describe_parameters(**kwargs)
+    response = convert_datetime_to_iso(response)
+    parameters = response.get("Parameters", [])
+
+    headers = [
+        "Name",
+        "Type",
+        "Data type",
+        "Tier",
+        "Version",
+        "Last modified date",
+        "Last modified user",
+        "Description",
+    ]
+    if argToBoolean(args.get("include_tags", False)):
+        for parameter in parameters:
+            parameter["Tags"] = ssm_client.list_tags_for_resource(
+                ResourceType=RESOURCE_TYPE_MAP["Parameter"],
+                ResourceId=parameter["Name"],
+            )["TagList"]
+        headers.append("Tags")
+
+    command_results = []
+    if next_token := response.get("NextToken"):
+        command_results.append(
+            next_token_command_result(next_token, "ParameterNextToken"),
+        )
+
+    command_results.append(
+        CommandResults(
+            outputs=parameters,
+            outputs_key_field="Name",
+            outputs_prefix="AWS.SSM.Parameter",
+            readable_output=tableToMarkdown(
+                name="AWS SSM Parameters",
+                t=_parse_parameters(parameters),
+                headers=headers,
+                json_transform_mapping={
+                    "Tags": JsonTransformer(
+                        is_nested=True,
+                    ),
+                },
+            ),
+        ),
+    )
+    return command_results
+
+
 def test_module(ssm_client: "SSMClient") -> str:
     """Tests the connectivity to AWS Systems Manager (SSM) by listing associations.
 
@@ -1546,6 +1697,8 @@ def main():
                 results = run_command_command(args, ssm_client)
             case "aws-ssm-command-cancel":
                 results = cancel_command_command(args, ssm_client)
+            case "aws-ssm-parameter-list":
+                results = list_parameters_command(args, ssm_client)
             case _:
                 msg = f"Command {command} is not implemented"
                 raise NotImplementedError(msg)

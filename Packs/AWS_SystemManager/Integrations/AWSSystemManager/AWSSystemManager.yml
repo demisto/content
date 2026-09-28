@@ -2393,6 +2393,100 @@ script:
     polling: true
     description: Attempts to cancel the command specified by the Command ID. There is no guarantee that the command will be terminated and the underlying process stopped.
     name: aws-ssm-command-cancel
+  - arguments:
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    - description: "One or more filters separated by ';' in the format key=<key>,option=<option>,values=<values>. The option pair is optional and defaults to Equals when omitted. The valid keys are: Name, Type, KeyId, Path, Label, Tier, DataType and tag:<TagName>. The valid options are: Equals, BeginsWith, Contains, Recursive and OneLevel. For example: key=Name,option=Contains,values=prod;key=Type,values=SecureString."
+      name: filters
+    - description: The maximum number of items to return for this call. The default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results.
+      name: limit
+    - description: The token for the next set of items to return. (Received this token from a previous call).
+      name: next_token
+    - auto: PREDEFINED
+      description: Whether to also return the tags of every parameter. Requires an additional API call per returned parameter, so it is slower. To filter by a tag instead, use the tag:<TagName> filter key, which requires no additional calls.
+      name: include_tags
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    description: Lists the Systems Manager (SSM) Parameter Store parameters in the current Amazon Web Services account and Amazon Web Services Region. Returns the parameter metadata only, never the parameter values.
+    name: aws-ssm-parameter-list
+    outputs:
+    - contextPath: AWS.SSM.ParameterNextToken.NextToken
+      description: The token to use when requesting the next set of items. If there are no additional items to return, the string is empty.
+      type: String
+    - contextPath: AWS.SSM.Parameter.Name
+      description: The name of the parameter.
+      type: String
+    - contextPath: AWS.SSM.Parameter.ARN
+      description: The Amazon Resource Name (ARN) of the parameter.
+      type: String
+    - contextPath: AWS.SSM.Parameter.Type
+      description: The type of the parameter. Either String, StringList or SecureString.
+      type: String
+    - contextPath: AWS.SSM.Parameter.KeyId
+      description: The ID of the query key used for the parameter.
+      type: String
+    - contextPath: AWS.SSM.Parameter.LastModifiedDate
+      description: The date the parameter was last changed or updated.
+      type: Date
+    - contextPath: AWS.SSM.Parameter.LastModifiedUser
+      description: The Amazon Resource Name (ARN) of the Amazon Web Services user who last changed the parameter.
+      type: String
+    - contextPath: AWS.SSM.Parameter.Description
+      description: The description of the parameter.
+      type: String
+    - contextPath: AWS.SSM.Parameter.AllowedPattern
+      description: A regular expression used to validate the parameter value.
+      type: String
+    - contextPath: AWS.SSM.Parameter.Version
+      description: The parameter version.
+      type: Number
+    - contextPath: AWS.SSM.Parameter.Tier
+      description: The parameter tier. Either Standard, Advanced or Intelligent-Tiering.
+      type: String
+    - contextPath: AWS.SSM.Parameter.DataType
+      description: The data type of the parameter, such as text or aws:ec2:image. The default is text.
+      type: String
+    - contextPath: AWS.SSM.Parameter.Policies.PolicyText
+      description: The JSON text of the policy.
+      type: String
+    - contextPath: AWS.SSM.Parameter.Policies.PolicyType
+      description: The type of policy. Either Expiration, ExpirationNotification or NoChangeNotification.
+      type: String
+    - contextPath: AWS.SSM.Parameter.Policies.PolicyStatus
+      description: The status of the policy. Either Pending, Finished, Failed or InProgress.
+      type: String
+    - contextPath: AWS.SSM.Parameter.Tags.Key
+      description: The name of the tag.
+      type: String
+    - contextPath: AWS.SSM.Parameter.Tags.Value
+      description: The value of the tag.
+      type: String
   isfetch: false
   runonce: false
   script: '-'

@@ -14,3 +14,4 @@
 !aws-ssm-command-run document_name=AWS target_key="Instance Ids" target_values=id print_polling_message=false
 !aws-ssm-command-cancel command_id=id
 !aws-ssm-command-list limit=2
+!aws-ssm-parameter-list limit=2

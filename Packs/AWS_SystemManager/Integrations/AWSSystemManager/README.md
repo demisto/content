@@ -1713,3 +1713,51 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Cancellation command was sent successful.
+
+### aws-ssm-parameter-list
+
+***
+Lists the Systems Manager (SSM) Parameter Store parameters in the current Amazon Web Services account and Amazon Web Services Region. Returns the parameter metadata only, never the parameter values.
+
+#### Base Command
+
+`aws-ssm-parameter-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional |
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional |
+| roleSessionName | An identifier for the assumed role session. | Optional |
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional |
+| filters | One or more filters separated by ';' in the format key=&lt;key&gt;,option=&lt;option&gt;,values=&lt;values&gt;. The option pair is optional and defaults to Equals when omitted. The valid keys are: Name, Type, KeyId, Path, Label, Tier, DataType and tag:&lt;TagName&gt;. The valid options are: Equals, BeginsWith, Contains, Recursive and OneLevel. For example: key=Name,option=Contains,values=prod;key=Type,values=SecureString. | Optional |
+| limit | The maximum number of items to return for this call. The default and max is 50. The call also returns a token that you can specify in a subsequent call to get the next set of results. | Optional |
+| next_token | The token for the next set of items to return. (Received this token from a previous call). | Optional |
+| include_tags | Whether to also return the tags of every parameter. Requires an additional API call per returned parameter, so it is slower. To filter by a tag instead, use the tag:&lt;TagName&gt; filter key, which requires no additional calls. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.SSM.ParameterNextToken.NextToken | String | The token to use when requesting the next set of items. If there are no additional items to return, the string is empty. |
+| AWS.SSM.Parameter.Name | String | The name of the parameter. |
+| AWS.SSM.Parameter.ARN | String | The Amazon Resource Name \(ARN\) of the parameter. |
+| AWS.SSM.Parameter.Type | String | The type of the parameter. Either String, StringList or SecureString. |
+| AWS.SSM.Parameter.KeyId | String | The ID of the query key used for the parameter. |
+| AWS.SSM.Parameter.LastModifiedDate | Date | The date the parameter was last changed or updated. |
+| AWS.SSM.Parameter.LastModifiedUser | String | The Amazon Resource Name \(ARN\) of the Amazon Web Services user who last changed the parameter. |
+| AWS.SSM.Parameter.Description | String | The description of the parameter. |
+| AWS.SSM.Parameter.AllowedPattern | String | A regular expression used to validate the parameter value. |
+| AWS.SSM.Parameter.Version | Number | The parameter version. |
+| AWS.SSM.Parameter.Tier | String | The parameter tier. Either Standard, Advanced or Intelligent-Tiering. |
+| AWS.SSM.Parameter.DataType | String | The data type of the parameter, such as text or aws:ec2:image. The default is text. |
+| AWS.SSM.Parameter.Policies.PolicyText | String | The JSON text of the policy. |
+| AWS.SSM.Parameter.Policies.PolicyType | String | The type of policy. Either Expiration, ExpirationNotification or NoChangeNotification. |
+| AWS.SSM.Parameter.Policies.PolicyStatus | String | The status of the policy. Either Pending, Finished, Failed or InProgress. |
+| AWS.SSM.Parameter.Tags.Key | String | The name of the tag. |
+| AWS.SSM.Parameter.Tags.Value | String | The value of the tag. |
+
+#### Command example
+
+```!aws-ssm-parameter-list limit=2```

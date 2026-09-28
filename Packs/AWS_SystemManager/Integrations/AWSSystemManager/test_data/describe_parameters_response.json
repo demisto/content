@@ -1,0 +1,43 @@
+{
+    "Parameters": [
+        {
+            "Name": "/prod/db/password",
+            "ARN": "arn:aws:ssm:us-east-1:123456789012:parameter/prod/db/password",
+            "Type": "SecureString",
+            "KeyId": "alias/aws/ssm",
+            "LastModifiedDate": "2024-01-15T10:30:00+02:00",
+            "LastModifiedUser": "arn:aws:iam::123456789012:user/admin",
+            "Description": "Production database password",
+            "Version": 3,
+            "Tier": "Standard",
+            "Policies": [],
+            "DataType": "text"
+        },
+        {
+            "Name": "/prod/app/region",
+            "ARN": "arn:aws:ssm:us-east-1:123456789012:parameter/prod/app/region",
+            "Type": "String",
+            "LastModifiedDate": "2024-02-20T08:15:00+02:00",
+            "LastModifiedUser": "arn:aws:iam::123456789012:user/admin",
+            "Description": "Default application region",
+            "AllowedPattern": "^[a-z0-9-]+$",
+            "Version": 1,
+            "Tier": "Standard",
+            "Policies": [],
+            "DataType": "text"
+        }
+    ],
+    "ResponseMetadata": {
+        "RequestId": "",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+            "server": "Server",
+            "date": "Mon, 21 Aug 2023 09:29:45 GMT",
+            "content-type": "application1",
+            "content-length": "13",
+            "connection": "keep-alive",
+            "x-amzn-requestid": ""
+        },
+        "RetryAttempts": 0
+    }
+}
