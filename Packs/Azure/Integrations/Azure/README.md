@@ -3040,14 +3040,14 @@ Sets properties for the blob service in a specific account storage. Required per
 | Azure.Storage.BlobServices.sku.name | String | The SKU name. |
 | Azure.Storage.BlobServices.sku.tier | String | The SKU tier. |
 
-### azure-firewall-network-rule-collection-create
+### azure-vn-firewall-policy-rule-collection-groups-create
 
 ***
 Create a network rule collection, holding a single network rule, in an Azure Firewall or in a firewall policy. Exactly one of the arguments 'firewall_name' or 'policy' must be provided. Required permissions for a firewall: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write. Required permissions for a policy: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write.
 
 #### Base Command
 
-`azure-firewall-network-rule-collection-create`
+`azure-vn-firewall-policy-rule-collection-groups-create`
 
 #### Input
 
@@ -3081,22 +3081,22 @@ Create a network rule collection, holding a single network rule, in an Azure Fir
 | Azure.Firewall.Firewalls.etag | String | The ETag of the Azure Firewall, used to prevent overwriting concurrent updates. |
 | Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the Azure Firewall. |
 | Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection. |
-| Azure.Firewall.RuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
-| Azure.Firewall.RuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates. |
-| Azure.Firewall.RuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
 
-### azure-firewall-network-rule-collection-update
+### azure-vn-firewall-policy-rule-collection-groups-update
 
 ***
 Update the priority or the action of a network rule collection in an Azure Firewall or in a firewall policy. Exactly one of the arguments 'firewall_name' or 'policy' must be provided. Required permissions for a firewall: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write. Required permissions for a policy: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write.
 
 #### Base Command
 
-`azure-firewall-network-rule-collection-update`
+`azure-vn-firewall-policy-rule-collection-groups-update`
 
 #### Input
 
@@ -3121,22 +3121,22 @@ Update the priority or the action of a network rule collection in an Azure Firew
 | Azure.Firewall.Firewalls.etag | String | The ETag of the Azure Firewall, used to prevent overwriting concurrent updates. |
 | Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the Azure Firewall. |
 | Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection. |
-| Azure.Firewall.RuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
-| Azure.Firewall.RuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates. |
-| Azure.Firewall.RuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
 
-### azure-firewall-network-rule-collection-delete
+### azure-vn-firewall-policy-rule-collection-groups-delete
 
 ***
 Delete a network rule collection from an Azure Firewall or from a firewall policy. Exactly one of the arguments 'firewall_name' or 'policy' must be provided. Required permissions for a firewall: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write. Required permission for a policy: Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete.
 
 #### Base Command
 
-`azure-firewall-network-rule-collection-delete`
+`azure-vn-firewall-policy-rule-collection-groups-delete`
 
 #### Input
 
@@ -3199,13 +3199,13 @@ Create a network rule in an existing network rule collection of an Azure Firewal
 | Azure.Firewall.Firewalls.etag | String | The ETag of the Azure Firewall, used to prevent overwriting concurrent updates. |
 | Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the Azure Firewall. |
 | Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection. |
-| Azure.Firewall.RuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
-| Azure.Firewall.RuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates. |
-| Azure.Firewall.RuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
 
 ### azure-firewall-network-rule-update
 
@@ -3246,13 +3246,13 @@ Update a network rule in a network rule collection of an Azure Firewall or of a 
 | Azure.Firewall.Firewalls.etag | String | The ETag of the Azure Firewall, used to prevent overwriting concurrent updates. |
 | Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the Azure Firewall. |
 | Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection. |
-| Azure.Firewall.RuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
-| Azure.Firewall.RuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates. |
-| Azure.Firewall.RuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
 
 ### azure-firewall-network-rule-delete
 
@@ -3285,13 +3285,13 @@ Delete network rules from a network rule collection of an Azure Firewall or of a
 | Azure.Firewall.Firewalls.etag | String | The ETag of the Azure Firewall, used to prevent overwriting concurrent updates. |
 | Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the Azure Firewall. |
 | Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection. |
-| Azure.Firewall.RuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
-| Azure.Firewall.RuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates. |
-| Azure.Firewall.RuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
-| Azure.Firewall.RuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
 
 ### azure-auth-test
 

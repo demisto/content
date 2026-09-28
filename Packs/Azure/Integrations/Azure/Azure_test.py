@@ -6358,7 +6358,7 @@ def test_firewall_network_rule_collection_create_command_policy(mocker):
 
     result = firewall_network_rule_collection_create_command(client=client, params={}, args=args)
 
-    assert result.outputs_prefix == "Azure.Firewall.RuleCollectionGroups"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups"
     sent_collection = client.firewall_policy_rule_collection_group_create_or_update.call_args.kwargs["collection_data"]
     rule_collection = sent_collection["properties"]["ruleCollections"][0]
     assert rule_collection["ruleCollectionType"] == "FirewallPolicyFilterRuleCollection"
@@ -6444,7 +6444,7 @@ def test_firewall_network_rule_collection_update_command_policy(mocker):
 
     result = firewall_network_rule_collection_update_command(client=client, params={}, args=args)
 
-    assert result.outputs_prefix == "Azure.Firewall.RuleCollectionGroups"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups"
     sent_group = client.firewall_policy_rule_collection_group_create_or_update.call_args.kwargs["collection_data"]
     assert sent_group["properties"]["priority"] == 300
     assert sent_group["properties"]["ruleCollections"][0]["priority"] == 300
@@ -6588,7 +6588,7 @@ def test_firewall_network_rule_create_command_policy(mocker):
 
     result = firewall_network_rule_create_command(client=client, params={}, args=args)
 
-    assert result.outputs_prefix == "Azure.Firewall.RuleCollectionGroups"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups"
     sent_group = client.firewall_policy_rule_collection_group_create_or_update.call_args.kwargs["collection_data"]
     sent_rules = sent_group["properties"]["ruleCollections"][0]["rules"]
     assert [rule["name"] for rule in sent_rules] == ["my-rule", "new-rule"]
@@ -6687,7 +6687,7 @@ def test_firewall_network_rule_update_command_policy(mocker):
 
     result = firewall_network_rule_update_command(client=client, params={}, args=args)
 
-    assert result.outputs_prefix == "Azure.Firewall.RuleCollectionGroups"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups"
     sent_group = client.firewall_policy_rule_collection_group_create_or_update.call_args.kwargs["collection_data"]
     sent_rule = sent_group["properties"]["ruleCollections"][0]["rules"][0]
     assert sent_rule["ipProtocols"] == ["UDP"]
@@ -6768,7 +6768,7 @@ def test_firewall_network_rule_delete_command_policy_partial(mocker):
 
     result = firewall_network_rule_delete_command(client=client, params={}, args=args)
 
-    assert result.outputs_prefix == "Azure.Firewall.RuleCollectionGroups"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups"
     assert "The following network rules were not found: not-exists-rule." in result.readable_output
     sent_group = client.firewall_policy_rule_collection_group_create_or_update.call_args.kwargs["collection_data"]
     assert [rule["name"] for rule in sent_group["properties"]["ruleCollections"][0]["rules"]] == ["other-rule"]

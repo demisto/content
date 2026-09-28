@@ -329,36 +329,36 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/loadBalancers/backendAddressPools/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list", "azure-rm-resource-groups-list"],
     "Microsoft.Network/azureFirewalls/read": [
-        "azure-firewall-network-rule-collection-create",
-        "azure-firewall-network-rule-collection-update",
-        "azure-firewall-network-rule-collection-delete",
+        "azure-vn-firewall-policy-rule-collection-groups-create",
+        "azure-vn-firewall-policy-rule-collection-groups-update",
+        "azure-vn-firewall-policy-rule-collection-groups-delete",
         "azure-firewall-network-rule-create",
         "azure-firewall-network-rule-update",
         "azure-firewall-network-rule-delete",
     ],
     "Microsoft.Network/azureFirewalls/write": [
-        "azure-firewall-network-rule-collection-create",
-        "azure-firewall-network-rule-collection-update",
-        "azure-firewall-network-rule-collection-delete",
+        "azure-vn-firewall-policy-rule-collection-groups-create",
+        "azure-vn-firewall-policy-rule-collection-groups-update",
+        "azure-vn-firewall-policy-rule-collection-groups-delete",
         "azure-firewall-network-rule-create",
         "azure-firewall-network-rule-update",
         "azure-firewall-network-rule-delete",
     ],
     "Microsoft.Network/firewallPolicies/ruleCollectionGroups/read": [
-        "azure-firewall-network-rule-collection-create",
-        "azure-firewall-network-rule-collection-update",
+        "azure-vn-firewall-policy-rule-collection-groups-create",
+        "azure-vn-firewall-policy-rule-collection-groups-update",
         "azure-firewall-network-rule-create",
         "azure-firewall-network-rule-update",
         "azure-firewall-network-rule-delete",
     ],
     "Microsoft.Network/firewallPolicies/ruleCollectionGroups/write": [
-        "azure-firewall-network-rule-collection-create",
-        "azure-firewall-network-rule-collection-update",
+        "azure-vn-firewall-policy-rule-collection-groups-create",
+        "azure-vn-firewall-policy-rule-collection-groups-update",
         "azure-firewall-network-rule-create",
         "azure-firewall-network-rule-update",
         "azure-firewall-network-rule-delete",
     ],
-    "Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete": ["azure-firewall-network-rule-collection-delete"],
+    "Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete": ["azure-vn-firewall-policy-rule-collection-groups-delete"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -522,7 +522,7 @@ COSMOS_DB_API_VERSION = "2024-11-15"
 PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
 NSG_API_VERSION = "2025-01-01"
-FIREWALL_API_VERSION = "2024-05-01"
+FIREWALL_API_VERSION = "2025-09-01"
 
 # Maps the destination type of an Azure Firewall network rule to the Azure field holding the destinations.
 FIREWALL_NETWORK_RULE_DESTINATION_FIELDS = {
@@ -949,7 +949,7 @@ class AzureClient:
             A dictionary containing the Azure Firewall resource.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/azure-firewalls/get
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/azure-firewalls/get?view=rest-virtualnetwork-2025-09-01&tabs=HTTP
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -981,7 +981,7 @@ class AzureClient:
             A dictionary containing the updated Azure Firewall resource.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/azure-firewalls/create-or-update
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/azure-firewalls/create-or-update?view=rest-virtualnetwork-2025-09-01&tabs=HTTP
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -1017,7 +1017,7 @@ class AzureClient:
             A dictionary containing the rule collection group.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/firewall-policy-rule-collection-groups/get
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/firewall-policy-rule-collection-groups/get?view=rest-virtualnetwork-2025-09-01&tabs=HTTP
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -1052,7 +1052,7 @@ class AzureClient:
             A dictionary containing the created or updated rule collection group.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/firewall-policy-rule-collection-groups/create-or-update
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/firewall-policy-rule-collection-groups/create-or-update?view=rest-virtualnetwork-2025-09-01&tabs=HTTP
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -1088,7 +1088,7 @@ class AzureClient:
             The HTTP response object from the delete operation.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/firewall-policy-rule-collection-groups/delete
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/firewall-policy-rule-collection-groups/delete?view=rest-virtualnetwork-2025-09-01&tabs=HTTP
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -3178,6 +3178,213 @@ def update_nic_properties(args: dict, params: dict, properties: dict):
         properties.pop("networkSecurityGroup", None)
 
 
+def build_firewall_network_rule(
+    rule_name: str,
+    description: str | None,
+    protocols: list,
+    source_type: str,
+    source_ips: list,
+    source_ip_group_ids: list,
+    destination_type: str,
+    destinations: list,
+    destination_ports: list,
+    is_firewall_rule: bool,
+) -> dict[str, Any]:
+    """
+    Build an Azure Firewall network rule object.
+
+    Args:
+        rule_name: The name of the rule.
+        description: The description of the rule.
+        protocols: The protocols of the rule.
+        source_type: The source type of the rule, either "ip_address" or "ip_group".
+        source_ips: The source IP addresses of the rule.
+        source_ip_group_ids: The source IP group IDs of the rule.
+        destination_type: The destination type of the rule.
+        destinations: The destinations of the rule.
+        destination_ports: The destination ports of the rule.
+        is_firewall_rule: Whether the rule belongs to a firewall. A policy rule uses a different schema.
+
+    Return:
+        A dictionary containing the network rule object.
+    """
+    rule: dict[str, Any] = {
+        "name": rule_name,
+        "description": description,
+        "destinationPorts": destination_ports,
+        FIREWALL_NETWORK_RULE_DESTINATION_FIELDS.get(destination_type, "destinationAddresses"): destinations,
+        "sourceAddresses": source_ips if source_type == "ip_address" else None,
+        "sourceIpGroups": source_ip_group_ids if source_type == "ip_group" else None,
+        "protocols": protocols if is_firewall_rule else None,
+        "ipProtocols": None if is_firewall_rule else protocols,
+        "ruleType": None if is_firewall_rule else "NetworkRule",
+    }
+    return remove_empty_elements(rule)
+
+
+def get_firewall_network_rule_collections(
+    client: AzureClient, subscription_id: str, resource_group_name: str, firewall_name: str
+) -> tuple[dict, list]:
+    """
+    Retrieve an Azure Firewall resource along with its network rule collections.
+
+    Args:
+        client: The AzureClient.
+        subscription_id: The Azure subscription ID.
+        resource_group_name: The resource group containing the firewall.
+        firewall_name: The name of the Azure Firewall.
+
+    Return:
+        A tuple of the firewall resource and the list of its network rule collections. The list is a
+        reference into the firewall resource, so mutating it updates the resource sent back to Azure.
+    """
+    firewall_data = client.firewall_get(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, firewall_name=firewall_name
+    )
+    return firewall_data, firewall_data.setdefault("properties", {}).setdefault("networkRuleCollections", [])
+
+
+def find_firewall_network_rule_collection(collections: list, collection_name: str) -> dict:
+    """
+    Find a network rule collection by name within a firewall's rule collections.
+
+    Args:
+        collections: The network rule collections of the firewall.
+        collection_name: The name of the rule collection to find.
+
+    Return:
+        The matching rule collection.
+
+    Raises:
+        ValueError: If the rule collection was not found.
+    """
+    for collection in collections:
+        if collection.get("name") == collection_name:
+            return collection
+    raise ValueError(f'Network rule collection "{collection_name}" was not found.')
+
+
+def get_policy_network_rule_collection(collection_group: dict, collection_name: str) -> dict:
+    """
+    Extract the rule collection out of a firewall policy rule collection group.
+
+    Args:
+        collection_group: The firewall policy rule collection group.
+        collection_name: The name of the rule collection, used for the error message.
+
+    Return:
+        The rule collection held by the rule collection group.
+
+    Raises:
+        ValueError: If the rule collection group holds no rule collection.
+    """
+    rule_collections = dict_safe_get(collection_group, ["properties", "ruleCollections"], [])
+    if not rule_collections:
+        raise ValueError(f'Network rule collection "{collection_name}" was not found in the policy.')
+    return rule_collections[0]
+
+
+def firewall_policy_network_rule_collection_exists(
+    client: AzureClient, subscription_id: str, resource_group_name: str, policy: str, collection_name: str
+) -> bool:
+    """
+    Check whether a rule collection group already exists in a firewall policy.
+
+    Args:
+        client: The AzureClient.
+        subscription_id: The Azure subscription ID.
+        resource_group_name: The resource group containing the firewall policy.
+        policy: The name of the firewall policy.
+        collection_name: The name of the rule collection group.
+
+    Return:
+        True if the rule collection group exists, False if Azure reported it as not found.
+    """
+    try:
+        client.firewall_policy_rule_collection_group_get(
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            policy_name=policy,
+            collection_name=collection_name,
+        )
+    except ValueError:
+        # handle_azure_error raises ValueError for a 404, which simply means the collection name is available.
+        demisto.debug(f"Network rule collection {collection_name} does not exist in policy {policy}.")
+        return False
+    return True
+
+
+def find_firewall_network_rule(rules: list, rule_name: str) -> dict:
+    """
+    Find a network rule by name within a rule collection's rules.
+
+    Args:
+        rules: The rules of the rule collection.
+        rule_name: The name of the rule to find.
+
+    Return:
+        The matching rule.
+
+    Raises:
+        ValueError: If the rule was not found.
+    """
+    for rule in rules:
+        if rule.get("name") == rule_name:
+            return rule
+    raise ValueError(f'Network rule "{rule_name}" was not found.')
+
+
+def remove_firewall_network_rules(rules: list, rule_names: list) -> tuple[list, list]:
+    """
+    Remove the requested network rules from a rule collection's rules.
+
+    Args:
+        rules: The rules of the rule collection.
+        rule_names: The names of the rules to remove.
+
+    Return:
+        A tuple of the remaining rules and the names of the rules that were not found.
+
+    Raises:
+        ValueError: If none of the requested rules were found.
+    """
+    existing_names = {rule.get("name") for rule in rules}
+    missing_names = [rule_name for rule_name in rule_names if rule_name not in existing_names]
+
+    if len(missing_names) == len(rule_names):
+        raise ValueError(f"None of the requested network rules were found: {', '.join(rule_names)}.")
+
+    return [rule for rule in rules if rule.get("name") not in rule_names], missing_names
+
+
+def firewall_command_results(response: dict, readable_header: str, is_firewall: bool) -> CommandResults:
+    """
+    Build the command results for the Azure Firewall network rule commands.
+
+    Args:
+        response: The Azure Firewall resource or the firewall policy rule collection group returned by Azure.
+        readable_header: The header of the readable output.
+        is_firewall: Whether the response is an Azure Firewall resource rather than a rule collection group.
+
+    Return:
+        CommandResults with the updated resource.
+    """
+    readable_output = tableToMarkdown(
+        readable_header,
+        response,
+        headers=["name", "id", "location", "type"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+    return CommandResults(
+        outputs_prefix="Azure.Firewall.Firewalls" if is_firewall else "Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -4760,213 +4967,6 @@ def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any]
             f"was accepted and the operation will complete asynchronously."
         )
     return CommandResults(readable_output=message)
-
-
-def build_firewall_network_rule(
-    rule_name: str,
-    description: str | None,
-    protocols: list,
-    source_type: str,
-    source_ips: list,
-    source_ip_group_ids: list,
-    destination_type: str,
-    destinations: list,
-    destination_ports: list,
-    is_firewall_rule: bool,
-) -> dict[str, Any]:
-    """
-    Build an Azure Firewall network rule object.
-
-    Args:
-        rule_name: The name of the rule.
-        description: The description of the rule.
-        protocols: The protocols of the rule.
-        source_type: The source type of the rule, either "ip_address" or "ip_group".
-        source_ips: The source IP addresses of the rule.
-        source_ip_group_ids: The source IP group IDs of the rule.
-        destination_type: The destination type of the rule.
-        destinations: The destinations of the rule.
-        destination_ports: The destination ports of the rule.
-        is_firewall_rule: Whether the rule belongs to a firewall. A policy rule uses a different schema.
-
-    Return:
-        A dictionary containing the network rule object.
-    """
-    rule: dict[str, Any] = {
-        "name": rule_name,
-        "description": description,
-        "destinationPorts": destination_ports,
-        FIREWALL_NETWORK_RULE_DESTINATION_FIELDS.get(destination_type, "destinationAddresses"): destinations,
-        "sourceAddresses": source_ips if source_type == "ip_address" else None,
-        "sourceIpGroups": source_ip_group_ids if source_type == "ip_group" else None,
-        "protocols": protocols if is_firewall_rule else None,
-        "ipProtocols": None if is_firewall_rule else protocols,
-        "ruleType": None if is_firewall_rule else "NetworkRule",
-    }
-    return remove_empty_elements(rule)
-
-
-def get_firewall_network_rule_collections(
-    client: AzureClient, subscription_id: str, resource_group_name: str, firewall_name: str
-) -> tuple[dict, list]:
-    """
-    Retrieve an Azure Firewall resource along with its network rule collections.
-
-    Args:
-        client: The AzureClient.
-        subscription_id: The Azure subscription ID.
-        resource_group_name: The resource group containing the firewall.
-        firewall_name: The name of the Azure Firewall.
-
-    Return:
-        A tuple of the firewall resource and the list of its network rule collections. The list is a
-        reference into the firewall resource, so mutating it updates the resource sent back to Azure.
-    """
-    firewall_data = client.firewall_get(
-        subscription_id=subscription_id, resource_group_name=resource_group_name, firewall_name=firewall_name
-    )
-    return firewall_data, firewall_data.setdefault("properties", {}).setdefault("networkRuleCollections", [])
-
-
-def find_firewall_network_rule_collection(collections: list, collection_name: str) -> dict:
-    """
-    Find a network rule collection by name within a firewall's rule collections.
-
-    Args:
-        collections: The network rule collections of the firewall.
-        collection_name: The name of the rule collection to find.
-
-    Return:
-        The matching rule collection.
-
-    Raises:
-        ValueError: If the rule collection was not found.
-    """
-    for collection in collections:
-        if collection.get("name") == collection_name:
-            return collection
-    raise ValueError(f'Network rule collection "{collection_name}" was not found.')
-
-
-def get_policy_network_rule_collection(collection_group: dict, collection_name: str) -> dict:
-    """
-    Extract the rule collection out of a firewall policy rule collection group.
-
-    Args:
-        collection_group: The firewall policy rule collection group.
-        collection_name: The name of the rule collection, used for the error message.
-
-    Return:
-        The rule collection held by the rule collection group.
-
-    Raises:
-        ValueError: If the rule collection group holds no rule collection.
-    """
-    rule_collections = dict_safe_get(collection_group, ["properties", "ruleCollections"], [])
-    if not rule_collections:
-        raise ValueError(f'Network rule collection "{collection_name}" was not found in the policy.')
-    return rule_collections[0]
-
-
-def firewall_policy_network_rule_collection_exists(
-    client: AzureClient, subscription_id: str, resource_group_name: str, policy: str, collection_name: str
-) -> bool:
-    """
-    Check whether a rule collection group already exists in a firewall policy.
-
-    Args:
-        client: The AzureClient.
-        subscription_id: The Azure subscription ID.
-        resource_group_name: The resource group containing the firewall policy.
-        policy: The name of the firewall policy.
-        collection_name: The name of the rule collection group.
-
-    Return:
-        True if the rule collection group exists, False if Azure reported it as not found.
-    """
-    try:
-        client.firewall_policy_rule_collection_group_get(
-            subscription_id=subscription_id,
-            resource_group_name=resource_group_name,
-            policy_name=policy,
-            collection_name=collection_name,
-        )
-    except ValueError:
-        # handle_azure_error raises ValueError for a 404, which simply means the collection name is available.
-        demisto.debug(f"Network rule collection {collection_name} does not exist in policy {policy}.")
-        return False
-    return True
-
-
-def find_firewall_network_rule(rules: list, rule_name: str) -> dict:
-    """
-    Find a network rule by name within a rule collection's rules.
-
-    Args:
-        rules: The rules of the rule collection.
-        rule_name: The name of the rule to find.
-
-    Return:
-        The matching rule.
-
-    Raises:
-        ValueError: If the rule was not found.
-    """
-    for rule in rules:
-        if rule.get("name") == rule_name:
-            return rule
-    raise ValueError(f'Network rule "{rule_name}" was not found.')
-
-
-def remove_firewall_network_rules(rules: list, rule_names: list) -> tuple[list, list]:
-    """
-    Remove the requested network rules from a rule collection's rules.
-
-    Args:
-        rules: The rules of the rule collection.
-        rule_names: The names of the rules to remove.
-
-    Return:
-        A tuple of the remaining rules and the names of the rules that were not found.
-
-    Raises:
-        ValueError: If none of the requested rules were found.
-    """
-    existing_names = {rule.get("name") for rule in rules}
-    missing_names = [rule_name for rule_name in rule_names if rule_name not in existing_names]
-
-    if len(missing_names) == len(rule_names):
-        raise ValueError(f"None of the requested network rules were found: {', '.join(rule_names)}.")
-
-    return [rule for rule in rules if rule.get("name") not in rule_names], missing_names
-
-
-def firewall_command_results(response: dict, readable_header: str, is_firewall: bool) -> CommandResults:
-    """
-    Build the command results for the Azure Firewall network rule commands.
-
-    Args:
-        response: The Azure Firewall resource or the firewall policy rule collection group returned by Azure.
-        readable_header: The header of the readable output.
-        is_firewall: Whether the response is an Azure Firewall resource rather than a rule collection group.
-
-    Return:
-        CommandResults with the updated resource.
-    """
-    readable_output = tableToMarkdown(
-        readable_header,
-        response,
-        headers=["name", "id", "location", "type"],
-        removeNull=True,
-        headerTransform=pascalToSpace,
-    )
-    return CommandResults(
-        outputs_prefix="Azure.Firewall.Firewalls" if is_firewall else "Azure.Firewall.RuleCollectionGroups",
-        outputs_key_field="id",
-        outputs=response,
-        readable_output=readable_output,
-        raw_response=response,
-    )
 
 
 def firewall_network_rule_collection_create_command(
@@ -6754,9 +6754,9 @@ def main():  # pragma: no cover
             "azure-postgres-config-set-log-retention-period-quick-action": set_postgres_config_command,
             "azure-postgres-config-set-statement-logging-quick-action": set_postgres_config_command,
             "azure-postgres-server-update-ssl-enforcement-quick-action": postgres_server_update_command,
-            "azure-firewall-network-rule-collection-create": firewall_network_rule_collection_create_command,
-            "azure-firewall-network-rule-collection-update": firewall_network_rule_collection_update_command,
-            "azure-firewall-network-rule-collection-delete": firewall_network_rule_collection_delete_command,
+            "azure-vn-firewall-policy-rule-collection-groups-create": firewall_network_rule_collection_create_command,
+            "azure-vn-firewall-policy-rule-collection-groups-update": firewall_network_rule_collection_update_command,
+            "azure-vn-firewall-policy-rule-collection-groups-delete": firewall_network_rule_collection_delete_command,
             "azure-firewall-network-rule-create": firewall_network_rule_create_command,
             "azure-firewall-network-rule-update": firewall_network_rule_update_command,
             "azure-firewall-network-rule-delete": firewall_network_rule_delete_command,
