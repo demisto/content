@@ -2665,7 +2665,7 @@ inputs:
 - key: Username
   value:
     complex:
-      root: PaloAltoNetworksXDR.Incident.alerts
+      root: PaloAltoNetworksXDR.Case.Issues
       accessor: user_name
       transformers:
       - operator: uniq
@@ -2675,7 +2675,7 @@ inputs:
 - key: SrcIPAddress
   value:
     complex:
-      root: PaloAltoNetworksXDR.Incident.alerts
+      root: PaloAltoNetworksXDR.Case.Issues
       accessor: action_local_ip
       transformers:
       - operator: uniq
@@ -2685,7 +2685,7 @@ inputs:
 - key: DstIPAddress
   value:
     complex:
-      root: PaloAltoNetworksXDR.Incident.alerts
+      root: PaloAltoNetworksXDR.Case.Issues
       accessor: action_remote_ip
       transformers:
       - operator: uniq
@@ -2695,7 +2695,7 @@ inputs:
 - key: DstPort
   value:
     complex:
-      root: PaloAltoNetworksXDR.Incident.alerts
+      root: PaloAltoNetworksXDR.Case.Issues
       accessor: action_remote_port
       transformers:
       - operator: uniq
@@ -2713,14 +2713,14 @@ inputs:
 - key: SrcHostname
   value:
     complex:
-      root: PaloAltoNetworksXDR.Incident.alerts
+      root: PaloAltoNetworksXDR.Case.Issues
       accessor: host_name
       transformers:
       - operator: append
         args:
           item:
             value:
-              simple: PaloAltoNetworksXDR.Incident.alerts.action_external_hostname
+              simple: PaloAltoNetworksXDR.Case.Issues.action_external_hostname
             iscontext: true
       - operator: uniq
   required: false
@@ -2729,12 +2729,12 @@ inputs:
 - key: EndpointID
   value:
     complex:
-      root: PaloAltoNetworksXDR.Incident.alerts
+      root: PaloAltoNetworksXDR.Case.Issues
       filters:
       - - operator: containsGeneral
           left:
             value:
-              simple: PaloAltoNetworksXDR.Incident.alerts.name
+              simple: PaloAltoNetworksXDR.Case.Issues.name
             iscontext: true
           right:
             value:
@@ -2750,14 +2750,14 @@ inputs:
 - key: Initiator_CMD
   value:
     complex:
-      root: PaloAltoNetworksXDR.Incident.alerts
+      root: PaloAltoNetworksXDR.Case.Issues
       accessor: action_process_image_command_line
       transformers:
       - operator: append
         args:
           item:
             value:
-              simple: PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_command_line
+              simple: PaloAltoNetworksXDR.Case.Issues.causality_actor_process_command_line
             iscontext: true
       - operator: uniq
   required: false
@@ -2766,14 +2766,14 @@ inputs:
 - key: Initiator_Process_SHA256
   value:
     complex:
-      root: PaloAltoNetworksXDR.Incident.alerts
+      root: PaloAltoNetworksXDR.Case.Issues
       accessor: action_process_image_sha256
       transformers:
       - operator: append
         args:
           item:
             value:
-              simple: PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_image_sha256
+              simple: PaloAltoNetworksXDR.Case.Issues.causality_actor_process_image_sha256
             iscontext: true
       - operator: uniq
   required: false
