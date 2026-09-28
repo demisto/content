@@ -9,26 +9,6 @@ Blocks a list of URLs in supported integrations.
 | Script Type | python3 |
 | Cortex XSOAR Version | 6.10.0 |
 
-## Dependencies
-
----
-This script uses the following commands and scripts.
-
-* pan-os
-* pan-os-apply-security-profile
-* pan-os-commit
-* pan-os-commit-status
-* pan-os-create-rule
-* pan-os-create-tag
-* pan-os-edit-custom-url-category
-* pan-os-edit-rule
-* pan-os-get-custom-url-category
-* pan-os-get-url-filter
-* pan-os-list-rules
-* pan-os-move-rule
-* pan-os-push-status
-* pan-os-push-to-device-group
-
 ## Inputs
 
 ---
