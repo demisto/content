@@ -1,0 +1,59 @@
+{
+  "events": [
+    {
+      "eventId": "b5ac4d16-8223-4cbd-86f3-f42f52a8f6ff",
+      "eventTime": "2017-07-27T12:13:37.15Z",
+      "impersonator": true,
+      "username": "jperez",
+      "eventData": [],
+      "eventType": {
+        "eventTypeId": "16",
+        "eventTypeName": "All Logins",
+        "eventDefinition": {
+          "eventDefinitionId": "415195",
+          "eventName": "Login",
+          "eventDescription": "A user logged in."
+        }
+      }
+    },
+    {
+      "eventId": "5409ed6f-d532-4832-b2be-961a21380416",
+      "eventTime": "2017-07-27T12:13:10.426Z",
+      "impersonator": false,
+      "username": "szhang",
+      "eventType": {
+        "eventTypeId": "50",
+        "eventTypeName": "Alert Activity",
+        "eventDefinition": {
+          "eventDefinitionId": "169758",
+          "eventName": "Alert Fired",
+          "eventDescription": "The condition that this alert was set up to monitor has occurred."
+        }
+      },
+      "eventData": [
+        {
+          "key": "Email To",
+          "value": "aaa@akamai.com"
+        },
+        {
+          "key": "Start Time",
+          "value": "Thu, Jul 27, 12:13 GMT 2017"
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "rel": "next",
+      "href": "/event-viewer-api/v1/events?beforeEventId=038a9f69-121f-4248-acd2-74103012c680"
+    },
+    {
+      "rel": "prev",
+      "href": "/event-viewer-api/v1/events?afterEventId=68bb2c73-bf1b-4cb0-ae56-b4fcd7210317"
+    },
+    {
+      "rel": "self",
+      "href": "/event-viewer-api/v1/events"
+    }
+  ]
+}
