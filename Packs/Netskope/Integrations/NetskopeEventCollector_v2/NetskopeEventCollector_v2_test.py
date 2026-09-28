@@ -880,3 +880,93 @@ def test_get_time_window_params(mocker, mock_config, start_time, end_time, expec
 
     # Verify the key mapping worked correctly
     assert params == expected_params, f"Expected {expected_params}, got {params}"
+
+
+@pytest.mark.asyncio
+async def test_fetch_and_send_events_async_retries_on_payload_error(mocker):
+    """
+    Given:
+        - The Netskope API returns an incomplete/truncated response payload (ClientPayloadError,
+          e.g. TransferEncodingError) on the first attempt and then succeeds.
+    When:
+        - Fetching a page of events via fetch_and_send_events_async.
+    Then:
+        - The page fetch is retried instead of failing.
+        - The page size (limit) is reduced on the retry to lower the chance of truncation.
+        - The events from the successful retry are returned with no failures.
+    """
+    from aiohttp import ClientPayloadError
+    from NetskopeEventCollector_v2 import fetch_and_send_events_async, MAX_EVENTS_PAGE_SIZE
+
+    mocker.patch("NetskopeEventCollector_v2.asyncio.sleep", return_value=None)
+
+    client = Client(BASE_URL, "token", False, False, ["alert"])
+    # count call (used by _handle_all_pages) returns a small number so a single page is scheduled
+    mocker.patch.object(client, "get_events_count", return_value=1)
+
+    observed_limits = []
+
+    async def get_events_data_async(event_type, params):
+        observed_limits.append(params.get("limit"))
+        if len(observed_limits) == 1:
+            raise ClientPayloadError("Not enough data to satisfy transfer length header.")
+        return {"result": [{"_id": "1", "timestamp": 1680000000}]}
+
+    mocker.patch.object(client, "get_events_data_async", side_effect=get_events_data_async)
+
+    request_params = {"limit": MAX_EVENTS_PAGE_SIZE, "offset": 0}
+    success, failures = await fetch_and_send_events_async(
+        client, "alert", request_params, limit=MAX_EVENTS_PAGE_SIZE, send_to_xsiam=False
+    )
+
+    assert failures == [], f"Expected no failures after a successful retry, got {failures}"
+    assert len(success) == 1, f"Expected one successful page, got {success}"
+    # first attempt used the full page size, retry used a reduced (halved) page size
+    assert observed_limits[0] == MAX_EVENTS_PAGE_SIZE
+    assert observed_limits[1] == MAX_EVENTS_PAGE_SIZE // 2
+    # exactly two attempts were made: the initial one plus a single retry
+    assert len(observed_limits) == 2
+
+
+@pytest.mark.asyncio
+async def test_fetch_and_send_events_async_payload_error_persists(mocker):
+    """
+    Given:
+        - The Netskope API persistently returns an incomplete/truncated response payload
+          (ClientPayloadError) on every attempt.
+    When:
+        - Fetching a page of events via fetch_and_send_events_async.
+    Then:
+        - After exhausting the retries the error is surfaced as a failure (recorded for
+          the next-fetch failure-replay mechanism) rather than crashing the fetch.
+        - The page size was shrunk on each retry but never below the configured floor.
+    """
+    from aiohttp import ClientPayloadError
+    from NetskopeEventCollector_v2 import fetch_and_send_events_async, MAX_EVENTS_PAGE_SIZE, MIN_EVENTS_PAGE_SIZE, MAX_RETRY
+
+    mocker.patch("NetskopeEventCollector_v2.asyncio.sleep", return_value=None)
+    # The failure path logs via demisto.error; mock it so it doesn't write to stdout (conftest forbids it).
+    mocker.patch.object(demisto, "error")
+
+    client = Client(BASE_URL, "token", False, False, ["alert"])
+    mocker.patch.object(client, "get_events_count", return_value=1)
+
+    observed_limits = []
+
+    async def get_events_data_async(event_type, params):
+        observed_limits.append(params.get("limit"))
+        raise ClientPayloadError("Not enough data to satisfy transfer length header.")
+
+    mocker.patch.object(client, "get_events_data_async", side_effect=get_events_data_async)
+
+    request_params = {"limit": MAX_EVENTS_PAGE_SIZE, "offset": 0}
+    success, failures = await fetch_and_send_events_async(
+        client, "alert", request_params, limit=MAX_EVENTS_PAGE_SIZE, send_to_xsiam=False
+    )
+
+    assert success == [], f"Expected no successful pages, got {success}"
+    assert len(failures) == 1, f"Expected a single recorded failure, got {failures}"
+    # page size was shrunk on each retry but never below the configured floor
+    assert min(observed_limits) >= MIN_EVENTS_PAGE_SIZE
+    # the request was attempted exactly MAX_RETRY + 1 times before giving up (1 initial attempt + 3 retries)
+    assert len(observed_limits) == MAX_RETRY + 1

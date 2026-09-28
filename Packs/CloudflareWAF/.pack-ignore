@@ -3,5 +3,5 @@ waf
 RequestHeaders
 
 [file:CloudflareWAF.yml]
-ignore=PR101,MR108
+ignore=PR101,MR108,BA129
 
