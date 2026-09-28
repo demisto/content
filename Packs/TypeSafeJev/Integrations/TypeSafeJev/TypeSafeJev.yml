@@ -67,6 +67,7 @@ script:
     - description: The text or JSON state to evaluate. Valid JSON is sent as structured state; other values are sent as text.
       name: state
       required: true
+      default: true
     - description: The JSON object whose keys are question IDs and whose values are TypeSafe Noul, Choice, or Score question definitions.
       name: questions
       required: true
