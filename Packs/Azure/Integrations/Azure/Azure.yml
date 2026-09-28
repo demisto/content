@@ -767,43 +767,6 @@ script:
       description: The SKU tier.
       type: String
 
-  - description: Lists blob containers. Deprecated. Use azure-storage-blob-container-list instead.
-    name: azure-storage-blob-containers-list
-    deprecated: true
-    outputs:
-      - contextPath: Azure.Storage.BlobContainers.id
-        description: The fully qualified resource ID for the resource.
-        type: String
-      - contextPath: Azure.Storage.BlobContainers.name
-        description: The name of the resource.
-        type: String
-      - contextPath: Azure.Storage.BlobContainers.type
-        description: The resource type.
-        type: String
-      - contextPath: Azure.Storage.BlobContainers.properties.publicAccess
-        description: The access level and whether data in the container may be accessed publicly.
-        type: String
-      - contextPath: Azure.Storage.BlobContainers.properties.leaseState
-        description: The lease state of the container.
-        type: String
-      - contextPath: Azure.Storage.BlobContainers.properties.lastModifiedTime
-        description: The date and time the container was last modified in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
-        type: Date
-    arguments:
-      - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-        name: subscription_id
-        required: false
-        required:platform: true
-      - description: "The resource group name."
-        name: resource_group_name
-        required: true
-      - description: The storage account name.
-        name: account_name
-        required: true
-      - description: The container name. When provided, retrieves the specified container only; otherwise all containers in the storage account are listed.
-        name: container_name
-        required: false
-
   - description: Run this command to update a specific blob container. The command is deprecated, please use azure-storage-blob-container-update.
     name: azure-storage-blob-containers-update
     deprecated: true
@@ -907,27 +870,27 @@ script:
   - name: azure-storage-blob-container-list
     description: "Lists blob containers, or retrieves a single blob container when a container name is provided. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/read."
     arguments:
-    - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-      name: subscription_id
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
-    - description: The resource group name.
-      name: resource_group_name
+    - name: resource_group_name
+      description: The resource group name.
       required: true
-    - description: The storage account name.
-      name: account_name
+    - name: account_name
+      description: The storage account name.
       required: true
-    - description: The container name. When provided, retrieves the specified container only; otherwise all containers in the storage account are listed.
-      name: container_name
+    - name: container_name
+      description: The container name. When provided, retrieves the specified container only; otherwise all containers in the storage account are listed.
       required: false
-    - auto: PREDEFINED
+    - name: include_deleted
       description: Whether to include soft-deleted blob containers in the response.
-      name: include_deleted
+      auto: PREDEFINED
       predefined:
         - 'true'
         - 'false'
-    - description: The maximum number of containers that the server returns per page (for example, 100).
-      name: maxpagesize
+    - name: maxpagesize
+      description: The maximum number of containers that the server returns per page (for example, 100).
     outputs:
     - contextPath: Azure.Storage.BlobContainers.id
       description: The fully qualified resource ID for the resource.

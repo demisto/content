@@ -103,7 +103,6 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Storage/storageAccounts/blobServices/containers/read": [
         "azure-storage-container-property-get",
         "azure-storage-blob-container-list",
-        "azure-storage-blob-containers-list",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/delete": ["azure-storage-container-delete"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": [
@@ -5939,7 +5938,6 @@ def main():  # pragma: no cover
             "azure-billing-budgets-list": azure_billing_budgets_list_command,
             "azure-storage-account-list": storage_account_list_command,
             "azure-storage-blob-container-list": storage_blob_containers_list_command,
-            "azure-storage-blob-containers-list": storage_blob_containers_list_command,
             "azure-storage-account-update": storage_account_update_command,
             "azure-storage-blob-service-properties-set": storage_blob_service_properties_set_command,
             "azure-storage-blob-service-property-set": storage_blob_service_properties_set_command,
