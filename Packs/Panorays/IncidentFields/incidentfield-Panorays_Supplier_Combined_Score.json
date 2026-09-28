@@ -13,5 +13,6 @@
     "version": -1,
     "content": true,
     "system": false,
-    "unsearchable": true
+    "unsearchable": true,
+    "required": false
 }

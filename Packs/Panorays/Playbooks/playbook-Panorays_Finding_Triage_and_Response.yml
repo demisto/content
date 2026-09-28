@@ -60,8 +60,9 @@ tasks:
       name: Is Panorays Findings API enabled?
       description: >-
         Verifies the Panorays Findings API instance is enabled before triaging. If the instance is disabled or
-        its API key has been revoked, the incident should not be auto-closed or handed to a remediation task
-        pointing at an unreachable integration.
+        not configured, the incident should not be auto-closed or handed to a remediation task pointing at an
+        unreachable integration. Note this only confirms an enabled instance exists for the brand - it does not
+        validate the API key itself, so a revoked or invalid key would still pass this check.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false

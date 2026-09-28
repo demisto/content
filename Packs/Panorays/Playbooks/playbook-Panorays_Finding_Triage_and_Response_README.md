@@ -1,6 +1,7 @@
 Triages a Panorays "Self Company" finding incident end-to-end without depending on any specific external ITSM tool.
 
 Flow:
+
 1. Verifies the Panorays Findings API integration instance is enabled. If it is not, the incident is routed to
    a manual review task instead of being triaged automatically against an unreachable integration.
 2. Checks for an existing open (or pending) incident on the same Panorays Finding ID. If found, only the newer
@@ -36,14 +37,14 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* IsIntegrationAvailable
-* PanoraysCheckOlderDuplicate
+- IsIntegrationAvailable
+- PanoraysCheckOlderDuplicate
 
 ### Commands
 
-* Print
-* closeInvestigation
-* send-notification
+- Print
+- closeInvestigation
+- send-notification
 
 ## Playbook Inputs
 

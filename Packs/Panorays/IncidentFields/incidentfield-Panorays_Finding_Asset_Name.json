@@ -10,9 +10,10 @@
     ],
     "associatedToAll": false,
     "type": "shortText",
-    "fromVersion": "6.10.0",
-    "version": -1,
     "content": true,
+    "unsearchable": true,
+    "version": -1,
+    "fromVersion": "6.10.0",
     "system": false,
-    "unsearchable": true
+    "required": false
 }

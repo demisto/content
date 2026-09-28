@@ -9,7 +9,7 @@
     "weeks": 0,
     "system": false,
     "readonly": false,
-    "fromVersion": "6.0.0",
+    "fromVersion": "6.10.0",
     "playbookId": "Panorays Finding - Triage and Response",
     "autorun": true,
     "disabled": false,

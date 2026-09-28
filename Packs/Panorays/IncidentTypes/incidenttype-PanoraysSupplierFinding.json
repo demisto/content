@@ -8,8 +8,6 @@
     "days": 0,
     "weeks": 0,
     "autorun": false,
-    "closureScript": "",
-    "preProcessingScript": "",
     "system": false,
     "readonly": false,
     "disabled": false,
