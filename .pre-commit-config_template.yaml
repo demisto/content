@@ -157,6 +157,16 @@ repos:
     exclude: test_data|Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py
     env:
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
+    # The mode-specific key replaces the base `env` wholesale (it is not merged),
+    # so COVERAGE_FILE must be repeated here.
+    env:nightly:
+      COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
+      SCRIPT_RUNNER_JOBS: "4"
+    # Split this image's file list into chunks of at most N files, so a single
+    # large image (e.g. demisto/python3, ~900 test files) becomes K hooks that
+    # run concurrently on the pre-commit thread pool instead of one serial hook.
+    # Nightly-only: local, CI and docker_autoupdate runs are unaffected.
+    max_files_per_hook:nightly: 50
     args:
     - /src/Tests/scripts/script_runner.py
     - coverage
