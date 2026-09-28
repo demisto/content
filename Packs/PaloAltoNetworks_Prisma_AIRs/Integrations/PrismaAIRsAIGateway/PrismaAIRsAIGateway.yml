@@ -2057,6 +2057,12 @@ script:
     - contextPath: PrismaAIRs.AIGatewayApiKey.status
       description: The API key status.
       type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.workspace_id
+      description: The workspace ID (UUID) the API key belongs to.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.workspace_name
+      description: The human-readable workspace name the API key belongs to, resolved from the workspace ID.
+      type: String
   - name: prisma-airs-aigateway-api-keys-user-list
     description: Lists user API keys in a workspace on the AI Gateway data plane. The key secret is never returned by list.
     arguments:
@@ -2080,6 +2086,12 @@ script:
       type: String
     - contextPath: PrismaAIRs.AIGatewayApiKey.status
       description: The API key status.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.workspace_id
+      description: The workspace ID (UUID) the API key belongs to.
+      type: String
+    - contextPath: PrismaAIRs.AIGatewayApiKey.workspace_name
+      description: The human-readable workspace name the API key belongs to, resolved from the workspace ID.
       type: String
   - name: prisma-airs-aigateway-api-keys-service-get
     description: Gets one service API key by UUID on the AI Gateway data plane. The key secret is never returned by get.

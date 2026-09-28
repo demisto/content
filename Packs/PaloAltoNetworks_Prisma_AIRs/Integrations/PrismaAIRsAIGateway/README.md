@@ -2892,6 +2892,8 @@ Lists service API keys in a workspace on the AI Gateway data plane. The key secr
 | PrismaAIRs.AIGatewayApiKey.name | String | The API key name. | 
 | PrismaAIRs.AIGatewayApiKey.type | String | The API key type. | 
 | PrismaAIRs.AIGatewayApiKey.status | String | The API key status. | 
+| PrismaAIRs.AIGatewayApiKey.workspace_id | String | The workspace ID \(UUID\) the API key belongs to. | 
+| PrismaAIRs.AIGatewayApiKey.workspace_name | String | The human-readable workspace name the API key belongs to, resolved from the workspace ID. | 
 
 ### prisma-airs-aigateway-api-keys-user-list
 
@@ -2918,6 +2920,8 @@ Lists user API keys in a workspace on the AI Gateway data plane. The key secret 
 | PrismaAIRs.AIGatewayApiKey.name | String | The API key name. | 
 | PrismaAIRs.AIGatewayApiKey.type | String | The API key type. | 
 | PrismaAIRs.AIGatewayApiKey.status | String | The API key status. | 
+| PrismaAIRs.AIGatewayApiKey.workspace_id | String | The workspace ID \(UUID\) the API key belongs to. | 
+| PrismaAIRs.AIGatewayApiKey.workspace_name | String | The human-readable workspace name the API key belongs to, resolved from the workspace ID. | 
 
 ### prisma-airs-aigateway-api-keys-service-get
 

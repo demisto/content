@@ -1455,6 +1455,40 @@ class TestApiKeys:
         assert args[1] == "/api-keys/user"
 
     @patch.object(Client, "http_request")
+    def test_service_list_enriches_workspace_name(self, mock_http: Mock, mock_client: Client) -> None:
+        """Each listed key is enriched with a workspace_name resolved once per workspace (lookups are cached)."""
+        mock_http.side_effect = [
+            {"data": [
+                {"id": "k1", "name": "ci", "workspace_id": "ws-1"},
+                {"id": "k2", "name": "cd", "workspace_id": "ws-1"},
+            ]},
+            {"data": {"id": "ws-1", "name": "production"}},
+        ]
+        result = api_keys_service_list_command(mock_client, {"workspace_id": "ws-1"})
+
+        # list call + a single cached workspace lookup for the shared workspace_id
+        assert mock_http.call_count == 2
+        lookup_args, lookup_kwargs = mock_http.call_args
+        assert lookup_args[1] == "/workspaces/ws-1"
+        assert lookup_kwargs["use_aigw_cp"] is True
+        assert result.outputs[0]["workspace_name"] == "production"
+        assert result.outputs[1]["workspace_name"] == "production"
+        # the raw workspace_id is preserved alongside the resolved name
+        assert result.outputs[0]["workspace_id"] == "ws-1"
+
+    @patch.object(Client, "http_request")
+    def test_service_list_enrichment_survives_lookup_failure(self, mock_http: Mock, mock_client: Client) -> None:
+        """A failed workspace lookup must not break the list; the key is returned without a workspace_name."""
+        mock_http.side_effect = [
+            {"data": [{"id": "k1", "name": "ci", "workspace_id": "ws-1"}]},
+            DemistoException("boom"),
+        ]
+        result = api_keys_service_list_command(mock_client, {"workspace_id": "ws-1"})
+
+        assert result.outputs[0]["id"] == "k1"
+        assert "workspace_name" not in result.outputs[0]
+
+    @patch.object(Client, "http_request")
     def test_service_get_by_uuid(self, mock_http: Mock, mock_client: Client) -> None:
         """Getting one key appends the UUID to the sub-collection path and never returns a secret."""
         mock_http.return_value = {"id": "k1", "name": "ci"}

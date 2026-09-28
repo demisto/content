@@ -1974,16 +1974,50 @@ def _api_keys_update_body(args: dict[str, Any]) -> dict[str, Any]:
     )
 
 
+def _resolve_workspace_name(client: Client, workspace_id: str, cache: dict[str, str | None]) -> str | None:
+    """Resolve a workspace UUID to its human-readable name, caching lookups within a single command run.
+
+    Returns None (and logs at debug) if the workspace cannot be fetched, so enrichment never fails a list.
+    """
+    if not workspace_id:
+        return None
+    if workspace_id in cache:
+        return cache[workspace_id]
+    name: str | None = None
+    try:
+        response = client.http_request("GET", f"{WORKSPACES_ENDPOINT}/{workspace_id}", use_aigw_cp=True)
+        workspace = response.get("data", response) if isinstance(response, dict) else response
+        if isinstance(workspace, dict):
+            name = workspace.get("name")
+    except Exception as exc:  # enrichment is best-effort; a failed lookup must not break the list
+        demisto.debug(f"Could not resolve workspace name for {workspace_id}: {exc}")
+    cache[workspace_id] = name
+    return name
+
+
+def _enrich_with_workspace_name(client: Client, data: Any) -> None:
+    """Stamp a human-readable workspace_name onto each API key (alongside its workspace_id), in place."""
+    if not isinstance(data, list):
+        return
+    cache: dict[str, str | None] = {}
+    for key in data:
+        if isinstance(key, dict) and key.get("workspace_id"):
+            name = _resolve_workspace_name(client, key["workspace_id"], cache)
+            if name:
+                key["workspace_name"] = name
+
+
 def _api_keys_list(client: Client, args: dict[str, Any], endpoint: str, title: str) -> CommandResults:
     """List API keys in a workspace (workspace_id is required). Secrets are never returned by list."""
     params = assign_params(workspace_id=args.get("workspace_id"), **pagination_params(args))
     response = client.http_request("GET", endpoint, params=params, use_aigw_cp=True)
     data = response.get("data", []) if isinstance(response, dict) else response
+    _enrich_with_workspace_name(client, data)
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}AIGatewayApiKey",
         outputs_key_field="id",
         outputs=data,
-        readable_output=table(title, data, headers=["id", "name", "type", "status", "object"]),
+        readable_output=table(title, data, headers=["id", "name", "type", "status", "workspace_name", "object"]),
         raw_response=data,
     )
 
