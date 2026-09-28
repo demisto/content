@@ -20,14 +20,11 @@ DEFAULT_BASE_URL = "https://api.dlp.paloaltonetworks.com/v1/"
 DEFAULT_AUTH_URL = "https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token"
 REPORT_URL = "public/report/{}"
 SERVICE_NAME_HEADER = "service-name"
-INCIDENTS_URL = "public/incident-notifications"
 REFRESH_TOKEN_URL = "public/oauth/refreshToken"
 UPDATE_INCIDENT_URL = "public/incident-feedback"
 SLEEP_TIME_URL = "public/seconds-between-incident-notifications-pull"
 V4_INCIDENTS_PATH = "/v4/api/incidents"
 V4_PAGE_SIZE = 1000
-FETCH_SLEEP = 5  # sleep between fetches (in seconds)
-LAST_FETCH_TIME = "last_fetch_time"
 DEFAULT_FIRST_FETCH = "60 minutes"
 ACCESS_TOKEN = "access_token"
 RESET_KEY = "reset"
@@ -189,17 +186,20 @@ class Client(BaseClient):
         count = 0
 
         while count < MAX_ATTEMPTS:
-            res = self._http_request(
-                method="POST",
-                headers={"Authorization": f"Bearer {self.access_token}"},
-                url_suffix=url_suffix,
-                full_url=full_url or None,
-                json_data=payload,
-                ok_codes=[200, 201, 204],
-                error_handler=self._handle_4xx_errors,
-                resp_type="response",
-                return_empty_response=True,
-            )
+            http_kwargs: dict[str, Any] = {
+                "method": "POST",
+                "headers": {"Authorization": f"Bearer {self.access_token}"},
+                "json_data": payload,
+                "ok_codes": [200, 201, 204],
+                "error_handler": self._handle_4xx_errors,
+                "resp_type": "response",
+                "return_empty_response": True,
+            }
+            if full_url:
+                http_kwargs["full_url"] = full_url
+            else:
+                http_kwargs["url_suffix"] = url_suffix
+            res = self._http_request(**http_kwargs)
             if res.status_code < 400 or res.status_code >= 500:
                 break
             count += 1
