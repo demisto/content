@@ -372,7 +372,7 @@ API_FUNCTION_TO_PERMISSIONS = {
         "Microsoft.Sql/servers/databases/transparentDataEncryption/write",
     ],
     "storage_account_list_request": ["Microsoft.Storage/storageAccounts/read"],
-    "storage_blob_containers_list_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/read"],
+    "storage_blob_container_list_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/read"],
     "storage_account_update_request": ["Microsoft.Storage/storageAccounts/read", "Microsoft.Storage/storageAccounts/write"],
     "storage_blob_service_properties_set_request": [
         "Microsoft.Storage/storageAccounts/blobServices/read",
@@ -926,7 +926,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def storage_blob_containers_list_request(self, subscription_id: str, resource_group_name: str, args: dict):
+    def storage_blob_container_list_request(self, subscription_id: str, resource_group_name: str, args: dict):
         """
         Send the get blob container/s request to the API.
 
@@ -969,7 +969,7 @@ class AzureClient:
                 e=e,
                 resource_name=container_name or "blob-containers",
                 resource_type="Blob Container",
-                api_function_name="storage_blob_containers_list_request",
+                api_function_name="storage_blob_container_list_request",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -3208,7 +3208,7 @@ def storage_account_list_command(client: AzureClient, params: dict, args: dict) 
     )
 
 
-def storage_blob_containers_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+def storage_blob_container_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """
         Gets a blob container if a container name is specified, and a list of blob containers if not.
     Args:
@@ -3222,7 +3222,7 @@ def storage_blob_containers_list_command(client: AzureClient, params: dict, args
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
 
-    response = client.storage_blob_containers_list_request(
+    response = client.storage_blob_container_list_request(
         subscription_id=subscription_id, resource_group_name=resource_group_name, args=args
     )
     containers = response.get("value", [response])
@@ -5937,7 +5937,7 @@ def main():  # pragma: no cover
             "azure-billing-forecast-list": azure_billing_forecast_list_command,
             "azure-billing-budgets-list": azure_billing_budgets_list_command,
             "azure-storage-account-list": storage_account_list_command,
-            "azure-storage-blob-container-list": storage_blob_containers_list_command,
+            "azure-storage-blob-container-list": storage_blob_container_list_command,
             "azure-storage-account-update": storage_account_update_command,
             "azure-storage-blob-service-properties-set": storage_blob_service_properties_set_command,
             "azure-storage-blob-service-property-set": storage_blob_service_properties_set_command,

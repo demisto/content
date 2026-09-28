@@ -825,15 +825,15 @@ script:
   - name: azure-storage-account-list
     description: "Lists storage accounts, or retrieves a single storage account when an account name is provided. Required permission: Microsoft.Storage/storageAccounts/read."
     arguments:
-    - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-      name: subscription_id
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
-    - description: The resource group name.
-      name: resource_group_name
+    - name: resource_group_name
+      description: The resource group name.
       required: true
-    - description: The storage account name. When provided, retrieves the specified storage account only; otherwise all storage accounts in the resource group are listed.
-      name: account_name
+    - name: account_name
+      description: The storage account name. When provided, retrieves the specified storage account only; otherwise all storage accounts in the resource group are listed.
       required: false
     outputs:
     - contextPath: Azure.Storage.StorageAccounts.id
