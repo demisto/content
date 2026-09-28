@@ -3399,7 +3399,7 @@ script:
     name: azure-sql-db-transparent-data-encryption-set
     outputs: [] # has no outputs for this command from response
   - name: azure-aks-managed-cluster-list
-    description: "Gets a list of managed clusters in the specified subscription. Required permission: Microsoft.ContainerService/managedClusters/read."
+    description: Gets a list of managed clusters in the specified subscription. Requires the following permission: Microsoft.ContainerService/managedClusters/read.
     arguments:
     - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: subscription_id
@@ -3428,22 +3428,22 @@ script:
       description: The version of Kubernetes specified when creating the managed cluster.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.maxAgentPools
-      description: The maximum number of agent pools for the managed cluster.
+      description: The maximum number of agent pools of the managed cluster.
       type: Number
     - contextPath: Azure.AKS.ManagedCluster.properties.dnsPrefix
       description: The DNS prefix specified when creating the managed cluster.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.fqdn
-      description: The FQDN for the master pool.
+      description: The FQDN of the master pool.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.agentPoolProfiles
       description: The agent pool profiles, including name, count, VM size, max pods, OS type, provisioning state, and orchestrator version.
       type: Unknown
     - contextPath: Azure.AKS.ManagedCluster.properties.linuxProfile
-      description: The Linux profile, including the administrator account name and the SSH public keys used to authenticate with VMs.
+      description: The Linux profile, including the administrator account name and SSH public keys used to authenticate with VMs.
       type: Unknown
     - contextPath: Azure.AKS.ManagedCluster.properties.servicePrincipalProfile
-      description: The service principal profile, including the client ID for the service principal.
+      description: The service principal profile, including the client ID of the service principal.
       type: Unknown
     - contextPath: Azure.AKS.ManagedCluster.properties.nodeResourceGroup
       description: The name of the resource group containing agent pool nodes.
@@ -3452,7 +3452,7 @@ script:
       description: Whether to enable Kubernetes Role-Based Access Control (RBAC).
       type: Boolean
     - contextPath: Azure.AKS.ManagedCluster.properties.diskEncryptionSetID
-      description: The resource ID of the disk encryption set to use for enabling encryption at rest.
+      description: The resource ID of the disk encryption set used to enable encryption at rest.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.networkProfile
       description: The network configuration, including the network plugin, pod CIDR, service CIDR, and DNS service IP.
@@ -3461,7 +3461,7 @@ script:
       description: The managed cluster add-on profiles, including the Operations Management Suite Agent and HTTP application routing configurations.
       type: Unknown
   - name: azure-aks-managed-cluster-addon-update
-    description: "Updates a managed cluster with the specified configuration. Required permissions: Microsoft.ContainerService/managedClusters/read, Microsoft.ContainerService/managedClusters/write."
+    description: "Updates a managed cluster with the specified configuration. Requires the following permissions: Microsoft.ContainerService/managedClusters/read, Microsoft.ContainerService/managedClusters/write.
     arguments:
     - description: The name of the managed cluster resource. Can be retrieved using the azure-aks-managed-cluster-list command.
       name: resource_name
@@ -3516,13 +3516,13 @@ script:
       - westus
       - westus2
       required: true
-    - description: 'Whether to configure ingress with automatic public DNS name creation. Possible values: "true" and "false".'
+    - description: Whether to configure ingress with automatic public DNS name creation.
       name: http_application_routing_enabled
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - description: 'Whether to turn on Log Analytics monitoring. If enabled and monitoring_resource_name is not specified, will use the currently configured workspace resource ID. Possible values: "true" and "false".'
+    - description: Whether to turn on Log Analytics monitoring. If enabled and monitoring_resource_name is not specified, it uses the currently configured workspace resource ID.
       name: monitoring_agent_enabled
       auto: PREDEFINED
       predefined:
