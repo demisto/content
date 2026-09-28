@@ -93,7 +93,7 @@ Lists storage accounts, or retrieves a single storage account when an account na
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Storage.StorageAccounts.id | String | Fully qualified resource ID for the storage account. |
+| Azure.Storage.StorageAccounts.id | String | The fully qualified resource ID for the storage account. |
 | Azure.Storage.StorageAccounts.name | String | The name of the storage account. |
 | Azure.Storage.StorageAccounts.type | String | The resource type. |
 | Azure.Storage.StorageAccounts.location | String | The geo-location where the resource lives. |
@@ -128,15 +128,15 @@ Lists blob containers, or retrieves a single blob container when a container nam
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Storage.BlobContainers.id | String | Fully qualified resource ID for the resource. |
+| Azure.Storage.BlobContainers.id | String | The fully qualified resource ID for the resource. |
 | Azure.Storage.BlobContainers.name | String | The name of the resource. |
 | Azure.Storage.BlobContainers.type | String | The resource type. |
-| Azure.Storage.BlobContainers.properties.publicAccess | String | Specifies whether data in the container may be accessed publicly and the access level. |
+| Azure.Storage.BlobContainers.properties.publicAccess | String | The access level and whether data in the container may be accessed publicly. |
 | Azure.Storage.BlobContainers.properties.leaseStatus | String | The lease status of the container. |
 | Azure.Storage.BlobContainers.properties.leaseState | String | The lease state of the container. |
-| Azure.Storage.BlobContainers.properties.lastModifiedTime | Date | Returns the date and time the container was last modified. |
-| Azure.Storage.BlobContainers.properties.hasImmutabilityPolicy | Boolean | The hasImmutabilityPolicy property is set to true by SRP if an ImmutabilityPolicy exists for this container, and false if it does not. |
-| Azure.Storage.BlobContainers.properties.hasLegalHold | Boolean | The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared. |
+| Azure.Storage.BlobContainers.properties.lastModifiedTime | Date | The date and time the container was last modified in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| Azure.Storage.BlobContainers.properties.hasImmutabilityPolicy | Boolean | Whether an ImmutabilityPolicy exists for this container. |
+| Azure.Storage.BlobContainers.properties.hasLegalHold | Boolean | Whether at least one legal hold tag exists for this container. |
 
 ### azure-storage-account-update
 

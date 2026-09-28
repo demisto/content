@@ -767,12 +767,12 @@ script:
       description: The SKU tier.
       type: String
 
-  - description: Run this command to list blob containers. The command is deprecated, please use azure-storage-blob-container-list.
+  - description: Lists blob containers. Deprecated. Use azure-storage-blob-container-list instead.
     name: azure-storage-blob-containers-list
     deprecated: true
     outputs:
       - contextPath: Azure.Storage.BlobContainers.id
-        description: Fully qualified resource ID for the resource.
+        description: The fully qualified resource ID for the resource.
         type: String
       - contextPath: Azure.Storage.BlobContainers.name
         description: The name of the resource.
@@ -781,13 +781,13 @@ script:
         description: The resource type.
         type: String
       - contextPath: Azure.Storage.BlobContainers.properties.publicAccess
-        description: Specifies whether data in the container may be accessed publicly and the access level.
+        description: The access level and whether data in the container may be accessed publicly.
         type: String
       - contextPath: Azure.Storage.BlobContainers.properties.leaseState
         description: The lease state of the container.
         type: String
       - contextPath: Azure.Storage.BlobContainers.properties.lastModifiedTime
-        description: Returns the date and time the container was last modified.
+        description: The date and time the container was last modified in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
         type: Date
     arguments:
       - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -874,7 +874,7 @@ script:
       required: false
     outputs:
     - contextPath: Azure.Storage.StorageAccounts.id
-      description: Fully qualified resource ID for the storage account.
+      description: The fully qualified resource ID for the storage account.
       type: String
     - contextPath: Azure.Storage.StorageAccounts.name
       description: The name of the storage account.
@@ -930,7 +930,7 @@ script:
       name: maxpagesize
     outputs:
     - contextPath: Azure.Storage.BlobContainers.id
-      description: Fully qualified resource ID for the resource.
+      description: The fully qualified resource ID for the resource.
       type: String
     - contextPath: Azure.Storage.BlobContainers.name
       description: The name of the resource.
@@ -939,7 +939,7 @@ script:
       description: The resource type.
       type: String
     - contextPath: Azure.Storage.BlobContainers.properties.publicAccess
-      description: Specifies whether data in the container may be accessed publicly and the access level.
+      description: The access level and whether data in the container may be accessed publicly.
       type: String
     - contextPath: Azure.Storage.BlobContainers.properties.leaseStatus
       description: The lease status of the container.
@@ -948,13 +948,13 @@ script:
       description: The lease state of the container.
       type: String
     - contextPath: Azure.Storage.BlobContainers.properties.lastModifiedTime
-      description: Returns the date and time the container was last modified.
+      description: The date and time the container was last modified in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Azure.Storage.BlobContainers.properties.hasImmutabilityPolicy
-      description: The hasImmutabilityPolicy property is set to true by SRP if an ImmutabilityPolicy exists for this container, and false if it does not.
+      description: Whether an ImmutabilityPolicy exists for this container.
       type: Boolean
     - contextPath: Azure.Storage.BlobContainers.properties.hasLegalHold
-      description: The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared.
+      description: Whether at least one legal hold tag exists for this container.
       type: Boolean
 
   - name: azure-storage-blob-container-update

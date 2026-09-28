@@ -951,10 +951,12 @@ class AzureClient:
             f"/blobServices/default/containers/{container_name}"
         )
         params = {"api-version": API_VERSION}
-        if args.get("include_deleted") == "true":
+        if argToBoolean(args.get("include_deleted", False)):
             params["$include"] = "deleted"
-        if maxpagesize := args.get("maxpagesize"):
-            params["$maxpagesize"] = maxpagesize
+        if maxpagesize := arg_to_number(args.get("maxpagesize")):
+            if maxpagesize <= 0:
+                raise ValueError("The maxpagesize argument must be a positive integer.")
+            params["$maxpagesize"] = str(maxpagesize)
 
         try:
             demisto.debug(f'Listing blob container(s) "{container_name}" under account "{account_name}".')
