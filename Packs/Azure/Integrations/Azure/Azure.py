@@ -4789,14 +4789,8 @@ def nsg_virtual_networks_list_command(client: AzureClient, params: dict[str, Any
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
 
-    all_results = argToBoolean(args.get("all_results", "false"))
-    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
-
     response = client.list_virtual_networks_request(subscription_id=subscription_id, resource_group_name=resource_group_name)
     data_from_response = response.get("value", [])
-
-    if not all_results:
-        data_from_response = data_from_response[:limit]
 
     # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
     for data in data_from_response:
@@ -4897,14 +4891,8 @@ def subscriptions_list_command(client: AzureClient, params: dict[str, Any], args
     Returns:
         Command results with raw response, outputs and readable outputs.
     """
-    all_results = argToBoolean(args.get("all_results", "false"))
-    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
-
     response = client.list_subscriptions_request()
     data_from_response = response.get("value", [])
-
-    if not all_results:
-        data_from_response = data_from_response[:limit]
 
     readable_output = tableToMarkdown(
         name="Subscriptions List",

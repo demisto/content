@@ -7603,14 +7603,11 @@ def test_extract_fallback_prefix_returns_empty_for_unknown_handler():
 def test_nsg_virtual_networks_list_command(mocker):
     """
     Given: An Azure client mock and the list_virtual_networks_response.json file.
-    When: nsg_virtual_networks_list_command is called
-          1. With a limit of 1 (all_results=False).
-          2. With all_results=True.
+    When: nsg_virtual_networks_list_command is called.
     Then:
-          1. It should return only 1 result when limited.
-          2. It should return all results when all_results=True.
-          3. The results should contain expected fields such as name, id and location.
-          4. The etag field should be cleaned up (first 3 chars and last char removed).
+          1. It should return all the virtual networks from the response.
+          2. The results should contain expected fields such as name, id and location.
+          3. The etag field should be cleaned up (first 3 chars and last char removed).
     """
     from Azure import nsg_virtual_networks_list_command
 
@@ -7621,13 +7618,11 @@ def test_nsg_virtual_networks_list_command(mocker):
 
     params = {"subscription_id": "subid", "resource_group_name": "rg1"}
 
-    # --- Case 1: with limit=1 ---
-    args = {"limit": "1", "all_results": "false"}
-    result: CommandResults = nsg_virtual_networks_list_command(mock_client, params, args)
+    result: CommandResults = nsg_virtual_networks_list_command(mock_client, params, {})
 
     assert result.outputs_prefix == "Azure.VirtualNetworks.VirtualNetworks"
     assert result.outputs_key_field == "id"
-    assert len(result.outputs) == 1
+    assert len(result.outputs) == 2
 
     first = result.outputs[0]
     assert first["name"] == "vnet1"
@@ -7637,23 +7632,14 @@ def test_nsg_virtual_networks_list_command(mocker):
 
     mock_client.list_virtual_networks_request.assert_called_with(subscription_id="subid", resource_group_name="rg1")
 
-    # --- Case 2: with all_results=True ---
-    # Reload the fixture, the command cleans up the etag in place on the response objects.
-    mock_client.list_virtual_networks_request.return_value = util_load_json("test_data/list_virtual_networks_response.json")
-    args = {"all_results": "true"}
-    result_all: CommandResults = nsg_virtual_networks_list_command(mock_client, params, args)
-
-    assert len(result_all.outputs) == len(mock_response["value"])
-    assert len(result_all.outputs) == 2
-
-    names = [item["name"] for item in result_all.outputs]
+    names = [item["name"] for item in result.outputs]
     assert "vnet1" in names
     assert "vnet2" in names
 
-    for item in result_all.outputs:
+    for item in result.outputs:
         assert item["etag"] == "etag"
 
-    assert "Virtual Networks List" in result_all.readable_output
+    assert "Virtual Networks List" in result.readable_output
 
 
 def test_nsg_virtual_networks_list_command_empty_response(mocker):
@@ -7830,13 +7816,10 @@ def test_create_network_interface_request_removes_empty_elements(mocker, client)
 def test_subscriptions_list_command(mocker):
     """
     Given: An Azure client mock and the list_subscriptions_response.json file.
-    When: subscriptions_list_command is called
-          1. With a limit of 1 (all_results=False).
-          2. With all_results=True.
+    When: subscriptions_list_command is called.
     Then:
-          1. It should return only 1 result when limited.
-          2. It should return all results when all_results=True.
-          3. The results should contain expected fields such as subscriptionId and displayName.
+          1. It should return all the subscriptions from the response.
+          2. The results should contain expected fields such as subscriptionId and displayName.
     """
     from Azure import subscriptions_list_command
 
@@ -7845,25 +7828,18 @@ def test_subscriptions_list_command(mocker):
     mock_client = mocker.Mock()
     mock_client.list_subscriptions_request.return_value = mock_response
 
-    # --- Case 1: with limit=1 ---
-    args = {"limit": "1", "all_results": "false"}
-    result: CommandResults = subscriptions_list_command(mock_client, {}, args)
+    result: CommandResults = subscriptions_list_command(mock_client, {}, {})
 
     assert result.outputs_prefix == "Azure.ResourceManagement.Subscriptions"
     assert result.outputs_key_field == "id"
-    assert len(result.outputs) == 1
+    assert len(result.outputs) == 2
 
     first = result.outputs[0]
     assert first["subscriptionId"] == "11111111-1111-1111-1111-111111111111"
     assert first["displayName"] == "Test Subscription 1"
     assert first["state"] == "Enabled"
 
-    # --- Case 2: with all_results=True ---
-    args = {"all_results": "true"}
-    result_all: CommandResults = subscriptions_list_command(mock_client, {}, args)
-
-    assert len(result_all.outputs) == 2
-    assert "Subscriptions List" in result_all.readable_output
+    assert "Subscriptions List" in result.readable_output
 
 
 def test_subscriptions_list_command_empty_response(mocker):

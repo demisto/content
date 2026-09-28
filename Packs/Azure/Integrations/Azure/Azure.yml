@@ -4679,17 +4679,6 @@ script:
       type: String
       required: false
       required:platform: true
-    - name: limit
-      description: The maximum number of records to return.
-      defaultValue: 50
-      type: Number
-    - name: all_results
-      description: Whether to retrieve all results by overriding the default limit.
-      defaultValue: 'false'
-      auto: PREDEFINED
-      predefined:
-        - "false"
-        - "true"
     outputs:
     - contextPath: Azure.VirtualNetworks.VirtualNetworks.name
       description: The virtual network's name.
@@ -4892,18 +4881,7 @@ script:
 
   - name: azure-nsg-subscriptions-list
     description: "Gets all subscriptions for a tenant. Required permissions: Microsoft.Resources/subscriptions/read."
-    arguments:
-    - name: limit
-      description: The maximum number of records to return.
-      defaultValue: 50
-      type: Number
-    - name: all_results
-      description: Whether to retrieve all results by overriding the default limit.
-      defaultValue: 'false'
-      auto: PREDEFINED
-      predefined:
-        - "false"
-        - "true"
+    arguments: []
     outputs:
     - contextPath: Azure.ResourceManagement.Subscriptions.id
       description: The unique identifier of the subscription.

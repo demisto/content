@@ -3140,8 +3140,6 @@ Gets virtual networks in a resource group. Required permissions: Microsoft.Netwo
 | --- | --- | --- |
 | resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| limit | The maximum number of records to return. Default is 50. | Optional |
-| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. Default is false. | Optional |
 
 #### Context Output
 
@@ -3214,10 +3212,7 @@ Gets all subscriptions for a tenant. Required permissions: Microsoft.Resources/s
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| limit | The maximum number of records to return. Default is 50. | Optional |
-| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. Default is false. | Optional |
+There are no input arguments for this command.
 
 #### Context Output
 
