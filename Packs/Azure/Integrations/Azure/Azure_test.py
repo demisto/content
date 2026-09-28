@@ -8092,7 +8092,7 @@ def test_firewall_policy_attach_command_success(mocker):
         - firewall_policy_attach_command is called.
     Then:
         - The firewall is fetched, its firewallPolicy property is set to the given policy ID,
-          and the updated firewall is returned under the Azure.VirtualNetworks.Firewalls prefix.
+          and the updated firewall is returned under the Azure.Firewall.Firewalls prefix.
     """
     from Azure import firewall_policy_attach_command
 
@@ -8114,7 +8114,7 @@ def test_firewall_policy_attach_command_success(mocker):
 
     result = firewall_policy_attach_command(client, params, args)
 
-    assert result.outputs_prefix == "Azure.VirtualNetworks.Firewalls"
+    assert result.outputs_prefix == "Azure.Firewall.Firewalls"
     assert "Successfully attached the firewall policy to firewall firewall1" in result.readable_output
     sent_firewall = client.firewall_update.call_args[1]["firewall_data"]
     assert sent_firewall["properties"]["firewallPolicy"] == {"id": "policy-id"}
@@ -8150,7 +8150,7 @@ def test_firewall_policy_detach_command_success(mocker):
         - firewall_policy_detach_command is called.
     Then:
         - The firewallPolicy property is removed from the firewall before the update is sent,
-          and the updated firewall is returned under the Azure.VirtualNetworks.Firewalls prefix.
+          and the updated firewall is returned under the Azure.Firewall.Firewalls prefix.
     """
     from Azure import firewall_policy_detach_command
 
@@ -8171,7 +8171,7 @@ def test_firewall_policy_detach_command_success(mocker):
 
     result = firewall_policy_detach_command(client, params, {"firewall_name": "firewall1"})
 
-    assert result.outputs_prefix == "Azure.VirtualNetworks.Firewalls"
+    assert result.outputs_prefix == "Azure.Firewall.Firewalls"
     assert "Successfully detached the firewall policy from firewall firewall1" in result.readable_output
     assert "firewallPolicy" not in client.firewall_update.call_args[1]["firewall_data"]["properties"]
 
@@ -8196,7 +8196,7 @@ def test_firewall_policy_detach_command_no_policy_attached(mocker):
 
     result = firewall_policy_detach_command(client, params, {"firewall_name": "firewall1"})
 
-    assert result.outputs_prefix == "Azure.VirtualNetworks.Firewalls"
+    assert result.outputs_prefix == "Azure.Firewall.Firewalls"
     client.firewall_update.assert_called_once()
 
 

@@ -338,9 +338,9 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-vn-firewall-policy-update",
     ],
     "Microsoft.Network/firewallPolicies/delete": ["azure-vn-firewall-policy-delete"],
-    "Microsoft.Network/firewallPolicies/join/action": ["azure-vn-firewall-policy-attach"],
-    "Microsoft.Network/azureFirewalls/read": ["azure-vn-firewall-policy-attach", "azure-vn-firewall-policy-detach"],
-    "Microsoft.Network/azureFirewalls/write": ["azure-vn-firewall-policy-attach", "azure-vn-firewall-policy-detach"],
+    "Microsoft.Network/firewallPolicies/join/action": ["azure-firewall-policy-attach"],
+    "Microsoft.Network/azureFirewalls/read": ["azure-firewall-policy-attach", "azure-firewall-policy-detach"],
+    "Microsoft.Network/azureFirewalls/write": ["azure-firewall-policy-attach", "azure-firewall-policy-detach"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -5655,7 +5655,7 @@ def parse_forecast_table_to_dict(response: dict) -> list[dict]:
 def firewall_policy_create_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
     Create a firewall policy. The command only creates the policy resource. To attach the policy to a firewall,
-    run the azure-vn-firewall-policy-attach command.
+    run the azure-firewall-policy-attach command.
 
     Args:
         client (AzureClient): The Azure client.
@@ -5946,7 +5946,7 @@ def firewall_policy_attach_command(client: AzureClient, params: dict[str, Any], 
     )
 
     return CommandResults(
-        outputs_prefix="Azure.VirtualNetworks.Firewalls",
+        outputs_prefix="Azure.Firewall.Firewalls",
         outputs_key_field="id",
         outputs=response,
         readable_output=readable_output,
@@ -5993,7 +5993,7 @@ def firewall_policy_detach_command(client: AzureClient, params: dict[str, Any], 
     )
 
     return CommandResults(
-        outputs_prefix="Azure.VirtualNetworks.Firewalls",
+        outputs_prefix="Azure.Firewall.Firewalls",
         outputs_key_field="id",
         outputs=response,
         readable_output=readable_output,
@@ -6448,8 +6448,8 @@ def main():  # pragma: no cover
             "azure-vn-firewall-policy-get": firewall_policy_get_command,
             "azure-vn-firewall-policy-delete": firewall_policy_delete_command,
             "azure-vn-firewall-policy-list": firewall_policy_list_command,
-            "azure-vn-firewall-policy-attach": firewall_policy_attach_command,
-            "azure-vn-firewall-policy-detach": firewall_policy_detach_command,
+            "azure-firewall-policy-attach": firewall_policy_attach_command,
+            "azure-firewall-policy-detach": firewall_policy_detach_command,
         }
 
         azure_ad_endpoint = params.get("azure_ad_endpoint") or DEFAULT_AZURE_AD_ENDPOINT

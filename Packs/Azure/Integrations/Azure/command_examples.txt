@@ -34,6 +34,6 @@
 !azure-vn-firewall-policy-update subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" policy_name="my-firewall-policy" threat_intelligence_mode="Deny" enable_proxy="true"
 !azure-vn-firewall-policy-get subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" policy_name="my-firewall-policy"
 !azure-vn-firewall-policy-list subscription_id="my-subscription-id" resource_group_name="my_resource_group_name"
-!azure-vn-firewall-policy-attach subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" firewall_name="my-firewall" policy_id="/subscriptions/my-subscription-id/resourceGroups/my_resource_group_name/providers/Microsoft.Network/firewallPolicies/my-firewall-policy"
-!azure-vn-firewall-policy-detach subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" firewall_name="my-firewall"
+!azure-firewall-policy-attach subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" firewall_name="my-firewall" policy_id="/subscriptions/my-subscription-id/resourceGroups/my_resource_group_name/providers/Microsoft.Network/firewallPolicies/my-firewall-policy"
+!azure-firewall-policy-detach subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" firewall_name="my-firewall"
 !azure-vn-firewall-policy-delete subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" policy_name="my-firewall-policy"
