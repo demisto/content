@@ -377,6 +377,9 @@ tasks:
       format: ""
       bcc:
       cc:
+      replyOptions:
+      - "Approve"
+      - "Reject"
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -436,3 +439,14 @@ marketplaces:
 - marketplacev2
 tests:
 - No tests (auto formatted)
+supportedModules:
+- cloud_posture
+- cloud
+- cloud_runtime_security
+- edr
+- agentix
+- asm
+- xsiam
+- exposure_management
+- tim
+- xti

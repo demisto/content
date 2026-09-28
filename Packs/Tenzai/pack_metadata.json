@@ -38,9 +38,5 @@
     ],
     "itemPrefix": [
         "Tenzai"
-    ],
-    "supportedModules": [
-        "asm",
-        "xsiam"
     ]
 }

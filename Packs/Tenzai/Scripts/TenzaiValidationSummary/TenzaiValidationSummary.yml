@@ -17,7 +17,7 @@ tags:
 timeout: '0'
 scripttarget: 0
 runas: DBotWeakRole
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.14.13053055
 enabled: true
 runonce: false
 fromversion: 6.10.0

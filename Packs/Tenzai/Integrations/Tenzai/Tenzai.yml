@@ -49,7 +49,6 @@ description: Validate Cortex ASM-discovered exposures with Tenzai's agentic pene
 display: Tenzai
 name: Tenzai
 provider: Tenzai
-supportlevelheader: partner
 script:
   commands:
   - name: tenzai-create-scan
@@ -238,7 +237,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.14.13053055
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

@@ -144,7 +144,7 @@ scripttarget: 0
 subtype: python3
 type: python
 runas: DBotWeakRole
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.14.13053055
 enabled: true
 runonce: false
 script: ''
