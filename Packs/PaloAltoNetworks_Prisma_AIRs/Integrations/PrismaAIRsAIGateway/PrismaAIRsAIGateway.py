@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 from PrismaAirsApiModule import *  # noqa # pylint: disable=unused-wildcard-import
 
-from typing import Any
+from typing import Any, TypedDict
 
 # CONSTANTS (AI Gateway specific; shared constants such as DEFAULT_LIMIT / PA_OUTPUT_PREFIX
 # and the plane-routing transport come from PrismaAirsApiModule).
@@ -88,7 +88,14 @@ def pagination_params(args: dict[str, Any]) -> dict[str, Any]:
     )
 
 
-def plane_flags(args: dict[str, Any]) -> dict[str, bool]:
+class PlaneFlags(TypedDict, total=False):
+    """The http_request routing flags plane_flags may set (exactly one is set per call)."""
+
+    use_aigw_cp: bool
+    use_aigw_admin: bool
+
+
+def plane_flags(args: dict[str, Any]) -> PlaneFlags:
     """Map a 'plane' argument ('data' default, or 'admin') to the http_request routing flag.
 
     Only workspace reads accept a caller-chosen plane; the data plane returns just the workspaces
@@ -208,9 +215,7 @@ def guardrails_mcp_servers_sync_command(client: Client, args: dict[str, Any]) ->
     body = assign_params(mcp_servers=json_arg(args, "mcp_servers"))
     if not body:
         raise ValueError("Provide at least one field to update (mcp_servers).")
-    response = client.http_request(
-        "PUT", f"{GUARDRAILS_ENDPOINT}/{guardrail_id}/mcp-servers", json_data=body, use_aigw_cp=True
-    )
+    response = client.http_request("PUT", f"{GUARDRAILS_ENDPOINT}/{guardrail_id}/mcp-servers", json_data=body, use_aigw_cp=True)
     outputs = dict(response) if isinstance(response, dict) else {"result": response}
     outputs["guardrail_id"] = guardrail_id
     return CommandResults(
@@ -705,9 +710,7 @@ def usage_limit_policy_entities_list_command(client: Client, args: dict[str, Any
     """List entities tracked by a usage-limit policy."""
     policy_id = args["policy_id"]
     params = assign_params(status=args.get("status"), search=args.get("search"), **pagination_params(args))
-    response = client.http_request(
-        "GET", f"{USAGE_LIMITS_ENDPOINT}/{policy_id}/entities", params=params, use_aigw_cp=True
-    )
+    response = client.http_request("GET", f"{USAGE_LIMITS_ENDPOINT}/{policy_id}/entities", params=params, use_aigw_cp=True)
     data = response.get("data", [])
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}AIGatewayUsageLimitPolicyEntity",
@@ -781,9 +784,7 @@ def secret_references_create_command(client: Client, args: dict[str, Any]) -> Co
 def secret_references_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get a secret reference by ID."""
     secret_reference_id = args["secret_reference_id"]
-    response = client.http_request(
-        "GET", f"{SECRET_REFERENCES_ENDPOINT}/{secret_reference_id}", use_aigw_admin=True
-    )
+    response = client.http_request("GET", f"{SECRET_REFERENCES_ENDPOINT}/{secret_reference_id}", use_aigw_admin=True)
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}AIGatewaySecretReference",
         outputs_key_field="id",
@@ -931,9 +932,7 @@ def mcp_servers_capabilities_list_command(client: Client, args: dict[str, Any]) 
         page_size=arg_to_number(args.get("page_size")),
         type=args.get("type"),
     )
-    response = client.http_request(
-        "GET", f"{MCP_SERVERS_ENDPOINT}/{mcp_server_id}/capabilities", params=params, use_aigw_cp=True
-    )
+    response = client.http_request("GET", f"{MCP_SERVERS_ENDPOINT}/{mcp_server_id}/capabilities", params=params, use_aigw_cp=True)
     data = response.get("data", response) if isinstance(response, dict) else response
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}AIGatewayMcpServerCapability",
@@ -969,9 +968,7 @@ def mcp_servers_user_access_list_command(client: Client, args: dict[str, Any]) -
         page_size=arg_to_number(args.get("page_size")),
         search=args.get("search"),
     )
-    response = client.http_request(
-        "GET", f"{MCP_SERVERS_ENDPOINT}/{mcp_server_id}/user-access", params=params, use_aigw_cp=True
-    )
+    response = client.http_request("GET", f"{MCP_SERVERS_ENDPOINT}/{mcp_server_id}/user-access", params=params, use_aigw_cp=True)
     data = response.get("data", response) if isinstance(response, dict) else response
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}AIGatewayMcpServerUserAccess",
@@ -1011,9 +1008,7 @@ def mcp_servers_connections_list_command(client: Client, args: dict[str, Any]) -
         current_page=arg_to_number(args.get("current_page")),
         page_size=arg_to_number(args.get("page_size")),
     )
-    response = client.http_request(
-        "GET", f"{MCP_SERVERS_ENDPOINT}/{mcp_server_id}/connections", params=params, use_aigw_cp=True
-    )
+    response = client.http_request("GET", f"{MCP_SERVERS_ENDPOINT}/{mcp_server_id}/connections", params=params, use_aigw_cp=True)
     data = response.get("data", response) if isinstance(response, dict) else response
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}AIGatewayMcpServerConnection",
@@ -1087,9 +1082,7 @@ def mcp_integrations_create_command(client: Client, args: dict[str, Any]) -> Com
 def mcp_integrations_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get an MCP integration by ID."""
     mcp_integration_id = args["mcp_integration_id"]
-    response = client.http_request(
-        "GET", f"{MCP_INTEGRATIONS_ENDPOINT}/{mcp_integration_id}", use_aigw_admin=True
-    )
+    response = client.http_request("GET", f"{MCP_INTEGRATIONS_ENDPOINT}/{mcp_integration_id}", use_aigw_admin=True)
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}AIGatewayMcpIntegration",
         outputs_key_field="id",
@@ -1155,9 +1148,7 @@ def mcp_integrations_workspaces_list_command(client: Client, args: dict[str, Any
 def mcp_integrations_capabilities_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List capabilities discovered from an MCP integration (tools, prompts, resources, resource templates)."""
     mcp_integration_id = args["mcp_integration_id"]
-    response = client.http_request(
-        "GET", f"{MCP_INTEGRATIONS_ENDPOINT}/{mcp_integration_id}/capabilities", use_aigw_admin=True
-    )
+    response = client.http_request("GET", f"{MCP_INTEGRATIONS_ENDPOINT}/{mcp_integration_id}/capabilities", use_aigw_admin=True)
     data = response.get("data", response) if isinstance(response, dict) else response
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}AIGatewayMcpIntegrationCapability",
@@ -1171,9 +1162,7 @@ def mcp_integrations_capabilities_list_command(client: Client, args: dict[str, A
 def mcp_integrations_metadata_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get metadata discovered from an MCP integration's server (identity, protocol, sync state)."""
     mcp_integration_id = args["mcp_integration_id"]
-    response = client.http_request(
-        "GET", f"{MCP_INTEGRATIONS_ENDPOINT}/{mcp_integration_id}/metadata", use_aigw_admin=True
-    )
+    response = client.http_request("GET", f"{MCP_INTEGRATIONS_ENDPOINT}/{mcp_integration_id}/metadata", use_aigw_admin=True)
     outputs = {**response, "mcp_integration_id": mcp_integration_id} if isinstance(response, dict) else response
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}AIGatewayMcpIntegrationMetadata",
@@ -1548,9 +1537,7 @@ def scopes_bind_command(client: Client, args: dict[str, Any]) -> CommandResults:
         {"resource_type": r.get("resource_type"), "resource_id": r.get("resource_id"), "metadata": r.get("metadata") or []}
         for r in current.get("resources", [])
     ]
-    already_bound = any(
-        r.get("resource_type") == "workspace" and r.get("resource_id") == workspace_slug for r in resources
-    )
+    already_bound = any(r.get("resource_type") == "workspace" and r.get("resource_id") == workspace_slug for r in resources)
     if not already_bound:
         resources.append({"resource_type": "workspace", "resource_id": workspace_slug, "metadata": []})
     body = {"name": name, "description": current.get("description") or "", "resources": resources}
@@ -1689,7 +1676,9 @@ def integrations_update_command(client: Client, args: dict[str, Any]) -> Command
         pricing_adjustments=json_arg(args, "pricing_adjustments"),
     )
     if not body:
-        raise ValueError("Provide at least one field to update (name, description, configurations, key, secret_mappings, pricing_adjustments).")
+        raise ValueError(
+            "Provide at least one field to update (name, description, configurations, key, secret_mappings, pricing_adjustments)."
+        )
     client.http_request(
         "PUT",
         f"{INTEGRATIONS_ENDPOINT}/{integration_id}",
@@ -1759,7 +1748,10 @@ def integrations_workspaces_set_command(client: Client, args: dict[str, Any]) ->
         default_provider_slug=args.get("default_provider_slug"),
     )
     if not body:
-        raise ValueError("Provide at least one field (workspaces, global_workspace_access, override_existing_workspace_access, create_default_provider, default_provider_slug).")
+        raise ValueError(
+            "Provide at least one field (workspaces, global_workspace_access, "
+            "override_existing_workspace_access, create_default_provider, default_provider_slug)."
+        )
     client.http_request(
         "PUT",
         f"{INTEGRATIONS_ENDPOINT}/{integration_id}/workspaces",
@@ -1904,9 +1896,7 @@ def plugins_list_command(client: Client, args: dict[str, Any]) -> CommandResults
         outputs_prefix=f"{PA_OUTPUT_PREFIX}AIGatewayPlugin",
         outputs_key_field="id",
         outputs=data,
-        readable_output=table(
-            "AI Gateway Plugins", data, headers=["id", "integration_slug", "plugin_provider_slug", "status"]
-        ),
+        readable_output=table("AI Gateway Plugins", data, headers=["id", "integration_slug", "plugin_provider_slug", "status"]),
         raw_response=data,
     )
 
@@ -1935,9 +1925,7 @@ def plugins_create_command(client: Client, args: dict[str, Any]) -> CommandResul
 # returned ONLY once, at create/rotate - it is surfaced to the caller (with a warning) and cannot be
 # recovered afterwards. list/get never return the secret.
 
-ONE_TIME_KEY_WARNING = (
-    "⚠️ Save the **key** value now - it is shown only once and cannot be retrieved later."
-)
+ONE_TIME_KEY_WARNING = "⚠️ Save the **key** value now - it is shown only once and cannot be retrieved later."
 
 
 def _api_keys_create_body(client: Client, args: dict[str, Any]) -> dict[str, Any]:
@@ -2224,9 +2212,7 @@ def organisations_self_update_command(client: Client, args: dict[str, Any]) -> C
         body.update(settings)
     if not body:
         raise ValueError("Provide at least one field to update (name and/or a settings JSON object).")
-    response = client.http_request(
-        "PUT", ORGANISATION_SELF_ENDPOINT, json_data=body, use_aigw_admin=True
-    )
+    response = client.http_request("PUT", ORGANISATION_SELF_ENDPOINT, json_data=body, use_aigw_admin=True)
     data = response.get("data", response) if isinstance(response, dict) else response
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}AIGatewayOrganisation",
@@ -2240,9 +2226,7 @@ def organisations_self_update_command(client: Client, args: dict[str, Any]) -> C
 def organisations_auth_settings_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get an organisation's auth settings. scim_token and client_secret are redacted."""
     org_id = _organisation_id(client, args)
-    response = client.http_request(
-        "GET", f"{ORGANISATIONS_ENDPOINT}/{org_id}/auth-settings", use_aigw_admin=True
-    )
+    response = client.http_request("GET", f"{ORGANISATIONS_ENDPOINT}/{org_id}/auth-settings", use_aigw_admin=True)
     data = _redact_auth_settings(response.get("data", response) if isinstance(response, dict) else response)
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}AIGatewayOrganisationAuthSettings",
@@ -2263,9 +2247,7 @@ def organisations_auth_settings_update_command(client: Client, args: dict[str, A
     )
     if not body:
         raise ValueError("Provide at least one field to update (auth_settings, domains, scim_token).")
-    response = client.http_request(
-        "PUT", f"{ORGANISATIONS_ENDPOINT}/{org_id}/auth-settings", json_data=body, use_aigw_admin=True
-    )
+    response = client.http_request("PUT", f"{ORGANISATIONS_ENDPOINT}/{org_id}/auth-settings", json_data=body, use_aigw_admin=True)
     data = _redact_auth_settings(response.get("data", response) if isinstance(response, dict) else response)
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}AIGatewayOrganisationAuthSettings",
@@ -2290,7 +2272,7 @@ def model_pricing_get_command(client: Client, args: dict[str, Any]) -> CommandRe
     provider = args["provider"]
     model = args["model"]
     endpoint = (args.get("endpoint") or MODEL_PRICING_DEFAULT_ENDPOINT).rstrip("/")
-    if not (endpoint.startswith("https://") or endpoint.startswith(("http://localhost", "http://127.0.0.1"))):
+    if not endpoint.startswith(("https://", "http://localhost", "http://127.0.0.1")):
         raise ValueError("The model pricing endpoint must be an HTTPS URL (HTTP is allowed only on loopback).")
     full_url = f"{endpoint}{MODEL_PRICING_PATH}/{quote(provider, safe='')}/{quote(model, safe='')}"
     # Direct unauthenticated GET: no Bearer token / x-tsg-id (public third-party catalog).

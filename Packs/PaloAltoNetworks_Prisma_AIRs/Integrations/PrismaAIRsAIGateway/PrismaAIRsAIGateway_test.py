@@ -336,9 +336,7 @@ class TestControlPlaneCommands:
     def test_usage_limit_policy_entity_reset(self, mock_http: Mock, mock_client: Client) -> None:
         """Resetting an entity issues a PUT to the reset path and confirms success."""
         mock_http.return_value = None
-        result = usage_limit_policy_entity_reset_command(
-            mock_client, {"policy_id": "u1", "entity_id": "e1"}
-        )
+        result = usage_limit_policy_entity_reset_command(mock_client, {"policy_id": "u1", "entity_id": "e1"})
 
         args, kwargs = mock_http.call_args
         assert args[0] == "PUT"
@@ -609,7 +607,10 @@ class TestWorkspaceProvision:
             {"name": "ws_truffles_abc123"},  # scope create
             {"data": {"id": "ws-9", "slug": "ws-truffl-03e7d9"}},  # workspace create
             {"resources": [], "description": ""},  # scope get (for bind)
-            {"name": "ws_truffles_abc123", "resources": [{"resource_type": "workspace", "resource_id": "ws-truffl-03e7d9"}]},  # bind PUT
+            {
+                "name": "ws_truffles_abc123",
+                "resources": [{"resource_type": "workspace", "resource_id": "ws-truffl-03e7d9"}],
+            },  # bind PUT
         ]
         result = workspaces_provision_command(mock_client, {"name": "Truffles", "description": "recipes"})
 
@@ -837,9 +838,7 @@ class TestIntegrations:
     def test_integrations_create_defaults_org_id_to_tsg(self, mock_http: Mock, mock_client: Client) -> None:
         """Create POSTs to /integrations and defaults organisation_id to the tenant TSG id."""
         mock_http.return_value = {"data": {"id": "int-1", "slug": "openai-prod"}}
-        integrations_create_command(
-            mock_client, {"ai_provider_id": "prov-uuid", "name": "OpenAI prod", "slug": "openai-prod"}
-        )
+        integrations_create_command(mock_client, {"ai_provider_id": "prov-uuid", "name": "OpenAI prod", "slug": "openai-prod"})
 
         args, kwargs = mock_http.call_args
         assert args[0] == "POST"
@@ -895,9 +894,7 @@ class TestIntegrations:
     def test_integrations_models_set_sends_models(self, mock_http: Mock, mock_client: Client) -> None:
         """Models set PUTs the parsed models array to the /models sub-resource."""
         mock_http.return_value = None
-        integrations_models_set_command(
-            mock_client, {"integration_id": "int-1", "models": '[{"slug":"gpt-4o"}]'}
-        )
+        integrations_models_set_command(mock_client, {"integration_id": "int-1", "models": '[{"slug":"gpt-4o"}]'})
 
         args, kwargs = mock_http.call_args
         assert args[0] == "PUT"
@@ -1098,9 +1095,7 @@ class TestMcpServerSubresources:
     def test_user_access_list(self, mock_http: Mock, mock_client: Client) -> None:
         """Listing user access routes to the control-plane sub-path and forwards search."""
         mock_http.return_value = {"data": [{"user_id": "u1", "enabled": True}]}
-        result = mcp_servers_user_access_list_command(
-            mock_client, {"mcp_server_id": "m1", "search": "ann"}
-        )
+        result = mcp_servers_user_access_list_command(mock_client, {"mcp_server_id": "m1", "search": "ann"})
 
         args, kwargs = mock_http.call_args
         assert args[1] == "/mcp-servers/m1/user-access"
@@ -1153,9 +1148,7 @@ class TestMcpServerSubresources:
     def test_connections_delete(self, mock_http: Mock, mock_client: Client) -> None:
         """Deleting connections issues a scoped DELETE on the control plane."""
         mock_http.return_value = None
-        result = mcp_servers_connections_delete_command(
-            mock_client, {"mcp_server_id": "m1", "user_id": "u1"}
-        )
+        result = mcp_servers_connections_delete_command(mock_client, {"mcp_server_id": "m1", "user_id": "u1"})
 
         args, kwargs = mock_http.call_args
         assert args[0] == "DELETE"
@@ -1172,9 +1165,7 @@ class TestMcpIntegrationSubresources:
     def test_workspaces_list(self, mock_http: Mock, mock_client: Client) -> None:
         """Listing integration workspaces routes to the admin-plane sub-path and forwards version."""
         mock_http.return_value = {"data": [{"id": "w1", "enabled": True}]}
-        result = mcp_integrations_workspaces_list_command(
-            mock_client, {"mcp_integration_id": "i1", "version": "2"}
-        )
+        result = mcp_integrations_workspaces_list_command(mock_client, {"mcp_integration_id": "i1", "version": "2"})
 
         args, kwargs = mock_http.call_args
         assert args[1] == "/mcp-integrations/i1/workspaces"
@@ -1271,9 +1262,7 @@ class TestConnection:
 
     @patch.object(Client, "_http_request")
     @patch.object(Client, "get_access_token")
-    def test_aigw_uses_oauth_token(
-        self, mock_token: Mock, mock_raw: Mock, mock_client: Client
-    ) -> None:
+    def test_aigw_uses_oauth_token(self, mock_token: Mock, mock_raw: Mock, mock_client: Client) -> None:
         """AI Gateway requests authenticate via the shared SCM OAuth2 token, not a static key."""
         mock_token.return_value = "oauth-access-token"
         mock_raw.return_value = {"data": []}
@@ -1458,10 +1447,12 @@ class TestApiKeys:
     def test_service_list_enriches_workspace_name(self, mock_http: Mock, mock_client: Client) -> None:
         """Each listed key is enriched with a workspace_name resolved once per workspace (lookups are cached)."""
         mock_http.side_effect = [
-            {"data": [
-                {"id": "k1", "name": "ci", "workspace_id": "ws-1"},
-                {"id": "k2", "name": "cd", "workspace_id": "ws-1"},
-            ]},
+            {
+                "data": [
+                    {"id": "k1", "name": "ci", "workspace_id": "ws-1"},
+                    {"id": "k2", "name": "cd", "workspace_id": "ws-1"},
+                ]
+            },
             {"data": {"id": "ws-1", "name": "production"}},
         ]
         result = api_keys_service_list_command(mock_client, {"workspace_id": "ws-1"})
@@ -1590,9 +1581,7 @@ class TestApiKeys:
             "key": "sk-new-secret",
             "key_transition_expires_at": "2026-10-01T00:00:00Z",
         }
-        result = api_keys_service_rotate_command(
-            mock_client, {"key_id": "k1", "key_transition_period_ms": "1800000"}
-        )
+        result = api_keys_service_rotate_command(mock_client, {"key_id": "k1", "key_transition_period_ms": "1800000"})
 
         args, kwargs = mock_http.call_args
         assert args[0] == "POST"
@@ -1634,9 +1623,7 @@ class TestOrganisations:
     def test_self_update_merges_settings(self, mock_http: Mock, mock_client: Client) -> None:
         """self-update PUTs name plus any merged settings JSON to /organisations/self."""
         mock_http.return_value = {"id": "org1"}
-        result = organisations_self_update_command(
-            mock_client, {"name": "Acme", "settings": '{"debug_log": 1}'}
-        )
+        result = organisations_self_update_command(mock_client, {"name": "Acme", "settings": '{"debug_log": 1}'})
 
         args, kwargs = mock_http.call_args
         assert args[0] == "PUT"
