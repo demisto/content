@@ -59,6 +59,8 @@ from MicrosoftGraphSecurity import (
     _download_operation_export_file,
     export_result_ediscovery_data_command,
     to_utc_datetime,
+    run_estimate_statistics_command,
+    _get_last_estimate_statistics_command,
 )
 
 client_mocker = MsGraphClient(
@@ -610,7 +612,12 @@ def test_fetch_alerts_same_timestamp_pagination_across_runs(mocker):
     """
     ts = "2026-09-08T12:40:42.500Z"
     all_alerts = [{"id": f"alert_{i}", "createdDateTime": ts, "title": f"alert_{i}", "severity": "medium"} for i in range(1, 5)]
-    mocker.patch.object(client_mocker, "search_alerts", return_value={"value": all_alerts})
+
+    def mock_search_alerts(params):
+        top = int(params.get("$top", len(all_alerts)))
+        return {"value": all_alerts[:top]}
+
+    mocker.patch.object(client_mocker, "search_alerts", side_effect=mock_search_alerts)
 
     # Run 1: limit 2
     alerts1, last_run1 = fetch_alerts(
@@ -670,7 +677,13 @@ def test_fetch_incidents_same_timestamp_pagination_across_runs(mocker):
         {"id": f"inc_{i}", "createdDateTime": ts, "displayName": f"inc_{i}", "severity": "medium", "alerts": []}
         for i in range(1, 5)
     ]
-    mocker.patch.object(client_mocker, "get_incidents_request", return_value={"value": all_incidents})
+
+    def mock_get_incidents(url_suffix, *args, **kwargs):
+        match = re.search(r"\$top=(\d+)", url_suffix)
+        top = int(match.group(1)) if match else len(all_incidents)
+        return {"value": all_incidents[:top]}
+
+    mocker.patch.object(client_mocker, "get_incidents_request", side_effect=mock_get_incidents)
 
     # Run 1: limit 2
     inc1, last_run1 = fetch_incidents(
@@ -1799,12 +1812,6 @@ def test_update_incident_command(mocker):
     assert results.outputs_key_field == expected_results["outputs_key_field"]
     assert results.outputs == expected_results["outputs"]
     assert results.readable_output == expected_results["readable_output"]
-
-
-from MicrosoftGraphSecurity import (
-    run_estimate_statistics_command,
-    _get_last_estimate_statistics_command,
-)
 
 
 # ==============================

@@ -1235,6 +1235,8 @@ def to_utc_datetime(val: Any) -> datetime | None:
     Parses a timestamp string or object into a timezone-aware UTC datetime.
     Ensures safe chronological comparison and sorting across timestamps with varying fractional second precision.
     """
+    if not val:
+        return None
     try:
         if dt := arg_to_datetime(val):
             return dt.astimezone(timezone.utc) if dt.tzinfo is not None else dt.replace(tzinfo=timezone.utc)  # noqa: UP017
@@ -1267,20 +1269,27 @@ def fetch_incidents(
     time_to = datetime.now().strftime(TIMESTAMP_FORMAT)
 
     # Fetch incidents within the time window (plus the optional user filter), and include their alerts.
-    # $top is set to fetch_limit so we request up to fetch_limit incidents in a single request.
+    # $top is increased by the number of already fetched IDs to prevent pagination deadlocks.
+    last_fetched_ids_count = len(last_run.get("last_fetched_ids", [])) if last_run else 0
+    request_limit = min(fetch_limit + last_fetched_ids_count, PAGE_SIZE_LIMIT)
     filter_expression = f"createdDateTime ge {time_from} and createdDateTime le {time_to}"
     if extra_filter:
         # Wrap in parentheses so an `or` clause can't escape the createdDateTime time window (OData `and` binds before `or`).
         filter_expression += f" and ({extra_filter})"
-    url_suffix = f"security/incidents?$expand=alerts&$top={fetch_limit}&$filter={filter_expression}&$orderby=createdDateTime asc"
+    url_suffix = (
+        f"security/incidents?$expand=alerts&$top={request_limit}&$filter={filter_expression}&$orderby=createdDateTime asc"
+    )
     # This header maps unknownFutureValue enum values to the appropriate real value (e.g. new service sources).
     headers = {"Prefer": "include-unknown-enum-members"}
 
-    demisto.debug(f"Fetching MS Graph Security incidents. From: {time_from}. To: {time_to}. Limit: {fetch_limit}")
-    demisto.debug(f"Current last_run state: {last_run}")
+    demisto.debug(
+        f"[Fetch] Fetching MS Graph Security incidents. From: {time_from}. To: {time_to}. "
+        f"Limit: {fetch_limit}. Request limit: {request_limit}."
+    )
+    demisto.debug(f"[Fetch] Current last_run state: {last_run}")
 
     incidents = client.get_incidents_request(url_suffix, FETCH_INCIDENTS_TIMEOUT, headers=headers).get("value", [])
-    demisto.debug(f"API returned {len(incidents)} incidents.")
+    demisto.debug(f"[Fetch] API returned {len(incidents)} incidents.")
 
     if incidents:
         count = 0
@@ -1290,12 +1299,13 @@ def fetch_incidents(
         )  # sort chronologically
 
         has_last_ids = "last_fetched_ids" in last_run
-        last_incident_time_str = last_run.get("time")
-        last_incident_dt = to_utc_datetime(last_incident_time_str) if last_incident_time_str else None
+        last_incident_dt = to_utc_datetime(last_run.get("time"))
         last_fetched_ids = set(last_run.get("last_fetched_ids", []))
 
-        demisto.debug(f"Incidents times from API: {[i.get('createdDateTime') for i in incidents]}")
-        demisto.debug(f"Deduplication start -> Last incident DT: {last_incident_dt}, Cached IDs count: {len(last_fetched_ids)}")
+        demisto.debug(f"[Fetch] Incidents times from API: {[i.get('createdDateTime') for i in incidents]}")
+        demisto.debug(
+            f"[Fetch] Deduplication start -> Last incident DT: {last_incident_dt}, Cached IDs count: {len(last_fetched_ids)}"
+        )
 
         ingested_records: list[tuple[str, datetime | None]] = []
         for incident in incidents:
@@ -1347,7 +1357,9 @@ def fetch_incidents(
                 }
             )
 
-    demisto.debug(f"Fetch incidents complete. Ingested {len(demisto_incidents)} incidents. Updated last_run: {new_last_run}")
+    demisto.info(
+        f"[Fetch] Fetch incidents complete. Ingested {len(demisto_incidents)} incidents. Updated last_run: {new_last_run}"
+    )
     return demisto_incidents, new_last_run
 
 
@@ -1376,17 +1388,20 @@ def fetch_alerts(
     time_from = new_last_run.get("time")
     time_to = datetime.now().strftime(TIMESTAMP_FORMAT)
 
-    # Get alerts from MS Graph Security. Pass fetch_limit as the page size so we request up to fetch_limit alerts.
+    # Get alerts from MS Graph Security. Increase page_size by the number of already fetched IDs to prevent pagination deadlocks.
+    last_fetched_ids_count = len(last_run.get("last_fetched_ids", [])) if last_run else 0
+    request_limit = min(fetch_limit + last_fetched_ids_count, PAGE_SIZE_LIMIT)
     demisto.debug(
-        f"Fetching MS Graph Security alerts. From: {time_from}. To: {time_to}. " f"Limit: {fetch_limit}. Filter: {filter_query}"
+        f"[Fetch] Fetching MS Graph Security alerts. From: {time_from}. To: {time_to}. "
+        f"Limit: {fetch_limit}. Request limit: {request_limit}. Filter: {filter_query}"
     )
-    demisto.debug(f"Current last_run state: {last_run}")
+    demisto.debug(f"[Fetch] Current last_run state: {last_run}")
 
-    args = {"time_to": time_to, "time_from": time_from, "filter": filter_query, "page_size": fetch_limit}
+    args = {"time_to": time_to, "time_from": time_from, "filter": filter_query, "page_size": request_limit}
     params = create_search_alerts_filters(args, is_fetch=True)
     alerts = client.search_alerts(params)["value"]
 
-    demisto.debug(f"API returned {len(alerts)} alerts.")
+    demisto.debug(f"[Fetch] API returned {len(alerts)} alerts.")
 
     if alerts:
         count = 0
@@ -1395,12 +1410,11 @@ def fetch_alerts(
             key=lambda k: to_utc_datetime(k.get("createdDateTime")) or datetime.min.replace(tzinfo=timezone.utc),  # noqa: UP017
         )  # sort chronologically
         has_last_ids = "last_fetched_ids" in last_run
-        last_alert_time_str = last_run.get("time")
-        last_alert_dt = to_utc_datetime(last_alert_time_str) if last_alert_time_str else None
+        last_alert_dt = to_utc_datetime(last_run.get("time"))
         last_fetched_ids = set(last_run.get("last_fetched_ids", []))
 
-        demisto.debug(f"Alerts times from API: {[a.get('createdDateTime') for a in alerts]}")
-        demisto.debug(f"Deduplication start -> Last alert DT: {last_alert_dt}, Cached IDs count: {len(last_fetched_ids)}")
+        demisto.debug(f"[Fetch] Alerts times from API: {[a.get('createdDateTime') for a in alerts]}")
+        demisto.debug(f"[Fetch] Deduplication start -> Last alert DT: {last_alert_dt}, Cached IDs count: {len(last_fetched_ids)}")
 
         ingested_records: list[tuple[str, datetime | None]] = []
         for alert in alerts:
@@ -1449,7 +1463,7 @@ def fetch_alerts(
                 }
             )
 
-    demisto.debug(f"Fetch alerts complete. Ingested {len(demisto_alerts)} alerts. Updated last_run: {new_last_run}")
+    demisto.info(f"[Fetch] Fetch alerts complete. Ingested {len(demisto_alerts)} alerts. Updated last_run: {new_last_run}")
     return demisto_alerts, new_last_run
 
 
