@@ -21,7 +21,6 @@ alter
     tmp_attr_uid = arrayindex(regextract(tmp_attributes, "(?:^|,\s)(?:uid|userid|UserID|UserId|userName|username|login|ssoId)=([^,]+)"), 0),
     tmp_attr_first_name = arrayindex(regextract(tmp_attributes, "(?:^|,\s)(?:givenName|givenname|GivenName|firstName|firstname|FirstName|first_name|First)=([^,]+)"), 0),
     tmp_attr_last_name = arrayindex(regextract(tmp_attributes, "(?:^|,\s)(?:sn|surname|lastName|lastname|LastName|last_name|Last)=([^,]+)"), 0),
-    tmp_attr_title = arrayindex(regextract(tmp_attributes, "(?:^|,\s)(?:title|Title)=([^,]+)"), 0),
     tmp_attr_roles = regextract(tmp_attributes, "(?:^|,\s)(?:role|roles|userRole|userRoles|role_role|Claims_365_Pega_Role)=([^,\]]+)"),
     // Group membership is either a list of DNs (memberOf=[CN=<group>,OU=...]) or a plain group name.
     tmp_groups_from_dn = regextract(tmp_attributes, "CN=([^,]+),OU="),
@@ -68,7 +67,6 @@ alter
     xdm.source.user.identifier = coalesce(tmp_attr_saml_subject, if(duid != "", duid, null)),
     xdm.source.user.first_name = tmp_attr_first_name,
     xdm.source.user.last_name = tmp_attr_last_name,
-    xdm.source.user.title = tmp_attr_title,
     xdm.source.user.groups = tmp_groups,
     xdm.source.user.roles = tmp_attr_roles,
     xdm.source.user.identity_type = if(tmp_username != null or tmp_upn != null, XDM_CONST.IDENTITY_TYPE_USER, XDM_CONST.IDENTITY_TYPE_UNKNOWN),
@@ -77,7 +75,6 @@ alter
     xdm.source.identity.identifier = coalesce(tmp_attr_saml_subject, if(duid != "", duid, null)),
     xdm.source.identity.first_name = tmp_attr_first_name,
     xdm.source.identity.last_name = tmp_attr_last_name,
-    xdm.source.identity.title = tmp_attr_title,
     xdm.source.identity.groups = tmp_groups,
     xdm.source.identity.roles = tmp_attr_roles,
     xdm.source.identity.identity_type = if(tmp_username != null or tmp_upn != null, XDM_CONST.IDENTITY_TYPE_USER, XDM_CONST.IDENTITY_TYPE_UNKNOWN),
