@@ -1,10 +1,12 @@
 import tempfile
+from email import message_from_bytes
 from pathlib import Path
 
 import demistomock as demisto
 import pytest
 from CommonServerPython import *
 from ParseEmailFilesV2 import data_to_md, main, parse_nesting_level
+from pytest_mock import MockerFixture
 
 
 def exec_command_for_file(
@@ -465,9 +467,9 @@ def test_eml_contains_eml_nesting_level(mocker, nesting_level_to_return, results
 
 def test_eml_contains_empty_htm_not_containing_file_data(mocker):
     """
-    Given: An email containing both an empty text file and a base64 encoded htm file.
+    Given: A root attachment-disposition envelope with an unnamed empty body and a named HTML attachment.
     When: Parsing a valid email file with default parameters.
-    Then: FileData is not one of the attachments' data attributes returned.
+    Then: The HTML attachment has a FilePath, not FileData; the empty body is not emitted as a file.
     """
     mocker.patch.object(demisto, "args", return_value={"entryid": "test"})
     mocker.patch.object(demisto, "executeCommand", side_effect=exec_command_for_file("eml_contains_emptytxt_htm_file.eml"))
@@ -478,7 +480,11 @@ def test_eml_contains_empty_htm_not_containing_file_data(mocker):
 
     results = demisto.results.call_args[0]
 
-    assert results[0]["EntryContext"]["Email"]["AttachmentsData"][0]["FileData"] is None
+    attachments = results[0]["EntryContext"]["Email"]["AttachmentsData"]
+    assert len(attachments) == 1
+    assert attachments[0]["Name"] == "SomeTest.HTM"
+    assert attachments[0]["FilePath"]
+    assert "FileData" not in attachments[0]
 
 
 def test_smime_without_to_from_subject(mocker):
@@ -659,3 +665,73 @@ def test_html_unescape_populated_in_context(mocker):
 
     # Original HTML key must still be present (unchanged)
     assert "HTML" in email_context
+
+
+@pytest.mark.parametrize("content_type", ["message/rfc822", "text/plain", "application/octet-stream"])
+@pytest.mark.parametrize(
+    "max_depth, nesting_level, expected_depths, expected_names",
+    [
+        ("3", "All files", [0, 1], ["original_message.eml", "pixel.png"]),
+        ("3", "Outer file", [0], ["original_message.eml"]),
+        ("3", "Inner file", [1], ["pixel.png"]),
+        ("1", "All files", [0], ["original_message.eml"]),
+    ],
+)
+def test_root_attachment_envelope_without_preprocessing(
+    mocker: MockerFixture,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    content_type: str,
+    max_depth: str,
+    nesting_level: str,
+    expected_depths: list[int],
+    expected_names: list[str],
+) -> None:
+    """Run the real parser, file writer, and context conversion, mocking only platform boundaries."""
+    test_data = Path(__file__).parent / "test_data"
+    original_bytes = (test_data / "original_message.eml").read_bytes()
+    original = message_from_bytes(original_bytes)
+    pixel_bytes = next(part.get_payload(decode=True) for part in original.walk() if part.get_content_type() == "image/png")
+    expected_files = {"original_message.eml": original_bytes, "pixel.png": pixel_bytes}
+    report = (test_data / "reported_message_root_attachment.eml").read_bytes()
+    report = report.replace(b"Content-Type: message/rfc822;", f"Content-Type: {content_type};".encode(), 1)
+    input_path = tmp_path / "reported_message_root_attachment.eml"
+    input_path.write_bytes(report)
+    monkeypatch.chdir(tmp_path)
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "entryid": "sample-entry",
+            "default_encoding": "utf-8",
+            "max_depth": max_depth,
+            "nesting_level_to_return": nesting_level,
+        },
+    )
+    execute_command = mocker.patch.object(
+        demisto,
+        "executeCommand",
+        return_value=[{"Type": entryTypes["note"], "Contents": {"path": str(input_path), "name": input_path.name}}],
+    )
+    mocker.patch.object(demisto, "context", return_value={})
+    mocker.patch.object(demisto, "dt", return_value="RFC 822 mail text")
+    mocker.patch.object(demisto, "investigation", return_value={"id": "sample-case"})
+    mocker.patch.object(demisto, "uniqueFile", side_effect=["file-1", "file-2"])
+    result_writer = mocker.patch.object(demisto, "results")
+
+    main()
+
+    execute_command.assert_called_once_with("getFilePath", {"id": "sample-entry"})
+    entries = [call.args[0] for call in result_writer.call_args_list]
+    files = {entry["File"]: entry for entry in entries if entry["Type"] == entryTypes["file"]}
+    emails = [entry["EntryContext"]["Email"] for entry in entries if "Email" in entry.get("EntryContext", {})]
+    assert sorted(files) == sorted(expected_names)
+    assert [item["Depth"] for item in emails] == expected_depths
+    for name, file_entry in files.items():
+        assert (tmp_path / f"sample-case_{file_entry['FileID']}").read_bytes() == expected_files[name]
+    for parsed_email in emails:
+        if parsed_email["Depth"] == 0:
+            assert parsed_email["HeadersMap"]["Content-Disposition"] == "attachment"
+        for attachment in parsed_email["AttachmentsData"]:
+            assert "FileData" not in attachment
+            assert attachment["FilePath"] == f"sample-case_{files[attachment['Name']]['FileID']}"

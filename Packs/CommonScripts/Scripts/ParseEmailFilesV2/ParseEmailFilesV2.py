@@ -1,6 +1,9 @@
+import base64
 import html
 import mimetypes
 from pathlib import Path
+import tempfile
+from email.parser import BytesParser
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -8,6 +11,130 @@ from parse_emails.parse_emails import EmailParser
 
 logger = logging.getLogger("parse-email")  # type: ignore[assignment]
 logger.addHandler(DemistoHandler)  # type: ignore[attr-defined]
+
+
+def get_decoded_file_data(attachment_part) -> bytes | None:
+    file_data = attachment_part.get_payload(decode=True)
+    if file_data:
+        return file_data
+
+    payload = attachment_part.get_payload()
+    if not isinstance(payload, list) or len(payload) != 1:
+        return None
+
+    nested_payload = payload[0].get_payload(decode=True)
+    if not nested_payload:
+        return None
+
+    try:
+        return base64.b64decode(nested_payload)
+    except Exception:
+        demisto.debug(f"Failed to base64 decode attached email payload: {traceback.format_exc()}")
+        return nested_payload
+
+
+def extract_attached_eml_files(file_path: str) -> dict[str, bytes]:
+    message = BytesParser().parsebytes(Path(file_path).read_bytes())
+    attached_files = {}
+
+    for part in message.walk():
+        file_name = part.get_filename()
+        if not file_name or not file_name.lower().endswith(".eml"):
+            continue
+
+        file_data = get_decoded_file_data(part)
+        if file_data:
+            attached_files[file_name] = file_data
+
+    return attached_files
+
+
+def parse_attached_eml_files(
+    attached_files: dict[str, bytes],
+    max_depth: int,
+    parse_only_headers: bool,
+    file_type: str,
+    forced_encoding: str | None,
+    default_encoding: str | None,
+) -> list[dict]:
+    if max_depth <= 1:
+        return []
+
+    parsed_emails = []
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        for file_name, file_data in attached_files.items():
+            attached_file_path = temp_path / file_name
+            attached_file_path.write_bytes(file_data)
+            child_output = EmailParser(
+                file_path=str(attached_file_path),
+                max_depth=max_depth - 1,
+                parse_only_headers=parse_only_headers,
+                file_info=file_type,
+                forced_encoding=forced_encoding,
+                default_encoding=default_encoding,
+                file_name=file_name,
+            ).parse()
+            if isinstance(child_output, dict):
+                child_output = [child_output]
+
+            for child_email in child_output:
+                child_email["Depth"] = child_email.get("Depth", 0) + 1
+                child_email["ParentFileName"] = file_name
+                parsed_emails.append(child_email)
+
+    return parsed_emails
+
+
+def remove_empty_unnamed_attachments(email_data: dict) -> None:
+    attachments_data = email_data.get("AttachmentsData")
+    if not attachments_data:
+        return
+
+    attachments_data = [
+        attachment
+        for attachment in attachments_data
+        if attachment.get("Name") and not (attachment["Name"].startswith("unknown_file_name") and not attachment.get("FileData"))
+    ]
+    email_data["AttachmentsData"] = attachments_data
+    email_data["AttachmentNames"] = [attachment["Name"] for attachment in attachments_data]
+    email_data["Attachments"] = ",".join(email_data["AttachmentNames"])
+
+
+def fix_attached_eml_outputs(
+    output: list[dict],
+    file_path: str,
+    file_name: str,
+    max_depth: int,
+    parse_only_headers: bool,
+    file_type: str,
+    forced_encoding: str | None,
+    default_encoding: str | None,
+) -> list[dict]:
+    if not file_name.lower().endswith(".eml"):
+        return output
+
+    attached_files = extract_attached_eml_files(file_path)
+    if not attached_files:
+        return output
+
+    for email_data in output:
+        for attachment in email_data.get("AttachmentsData") or []:
+            file_name = attachment.get("Name")
+            if file_name in attached_files:
+                attachment["FileData"] = attached_files[file_name]
+
+    if any((email_data.get("Depth") or 0) > 0 for email_data in output):
+        return output
+
+    return output + parse_attached_eml_files(
+        attached_files,
+        max_depth,
+        parse_only_headers,
+        file_type,
+        forced_encoding,
+        default_encoding,
+    )
 
 
 def html_unescape(html_body: str) -> str:
@@ -84,18 +211,18 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     if parent_email_file:
         md += f"### Containing email: {parent_email_file}\n"
 
-    md += f"""* From:\t{email_data.get('From') or ""}\n"""
-    md += f"""* To:\t{email_data.get('To') or ""}\n"""
-    md += f"""* CC:\t{email_data.get('CC') or ""}\n"""
-    md += f"""* BCC:\t{email_data.get('BCC') or ""}\n"""
-    md += f"""* Subject:\t{email_data.get('Subject') or ""}\n"""
+    md += f"""* From:\t{email_data.get("From") or ""}\n"""
+    md += f"""* To:\t{email_data.get("To") or ""}\n"""
+    md += f"""* CC:\t{email_data.get("CC") or ""}\n"""
+    md += f"""* BCC:\t{email_data.get("BCC") or ""}\n"""
+    md += f"""* Subject:\t{email_data.get("Subject") or ""}\n"""
     if email_data.get("Text"):
         text = email_data["Text"].replace("<", "[").replace(">", "]")
-        md += f'* Body/Text:\t{text or ""}\n'
+        md += f"* Body/Text:\t{text or ''}\n"
     if email_data.get("HTML"):
-        md += f"""* Body/HTML:\t{email_data['HTML'] or ""}\n"""
+        md += f"""* Body/HTML:\t{email_data["HTML"] or ""}\n"""
 
-    md += f"""* Attachments:\t{email_data.get('Attachments') or ""}\n"""
+    md += f"""* Attachments:\t{email_data.get("Attachments") or ""}\n"""
     md += "\n\n" + tableToMarkdown("HeadersMap", email_data.get("HeadersMap"))
     return md
 
@@ -219,10 +346,22 @@ def main():
         if isinstance(output, dict):
             output = [output]
 
-        elif output and nesting_level_to_return != "All files":
+        output = fix_attached_eml_outputs(
+            output,
+            cleaned_file_path,
+            file_name,
+            int(max_depth),
+            parse_only_headers,
+            file_type,
+            forced_encoding,
+            default_encoding,
+        )
+
+        if output and nesting_level_to_return != "All files":
             output = parse_nesting_level(nesting_level_to_return, output)
 
         for email in output:
+            remove_empty_unnamed_attachments(email)
             if email.get("AttachmentsData"):
                 for attachment in email.get("AttachmentsData"):
                     if name := attachment.get("Name"):
