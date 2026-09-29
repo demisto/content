@@ -822,7 +822,7 @@ script:
           - Container
           - None
 
-  - name: azure-storage-account-list
+  - name: azure-storage-accounts-list
     description: "Lists storage accounts, or retrieves a single storage account when an account name is provided. Required permission: Microsoft.Storage/storageAccounts/read."
     arguments:
     - name: subscription_id
@@ -830,8 +830,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The resource group name.
-      required: true
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: account_name
       description: The storage account name. When provided, retrieves the specified storage account only; otherwise all storage accounts in the resource group are listed.
       required: false
@@ -867,7 +868,7 @@ script:
       description: The status indicating whether the secondary location of the storage account is available.
       type: String
 
-  - name: azure-storage-blob-container-list
+  - name: azure-storage-blob-containers-list
     description: "Lists blob containers, or retrieves a single blob container when a container name is provided. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/read."
     arguments:
     - name: subscription_id
@@ -875,8 +876,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The resource group name.
-      required: true
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: account_name
       description: The storage account name.
       required: true
@@ -889,8 +891,8 @@ script:
       predefined:
         - 'true'
         - 'false'
-    - name: maxpagesize
-      description: The maximum number of containers that the server returns per page (for example, 100).
+    - name: limit
+      description: The maximum number of containers to return (1-5000).
     outputs:
     - contextPath: Azure.Storage.BlobContainers.id
       description: The fully qualified resource ID of the resource.

@@ -7792,3 +7792,134 @@ def test_storage_blob_container_list_command_error_response(mocker):
 
     with pytest.raises(DemistoException):
         storage_blob_container_list_command(mock_client, params, args)
+
+
+@pytest.mark.parametrize("limit", [1, 100, 5000, None])
+def test_validate_limit_valid_input(limit):
+    """
+    Given: A limit value within the allowed range (or None).
+    When: validate_limit is called.
+    Then: No exception is raised.
+    """
+    from Azure import validate_limit
+
+    validate_limit(limit)
+
+
+@pytest.mark.parametrize("limit", [0, -1, 5001])
+def test_validate_limit_invalid_input(limit):
+    """
+    Given: A limit value outside the allowed range (1-5000 inclusive).
+    When: validate_limit is called.
+    Then: A DemistoException is raised.
+    """
+    from Azure import validate_limit
+
+    with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 5000"):
+        validate_limit(limit)
+
+
+def test_storage_blob_container_list_request_limit_sets_maxpagesize(mocker, client):
+    """
+    Given: A limit argument within the allowed range.
+    When: storage_blob_container_list_request is called.
+    Then: The request is sent with the $maxpagesize query parameter set to the limit value.
+    """
+    http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.storage_blob_container_list_request(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        args={"account_name": "mock_account_name", "limit": "100"},
+    )
+
+    sent_params = http_request.call_args.kwargs["params"]
+    assert sent_params["$maxpagesize"] == "100"
+
+
+def test_storage_blob_container_list_request_url_without_container(mocker, client):
+    """
+    Given: No container_name argument.
+    When: storage_blob_container_list_request is called.
+    Then: The URL ends at the containers collection (no trailing container segment).
+    """
+    http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.storage_blob_container_list_request(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        args={"account_name": "mock_account_name"},
+    )
+
+    assert http_request.call_args.kwargs["full_url"].endswith(
+        "/providers/Microsoft.Storage/storageAccounts/mock_account_name/blobServices/default/containers"
+    )
+
+
+def test_storage_blob_container_list_request_url_with_container(mocker, client):
+    """
+    Given: A container_name argument.
+    When: storage_blob_container_list_request is called.
+    Then: The URL includes the specific container segment.
+    """
+    http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.storage_blob_container_list_request(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        args={"account_name": "mock_account_name", "container_name": "mock_container"},
+    )
+
+    assert http_request.call_args.kwargs["full_url"].endswith("/blobServices/default/containers/mock_container")
+
+
+def test_storage_account_list_request_url_without_account(mocker, client):
+    """
+    Given: No account_name argument.
+    When: storage_account_list_request is called.
+    Then: The URL ends at the storageAccounts collection (no trailing account segment).
+    """
+    http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.storage_account_list_request(
+        account_name="",
+        resource_group_name="mock_resource_group",
+        subscription_id="mock_subscription_id",
+    )
+
+    assert http_request.call_args.kwargs["full_url"].endswith("/providers/Microsoft.Storage/storageAccounts")
+
+
+def test_storage_account_list_request_url_with_account(mocker, client):
+    """
+    Given: An account_name argument.
+    When: storage_account_list_request is called.
+    Then: The URL includes the specific storage account segment.
+    """
+    http_request = mocker.patch.object(client, "http_request", return_value={})
+
+    client.storage_account_list_request(
+        account_name="mock_account_name",
+        resource_group_name="mock_resource_group",
+        subscription_id="mock_subscription_id",
+    )
+
+    assert http_request.call_args.kwargs["full_url"].endswith("/storageAccounts/mock_account_name")
+
+
+def test_storage_blob_container_list_request_invalid_limit_raises(mocker, client):
+    """
+    Given: A limit argument outside the allowed range.
+    When: storage_blob_container_list_request is called.
+    Then: A DemistoException is raised before any request is sent.
+    """
+    http_request = mocker.patch.object(client, "http_request")
+
+    with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 5000"):
+        client.storage_blob_container_list_request(
+            subscription_id="mock_subscription_id",
+            resource_group_name="mock_resource_group",
+            args={"account_name": "mock_account_name", "limit": "6000"},
+        )
+
+    http_request.assert_not_called()

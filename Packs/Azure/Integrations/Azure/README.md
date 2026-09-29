@@ -72,21 +72,21 @@ Update a security rule. If one does not exist, it will be created. The command i
 | Azure.NSGRule.priority | Number | The rule's priority. Can be from 100 to 4096. |
 | Azure.NSGRule.direction | String | The rule's direction. Can be "Inbound" or "Outbound". |
 
-### azure-storage-account-list
+### azure-storage-accounts-list
 
 ***
 Lists storage accounts, or retrieves a single storage account when an account name is provided. Required permission: Microsoft.Storage/storageAccounts/read.
 
 #### Base Command
 
-`azure-storage-account-list`
+`azure-storage-accounts-list`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The resource group name. | Required |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | account_name | The storage account name. When provided, retrieves the specified storage account only; otherwise all storage accounts in the resource group are listed. | Optional |
 
 #### Context Output
@@ -104,25 +104,25 @@ Lists storage accounts, or retrieves a single storage account when an account na
 | Azure.Storage.StorageAccounts.properties.statusOfPrimary | String | The status indicating whether the primary location of the storage account is available. |
 | Azure.Storage.StorageAccounts.properties.statusOfSecondary | String | The status indicating whether the secondary location of the storage account is available. |
 
-### azure-storage-blob-container-list
+### azure-storage-blob-containers-list
 
 ***
 Lists blob containers, or retrieves a single blob container when a container name is provided. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/read.
 
 #### Base Command
 
-`azure-storage-blob-container-list`
+`azure-storage-blob-containers-list`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The resource group name. | Required |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | account_name | The storage account name. | Required |
 | container_name | The container name. When provided, retrieves the specified container only; otherwise all containers in the storage account are listed. | Optional |
 | include_deleted | Whether to include soft-deleted blob containers in the response. Possible values are: true, false. | Optional |
-| maxpagesize | The maximum number of containers that the server returns per page (for example, 100). | Optional |
+| limit | The maximum number of containers to return (1-5000). | Optional |
 
 #### Context Output
 

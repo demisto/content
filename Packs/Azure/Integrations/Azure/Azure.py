@@ -24,6 +24,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 STORAGE_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
 API_VERSION = "2022-09-01"
 NEW_API_VERSION_PARAMS = {"api-version": "2024-05-01"}
+BLOB_CONTAINERS_MAX_PAGE_SIZE = 5000
 GRANT_BY_CONNECTION = {
     "Device Code": DEVICE_CODE,
     "Authorization Code": AUTHORIZATION_CODE,
@@ -64,7 +65,7 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-vn-security-rule-delete",
     ],
     "Microsoft.Storage/storageAccounts/read": [
-        "azure-storage-account-list",
+        "azure-storage-accounts-list",
         "azure-storage-account-update",
         "azure-storage-allow-access-quick-action",
         "azure-storage-disable-cross-tenant-replication-quick-action",
@@ -102,7 +103,7 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action": ["azure-storage-container-public-access-block"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/read": [
         "azure-storage-container-property-get",
-        "azure-storage-blob-container-list",
+        "azure-storage-blob-containers-list",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/delete": ["azure-storage-container-delete"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": [
@@ -907,8 +908,10 @@ class AzureClient:
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-            f"/providers/Microsoft.Storage/storageAccounts/{account_name}"
+            f"/providers/Microsoft.Storage/storageAccounts"
         )
+        if account_name:
+            full_url += f"/{account_name}"
         try:
             demisto.debug(f'Listing storage account(s) "{account_name}".')
             return self.http_request(
@@ -947,15 +950,16 @@ class AzureClient:
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Storage/storageAccounts/{account_name}"
-            f"/blobServices/default/containers/{container_name}"
+            f"/blobServices/default/containers"
         )
+        if container_name:
+            full_url += f"/{container_name}"
         params = {"api-version": API_VERSION}
         if argToBoolean(args.get("include_deleted", False)):
             params["$include"] = "deleted"
-        if maxpagesize := arg_to_number(args.get("maxpagesize")):
-            if maxpagesize <= 0:
-                raise ValueError("The maxpagesize argument must be a positive integer.")
-            params["$maxpagesize"] = str(maxpagesize)
+        if limit := arg_to_number(args.get("limit")):
+            validate_limit(limit, max_limit=BLOB_CONTAINERS_MAX_PAGE_SIZE)
+            params["$maxpagesize"] = str(limit)
 
         try:
             demisto.debug(f'Listing blob container(s) "{container_name}" under account "{account_name}".')
@@ -2971,6 +2975,25 @@ def extract_azure_resource_info(resource_id: str) -> tuple[str | None, str | Non
     return results["subscription_id"], results["resource_group"], results["account_name"]
 
 
+def validate_limit(limit: int | None, min_limit: int = 1, max_limit: int = BLOB_CONTAINERS_MAX_PAGE_SIZE) -> None:
+    """
+    Validates that the provided limit argument is within the allowed range.
+
+    Args:
+        limit (int | None): The limit value to validate.
+        min_limit (int): The minimum allowed value (inclusive). Defaults to 1.
+        max_limit (int): The maximum allowed value (inclusive). Defaults to BLOB_CONTAINERS_MAX_PAGE_SIZE.
+
+    Raises:
+        DemistoException: If the limit is outside the allowed range.
+    """
+    if limit is not None and not (min_limit <= limit <= max_limit):
+        raise DemistoException(
+            f"The acceptable values of the argument limit are {min_limit} to {max_limit}, inclusive. "
+            f"Currently the value is {limit}."
+        )
+
+
 def remove_query_param_from_url(url: str, param: str) -> str:
     """
     Remove a specific query parameter from a given URL and return the updated URL.
@@ -3171,37 +3194,14 @@ def storage_account_list_command(client: AzureClient, params: dict, args: dict) 
     if not accounts:
         return CommandResults(readable_output="No storage accounts were found.", raw_response=response)
 
-    readable_output = []
-    for account in accounts:
-        account_subscription_id, resource_group, _ = extract_azure_resource_info(account.get("id", ""))
-        readable_output.append(
-            {
-                "Account Name": account.get("name"),
-                "Subscription ID": account_subscription_id,
-                "Resource Group": resource_group,
-                "Kind": account.get("kind"),
-                "Status Primary": account.get("properties", {}).get("statusOfPrimary"),
-                "Status Secondary": account.get("properties", {}).get("statusOfSecondary"),
-                "Location": account.get("location"),
-            }
-        )
-
     return CommandResults(
         outputs_prefix="Azure.Storage.StorageAccounts",
         outputs_key_field="id",
         outputs=accounts,
         readable_output=tableToMarkdown(
             "Azure Storage Account List",
-            readable_output,
-            [
-                "Account Name",
-                "Subscription ID",
-                "Resource Group",
-                "Kind",
-                "Status Primary",
-                "Status Secondary",
-                "Location",
-            ],
+            accounts,
+            ["id", "name", "type", "kind", "location"],
             removeNull=True,
         ),
         raw_response=response,
@@ -3230,37 +3230,14 @@ def storage_blob_container_list_command(client: AzureClient, params: dict, args:
     if not containers:
         return CommandResults(readable_output="No blob containers were found.", raw_response=response)
 
-    readable_output = []
-    for container in containers:
-        container_subscription_id, resource_group, account_name = extract_azure_resource_info(container.get("id", ""))
-        readable_output.append(
-            {
-                "Container Name": container.get("name"),
-                "Account Name": account_name,
-                "Subscription ID": container_subscription_id,
-                "Resource Group": resource_group,
-                "Public Access": container.get("properties", {}).get("publicAccess"),
-                "Lease State": container.get("properties", {}).get("leaseState"),
-                "Last Modified Time": container.get("properties", {}).get("lastModifiedTime"),
-            }
-        )
-
     return CommandResults(
         outputs_prefix="Azure.Storage.BlobContainers",
         outputs_key_field="id",
         outputs=containers,
         readable_output=tableToMarkdown(
             "Azure Storage Blob Containers List",
-            readable_output,
-            [
-                "Container Name",
-                "Account Name",
-                "Subscription ID",
-                "Resource Group",
-                "Public Access",
-                "Lease State",
-                "Last Modified Time",
-            ],
+            containers,
+            ["id", "name", "type"],
             removeNull=True,
         ),
         raw_response=response,
@@ -5936,8 +5913,8 @@ def main():  # pragma: no cover
             "azure-billing-usage-list": azure_billing_usage_list_command,
             "azure-billing-forecast-list": azure_billing_forecast_list_command,
             "azure-billing-budgets-list": azure_billing_budgets_list_command,
-            "azure-storage-account-list": storage_account_list_command,
-            "azure-storage-blob-container-list": storage_blob_container_list_command,
+            "azure-storage-accounts-list": storage_account_list_command,
+            "azure-storage-blob-containers-list": storage_blob_container_list_command,
             "azure-storage-account-update": storage_account_update_command,
             "azure-storage-blob-service-properties-set": storage_blob_service_properties_set_command,
             "azure-storage-blob-service-property-set": storage_blob_service_properties_set_command,
