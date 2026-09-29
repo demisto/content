@@ -434,6 +434,22 @@ configuration:
   supportedModules:
   - "xsiam"
   - "exposure_management"
+- additionalinfo: |-
+    How far back to look for Spotlight vulnerabilities, in days. Only vulnerabilities updated within this window are fetched.
+    Lower this on very large tenants: it is the most direct way to reduce the size of a fetch cycle, and therefore its duration and memory use.
+  display: Spotlight vulnerabilities lookback (days)
+  name: spotlight_lookback_days
+  defaultvalue: '100'
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - xsoar
+  - xpanse
+  supportedModules:
+  - "xsiam"
+  - "exposure_management"
 - display: 'Trust any certificate (not secure)'
   name: insecure
   type: 8

@@ -9439,7 +9439,7 @@ class TestSpotlightSeverityBasedFetch:
         mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
 
         # Execute - no previously completed severities
-        total_vulns, unique_aids = await fetch_spotlight_by_severity_parallel(
+        total_vulns, unique_aids, sealed = await fetch_spotlight_by_severity_parallel(
             client=mock_client,
             context_store=mock_context_store,
             spotlight_state=mock_state,
@@ -9448,6 +9448,7 @@ class TestSpotlightSeverityBasedFetch:
         )
 
         # Verify
+        assert sealed
         assert total_vulns == 50  # 10+20+15+5+0+0
         assert unique_aids == {"aid1", "aid2", "aid3", "aid4", "aid5", "aid6"}
 
@@ -9600,7 +9601,7 @@ class TestSpotlightSeverityBasedFetch:
         # Execute - should not raise exception
         # Disable stdout capture since this test intentionally triggers error logging
         with capfd.disabled():
-            total_vulns, unique_aids = await fetch_spotlight_by_severity_parallel(
+            total_vulns, unique_aids, sealed = await fetch_spotlight_by_severity_parallel(
                 client=mock_client,
                 context_store=mocker.Mock(),
                 spotlight_state=mock_state,
@@ -9609,6 +9610,7 @@ class TestSpotlightSeverityBasedFetch:
             )
 
         # Verify - only successful severities counted
+        assert not sealed
         assert total_vulns == 18  # 10+5+3 (HIGH excluded)
         assert unique_aids == {"aid1", "aid2", "aid3"}
 
@@ -12066,7 +12068,7 @@ class TestSpotlightFetchReportsHealth:
     """
 
     @staticmethod
-    def _run_fetch(mocker, parallel_side_effect=None, parallel_return=(0, set())):
+    def _run_fetch(mocker, parallel_side_effect=None, parallel_return=(0, set(), True)):
         """Run fetch_spotlight_assets with everything below the severity fan-out stubbed out.
 
         Returns the updateModuleHealth mock.
@@ -12102,7 +12104,7 @@ class TestSpotlightFetchReportsHealth:
         """The health write must be a non-error one, which is what actually clears the red status."""
         import CrowdStrikeFalcon
 
-        mock_health = self._run_fetch(mocker, parallel_return=(1234, {"aid-1", "aid-2"}))
+        mock_health = self._run_fetch(mocker, parallel_return=(1234, {"aid-1", "aid-2"}, True))
 
         await CrowdStrikeFalcon.fetch_spotlight_assets()
 
@@ -12115,7 +12117,7 @@ class TestSpotlightFetchReportsHealth:
         """Mirrors the CNAPP path's ``{"assetsPulled": n}`` so the UI shows a count, not just green."""
         import CrowdStrikeFalcon
 
-        mock_health = self._run_fetch(mocker, parallel_return=(1234, {"aid-1", "aid-2"}))
+        mock_health = self._run_fetch(mocker, parallel_return=(1234, {"aid-1", "aid-2"}, True))
 
         await CrowdStrikeFalcon.fetch_spotlight_assets()
 
@@ -12132,6 +12134,32 @@ class TestSpotlightFetchReportsHealth:
             await CrowdStrikeFalcon.fetch_spotlight_assets()
 
         assert mock_health.call_count == 0, "a failed fetch cleared the error status"
+
+    @pytest.mark.asyncio
+    async def test_unsealed_cycle_does_not_report_success(self, mocker):
+        """A cycle that fetched records but left severities outstanding produced no queryable
+        snapshot, so reporting it as healthy hides the very failure the tickets are about."""
+        import CrowdStrikeFalcon
+
+        mock_health = self._run_fetch(mocker, parallel_return=(1234, {"aid-1"}, False))
+
+        with pytest.raises(DemistoException):
+            await CrowdStrikeFalcon.fetch_spotlight_assets()
+
+        assert mock_health.call_count == 0, "an unsealed cycle was reported as a healthy fetch"
+
+    @pytest.mark.asyncio
+    async def test_unsealed_cycle_keeps_the_resume_state(self, mocker):
+        """The completed severities must survive, or the next cycle re-fetches everything."""
+        import CrowdStrikeFalcon
+
+        self._run_fetch(mocker, parallel_return=(1234, {"aid-1"}, False))
+        mock_update_state = mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+
+        with pytest.raises(DemistoException):
+            await CrowdStrikeFalcon.fetch_spotlight_assets()
+
+        assert mock_update_state.call_count == 0, "the unsealed cycle wiped the state needed to resume"
 
 
 class TestLongRunningSpotlightExecution:
@@ -12495,7 +12523,7 @@ class TestXsiamSendFailureIsNotCounted:
         session_ctx.__aenter__ = mocker.AsyncMock(return_value=session)
         session_ctx.__aexit__ = mocker.AsyncMock(return_value=False)
 
-        mocker.patch("CrowdStrikeFalcon.aiohttp.ClientSession", return_value=session_ctx)
+        mocker.patch("CrowdStrikeFalcon.get_xsiam_session", new_callable=mocker.AsyncMock, return_value=session)
         return session
 
     @pytest.mark.asyncio
@@ -12576,7 +12604,7 @@ class TestXsiamSendFailureIsNotCounted:
         session_ctx = mocker.MagicMock()
         session_ctx.__aenter__ = mocker.AsyncMock(return_value=session)
         session_ctx.__aexit__ = mocker.AsyncMock(return_value=False)
-        mocker.patch("CrowdStrikeFalcon.aiohttp.ClientSession", return_value=session_ctx)
+        mocker.patch("CrowdStrikeFalcon.get_xsiam_session", new_callable=mocker.AsyncMock, return_value=session)
 
         save_state_callback = mocker.MagicMock()
         data = [{"id": f"vuln{i}", "aid": "aid1"} for i in range(50)]
@@ -12634,7 +12662,7 @@ class TestXsiamSendFailureIsNotCounted:
         session_ctx = mocker.MagicMock()
         session_ctx.__aenter__ = mocker.AsyncMock(return_value=session)
         session_ctx.__aexit__ = mocker.AsyncMock(return_value=False)
-        mocker.patch("CrowdStrikeFalcon.aiohttp.ClientSession", return_value=session_ctx)
+        mocker.patch("CrowdStrikeFalcon.get_xsiam_session", new_callable=mocker.AsyncMock, return_value=session)
 
         await xsiam_api_call_async(xsiam_url="mock_url", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets")
 
@@ -12678,7 +12706,7 @@ class TestXsiamSendFailureIsNotCounted:
         session_ctx = mocker.MagicMock()
         session_ctx.__aenter__ = mocker.AsyncMock(return_value=session)
         session_ctx.__aexit__ = mocker.AsyncMock(return_value=False)
-        mocker.patch("CrowdStrikeFalcon.aiohttp.ClientSession", return_value=session_ctx)
+        mocker.patch("CrowdStrikeFalcon.get_xsiam_session", new_callable=mocker.AsyncMock, return_value=session)
 
         with pytest.raises(DemistoException, match="502"):
             await xsiam_api_call_async(xsiam_url="mock_url", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets")
@@ -12751,7 +12779,7 @@ class TestXsiamSendFailureIsNotCounted:
         session_ctx = mocker.MagicMock()
         session_ctx.__aenter__ = mocker.AsyncMock(return_value=session)
         session_ctx.__aexit__ = mocker.AsyncMock(return_value=False)
-        mocker.patch("CrowdStrikeFalcon.aiohttp.ClientSession", return_value=session_ctx)
+        mocker.patch("CrowdStrikeFalcon.get_xsiam_session", new_callable=mocker.AsyncMock, return_value=session)
 
         await xsiam_api_call_async(xsiam_url="mock_url", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets")
 
@@ -13180,3 +13208,428 @@ class TestModuleTestConnectionErrors:
         mocker.patch("CrowdStrikeFalcon.get_token", return_value="token")
 
         assert module_test() == "ok"
+
+
+class TestSpotlightFetchTuning:
+    """Covers the XSUP-76845 / XSUP-76789 changes: the cursor died because each page spent too long
+    off the wire, and memory sat near the container limit. These assert the dials that bound both."""
+
+    @pytest.mark.asyncio
+    async def test_severities_are_fetched_two_at_a_time(self, mocker):
+        """Six concurrent severities was the dominant memory variable and the main source of event
+        loop contention between a page arriving and the next one being requested."""
+        import CrowdStrikeFalcon
+
+        live = 0
+        high_water = 0
+
+        async def track_concurrency(*_args, **kwargs):
+            nonlocal live, high_water
+            live += 1
+            high_water = max(high_water, live)
+            await asyncio.sleep(0)
+            live -= 1
+            return 0, set(), set(), []
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+        mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
+        mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+        mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+        mocker.patch("CrowdStrikeFalcon.finalize_severity_fetch", new_callable=mocker.AsyncMock, return_value=True)
+        mocker.patch(
+            "CrowdStrikeFalcon.fetch_vulnerabilities_by_severity",
+            new_callable=mocker.AsyncMock,
+            side_effect=track_concurrency,
+        )
+
+        await CrowdStrikeFalcon.fetch_spotlight_by_severity_parallel(
+            client=mocker.MagicMock(),
+            context_store=mocker.MagicMock(),
+            spotlight_state=mocker.MagicMock(),
+            snapshot_id="snap-1",
+            completed_severities=[],
+        )
+
+        assert high_water <= CrowdStrikeFalcon.MAX_CONCURRENT_SEVERITIES
+
+    @pytest.mark.asyncio
+    async def test_severities_start_smallest_first(self, mocker):
+        """HIGH and MEDIUM carry the most rows. Starting them together puts the peak at the start
+        of the cycle; smallest-first leaves the largest running alone at the tail."""
+        import CrowdStrikeFalcon
+
+        started = []
+
+        async def record_start(*_args, **kwargs):
+            started.append(kwargs["severity"])
+            return 0, set(), set(), []
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+        mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
+        mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+        mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+        mocker.patch("CrowdStrikeFalcon.finalize_severity_fetch", new_callable=mocker.AsyncMock, return_value=True)
+        mocker.patch(
+            "CrowdStrikeFalcon.fetch_vulnerabilities_by_severity",
+            new_callable=mocker.AsyncMock,
+            side_effect=record_start,
+        )
+
+        await CrowdStrikeFalcon.fetch_spotlight_by_severity_parallel(
+            client=mocker.MagicMock(),
+            context_store=mocker.MagicMock(),
+            spotlight_state=mocker.MagicMock(),
+            snapshot_id="snap-1",
+            completed_severities=[],
+        )
+
+        assert started == CrowdStrikeFalcon.SPOTLIGHT_SEVERITY_FETCH_ORDER
+        assert set(started) == set(CrowdStrikeFalcon.SPOTLIGHT_SEVERITIES), "the fetch order must cover every severity"
+
+    def test_completed_severities_are_not_refetched(self, mocker):
+        """The resume path filters against the new order constant, not the old declaration list."""
+        import CrowdStrikeFalcon
+
+        remaining = [s for s in CrowdStrikeFalcon.SPOTLIGHT_SEVERITY_FETCH_ORDER if s not in ["LOW", "NONE"]]
+
+        assert "LOW" not in remaining
+        assert "NONE" not in remaining
+        assert len(remaining) == len(CrowdStrikeFalcon.SPOTLIGHT_SEVERITIES) - 2
+
+    def test_long_running_uses_the_smaller_page(self, mocker):
+        """Smaller pages cut both the resident working set and the per-page parse/compress time
+        that is charged against the cursor's TTL."""
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={"longRunning": True})
+
+        assert CrowdStrikeFalcon.get_spotlight_page_size() == CrowdStrikeFalcon.SPOTLIGHT_PAGE_SIZE_LONG_RUNNING
+
+    def test_scheduled_fetch_keeps_the_large_page(self, mocker):
+        """The scheduled flow is bound by a 12h timeout, so extra round trips cost more there than
+        the memory they save."""
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={})
+
+        assert CrowdStrikeFalcon.get_spotlight_page_size() == CrowdStrikeFalcon.MAX_FETCH_SPOTLIGHT_ASSETS
+
+    def test_shrink_ladder_never_retries_above_the_page_size(self, mocker):
+        """With a 3000 page, retrying at the old 5000 first rung would request more than the
+        original attempt."""
+        import CrowdStrikeFalcon
+
+        ladder = CrowdStrikeFalcon.build_spotlight_shrink_ladder(3000)
+
+        assert ladder[0] == 3000
+        assert ladder == sorted(ladder, reverse=True)
+        assert max(ladder) == 3000
+
+    @pytest.mark.asyncio
+    async def test_ladder_stops_once_the_retry_budget_is_spent(self, mocker):
+        """Past the budget the cursor is assumed dead, so the remaining rungs are pointless: they
+        would only delay restarting this severity with a fresh cursor."""
+        import CrowdStrikeFalcon
+        from ContentClientApiModule import ContentClientError
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+        mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new_callable=mocker.AsyncMock)
+        # Zero budget, so the very first backoff is already over it.
+        mocker.patch.object(CrowdStrikeFalcon, "SPOTLIGHT_LADDER_BUDGET_SECONDS", 0)
+
+        response = mocker.MagicMock()
+        response.status_code = 500
+        page = mocker.patch.object(
+            CrowdStrikeFalcon,
+            "fetch_spotlight_vulnerabilities_page",
+            new_callable=mocker.AsyncMock,
+            side_effect=ContentClientError("upstream 500", response=response),
+        )
+
+        with pytest.raises(ContentClientError):
+            await CrowdStrikeFalcon.fetch_spotlight_page_with_shrink(
+                client=mocker.MagicMock(), after_token="tok", filter_query="q", severity="LOW", page_size=3000
+            )
+
+        assert page.call_count == 1, "the ladder kept walking rungs after the cursor was presumed dead"
+
+    @pytest.mark.asyncio
+    async def test_retry_log_reports_the_limit_actually_used_next(self, mocker):
+        """The log must name the rung the code will really try; indexing the module-level ladder
+        instead of the locally built one reports a limit that is never requested."""
+        import CrowdStrikeFalcon
+        from ContentClientApiModule import ContentClientError
+
+        logged: list[str] = []
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets", side_effect=lambda msg, *a, **k: logged.append(msg))
+        mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new_callable=mocker.AsyncMock)
+
+        response = mocker.MagicMock()
+        response.status_code = 500
+        # page_size 2000 gives the ladder [2000, 1000, 500], which is offset from the module
+        # constant [5000, 2500, 1000, 500] - so a wrong index shows up as a wrong number.
+        mocker.patch.object(
+            CrowdStrikeFalcon,
+            "fetch_spotlight_vulnerabilities_page",
+            new_callable=mocker.AsyncMock,
+            side_effect=ContentClientError("upstream 500", response=response),
+        )
+
+        with pytest.raises(ContentClientError):
+            await CrowdStrikeFalcon.fetch_spotlight_page_with_shrink(
+                client=mocker.MagicMock(), after_token="tok", filter_query="q", severity="LOW", page_size=2000
+            )
+
+        retry_lines = [line for line in logged if "then retrying the same page at limit=" in line]
+        assert retry_lines, "no retry line was logged"
+        assert "at limit=1000" in retry_lines[0], f"log names a rung the ladder will not use: {retry_lines[0]}"
+
+    @pytest.mark.asyncio
+    async def test_send_tasks_are_drained_when_a_severity_fails(self, mocker):
+        """A severity that raises must not leave uploads running.
+
+        Nothing downstream awaits them - the caller never receives this severity's task set - so
+        they would still be uploading when the cycle closes the shared XSIAM session underneath
+        them, turning a batch the server actually stored into a client-side error.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+        from ContentClientApiModule import ContentClientError
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+
+        vulnerabilities = [
+            {"id": "vuln1", "aid": "aid1", "cve": {"severity": "HIGH"}},
+            {"id": "vuln2", "aid": "aid2", "cve": {"severity": "HIGH"}},
+        ]
+        first_page = mocker.Mock()
+        first_page.json.return_value = {
+            "resources": vulnerabilities,
+            "meta": {"pagination": {"after": "tok"}},  # A second page, so a send task is spawned.
+        }
+
+        mock_client = mocker.AsyncMock()
+        # First page succeeds and starts an upload; the prefetched second page then fails.
+        mock_client._request.side_effect = [first_page, ContentClientError("boom")]
+
+        send_finished = False
+
+        async def slow_send(**kwargs):
+            nonlocal send_finished
+            await asyncio.sleep(0)
+            send_finished = True
+            return 1, len(kwargs.get("data", []))
+
+        sent_tasks: list[asyncio.Task] = []
+
+        def create_task_side_effect(*args, **kwargs):
+            task = asyncio.create_task(slow_send(**kwargs))
+            sent_tasks.append(task)
+            return task
+
+        mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=create_task_side_effect,
+        )
+
+        with pytest.raises(ContentClientError):
+            await fetch_vulnerabilities_by_severity(
+                client=mock_client,
+                severity="HIGH",
+                context_store=mocker.Mock(),
+                spotlight_state=mocker.Mock(),
+                snapshot_id="snap123",
+                asset_handler=mock_handler,
+            )
+
+        assert sent_tasks, "no send task was created, so the drain is not being exercised"
+        assert all(task.done() for task in sent_tasks), "a send task outlived the severity that started it"
+        assert send_finished, "the send was abandoned rather than drained"
+
+    def test_lookback_defaults_to_100_days(self, mocker):
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={})
+
+        assert CrowdStrikeFalcon.get_spotlight_lookback_days() == 100
+
+    def test_lookback_is_configurable(self, mocker):
+        """The most direct lever a support engineer has for shrinking a cycle on a huge tenant."""
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={"spotlight_lookback_days": "30"})
+
+        assert CrowdStrikeFalcon.get_spotlight_lookback_days() == 30
+
+    @pytest.mark.asyncio
+    async def test_the_seal_is_sent_as_a_single_chunk(self, mocker):
+        """A seal split across chunks can partially store. The retry then re-sends the withheld
+        records, so stored can never equal declared again and the snapshot never becomes queryable."""
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+        mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
+        handler = mocker.MagicMock()
+        handler.flush_remaining = mocker.AsyncMock()
+        handler.processed_aids = set()
+
+        seal_task = asyncio.get_running_loop().create_future()
+        seal_task.set_result((1, 1))
+        mock_create = mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            return_value=seal_task,
+        )
+
+        await CrowdStrikeFalcon.finalize_severity_fetch(
+            all_pending_tasks=set(),
+            current_completed_severities=list(CrowdStrikeFalcon.SPOTLIGHT_SEVERITIES),
+            total_vulnerabilities=42,
+            all_unique_aids=set(),
+            asset_handler=handler,
+            context_store=mocker.MagicMock(),
+            spotlight_state=mocker.MagicMock(),
+            snapshot_id="snap-1",
+            withheld_records=[{"id": "v1"}],
+        )
+
+        assert mock_create.call_args.kwargs["chunk_size"] == CrowdStrikeFalcon.XSIAM_EVENT_CHUNK_SIZE_LIMIT
+        # Left at its default, which is the strict setting: any failing chunk raises rather than
+        # letting a partially stored seal fall through to the state reset.
+        assert mock_create.call_args.kwargs.get("count_stored", False) is False, "the seal must stay all-or-nothing"
+
+    @pytest.mark.asyncio
+    async def test_semaphores_of_different_names_coexist(self, mocker):
+        """Fetching the chunk-send semaphore must not disturb the severity one.
+
+        Both are cached in one dict. If the cache were reset whenever a name was missing rather
+        than when the loop changed, the first chunk-send lookup mid-cycle would replace the
+        severity semaphore that running tasks were already holding, silently removing the limit.
+        """
+        import CrowdStrikeFalcon
+
+        severity_sem = CrowdStrikeFalcon.get_severity_semaphore()
+        await severity_sem.acquire()
+
+        CrowdStrikeFalcon.get_chunk_send_semaphore()
+
+        assert (
+            CrowdStrikeFalcon.get_severity_semaphore() is severity_sem
+        ), "the severity semaphore was replaced, so its limit no longer applies to in-flight tasks"
+        assert severity_sem.locked() is (CrowdStrikeFalcon.MAX_CONCURRENT_SEVERITIES == 1)
+        severity_sem.release()
+
+    @pytest.mark.asyncio
+    async def test_semaphores_are_rebuilt_for_a_new_event_loop(self, mocker):
+        """The long-running flow calls asyncio.run() per cycle; a semaphore bound to a closed loop
+        raises when awaited from the next one, so each cycle must get fresh ones.
+
+        The previous cycle's loop is seeded directly rather than by running a second loop, because
+        the cache must be invalidated even when the new loop reuses the freed one's id() - which is
+        what CPython does with addresses, and what a two-live-loops test can never reproduce.
+        """
+        import CrowdStrikeFalcon
+
+        closed_loop = asyncio.new_event_loop()
+        closed_loop.close()
+        stale = asyncio.Semaphore(CrowdStrikeFalcon.MAX_CONCURRENT_SEVERITIES)
+        mocker.patch.object(CrowdStrikeFalcon, "_SEMAPHORE_LOOP", closed_loop)
+        mocker.patch.dict(CrowdStrikeFalcon._LOOP_SEMAPHORES, {"severity": stale}, clear=True)
+
+        assert (
+            CrowdStrikeFalcon.get_severity_semaphore() is not stale
+        ), "a semaphore bound to a closed event loop was handed to the new cycle"
+
+    def test_loop_identity_is_the_loop_object_not_its_id(self):
+        """id() is an address and CPython reuses the addresses of freed objects, so comparing ids
+        would let a new cycle's loop masquerade as the previous one and keep its dead semaphores."""
+        import CrowdStrikeFalcon
+
+        assert not isinstance(
+            CrowdStrikeFalcon._SEMAPHORE_LOOP, int
+        ), "the cached loop identity must be the loop object itself, not its id()"
+
+    @pytest.mark.asyncio
+    async def test_asset_enrichment_tasks_are_bounded(self, mocker):
+        """Nothing else bounds these: they are spawned from the vulnerability stream and only
+        awaited at the end of the cycle, so their payloads otherwise accumulate for the whole run."""
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+        handler = CrowdStrikeFalcon.AssetsDeviceHandler(
+            client=mocker.MagicMock(),
+            context_store=mocker.MagicMock(),
+            spotlight_state=mocker.MagicMock(),
+            snapshot_id="snap-1",
+            processed_aids=set(),
+            batch_limit=1,
+        )
+
+        live = 0
+        high_water = 0
+
+        async def slow_enrich(*_args, **_kwargs):
+            nonlocal live, high_water
+            live += 1
+            high_water = max(high_water, live)
+            await asyncio.sleep(0)
+            live -= 1
+
+        mocker.patch.object(handler, "enrich_and_ingest_batch", side_effect=slow_enrich)
+
+        await handler.receive_new_aids({f"aid{i}" for i in range(40)})
+
+        assert high_water <= CrowdStrikeFalcon.MAX_PENDING_ASSET_TASKS
+
+    @pytest.mark.asyncio
+    async def test_asset_tasks_are_drained_when_the_cycle_does_not_seal(self, mocker):
+        """flush_remaining only runs when every severity completed.
+
+        On any other exit the enrichment tasks are still uploading, and the caller closes the
+        shared XSIAM session the moment this returns - so they must be settled here rather than
+        left to fail against a closed connector.
+        """
+        import CrowdStrikeFalcon
+        from ContentClientApiModule import ContentClientError
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        finished = False
+
+        async def slow_enrich():
+            nonlocal finished
+            # Long enough that it cannot finish incidentally while the severities unwind:
+            # a sleep(0) would be resumed by any of the awaits on the way out and the test
+            # would pass with or without the drain.
+            await asyncio.sleep(0.2)
+            finished = True
+
+        enrichment_task = asyncio.create_task(slow_enrich())
+
+        handler = mocker.MagicMock()
+        handler.running_tasks = {enrichment_task}
+        handler.flush_remaining = mocker.AsyncMock()
+        handler.processed_aids = set()
+        mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler", return_value=handler)
+
+        # Every severity dies, so none is marked complete, the snapshot cannot seal and
+        # flush_remaining is never reached - the exact path that used to abandon these tasks.
+        mocker.patch(
+            "CrowdStrikeFalcon.fetch_vulnerabilities_by_severity",
+            new_callable=mocker.AsyncMock,
+            side_effect=ContentClientError("severity died"),
+        )
+
+        _total, _aids, sealed = await CrowdStrikeFalcon.fetch_spotlight_by_severity_parallel(
+            client=mocker.MagicMock(),
+            context_store=mocker.MagicMock(),
+            spotlight_state=mocker.MagicMock(),
+            snapshot_id="snap-1",
+            completed_severities=[],
+        )
+
+        assert sealed is False, "the snapshot should not seal with severities outstanding"
+        handler.flush_remaining.assert_not_awaited()
+        assert enrichment_task.done(), "an enrichment task outlived the cycle that owns it"
+        assert finished, "the enrichment upload was abandoned rather than drained"
