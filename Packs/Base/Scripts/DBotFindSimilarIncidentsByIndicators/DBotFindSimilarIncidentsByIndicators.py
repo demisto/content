@@ -1,6 +1,7 @@
 import math
 import re
 from collections import Counter
+from typing import Any, Callable
 
 import demistomock as demisto
 import numpy as np
@@ -57,9 +58,56 @@ STATUS_DICT = {
     2: "Closed",
     3: "Archive",
 }
-INDICATOR_LINK_FORMAT = "[{0}](#/indicator/{0})"
-INCIDENT_LINK_FORMAT = "[{0}](#/Details/{0})"
 DATE_FORMAT = "%Y-%m-%d"
+
+
+def get_incident_link_creator() -> Callable[[Any], str]:
+    """Returns a function to build a markdown link to an incident details page.
+
+    The URL format depends on the platform:
+
+    - Unified Cortex platform (XSIAM v3 / XSOAR on platform): ``/issue-view/{id}``
+    - Cortex XSOAR 8.x (SaaS, non-platform): ``/Details/{id}``
+    - Cortex XSOAR 6.x (on-prem, legacy): ``#/Details/{id}``
+
+    This ensures the generated hyperlinks navigate directly to the incident/issue on
+    every supported platform.
+
+    :return: A function that takes an incident_id and returns a markdown-formatted link.
+    """
+    if is_platform():
+        template = "[{id}](/issue-view/{id})"
+    elif is_demisto_version_ge("8.4.0"):
+        template = "[{id}](/Details/{id})"
+    else:
+        template = "[{id}](#/Details/{id})"
+
+    def create_incident_link(incident_id: Any) -> str:
+        return template.format(id=incident_id)
+
+    return create_incident_link
+
+
+def get_indicator_link_creator() -> Callable[[Any], str]:
+    """Returns a function to build a markdown link to an indicator details page.
+
+    The URL format depends on the platform:
+
+    - Unified Cortex platform (XSIAM v3 / XSOAR on platform): ``/indicator/{id}``
+    - Cortex XSOAR 8.x (SaaS, non-platform): ``/indicator/{id}``
+    - Cortex XSOAR 6.x (on-prem, legacy): ``#/indicator/{id}``
+
+    :return: A function that takes an indicator_id and returns a markdown-formatted link.
+    """
+    if is_platform() or is_xsoar_saas():
+        template = "[{id}](/indicator/{id})"
+    else:
+        template = "[{id}](#/indicator/{id})"
+
+    def create_indicator_link(indicator_id: Any) -> str:
+        return template.format(id=indicator_id)
+
+    return create_indicator_link
 
 
 def flatten_list(my_list: list[list]) -> list:
@@ -278,7 +326,7 @@ def get_mutual_indicators_df(
         indicators_df[INVOLVED_INCIDENTS_COUNT_COLUMN] = indicators_df[INVESTIGATION_IDS_FIELD].apply(
             lambda inv_ids: sum(id_ in incident_ids for id_ in inv_ids),
         )
-        indicators_df[INDICATOR_LINK_COLUMN] = indicators_df[INDICATOR_ID_FIELD].apply(lambda x: INDICATOR_LINK_FORMAT.format(x))
+        indicators_df[INDICATOR_LINK_COLUMN] = indicators_df[INDICATOR_ID_FIELD].apply(get_indicator_link_creator())
         indicators_df = indicators_df.sort_values(
             [SCORE_FIELD, INVOLVED_INCIDENTS_COUNT_COLUMN],
             ascending=False,
@@ -396,9 +444,7 @@ def format_similar_incidents(
 
     # format and enrich DataFrame
     similar_incidents = similar_incidents.reset_index().rename(columns={"index": INCIDENT_ID_FIELD})
-    similar_incidents[INCIDENT_LINK_COLUMN] = similar_incidents[INCIDENT_ID_FIELD].apply(
-        lambda _id: INCIDENT_LINK_FORMAT.format(_id)
-    )
+    similar_incidents[INCIDENT_LINK_COLUMN] = similar_incidents[INCIDENT_ID_FIELD].apply(get_incident_link_creator())
     similar_incidents[IDENTICAL_INDICATORS_COLUMN] = similar_incidents[IDENTICAL_INDICATORS_COLUMN].apply(
         lambda inc_ids: replace_indicator_ids_with_values(inc_ids, indicators_data)
     )
@@ -447,7 +493,7 @@ def actual_incident_results(
     :return: a CommandResults obj
     """
     incident_df[INCIDENT_ID_FIELD] = [incident_id]
-    incident_df[INCIDENT_LINK_COLUMN] = incident_df[INCIDENT_ID_FIELD].apply(lambda _id: INCIDENT_LINK_FORMAT.format(_id))
+    incident_df[INCIDENT_LINK_COLUMN] = incident_df[INCIDENT_ID_FIELD].apply(get_incident_link_creator())
     incident_df[INDICATORS_COLUMN] = incident_df[INDICATORS_COLUMN].apply(
         lambda inc_ids: replace_indicator_ids_with_values(inc_ids, indicators_data)
     )
