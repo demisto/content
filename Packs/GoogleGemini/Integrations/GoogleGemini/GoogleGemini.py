@@ -76,7 +76,7 @@ class Client(BaseClient):
         verify: bool,
         proxy: bool,
         auth_type: str,
-        model: str = "gemini-2.5-flash-preview-05-20",
+        model: str = "gemini-2.5-flash",
         max_tokens: int = 1024,
         temperature: float | None = None,
         top_p: float | None = None,
