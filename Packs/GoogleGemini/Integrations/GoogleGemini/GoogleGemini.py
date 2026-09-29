@@ -13,11 +13,6 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-""" IMPORTS """
-
-
-from google.oauth2 import service_account
-from google.auth.transport.requests import Request
 
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601
