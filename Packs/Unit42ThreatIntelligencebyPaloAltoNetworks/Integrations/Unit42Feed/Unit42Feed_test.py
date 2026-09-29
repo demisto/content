@@ -20,6 +20,7 @@ from Unit42Feed import (
     RETRY_COUNT,
     STATUS_CODES_TO_RETRY,
     THREAT_OBJECTS_TYPE,
+    THREAT_OBJECTS_LIMIT,
 )
 from CommonServerPython import *
 
@@ -1982,36 +1983,30 @@ def test_fetch_indicators_stores_pending_threat_objects(client, mocker):
     assert next_run["page_tokens"] == {"threat_objects": "page2"}
 
 
-def test_fetch_indicators_threat_objects_consume_budget_indicators_resumed_next_run(client, mocker):
+def test_fetch_indicators_threat_objects_and_indicators_use_separate_budgets(client, mocker):
     """
     Given:
-        - Both Threat Objects and Indicators are enabled with a small shared total limit
-        - Threat objects alone return a full page that meets/exceeds the whole budget, with
-          more pages still available
+        - A fresh run (threat objects due) with both feeds enabled and a limit of "20000".
+        - Threat objects still have pages remaining (pending token); indicators complete.
     When:
-        - Calling fetch_indicators (run 1), then feeding its next run back in (run 2)
+        - Calling fetch_indicators.
     Then:
-        - Run 1: threat objects consume the entire budget, so indicators are NOT queried this
-          run, and only the threat objects token is stored as pending.
-        - Run 2: threat objects had a pending token (indicators did not), so only threat
-          objects resume from that token; indicators remain skipped because the cycle is in
-          progress and they never had a token.
+        - Threat objects are fetched with their own THREAT_OBJECTS_LIMIT budget.
+        - Indicators are fetched with the full 20000 limit, unreduced by the threat objects count.
+        - Both feeds run the same cycle; total_fetched combines both and only a pending
+          "threat_objects" token remains.
     """
     from Unit42Feed import fetch_indicators
 
     mock_demisto_params(mocker)
 
-    threat_objects_page = {
-        "data": [{"name": f"APT{i}", "threat_object_class": "actor", "publications": []} for i in range(100)],
-        "metadata": {"next_page_token": "to_page2"},
-    }
-    mock_get_threat_objects = mocker.patch.object(client, "get_threat_objects", return_value=threat_objects_page)
-    mock_get_indicators = mocker.patch.object(client, "get_indicators")
-    mocker.patch("Unit42Feed.demisto.createIndicators")
+    # Patch the fetch wrappers to inspect the budget each receives and control their returns.
+    mock_fetch_threat_objects = mocker.patch("Unit42Feed.fetch_threat_objects_with_limit", return_value=(2500, "to_page2"))
+    mock_fetch_indicator_type = mocker.patch("Unit42Feed.fetch_indicator_type", return_value=(1, None))
     mocker.patch("Unit42Feed.demisto.getLastRun", return_value={})
 
     params = {
-        "limit": "50",
+        "limit": "20000",
         "feed_types": ["Threat Objects", "Indicators"],
         "indicator_types": ["IP"],
         "feedTags": [],
@@ -2019,25 +2014,16 @@ def test_fetch_indicators_threat_objects_consume_budget_indicators_resumed_next_
     }
 
     current_time = datetime(2023, 6, 2, 12, 0, 0)
+    total_fetched, next_run = fetch_indicators(client, params, current_time)
 
-    # --- Run 1: threat objects consume the whole budget; indicators skipped this run ---
-    total_run1, next_run_1 = fetch_indicators(client, params, current_time)
+    mock_fetch_threat_objects.assert_called_once()
+    assert mock_fetch_threat_objects.call_args[1]["limit"] == THREAT_OBJECTS_LIMIT
+    mock_fetch_indicator_type.assert_called_once()
+    assert mock_fetch_indicator_type.call_args[1]["limit"] == 20000
 
-    assert total_run1 == 100  # full threat objects page pushed, exhausting the budget
-    mock_get_indicators.assert_not_called()  # no budget left for indicators
-    assert next_run_1["page_tokens"] == {"threat_objects": "to_page2"}
-    assert "indicators" not in next_run_1["page_tokens"]
-    assert "last_successful_run" not in next_run_1
-
-    # --- Run 2: only threat objects (which had a token) resume; indicators still skipped ---
-    mocker.patch("Unit42Feed.demisto.getLastRun", return_value=next_run_1)
-    total_run2, _ = fetch_indicators(client, params, current_time)
-
-    assert total_run2 == 100
-    # Threat objects resumed from the pending token produced in run 1.
-    assert mock_get_threat_objects.call_args_list[-1][1]["next_page_token"] == "to_page2"
-    # Indicators never had a pending token, so with a cycle in progress they stay skipped.
-    mock_get_indicators.assert_not_called()
+    assert total_fetched == 2501
+    assert next_run["page_tokens"] == {"threat_objects": "to_page2"}
+    assert "indicators" not in next_run["page_tokens"]
 
 
 def test_fetch_indicators_initializes_cycle_start_time_on_first_pending_run(client, mocker):
