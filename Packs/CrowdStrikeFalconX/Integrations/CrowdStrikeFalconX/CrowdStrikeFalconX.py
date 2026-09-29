@@ -548,7 +548,12 @@ def file_command(client: Client, **args: dict) -> List[CommandResults]:
     for report_id in report_ids:
         response = client.get_full_report(report_id)
         report_to_results[report_id] = parse_outputs(
-            response, reliability=client.reliability, resources_fields=resources_fields, sandbox_fields=sandbox_fields
+            response,
+            reliability=client.reliability,
+            resources_fields=resources_fields,
+            sandbox_fields=sandbox_fields,
+            relationships_limit=client.relationships_limit,
+            sandbox_array_limit=client.sandbox_array_limit,
         )
 
     command_results = parse_file_results(report_to_results)
@@ -703,6 +708,8 @@ def parse_outputs(
     resources_fields: Optional[tuple] = None,
     sandbox_fields: Optional[tuple] = None,
     extra_sandbox_fields: Optional[tuple] = None,
+    relationships_limit: int = DEFAULT_RELATIONSHIPS_LIMIT,
+    sandbox_array_limit: int = DEFAULT_SANDBOX_ARRAY_LIMIT,
 ) -> RawCommandResults:
     """Parse group data as received from CrowdStrike FalconX API matching Demisto conventions
     the output from the API is a dict that contains the keys: meta, resources and errors
@@ -716,6 +723,8 @@ def parse_outputs(
     :param resources_fields: the wanted params that appear in the resources section
     :param sandbox_fields: the wanted params that appear in the sandbox section
     :param extra_sandbox_fields: the wanted params that appear in the extra sandbox section
+    :param relationships_limit: maximum number of relationships to keep per file indicator.
+    :param sandbox_array_limit: maximum number of entries to keep per large sandbox array in context.
     """
     output: Dict[str, Any] = {}
     indicator: Optional[Common.File] = None
@@ -732,11 +741,15 @@ def parse_outputs(
 
             if sandbox := resources.get("sandbox", [{}])[0]:  # list of single dict
                 output.update(filter_dictionary(sandbox, sandbox_fields))
-                indicator = parse_indicator(sandbox, reliability)
+                indicator = parse_indicator(sandbox, reliability, relationships_limit)
 
                 if extra_sandbox_group_outputs := filter_dictionary(sandbox, extra_sandbox_fields):
                     for process in extra_sandbox_group_outputs.get("processes", []):
                         process.pop("registry", None)
+
+                    extra_sandbox_group_outputs = truncate_sandbox_arrays(
+                        extra_sandbox_group_outputs, sandbox_array_limit, report_id=str(resources.get("id", "unknown"))
+                    )
 
                     resources_group_outputs["sandbox"] = extra_sandbox_group_outputs
                     output.update(extra_sandbox_group_outputs)
@@ -746,7 +759,9 @@ def parse_outputs(
     return RawCommandResults(response, output, indicator)
 
 
-def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File]:  # type: ignore[return]
+def parse_indicator(  # type: ignore[return]
+    sandbox: dict, reliability_str: str, relationships_limit: int = DEFAULT_RELATIONSHIPS_LIMIT
+) -> Optional[Common.File]:
     if sha256 := sandbox.get("sha256"):
         score_field: int = DBOT_SCORE_DICT.get(sandbox.get("verdict", ""), Common.DBotScore.NONE)
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability_str)
@@ -755,7 +770,9 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
         info = {item["id"]: item.get("value") for item in sandbox.get("version_info", [])}
         relationships: Optional[List[EntityRelationship]] = None
         if sandbox.get("submission_type", "") in ("file_url", "file"):
-            relationships = parse_indicator_relationships(sandbox, indicator_value=sha256, reliability=reliability)
+            relationships = parse_indicator_relationships(
+                sandbox, indicator_value=sha256, reliability=reliability, relationships_limit=relationships_limit
+            )
         signature: Optional[Common.FileSignature] = Common.FileSignature(
             authentihash="",  # N/A in data
             copyright=info.get("LegalCopyright", ""),
@@ -781,7 +798,9 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
     return None
 
 
-def parse_indicator_relationships(sandbox: dict, indicator_value: str, reliability: str) -> List[EntityRelationship]:
+def parse_indicator_relationships(
+    sandbox: dict, indicator_value: str, reliability: str, relationships_limit: int = DEFAULT_RELATIONSHIPS_LIMIT
+) -> List[EntityRelationship]:
     relationships = []
 
     def _create_relationship(relationship_name: str, entity_b: str, entity_b_type: str) -> EntityRelationship:
@@ -822,6 +841,13 @@ def parse_indicator_relationships(sandbox: dict, indicator_value: str, reliabili
                     entity_b_type=FeedIndicatorType.IP,
                 )
             )
+
+    if len(relationships) > relationships_limit:
+        demisto.debug(
+            f"CrowdStrike Falcon X: relationships for indicator {indicator_value} truncated to "
+            f"{relationships_limit} entries. Full data available in raw_response."
+        )
+        relationships = relationships[:relationships_limit]
     return relationships
 
 
@@ -1130,6 +1156,8 @@ def get_full_report_command(
             resources_fields=resources_fields,
             sandbox_fields=sandbox_fields,
             extra_sandbox_fields=extra_sandbox_fields,
+            relationships_limit=client.relationships_limit,
+            sandbox_array_limit=client.sandbox_array_limit,
         )
         results.append(result)
 
