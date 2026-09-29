@@ -20,12 +20,12 @@ Unit 42 Feed integration provides threat intelligence from Palo Alto Networks Un
 
 ## How Fetching Works
 
-The integration fetches indicators and threat objects on a single shared limit per fetch. The total number of items fetched in a run is capped at **20,000** (across both threat objects and indicators combined).
+The integration fetches indicators and threat objects, each capped by its own independent limit per fetch. Indicators are capped at **20,000** items per run, and threat objects are capped separately at **5,000** items per run.
 
 Fetch order within a run:
 
-1. **Threat Objects** are fetched first, consuming from the shared limit.
-2. **Indicators** (all configured indicator types, queried together) are then fetched with whatever quota remains.
+1. **Threat Objects** are fetched first, up to their own 5,000-item limit.
+2. **Indicators** (all configured indicator types, queried together) are then fetched with the full 20,000-item limit, independent of how many threat objects were fetched.
 
 ### Fetch Frequency
 
@@ -34,7 +34,7 @@ Fetch order within a run:
 
 ### Incremental Fetch
 
-When the total limit is reached during a run and more data is still available, the integration saves its position and resumes from where it stopped on the next run, instead of restarting the same query. This ensures no data is skipped across runs.
+When a feed reaches its limit during a run and more data is still available, the integration saves its position and resumes from where it stopped on the next run, instead of restarting the same query. This ensures no data is skipped across runs.
 
 ## Commands
 

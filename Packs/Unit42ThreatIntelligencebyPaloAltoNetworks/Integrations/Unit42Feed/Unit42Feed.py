@@ -1029,14 +1029,14 @@ def _should_fetch_threat_objects(feed_enabled: bool, cycle_in_progress: bool, fe
 
 
 def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tuple[int, dict]:
-    """Retrieves indicators from the feed using a single shared total limit.
+    """Retrieves indicators and threat objects from the feed, each capped by its own independent limit.
 
     Indicators/threat objects are pushed to the server as soon as each page is
     fetched and parsed, instead of being accumulated in memory for the entire fetch cycle.
     This function only tracks and returns the total count fetched, to avoid holding all
     indicators in memory at once and causing out-of-memory issues.
 
-    The fetch is incremental: when the total limit is hit and the API still has more pages,
+    The fetch is incremental: when a feed's limit is hit and the API still has more pages,
     the pending state (the start time and the per-feed page tokens of the feeds that were
     not exhausted) is returned as the next run, so the following fetch resumes exactly where
     this one stopped. Otherwise, the next run only holds the last successful run time.
