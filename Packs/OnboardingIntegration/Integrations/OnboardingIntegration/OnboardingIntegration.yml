@@ -196,7 +196,7 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
-  dockerimage: demisto/faker3:1.0.0.10120494
+  dockerimage: demisto/faker3:1.0.0.12844876
   isfetch: true
   subtype: python3
 tests:

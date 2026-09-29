@@ -10,7 +10,7 @@ def filter_non_locked(res):
 def main():
     try:
         if is_demisto_version_ge("8.0.0"):
-            uri = "xsoar/public/v1/incidenttype"
+            uri = "incidenttype"
         else:
             account_name = demisto.incidents()[0].get("account", "")
             uri = f"acc_{account_name}/incidenttype" if account_name else "incidenttype"
