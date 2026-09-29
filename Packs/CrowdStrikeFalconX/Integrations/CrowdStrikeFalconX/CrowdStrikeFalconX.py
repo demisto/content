@@ -671,6 +671,30 @@ def find_suitable_hash_output(raw_results: tuple[RawCommandResults]) -> Dict[str
     return max_outputs
 
 
+def truncate_sandbox_arrays(sandbox_outputs: dict, max_length: int, report_id: str = "unknown") -> dict:
+    """
+    Return a copy of the sandbox outputs with the large arrays capped to `max_length` entries.
+
+    Only the fields listed in SANDBOX_ARRAYS_TO_TRUNCATE are affected.
+
+    :param sandbox_outputs: the extra sandbox outputs dict (already filtered to the wanted fields).
+    :param max_length: maximum number of entries to keep per truncated array.
+    :param report_id: the report id, used for debug logging only.
+
+    :return: a shallow copy of `sandbox_outputs` with the large arrays truncated where needed.
+    """
+    truncated_outputs = dict(sandbox_outputs)
+    for field in SANDBOX_ARRAYS_TO_TRUNCATE:
+        value = truncated_outputs.get(field)
+        if isinstance(value, list) and len(value) > max_length:
+            demisto.debug(
+                f"CrowdStrike Falcon X full report {report_id}: sandbox[{field}] truncated to "
+                f"{max_length} entries. Full data available in raw_response."
+            )
+            truncated_outputs[field] = value[:max_length]
+    return truncated_outputs
+
+
 def parse_outputs(
     response: dict,
     reliability: str,
