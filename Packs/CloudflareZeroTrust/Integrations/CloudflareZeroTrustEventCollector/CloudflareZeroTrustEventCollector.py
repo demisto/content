@@ -143,7 +143,10 @@ def fetch_events_for_type(
     start_date = calculate_fetch_dates(last_run, start_fetch_date)
     previous_event_ids = last_run.get("events_ids", [])
     events_to_fetch = max_fetch + len(previous_event_ids)
-    page_size = min(events_to_fetch, max_page_size)
+    # Always request a fixed page size and trim to `max_fetch` locally. Deriving it from `max_fetch` plus the number of
+    # deduplication IDs produces arbitrary values (e.g. 644), some of which the Access Authentication Logs endpoint
+    # rejects with HTTP 400 and error code 12091 (access.api.error.invalid_url_parameter_value).
+    page_size = max_page_size
 
     page = 1
     events: list[dict[str, Any]] = []
@@ -222,16 +225,25 @@ def fetch_events(
         },
     }
     event_type_is_finished: dict[str, bool] = {}
+    event_type_errors: dict[str, str] = {}
 
     for event_type in event_types_to_fetch:
         event_type_is_finished[event_type] = False
         event_type_timeout = FETCH_EVENTS_TIMEOUT // len(event_types_to_fetch)
         event_type_max_fetch = event_type_kwargs[event_type]["max_fetch"]
 
-        with ExecutionTimeout(event_type_timeout):
-            demisto.debug(f"Starting to fetch {event_type=} with {event_type_max_fetch=} and {event_type_timeout=}.")
-            fetched_events, event_type_next_run = fetch_events_for_type(client=client, **event_type_kwargs[event_type])
-            event_type_is_finished[event_type] = True
+        try:
+            with ExecutionTimeout(event_type_timeout):
+                demisto.debug(f"Starting to fetch {event_type=} with {event_type_max_fetch=} and {event_type_timeout=}.")
+                fetched_events, event_type_next_run = fetch_events_for_type(client=client, **event_type_kwargs[event_type])
+                event_type_is_finished[event_type] = True
+        except Exception as e:
+            # Isolate failures per event type so an error in one does not discard the events and progress of the others.
+            demisto.error(f"Failed fetching {event_type=}: {e}")
+            event_type_errors[event_type] = str(e)
+            # Keep the existing last run (including any reduced max fetch) so the next iteration retries the same window.
+            next_run[event_type] = {**event_type_kwargs[event_type]["last_run"], "max_fetch": event_type_max_fetch}
+            continue
 
         if event_type_is_finished[event_type]:
             demisto.debug(
@@ -250,7 +262,14 @@ def fetch_events(
             event_type_last_run = event_type_kwargs[event_type]["last_run"]
             next_run[event_type] = {**event_type_last_run, "max_fetch": max(event_type_max_fetch // 2, 1)}
 
-    event_types_finished = event_type_is_finished.values()
+    if event_type_errors and len(event_type_errors) == len(event_types_to_fetch):
+        # Every event type failed, so there is no progress to save. Surface the error instead of silently continuing.
+        raise DemistoException(f"Failed fetching all event types: {event_type_errors}")
+
+    # Event types that raised an error are excluded, so a persistent error does not trigger an immediate re-fetch loop.
+    event_types_finished = [
+        is_finished for event_type, is_finished in event_type_is_finished.items() if event_type not in event_type_errors
+    ]
     # If at least one event type timed out and at least one finished in time, trigger instant next run
     if False in event_types_finished and True in event_types_finished:
         demisto.debug("Some event types timed out. Next fetch triggered immediately.")
