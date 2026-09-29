@@ -33,6 +33,10 @@ DBOT_SCORE_DICT: Dict[str, int] = {
 OUTPUTS_PREFIX = "csfalconx.resource"
 ONE_MINUTE = 60
 
+DEFAULT_RELATIONSHIPS_LIMIT = 50  # Max relationships kept per file indicator.
+DEFAULT_SANDBOX_ARRAY_LIMIT = 50  # Max entries kept per large sandbox array in context.
+SANDBOX_ARRAYS_TO_TRUNCATE = ("processes", "http_requests", "dns_requests", "contacted_hosts", "extracted_files")
+
 
 def convert_environment_id_string_to_int(environment_id: str) -> int:
     """
@@ -60,7 +64,17 @@ class Client:
     Client to use in the CrowdStrikeFalconX integration. Uses BaseClient
     """
 
-    def __init__(self, server_url: str, username: str, password: str, use_ssl: bool, proxy: bool, reliability: str):
+    def __init__(
+        self,
+        server_url: str,
+        username: str,
+        password: str,
+        use_ssl: bool,
+        proxy: bool,
+        reliability: str,
+        relationships_limit: int = DEFAULT_RELATIONSHIPS_LIMIT,
+        sandbox_array_limit: int = DEFAULT_SANDBOX_ARRAY_LIMIT,
+    ):
         self._base_url = server_url
         self._verify = use_ssl
         self._ok_codes = ()  # type: ignore[var-annotated]
@@ -70,6 +84,8 @@ class Client:
         self._token = self._get_access_token()
         self._headers = {"Authorization": "bearer " + self._token}
         self.reliability = reliability
+        self.relationships_limit = relationships_limit
+        self.sandbox_array_limit = sandbox_array_limit
         if not proxy:
             self._session.trust_env = False
 
@@ -1622,13 +1638,22 @@ def main():
     use_ssl = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     reliability = params.get("reliability", DBotScoreReliability.B)
+    relationships_limit = arg_to_number(params.get("relationships_limit")) or DEFAULT_RELATIONSHIPS_LIMIT
+    sandbox_array_limit = arg_to_number(params.get("sandbox_array_limit")) or DEFAULT_SANDBOX_ARRAY_LIMIT
 
     command = demisto.command()
     demisto.debug(f"Command being called in CrowdStrikeFalconX Sandbox is: {command}")
 
     try:
         client = Client(
-            server_url=url, username=username, password=password, use_ssl=use_ssl, proxy=proxy, reliability=reliability
+            server_url=url,
+            username=username,
+            password=password,
+            use_ssl=use_ssl,
+            proxy=proxy,
+            reliability=reliability,
+            relationships_limit=relationships_limit,
+            sandbox_array_limit=sandbox_array_limit,
         )
         polling_commands = {
             "cs-fx-upload-file": upload_file_with_polling_command,
