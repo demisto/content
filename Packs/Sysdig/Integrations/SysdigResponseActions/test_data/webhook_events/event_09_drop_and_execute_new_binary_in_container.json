@@ -1,0 +1,106 @@
+{
+    "alert": {
+        "name": "Policy V2 7770001: Sysdig Runtime Activity Logs",
+        "description": "This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.",
+        "severity": 7,
+        "severityLabel": "Info",
+        "subject": "Sysdig Runtime Activity Logs triggered at 04/28/2026 01:14 PM UTC",
+        "body": "Policy event triggered at 04/28/2026 01:14 PM UTC\n\nPolicy:             Sysdig Runtime Activity Logs\nPolicy URL:         https://app.example.sysdig.com/secure//#/policies/7770001\nDescription:        This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.\n\nTimestamp:          04/28/2026 01:14 PM UTC\nURL:                https://app.example.sysdig.com/secure//#/events/00000000000000000000000000000009\nRule:               Drop and execute new binary in container\nRule URL:           https://app.example.sysdig.com/secure//#/policies/rules/falco/Drop%20and%20execute%20new%20binary%20in%20container\nSeverity:           Info\nScope:\n    kubernetes.workload.type:      daemonset\n    host.mac:      aa:bb:cc:dd:ee:05\n    container.label.io.kubernetes.container.name:      lacework\n    kubernetes.pod.name:      lacework-lacework-agent-gfrfk\n    container.image.digest:      sha256:3333444455556666777788889999000011112222aaaabbbbccccddddeeeeffff\n    process.name:      exe -ns net -p 604489\n    host.id:      eeee000011112222333344445555666677778888999900001111222233334444\n    kubernetes.workload.name:      lacework-lacework-agent\n    container.name:      lacework\n    kubernetes.cluster.name:      myclusterName\n    container.label.io.kubernetes.pod.namespace:      lacework\n    container.image.repo:      docker.io/lacework/datacollector\n    kubernetes.node.name:      node04\n    host.hostName:      hybrid-node\n    kubernetes.namespace.name:      lacework\n    container.image.tag:      8.1.0\n    container.image.id:      bbb000000004\n    kubernetes.daemonSet.name:      lacework-lacework-agent\n    container.label.io.kubernetes.pod.name:      lacework-lacework-agent-gfrfk\nActions:            No actions performed\nDetails:            Executing binary exe with parent datacollector not part of base image docker.io/lacework/datacollector on lacework under user root and execution path /var/lib/lacework/8.1.0.30690/datacollector (proc.name=exe proc.exepath=/var/lib/lacework/8.1.0.30690/datacollector proc.pname=datacollector gparent=datacollector ggparent=datacollector_w gggparent=containerd-shim evt.type=execve container.name=lacework image=docker.io/lacework/datacollector:8.1.0 proc.cmdline=exe -ns net -p 604489 proc.pcmdline=datacollector -r=collector proc.pid=2477329 proc.cwd=/ proc.ppid=3594422 user.uid=0 user.loginuid=-1 user.loginname=<NA> user.name=root group.gid=0 group.name=root container.id=aaa000000007 )"
+    },
+    "event": {
+        "url": "https://app.example.sysdig.com/secure//#/events/?from=1777382012&to=1777382073"
+    },
+    "condition": "count(policyEvent) > 0",
+    "source": "Sysdig Secure",
+    "state": "ACTIVE",
+    "timestamp": 1777382072855118,
+    "timespan": 60000000,
+    "entities": [
+        {
+            "metricValues": [
+                {
+                    "metric": "policyEvent",
+                    "aggregation": "count",
+                    "groupAggregation": "none",
+                    "value": 1
+                }
+            ],
+            "policyEvents": [
+                {
+                    "id": "00000000000000000000000000000009",
+                    "containerId": "aaa000000007",
+                    "name": "Sysdig Runtime Activity Logs",
+                    "description": "This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.",
+                    "severity": 7,
+                    "policyId": 7770001,
+                    "output": "Executing binary exe with parent datacollector not part of base image docker.io/lacework/datacollector on lacework under user root and execution path /var/lib/lacework/8.1.0.30690/datacollector (proc.name=exe proc.exepath=/var/lib/lacework/8.1.0.30690/datacollector proc.pname=datacollector gparent=datacollector ggparent=datacollector_w gggparent=containerd-shim evt.type=execve container.name=lacework image=docker.io/lacework/datacollector:8.1.0 proc.cmdline=exe -ns net -p 604489 proc.pcmdline=datacollector -r=collector proc.pid=2477329 proc.cwd=/ proc.ppid=3594422 user.uid=0 user.loginuid=-1 user.loginname=<NA> user.name=root group.gid=0 group.name=root container.id=aaa000000007 )",
+                    "ruleName": "Drop and execute new binary in container",
+                    "ruleType": "RULE_TYPE_FALCO",
+                    "matchedOnDefault": false,
+                    "fields": {
+                        "proc.pname": "datacollector",
+                        "user.uid": "0",
+                        "group.name": "root",
+                        "container.image.tag": "8.1.0",
+                        "evt.type": "execve",
+                        "proc.cmdline": "exe -ns net -p 604489",
+                        "proc.cwd": "/",
+                        "proc.ppid": "3594422",
+                        "user.name": "root",
+                        "proc.exepath": "/var/lib/lacework/8.1.0.30690/datacollector",
+                        "proc.aname[2]": "datacollector",
+                        "proc.aname[3]": "datacollector_w",
+                        "container.id": "aaa000000007",
+                        "proc.pid": "2477329",
+                        "proc.aname[4]": "containerd-shim",
+                        "user.loginuid": "-1",
+                        "container.name": "lacework",
+                        "container.image.repository": "docker.io/lacework/datacollector",
+                        "proc.name": "exe",
+                        "group.gid": "0",
+                        "user.loginname": "<NA>",
+                        "proc.pcmdline": "datacollector -r=collector"
+                    },
+                    "eventLabels": {
+                        "kubernetes.node.name": "node04",
+                        "kubernetes.namespace.name": "lacework",
+                        "kubernetes.workload.name": "lacework-lacework-agent",
+                        "container.image.tag": "8.1.0",
+                        "host.mac": "aa:bb:cc:dd:ee:05",
+                        "kubernetes.cluster.name": "myclusterName",
+                        "process.name": "exe -ns net -p 604489",
+                        "kubernetes.workload.type": "daemonset",
+                        "container.name": "lacework",
+                        "container.image.repo": "docker.io/lacework/datacollector",
+                        "container.label.io.kubernetes.pod.name": "lacework-lacework-agent-gfrfk",
+                        "container.image.digest": "sha256:3333444455556666777788889999000011112222aaaabbbbccccddddeeeeffff",
+                        "kubernetes.daemonSet.name": "lacework-lacework-agent",
+                        "kubernetes.pod.name": "lacework-lacework-agent-gfrfk",
+                        "host.hostName": "hybrid-node",
+                        "container.label.io.kubernetes.container.name": "lacework",
+                        "container.label.io.kubernetes.pod.namespace": "lacework",
+                        "host.id": "eeee000011112222333344445555666677778888999900001111222233334444",
+                        "container.image.id": "bbb000000004"
+                    },
+                    "falsePositive": false,
+                    "policyVersion": 65,
+                    "origin": "Sysdig",
+                    "timestamp": 1777382072855118,
+                    "hostMac": "aa:bb:cc:dd:ee:05",
+                    "isAggregated": false
+                }
+            ],
+            "policies": [
+                {
+                    "name": "Sysdig Runtime Activity Logs",
+                    "description": "This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.",
+                    "origin": "Secure UI",
+                    "versionId": "0.0.0",
+                    "severity": 7,
+                    "enabled": false,
+                    "id": 7770001
+                }
+            ]
+        }
+    ]
+}

@@ -2289,3 +2289,48 @@ Updates the status for a group of UAM alerts. Relevant for API version 2.1.
 | SentinelOne.UAMAlert.ID | String | The UAM alert ID. |
 | SentinelOne.UAMAlert.Updated | Boolean | Whether the status was successfully updated. |
 | SentinelOne.UAMAlert.Status | String | Name of the status performed on the alerts. |
+
+### sentinelone-export-threat-events
+
+***
+Exports the threat's events as a JSON File.  Relevant for API version 2.1.
+
+#### Base Command
+
+`sentinelone-export-threat-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| threat_id | Please provide the Valid Threat ID. Example: 14629133470822878. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Export.Events.ThreatId | String | The threat ID. |
+| SentinelOne.Export.Events.Filename | String | The name of the file containing the Events. |
+
+### sentinelone-export-full-threat-timeline
+
+***
+Exports the threat's full timeline as a JSON File. Relevant for API version 2.1.
+
+#### Base Command
+
+`sentinelone-export-full-threat-timeline`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| threat_id | Please provide the Valid Threat ID. Example: 14629133470822878. | Required |
+| limit | The max number of timeline entries to return, default is 5000. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Export.Timeline.ThreatId | String | The threat ID. |
+| SentinelOne.Export.Timeline.Filename | String | The name of the file containing the Timeline. |

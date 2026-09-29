@@ -1,0 +1,16 @@
+{
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "Security Compliance Analyzer",
+    "jobId": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "sessionType": "SecurityComplianceAnalyzer",
+    "creationTime": "2024-01-15T10:00:00.000Z",
+    "state": "Starting",
+    "progressPercent": 0,
+    "result": {
+        "result": "None",
+        "message": "",
+        "isCanceled": false
+    },
+    "initiatedBy": ".\\veeam-rest-service",
+    "usn": 12345
+}

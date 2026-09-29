@@ -280,6 +280,114 @@ def test_gz_endpoint_list_command(mock_demisto, requests_mock):
 
 
 @patch("GravityZone.demisto")
+@pytest.mark.parametrize(
+    "valid_name",
+    [
+        "ABC",
+    ],
+)
+def test_gz_endpoint_list_command_valid_name_values(mock_demisto, requests_mock, valid_name):
+    """
+    Given
+            A valid `name` argument value
+    When
+            Calling gz-endpoint-list command
+    Then
+            Make sure command execution succeeds.
+    """
+
+    # Prepare
+    from GravityZone import gz_endpoint_list_command
+
+    mock_demisto.command.return_value = "gz-endpoint-list"
+    mock_demisto.params.return_value = {}
+    load_api_mocked_data(requests_mock, "gz-endpoint-list-name")
+    client = get_client()
+
+    # Execute
+    command_response = gz_endpoint_list_command(client=client, args={"name": valid_name})
+
+    # Assert
+    assert command_response is not None
+    assert requests_mock.called
+
+    # Assert command response
+    assert_command_mocked_data("gz-endpoint-list-name", command_response)
+
+
+@patch("GravityZone.demisto")
+@pytest.mark.parametrize(
+    ("invalid_name", "expected_error"),
+    [
+        ("ab", r"The 'name' argument must be at least 3 characters long\."),
+        ("ac*b", r"If using a wildcard, the 'name' argument must start with '\*'\."),
+        ("*ac*b*d", r"The 'name' argument can only contain one wildcard '\*' character\."),
+    ],
+)
+def test_gz_endpoint_list_command_invalid_name_values(mock_demisto, requests_mock, invalid_name, expected_error):
+    """
+    Given
+            An invalid `name` argument value
+    When
+            Calling gz-endpoint-list command
+    Then
+            Make sure command validation fails.
+    """
+
+    # Prepare
+    from GravityZone import gz_endpoint_list_command
+
+    mock_demisto.command.return_value = "gz-endpoint-list"
+    mock_demisto.params.return_value = {}
+    client = get_client()
+
+    # Execute + Assert
+    with pytest.raises(Exception, match=expected_error):
+        gz_endpoint_list_command(client=client, args={"name": invalid_name})
+
+    # Invalid input should fail before API calls
+    assert not requests_mock.called
+
+
+@patch("GravityZone.demisto")
+@pytest.mark.parametrize(
+    "node_id",
+    [
+        "COMPANY_ID",
+    ],
+)
+def test_gz_endpoint_list_command_with_node_id_skips_get_my_company(mock_demisto, requests_mock, node_id):
+    """
+    Given
+            A `node_id` argument value
+    When
+            Calling gz-endpoint-list command
+    Then
+            Make sure get_my_company is not called.
+    """
+
+    # Prepare
+    from GravityZone import gz_endpoint_list_command
+
+    mock_demisto.command.return_value = "gz-endpoint-list"
+    mock_demisto.params.return_value = {}
+    load_api_mocked_data(requests_mock, "gz-endpoint-list-node")
+    client = get_client()
+
+    with patch.object(client, "get_my_company", side_effect=AssertionError("get_my_company should not be called")) as mocked:
+        # Execute
+        command_response = gz_endpoint_list_command(client=client, args={"node_id": node_id})
+
+        # Assert
+        assert command_response is not None
+        mocked.assert_not_called()
+        assert requests_mock.called
+
+        # Assert command response
+        assert_command_mocked_data("gz-endpoint-list-node", command_response)
+
+
+@patch("GravityZone.demisto")
 def test_gz_endpoint_get_command(mock_demisto, requests_mock):
     """
     Given

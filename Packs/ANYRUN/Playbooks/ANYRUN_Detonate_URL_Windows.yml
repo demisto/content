@@ -550,7 +550,7 @@ inputs:
   playbookInputQuery:
 - key: opt_timeout
   value:
-    simple: "60"
+    simple: "120"
   required: false
   description: 'Timeout option. Size range: 10-660.'
   playbookInputQuery:

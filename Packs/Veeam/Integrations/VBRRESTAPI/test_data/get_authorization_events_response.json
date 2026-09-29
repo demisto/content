@@ -1,0 +1,26 @@
+{
+    "data": [
+        {
+            "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "name": "Authorization Event 1",
+            "state": "Approved",
+            "creationTime": "2024-04-24T10:00:00.000Z",
+            "processedTime": "2024-04-24T10:05:00.000Z",
+            "expirationTime": "2024-04-25T10:00:00.000Z",
+            "createdBy": "admin",
+            "processedBy": "admin",
+            "description": "Access request approved"
+        },
+        {
+            "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+            "name": "Authorization Event 2",
+            "state": "Pending",
+            "creationTime": "2024-04-24T11:00:00.000Z",
+            "processedTime": null,
+            "expirationTime": "2024-04-25T11:00:00.000Z",
+            "createdBy": "user1",
+            "processedBy": null,
+            "description": "Access request pending"
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: CiscoSMA_ModelingRule
+name: CiscoSMA Modeling Rule
+rules: ''
+schema: ''
+tags: Cisco Security Management Appliance
+supportedModules:
+- xsiam

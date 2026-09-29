@@ -1,0 +1,107 @@
+{
+    "alert": {
+        "name": "Policy V2 7770001: Sysdig Runtime Activity Logs",
+        "description": "This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.",
+        "severity": 7,
+        "severityLabel": "Info",
+        "subject": "Sysdig Runtime Activity Logs triggered at 04/28/2026 10:44 AM UTC",
+        "body": "Policy event triggered at 04/28/2026 10:44 AM UTC\n\nPolicy:             Sysdig Runtime Activity Logs\nPolicy URL:         https://app.example.sysdig.com/secure//#/policies/7770001\nDescription:        This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.\n\nTimestamp:          04/28/2026 10:44 AM UTC\nURL:                https://app.example.sysdig.com/secure//#/events/00000000000000000000000000000001\nRule:               The docker client is executed in a container\nRule URL:           https://app.example.sysdig.com/secure//#/policies/rules/falco/The%20docker%20client%20is%20executed%20in%20a%20container\nSeverity:           Info\nScope:\n    host.hostName:      demo-vsphere-node-01\n    container.name:      job\n    host.id:      aaaa000011112222333344445555666677778888999900001111222233334444\n    container.label.io.kubernetes.pod.name:      kyverno-test-cronjob-29477410-mqxx5\n    container.image.id:      bbb000000001\n    container.label.io.kubernetes.pod.namespace:      kyverno\n    host.mac:      aa:bb:cc:dd:ee:01\n    kubernetes.namespace.name:      kyverno\n    kubernetes.cluster.name:      myclusterName\n    kubernetes.node.name:      demo-vsphere-node-01\n    kubernetes.pod.name:      kyverno-test-cronjob-29477410-mqxx5\n    process.name:      kubectl get pod -n kyverno -l app=kyverno --field-selector=status.phase==Running -o jsonpath={.items[0].metadata.name}\n    container.image.tag:      1.26.2\n    kubernetes.container.name:      job\n    container.image.repo:      docker.io/alpine/k8s\n    container.image.digest:      sha256:0000111122223333444455556666777788889999aaaabbbbccccddddeeeeffff\n    container.id:      aaa000000001\n    container.label.io.kubernetes.container.name:      job\nActions:            No actions performed\nDetails:            Command kubectl with parent bash executed in container job with image docker.io/alpine/k8s under user root (proc.name=kubectl proc.exepath=/usr/bin/kubectl proc.pname=bash gparent=containerd-shim ggparent=systemd gggparent=<NA> user.name=root user.loginuid=-1 container=container_id=aaa000000001 container_name=job proc.cmdline=kubectl get pod -n kyverno -l app=kyverno --field-selector=status.phase==Running -o jsonpath={.items[0].metadata.name} evt.type=execve evt.res=SUCCESS proc.pid=1718052 proc.cwd=/apps/ proc.ppid=3217837 proc.pcmdline=bash -c echo -e \"1. Checking readiness probe for kyvenro pod...\\n\" kyverno_pod=\"...\"; while [[ \"$kyverno_pod\" != \"kyverno-\"* ]]; do .  kyverno_pod=`kubectl get pod -n kyverno -l app=kyverno --field-selector=status.phase==Running -o jsonpath=\"{.items[0].metadata.name}\"` && echo Waiting;.  sleep 15;.done; echo ...Success; echo -e \"apiVersion: kyverno.io/v1 \\nkind: ClusterPolicy \\nmetadata: \\n  name: autotest-disallow-default-namespace \\n  annotations: \\n    pod-policies.kyverno.io/autogen-controllers: none \\nspec: \\n  validationFailureAction: Audit \\n  background: true \\n  rules: \\n  - name: validate-namespace \\n    match: \\n      any: \\n      - resources: \\n          kinds: \\n          - Pod \\n    validate: \\n      message: \\\"Using default namespace is not allowed.\\\" \\n      pattern: \\n        metadata: \\n          namespace: \\\"!default\\\"\" | kubectl apply -f -.echo -e \"2. Checking policy....\\n\".sleep 30;.policy_status=`kubectl get cpol autotest-disallow-default-namespace -o jsonpath=\"{.status.ready}\"`; if [[ \"$policy_status\" == \"true\" ]];  then.    echo \"Verified Kyverno deployment\".    kubectl delete cpol autotest-disallow-default-namespace.    exit 0.fi .echo \"Failed to verify Kyverno deployment. Exiting\" exit 1 proc.sid=3217837 user.uid=0 user.loginname=<NA> group.gid=0 group.name=root container.id=aaa000000001 container.name=job image=docker.io/alpine/k8s:1.26.2)"
+    },
+    "event": {
+        "url": "https://app.example.sysdig.com/secure//#/events/?from=1777373022&to=1777373083"
+    },
+    "condition": "count(policyEvent) > 0",
+    "source": "Sysdig Secure",
+    "state": "ACTIVE",
+    "timestamp": 1777373082191418,
+    "timespan": 60000000,
+    "entities": [
+        {
+            "metricValues": [
+                {
+                    "metric": "policyEvent",
+                    "aggregation": "count",
+                    "groupAggregation": "none",
+                    "value": 1
+                }
+            ],
+            "policyEvents": [
+                {
+                    "id": "00000000000000000000000000000001",
+                    "containerId": "aaa000000001",
+                    "name": "Sysdig Runtime Activity Logs",
+                    "description": "This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.",
+                    "severity": 7,
+                    "policyId": 7770001,
+                    "output": "Command kubectl with parent bash executed in container job with image docker.io/alpine/k8s under user root (proc.name=kubectl proc.exepath=/usr/bin/kubectl proc.pname=bash gparent=containerd-shim ggparent=systemd gggparent=<NA> user.name=root user.loginuid=-1 container=container_id=aaa000000001 container_name=job proc.cmdline=kubectl get pod -n kyverno -l app=kyverno --field-selector=status.phase==Running -o jsonpath={.items[0].metadata.name} evt.type=execve evt.res=SUCCESS proc.pid=1718052 proc.cwd=/apps/ proc.ppid=3217837 proc.pcmdline=bash -c echo -e \"1. Checking readiness probe for kyvenro pod...\\n\" kyverno_pod=\"...\"; while [[ \"$kyverno_pod\" != \"kyverno-\"* ]]; do .  kyverno_pod=`kubectl get pod -n kyverno -l app=kyverno --field-selector=status.phase==Running -o jsonpath=\"{.items[0].metadata.name}\"` && echo Waiting;.  sleep 15;.done; echo ...Success; echo -e \"apiVersion: kyverno.io/v1 \\nkind: ClusterPolicy \\nmetadata: \\n  name: autotest-disallow-default-namespace \\n  annotations: \\n    pod-policies.kyverno.io/autogen-controllers: none \\nspec: \\n  validationFailureAction: Audit \\n  background: true \\n  rules: \\n  - name: validate-namespace \\n    match: \\n      any: \\n      - resources: \\n          kinds: \\n          - Pod \\n    validate: \\n      message: \\\"Using default namespace is not allowed.\\\" \\n      pattern: \\n        metadata: \\n          namespace: \\\"!default\\\"\" | kubectl apply -f -.echo -e \"2. Checking policy....\\n\".sleep 30;.policy_status=`kubectl get cpol autotest-disallow-default-namespace -o jsonpath=\"{.status.ready}\"`; if [[ \"$policy_status\" == \"true\" ]];  then.    echo \"Verified Kyverno deployment\".    kubectl delete cpol autotest-disallow-default-namespace.    exit 0.fi .echo \"Failed to verify Kyverno deployment. Exiting\" exit 1 proc.sid=3217837 user.uid=0 user.loginname=<NA> group.gid=0 group.name=root container.id=aaa000000001 container.name=job image=docker.io/alpine/k8s:1.26.2)",
+                    "ruleName": "The docker client is executed in a container",
+                    "ruleType": "RULE_TYPE_FALCO",
+                    "matchedOnDefault": false,
+                    "fields": {
+                        "user.uid": "0",
+                        "group.name": "root",
+                        "proc.pname": "bash",
+                        "container.image.tag": "1.26.2",
+                        "evt.type": "execve",
+                        "proc.cmdline": "kubectl get pod -n kyverno -l app=kyverno --field-selector=status.phase==Running -o jsonpath={.items[0].metadata.name}",
+                        "proc.cwd": "/apps/",
+                        "proc.ppid": "3217837",
+                        "user.name": "root",
+                        "proc.sid": "3217837",
+                        "proc.exepath": "/usr/bin/kubectl",
+                        "proc.aname[2]": "containerd-shim",
+                        "proc.pid": "1718052",
+                        "container.id": "aaa000000001",
+                        "proc.aname[3]": "systemd",
+                        "proc.aname[4]": "<NA>",
+                        "user.loginuid": "-1",
+                        "container.name": "job",
+                        "container.image.repository": "docker.io/alpine/k8s",
+                        "proc.name": "kubectl",
+                        "group.gid": "0",
+                        "user.loginname": "<NA>",
+                        "proc.pcmdline": "bash -c echo -e \"1. Checking readiness probe for kyvenro pod...\\n\" kyverno_pod=\"...\"; while [[ \"$kyverno_pod\" != \"kyverno-\"* ]]; do .  kyverno_pod=`kubectl get pod -n kyverno -l app=kyverno --field-selector=status.phase==Running -o jsonpath=\"{.items[0].metadata.name}\"` && echo Waiting;.  sleep 15;.done; echo ...Success; echo -e \"apiVersion: kyverno.io/v1 \\nkind: ClusterPolicy \\nmetadata: \\n  name: autotest-disallow-default-namespace \\n  annotations: \\n    pod-policies.kyverno.io/autogen-controllers: none \\nspec: \\n  validationFailureAction: Audit \\n  background: true \\n  rules: \\n  - name: validate-namespace \\n    match: \\n      any: \\n      - resources: \\n          kinds: \\n          - Pod \\n    validate: \\n      message: \\\"Using default namespace is not allowed.\\\" \\n      pattern: \\n        metadata: \\n          namespace: \\\"!default\\\"\" | kubectl apply -f -.echo -e \"2. Checking policy....\\n\".sleep 30;.policy_status=`kubectl get cpol autotest-disallow-default-namespace -o jsonpath=\"{.status.ready}\"`; if [[ \"$policy_status\" == \"true\" ]];  then.    echo \"Verified Kyverno deployment\".    kubectl delete cpol autotest-disallow-default-namespace.    exit 0.fi .echo \"Failed to verify Kyverno deployment. Exiting\" exit 1",
+                        "evt.res": "SUCCESS"
+                    },
+                    "eventLabels": {
+                        "kubernetes.node.name": "demo-vsphere-node-01",
+                        "kubernetes.namespace.name": "kyverno",
+                        "container.image.tag": "1.26.2",
+                        "kubernetes.container.name": "job",
+                        "host.mac": "aa:bb:cc:dd:ee:01",
+                        "kubernetes.cluster.name": "myclusterName",
+                        "container.id": "aaa000000001",
+                        "process.name": "kubectl get pod -n kyverno -l app=kyverno --field-selector=status.phase==Running -o jsonpath={.items[0].metadata.name}",
+                        "container.name": "job",
+                        "container.image.repo": "docker.io/alpine/k8s",
+                        "container.label.io.kubernetes.pod.name": "kyverno-test-cronjob-29477410-mqxx5",
+                        "container.image.digest": "sha256:0000111122223333444455556666777788889999aaaabbbbccccddddeeeeffff",
+                        "kubernetes.pod.name": "kyverno-test-cronjob-29477410-mqxx5",
+                        "host.hostName": "demo-vsphere-node-01",
+                        "container.label.io.kubernetes.pod.namespace": "kyverno",
+                        "container.label.io.kubernetes.container.name": "job",
+                        "host.id": "aaaa000011112222333344445555666677778888999900001111222233334444",
+                        "container.image.id": "bbb000000001"
+                    },
+                    "falsePositive": false,
+                    "policyVersion": 65,
+                    "origin": "Sysdig",
+                    "timestamp": 1777373082191418,
+                    "hostMac": "aa:bb:cc:dd:ee:01",
+                    "isAggregated": false
+                }
+            ],
+            "policies": [
+                {
+                    "name": "Sysdig Runtime Activity Logs",
+                    "description": "This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.",
+                    "origin": "Secure UI",
+                    "versionId": "0.0.0",
+                    "severity": 7,
+                    "enabled": false,
+                    "id": 7770001
+                }
+            ]
+        }
+    ]
+}

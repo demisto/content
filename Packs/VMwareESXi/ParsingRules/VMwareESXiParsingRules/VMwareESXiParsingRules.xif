@@ -3,7 +3,7 @@ filter _raw_log ~= "^\<*\d*\>*\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}"
 // Filter for RFC 3164 log format, with ISO-8601 timestamp format: <PRI>YYYY-MM-DDTHH:MM:SS.mmZ HOSTNAME PROCESS: MSG
 | alter
     parsed_fields = if(
-    _raw_log ~= "^\<*\d*\>*\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}Z*", regexcapture(_raw_log, "\<*(?P<pri>\d*)\>*(?P<timestamp>\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}Z*)\s+(?P<hostname>\S+)\s+(?P<process_pid>.+?)\:\s*(?P<msg>.+)")),
+    _raw_log ~= "^\<*\d*\>*\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}Z*", regexcapture(_raw_log, "\<*(?P<pri>\d*)\>*(?P<timestamp>\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}Z*)\s+?(?P<hostname>\S+?)\s+?(?P<process_pid>.+?)\:\s*(?P<msg>.+)")),
     tmp_timestamp_extract = arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|\.\d{3}Z?)"), 0)
 | alter
     tmp_format_check1 = parse_timestamp("%FT%R:%E*SZ", parsed_fields -> timestamp), // Standard ISO-8601 with flexible milliseconds: YYYY-MM-DDTHH:MM:SS.mmZ
@@ -22,7 +22,7 @@ filter
     _raw_log ~= "^\<\d+\>\d+\s+\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}"
 | alter
     parsed_fields = if(
-        _raw_log ~= "^\<\d+\>\d+\s+\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}Z*", regexcapture(_raw_log, "\<(?P<pri>\d+)\>\d+\s+(?P<timestamp>\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}Z*)\s+(?P<hostname>\S+)\s+(?P<process_pid>.+?)\:\s*(?P<msg>.+)")
+        _raw_log ~= "^\<\d+\>\d+\s+\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}Z*", regexcapture(_raw_log, "\<(?P<pri>\d+)\>\d+\s+(?P<timestamp>\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.*\d{0,}Z*)\s+?(?P<hostname>\S+?)\s+?(?P<process_pid>.+?)\:\s*(?P<msg>.+)")
     ),
     tmp_timestamp_extract = arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|\.\d{3}Z?)"), 0)
 | alter

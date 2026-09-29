@@ -1,3 +1,5 @@
 [file:MicrosoftWindowsEvents_1_3.yml]
 ignore=MR108
 
+[file:MicrosoftWindowsEvents_2_11.yml]
+ignore=MR108

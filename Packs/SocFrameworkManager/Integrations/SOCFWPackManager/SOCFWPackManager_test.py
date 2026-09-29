@@ -388,7 +388,10 @@ def test_command_install_pack_calls_download_and_sdk(tmp_path):
         os.chdir(orig)
 
     assert sdk_calls, "upload_pack_as_system_content should be called"
-    assert "Pack-v1.0.0" in sdk_calls[0]["pack_path"]
+    # The pack directory name becomes the pack ID on the tenant, so the release
+    # version must not survive into it.
+    assert sdk_calls[0]["pack_path"].endswith(os.sep + "Pack")
+    assert "Pack-v1.0.0" not in os.path.basename(sdk_calls[0]["pack_path"])
     assert sdk_calls[0]["verify"] is True
     # CommandResults stub returns kwargs; outputs include the filename.
     assert result.get("outputs", {}).get("filename") == "Pack-v1.0.0.zip"
@@ -494,3 +497,110 @@ def test_command_install_pack_appends_zip_if_missing(monkeypatch):
 
     assert derived
     assert derived[0].endswith(".zip")
+
+
+def test_pack_dir_name_strips_release_version():
+    """Regression: the pack directory name becomes the pack ID on the tenant,
+    so leaving the version on installed every release as a separate pack --
+    soc-optimization-unified-v3.11.2 alongside soc-optimization-unified --
+    rather than upgrading in place.
+    """
+    integration, _ = load_integration()
+    cases = {
+        "soc-optimization-unified.zip": "soc-optimization-unified",
+        "soc-optimization-unified-v3.11.2.zip": "soc-optimization-unified",
+        "soc-optimization-unified-v3.11.1-pr1008.zip": "soc-optimization-unified",
+        "soc-optimization-unified-v3.11.2": "soc-optimization-unified",
+        "SocFrameworkAbnormalSecurity-v1.0.4.zip": "SocFrameworkAbnormalSecurity",
+        "soc-vendor-thing.zip": "soc-vendor-thing",
+    }
+    for given, expected in cases.items():
+        assert integration.pack_dir_name(given) == expected, given
+
+
+def test_prepare_pack_dir_uses_version_stripped_directory(tmp_path, monkeypatch):
+    integration, _ = load_integration()
+    monkeypatch.chdir(tmp_path)
+
+    zip_path = tmp_path / "soc-optimization-unified-v3.11.2.zip"
+    with zipfile.ZipFile(zip_path, "w") as zf:
+        zf.writestr("soc-optimization-unified/pack_metadata.json", '{"name": "SOC Framework Unified"}')
+
+    pack_path = integration._prepare_pack_dir(str(zip_path), "soc-optimization-unified-v3.11.2.zip")
+
+    assert os.path.basename(pack_path) == "soc-optimization-unified"
+    assert not os.path.exists(tmp_path / "Packs" / "soc-optimization-unified-v3.11.2")
+
+
+def test_get_catalog_url_command_returns_configured_value():
+    """A script cannot read another integration instance's parameters, so the
+    configured catalog location is surfaced through this command instead.
+    """
+    integration, _ = load_integration()
+    res = integration.get_catalog_url_command({"catalog_url": "https://fork.example/pack_catalog.json"})
+    assert res["outputs"] == {"CatalogURL": "https://fork.example/pack_catalog.json"}
+    assert res["raw_response"] == {"catalog_url": "https://fork.example/pack_catalog.json"}
+
+
+def test_get_catalog_url_command_defaults_when_unset():
+    integration, _ = load_integration()
+    for params in ({}, {"catalog_url": ""}, {"catalog_url": "   "}, {"catalog_url": None}):
+        res = integration.get_catalog_url_command(params)
+        assert res["outputs"]["CatalogURL"] == integration.DEFAULT_CATALOG_URL, params
+
+
+def test_pack_dir_name_keeps_version_like_strings_mid_filename():
+    """Only a trailing version suffix is a version.
+
+    A version-like component in the middle of the name is part of the pack ID
+    and must survive, and a legitimate trailing word must not be mistaken for a
+    pre-release tag -- "soc-v3-tools" previously reduced to "soc", which would
+    install the pack under the wrong ID.
+    """
+    integration, _ = load_integration()
+    cases = {
+        # Version-like component mid-name, real version at the end.
+        "soc-v2-endpoint-v1.0.0.zip": "soc-v2-endpoint",
+        "my-v10-agent-v2.5.zip": "my-v10-agent",
+        # Version-like component mid-name, no trailing version.
+        "soc-v3-tools.zip": "soc-v3-tools",
+        "soc-v2-endpoint.zip": "soc-v2-endpoint",
+        # Recognized pre-release tags are still stripped with the version.
+        "soc-pack-v1.2.3-pr1008.zip": "soc-pack",
+        "soc-pack-v1.2.3-rc2.zip": "soc-pack",
+        "soc-pack-v1.2.3-beta.zip": "soc-pack",
+        # An unrecognized trailing word is not a pre-release tag.
+        "soc-pack-v1.2.3-tools.zip": "soc-pack-v1.2.3-tools",
+        # Case-insensitive on the version marker.
+        "soc-pack-V1.2.3.zip": "soc-pack",
+    }
+    for given, expected in cases.items():
+        assert integration.pack_dir_name(given) == expected, given
+
+
+def test_get_catalog_url_command_rejects_a_relative_url():
+    """A scheme-less value would resolve against the tenant host at fetch time
+    and surface as a confusing 404, so it is reported and ignored here.
+    """
+    integration, _ = load_integration()
+    for bad in (
+        "raw.githubusercontent.com/org/repo/main/pack_catalog.json",
+        "/Packs/pack_catalog.json",
+        "ftp://example.com/pack_catalog.json",
+        "not a url",
+        "https:///pack_catalog.json",
+    ):
+        res = integration.get_catalog_url_command({"catalog_url": bad})
+        assert res["outputs"]["CatalogURL"] == integration.DEFAULT_CATALOG_URL, bad
+        assert "ignored" in res["readable_output"], bad
+
+
+def test_get_catalog_url_command_accepts_a_valid_override():
+    integration, _ = load_integration()
+    for good in (
+        "https://fork.example/pack_catalog.json",
+        "http://internal.example:8080/catalog/pack_catalog.json",
+    ):
+        res = integration.get_catalog_url_command({"catalog_url": good})
+        assert res["outputs"]["CatalogURL"] == good, good
+        assert "ignored" not in res["readable_output"], good

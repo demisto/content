@@ -15,6 +15,6 @@ args:
   default: true
   required: true
 scripttarget: 0
-dockerimage: demisto/python3:3.12.13.10116658
+dockerimage: demisto/python3:3.12.13.10404775
 tests:
 - No tests (auto formatted)

@@ -176,7 +176,7 @@ expected_alert_output = [
             "cybersixgillthreattype": ["Brand Protection", "Data Leak"],
             "cybersixgillassessment": "text",
             "cybersixgillrecommendations": "",
-            "incidentlink": "https://portal.cybersixgill.com/#/?actionable_alert=6188bd21017198385e228437&org=",
+            "incidentlink": "https://portal.cybersixgill.com/#/alerts?filters.alert_id=6188bd21017198385e228437",
             "cybersixgillstatus": "In Treatment",
             "cybersixgillsite": "rw_everest",
             "cybersixgillactor": None,

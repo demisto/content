@@ -1921,4 +1921,139 @@ def test_wait_for_page_load_timeout(mocker):
     assert "Page.stopLoading" in stopped
 
 
+def test_wait_for_page_load_normal_completion_no_freeze_on_load(mocker):
+    """
+    Given: A cgroup limit exists, the page finishes loading, and the caller passed
+           freeze_on_load=False (text extraction, which still needs a live JS context).
+    When: Calling wait_for_page_load_with_memory_guard.
+    Then: The tab is NOT frozen on the normal-completion path and True is still returned.
+
+    Regression test for a bug where the unconditional post-load freeze disabled script
+    execution and purged the V8 heap, so the Runtime.evaluate used by rasterize-extract
+    failed with "Cannot find default execution context".
+    """
+    mocker.patch.object(rasterize, "get_container_available_memory_bytes", return_value=10 * 1024 * 1024 * 1024)
+    freeze = mocker.patch.object(rasterize, "_freeze_tab_for_screenshot")
+    event = threading.Event()
+    event.set()
+    tab = mocker.MagicMock()
+
+    result = rasterize.wait_for_page_load_with_memory_guard(
+        tab_ready_event=event, navigation_timeout=5, tab_id="tab_id", path="path", tab=tab, freeze_on_load=False
+    )
+
+    assert result is True
+    freeze.assert_not_called()
+
+
+def test_wait_for_page_load_memory_pressure_freezes_even_when_freeze_on_load_false(mocker):
+    """
+    Given: A caller passed freeze_on_load=False, the page does not finish loading, and
+           available memory drops below the tolerance.
+    When: Calling wait_for_page_load_with_memory_guard.
+    Then: The tab is still frozen and False is returned - freeze_on_load only suppresses the
+          post-load freeze, never the OOM protection.
+    """
+    mocker.patch.object(rasterize, "get_container_available_memory_bytes", return_value=10 * 1024 * 1024)
+    freeze = mocker.patch.object(rasterize, "_freeze_tab_for_screenshot")
+    mocker.patch.object(rasterize.time, "sleep")
+    event = threading.Event()  # never set
+    tab = mocker.MagicMock()
+
+    result = rasterize.wait_for_page_load_with_memory_guard(
+        tab_ready_event=event,
+        navigation_timeout=5,
+        tolerance_bytes=650 * 1024 * 1024,
+        poll_interval=0.01,
+        tab_id="tab_id",
+        path="path",
+        tab=tab,
+        freeze_on_load=False,
+    )
+
+    assert result is False
+    assert event.is_set()
+    freeze.assert_called_once_with(tab, "tab_id", "path")
+
+
+def test_wait_for_page_load_freeze_on_load_defaults_to_true(mocker):
+    """
+    Given: A caller that does not pass freeze_on_load (screenshot/PDF captures).
+    When: Calling wait_for_page_load_with_memory_guard and the page finishes loading.
+    Then: The tab is frozen, preserving the existing memory-capping behavior for captures.
+    """
+    mocker.patch.object(rasterize, "get_container_available_memory_bytes", return_value=10 * 1024 * 1024 * 1024)
+    freeze = mocker.patch.object(rasterize, "_freeze_tab_for_screenshot")
+    event = threading.Event()
+    event.set()
+    tab = mocker.MagicMock()
+
+    result = rasterize.wait_for_page_load_with_memory_guard(
+        tab_ready_event=event, navigation_timeout=5, tab_id="tab_id", path="path", tab=tab
+    )
+
+    assert result is True
+    freeze.assert_called_once_with(tab, "tab_id", "path")
+
+
 # endregion
+
+
+def test_rasterize_extract_command_extraction_error_includes_guidance(mocker):
+    """
+    Given: A URL that fails extraction with an "Extraction Error:" result
+    When: Calling rasterize_extract_command
+    Then: The error output includes actionable guidance (slow/anti-bot, retry with higher
+          max_page_load_time) so the caller/agent can act instead of retrying blindly
+    """
+    from rasterize import rasterize_extract_command
+
+    mock_args = {"url": "https://example.com", "wait_time": "0", "max_page_load_time": "30"}
+    mocker.patch.object(demisto, "args", return_value=mock_args)
+    mocker.patch("rasterize.perform_rasterize", return_value=[("Extraction Error: timeout", "https://example.com")])
+    mock_return_results = mocker.patch("rasterize.return_results")
+
+    rasterize_extract_command()
+
+    output = mock_return_results.call_args[0][0][0].readable_output
+    assert "page-load timeout" in output
+    assert "anti-bot" in output
+    assert "max_page_load_time" in output
+
+
+def test_rasterize_extract_command_passes_navigation_timeout_unchanged(mocker):
+    """
+    Given: An explicit max_page_load_time
+    When: Calling rasterize_extract_command
+    Then: The navigation_timeout passed to perform_rasterize is the caller's value, unchanged
+          (the navigation budget is never shortened - slow pages still get their full time)
+    """
+    from rasterize import rasterize_extract_command
+
+    mock_args = {"url": "https://example.com", "max_page_load_time": "250"}
+    mocker.patch.object(demisto, "args", return_value=mock_args)
+    mock_perform = mocker.patch("rasterize.perform_rasterize", return_value=[("# Content", "https://example.com")])
+    mocker.patch("rasterize.return_results")
+
+    rasterize_extract_command()
+
+    assert mock_perform.call_args.kwargs["navigation_timeout"] == 250
+
+
+def test_extract_content_from_tab_uses_navigation_timeout(mocker):
+    """
+    Given: A navigation_timeout value
+    When: Calling extract_content_from_tab
+    Then: The extraction JS timeout is the same navigation_timeout (original behavior - the total
+          per-URL budget is controlled via the action's max_page_load_time, not hardcoded here)
+    """
+    from rasterize import extract_content_from_tab
+
+    mock_tab = mocker.Mock()
+    mock_tab.id = "test_tab_id"
+    mock_tab.Page.getFrameTree.return_value = {"frameTree": {"frame": {"url": "https://example.com"}}}
+    mock_tab.Runtime.evaluate.return_value = {"result": {"value": {"type": "html", "content": "# ok"}}}
+
+    extract_content_from_tab(mock_tab, 145)
+
+    assert mock_tab.Runtime.evaluate.call_args.kwargs["_timeout"] == 145

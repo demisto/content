@@ -6,11 +6,11 @@
         "RubrikRadar": "Rubrik Radar",
         "RubrikDSPMViolation": "Rubrik DSPM Violation",
         "RubrikIRViolation": "Rubrik IR Violation",
+        "RubrikSensitiveDataObject": "Rubrik Sensitive Data Object",
         "RubrikThreatMonitoringObject": "Rubrik Threat Monitoring Object"
     },
     "name": "Rubrik Polaris Radar - Classification",
     "transformer": {
-        "complex": null,
         "simple": "incidentClassification"
     },
     "type": "classification",

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import functools
 import json
 from pathlib import Path
 import subprocess
@@ -41,10 +42,23 @@ RELEASE_NOTES_ITEMS = ["ReleaseNotes", "pack_metadata.json"]
 # -----------------------------
 # Git utilities
 # -----------------------------
-def run_git_command(cmd, github_token, raise_on_error=True):
+@functools.lru_cache(maxsize=1)
+def get_repo_root() -> str:
+    """Get the git repository root directory.
+
+    The workflow runs this script from .github/github_workflow_scripts/,
+    but git commands operating on repo-relative file paths (e.g. Packs/...)
+    must execute from the repository root. Without this, git rm --ignore-unmatch
+    silently does nothing because the paths don't exist relative to the cwd.
+    """
+    result = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True, check=True)
+    return result.stdout.strip()
+
+
+def run_git_command(cmd: list[str], github_token: str, raise_on_error: bool = True) -> subprocess.CompletedProcess:
     log_cmd = [c.replace(github_token, "***") for c in cmd]
     print(f"Running: {' '.join(log_cmd)}")
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = subprocess.run(cmd, capture_output=True, text=True, cwd=get_repo_root())
 
     if result.returncode != 0 and raise_on_error:
         print(f"Error: {result.stderr}")
@@ -223,7 +237,7 @@ def remove_branch_protection(repo, branch_name, t):
 
 
 def prepare_body(pr: PullRequest):
-    body = f"## Original External PR\r\n[external pull request]({pr.html_url})\r\n\r\n"
+    body = f"## Related PRs\r\n**Original External PR:** {pr.html_url}\r\n\r\n"
     if "## Contributor" not in pr.body:
         merged_pr_author = pr.user.login
         body += f"## Contributor\r\n@{merged_pr_author}\r\n\r\n"
@@ -361,6 +375,26 @@ def main():
 
         except Exception as e:
             print(f"{t.red}Mapping PR failed: {e}{t.normal}")
+
+    # Cross-reference main and mapping PRs when both were created from the same external PR
+    if len(created) == 2:
+        main_pr, mapping_pr = created[0], created[1]
+        try:
+            main_pr.edit(
+                body=main_pr.body.replace(
+                    f"**Original External PR:** {merged_pr.html_url}",
+                    f"**Original External PR:** {merged_pr.html_url}\r\n**Mapping Internal PR:** {mapping_pr.html_url}",
+                )
+            )
+            mapping_pr.edit(
+                body=mapping_pr.body.replace(
+                    f"**Original External PR:** {merged_pr.html_url}",
+                    f"**Original External PR:** {merged_pr.html_url}\r\n**Main Internal PR:** {main_pr.html_url}",
+                )
+            )
+            print(f"{t.cyan}Cross-referenced main PR #{main_pr.number} and mapping PR #{mapping_pr.number}{t.normal}")
+        except Exception as e:
+            print(f"{t.red}Failed to cross-reference PRs: {e}{t.normal}")
 
     for pr in created:
         remove_branch_protection(content_repo, pr.head.ref, t)

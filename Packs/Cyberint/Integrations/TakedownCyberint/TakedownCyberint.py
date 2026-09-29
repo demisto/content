@@ -197,7 +197,7 @@ def submit_takedown_request_command(
         url=args.get("url"),
         brand=args.get("brand"),
         original_url=args.get("original_url"),
-        alert_id=args.get("alert_id"),
+        alert_id=arg_to_number(args.get("alert_id"), arg_name="alert_id"),
         note=args.get("note"),
     )
 
