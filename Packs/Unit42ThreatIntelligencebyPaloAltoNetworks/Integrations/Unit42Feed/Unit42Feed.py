@@ -10,6 +10,7 @@ INTEGRATION_NAME = "Unit 42 Feed"
 API_LIMIT = 5000
 TOTAL_INDICATOR_LIMIT = 20000
 THREAT_OBJECTS_FETCH_INTERVAL_HOURS = 24
+THREAT_OBJECTS_LIMIT = 5000
 
 # List of all indicator types
 INDICATOR_TYPES_LIST = ["File", "IP", "URL", "Domain"]
@@ -1048,8 +1049,6 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
         Tuple of the total number of indicators/threat objects fetched and pushed to the
         server, and the next run object to store with demisto.setLastRun().
     """
-    total_fetched = 0
-
     # Get configuration
     feed_types = argToList(params.get("feed_types"))
     indicator_types = argToList(params.get("indicator_types")) or INDICATOR_TYPES_LIST
@@ -1072,12 +1071,14 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
 
     cycle_start_time = last_run.get("cycle_start_time") or current_time.strftime(DATE_FORMAT)
 
-    # Parse the total limit shared across the whole fetch.
-    total_limit = arg_to_number(params.get("limit"))  # noqa: ucp-param-default
-    if total_limit is None or total_limit <= 0:
-        total_limit = TOTAL_INDICATOR_LIMIT
+    # Parse the indicators fetch limit.
+    indicators_limit = arg_to_number(params.get("limit"))  # noqa: ucp-param-default
+    if indicators_limit is None or indicators_limit <= 0:
+        indicators_limit = TOTAL_INDICATOR_LIMIT
 
-    demisto.debug(f"UNIT42FEED: Starting fetch with {total_limit=}, {feed_types=}")
+    demisto.debug(
+        f"UNIT42FEED: Starting fetch with {indicators_limit=}, threat_objects_limit={THREAT_OBJECTS_LIMIT}, {feed_types=}"
+    )
     demisto.debug(f"UNIT42FEED: {indicator_types=}, {start_time=}, {cycle_in_progress=}")
 
     # Incoming per-feed resume tokens from an interrupted fetch.
@@ -1117,47 +1118,47 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
     # Set when a threat-objects fetch completes this run, to reset the 24h window.
     threat_objects_completed_at: str | None = None
 
-    # Threat Objects are fetched first, consuming from the shared budget.
+    # Per-feed fetch counters.
+    threat_objects_fetched = 0
+    indicators_fetched = 0
+
+    # Threat Objects are fetched first.
     should_fetch_threat_objects = _should_fetch_threat_objects(
         THREAT_OBJECTS_TYPE in feed_types, cycle_in_progress, threat_objects_token, threat_objects_due
     )
     if should_fetch_threat_objects:
-        demisto.debug(
-            f"UNIT42FEED: Fetching threat objects (limit={total_limit - total_fetched}, page_token={threat_objects_token})"
-        )
-        fetched_count, next_page_token = fetch_threat_objects_with_limit(
+        demisto.debug(f"UNIT42FEED: Fetching threat objects (limit={THREAT_OBJECTS_LIMIT}, page_token={threat_objects_token})")
+        threat_objects_fetched, next_page_token = fetch_threat_objects_with_limit(
             client=client,
-            limit=total_limit - total_fetched,
+            limit=THREAT_OBJECTS_LIMIT,
             feed_tags=feed_tags,
             tlp_color=tlp_color,
             next_page_token=threat_objects_token,
         )
-        total_fetched += fetched_count
         if next_page_token:
             page_tokens["threat_objects"] = next_page_token
         else:
             # TOs fully fetched this run -> reset the 24h window from now.
             threat_objects_completed_at = current_time.strftime(DATE_FORMAT)
-        demisto.debug(f"UNIT42FEED: Fetched {fetched_count} threat objects. Total: {total_fetched}")
+        demisto.debug(f"UNIT42FEED: Fetched {threat_objects_fetched} threat objects (limit {THREAT_OBJECTS_LIMIT}).")
 
-    # Then all configured indicator types together in one combined query, using the
-    # remaining budget. On a resumed run only if indicators still had a pending token.
+    # Then all configured indicator types together in one combined query.
+    # On a resumed run only if indicators still had a pending token.
     should_fetch_indicators = _should_fetch_indicators(INDICATORS_TYPE in feed_types, cycle_in_progress, indicators_token)
-    if should_fetch_indicators and total_fetched < total_limit:
-        demisto.debug(f"UNIT42FEED: Fetching indicators (limit={total_limit - total_fetched}, page_token={indicators_token})")
-        fetched_count, next_page_token = fetch_indicator_type(
+    if should_fetch_indicators:
+        demisto.debug(f"UNIT42FEED: Fetching indicators (limit={indicators_limit}, page_token={indicators_token})")
+        indicators_fetched, next_page_token = fetch_indicator_type(
             client=client,
             indicator_types=indicator_types,
-            limit=total_limit - total_fetched,
+            limit=indicators_limit,
             start_time=start_time,
             feed_tags=feed_tags,
             tlp_color=tlp_color,
             next_page_token=indicators_token,
         )
-        total_fetched += fetched_count
         if next_page_token:
             page_tokens["indicators"] = next_page_token
-        demisto.debug(f"UNIT42FEED: Fetched {fetched_count} indicators. Total: {total_fetched}")
+        demisto.debug(f"UNIT42FEED: Fetched {indicators_fetched} indicators (limit {indicators_limit}).")
 
     if page_tokens:
         next_run = {"start_time": start_time, "cycle_start_time": cycle_start_time, "page_tokens": page_tokens}
@@ -1174,7 +1175,11 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
     if next_threat_objects_fetch:
         next_run["last_threat_objects_fetch"] = next_threat_objects_fetch
 
-    demisto.info(f"UNIT42FEED: Fetch complete. Total indicators: {total_fetched} (total limit: {total_limit})")
+    total_fetched = threat_objects_fetched + indicators_fetched
+    demisto.info(
+        f"UNIT42FEED: Fetch complete. Fetched {total_fetched} items "
+        f"({threat_objects_fetched} threat objects, {indicators_fetched} indicators)."
+    )
 
     return total_fetched, next_run
 
