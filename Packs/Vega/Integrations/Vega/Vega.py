@@ -66,6 +66,10 @@ VEGA_VERDICT_FIELD = "vegaverdict"
 VEGA_VERDICT_REASONING_FIELD = "vegaverdictreasoning"
 VEGA_NEW_COMMENT_FIELD = "veganewcomment"
 VEGA_NEW_COMMENT_LAYOUT_DEFAULT = "comment"
+VEGA_TIMELINE_EVENTS_SOURCE_FIELD = "vegatimelineeventssource"
+VEGA_TIMELINE_EVENTS_SOURCE_KEY = "VegaTimelineEventsSource"
+VEGA_COMMENTS_SOURCE_FIELD = "vegacommentssource"
+VEGA_COMMENTS_SOURCE_KEY = "VegaCommentsSource"
 VEGA_MIRROR_TAG_FROM_VEGA = "From Vega"
 VEGA_MIRROR_TAG_TO_VEGA = "To Vega"
 GET_MODIFIED_REMOTE_DATA_LIMIT = 100
@@ -567,21 +571,68 @@ def _is_retryable_http_error(exc: Exception) -> bool:
     return any(marker in message for marker in _CONNECTION_ERROR_MARKERS)
 
 
+def _text_indicates_rate_limit(value: Any) -> bool:
+    """Return True when text describes an API rate-limit response."""
+    if not isinstance(value, str) or not value.strip():
+        return False
+    compact = "".join(ch for ch in value.lower() if ch.isalnum())
+    return "ratelimit" in compact or "toomanyrequest" in compact
+
+
+def _api_error_indicates_rate_limit(error: Any) -> bool:
+    """Return True when an API error object or message is a rate limit."""
+    if isinstance(error, str):
+        return _text_indicates_rate_limit(error)
+    if not isinstance(error, dict):
+        return False
+    if _text_indicates_rate_limit(error.get("message")) or _text_indicates_rate_limit(error.get("code")):
+        return True
+
+    extensions = error.get("extensions")
+    if not isinstance(extensions, dict):
+        return False
+    return (
+        extensions.get("error_code_name") == "REQUEST_RATE_LIMITED"
+        or extensions.get("code") == "TooManyRequests"
+        or _text_indicates_rate_limit(extensions.get("error_code_name"))
+        or _text_indicates_rate_limit(extensions.get("code"))
+    )
+
+
 def _is_graphql_rate_limited(errors: Any) -> bool:
     """Return True when GraphQL errors indicate rate limiting."""
+    if isinstance(errors, dict):
+        return _api_error_indicates_rate_limit(errors)
     if not isinstance(errors, list):
         return False
+    return any(_api_error_indicates_rate_limit(err) for err in errors)
 
-    for err in errors:
-        if not isinstance(err, dict):
+
+def _payload_has_rate_limit_error(node: Any) -> bool:
+    """Return True when a GraphQL data payload contains a rate-limit error object."""
+    if isinstance(node, list):
+        return any(_payload_has_rate_limit_error(item) for item in node)
+    if not isinstance(node, dict):
+        return False
+    if _api_error_indicates_rate_limit(node.get("error")) or _is_graphql_rate_limited(node.get("errors")):
+        return True
+    for key, value in node.items():
+        if key in {"error", "errors", "results"}:
             continue
-        extensions = err.get("extensions") or {}
-        error_code_name = extensions.get("error_code_name")
-        code = extensions.get("code")
-        if error_code_name == "REQUEST_RATE_LIMITED" or code == "TooManyRequests":
+        if isinstance(value, dict | list) and _payload_has_rate_limit_error(value):
             return True
-
     return False
+
+
+def _graphql_response_is_rate_limited(response: Any) -> bool:
+    """Return True when an HTTP 200 GraphQL body reports a rate limit."""
+    if not isinstance(response, dict):
+        return _text_indicates_rate_limit(response)
+    if _text_indicates_rate_limit(response.get("message")) or _api_error_indicates_rate_limit(response.get("error")):
+        return True
+    if _is_graphql_rate_limited(response.get("errors")):
+        return True
+    return _payload_has_rate_limit_error(response.get("data"))
 
 
 def _is_connection_or_url_error(exc: Exception) -> bool:
@@ -778,24 +829,25 @@ class Client(BaseClient):
 
     def _graphql_request(self, query: str, variables: dict | None = None) -> dict:
         """Execute a GraphQL query against the Vega API."""
-        last_rate_limit_errors: list[Any] | None = None
+        last_rate_limit_detail: Any = None
 
         for attempt in range(RATE_LIMIT_MAX_RETRIES):
             response = self._post_graphql_query(query, variables)
-            errors = response.get("errors")
-            if not errors:
-                self._reset_rate_limit_wait()
-                return response
+            if _graphql_response_is_rate_limited(response):
+                last_rate_limit_detail = response.get("errors") or response.get("data") or response.get("message")
+                if attempt < RATE_LIMIT_MAX_RETRIES - 1:
+                    self._sleep_before_rate_limit_retry("GraphQL REQUEST_RATE_LIMITED", attempt)
+                continue
 
-            if not _is_graphql_rate_limited(errors):
+            errors = response.get("errors")
+            if errors:
                 raise DemistoException(f"GraphQL error: {errors}")
 
-            last_rate_limit_errors = errors
-            if attempt < RATE_LIMIT_MAX_RETRIES - 1:
-                self._sleep_before_rate_limit_retry("GraphQL REQUEST_RATE_LIMITED", attempt)
+            self._reset_rate_limit_wait()
+            return response
 
         raise DemistoException(
-            f"API rate limit exceeded after maximum retries. GraphQL error: {last_rate_limit_errors}. "
+            f"API rate limit exceeded after maximum retries. GraphQL error: {last_rate_limit_detail}. "
             f"Next wait interval would be {self._rate_limit_wait_seconds}s."
         )
 
@@ -1178,7 +1230,7 @@ def _merge_alert_event_object_lists(
     *,
     prefer_existing: bool = True,
 ) -> list[Any]:
-    """Merge list values by index so Splunk multivalue object fields combine cleanly."""
+    """Merge list values by index so dotted-array multivalue object fields combine cleanly."""
     length = max(len(left), len(right))
     merged: list[Any] = []
     for index in range(length):
@@ -1195,9 +1247,9 @@ def _merge_alert_event_object_lists(
     return merged
 
 
-def _parse_splunk_style_field_path(key: str) -> list[tuple[str, bool]]:
+def _parse_dotted_array_field_path(key: str) -> list[tuple[str, bool]]:
     """
-    Parse Splunk-style field names into path segments.
+    Parse dotted-array field names into path segments.
 
     Examples:
         vendorInformation.provider -> [("vendorInformation", False), ("provider", False)]
@@ -1216,12 +1268,12 @@ def _parse_splunk_style_field_path(key: str) -> list[tuple[str, bool]]:
     return segments
 
 
-def _assign_splunk_style_segments(
+def _assign_dotted_array_segments(
     current: dict[str, Any],
     segments: list[tuple[str, bool]],
     value: Any,
 ) -> None:
-    """Assign a value into current using parsed Splunk path segments."""
+    """Assign a value into current using parsed dotted-array path segments."""
     if not segments:
         return
 
@@ -1252,7 +1304,7 @@ def _assign_splunk_style_segments(
                 if not _is_empty_alert_event_field_value(arr[item_index]):
                     continue
                 arr[item_index] = {}
-            _assign_splunk_style_segments(arr[item_index], rest, item_value)
+            _assign_dotted_array_segments(arr[item_index], rest, item_value)
         return
 
     if is_last:
@@ -1269,19 +1321,19 @@ def _assign_splunk_style_segments(
             return
         nested = {}
         current[name] = nested
-    _assign_splunk_style_segments(nested, rest, value)
+    _assign_dotted_array_segments(nested, rest, value)
 
 
-def _assign_splunk_style_path(root: dict[str, Any], key: str, value: Any) -> None:
-    """Assign a value into root using Splunk dotted / {}-array field naming."""
-    segments = _parse_splunk_style_field_path(key)
+def _assign_dotted_array_path(root: dict[str, Any], key: str, value: Any) -> None:
+    """Assign a value into root using dotted / {}-array field naming."""
+    segments = _parse_dotted_array_field_path(key)
     if segments:
-        _assign_splunk_style_segments(root, segments, value)
+        _assign_dotted_array_segments(root, segments, value)
 
 
 def _expand_flat_raw_fields(raw_fields: dict[str, Any]) -> dict[str, Any]:
     """
-    Expand flat Splunk-style keys into nested objects/arrays.
+    Expand flat dotted-array keys into nested objects/arrays.
 
     Keys without '.' or '{}' are copied as-is. Already-nested values are preserved.
     """
@@ -1291,7 +1343,7 @@ def _expand_flat_raw_fields(raw_fields: dict[str, Any]) -> dict[str, Any]:
         if key_name in ALERT_EVENT_JSON_TRUNCATE_KEYS:
             continue
         if "{}" in key_name or "." in key_name:
-            _assign_splunk_style_path(expanded, key_name, value)
+            _assign_dotted_array_path(expanded, key_name, value)
             continue
         if key_name not in expanded or _is_empty_alert_event_field_value(expanded.get(key_name)):
             expanded[key_name] = value
@@ -2090,6 +2142,9 @@ def _build_vega_alert_custom_fields(raw: dict) -> dict[str, Any]:
     alert_event_fields = raw.get("_alertEventsCustomFields")
     if isinstance(alert_event_fields, dict):
         custom_fields.update(alert_event_fields)
+    comments_source = raw.get(VEGA_COMMENTS_SOURCE_KEY)
+    if comments_source is not None:
+        custom_fields[VEGA_COMMENTS_SOURCE_FIELD] = str(comments_source)
     custom_fields[VEGA_NEW_COMMENT_FIELD] = VEGA_NEW_COMMENT_LAYOUT_DEFAULT
     return custom_fields
 
@@ -2420,6 +2475,12 @@ def _build_vega_incident_custom_fields(raw: dict) -> dict[str, str]:
     timeline_html = raw.get("vegaTimelineEvents")
     if timeline_html:
         custom_fields["vegatimelineevents"] = str(timeline_html)
+    timeline_source = raw.get(VEGA_TIMELINE_EVENTS_SOURCE_KEY)
+    if timeline_source is not None:
+        custom_fields[VEGA_TIMELINE_EVENTS_SOURCE_FIELD] = str(timeline_source)
+    comments_source = raw.get(VEGA_COMMENTS_SOURCE_KEY)
+    if comments_source is not None:
+        custom_fields[VEGA_COMMENTS_SOURCE_FIELD] = str(comments_source)
     findings_html = raw.get("vegaIncidentFindings")
     if findings_html:
         custom_fields["vegaincidentfindings"] = str(findings_html)
@@ -2563,6 +2624,7 @@ def _format_raw_entity_for_xsoar(raw: dict) -> None:
     if findings_source is not None:
         raw["vegaIncidentFindings"] = _format_key_findings_html(findings_source, assets, observables)
     if entity_type in ("Vega Incident", "Vega Alert") and "comments" in raw:
+        raw[VEGA_COMMENTS_SOURCE_KEY] = json.dumps(raw.get("comments"))
         raw["vegaComments"] = _format_vega_comments_html(raw.get("comments"))
     if "recommendedActions" in raw:
         raw["recommendedActions"] = _format_recommended_actions_for_grid(raw.get("recommendedActions"))
@@ -3431,6 +3493,7 @@ def incident_to_xsoar_incident(
     if timeline_events is not None:
         raw["timelineEvents"] = timeline_events
         raw["vegaTimelineEvents"] = _format_timeline_events_html(timeline_events)
+        raw[VEGA_TIMELINE_EVENTS_SOURCE_KEY] = json.dumps(timeline_events)
     _apply_vega_entity_link(raw)
     _format_raw_entity_for_xsoar(raw)
     return _build_xsoar_incident_dict(raw, "Vega Incident", MIRROR_ENTITY_SUFFIX_INCIDENT, _build_vega_incident_custom_fields)
@@ -4196,6 +4259,7 @@ def _build_mirror_entity_custom_fields(entity: dict[str, Any], entity_type_suffi
 
     if "comments" in entity:
         custom_fields["vegacomments"] = _format_vega_comments_html(entity.get("comments"))
+        custom_fields[VEGA_COMMENTS_SOURCE_FIELD] = json.dumps(entity.get("comments"))
     return custom_fields
 
 
@@ -4238,6 +4302,8 @@ def _build_mirror_sync_object(
 
     if "vegaComments" in raw:
         sync_object["vegaComments"] = raw["vegaComments"]
+    if VEGA_COMMENTS_SOURCE_KEY in raw:
+        sync_object[VEGA_COMMENTS_SOURCE_KEY] = raw[VEGA_COMMENTS_SOURCE_KEY]
 
     _apply_mirror_sync_metadata(sync_object, mirror_context=mirror_context)
 

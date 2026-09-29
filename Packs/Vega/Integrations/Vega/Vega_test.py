@@ -1483,6 +1483,8 @@ def test_format_raw_entity_for_xsoar_builds_vega_comments_html():
     assert "vegaComments" in incident
     assert "Reviewed in XSOAR" in incident["vegaComments"]
     assert "[{}]" not in incident["vegaComments"]
+    assert json.loads(incident["VegaCommentsSource"]) == incident["comments"]
+    assert _build_vega_incident_custom_fields(incident)["vegacommentssource"] == incident["VegaCommentsSource"]
 
 
 def test_format_raw_entity_for_xsoar_builds_vega_alert_comments_html():
@@ -1507,6 +1509,8 @@ def test_format_raw_entity_for_xsoar_builds_vega_alert_comments_html():
     assert "vegaComments" in alert
     assert "Escalated for review" in alert["vegaComments"]
     assert "[{}]" not in alert["vegaComments"]
+    assert json.loads(alert["VegaCommentsSource"]) == alert["comments"]
+    assert _build_vega_alert_custom_fields(alert)["vegacommentssource"] == alert["VegaCommentsSource"]
 
 
 def test_format_timeline_events_html_dark_theme_layout():
@@ -1576,8 +1580,10 @@ def test_incident_to_xsoar_incident_includes_timeline_events():
 
     assert raw["timelineEvents"] == timeline
     assert "vegaTimelineEvents" in raw
+    assert json.loads(raw["VegaTimelineEventsSource"]) == timeline
     assert xsoar_incident["CustomFields"]["vegatimelineevents"]
     assert "Test event." in xsoar_incident["CustomFields"]["vegatimelineevents"]
+    assert json.loads(xsoar_incident["CustomFields"]["vegatimelineeventssource"]) == timeline
 
 
 def test_fetch_incidents_command_fetches_timeline_details(mocker):
@@ -1863,7 +1869,7 @@ def test_expand_flat_raw_fields_expands_dotted_and_array_keys():
     assert expanded["userStates"] == [{"logonIp": "10.0.0.1", "userPrincipalName": "user@example.com"}]
 
 
-def test_promote_raw_into_fields_keeps_schema_and_promotes_splunk_raw():
+def test_promote_raw_into_fields_keeps_schema_and_promotes_dotted_raw():
     fields = {
         "app_uid": None,
         "http_response": {"code": None},
@@ -1878,7 +1884,7 @@ def test_promote_raw_into_fields_keeps_schema_and_promotes_splunk_raw():
                 "securityResources{}.resourceType": "attacked",
                 "userStates{}.logonIp": "10.0.0.1",
                 "userStates{}.userPrincipalName": "user@example.com",
-                "splunk_server": "idx-example.splunkcloud.com",
+                "source_server": "idx-example.example.com",
                 "risk_score": "should-not-overwrite",
             }
         ),
@@ -1893,7 +1899,7 @@ def test_promote_raw_into_fields_keeps_schema_and_promotes_splunk_raw():
     assert promoted["vendorInformation"] == {"provider": "ASC"}
     assert promoted["securityResources"] == [{"resourceType": "attacked"}]
     assert promoted["userStates"] == [{"logonIp": "10.0.0.1", "userPrincipalName": "user@example.com"}]
-    assert promoted["splunk_server"] == "idx-example.splunkcloud.com"
+    assert promoted["source_server"] == "idx-example.example.com"
     assert isinstance(promoted["_raw"], str)
     assert "date_year" in promoted["_raw"]
 
@@ -1975,7 +1981,7 @@ def test_fetch_alert_events_page_enriches_fields_from_raw(mocker):
         "total": 1,
         "results": [
             {
-                "catalog": "splunk_cloud__sandbox",
+                "catalog": "siem_cloud__sandbox",
                 "data_source": "microsoft_graph_events",
                 "fields": json.dumps(
                     {
@@ -2042,7 +2048,7 @@ def test_alert_to_incident_stores_enriched_alert_events(mocker):
         "total": 1,
         "results": [
             {
-                "catalog": "splunk_cloud__sandbox",
+                "catalog": "siem_cloud__sandbox",
                 "fields": json.dumps(
                     {
                         "risk_score": "medium",
@@ -2530,6 +2536,86 @@ def test_graphql_request_retries_on_graphql_rate_limit(mocker):
     assert sleep_mock.call_args_list[0].args[0] == 2
     assert sleep_mock.call_args_list[1].args[0] == 4
     assert client._rate_limit_wait_seconds == RATE_LIMIT_INITIAL_WAIT_SECONDS
+
+
+def _rate_limit_retry_client(mocker):
+    mocker.patch.object(demisto, "debug")
+    sleep_mock = mocker.patch("Vega.time.sleep")
+    client = Client(
+        base_url=BASE_URL,
+        verify=False,
+        proxy=False,
+        access_key="test-key",
+        access_key_id="test-key-id",
+    )
+    mocker.patch.object(client, "_authenticate", return_value="jwt-token")
+    return client, sleep_mock
+
+
+def test_graphql_request_retries_on_rate_limit_message_without_extensions(mocker):
+    client, sleep_mock = _rate_limit_retry_client(mocker)
+    rate_limited_response = {
+        "errors": [{"message": "Rate limit exceeded. Please retry after a brief wait."}],
+        "data": None,
+    }
+    success_response = {"data": {"getAlertsEvents": {"total": 1, "results": [{"timestamp": "t1"}]}}}
+    http_mock = mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=[rate_limited_response, success_response],
+    )
+
+    response = client._graphql_request("query { getAlertsEvents(alertId: $alertId) { results } }", {"alertId": "alert-1"})
+
+    assert response == success_response
+    assert http_mock.call_count == 2
+    assert sleep_mock.call_args_list[0].args[0] == 2
+    assert client._rate_limit_wait_seconds == RATE_LIMIT_INITIAL_WAIT_SECONDS
+
+
+def test_graphql_request_retries_on_http_200_payload_rate_limit_message(mocker):
+    client, sleep_mock = _rate_limit_retry_client(mocker)
+    rate_limited_response = {
+        "data": {
+            "getAlertsEvents": {
+                "total": 0,
+                "results": None,
+                "error": {"code": "INTERNAL", "message": "Rate limit exceeded"},
+            }
+        }
+    }
+    success_response = {"data": {"getAlertsEvents": {"total": 0, "results": [], "error": None}}}
+    http_mock = mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=[rate_limited_response, success_response],
+    )
+
+    response = client._graphql_request("query { getAlertsEvents(alertId: $alertId) { results error { message } } }")
+
+    assert response == success_response
+    assert http_mock.call_count == 2
+    sleep_mock.assert_called_once_with(2)
+
+
+def test_graphql_request_does_not_retry_unrelated_payload_error(mocker):
+    client, sleep_mock = _rate_limit_retry_client(mocker)
+    payload_error_response = {
+        "data": {
+            "getAlertsEvents": {
+                "total": 0,
+                "results": [],
+                "error": {"code": "NOT_FOUND", "message": "Alert not found"},
+            }
+        }
+    }
+    http_mock = mocker.patch.object(client, "_http_request", return_value=payload_error_response)
+
+    response = client._graphql_request("query { getAlertsEvents(alertId: $alertId) { results error { message } } }")
+
+    assert response == payload_error_response
+    http_mock.assert_called_once()
+    sleep_mock.assert_not_called()
 
 
 def test_client_http_request_retries_on_429(mocker):
@@ -3034,6 +3120,8 @@ def test_build_mirror_sync_object_includes_only_sync_fields():
     assert "vegaComments" in sync_object
     assert "note" in sync_object["vegaComments"]
     assert sync_object["CustomFields"]["vegacomments"] == sync_object["vegaComments"]
+    assert json.loads(sync_object["VegaCommentsSource"]) == incident["comments"]
+    assert sync_object["CustomFields"]["vegacommentssource"] == sync_object["VegaCommentsSource"]
     assert "incidentSummary" not in sync_object
     assert "assignee" not in sync_object
 
@@ -3051,6 +3139,7 @@ def test_build_mirror_sync_object_reflects_removed_comments():
     assert "vegaComments" in sync_object
     assert "No comments are available" in sync_object["vegaComments"]
     assert sync_object["CustomFields"]["vegacomments"] == sync_object["vegaComments"]
+    assert json.loads(sync_object["CustomFields"]["vegacommentssource"]) == []
     assert "vegaComments" not in sync_object or "Removed comment" not in sync_object["vegaComments"]
 
 
@@ -3715,6 +3804,10 @@ def test_get_remote_data_command_alert_with_comment(mocker):
     assert "vegaComments" in result.mirrored_object
     assert "Updated in Vega" in result.mirrored_object["vegaComments"]
     assert "Updated in Vega" in result.mirrored_object["CustomFields"]["vegacomments"]
+    assert (
+        json.loads(result.mirrored_object["CustomFields"]["vegacommentssource"])
+        == mock_client.get_alert_for_mirror.return_value["comments"]
+    )
     assert len(result.entries) >= 1
     assert result.entries[0]["Contents"].startswith("analyst@example.com")
     assert result.entries[0]["Tags"] == [VEGA_MIRROR_TAG_FROM_VEGA]
