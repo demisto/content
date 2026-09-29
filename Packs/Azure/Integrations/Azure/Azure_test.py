@@ -6233,6 +6233,313 @@ def test_main_auth_reset(mocker):
     mock_get_client.assert_not_called()
 
 
+def test_create_table_command(mocker, client, mock_params):
+    """
+    Given: An Azure client whose create_table_request returns a created table.
+    When: create_table_command is called with valid snake_case args.
+    Then: It returns CommandResults with the Azure.Storage.Table prefix and the created table name.
+    """
+    from Azure import create_table_command
+
+    mock_response = util_load_json("test_data/table_create_response.json")
+    mocker.patch.object(client, "create_table_request", return_value=mock_response)
+
+    args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount", "table_name": "mocktable"}
+
+    result = create_table_command(client, mock_params, args)
+
+    client.create_table_request.assert_called_once_with("mockaccount", "mocktable")
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Storage.Table"
+    assert result.outputs.get("TableName") == "mocktable"
+
+
+def test_create_table_command_invalid_name(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to create a table with an invalid name.
+    When: create_table_command is called with an invalid table name.
+    Then: It raises an exception about the invalid table name.
+    """
+    from Azure import create_table_command
+
+    args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount", "table_name": "test--1"}
+
+    with pytest.raises(Exception) as excinfo:
+        create_table_command(client, mock_params, args)
+
+    assert "table name is invalid" in str(excinfo.value)
+
+
+def test_delete_table_command(mocker, client, mock_params):
+    """
+    Given: An Azure client whose delete_table_request succeeds.
+    When: delete_table_command is called with valid snake_case args.
+    Then: It returns a CommandResults with the success readable output and no context.
+    """
+    from Azure import delete_table_command
+
+    mocker.patch.object(client, "delete_table_request")
+
+    args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount", "table_name": "mocktable"}
+
+    result = delete_table_command(client, mock_params, args)
+
+    client.delete_table_request.assert_called_once_with("mockaccount", "mocktable")
+    assert isinstance(result, CommandResults)
+    assert result.outputs is None
+    assert result.readable_output == "Table mocktable successfully deleted."
+
+
+def test_list_tables_command(mocker, client, mock_params):
+    """
+    Given: An Azure client whose list_tables_request returns two tables.
+    When: list_tables_command is called with valid snake_case args.
+    Then: It returns CommandResults with the Azure.Storage.Table prefix and both table names.
+    """
+    from Azure import list_tables_command
+
+    mock_response = util_load_json("test_data/table_list_response.json")
+    mock_http = mocker.Mock()
+    mock_http.json.return_value = mock_response
+    mock_http.headers = {}
+    mocker.patch.object(client, "list_tables_request", return_value=mock_http)
+
+    args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount"}
+
+    result = list_tables_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Storage.Table"
+    assert len(result.outputs) == 2
+    assert result.outputs[0].get("TableName") == "mocktable1"
+    assert result.outputs[1].get("TableName") == "mocktable2"
+
+
+def test_list_tables_command_empty(mocker, client, mock_params):
+    """
+    Given: An Azure client whose list_tables_request returns no tables.
+    When: list_tables_command is called.
+    Then: It returns a CommandResults with a 'no tables found' readable output and no context.
+    """
+    from Azure import list_tables_command
+
+    mock_http = mocker.Mock()
+    mock_http.json.return_value = {"value": []}
+    mock_http.headers = {}
+    mocker.patch.object(client, "list_tables_request", return_value=mock_http)
+
+    args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount"}
+
+    result = list_tables_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs is None
+    assert "No tables found" in result.readable_output
+
+
+def test_insert_entity_command(mocker, client, mock_params):
+    """
+    Given: An Azure client whose insert_entity_request returns the inserted entity.
+    When: insert_entity_command is called with a valid JSON entity_fields and keys.
+    Then: It returns CommandResults with the Azure.Storage.Table.Entity prefix and the inserted entity.
+    """
+    from Azure import insert_entity_command
+
+    mock_response = util_load_json("test_data/table_insert_entity_response.json")
+    mocker.patch.object(client, "insert_entity_request", return_value=mock_response)
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "table_name": "mocktable",
+        "partition_key": "mock-partition",
+        "row_key": "mock-row",
+        "entity_fields": '{"Age": 20}',
+    }
+
+    result = insert_entity_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Storage.Table.Entity"
+    assert result.outputs.get("PartitionKey") == "mock-partition"
+    assert result.outputs.get("RowKey") == "mock-row"
+
+
+def test_insert_entity_command_invalid_json(mocker, client, mock_params):
+    """
+    Given: An Azure client and an invalid JSON entity_fields argument.
+    When: insert_entity_command is called.
+    Then: It raises a ValueError (json.loads raises JSONDecodeError, a ValueError subclass).
+    """
+    from Azure import insert_entity_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "table_name": "mocktable",
+        "partition_key": "mock-partition",
+        "row_key": "mock-row",
+        "entity_fields": "not-json",
+    }
+
+    with pytest.raises(ValueError):
+        insert_entity_command(client, mock_params, args)
+
+
+def test_update_entity_command(mocker, client, mock_params):
+    """
+    Given: An Azure client whose update_entity_request succeeds.
+    When: update_entity_command is called with valid snake_case args.
+    Then: It returns a CommandResults with the success readable output and no context.
+    """
+    from Azure import update_entity_command
+
+    mocker.patch.object(client, "update_entity_request")
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "table_name": "mocktable",
+        "partition_key": "mock-partition",
+        "row_key": "mock-row",
+        "entity_fields": '{"Address": "New York"}',
+    }
+
+    result = update_entity_command(client, mock_params, args)
+
+    client.update_entity_request.assert_called_once_with(
+        "mockaccount", "mocktable", "mock-partition", "mock-row", {"Address": "New York"}
+    )
+    assert isinstance(result, CommandResults)
+    assert result.outputs is None
+    assert result.readable_output == "Entity in mocktable table successfully updated."
+
+
+def test_replace_entity_command(mocker, client, mock_params):
+    """
+    Given: An Azure client whose replace_entity_request succeeds.
+    When: replace_entity_command is called with valid snake_case args.
+    Then: It returns a CommandResults with the success readable output and no context.
+    """
+    from Azure import replace_entity_command
+
+    mocker.patch.object(client, "replace_entity_request")
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "table_name": "mocktable",
+        "partition_key": "mock-partition",
+        "row_key": "mock-row",
+        "entity_fields": '{"Address": "New York"}',
+    }
+
+    result = replace_entity_command(client, mock_params, args)
+
+    client.replace_entity_request.assert_called_once_with(
+        "mockaccount", "mocktable", "mock-partition", "mock-row", {"Address": "New York"}
+    )
+    assert isinstance(result, CommandResults)
+    assert result.outputs is None
+    assert result.readable_output == "Entity in mocktable table successfully replaced."
+
+
+def test_query_entity_command(mocker, client, mock_params):
+    """
+    Given: An Azure client whose query_entity_request returns a single entity.
+    When: query_entity_command is called with valid snake_case args.
+    Then: It returns CommandResults with the Azure.Storage.Table.Entity prefix and the queried entity.
+    """
+    from Azure import query_entity_command
+
+    mock_response = util_load_json("test_data/table_query_entity_response.json")
+    mock_http = mocker.Mock()
+    mock_http.json.return_value = mock_response
+    mock_http.headers = {}
+    mocker.patch.object(client, "query_entity_request", return_value=mock_http)
+
+    args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount", "table_name": "mocktable", "limit": "1"}
+
+    result = query_entity_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Storage.Table.Entity"
+    assert len(result.outputs) == 1
+    assert result.outputs[0].get("PartitionKey") == "mock-partition"
+    assert result.outputs[0].get("RowKey") == "mock-row"
+    assert result.outputs[0].get("Address") == "New York"
+
+
+def test_query_entity_command_partial_keys(mocker, client, mock_params):
+    """
+    Given: An Azure client and args providing only partition_key without row_key.
+    When: query_entity_command is called.
+    Then: It raises an exception requiring both partition_key and row_key together.
+    """
+    from Azure import query_entity_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "table_name": "mocktable",
+        "partition_key": "mock-partition",
+    }
+
+    with pytest.raises(Exception) as excinfo:
+        query_entity_command(client, mock_params, args)
+
+    assert "partition_key" in str(excinfo.value)
+    assert "row_key" in str(excinfo.value)
+
+
+def test_query_entity_command_empty(mocker, client, mock_params):
+    """
+    Given: An Azure client whose query_entity_request returns no entities.
+    When: query_entity_command is called without keys.
+    Then: It returns a CommandResults with a 'no entities found' readable output and no context.
+    """
+    from Azure import query_entity_command
+
+    mock_http = mocker.Mock()
+    mock_http.json.return_value = {"value": []}
+    mock_http.headers = {}
+    mocker.patch.object(client, "query_entity_request", return_value=mock_http)
+
+    args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount", "table_name": "mocktable"}
+
+    result = query_entity_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs is None
+    assert "No entities found" in result.readable_output
+
+
+def test_delete_entity_command(mocker, client, mock_params):
+    """
+    Given: An Azure client whose delete_entity_request succeeds.
+    When: delete_entity_command is called with valid snake_case args.
+    Then: It returns a CommandResults with the success readable output and no context.
+    """
+    from Azure import delete_entity_command
+
+    mocker.patch.object(client, "delete_entity_request")
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "table_name": "mocktable",
+        "partition_key": "mock-partition",
+        "row_key": "mock-row",
+    }
+
+    result = delete_entity_command(client, mock_params, args)
+
+    client.delete_entity_request.assert_called_once_with("mockaccount", "mocktable", "mock-partition", "mock-row")
+    assert isinstance(result, CommandResults)
+    assert result.outputs is None
+    assert result.readable_output == "Entity in mocktable table successfully deleted."
+
+
 # ---------------------------------------------------------------------------
 # YAML <-> Python wiring tests
 #
