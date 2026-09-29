@@ -66,8 +66,6 @@ VEGA_VERDICT_FIELD = "vegaverdict"
 VEGA_VERDICT_REASONING_FIELD = "vegaverdictreasoning"
 VEGA_NEW_COMMENT_FIELD = "veganewcomment"
 VEGA_NEW_COMMENT_LAYOUT_DEFAULT = "comment"
-VEGA_TIMELINE_EVENTS_SOURCE_FIELD = "vegatimelineeventssource"
-VEGA_TIMELINE_EVENTS_SOURCE_KEY = "VegaTimelineEventsSource"
 VEGA_COMMENTS_SOURCE_FIELD = "vegacommentssource"
 VEGA_COMMENTS_SOURCE_KEY = "VegaCommentsSource"
 VEGA_MIRROR_TAG_FROM_VEGA = "From Vega"
@@ -2143,8 +2141,8 @@ def _build_vega_alert_custom_fields(raw: dict) -> dict[str, Any]:
     if isinstance(alert_event_fields, dict):
         custom_fields.update(alert_event_fields)
     comments_source = raw.get(VEGA_COMMENTS_SOURCE_KEY)
-    if comments_source is not None:
-        custom_fields[VEGA_COMMENTS_SOURCE_FIELD] = str(comments_source)
+    if isinstance(comments_source, list):
+        custom_fields[VEGA_COMMENTS_SOURCE_FIELD] = comments_source
     custom_fields[VEGA_NEW_COMMENT_FIELD] = VEGA_NEW_COMMENT_LAYOUT_DEFAULT
     return custom_fields
 
@@ -2455,9 +2453,9 @@ def _format_timeline_events_html(timeline_events: list[dict]) -> str:
     )
 
 
-def _build_vega_incident_custom_fields(raw: dict) -> dict[str, str]:
+def _build_vega_incident_custom_fields(raw: dict) -> dict[str, Any]:
     """Build CustomFields for Vega incidents (set directly on ingest, not via mapper)."""
-    custom_fields: dict[str, str] = {}
+    custom_fields: dict[str, Any] = {}
     # Populate vegaincidentid so outgoing mirroring and vega-update-incident can reliably
     # resolve the Vega entity without falling back to fragile rawJSON parsing.
     incident_id = _normalize_entity_id(raw)
@@ -2475,12 +2473,9 @@ def _build_vega_incident_custom_fields(raw: dict) -> dict[str, str]:
     timeline_html = raw.get("vegaTimelineEvents")
     if timeline_html:
         custom_fields["vegatimelineevents"] = str(timeline_html)
-    timeline_source = raw.get(VEGA_TIMELINE_EVENTS_SOURCE_KEY)
-    if timeline_source is not None:
-        custom_fields[VEGA_TIMELINE_EVENTS_SOURCE_FIELD] = str(timeline_source)
     comments_source = raw.get(VEGA_COMMENTS_SOURCE_KEY)
-    if comments_source is not None:
-        custom_fields[VEGA_COMMENTS_SOURCE_FIELD] = str(comments_source)
+    if isinstance(comments_source, list):
+        custom_fields[VEGA_COMMENTS_SOURCE_FIELD] = comments_source
     findings_html = raw.get("vegaIncidentFindings")
     if findings_html:
         custom_fields["vegaincidentfindings"] = str(findings_html)
@@ -2624,7 +2619,7 @@ def _format_raw_entity_for_xsoar(raw: dict) -> None:
     if findings_source is not None:
         raw["vegaIncidentFindings"] = _format_key_findings_html(findings_source, assets, observables)
     if entity_type in ("Vega Incident", "Vega Alert") and "comments" in raw:
-        raw[VEGA_COMMENTS_SOURCE_KEY] = json.dumps(raw.get("comments"))
+        raw[VEGA_COMMENTS_SOURCE_KEY] = raw.get("comments") if isinstance(raw.get("comments"), list) else []
         raw["vegaComments"] = _format_vega_comments_html(raw.get("comments"))
     if "recommendedActions" in raw:
         raw["recommendedActions"] = _format_recommended_actions_for_grid(raw.get("recommendedActions"))
@@ -3437,7 +3432,7 @@ def _build_xsoar_incident_dict(
     raw: dict[str, Any],
     entity_type: str,
     entity_type_suffix: str,
-    custom_fields_builder: Callable[[dict], dict[str, str]],
+    custom_fields_builder: Callable[[dict], dict[str, Any]],
 ) -> dict[str, Any]:
     """Build a common XSOAR incident dict from prepared raw entity data."""
     severity = VEGA_SEVERITY_TO_XSOAR.get(raw.get("severity", "").upper(), IncidentSeverity.UNKNOWN)
@@ -3493,7 +3488,6 @@ def incident_to_xsoar_incident(
     if timeline_events is not None:
         raw["timelineEvents"] = timeline_events
         raw["vegaTimelineEvents"] = _format_timeline_events_html(timeline_events)
-        raw[VEGA_TIMELINE_EVENTS_SOURCE_KEY] = json.dumps(timeline_events)
     _apply_vega_entity_link(raw)
     _format_raw_entity_for_xsoar(raw)
     return _build_xsoar_incident_dict(raw, "Vega Incident", MIRROR_ENTITY_SUFFIX_INCIDENT, _build_vega_incident_custom_fields)
@@ -4216,9 +4210,9 @@ def _normalize_mirror_entity(entity: dict[str, Any], entity_type_suffix: str) ->
 
 
 #! ---------------------------- MIRROR VEGA TO XSOAR--------------------------------------
-def _build_mirror_entity_custom_fields(entity: dict[str, Any], entity_type_suffix: str) -> dict[str, str]:
+def _build_mirror_entity_custom_fields(entity: dict[str, Any], entity_type_suffix: str) -> dict[str, Any]:
     """Build custom fields for a mirrored Vega entity."""
-    custom_fields: dict[str, str] = {}
+    custom_fields: dict[str, Any] = {}
     entity_id = _normalize_entity_id(entity)
     if entity_id:
         if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
@@ -4259,7 +4253,8 @@ def _build_mirror_entity_custom_fields(entity: dict[str, Any], entity_type_suffi
 
     if "comments" in entity:
         custom_fields["vegacomments"] = _format_vega_comments_html(entity.get("comments"))
-        custom_fields[VEGA_COMMENTS_SOURCE_FIELD] = json.dumps(entity.get("comments"))
+        comments = entity.get("comments")
+        custom_fields[VEGA_COMMENTS_SOURCE_FIELD] = comments if isinstance(comments, list) else []
     return custom_fields
 
 

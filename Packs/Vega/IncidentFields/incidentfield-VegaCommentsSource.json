@@ -3,7 +3,7 @@
     "version": -1,
     "name": "Vega Comments Source",
     "ownerOnly": false,
-    "description": "Unmodified Vega comments, stored as JSON.",
+    "description": "Unmodified Vega comments.",
     "cliName": "vegacommentssource",
     "type": "longText",
     "closeForm": false,

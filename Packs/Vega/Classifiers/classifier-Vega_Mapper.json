@@ -78,7 +78,7 @@
                 "Vega Comments": {
                     "simple": "vegaComments"
                 },
-                "VegaCommentsSource": {
+                "Vega Comments Source": {
                     "simple": "VegaCommentsSource"
                 },
                 "dbotMirrorDirection": {
@@ -155,13 +155,13 @@
                 "Vega Timeline Events": {
                     "simple": "vegaTimelineEvents"
                 },
-                "VegaTimelineEventsSource": {
-                    "simple": "VegaTimelineEventsSource"
+                "Vega Timeline Events Source": {
+                    "simple": "timelineEvents"
                 },
                 "Vega Comments": {
                     "simple": "vegaComments"
                 },
-                "VegaCommentsSource": {
+                "Vega Comments Source": {
                     "simple": "VegaCommentsSource"
                 },
                 "Vega Recommended Actions": {

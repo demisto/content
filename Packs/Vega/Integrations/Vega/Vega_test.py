@@ -1483,8 +1483,8 @@ def test_format_raw_entity_for_xsoar_builds_vega_comments_html():
     assert "vegaComments" in incident
     assert "Reviewed in XSOAR" in incident["vegaComments"]
     assert "[{}]" not in incident["vegaComments"]
-    assert json.loads(incident["VegaCommentsSource"]) == incident["comments"]
-    assert _build_vega_incident_custom_fields(incident)["vegacommentssource"] == incident["VegaCommentsSource"]
+    assert incident["VegaCommentsSource"] == incident["comments"]
+    assert _build_vega_incident_custom_fields(incident)["vegacommentssource"] == incident["comments"]
 
 
 def test_format_raw_entity_for_xsoar_builds_vega_alert_comments_html():
@@ -1509,8 +1509,8 @@ def test_format_raw_entity_for_xsoar_builds_vega_alert_comments_html():
     assert "vegaComments" in alert
     assert "Escalated for review" in alert["vegaComments"]
     assert "[{}]" not in alert["vegaComments"]
-    assert json.loads(alert["VegaCommentsSource"]) == alert["comments"]
-    assert _build_vega_alert_custom_fields(alert)["vegacommentssource"] == alert["VegaCommentsSource"]
+    assert alert["VegaCommentsSource"] == alert["comments"]
+    assert _build_vega_alert_custom_fields(alert)["vegacommentssource"] == alert["comments"]
 
 
 def test_format_timeline_events_html_dark_theme_layout():
@@ -1580,10 +1580,10 @@ def test_incident_to_xsoar_incident_includes_timeline_events():
 
     assert raw["timelineEvents"] == timeline
     assert "vegaTimelineEvents" in raw
-    assert json.loads(raw["VegaTimelineEventsSource"]) == timeline
+    assert "VegaTimelineEventsSource" not in raw
     assert xsoar_incident["CustomFields"]["vegatimelineevents"]
     assert "Test event." in xsoar_incident["CustomFields"]["vegatimelineevents"]
-    assert json.loads(xsoar_incident["CustomFields"]["vegatimelineeventssource"]) == timeline
+    assert "vegatimelineeventssource" not in xsoar_incident["CustomFields"]
 
 
 def test_fetch_incidents_command_fetches_timeline_details(mocker):
@@ -3120,8 +3120,8 @@ def test_build_mirror_sync_object_includes_only_sync_fields():
     assert "vegaComments" in sync_object
     assert "note" in sync_object["vegaComments"]
     assert sync_object["CustomFields"]["vegacomments"] == sync_object["vegaComments"]
-    assert json.loads(sync_object["VegaCommentsSource"]) == incident["comments"]
-    assert sync_object["CustomFields"]["vegacommentssource"] == sync_object["VegaCommentsSource"]
+    assert sync_object["VegaCommentsSource"] == incident["comments"]
+    assert sync_object["CustomFields"]["vegacommentssource"] == incident["comments"]
     assert "incidentSummary" not in sync_object
     assert "assignee" not in sync_object
 
@@ -3139,7 +3139,7 @@ def test_build_mirror_sync_object_reflects_removed_comments():
     assert "vegaComments" in sync_object
     assert "No comments are available" in sync_object["vegaComments"]
     assert sync_object["CustomFields"]["vegacomments"] == sync_object["vegaComments"]
-    assert json.loads(sync_object["CustomFields"]["vegacommentssource"]) == []
+    assert sync_object["CustomFields"]["vegacommentssource"] == []
     assert "vegaComments" not in sync_object or "Removed comment" not in sync_object["vegaComments"]
 
 
@@ -3805,8 +3805,7 @@ def test_get_remote_data_command_alert_with_comment(mocker):
     assert "Updated in Vega" in result.mirrored_object["vegaComments"]
     assert "Updated in Vega" in result.mirrored_object["CustomFields"]["vegacomments"]
     assert (
-        json.loads(result.mirrored_object["CustomFields"]["vegacommentssource"])
-        == mock_client.get_alert_for_mirror.return_value["comments"]
+        result.mirrored_object["CustomFields"]["vegacommentssource"] == mock_client.get_alert_for_mirror.return_value["comments"]
     )
     assert len(result.entries) >= 1
     assert result.entries[0]["Contents"].startswith("analyst@example.com")
