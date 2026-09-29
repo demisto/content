@@ -3,6 +3,7 @@ from typing import Any
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401,F403
+from ContentClientApiModule import *  # noqa: F401,F403
 
 
 DEFAULT_BASE_URL = "https://api.typesafe.ai"

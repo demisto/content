@@ -189,7 +189,7 @@ script:
     - contextPath: TypeSafeJev.Model.release_date
       description: The model release date.
       type: Date
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/fastapi:0.141.1.13241299
   runonce: false
   script: ''
   subtype: python3
