@@ -1,7 +1,8 @@
 import math
 import re
 from collections import Counter
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 import demistomock as demisto
 import numpy as np
