@@ -2043,7 +2043,7 @@ class AzureClient:
         full_url = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.ContainerService/managedClusters"
         if next_token:
             demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of AKS managed clusters.")
-            full_url = next_token
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname)
             params = {}
         demisto.debug("Listing AKS managed clusters.")
         try:
