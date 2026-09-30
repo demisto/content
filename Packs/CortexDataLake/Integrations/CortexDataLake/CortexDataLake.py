@@ -326,24 +326,26 @@ class Client(BaseClient):
         return mapped_url
 
     def _is_url_reachable(self, url: str) -> bool:
-        """Performs a lightweight reachability probe against the given URL.
+        """Probes the URL, treating only a non-error HTTP status as reachable.
 
-        Any failure - including a timeout (host unreachable), connection error, or any other exception -
-        is treated as "not reachable" and returns False. A successful HTTP response means the host is
-        reachable and returns True.
+        An error status or any transport failure is treated as not reachable,
+        since a decommissioned host may answer at its root while no longer serving the query API.
 
         Args:
             url: The URL to probe.
 
         Returns:
-            True if the host responded, False on timeout / connection error / any error.
+            True if the host responded with status_code < 400, otherwise False.
         """
         try:
             with requests.Session() as session:
                 session.trust_env = self.trust_env
-                session.get(url, timeout=URL_REACHABILITY_TIMEOUT, verify=self.use_ssl)
-            demisto.debug(f"CDL - URL reachable: {url}")
-            return True
+                response = session.get(url, timeout=URL_REACHABILITY_TIMEOUT, verify=self.use_ssl)
+            if response.status_code < requests.codes.bad_request:
+                demisto.debug(f"CDL - URL reachable: {url} ({response.status_code=})")
+                return True
+            demisto.info(f"CDL - URL not reachable: {url} responded with error {response.status_code=}.")
+            return False
         except Exception as e:
             demisto.info(f"CDL - URL not reachable: {url}. Error: {e}")
             demisto.debug(f"CDL - URL reachability probe traceback for {url}:\n{traceback.format_exc()}")
