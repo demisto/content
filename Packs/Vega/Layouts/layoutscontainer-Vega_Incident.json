@@ -658,6 +658,33 @@
 						"w": 3,
 						"x": 0,
 						"y": 19
+					},
+					{
+						"displayType": "CARD",
+						"h": 6,
+						"hideName": true,
+						"i": "js3vpk9qph-vega-incident-alerts-section",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "vegaalerts",
+								"height": 106,
+								"id": "b7e1c4a2-9d30-4f58-a6c1-2e8f0b5d7a14",
+								"index": 0,
+								"listId": "js3vpk9qph-vega-incident-alerts-section",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Vega Alerts",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 22
 					}
 				],
 				"type": "custom"

@@ -68,6 +68,39 @@ VEGA_NEW_COMMENT_FIELD = "veganewcomment"
 VEGA_NEW_COMMENT_LAYOUT_DEFAULT = "comment"
 VEGA_COMMENTS_SOURCE_FIELD = "vegacommentssource"
 VEGA_COMMENTS_SOURCE_KEY = "VegaCommentsSource"
+VEGA_ALERTS_FIELD = "vegaalerts"
+_INCIDENT_ALERT_SCALAR_FIELDS = (
+    "id",
+    "vegaAlertId",
+    "detectionId",
+    "name",
+    "description",
+    "severity",
+    "status",
+    "createdAt",
+    "updatedAt",
+    "detectionSource",
+    "detectionDescription",
+    "detectionQuery",
+    "eventCount",
+    "isTestMode",
+    "verdict",
+    "verdictReasoning",
+    "dedupCount",
+    "href",
+)
+_INCIDENT_ALERT_LIST_FIELDS = (
+    "dataSources",
+    "assignees",
+    "relatedIncidents",
+    "comments",
+    "labels",
+    "skills",
+    "actors",
+    "targets",
+)
+_INCIDENT_ALERT_OBJECT_FIELDS = ("assignee", "mitre", "escalation")
+INCIDENT_ALERT_LOOKUP_BATCH_SIZE = 1000
 VEGA_MIRROR_TAG_FROM_VEGA = "From Vega"
 VEGA_MIRROR_TAG_TO_VEGA = "To Vega"
 GET_MODIFIED_REMOTE_DATA_LIMIT = 100
@@ -250,22 +283,32 @@ TEST_CONNECTION_ACCESS_KEY_ID_ERROR = "Incorrect Access Key ID. Please check you
 
 # ? ---------------------------- GRAPHQL QUERIES --------------------------------------
 GET_ALERTS_QUERY = (
-    "query GetAlerts($alertNames: [String!], $alertIds: [ID!], $alertSeverities: [AlertSeverity!], "
-    "$statuses: [AlertStatus!], $detectionIds: [ID!], $dataSourceNames: [String!], "
-    "$alertVerdicts: [AlertVerdict!], $hasRelatedIncidents: Boolean, $from: Time, "
-    "$updatedFrom: Time, $updatedTo: Time, $limit: Int, $offset: Int) { "
-    " getAlerts(alertNames: $alertNames, alertIds: $alertIds, alertSeverities: $alertSeverities, "
-    "statuses: $statuses, detectionIds: $detectionIds, dataSourceNames: $dataSourceNames, "
-    "alertVerdicts: $alertVerdicts, hasRelatedIncidents: $hasRelatedIncidents, from: $from, "
-    "updatedFrom: $updatedFrom, updatedTo: $updatedTo, limit: $limit, offset: $offset) { "
+    "query GetAlerts($alertNames: [String!], $alertIds: [ID!], $vegaAlertIds: [String!], "
+    "$alertSeverities: [AlertSeverity!], $statuses: [AlertStatus!], $detectionIds: [ID!], "
+    "$dataSourceNames: [String!], $alertVerdicts: [AlertVerdict!], $hasRelatedIncidents: Boolean, "
+    "$from: Time, $to: Time, $updatedFrom: Time, $updatedTo: Time, $originType: AlertOriginType, "
+    "$sortBy: AlertSortFieldPublic, $sortOrder: SortOrderPublic, $limit: Int, $offset: Int) { "
+    " getAlerts(alertNames: $alertNames, alertIds: $alertIds, vegaAlertIds: $vegaAlertIds, "
+    "alertSeverities: $alertSeverities, statuses: $statuses, detectionIds: $detectionIds, "
+    "dataSourceNames: $dataSourceNames, alertVerdicts: $alertVerdicts, "
+    "hasRelatedIncidents: $hasRelatedIncidents, from: $from, to: $to, updatedFrom: $updatedFrom, "
+    "updatedTo: $updatedTo, originType: $originType, sortBy: $sortBy, sortOrder: $sortOrder, "
+    "limit: $limit, offset: $offset) { "
     "  alerts { id vegaAlertId detectionId name description severity status "
     "   assignee { userId displayName email } "
     "   assignees { userId displayName email } "
     "   dataSources createdAt updatedAt "
     "   mitre { mitreTactics mitreTechniques } "
     "   relatedIncidents { incidentId name } "
-    "   detectionSource detectionDescription detectionQuery eventCount isTestMode verdict verdictReasoning dedupCount "
-    "   comments { text addedBy addedAt } } "
+    "   detectionSource detectionDescription detectionQuery eventCount isTestMode verdict verdictReasoning "
+    "   escalation { status reasoning determinedAt incident { incidentId name } } "
+    "   dedupCount "
+    "   comments { text addedBy addedAt } "
+    "   labels { id categoryId name color usageCount } "
+    "   skills { id name version } "
+    "   actors { field values } "
+    "   targets { field values } "
+    "   href } "
     "  total limit offset "
     "  error { code message } } }"
 )
@@ -283,7 +326,8 @@ GET_INCIDENT_MIRROR_QUERY = (
     "query GetIncidents($incidentIds: [ID!], $from: Time, $limit: Int, $offset: Int) { "
     " getIncidents(incidentIds: $incidentIds, from: $from, limit: $limit, offset: $offset) { "
     "  incidents { id userStatus investigationStatus severity verdict verdictReasoning lastUpdated "
-    "   comments { text addedBy addedAt } } "
+    "   comments { text addedBy addedAt } "
+    "   alerts { alertId name createdAt } } "
     "  total limit offset "
     "  error { code message } } }"
 )
@@ -2479,6 +2523,9 @@ def _build_vega_incident_custom_fields(raw: dict) -> dict[str, Any]:
     findings_html = raw.get("vegaIncidentFindings")
     if findings_html:
         custom_fields["vegaincidentfindings"] = str(findings_html)
+    alerts = raw.get("alerts")
+    if isinstance(alerts, list):
+        custom_fields[VEGA_ALERTS_FIELD] = alerts
     custom_fields[VEGA_NEW_COMMENT_FIELD] = VEGA_NEW_COMMENT_LAYOUT_DEFAULT
     return custom_fields
 
@@ -3476,9 +3523,141 @@ def alert_to_incident(
     return _build_xsoar_incident_dict(raw, "Vega Alert", MIRROR_ENTITY_SUFFIX_ALERT, _build_vega_alert_custom_fields)
 
 
+def _incident_alert_id(alert: dict[str, Any]) -> str:
+    """Return the Vega alert UUID from an incident alert stub or a getAlerts record."""
+    for key in ("alertId", "id"):
+        value = alert.get(key)
+        if value is not None and str(value).strip():
+            return str(value).strip()
+    return ""
+
+
+def _grid_scalar_text(value: Any) -> str:
+    """Convert a scalar alert field to a grid cell string."""
+    if value is None:
+        return ""
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, str):
+        return value
+    return str(value)
+
+
+def _format_incident_alert_stub_row(stub: dict[str, Any]) -> dict[str, str]:
+    """Build a Vega Alerts row from the short incident alert reference."""
+    return {
+        "alertId": _incident_alert_id(stub),
+        "name": _grid_scalar_text(stub.get("name")),
+        "createdAt": _grid_scalar_text(stub.get("createdAt")),
+    }
+
+
+def _format_incident_alert_grid_row(alert: dict[str, Any]) -> dict[str, Any]:
+    """Build a Vega Alerts row from a full getAlerts record.
+
+    Lists and objects stay in their API shape. Scalar fields are stored as text for the grid columns.
+    """
+    row: dict[str, Any] = {"alertId": _incident_alert_id(alert)}
+    for key in _INCIDENT_ALERT_SCALAR_FIELDS:
+        row[key] = _grid_scalar_text(alert.get(key))
+    for key in _INCIDENT_ALERT_LIST_FIELDS:
+        value = alert.get(key)
+        row[key] = value if isinstance(value, list) else []
+    for key in _INCIDENT_ALERT_OBJECT_FIELDS:
+        value = alert.get(key)
+        row[key] = value if isinstance(value, dict) else None
+    if not row["id"]:
+        row["id"] = row["alertId"]
+    return row
+
+
+def _incident_alert_lookup_from_time(created_at_values: list[Any]) -> str | None:
+    """Return a getAlerts from time that includes the oldest alert in the batch."""
+    parsed_times: list[datetime] = []
+    for value in created_at_values:
+        parsed = _parse_entity_created_at(value)
+        if parsed:
+            parsed_times.append(parsed)
+    if not parsed_times:
+        return None
+    return _format_fetch_timestamp(min(parsed_times) - timedelta(days=1))
+
+
+def _fetch_incident_alert_batch(client: Client, alert_ids: list[str], from_time: str | None) -> list[dict[str, Any]]:
+    """Fetch one batch of full alert records by UUID."""
+    response = client.get_alerts(alert_ids=alert_ids, from_time=from_time, limit=len(alert_ids), offset=0) or {}
+    api_error = response.get("error")
+    if isinstance(api_error, dict) and api_error.get("message"):
+        raise DemistoException(f"Vega API error fetching incident alerts: {api_error.get('message')}")
+    return [alert for alert in (response.get("alerts") or []) if isinstance(alert, dict)]
+
+
+def _fetch_incident_alerts_by_ids(
+    client: Client,
+    alert_ids: list[str],
+    created_at_by_id: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """Fetch full alert records for the given alert UUIDs.
+
+    IDs are sent in one request until the count exceeds 1,000, then in batches of 1,000. Each request sends a
+    from time based on that batch's oldest alert so a default API window does not drop older alerts. A failed
+    batch leaves those alerts unresolved.
+    """
+    collected: list[dict[str, Any]] = []
+    for start in range(0, len(alert_ids), INCIDENT_ALERT_LOOKUP_BATCH_SIZE):
+        chunk = alert_ids[start : start + INCIDENT_ALERT_LOOKUP_BATCH_SIZE]
+        from_time = _incident_alert_lookup_from_time([created_at_by_id.get(alert_id) for alert_id in chunk])
+        try:
+            collected.extend(_fetch_incident_alert_batch(client, chunk, from_time))
+        except Exception as exc:
+            demisto.info(f"Failed to fetch incident alert metadata for {len(chunk)} alerts: error={exc}")
+    return collected
+
+
+def _enrich_incident_alerts(client: Client, alerts: Any) -> list[dict[str, Any]]:
+    """Replace incident alert stubs with full getAlerts rows.
+
+    Rate-limit retries run inside the GraphQL client. If those retries are exhausted, or an alert is missing
+    from the response, the original alertId, name, and createdAt row is kept.
+    """
+    stubs = [alert for alert in alerts if isinstance(alert, dict)] if isinstance(alerts, list) else []
+    ordered_ids: list[str] = []
+    created_at_by_id: dict[str, Any] = {}
+    for stub in stubs:
+        alert_id = _incident_alert_id(stub)
+        if alert_id and alert_id not in created_at_by_id:
+            ordered_ids.append(alert_id)
+            created_at_by_id[alert_id] = stub.get("createdAt")
+    if not ordered_ids:
+        return []
+
+    details = _fetch_incident_alerts_by_ids(client, ordered_ids, created_at_by_id)
+    alerts_by_id = {_incident_alert_id(alert): alert for alert in details if _incident_alert_id(alert)}
+    if len(alerts_by_id) < len(ordered_ids):
+        demisto.info(f"Incident alert metadata resolved {len(alerts_by_id)} of {len(ordered_ids)} alerts.")
+
+    rows: list[dict[str, Any]] = []
+    for stub in stubs:
+        alert_id = _incident_alert_id(stub)
+        if not alert_id:
+            continue
+        full_alert = alerts_by_id.get(alert_id)
+        if not full_alert:
+            rows.append(_format_incident_alert_stub_row(stub))
+            continue
+        row = _format_incident_alert_grid_row(full_alert)
+        if not row["name"]:
+            row["name"] = _grid_scalar_text(stub.get("name"))
+        if not row["createdAt"]:
+            row["createdAt"] = _grid_scalar_text(stub.get("createdAt"))
+        rows.append(row)
+    return rows
+
+
 def incident_to_xsoar_incident(
     incident: dict,
     timeline_events: list[dict] | None = None,
+    client: Client | None = None,
 ) -> dict:
     """Convert a Vega incident to an XSOAR incident."""
     raw = dict(incident)
@@ -3488,6 +3667,8 @@ def incident_to_xsoar_incident(
     if timeline_events is not None:
         raw["timelineEvents"] = timeline_events
         raw["vegaTimelineEvents"] = _format_timeline_events_html(timeline_events)
+    if client is not None and isinstance(raw.get("alerts"), list):
+        raw["alerts"] = _enrich_incident_alerts(client, raw.get("alerts"))
     _apply_vega_entity_link(raw)
     _format_raw_entity_for_xsoar(raw)
     return _build_xsoar_incident_dict(raw, "Vega Incident", MIRROR_ENTITY_SUFFIX_INCIDENT, _build_vega_incident_custom_fields)
@@ -4255,6 +4436,8 @@ def _build_mirror_entity_custom_fields(entity: dict[str, Any], entity_type_suffi
         custom_fields["vegacomments"] = _format_vega_comments_html(entity.get("comments"))
         comments = entity.get("comments")
         custom_fields[VEGA_COMMENTS_SOURCE_FIELD] = comments if isinstance(comments, list) else []
+    if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT and isinstance(entity.get("alerts"), list):
+        custom_fields[VEGA_ALERTS_FIELD] = entity["alerts"]
     return custom_fields
 
 
@@ -4299,6 +4482,8 @@ def _build_mirror_sync_object(
         sync_object["vegaComments"] = raw["vegaComments"]
     if VEGA_COMMENTS_SOURCE_KEY in raw:
         sync_object[VEGA_COMMENTS_SOURCE_KEY] = raw[VEGA_COMMENTS_SOURCE_KEY]
+    if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT and isinstance(entity.get("alerts"), list):
+        sync_object["alerts"] = entity["alerts"]
 
     _apply_mirror_sync_metadata(sync_object, mirror_context=mirror_context)
 
@@ -4619,6 +4804,17 @@ def _build_not_found_mirror_response(
     return GetRemoteDataResponse(mirrored_object=not_found, entries=[])
 
 
+def _mirror_incident_alert_stubs(entity: dict[str, Any], details: dict[str, Any]) -> list[dict[str, Any]] | None:
+    """Return the incident alert references used to load full alert metadata."""
+    details_alerts = details.get("alerts")
+    if isinstance(details_alerts, list):
+        return details_alerts
+    entity_alerts = entity.get("alerts")
+    if isinstance(entity_alerts, list):
+        return entity_alerts
+    return None
+
+
 def _enrich_mirror_incident_entity(client: Client, entity: dict[str, Any], last_update: str | None) -> dict[str, Any]:
     """Fetch additional incident details needed for incoming mirror sync."""
     entity_id = _normalize_entity_id(entity)
@@ -4627,23 +4823,29 @@ def _enrich_mirror_incident_entity(client: Client, entity: dict[str, Any], last_
 
     incident_lookup_filters = _resolve_mirror_incident_lookup_filters(last_update)
     details = client.get_incident_by_id(entity_id, **incident_lookup_filters)
-    if not isinstance(details, dict) or not details:
-        return entity
+    if not isinstance(details, dict):
+        details = {}
 
-    for key in (
-        "verdictReasoning",
-        "verdict",
-        "comments",
-        "status",
-        "userStatus",
-        "investigationStatus",
-        "severity",
-        "lastUpdated",
-        "userVerdict",
-    ):
-        if key in details and details[key] is not None:
-            entity[key] = details[key]
-    return _normalize_incident_api_entity(entity)
+    if details:
+        for key in (
+            "verdictReasoning",
+            "verdict",
+            "comments",
+            "status",
+            "userStatus",
+            "investigationStatus",
+            "severity",
+            "lastUpdated",
+            "userVerdict",
+        ):
+            if key in details and details[key] is not None:
+                entity[key] = details[key]
+        entity = _normalize_incident_api_entity(entity)
+
+    alert_stubs = _mirror_incident_alert_stubs(entity, details)
+    if alert_stubs is not None:
+        entity["alerts"] = _enrich_incident_alerts(client, alert_stubs)
+    return entity
 
 
 def _build_incoming_mirror_comment_entries(entity: dict[str, Any], last_update_dt: datetime) -> list[dict[str, Any]]:
@@ -5183,7 +5385,7 @@ def _ingest_fetched_incidents(
 
             new_ids.append(incident_id)
             timeline_events = _fetch_incident_timeline_events(client, incident_id) if incident_id else []
-            xsoar_incidents.append(incident_to_xsoar_incident(incident, timeline_events=timeline_events))
+            xsoar_incidents.append(incident_to_xsoar_incident(incident, timeline_events=timeline_events, client=client))
             ingested.append(incident)
 
         next_run["incidents_last_ids"] = list(set(current_cycle_ids))

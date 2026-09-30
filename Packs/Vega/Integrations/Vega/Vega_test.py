@@ -65,6 +65,7 @@ from Vega import (
     set_detections_state_command,
     update_detections_command,
     incident_to_xsoar_incident,
+    _enrich_incident_alerts,
     parse_backfill_days,
     load_current_incident,
     resolve_alert_id_from_incident,
@@ -1641,6 +1642,234 @@ def test_fetch_incidents_command_fetches_timeline_details(mocker):
     mock_client.get_incident_timeline.assert_called_once_with("inc-1")
     raw = json.loads(incidents[0]["rawJSON"])
     assert raw["timelineEvents"][0]["summary"] == "Timeline summary."
+
+
+def _full_incident_alert(alert_id: str = "alert-1") -> dict:
+    return {
+        "id": alert_id,
+        "vegaAlertId": "VA-1",
+        "detectionId": "det-1",
+        "name": "Suspicious login",
+        "description": "Full alert description",
+        "severity": "HIGH",
+        "status": "OPEN",
+        "assignee": {"userId": "user-1", "displayName": "Ada Lovelace", "email": "ada@example.com"},
+        "assignees": [{"userId": "user-1", "displayName": "Ada Lovelace", "email": "ada@example.com"}],
+        "dataSources": ["CloudTrail", "Okta"],
+        "createdAt": TIMESTAMP_T1,
+        "updatedAt": TIMESTAMP_T2,
+        "mitre": {"mitreTactics": ["TA0001"], "mitreTechniques": ["T1078"]},
+        "relatedIncidents": [{"incidentId": "inc-9", "name": "Related"}],
+        "detectionSource": "Vega",
+        "detectionDescription": "Detects suspicious logins",
+        "detectionQuery": "event_type = login",
+        "eventCount": 4,
+        "isTestMode": False,
+        "verdict": "SUSPICIOUS",
+        "verdictReasoning": "Multiple failed logins",
+        "dedupCount": 2,
+        "comments": [{"text": "Review", "addedBy": "Ada", "addedAt": TIMESTAMP_T2}],
+    }
+
+
+def test_incident_to_xsoar_incident_enriches_alerts(mocker):
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock()
+    mock_client.get_alerts.return_value = {
+        "alerts": [_full_incident_alert()],
+        "total": 1,
+        "limit": 100,
+        "offset": 0,
+    }
+    incident = {
+        "id": "inc-1",
+        "name": "Test Incident",
+        "severity": "HIGH",
+        "createdAt": TIMESTAMP_T1,
+        "alerts": [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}],
+    }
+
+    xsoar_incident = incident_to_xsoar_incident(incident, client=mock_client)
+    raw = json.loads(xsoar_incident["rawJSON"])
+    row = raw["alerts"][0]
+
+    mock_client.get_alerts.assert_called_once_with(
+        alert_ids=["alert-1"],
+        from_time="2026-05-31T10:00:00Z",
+        limit=1,
+        offset=0,
+    )
+    assert row["alertId"] == "alert-1"
+    assert row["id"] == "alert-1"
+    assert row["name"] == "Suspicious login"
+    assert row["severity"] == "HIGH"
+    assert row["status"] == "OPEN"
+    assert row["verdict"] == "SUSPICIOUS"
+    assert row["createdAt"] == TIMESTAMP_T1
+    assert row["dataSources"] == ["CloudTrail", "Okta"]
+    assert row["eventCount"] == "4"
+    assert row["isTestMode"] == "false"
+    assert row["assignee"] == _full_incident_alert()["assignee"]
+    assert row["assignees"] == _full_incident_alert()["assignees"]
+    assert row["mitre"] == _full_incident_alert()["mitre"]
+    assert row["comments"] == _full_incident_alert()["comments"]
+    assert row["labels"] == []
+    assert row["escalation"] is None
+    assert xsoar_incident["CustomFields"]["vegaalerts"] == raw["alerts"]
+
+
+def test_enrich_incident_alerts_falls_back_to_stub_when_lookup_fails(mocker):
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock()
+    mock_client.get_alerts.side_effect = DemistoException("API rate limit exceeded after maximum retries.")
+    stubs = [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}]
+
+    rows = _enrich_incident_alerts(mock_client, stubs)
+
+    assert rows == [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}]
+
+
+def test_enrich_incident_alerts_keeps_stub_for_missing_alert(mocker):
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock()
+    mock_client.get_alerts.return_value = {
+        "alerts": [_full_incident_alert("alert-1")],
+        "total": 1,
+        "limit": 100,
+        "offset": 0,
+    }
+    stubs = [
+        {"alertId": "alert-1", "name": "Found", "createdAt": TIMESTAMP_T1},
+        {"alertId": "alert-2", "name": "Missing", "createdAt": TIMESTAMP_T2},
+    ]
+
+    rows = _enrich_incident_alerts(mock_client, stubs)
+
+    assert rows[0]["alertId"] == "alert-1"
+    assert rows[0]["detectionId"] == "det-1"
+    assert rows[1] == {"alertId": "alert-2", "name": "Missing", "createdAt": TIMESTAMP_T2}
+
+
+def test_enrich_incident_alerts_batches_above_one_thousand(mocker):
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "info")
+    mock_client = mocker.Mock()
+    alert_ids = [f"alert-{index}" for index in range(1001)]
+
+    def alert_page(page_ids: list[str]) -> dict:
+        return {
+            "alerts": [{"id": alert_id, "name": "Alert", "createdAt": TIMESTAMP_T1} for alert_id in page_ids],
+            "total": len(page_ids),
+        }
+
+    mock_client.get_alerts.side_effect = [alert_page(alert_ids[:1000]), alert_page(alert_ids[1000:])]
+    stubs = [{"alertId": alert_id, "name": "Alert", "createdAt": TIMESTAMP_T1} for alert_id in alert_ids]
+
+    rows = _enrich_incident_alerts(mock_client, stubs)
+
+    assert len(rows) == 1001
+    assert mock_client.get_alerts.call_count == 2
+    assert mock_client.get_alerts.call_args_list[0].kwargs == {
+        "alert_ids": alert_ids[:1000],
+        "from_time": "2026-05-31T10:00:00Z",
+        "limit": 1000,
+        "offset": 0,
+    }
+    assert mock_client.get_alerts.call_args_list[1].kwargs["alert_ids"] == alert_ids[1000:]
+    assert mock_client.get_alerts.call_args_list[1].kwargs["limit"] == 1
+
+
+def test_fetch_incidents_command_enriches_incident_alerts(mocker):
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock()
+    mock_client.get_incidents.return_value = {
+        "incidents": [
+            {
+                "id": "inc-1",
+                "name": "Inc 1",
+                "severity": "HIGH",
+                "createdAt": TIMESTAMP_T1,
+                "alerts": [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}],
+            }
+        ],
+        "total": 1,
+        "limit": 200,
+        "offset": 0,
+    }
+    mock_client.get_incident_timeline.return_value = {"events": []}
+    mock_client.get_alerts.return_value = {
+        "alerts": [_full_incident_alert()],
+        "total": 1,
+        "limit": 100,
+        "offset": 0,
+    }
+
+    _, incidents = fetch_incidents_command(
+        client=mock_client,
+        last_run={},
+        fetch_alerts=False,
+        fetch_incidents=True,
+        alert_severities=None,
+        alert_statuses=None,
+        alert_verdicts=None,
+        has_related_incidents=None,
+        incident_severities=None,
+        incident_statuses=None,
+        incident_verdicts=None,
+        first_fetch_time=FIRST_FETCH_TIME,
+    )
+
+    assert incidents[0]["CustomFields"]["vegaalerts"][0]["detectionId"] == "det-1"
+    mock_client.get_alerts.assert_called_once_with(
+        alert_ids=["alert-1"],
+        from_time="2026-05-31T10:00:00Z",
+        limit=1,
+        offset=0,
+    )
+
+
+def test_get_remote_data_command_mirrors_incident_alerts(mocker):
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_incident_for_mirror.return_value = {
+        "id": "inc-1",
+        "status": "INVESTIGATING",
+        "alerts": [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}],
+    }
+    mock_client.get_incident_by_id.return_value = {
+        "id": "inc-1",
+        "status": "INVESTIGATING",
+        "verdictReasoning": "Loaded from details",
+        "alerts": [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}],
+    }
+    mock_client.get_alerts.return_value = {
+        "alerts": [_full_incident_alert()],
+        "total": 1,
+        "limit": 100,
+        "offset": 0,
+    }
+
+    result = get_remote_data_command(
+        mock_client,
+        {
+            "id": "inc-1",
+            "lastUpdate": "2026-06-15T11:00:00Z",
+            "data": {"type": "Vega Incident"},
+        },
+    )
+
+    mirrored_alerts = result.mirrored_object["CustomFields"]["vegaalerts"]
+    assert mirrored_alerts[0]["alertId"] == "alert-1"
+    assert mirrored_alerts[0]["detectionQuery"] == "event_type = login"
+    assert mirrored_alerts[0]["comments"] == _full_incident_alert()["comments"]
+    assert result.mirrored_object["alerts"] == mirrored_alerts
+    mock_client.get_alerts.assert_called_once_with(
+        alert_ids=["alert-1"],
+        from_time="2026-05-31T10:00:00Z",
+        limit=1,
+        offset=0,
+    )
 
 
 def test_format_raw_entity_for_xsoar_prefers_key_findings():

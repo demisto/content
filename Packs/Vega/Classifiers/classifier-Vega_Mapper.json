@@ -149,6 +149,9 @@
                 "Vega Alerts Count": {
                     "simple": "alertsCount"
                 },
+                "Vega Alerts": {
+                    "simple": "alerts"
+                },
                 "Vega Incident Link": {
                     "simple": "link"
                 },
