@@ -246,6 +246,34 @@ configuration:
     section: Collect
     required: false
     defaultvalue: "false"
+  - display: Incident reconciliation fetch instance
+    additionalinfo: >-
+      Use this on a separate instance from the one that fetches the live stream.
+      When selected, this instance fetches only the alert and incident IDs below.
+      Severity, status, verdict, related-incident, entity, backfill, and lookback settings are ignored.
+      IDs that already exist in Cortex XSOAR are created again as new investigations.
+      Paste only IDs returned by vega-reconcile-ids.
+    name: incident_reconciliation
+    type: 8
+    section: Collect
+    required: false
+    defaultvalue: "false"
+  - display: Reconciliation alert IDs
+    additionalinfo: >-
+      Comma-separated Vega alert UUIDs. Used only when Incident reconciliation fetch instance is selected.
+      IDs that already exist in Cortex XSOAR are created again as new investigations.
+    name: reconciliation_alert_ids
+    type: 12
+    section: Collect
+    required: false
+  - display: Reconciliation incident IDs
+    additionalinfo: >-
+      Comma-separated Vega incident UUIDs. Used only when Incident reconciliation fetch instance is selected.
+      IDs that already exist in Cortex XSOAR are created again as new investigations.
+    name: reconciliation_incident_ids
+    type: 12
+    section: Collect
+    required: false
   - display: Incident type
     name: incidentType
     type: 13
@@ -572,6 +600,121 @@ script:
           type: String
         - contextPath: Vega.Incident.assignee
           description: Updated Vega incident assignee email, display name, or user ID.
+          type: String
+    - name: vega-reconcile-ids
+      arguments:
+        - name: start_date
+          description: >-
+            Window start. Sent to Vega as the getAlerts and getIncidents from filter.
+            Use YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ.
+          required: true
+        - name: end_date
+          description: >-
+            Window end. Sent to Vega as the getAlerts and getIncidents to filter.
+            A date without a time includes that whole day. Use YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ.
+          required: true
+        - name: alert_severities
+          description: Alert severities to include. Leave empty to include all severities.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - LOW
+            - MEDIUM
+            - HIGH
+            - CRITICAL
+        - name: alert_statuses
+          description: Alert statuses to include. Leave empty to include all statuses.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - OPEN
+            - IN PROGRESS
+            - PEER REVIEW
+            - RESOLVED
+        - name: alert_verdicts
+          description: Alert verdicts to include. Leave empty to include all verdicts.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - MALICIOUS
+            - SUSPICIOUS
+            - BENIGN
+            - INCONCLUSIVE
+            - NA
+        - name: alert_has_related_incidents
+          description: >-
+            Whether alerts have related incidents. Yes, No, or both. Leave empty to include all alerts.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - "Yes"
+            - "No"
+        - name: incident_severities
+          description: Incident severities to include. Leave empty to include all severities.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - LOW
+            - MEDIUM
+            - HIGH
+            - CRITICAL
+        - name: incident_statuses
+          description: Incident user statuses to include. Leave empty to include all user statuses.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - OPEN
+            - IN REVIEW
+            - ON HOLD
+            - RESOLVED
+        - name: incident_investigation_statuses
+          description: Incident investigation statuses to include. Leave empty to include all investigation statuses.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - NEW
+            - INVESTIGATING
+            - COMPLETED
+            - FAILED
+        - name: incident_verdicts
+          description: Incident verdicts to include. Leave empty to include all verdicts.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - MALICIOUS
+            - SUSPICIOUS
+            - BENIGN
+            - INCONCLUSIVE
+            - NA
+      description: >-
+        Compare Vega alert and incident UUIDs with Cortex XSOAR investigations in a created-time window
+        and return the IDs that are missing from Cortex XSOAR. Vega is queried for id only, 100 records
+        per page. Paste the comma-separated lists into a Vega instance that has Incident reconciliation
+        fetch instance selected.
+      outputs:
+        - contextPath: Vega.Reconciliation.MissingAlertIds
+          description: Vega alert UUIDs that have no matching Cortex XSOAR investigation.
+          type: String
+        - contextPath: Vega.Reconciliation.MissingIncidentIds
+          description: Vega incident UUIDs that have no matching Cortex XSOAR investigation.
+          type: String
+        - contextPath: Vega.Reconciliation.VegaAlertCount
+          description: Number of Vega alert UUIDs found in the window.
+          type: Number
+        - contextPath: Vega.Reconciliation.XsoarAlertCount
+          description: Number of matching Vega Alert investigations found in Cortex XSOAR.
+          type: Number
+        - contextPath: Vega.Reconciliation.VegaIncidentCount
+          description: Number of Vega incident UUIDs found in the window.
+          type: Number
+        - contextPath: Vega.Reconciliation.XsoarIncidentCount
+          description: Number of matching Vega Incident investigations found in Cortex XSOAR.
+          type: Number
+        - contextPath: Vega.Reconciliation.StartDate
+          description: Vega from time used for the scan.
+          type: String
+        - contextPath: Vega.Reconciliation.EndDate
+          description: Vega to time used for the scan.
           type: String
     - name: get-remote-data
       arguments:

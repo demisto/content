@@ -155,6 +155,12 @@ RATE_LIMIT_MAX_RETRIES = 10
 RATE_LIMIT_INITIAL_WAIT_SECONDS = 2
 RATE_LIMIT_WAIT_INCREMENT_SECONDS = 2
 FETCH_ENTITIES_PAGE_SIZE = 100
+RECONCILE_PAGE_SIZE = FETCH_ENTITIES_PAGE_SIZE
+RECONCILE_MAX_PAGES = 50
+RECONCILE_COMPLETED_ALERTS_KEY = "reconciliation_completed_alert_ids"
+RECONCILE_COMPLETED_INCIDENTS_KEY = "reconciliation_completed_incident_ids"
+RECONCILE_NOT_FOUND_ALERTS_KEY = "reconciliation_not_found_alert_ids"
+RECONCILE_NOT_FOUND_INCIDENTS_KEY = "reconciliation_not_found_incident_ids"
 _RETRYABLE_HTTP_STATUS_CODES = frozenset({429, 502, 503, 504})
 DEFAULT_ALERT_EVENTS_PAGE_SIZE = 200
 MAX_ALERT_EVENTS_IDS = 10
@@ -371,6 +377,28 @@ GET_INCIDENTS_QUERY = (
     "   labels { id categoryId name color usageCount } "
     "   skills { id name version } "
     "   link href } "
+    "  total limit offset "
+    "  error { code message } } }"
+)
+
+GET_ALERT_IDS_QUERY = (
+    "query GetAlertIds($alertSeverities: [AlertSeverity!], $statuses: [AlertStatus!], "
+    "$alertVerdicts: [AlertVerdict!], $hasRelatedIncidents: Boolean, $from: Time, $to: Time, "
+    "$limit: Int, $offset: Int) { "
+    " getAlerts(alertSeverities: $alertSeverities, statuses: $statuses, alertVerdicts: $alertVerdicts, "
+    "hasRelatedIncidents: $hasRelatedIncidents, from: $from, to: $to, limit: $limit, offset: $offset) { "
+    "  alerts { id } "
+    "  total limit offset "
+    "  error { code message } } }"
+)
+
+GET_INCIDENT_IDS_QUERY = (
+    "query GetIncidentIds($severities: [IncidentSeverity!], "
+    "$investigationStatuses: [IncidentInvestigationStatusPublic!], $userStatuses: [IncidentUserStatusPublic!], "
+    "$verdicts: [IncidentVerdictPublic!], $from: Time, $to: Time, $limit: Int, $offset: Int) { "
+    " getIncidents(severities: $severities, investigationStatuses: $investigationStatuses, "
+    "userStatuses: $userStatuses, verdicts: $verdicts, from: $from, to: $to, limit: $limit, offset: $offset) { "
+    "  incidents { id } "
     "  total limit offset "
     "  error { code message } } }"
 )
@@ -718,6 +746,7 @@ def _build_alerts_query_variables(
     verdicts: list[str] | None = None,
     has_related_incidents: bool | None = None,
     from_time: str | None = None,
+    to_time: str | None = None,
     updated_from: str | None = None,
     updated_to: str | None = None,
     alert_ids: list[str] | None = None,
@@ -738,6 +767,8 @@ def _build_alerts_query_variables(
         variables["hasRelatedIncidents"] = has_related_incidents
     if from_time:
         variables["from"] = from_time
+    if to_time:
+        variables["to"] = to_time
     if updated_from:
         variables["updatedFrom"] = updated_from
     if updated_to:
@@ -754,6 +785,7 @@ def _build_incidents_query_variables(
     investigation_statuses: list[str] | None = None,
     verdicts: list[str] | None = None,
     from_time: str | None = None,
+    to_time: str | None = None,
     updated_from: str | None = None,
     updated_to: str | None = None,
     incident_ids: list[str] | None = None,
@@ -777,6 +809,8 @@ def _build_incidents_query_variables(
         variables["verdicts"] = verdicts
     if from_time:
         variables["from"] = from_time
+    if to_time:
+        variables["to"] = to_time
     if updated_from:
         variables["updatedFrom"] = updated_from
     if updated_to:
@@ -1117,6 +1151,60 @@ class Client(BaseClient):
         get_incidents = (response.get("data") or {}).get("getIncidents") or {}
         incidents = get_incidents.get("incidents") or []
         return incidents[0] if incidents else {}
+
+    def get_alert_ids(
+        self,
+        severities: list[str] | None = None,
+        statuses: list[str] | None = None,
+        verdicts: list[str] | None = None,
+        has_related_incidents: bool | None = None,
+        from_time: str | None = None,
+        to_time: str | None = None,
+        limit: int | None = None,
+        offset: int = 0,
+    ) -> dict:
+        """Fetch Vega alert UUIDs only."""
+        variables = _build_alerts_query_variables(
+            severities=severities,
+            statuses=statuses,
+            verdicts=verdicts,
+            has_related_incidents=has_related_incidents,
+            from_time=from_time,
+            to_time=to_time,
+            limit=limit,
+            offset=offset,
+        )
+        response = self._graphql_request(GET_ALERT_IDS_QUERY, variables)
+        raw_data = response.get("data")
+        data: dict[str, Any] = raw_data if isinstance(raw_data, dict) else {}
+        return data.get("getAlerts") or {}
+
+    def get_incident_ids(
+        self,
+        severities: list[str] | None = None,
+        statuses: list[str] | None = None,
+        investigation_statuses: list[str] | None = None,
+        verdicts: list[str] | None = None,
+        from_time: str | None = None,
+        to_time: str | None = None,
+        limit: int | None = None,
+        offset: int = 0,
+    ) -> dict:
+        """Fetch Vega incident UUIDs only."""
+        variables = _build_incidents_query_variables(
+            severities=severities,
+            statuses=statuses,
+            investigation_statuses=investigation_statuses,
+            verdicts=verdicts,
+            from_time=from_time,
+            to_time=to_time,
+            limit=limit,
+            offset=offset,
+        )
+        response = self._graphql_request(GET_INCIDENT_IDS_QUERY, variables)
+        raw_data = response.get("data")
+        data: dict[str, Any] = raw_data if isinstance(raw_data, dict) else {}
+        return data.get("getIncidents") or {}
 
     def update_alerts(self, update_input: dict[str, Any]) -> dict:
         """Update one or more Vega alerts."""
@@ -5956,6 +6044,512 @@ def _ingest_fetched_alerts(
         return 0
 
 
+def _parse_comma_separated_ids(value: Any) -> list[str]:
+    """Split a comma-separated ID list and drop blanks and duplicates."""
+    if value is None:
+        return []
+    text = str(value).replace("\r", ",").replace("\n", ",")
+    parsed: list[str] = []
+    seen: set[str] = set()
+    for part in text.split(","):
+        item = part.strip()
+        if item and item not in seen:
+            seen.add(item)
+            parsed.append(item)
+    return parsed
+
+
+def _page_reached_end(fetched_count: int, page_count: int, total: int | None) -> bool:
+    """Return True when a page has consumed the result set.
+
+    A short page ends the scan only when the API does not report a larger total.
+    """
+    if total is not None:
+        return fetched_count >= total
+    return page_count < RECONCILE_PAGE_SIZE
+
+
+def _optional_int(value: Any) -> int | None:
+    """Return an int when the value can be parsed, otherwise None."""
+    if value is None or value == "":
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _raise_vega_collection_error(payload: dict[str, Any], label: str) -> None:
+    """Raise when a Vega list payload contains an API error message."""
+    api_error = payload.get("error")
+    if isinstance(api_error, dict) and api_error.get("message"):
+        raise DemistoException(f"Vega API error fetching {label}: {api_error.get('message')}")
+
+
+def _parse_reconcile_boundary(value: Any, *, end_of_day: bool) -> str:
+    """Parse a reconciliation date argument into a Vega Time value."""
+    text = str(value or "").strip()
+    if not text:
+        raise DemistoException("start_date and end_date are required. They map to the Vega API from and to filters.")
+    date_only = len(text) == 10 and text[4] == "-" and text[7] == "-"
+    if date_only:
+        text = f"{text}T23:59:59Z" if end_of_day else f"{text}T00:00:00Z"
+    parsed = _parse_entity_created_at(text)
+    if parsed is None:
+        raise DemistoException(f"Invalid date '{value}'. Use YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ.")
+    return _format_fetch_timestamp(parsed)
+
+
+def _parse_reconcile_window(args: dict[str, Any]) -> tuple[str, str]:
+    """Return the Vega from/to window for a reconciliation scan."""
+    if not str(args.get("start_date") or "").strip() or not str(args.get("end_date") or "").strip():
+        raise DemistoException("start_date and end_date are required. They map to the Vega API from and to filters.")
+    start_time = _parse_reconcile_boundary(args.get("start_date"), end_of_day=False)
+    end_time = _parse_reconcile_boundary(args.get("end_date"), end_of_day=True)
+    if start_time > end_time:
+        raise DemistoException("start_date must be before or equal to end_date.")
+    return start_time, end_time
+
+
+def _collect_paged_ids(
+    fetch_page: Callable[[int], dict[str, Any]],
+    entities_key: str,
+    id_from_item: Callable[[dict[str, Any]], str],
+    max_pages: int = RECONCILE_MAX_PAGES,
+) -> tuple[list[str], bool]:
+    """Page a Vega ID query at RECONCILE_PAGE_SIZE and stop at RECONCILE_MAX_PAGES."""
+    collected: list[str] = []
+    seen: set[str] = set()
+    offset = 0
+    truncated = False
+    for page_index in range(max_pages):
+        response = fetch_page(offset) or {}
+        _raise_vega_collection_error(response, entities_key)
+        page_items = [item for item in (response.get(entities_key) or []) if isinstance(item, dict)]
+        if not page_items:
+            break
+        for item in page_items:
+            entity_id = id_from_item(item)
+            if entity_id and entity_id not in seen:
+                seen.add(entity_id)
+                collected.append(entity_id)
+        total = _optional_int(response.get("total"))
+        offset += len(page_items)
+        if _page_reached_end(offset, len(page_items), total):
+            break
+        if page_index == max_pages - 1:
+            truncated = True
+    return collected, truncated
+
+
+def _xsoar_query_timestamp(iso_time: str) -> str:
+    """Convert a Vega ISO timestamp to a Cortex XSOAR occurred-query timestamp."""
+    text = iso_time.strip()
+    if text.endswith("Z"):
+        text = text[:-1]
+    return f"{text} +0000"
+
+
+def _xsoar_reconciliation_query(entity_type: str, start_time: str, end_time: str) -> str:
+    """Build an incident-search query for one Vega entity type and time window."""
+    start = _xsoar_query_timestamp(start_time)
+    end = _xsoar_query_timestamp(end_time)
+    return f'type:"{entity_type}" and occurred:>="{start}" and occurred:<="{end}"'
+
+
+def _parse_xsoar_search_response(response: Any) -> dict[str, Any]:
+    """Normalize a demisto.internalHttpRequest incidents/search response."""
+    if not isinstance(response, dict):
+        raise DemistoException("Cortex XSOAR incident search returned an unexpected response.")
+    status_code = response.get("statusCode")
+    if status_code not in (None, 200, "200"):
+        raise DemistoException(f"Cortex XSOAR incident search failed with status {status_code}.")
+    body = response.get("body", response)
+    if isinstance(body, str):
+        if not body.strip():
+            return {}
+        try:
+            body = json.loads(body)
+        except json.JSONDecodeError as exc:
+            raise DemistoException("Cortex XSOAR incident search returned invalid JSON.") from exc
+    if not isinstance(body, dict):
+        raise DemistoException("Cortex XSOAR incident search returned an unexpected body.")
+    return body
+
+
+def _search_xsoar_incidents_page(query: str, page: int) -> tuple[list[dict[str, Any]], int | None]:
+    """Return one page of Cortex XSOAR incidents and the reported total."""
+    request_body = json.dumps({"filter": {"query": query, "page": page, "size": RECONCILE_PAGE_SIZE}})
+    try:
+        response = demisto.internalHttpRequest("POST", "/incidents/search", body=request_body)
+    except Exception as exc:
+        raise DemistoException(f"Cortex XSOAR incident search failed: {exc}") from exc
+    payload = _parse_xsoar_search_response(response)
+    data = payload.get("data")
+    total = payload.get("total")
+    if isinstance(data, dict):
+        total = data.get("total", total)
+        data = data.get("data")
+    incidents = [item for item in data if isinstance(item, dict)] if isinstance(data, list) else []
+    return incidents, _optional_int(total)
+
+
+def _custom_field_text(incident: dict[str, Any], field_name: str) -> str:
+    """Read one custom field without depending on the field being searchable."""
+    custom_fields = incident.get("CustomFields") or incident.get("customFields") or {}
+    if not isinstance(custom_fields, dict):
+        return ""
+    for key, value in custom_fields.items():
+        if str(key).lower() == field_name and value is not None and str(value).strip():
+            return str(value).strip()
+    return ""
+
+
+def _xsoar_vega_entity_id(incident: dict[str, Any], entity_suffix: str) -> str:
+    """Resolve the Vega UUID stored on an XSOAR investigation."""
+    mirror_id = str(incident.get("dbotMirrorId") or incident.get("dbotmirrorid") or "").strip()
+    parsed_id, parsed_suffix = _parse_mirror_id(mirror_id)
+    if parsed_suffix == entity_suffix and parsed_id:
+        return parsed_id
+    field_name = "vegaincidentid" if entity_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT else "alertid"
+    return _custom_field_text(incident, field_name)
+
+
+def _collect_xsoar_entity_ids(
+    entity_type: str,
+    entity_suffix: str,
+    start_time: str,
+    end_time: str,
+    max_pages: int = RECONCILE_MAX_PAGES,
+) -> tuple[set[str], bool]:
+    """Page Cortex XSOAR investigations and collect Vega UUIDs for one entity type."""
+    query = _xsoar_reconciliation_query(entity_type, start_time, end_time)
+    found: set[str] = set()
+    scanned = 0
+    truncated = False
+    for page_index in range(max_pages):
+        incidents, total = _search_xsoar_incidents_page(query, page_index)
+        if not incidents:
+            break
+        for incident in incidents:
+            entity_id = _xsoar_vega_entity_id(incident, entity_suffix)
+            if entity_id:
+                found.add(entity_id)
+        scanned += len(incidents)
+        if _page_reached_end(scanned, len(incidents), total):
+            break
+        if page_index == max_pages - 1:
+            truncated = True
+    return found, truncated
+
+
+def _missing_ids(source_ids: list[str], present_ids: set[str]) -> list[str]:
+    """Return source IDs that are absent from the comparison set, in source order."""
+    return [entity_id for entity_id in source_ids if entity_id not in present_ids]
+
+
+def _reconcile_alert_filters(args: dict[str, Any]) -> dict[str, Any]:
+    """Map command arguments to Vega alert ID-query filters. Empty means all values."""
+    return {
+        "severities": filter_alert_severities(argToList(args.get("alert_severities")) or None),
+        "statuses": filter_alert_statuses(argToList(args.get("alert_statuses")) or None),
+        "verdicts": filter_alert_verdicts(argToList(args.get("alert_verdicts")) or None),
+        "has_related_incidents": resolve_has_related_incidents(argToList(args.get("alert_has_related_incidents"))),
+    }
+
+
+def _reconcile_incident_filters(args: dict[str, Any]) -> dict[str, Any]:
+    """Map command arguments to Vega incident ID-query filters. Empty means all values."""
+    return {
+        "severities": filter_incident_severities(argToList(args.get("incident_severities")) or None),
+        "statuses": filter_incident_statuses(argToList(args.get("incident_statuses")) or None),
+        "investigation_statuses": filter_incident_investigation_statuses(
+            argToList(args.get("incident_investigation_statuses")) or None
+        ),
+        "verdicts": filter_incident_verdicts(argToList(args.get("incident_verdicts")) or None),
+    }
+
+
+def _comma_id_text(entity_ids: list[str]) -> str:
+    """Format IDs for pasting into the reconciliation instance fields."""
+    return ", ".join(entity_ids) if entity_ids else "None"
+
+
+def _reconciliation_readable_output(
+    start_time: str,
+    end_time: str,
+    vega_alert_count: int,
+    xsoar_alert_count: int,
+    missing_alert_ids: list[str],
+    vega_incident_count: int,
+    xsoar_incident_count: int,
+    missing_incident_ids: list[str],
+) -> str:
+    """Build the War Room summary and comma-separated missing ID lists."""
+    summary = tableToMarkdown(
+        "Vega reconciliation",
+        [
+            {
+                "Start": start_time,
+                "End": end_time,
+                "Vega alerts": vega_alert_count,
+                "XSOAR alerts": xsoar_alert_count,
+                "Missing alerts": len(missing_alert_ids),
+                "Vega incidents": vega_incident_count,
+                "XSOAR incidents": xsoar_incident_count,
+                "Missing incidents": len(missing_incident_ids),
+            }
+        ],
+    )
+    return "\n".join(
+        [
+            summary,
+            "### Missing Vega alert IDs",
+            _comma_id_text(missing_alert_ids),
+            "### Missing Vega incident IDs",
+            _comma_id_text(missing_incident_ids),
+        ]
+    )
+
+
+def reconcile_ids_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Return Vega alert and incident UUIDs that have no matching Cortex XSOAR investigation."""
+    start_time, end_time = _parse_reconcile_window(args)
+    alert_filters = _reconcile_alert_filters(args)
+    incident_filters = _reconcile_incident_filters(args)
+
+    def _alert_page(offset: int) -> dict[str, Any]:
+        return (
+            client.get_alert_ids(
+                from_time=start_time,
+                to_time=end_time,
+                limit=RECONCILE_PAGE_SIZE,
+                offset=offset,
+                **alert_filters,
+            )
+            or {}
+        )
+
+    def _incident_page(offset: int) -> dict[str, Any]:
+        return (
+            client.get_incident_ids(
+                from_time=start_time,
+                to_time=end_time,
+                limit=RECONCILE_PAGE_SIZE,
+                offset=offset,
+                **incident_filters,
+            )
+            or {}
+        )
+
+    vega_alert_ids, _alerts_truncated = _collect_paged_ids(_alert_page, "alerts", _normalize_entity_id)
+    vega_incident_ids, _incidents_truncated = _collect_paged_ids(_incident_page, "incidents", _normalize_entity_id)
+    xsoar_alert_ids, _xsoar_alerts_truncated = _collect_xsoar_entity_ids(
+        "Vega Alert",
+        MIRROR_ENTITY_SUFFIX_ALERT,
+        start_time,
+        end_time,
+    )
+    xsoar_incident_ids, _xsoar_incidents_truncated = _collect_xsoar_entity_ids(
+        "Vega Incident",
+        MIRROR_ENTITY_SUFFIX_INCIDENT,
+        start_time,
+        end_time,
+    )
+    missing_alert_ids = _missing_ids(vega_alert_ids, xsoar_alert_ids)
+    missing_incident_ids = _missing_ids(vega_incident_ids, xsoar_incident_ids)
+    outputs: dict[str, Any] = {
+        "MissingAlertIds": missing_alert_ids,
+        "MissingIncidentIds": missing_incident_ids,
+        "VegaAlertCount": len(vega_alert_ids),
+        "XsoarAlertCount": len(xsoar_alert_ids),
+        "VegaIncidentCount": len(vega_incident_ids),
+        "XsoarIncidentCount": len(xsoar_incident_ids),
+        "StartDate": start_time,
+        "EndDate": end_time,
+    }
+    return CommandResults(
+        outputs_prefix="Vega.Reconciliation",
+        outputs=outputs,
+        readable_output=_reconciliation_readable_output(
+            start_time,
+            end_time,
+            len(vega_alert_ids),
+            len(xsoar_alert_ids),
+            missing_alert_ids,
+            len(vega_incident_ids),
+            len(xsoar_incident_ids),
+            missing_incident_ids,
+        ),
+    )
+
+
+def _stored_id_list(last_run: dict[str, Any], key: str) -> list[str]:
+    """Return a string ID list stored in last run."""
+    value = last_run.get(key) or []
+    if not isinstance(value, list):
+        return []
+    return [str(item).strip() for item in value if str(item).strip()]
+
+
+def _extend_unique_ids(existing: list[str], extra: list[str]) -> list[str]:
+    """Append IDs that are not already present."""
+    seen = set(existing)
+    updated = list(existing)
+    for item in extra:
+        if item not in seen:
+            seen.add(item)
+            updated.append(item)
+    return updated
+
+
+def _pending_reconciliation_ids(desired: list[str], completed: list[str], not_found: list[str]) -> list[str]:
+    """Return configured IDs that this instance has not finished."""
+    done = set(completed) | set(not_found)
+    return [entity_id for entity_id in desired if entity_id not in done]
+
+
+def _vega_entities_or_raise(payload: dict[str, Any], entities_key: str, label: str) -> list[dict[str, Any]]:
+    """Return entity dicts from a Vega list payload, or raise on an API error."""
+    _raise_vega_collection_error(payload, label)
+    return [item for item in (payload.get(entities_key) or []) if isinstance(item, dict)]
+
+
+def _fetch_reconciliation_records(client: Client, entity_ids: list[str], *, incidents: bool) -> list[dict[str, Any]]:
+    """Fetch full Vega records for an explicit ID list using the static lookup time."""
+    if incidents:
+        response = (
+            client.get_incidents(
+                incident_ids=entity_ids,
+                from_time=INCIDENT_ID_LOOKUP_FROM_TIME,
+                limit=len(entity_ids),
+                offset=0,
+            )
+            or {}
+        )
+        return _vega_entities_or_raise(response, "incidents", "incidents")
+    response = (
+        client.get_alerts(
+            alert_ids=entity_ids,
+            from_time=INCIDENT_ID_LOOKUP_FROM_TIME,
+            limit=len(entity_ids),
+            offset=0,
+        )
+        or {}
+    )
+    return _vega_entities_or_raise(response, "alerts", "alerts")
+
+
+def _load_reconciliation_batch(client: Client, entity_ids: list[str], *, incidents: bool) -> list[dict[str, Any]] | None:
+    """Load one reconciliation batch. Transient API errors leave the IDs pending."""
+    label = "reconciliation incidents" if incidents else "reconciliation alerts"
+    try:
+        return _fetch_reconciliation_records(client, entity_ids, incidents=incidents)
+    except Exception as exc:
+        _handle_fetch_entity_error(label, exc)
+        return None
+
+
+def _partition_reconciliation_ids(requested: list[str], entities: list[dict[str, Any]]) -> tuple[list[str], list[str]]:
+    """Split requested IDs into those Vega returned and those it did not."""
+    returned = {_normalize_entity_id(entity) for entity in entities}
+    returned.discard("")
+    found = [entity_id for entity_id in requested if entity_id in returned]
+    missing = [entity_id for entity_id in requested if entity_id not in returned]
+    return found, missing
+
+
+def _xsoar_incidents_for_reconciliation_alerts(
+    client: Client,
+    alerts: list[dict[str, Any]],
+    integration_url: str | None,
+) -> list[dict[str, Any]]:
+    """Convert reconciliation alerts into XSOAR incidents, including alert events."""
+    pending = [(alert_id, alert) for alert in alerts if (alert_id := _normalize_entity_id(alert))]
+    prefetched = _fetch_alert_events_for_ids(client, [alert_id for alert_id, _alert in pending])
+    return [
+        alert_to_incident(
+            alert,
+            integration_url=integration_url,
+            prefetched_alert_events=prefetched.get(alert_id),
+        )
+        for alert_id, alert in pending
+    ]
+
+
+def _xsoar_incidents_for_reconciliation_incidents(
+    client: Client,
+    incidents: list[dict[str, Any]],
+    include_alert_metadata: bool,
+) -> list[dict[str, Any]]:
+    """Convert reconciliation incidents into XSOAR incidents, including timeline events."""
+    created: list[dict[str, Any]] = []
+    for incident in incidents:
+        incident_id = _normalize_entity_id(incident)
+        if not incident_id:
+            continue
+        timeline_events = _fetch_incident_timeline_events(client, incident_id)
+        created.append(
+            incident_to_xsoar_incident(
+                incident,
+                timeline_events=timeline_events,
+                client=client,
+                include_alert_metadata=include_alert_metadata,
+            )
+        )
+    return created
+
+
+def fetch_reconciliation_incidents_command(
+    client: Client,
+    last_run: dict[str, Any],
+    alert_ids: list[str],
+    incident_ids: list[str],
+    max_fetch: int,
+    integration_url: str | None = None,
+    include_alert_metadata: bool = False,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Create investigations for explicit Vega IDs and ignore Collect filters and backfill."""
+    next_run = dict(last_run)
+    completed_incidents = _stored_id_list(last_run, RECONCILE_COMPLETED_INCIDENTS_KEY)
+    not_found_incidents = _stored_id_list(last_run, RECONCILE_NOT_FOUND_INCIDENTS_KEY)
+    completed_alerts = _stored_id_list(last_run, RECONCILE_COMPLETED_ALERTS_KEY)
+    not_found_alerts = _stored_id_list(last_run, RECONCILE_NOT_FOUND_ALERTS_KEY)
+    pending_incidents = _pending_reconciliation_ids(incident_ids, completed_incidents, not_found_incidents)
+    pending_alerts = _pending_reconciliation_ids(alert_ids, completed_alerts, not_found_alerts)
+    incident_batch = pending_incidents[:max_fetch]
+    alert_batch = pending_alerts[: max(max_fetch - len(incident_batch), 0)]
+    xsoar_incidents: list[dict[str, Any]] = []
+
+    if incident_batch:
+        incident_records = _load_reconciliation_batch(client, incident_batch, incidents=True)
+        if incident_records is not None:
+            found, missing = _partition_reconciliation_ids(incident_batch, incident_records)
+            completed_incidents = _extend_unique_ids(completed_incidents, found)
+            not_found_incidents = _extend_unique_ids(not_found_incidents, missing)
+            xsoar_incidents.extend(
+                _xsoar_incidents_for_reconciliation_incidents(client, incident_records, include_alert_metadata)
+            )
+
+    if alert_batch:
+        alert_records = _load_reconciliation_batch(client, alert_batch, incidents=False)
+        if alert_records is not None:
+            found, missing = _partition_reconciliation_ids(alert_batch, alert_records)
+            completed_alerts = _extend_unique_ids(completed_alerts, found)
+            not_found_alerts = _extend_unique_ids(not_found_alerts, missing)
+            xsoar_incidents.extend(_xsoar_incidents_for_reconciliation_alerts(client, alert_records, integration_url))
+
+    next_run[RECONCILE_COMPLETED_INCIDENTS_KEY] = completed_incidents
+    next_run[RECONCILE_NOT_FOUND_INCIDENTS_KEY] = not_found_incidents
+    next_run[RECONCILE_COMPLETED_ALERTS_KEY] = completed_alerts
+    next_run[RECONCILE_NOT_FOUND_ALERTS_KEY] = not_found_alerts
+    demisto.info(
+        "Reconciliation fetch finished: "
+        f"incidents={len(incident_batch)}, alerts={len(alert_batch)}, created={len(xsoar_incidents)}"
+    )
+    return next_run, xsoar_incidents
+
+
 def fetch_incidents_command(
     client: Client,
     last_run: dict,
@@ -6157,6 +6751,9 @@ def _parse_vega_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         "max_fetch": _resolve_max_fetch(params.get("max_fetch")),
         "lookback_minutes": _parse_lookback_minutes(params.get("lookback_minutes")),
         "include_incident_alert_metadata": _include_incident_alert_metadata(params),
+        "incident_reconciliation": argToBoolean(params.get("incident_reconciliation", False)),
+        "reconciliation_alert_ids": _parse_comma_separated_ids(params.get("reconciliation_alert_ids")),
+        "reconciliation_incident_ids": _parse_comma_separated_ids(params.get("reconciliation_incident_ids")),
     }
 
 
@@ -6185,6 +6782,7 @@ def _dispatch_vega_command(client: Client, command: str, config: dict[str, Any])
         "vega-update-detections": lambda: return_results(update_detections_command(client, demisto.args())),
         "vega-update-alert": lambda: return_results(update_alert_command(client, demisto.args())),
         "vega-update-incident": lambda: return_results(update_incident_command(client, demisto.args())),
+        "vega-reconcile-ids": lambda: return_results(reconcile_ids_command(client, demisto.args())),
         "get-remote-data": lambda: return_results(
             get_remote_data_command(
                 client,
@@ -6200,26 +6798,37 @@ def _dispatch_vega_command(client: Client, command: str, config: dict[str, Any])
 
     if command == "fetch-incidents":
         last_run = demisto.getLastRun()
-        next_run, xsoar_incidents = fetch_incidents_command(
-            client=client,
-            last_run=last_run,
-            fetch_alerts=config["fetch_alerts"],
-            fetch_incidents=config["fetch_incidents"],
-            alert_severities=config["alert_severities"],
-            alert_statuses=config["alert_statuses"],
-            alert_verdicts=config["alert_verdicts"],
-            has_related_incidents=config["has_related_incidents"],
-            incident_severities=config["incident_severities"],
-            incident_statuses=config["incident_statuses"],
-            incident_investigation_statuses=config["incident_investigation_statuses"],
-            incident_verdicts=config["incident_verdicts"],
-            first_fetch_time=config["first_fetch_time"],
-            backfill_days=config["backfill_days"],
-            integration_url=config["base_url"],
-            max_fetch=config["max_fetch"],
-            lookback_minutes=config["lookback_minutes"],
-            include_incident_alert_metadata=config["include_incident_alert_metadata"],
-        )
+        if config["incident_reconciliation"]:
+            next_run, xsoar_incidents = fetch_reconciliation_incidents_command(
+                client=client,
+                last_run=last_run,
+                alert_ids=config["reconciliation_alert_ids"],
+                incident_ids=config["reconciliation_incident_ids"],
+                max_fetch=config["max_fetch"],
+                integration_url=config["base_url"],
+                include_alert_metadata=config["include_incident_alert_metadata"],
+            )
+        else:
+            next_run, xsoar_incidents = fetch_incidents_command(
+                client=client,
+                last_run=last_run,
+                fetch_alerts=config["fetch_alerts"],
+                fetch_incidents=config["fetch_incidents"],
+                alert_severities=config["alert_severities"],
+                alert_statuses=config["alert_statuses"],
+                alert_verdicts=config["alert_verdicts"],
+                has_related_incidents=config["has_related_incidents"],
+                incident_severities=config["incident_severities"],
+                incident_statuses=config["incident_statuses"],
+                incident_investigation_statuses=config["incident_investigation_statuses"],
+                incident_verdicts=config["incident_verdicts"],
+                first_fetch_time=config["first_fetch_time"],
+                backfill_days=config["backfill_days"],
+                integration_url=config["base_url"],
+                max_fetch=config["max_fetch"],
+                lookback_minutes=config["lookback_minutes"],
+                include_incident_alert_metadata=config["include_incident_alert_metadata"],
+            )
         demisto.setLastRun(next_run)
         demisto.incidents(xsoar_incidents)
         return

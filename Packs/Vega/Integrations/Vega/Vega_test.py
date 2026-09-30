@@ -47,7 +47,6 @@ from Vega import (
     VEGA_VERDICT_FIELD,
     VEGA_INCIDENT_STATUS_FIELD,
     _normalize_vega_status_for_display,
-    _normalize_entity_id,
     _normalize_verdict_reasoning_for_display,
     _extract_verdict_reasoning_from_entity,
     _mirror_entity_type_from_args,
@@ -124,6 +123,19 @@ from Vega import (
     TEST_CONNECTION_URL_ERROR,
     test_module as vega_test_module,
     main as vega_main,
+    GET_ALERT_IDS_QUERY,
+    GET_INCIDENT_IDS_QUERY,
+    RECONCILE_PAGE_SIZE,
+    RECONCILE_COMPLETED_INCIDENTS_KEY,
+    RECONCILE_COMPLETED_ALERTS_KEY,
+    RECONCILE_NOT_FOUND_ALERTS_KEY,
+    _parse_comma_separated_ids,
+    _parse_reconcile_window,
+    _collect_paged_ids,
+    _normalize_entity_id,
+    _xsoar_vega_entity_id,
+    reconcile_ids_command,
+    fetch_reconciliation_incidents_command,
 )
 
 _VEGA_API_HOST = "api" + ".vega.com"
@@ -5442,3 +5454,195 @@ def test_test_module_rejects_invalid_lookback_minutes(mocker):
         vega_test_module(client, backfill_days=30, max_fetch=50, lookback_minutes="abc")
         == 'Invalid number: "lookback_minutes"="abc"'
     )
+
+
+def test_id_queries_select_only_uuid():
+    assert "alerts { id }" in GET_ALERT_IDS_QUERY
+    assert "incidents { id }" in GET_INCIDENT_IDS_QUERY
+    assert "comments" not in GET_ALERT_IDS_QUERY
+    assert "comments" not in GET_INCIDENT_IDS_QUERY
+
+
+def test_parse_comma_separated_ids_trims_and_dedupes():
+    assert _parse_comma_separated_ids(" a-1, a-2,a-1 , ,a-3 ") == ["a-1", "a-2", "a-3"]
+
+
+def test_parse_reconcile_window_maps_dates_to_vega_from_and_to():
+    start_time, end_time = _parse_reconcile_window({"start_date": "2024-06-01", "end_date": "2024-06-02"})
+    assert start_time == "2024-06-01T00:00:00Z"
+    assert end_time == "2024-06-02T23:59:59Z"
+
+
+def test_parse_reconcile_window_rejects_inverted_range():
+    with pytest.raises(DemistoException, match="start_date must be before"):
+        _parse_reconcile_window({"start_date": "2024-06-03", "end_date": "2024-06-01"})
+
+
+def test_collect_paged_ids_follows_total():
+    pages = {
+        0: {"alerts": [{"id": f"a-{index}"} for index in range(RECONCILE_PAGE_SIZE)], "total": RECONCILE_PAGE_SIZE + 1},
+        RECONCILE_PAGE_SIZE: {"alerts": [{"id": "a-last"}], "total": RECONCILE_PAGE_SIZE + 1},
+    }
+
+    ids, truncated = _collect_paged_ids(lambda offset: pages[offset], "alerts", _normalize_entity_id)
+
+    assert ids[-1] == "a-last"
+    assert len(ids) == RECONCILE_PAGE_SIZE + 1
+    assert truncated is False
+
+
+def test_collect_paged_ids_continues_after_short_page_when_total_remains():
+    def fetch_page(offset: int) -> dict:
+        if offset == 0:
+            return {"alerts": [{"id": "a-1"}], "total": 2}
+        return {"alerts": [{"id": "a-2"}], "total": 2}
+
+    ids, truncated = _collect_paged_ids(fetch_page, "alerts", _normalize_entity_id, max_pages=5)
+
+    assert ids == ["a-1", "a-2"]
+    assert truncated is False
+
+
+def test_collect_paged_ids_marks_truncated_at_page_cap():
+    def fetch_page(offset: int) -> dict:
+        del offset
+        return {"alerts": [{"id": f"a-{index}"} for index in range(RECONCILE_PAGE_SIZE)], "total": 10000}
+
+    ids, truncated = _collect_paged_ids(fetch_page, "alerts", _normalize_entity_id, max_pages=1)
+
+    assert len(ids) == RECONCILE_PAGE_SIZE
+    assert truncated is True
+
+
+def test_xsoar_vega_entity_id_uses_mirror_uuid_not_display_id():
+    incident = {
+        "dbotMirrorId": "alert:uuid-1",
+        "CustomFields": {"vegaalertid": "VEGA-1", "alertid": "other"},
+    }
+    assert _xsoar_vega_entity_id(incident, "alert") == "uuid-1"
+
+
+def test_reconcile_ids_command_returns_missing_uuids(mocker):
+    client = mocker.Mock()
+    client.get_alert_ids.return_value = {"alerts": [{"id": "a-1"}, {"id": "a-2"}], "total": 2}
+    client.get_incident_ids.return_value = {"incidents": [{"id": "i-1"}, {"id": "i-2"}], "total": 2}
+
+    def search(_method, _uri, body=None):
+        payload = json.loads(body)
+        query = payload["filter"]["query"]
+        assert payload["filter"]["size"] == RECONCILE_PAGE_SIZE
+        if 'type:"Vega Alert"' in query:
+            data = [{"dbotMirrorId": "alert:a-1", "type": "Vega Alert"}]
+        else:
+            data = [{"CustomFields": {"vegaincidentid": "i-1"}, "type": "Vega Incident"}]
+        return {"statusCode": 200, "body": json.dumps({"data": data, "total": 1})}
+
+    mocker.patch("Vega.demisto.internalHttpRequest", side_effect=search)
+    result = reconcile_ids_command(
+        client,
+        {"start_date": "2024-06-01", "end_date": "2024-06-02", "alert_severities": "HIGH"},
+    )
+
+    assert result.outputs["MissingAlertIds"] == ["a-2"]
+    assert result.outputs["MissingIncidentIds"] == ["i-2"]
+    assert "Truncated" not in result.outputs
+    assert "a-2" in result.readable_output
+    assert "i-2" in result.readable_output
+    assert client.get_alert_ids.call_args.kwargs["from_time"] == "2024-06-01T00:00:00Z"
+    assert client.get_alert_ids.call_args.kwargs["to_time"] == "2024-06-02T23:59:59Z"
+    assert client.get_alert_ids.call_args.kwargs["limit"] == RECONCILE_PAGE_SIZE
+    assert client.get_alert_ids.call_args.kwargs["severities"] == ["HIGH"]
+    assert "statuses" not in client.get_alert_ids.call_args.kwargs or client.get_alert_ids.call_args.kwargs["statuses"] is None
+
+
+def _patch_reconciliation_runtime(mocker):
+    mocker.patch("Vega.demisto.params", return_value={})
+    mocker.patch("Vega.demisto.integrationInstance", return_value="reconcile")
+    mocker.patch("Vega.demisto.info")
+    mocker.patch("Vega._fetch_incident_timeline_events", return_value=[])
+    mocker.patch("Vega._fetch_alert_events_for_ids", return_value={})
+
+
+def test_fetch_reconciliation_uses_static_from_and_max_fetch(mocker):
+    _patch_reconciliation_runtime(mocker)
+    client = mocker.Mock()
+    client.get_incidents.return_value = {
+        "incidents": [{"id": "i-1", "name": "One", "createdAt": "2024-06-01T00:00:00Z", "severity": "LOW"}],
+        "total": 1,
+    }
+
+    next_run, incidents = fetch_reconciliation_incidents_command(
+        client,
+        last_run={"alerts_last_fetch": "keep-me"},
+        alert_ids=["a-1"],
+        incident_ids=["i-1", "i-2"],
+        max_fetch=1,
+        integration_url="https://vega.example",
+    )
+
+    client.get_incidents.assert_called_once_with(
+        incident_ids=["i-1"],
+        from_time=INCIDENT_ID_LOOKUP_FROM_TIME,
+        limit=1,
+        offset=0,
+    )
+    client.get_alerts.assert_not_called()
+    assert "severities" not in client.get_incidents.call_args.kwargs
+    assert next_run["alerts_last_fetch"] == "keep-me"
+    assert next_run[RECONCILE_COMPLETED_INCIDENTS_KEY] == ["i-1"]
+    assert len(incidents) == 1
+    assert incidents[0]["dbotMirrorId"] == "incident:i-1"
+
+
+def test_fetch_reconciliation_marks_missing_ids_and_does_not_retry(mocker):
+    _patch_reconciliation_runtime(mocker)
+    client = mocker.Mock()
+    client.get_incidents.return_value = {
+        "incidents": [{"id": "i-1", "name": "One", "createdAt": "2024-06-01T00:00:00Z", "severity": "LOW"}],
+        "total": 1,
+    }
+    client.get_alerts.return_value = {"alerts": [], "total": 0}
+
+    next_run, created = fetch_reconciliation_incidents_command(
+        client,
+        last_run={},
+        alert_ids=["a-missing"],
+        incident_ids=["i-1"],
+        max_fetch=50,
+        integration_url="https://vega.example",
+    )
+    assert next_run[RECONCILE_NOT_FOUND_ALERTS_KEY] == ["a-missing"]
+    assert next_run[RECONCILE_COMPLETED_ALERTS_KEY] == []
+    assert len(created) == 1
+
+    next_run, created_again = fetch_reconciliation_incidents_command(
+        client,
+        last_run=next_run,
+        alert_ids=["a-missing"],
+        incident_ids=["i-1"],
+        max_fetch=50,
+        integration_url="https://vega.example",
+    )
+
+    assert created_again == []
+    assert client.get_alerts.call_count == 1
+    assert client.get_incidents.call_count == 1
+
+
+def test_fetch_reconciliation_leaves_ids_pending_on_transient_error(mocker):
+    _patch_reconciliation_runtime(mocker)
+    mocker.patch("Vega.demisto.error")
+    client = mocker.Mock()
+    client.get_alerts.side_effect = DemistoException("connection timeout error")
+
+    next_run, created = fetch_reconciliation_incidents_command(
+        client,
+        last_run={},
+        alert_ids=["a-1"],
+        incident_ids=[],
+        max_fetch=50,
+    )
+
+    assert created == []
+    assert next_run[RECONCILE_NOT_FOUND_ALERTS_KEY] == []
+    assert next_run[RECONCILE_COMPLETED_ALERTS_KEY] == []

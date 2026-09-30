@@ -26,6 +26,9 @@ This is the default integration for this content pack when configured by the Dat
 | Incident Investigation Statuses to fetch | The Vega investigation statuses by which to filter incidents. If empty, all investigation statuses are fetched. NEW is shown as Pending in Vega. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
 | Incident Verdicts to fetch | The verdicts by which to filter incidents. If empty, all verdicts are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. Filter incidents by verdict. If empty, all verdicts are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
 | Include alert metadata on incidents | Store the full metadata of every alert related to a fetched Vega incident. Full alert metadata can make incidents large and slow to open. Leave this unchecked unless you need the complete alert record on the incident. Use vega-get-alert-metadata to load alert metadata in the War Room on demand. | False |
+| Incident reconciliation fetch instance | Use this on a separate instance from the one that fetches the live stream. When selected, this instance fetches only the alert and incident IDs below. Severity, status, verdict, related-incident, entity, backfill, and lookback settings are ignored. IDs that already exist in Cortex XSOAR are created again as new investigations. Paste only IDs returned by vega-reconcile-ids. | False |
+| Reconciliation alert IDs | Comma-separated Vega alert UUIDs. Used only when Incident reconciliation fetch instance is selected. IDs that already exist in Cortex XSOAR are created again as new investigations. | False |
+| Reconciliation incident IDs | Comma-separated Vega incident UUIDs. Used only when Incident reconciliation fetch instance is selected. IDs that already exist in Cortex XSOAR are created again as new investigations. | False |
 | Incident type |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
@@ -213,6 +216,43 @@ Immediately update Vega incident user status, verdict, verdict reasoning, severi
 | Vega.Incident.verdict | String | Updated Vega incident verdict. |
 | Vega.Incident.severity | String | Updated Vega incident severity. |
 | Vega.Incident.assignee | String | Updated Vega incident assignee email, display name, or user ID. |
+
+### vega-reconcile-ids
+
+***
+Compare Vega alert and incident UUIDs with Cortex XSOAR investigations in a created-time window and return the IDs that are missing from Cortex XSOAR. Vega is queried for id only, 100 records per page. Paste the comma-separated lists into a Vega instance that has Incident reconciliation fetch instance selected.
+
+#### Base Command
+
+`vega-reconcile-ids`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| start_date | Window start. Sent to Vega as the getAlerts and getIncidents from filter. Use YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ. | Required |
+| end_date | Window end. Sent to Vega as the getAlerts and getIncidents to filter. A date without a time includes that whole day. Use YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ. | Required |
+| alert_severities | Alert severities to include. Leave empty to include all severities. Possible values are: LOW, MEDIUM, HIGH, CRITICAL. | Optional |
+| alert_statuses | Alert statuses to include. Leave empty to include all statuses. Possible values are: OPEN, IN PROGRESS, PEER REVIEW, RESOLVED. | Optional |
+| alert_verdicts | Alert verdicts to include. Leave empty to include all verdicts. Possible values are: MALICIOUS, SUSPICIOUS, BENIGN, INCONCLUSIVE, NA. | Optional |
+| alert_has_related_incidents | Whether alerts have related incidents. Yes, No, or both. Leave empty to include all alerts. | Optional |
+| incident_severities | Incident severities to include. Leave empty to include all severities. Possible values are: LOW, MEDIUM, HIGH, CRITICAL. | Optional |
+| incident_statuses | Incident user statuses to include. Leave empty to include all user statuses. Possible values are: OPEN, IN REVIEW, ON HOLD, RESOLVED. | Optional |
+| incident_investigation_statuses | Incident investigation statuses to include. Leave empty to include all investigation statuses. Possible values are: NEW, INVESTIGATING, COMPLETED, FAILED. | Optional |
+| incident_verdicts | Incident verdicts to include. Leave empty to include all verdicts. Possible values are: MALICIOUS, SUSPICIOUS, BENIGN, INCONCLUSIVE, NA. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vega.Reconciliation.MissingAlertIds | String | Vega alert UUIDs that have no matching Cortex XSOAR investigation. |
+| Vega.Reconciliation.MissingIncidentIds | String | Vega incident UUIDs that have no matching Cortex XSOAR investigation. |
+| Vega.Reconciliation.VegaAlertCount | Number | Number of Vega alert UUIDs found in the window. |
+| Vega.Reconciliation.XsoarAlertCount | Number | Number of matching Vega Alert investigations found in Cortex XSOAR. |
+| Vega.Reconciliation.VegaIncidentCount | Number | Number of Vega incident UUIDs found in the window. |
+| Vega.Reconciliation.XsoarIncidentCount | Number | Number of matching Vega Incident investigations found in Cortex XSOAR. |
+| Vega.Reconciliation.StartDate | String | Vega from time used for the scan. |
+| Vega.Reconciliation.EndDate | String | Vega to time used for the scan. |
 
 ### get-remote-data
 

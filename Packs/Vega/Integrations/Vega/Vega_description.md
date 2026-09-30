@@ -22,6 +22,7 @@ You can configure the integration to fetch alerts, incidents, or both using the 
 - **Incidents**: Fetches Vega incidents. You can filter the fetched incidents by specific severities (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`), user statuses (`Open`, `In Review`, `On Hold`, `Resolved`), investigation statuses (`Pending`/`NEW`, `Investigating`, `Completed`, `Failed`), and verdicts (`Malicious`, `Suspicious`, `Benign`, `Inconclusive`, `N/A`). If a status filter is left empty, all values for that filter are fetched.
 - **Include alert metadata on incidents**: When enabled, each fetched incident stores the full metadata of its related alerts. This can make incidents large and slow to open. Leave it disabled and run `vega-get-alert-metadata` in the War Room when you need that metadata.
 - **Backfill Days**: Select how many days before today to retrieve alerts and incidents on the very first run (0–365). Use `0` for today only; the default is `30`.
+- **Incident reconciliation fetch instance**: Enable this on a second instance, not the instance that fetches the live stream. Fetch then ignores severity, status, verdict, entity, backfill, and lookback settings and creates investigations only for the comma-separated UUIDs in **Reconciliation alert IDs** and **Reconciliation incident IDs**. An ID that already exists in Cortex XSOAR is created again as a new investigation. Run `vega-reconcile-ids` first and paste only the missing IDs.
 
 ### Mirroring
 
