@@ -1,0 +1,11 @@
+!cloudflare-waf-ruleset-entrypoint-get phase=http_request_firewall_custom
+!cloudflare-waf-ruleset-entrypoint-update phase=http_request_firewall_custom name="Custom entry point" description="Updated via XSOAR"
+!cloudflare-waf-ruleset-rule-create ruleset_id=6f9ad6d1944142d09728b37f34216a3d rule=`{"action": "block", "expression": "(ip.src eq 192.0.2.1)", "description": "Block bad IP"}`
+!cloudflare-waf-ruleset-rule-update ruleset_id=6f9ad6d1944142d09728b37f34216a3d rule_id=cff2d9420cbc4346b70c552752e5718f rule=`{"action": "log", "expression": "(ip.src eq 192.0.2.1)", "description": "Log bad IP"}`
+!cloudflare-waf-ruleset-rule-delete ruleset_id=6f9ad6d1944142d09728b37f34216a3d rule_id=cff2d9420cbc4346b70c552752e5718f
+!cloudflare-waf-ruleset-version-list ruleset_id=6f9ad6d1944142d09728b37f34216a3d
+!cloudflare-waf-ruleset-version-get ruleset_id=6f9ad6d1944142d09728b37f34216a3d version=2
+!cloudflare-waf-ruleset-version-delete ruleset_id=6f9ad6d1944142d09728b37f34216a3d version=2
+!cloudflare-waf-ruleset-entrypoint-version-list phase=http_request_firewall_custom
+!cloudflare-waf-ruleset-entrypoint-version-get phase=http_request_firewall_custom version=2
+!cloudflare-waf-ruleset-rule-list-by-tag ruleset_id=efb7b8c949ac4650a09736fc376e9aee version=381 tag=wordpress

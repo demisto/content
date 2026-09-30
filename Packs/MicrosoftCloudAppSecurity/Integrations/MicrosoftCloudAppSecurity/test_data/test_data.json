@@ -154,7 +154,7 @@
     },
     "entityData": [
       {
-        "displayName": "Avishai Brandeis",
+        "displayName": "Avi Testman",
         "id": {
           "id": "avishai@demistodev.onmicrosoft.com",
           "inst": 0,
@@ -163,7 +163,7 @@
         "resolved": true
       },
       {
-        "displayName": "Avishai Brandeis",
+        "displayName": "Avi Testman",
         "id": {
           "id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2",
           "inst": 0,
@@ -219,7 +219,7 @@
           "id": "avishai@demistodev.onmicrosoft.com",
           "instanceId": 0,
           "link": -162371649,
-          "name": "Avishai Brandeis",
+          "name": "Avi Testman",
           "objType": 21,
           "resolved": true,
           "role": 4,
@@ -230,7 +230,7 @@
           "id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2",
           "instanceId": 0,
           "link": -162371649,
-          "name": "Avishai Brandeis",
+          "name": "Avi Testman",
           "objType": 23,
           "resolved": true,
           "role": 4,
@@ -275,7 +275,7 @@
     "resolvedActor": {
       "id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2",
       "instanceId": "0",
-      "name": "Avishai Brandeis",
+      "name": "Avi Testman",
       "objType": "23",
       "resolved": true,
       "role": "4",
@@ -395,7 +395,7 @@
           "objType": 21,
           "role": 4,
           "tags": [],
-          "name": "Avishai Brandeis",
+          "name": "Avi Testman",
           "instanceId": 0,
           "resolved": true,
           "saasId": 11161,
@@ -408,7 +408,7 @@
           "tags": [
             "5f01dbbc68df27c17aa6ca81"
           ],
-          "name": "Avishai Brandeis",
+          "name": "Avi Testman",
           "instanceId": 0,
           "resolved": true,
           "saasId": 11161,
@@ -469,7 +469,7 @@
         "5f01dbbc68df27c17aa6ca81"
       ],
       "objType": "23",
-      "name": "Avishai Brandeis",
+      "name": "Avi Testman",
       "role": "4",
       "resolved": true
     },
@@ -479,7 +479,7 @@
     "classifications": [],
     "entityData": {
       "0": {
-        "displayName": "Avishai Brandeis",
+        "displayName": "Avi Testman",
         "id": {
           "id": "avishai@demistodev.onmicrosoft.com",
           "saas": 11161,
@@ -489,7 +489,7 @@
       },
       "1": null,
       "2": {
-        "displayName": "Avishai Brandeis",
+        "displayName": "Avi Testman",
         "id": {
           "id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2",
           "saas": 11161,
@@ -570,11 +570,11 @@
         "trueEmail": "avishai@demistodev.onmicrosoft.com",
         "externalUser": false,
         "LoginName": "i:0#.f|membership|avishai@demistodev.onmicrosoft.com",
-        "name": "Avishai Brandeis",
+        "name": "Avi Testman",
         "idInSiteCollection": "4",
         "sipAddress": "avishai@demistodev.onmicrosoft.com",
         "Email": "avishai@demistodev.onmicrosoft.com",
-        "Title": "Avishai Brandeis"
+        "Title": "Avi Testman"
       },
       "LinkingUrl": "",
       "parentUniqueId": "8f83a489-34b7-4bb6-a331-260d1291ef6b",
@@ -605,7 +605,7 @@
     ],
     "name_l": "20200325_104025.jpg.txt",
     "snapshotLastModifiedDate": "2020-07-09T22:15:39.820Z",
-    "ownerName": "Avishai Brandeis",
+    "ownerName": "Avi Testman",
     "originalId": "5f077e6fc3b664209dae1f6b",
     "dlpScanResults": [],
     "fTags": [],
@@ -741,11 +741,11 @@
         "trueEmail": "avishai@demistodev.onmicrosoft.com",
         "externalUser": false,
         "LoginName": "i:0#.f|membership|avishai@demistodev.onmicrosoft.com",
-        "name": "Avishai Brandeis",
+        "name": "Avi Testman",
         "idInSiteCollection": "4",
         "sipAddress": "avishai@demistodev.onmicrosoft.com",
         "Email": "avishai@demistodev.onmicrosoft.com",
-        "Title": "Avishai Brandeis"
+        "Title": "Avi Testman"
       },
       "LinkingUrl": "",
       "parentUniqueId": "8f83a489-34b7-4bb6-a331-260d1291ef6b",
@@ -773,7 +773,7 @@
     "fileStatus": "EXISTS",
     "name_l": "20200325_104025.jpg.txt",
     "snapshotLastModifiedDate": "2020-07-09T22:15:39.820Z",
-    "ownerName": "Avishai Brandeis",
+    "ownerName": "Avi Testman",
     "originalId": "5f077e6fc3b664209dae1f6b",
     "dlpScanResults": [],
     "fTags": [],

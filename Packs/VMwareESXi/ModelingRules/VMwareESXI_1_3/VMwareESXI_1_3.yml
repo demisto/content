@@ -5,3 +5,5 @@ rules: ''
 schema: ''
 tags: VMwareESXi
 toversion: 8.12.0
+supportedModules:
+- xsiam

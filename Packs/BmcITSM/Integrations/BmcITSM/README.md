@@ -343,7 +343,7 @@ Retrieves a list of BMC Helix ITSM tickets. The records are retrieved by the que
             {
                 "Assignee": {
                     "AssignedGroup": null,
-                    "FullName": "Bob Baxter",
+                    "FullName": "Bob Testman",
                     "Group": "Backoffice Support",
                     "SupportCompany": "Calbro Services",
                     "SupportOrganization": "IT Support"
@@ -1026,7 +1026,7 @@ Create known error ticket.
 
 #### Command example
 
-```!bmc-itsm-known-error-create summary="New Error API" details="New Error API Details" target_resolution_date=" in 5 days" company="Calbro Services" resolution="error resolution" investigation_justification=look assignee="Bob Baxter" assigned_support_company="Calbro Services" assigned_support_organization="IT Support" assigned_group="Backoffice Support" impact="2-Significant/Large" status=Assigned urgency="2-High" view_access=Internal```
+```!bmc-itsm-known-error-create summary="New Error API" details="New Error API Details" target_resolution_date=" in 5 days" company="Calbro Services" resolution="error resolution" investigation_justification=look assignee="Bob Testman" assigned_support_company="Calbro Services" assigned_support_organization="IT Support" assigned_group="Backoffice Support" impact="2-Significant/Large" status=Assigned urgency="2-High" view_access=Internal```
 
 #### Context Example
 

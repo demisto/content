@@ -1,0 +1,117 @@
+{
+    "alert": {
+        "name": "Policy V2 7770001: Sysdig Runtime Activity Logs",
+        "description": "This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.",
+        "severity": 7,
+        "severityLabel": "Info",
+        "subject": "Sysdig Runtime Activity Logs triggered at 04/28/2026 01:17 PM UTC",
+        "body": "Policy event triggered at 04/28/2026 01:17 PM UTC\n\nPolicy:             Sysdig Runtime Activity Logs\nPolicy URL:         https://app.example.sysdig.com/secure//#/policies/7770001\nDescription:        This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.\n\nTimestamp:          04/28/2026 01:17 PM UTC\nURL:                https://app.example.sysdig.com/secure//#/events/0000000000000000000000000000000e\nRule:               Launch Code Compiler Tool in Container\nRule URL:           https://app.example.sysdig.com/secure//#/policies/rules/falco/Launch%20Code%20Compiler%20Tool%20in%20Container\nSeverity:           Info\nScope:\n    kubernetes.node.name:      ip-10-0-0-3.ec2.internal\n    container.image.repo:      docker.io/example/test-app\n    container.image.tag:      1.3\n    aws.accountId:      111122223333\n    kubernetes.cronJob.name:      pygoat-cronjob\n    container.label.io.kubernetes.container.name:      client\n    container.image.id:      bbb000000002\n    cloudProvider.account.id:      111122223333\n    kubernetes.job.name:      pygoat-cronjob-29623036\n    kubernetes.pod.name:      pygoat-cronjob-29623036-4gbzj\n    container.image.digest:      sha256:1111222233334444555566667777888899990000aaaabbbbccccddddeeeeffff\n    kubernetes.cluster.name:      demo-eks-cluster\n    kubernetes.workload.type:      cronjob\n    host.hostName:      ip-10-0-0-3.ec2.internal\n    cloudProvider.region:      us-east-1\n    container.name:      client\n    agent.variant:      traditional\n    host.id:      dddd000011112222333344445555666677778888999900001111222233334444\n    agent.version:      14.3.1\n    aws.instanceId:      i-0eee5555ffff66666\n    cloudProvider.name:      aws\n    container.label.io.kubernetes.pod.namespace:      pygoat\n    kubernetes.workload.name:      pygoat-cronjob\n    kubernetes.namespace.name:      pygoat\n    aws.region:      us-east-1\n    container.label.io.kubernetes.pod.name:      pygoat-cronjob-29623036-4gbzj\n    host.mac:      aa:bb:cc:dd:ee:04\n    process.name:      gcc -O3 -fPIC -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN -DPIC -c -o objs/inffast.o inffast.c\n    orchestrator.type:      k8s\nActions:            No actions performed\nDetails:            Detected a code compiler gcc usage on client having image docker.io/example/test-app under user root (proc.name=gcc proc.pname=make gparent=sh ggparent=make gggparent=sh container.name=client image=docker.io/example/test-app proc.cwd=/opt/nmap-7.92/libz/ proc.pcmdline=make user.name=root evt.type=execve evt.args=res=0 exe=gcc args=-O3.-fPIC.-D_LARGEFILE64_SOURCE=1.-DHAVE_HIDDEN.-DPIC.-c.-o.objs/inffast.o.inffast.c. tid=2006580(gcc) pid=2006580(gcc) ptid=2006129(make) cwd=<NA> fdlimit=1048576 pgft_maj=0 pgft_min=6 vm_size=1648 vm_rss=4 vm_swap=0 comm=gcc cgroups=cpuset=/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod00000000_0000_0000_0000_000000000001.slice/cri-containerd-aaa00000000a2591189a89dc50d4903af08590c688265cbca90666014fb03fd0.scope.cpu=/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod00000000_0000_0000_0000_000000000001.slice/cri-containerd-aaa00000000a2591189a89dc50d4903af08590c688265cbca90666014fb03fd0.scope.cpuacct=/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod00000000_0000_0000_0000_000000000001.slice/cri-containerd-aaa00000000a2591189a89dc50d4903af08590c688265cbca90666014fb03fd0.scope.io=/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod00000000_0000_0000_0000_000000000001.slice/cri-containerd-aaa00000000a2591189a89dc50d4903af08590c688265cbca90666014fb03fd0.scope.memory=/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod00000000_0000_0000_0000_000000000001.slice/cri-containerd-aaa00000000a2591189a89dc50d4903af08590c688265cbca90666014fb03fd0.scope. env=NCATDIR=ncat.KUBERNETES_PORT_443_TCP_PROTO=tcp.PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/dbf0c85f76fb6e1ab42aa672ffca6f0a675d9ee4/public/get-pip.py.KUBERNETES_PORT_443_TCP_PORT=443.PWD=/opt/nmap-7.92/libz.HOSTNAME=pygoat-cronjob-29623036-4gbzj.OLDPWD=/opt/nmap-7.92.LIBLUADIR=liblua.RPMTDIR=/root/rpm.LANG=C.UTF-8.MAKEFLAGS=w.SRCS=charpool.cc FingerPrintResults.cc FPEngine.cc FPModel.cc idle_scan.cc MACLookup.cc main.cc nmap.cc nmap_dns.cc nmap_error.cc nmap_ftp.cc NmapOps.cc NmapOutputTable.cc nmap_tty.cc osscan2.cc osscan.cc output.cc payload.cc portlist.cc portreasons.cc protocols.cc scan_engine.cc scan_engine_connect.cc scan_engine_raw.cc scan_lists.cc service_scan.cc services.cc string_pool.cc Target.cc NewTargets.cc TargetGroup.cc targets.cc tcpip.cc timing.cc traceroute.cc utils.cc xml.cc nse_main.cc nse_utility.cc nse_nsock.cc nse_dnet.cc nse_fs.cc nse_nmaplib.cc nse_debug.cc nse_pcrelib.cc nse_lpeg.cc nse_zlib.cc.MFLAGS=-w.GPG_KEY=0000000000000000000000000000000000000000.LIBLINEAR_LIBS=./liblinear/liblinear.a.PYTHON_PIP_VERSION=23.0.1.KUBERNETES_PORT_443_TCP_ADDR=10.96.0.1.NSOCKDIR=nsock.HDRS=charpool.h FingerPrintResults.h FPEngine.h idle_scan.h MACLookup.h nmap_amigaos.h nmap_dns.h nmap_error.h nmap.h nmap_ftp.h NmapOps.h NmapOutputTable.h nmap_tty.h nmap_winconfig.h osscan2.h osscan.h output.h payload.h portlist.h portreasons.h probespec.h protocols.h scan_engine.h scan_engine_connect.h scan_engine_raw.h service_scan.h scan_lists.h services.h string_pool.h NewTargets.h TargetGroup.h Target.h targets.h tcpip.h timing.h traceroute.h utils.h xml.h nse_main.h nse_utility.h nse_nsock.h nse_dnet.h nse_fs.h nse_nmaplib.h nse_debug.h nse_pcrelib.h nse_lpeg.h nse_zlib.h.PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin.NDIR=/opt/nmap-7.92.KUBERNETES_SERVICE_HOST=10.96.0.1.PYTHON_SETUPTOOLS_VERSION=58.1.0.KUBERNETES_SERVICE_PORT_HTTPS=443.PYTHON_VERSION=3.9.18.NBASEDIR=nbase.KUBERNETES_PORT=tcp://10.96.0.1:443.KUBERNETES_PORT_443_TCP=tcp://10.96.0.1:443.NMAP_VERSION=7.92.KUBERNETES_SERVICE_PORT=443.LIBDNETDIR=libdnet-stripped.HOME=/root.LIBLINEARDIR=liblinear.PYTHON_GET_PIP_SHA256=dfe9fd5c28dc98b5ac17979a953ea550cec37ae1b47a5116007395bfacff2ab9.MAKELEVEL=2. tty=0 vpgid=1(systemd) loginuid=-1(<NONE>) flags=9(EXE_WRITABLE|EXE_LOWER_LAYER) cap_inheritable=0 cap_permitted=A80425FB cap_effective=A80425FB exe_ino=38821699 exe_ino_ctime=2026-01-08 09:30:04.596718736 exe_ino_mtime=2023-01-08 09:12:42.000000000 uid=0(root) trusted_exepath=/usr/bin/x86_64-linux-gnu-gcc-12 pgid=1988799(python) gid=0(root) user.loginuid=-1 user.uid=0 user.loginname=<NA> fd.cport=<NA> fd.sport=<NA> fd.name=<NA> proc.pid.ts=1777382251609591699 proc.ppid.ts=1777382243714259935 proc.hash.sha256=aaa0000000000000000000000000000000000000000000000000000000000005)"
+    },
+    "event": {
+        "url": "https://app.example.sysdig.com/secure//#/events/?from=1777382191&to=1777382252"
+    },
+    "condition": "count(policyEvent) > 0",
+    "source": "Sysdig Secure",
+    "state": "ACTIVE",
+    "timestamp": 1777382251609856,
+    "timespan": 60000000,
+    "entities": [
+        {
+            "metricValues": [
+                {
+                    "metric": "policyEvent",
+                    "aggregation": "count",
+                    "groupAggregation": "none",
+                    "value": 1
+                }
+            ],
+            "policyEvents": [
+                {
+                    "id": "0000000000000000000000000000000e",
+                    "containerId": "aaa00000000a",
+                    "name": "Sysdig Runtime Activity Logs",
+                    "description": "This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.",
+                    "severity": 7,
+                    "policyId": 7770001,
+                    "output": "Detected a code compiler gcc usage on client having image docker.io/example/test-app under user root (proc.name=gcc proc.pname=make gparent=sh ggparent=make gggparent=sh container.name=client image=docker.io/example/test-app proc.cwd=/opt/nmap-7.92/libz/ proc.pcmdline=make user.name=root evt.type=execve evt.args=res=0 exe=gcc args=-O3.-fPIC.-D_LARGEFILE64_SOURCE=1.-DHAVE_HIDDEN.-DPIC.-c.-o.objs/inffast.o.inffast.c. tid=2006580(gcc) pid=2006580(gcc) ptid=2006129(make) cwd=<NA> fdlimit=1048576 pgft_maj=0 pgft_min=6 vm_size=1648 vm_rss=4 vm_swap=0 comm=gcc cgroups=cpuset=/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod00000000_0000_0000_0000_000000000001.slice/cri-containerd-aaa00000000a2591189a89dc50d4903af08590c688265cbca90666014fb03fd0.scope.cpu=/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod00000000_0000_0000_0000_000000000001.slice/cri-containerd-aaa00000000a2591189a89dc50d4903af08590c688265cbca90666014fb03fd0.scope.cpuacct=/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod00000000_0000_0000_0000_000000000001.slice/cri-containerd-aaa00000000a2591189a89dc50d4903af08590c688265cbca90666014fb03fd0.scope.io=/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod00000000_0000_0000_0000_000000000001.slice/cri-containerd-aaa00000000a2591189a89dc50d4903af08590c688265cbca90666014fb03fd0.scope.memory=/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod00000000_0000_0000_0000_000000000001.slice/cri-containerd-aaa00000000a2591189a89dc50d4903af08590c688265cbca90666014fb03fd0.scope. env=NCATDIR=ncat.KUBERNETES_PORT_443_TCP_PROTO=tcp.PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/dbf0c85f76fb6e1ab42aa672ffca6f0a675d9ee4/public/get-pip.py.KUBERNETES_PORT_443_TCP_PORT=443.PWD=/opt/nmap-7.92/libz.HOSTNAME=pygoat-cronjob-29623036-4gbzj.OLDPWD=/opt/nmap-7.92.LIBLUADIR=liblua.RPMTDIR=/root/rpm.LANG=C.UTF-8.MAKEFLAGS=w.SRCS=charpool.cc FingerPrintResults.cc FPEngine.cc FPModel.cc idle_scan.cc MACLookup.cc main.cc nmap.cc nmap_dns.cc nmap_error.cc nmap_ftp.cc NmapOps.cc NmapOutputTable.cc nmap_tty.cc osscan2.cc osscan.cc output.cc payload.cc portlist.cc portreasons.cc protocols.cc scan_engine.cc scan_engine_connect.cc scan_engine_raw.cc scan_lists.cc service_scan.cc services.cc string_pool.cc Target.cc NewTargets.cc TargetGroup.cc targets.cc tcpip.cc timing.cc traceroute.cc utils.cc xml.cc nse_main.cc nse_utility.cc nse_nsock.cc nse_dnet.cc nse_fs.cc nse_nmaplib.cc nse_debug.cc nse_pcrelib.cc nse_lpeg.cc nse_zlib.cc.MFLAGS=-w.GPG_KEY=0000000000000000000000000000000000000000.LIBLINEAR_LIBS=./liblinear/liblinear.a.PYTHON_PIP_VERSION=23.0.1.KUBERNETES_PORT_443_TCP_ADDR=10.96.0.1.NSOCKDIR=nsock.HDRS=charpool.h FingerPrintResults.h FPEngine.h idle_scan.h MACLookup.h nmap_amigaos.h nmap_dns.h nmap_error.h nmap.h nmap_ftp.h NmapOps.h NmapOutputTable.h nmap_tty.h nmap_winconfig.h osscan2.h osscan.h output.h payload.h portlist.h portreasons.h probespec.h protocols.h scan_engine.h scan_engine_connect.h scan_engine_raw.h service_scan.h scan_lists.h services.h string_pool.h NewTargets.h TargetGroup.h Target.h targets.h tcpip.h timing.h traceroute.h utils.h xml.h nse_main.h nse_utility.h nse_nsock.h nse_dnet.h nse_fs.h nse_nmaplib.h nse_debug.h nse_pcrelib.h nse_lpeg.h nse_zlib.h.PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin.NDIR=/opt/nmap-7.92.KUBERNETES_SERVICE_HOST=10.96.0.1.PYTHON_SETUPTOOLS_VERSION=58.1.0.KUBERNETES_SERVICE_PORT_HTTPS=443.PYTHON_VERSION=3.9.18.NBASEDIR=nbase.KUBERNETES_PORT=tcp://10.96.0.1:443.KUBERNETES_PORT_443_TCP=tcp://10.96.0.1:443.NMAP_VERSION=7.92.KUBERNETES_SERVICE_PORT=443.LIBDNETDIR=libdnet-stripped.HOME=/root.LIBLINEARDIR=liblinear.PYTHON_GET_PIP_SHA256=dfe9fd5c28dc98b5ac17979a953ea550cec37ae1b47a5116007395bfacff2ab9.MAKELEVEL=2. tty=0 vpgid=1(systemd) loginuid=-1(<NONE>) flags=9(EXE_WRITABLE|EXE_LOWER_LAYER) cap_inheritable=0 cap_permitted=A80425FB cap_effective=A80425FB exe_ino=38821699 exe_ino_ctime=2026-01-08 09:30:04.596718736 exe_ino_mtime=2023-01-08 09:12:42.000000000 uid=0(root) trusted_exepath=/usr/bin/x86_64-linux-gnu-gcc-12 pgid=1988799(python) gid=0(root) user.loginuid=-1 user.uid=0 user.loginname=<NA> fd.cport=<NA> fd.sport=<NA> fd.name=<NA> proc.pid.ts=1777382251609591699 proc.ppid.ts=1777382243714259935 proc.hash.sha256=aaa0000000000000000000000000000000000000000000000000000000000005)",
+                    "ruleName": "Launch Code Compiler Tool in Container",
+                    "ruleType": "RULE_TYPE_FALCO",
+                    "matchedOnDefault": false,
+                    "fields": {
+                        "fd.name": "<NA>",
+                        "proc.pname": "make",
+                        "user.uid": "0",
+                        "evt.type": "execve",
+                        "proc.cmdline": "gcc -O3 -fPIC -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN -DPIC -c -o objs/inffast.o inffast.c",
+                        "proc.cwd": "/opt/nmap-7.92/libz/",
+                        "user.name": "root",
+                        "fd.sport": "<NA>",
+                        "proc.pid.ts": "1777382251609591699",
+                        "proc.aname[2]": "sh",
+                        "proc.aname[3]": "make",
+                        "proc.aname[4]": "sh",
+                        "proc.hash.sha256": "aaa0000000000000000000000000000000000000000000000000000000000005",
+                        "user.loginuid": "-1",
+                        "container.name": "client",
+                        "container.image.repository": "docker.io/example/test-app",
+                        "proc.name": "gcc",
+                        "evt.args": "res=0 exe=gcc args=-O3.-fPIC.-D_LARGEFILE64_SOURCE=1.-DHAVE_HIDDEN.-DPIC.-c.-o.objs/inffast.o.inffast.c. tid=2006580(gcc) pid=2006580(gcc) ptid=2006129(make) cwd=<NA> fdlimit=1048576 pgft_maj=0 pgft_min=6 vm_size=1648 vm_rss=4 vm_swap=0 comm=gcc cgroups=cpuset=/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod00000000_0000_0000_0000_000000000001.slice/cri-containerd-aaa00000000a2591189a89dc50d4903af08590c688265cbca90666014fb03fd0.scope.cpu=/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod00000000_0000_0000_0000_000000000001.slice/cri-containerd-aaa00000000a2591189a89dc50d4903af08590c688265cbca90666014fb03fd0.scope.cpuacct=/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod00000000_0000_0000_0000_000000000001.slice/cri-containerd-aaa00000000a2591189a89dc50d4903af08590c688265cbca90666014fb03fd0.scope.io=/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod00000000_0000_0000_0000_000000000001.slice/cri-containerd-aaa00000000a2591189a89dc50d4903af08590c688265cbca90666014fb03fd0.scope.memory=/kubepods.slice/kubepods-besteffort.slice/kubepods-besteffort-pod00000000_0000_0000_0000_000000000001.slice/cri-containerd-aaa00000000a2591189a89dc50d4903af08590c688265cbca90666014fb03fd0.scope. env=NCATDIR=ncat.KUBERNETES_PORT_443_TCP_PROTO=tcp.PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/dbf0c85f76fb6e1ab42aa672ffca6f0a675d9ee4/public/get-pip.py.KUBERNETES_PORT_443_TCP_PORT=443.PWD=/opt/nmap-7.92/libz.HOSTNAME=pygoat-cronjob-29623036-4gbzj.OLDPWD=/opt/nmap-7.92.LIBLUADIR=liblua.RPMTDIR=/root/rpm.LANG=C.UTF-8.MAKEFLAGS=w.SRCS=charpool.cc FingerPrintResults.cc FPEngine.cc FPModel.cc idle_scan.cc MACLookup.cc main.cc nmap.cc nmap_dns.cc nmap_error.cc nmap_ftp.cc NmapOps.cc NmapOutputTable.cc nmap_tty.cc osscan2.cc osscan.cc output.cc payload.cc portlist.cc portreasons.cc protocols.cc scan_engine.cc scan_engine_connect.cc scan_engine_raw.cc scan_lists.cc service_scan.cc services.cc string_pool.cc Target.cc NewTargets.cc TargetGroup.cc targets.cc tcpip.cc timing.cc traceroute.cc utils.cc xml.cc nse_main.cc nse_utility.cc nse_nsock.cc nse_dnet.cc nse_fs.cc nse_nmaplib.cc nse_debug.cc nse_pcrelib.cc nse_lpeg.cc nse_zlib.cc.MFLAGS=-w.GPG_KEY=0000000000000000000000000000000000000000.LIBLINEAR_LIBS=./liblinear/liblinear.a.PYTHON_PIP_VERSION=23.0.1.KUBERNETES_PORT_443_TCP_ADDR=10.96.0.1.NSOCKDIR=nsock.HDRS=charpool.h FingerPrintResults.h FPEngine.h idle_scan.h MACLookup.h nmap_amigaos.h nmap_dns.h nmap_error.h nmap.h nmap_ftp.h NmapOps.h NmapOutputTable.h nmap_tty.h nmap_winconfig.h osscan2.h osscan.h output.h payload.h portlist.h portreasons.h probespec.h protocols.h scan_engine.h scan_engine_connect.h scan_engine_raw.h service_scan.h scan_lists.h services.h string_pool.h NewTargets.h TargetGroup.h Target.h targets.h tcpip.h timing.h traceroute.h utils.h xml.h nse_main.h nse_utility.h nse_nsock.h nse_dnet.h nse_fs.h nse_nmaplib.h nse_debug.h nse_pcrelib.h nse_lpeg.h nse_zlib.h.PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin.NDIR=/opt/nmap-7.92.KUBERNETES_SERVICE_HOST=10.96.0.1.PYTHON_SETUPTOOLS_VERSION=58.1.0.KUBERNETES_SERVICE_PORT_HTTPS=443.PYTHON_VERSION=3.9.18.NBASEDIR=nbase.KUBERNETES_PORT=tcp://10.96.0.1:443.KUBERNETES_PORT_443_TCP=tcp://10.96.0.1:443.NMAP_VERSION=7.92.KUBERNETES_SERVICE_PORT=443.LIBDNETDIR=libdnet-stripped.HOME=/root.LIBLINEARDIR=liblinear.PYTHON_GET_PIP_SHA256=dfe9fd5c28dc98b5ac17979a953ea550cec37ae1b47a5116007395bfacff2ab9.MAKELEVEL=2. tty=0 vpgid=1(systemd) loginuid=-1(<NONE>) flags=9(EXE_WRITABLE|EXE_LOWER_LAYER) cap_inheritable=0 cap_permitted=A80425FB cap_effective=A80425FB exe_ino=38821699 exe_ino_ctime=2026-01-08 09:30:04.596718736 exe_ino_mtime=2023-01-08 09:12:42.000000000 uid=0(root) trusted_exepath=/usr/bin/x86_64-linux-gnu-gcc-12 pgid=1988799(python) gid=0(root)",
+                        "fd.cport": "<NA>",
+                        "proc.ppid.ts": "1777382243714259935",
+                        "proc.aname": "<NA>",
+                        "user.loginname": "<NA>",
+                        "proc.pcmdline": "make"
+                    },
+                    "eventLabels": {
+                        "kubernetes.node.name": "ip-10-0-0-3.ec2.internal",
+                        "kubernetes.workload.name": "pygoat-cronjob",
+                        "container.image.tag": "1.3",
+                        "host.mac": "aa:bb:cc:dd:ee:04",
+                        "kubernetes.workload.type": "cronjob",
+                        "container.image.repo": "docker.io/example/test-app",
+                        "container.name": "client",
+                        "kubernetes.pod.name": "pygoat-cronjob-29623036-4gbzj",
+                        "cloudProvider.region": "us-east-1",
+                        "container.label.io.kubernetes.container.name": "client",
+                        "cloudProvider.name": "aws",
+                        "container.label.io.kubernetes.pod.namespace": "pygoat",
+                        "host.id": "dddd000011112222333344445555666677778888999900001111222233334444",
+                        "container.image.id": "bbb000000002",
+                        "agent.variant": "traditional",
+                        "kubernetes.namespace.name": "pygoat",
+                        "kubernetes.cronJob.name": "pygoat-cronjob",
+                        "orchestrator.type": "k8s",
+                        "kubernetes.cluster.name": "demo-eks-cluster",
+                        "kubernetes.job.name": "pygoat-cronjob-29623036",
+                        "process.name": "gcc -O3 -fPIC -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN -DPIC -c -o objs/inffast.o inffast.c",
+                        "aws.region": "us-east-1",
+                        "aws.accountId": "111122223333",
+                        "container.label.io.kubernetes.pod.name": "pygoat-cronjob-29623036-4gbzj",
+                        "container.image.digest": "sha256:1111222233334444555566667777888899990000aaaabbbbccccddddeeeeffff",
+                        "host.hostName": "ip-10-0-0-3.ec2.internal",
+                        "agent.version": "14.3.1",
+                        "cloudProvider.account.id": "111122223333",
+                        "aws.instanceId": "i-0eee5555ffff66666"
+                    },
+                    "falsePositive": false,
+                    "policyVersion": 65,
+                    "origin": "Sysdig",
+                    "timestamp": 1777382251609856,
+                    "hostMac": "aa:bb:cc:dd:ee:04",
+                    "isAggregated": false
+                }
+            ],
+            "policies": [
+                {
+                    "name": "Sysdig Runtime Activity Logs",
+                    "description": "This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.",
+                    "origin": "Secure UI",
+                    "versionId": "0.0.0",
+                    "severity": 7,
+                    "enabled": false,
+                    "id": 7770001
+                }
+            ]
+        }
+    ]
+}

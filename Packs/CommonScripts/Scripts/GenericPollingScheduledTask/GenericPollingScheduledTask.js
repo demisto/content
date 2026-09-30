@@ -57,6 +57,9 @@ function finish(playbookId, tag, err, entryGUID) {
     if (playbookId) {
         params.parentPlaybookID = playbookId;
     }
+    logDebug('[GenericPollingScheduledTask] finish() completing task. input=' + params.input +
+        ' tag=' + tag + ' entryGUID=' + entryGUID +
+        (err === undefined ? '' : ' err=' + JSON.stringify('' + err)));
     if ((entryGUID !== undefined) && (entryGUID)) {
         var res = executeCommand("stopScheduleEntry", {'scheduledEntryGuid': entryGUID});
         if (isError(res[0])) {
@@ -130,13 +133,21 @@ function shouldRunWithGuid() {
     // If not, we are running on an older version of platform and we need to use the old polling mechanism.
     // The try/catch mechanism is to support development and to ignore parseInt errors.
     try {
-        if  ((platform === "xsoar") && (compareVersions(version, MINIMUM_XSOAR_VERSION) >= 0) && (parseInt(buildNumber) >= MINIMUM_BUILD_NUMBER_XSOAR)) {
+        var platformMatch = (platform === "xsoar");
+        var versionMatch = (compareVersions(version, MINIMUM_XSOAR_VERSION) >= 0);
+        var buildMatch = (parseInt(buildNumber) >= MINIMUM_BUILD_NUMBER_XSOAR);
+        if  (platformMatch && versionMatch && buildMatch) {
+            logDebug('[GenericPollingScheduledTask] Using GUID flow. platform=' + platform +
+                ' version=' + version + ' buildNumber=' + buildNumber);
             return true;
         }
     }
     catch (err) {
+        logDebug('[GenericPollingScheduledTask] shouldRunWithGuid error, using OLD flow: ' + err);
         return false;
     }
+    logDebug('[GenericPollingScheduledTask] Using OLD flow. platform=' + platform +
+        ' version=' + version + ' buildNumber=' + buildNumber);
 }
 
 function genericPollingScheduled(){
@@ -145,13 +156,14 @@ function genericPollingScheduled(){
         if (shouldRunWithGuid) {
             var endTime = stringToDate(args.endTime, "%Y-%m-%d %H:%M:%S");
             var currentTime = new Date();
-
             if (currentTime >= endTime) {
+                logDebug('[GenericPollingScheduledTask] GUID flow: endTime reached, finishing (YES).');
                 return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
             }
         }
         else {
             if (args.timeout <= 0) {
+                logDebug('[GenericPollingScheduledTask] OLD flow: timeout reached, finishing (YES).');
                 return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
             }
         }
@@ -173,7 +185,18 @@ function genericPollingScheduled(){
         }
         var pendings = dq(invContext, pendingPath);
 
+        // Compatibility fix: on some platform versions dq() wraps the result in a
+        // {"result": <value>} envelope instead of returning the bare value/list.
+        // Unwrap it so the pending-vs-ids intersection behaves consistently across platforms.
+        if (pendings && (typeof pendings === 'object') && !Array.isArray(pendings) && ('result' in pendings)) {
+            logDebug('[GenericPollingScheduledTask] dq() returned a {"result":...} envelope - unwrapping.');
+            pendings = pendings.result;
+        }
+        logDebug('[GenericPollingScheduledTask] pendingPath=' + pendingPath +
+            ' | pendings=' + JSON.stringify(pendings) + ' | ids=' + JSON.stringify(ids));
+
         if (pendings === null) {
+            logDebug('[GenericPollingScheduledTask] No pending ids found in context, finishing (YES).');
             return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
         }
 
@@ -181,8 +204,10 @@ function genericPollingScheduled(){
         var pendingsStrArr = listOfStrings(pendings);
         idsToPoll = intersect(idsStrArr, pendingsStrArr);
         if (idsToPoll.length === 0) {
+            logDebug('[GenericPollingScheduledTask] All ids finished (none still pending), finishing (YES).');
             return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
         }
+        logDebug('[GenericPollingScheduledTask] Still polling ' + idsToPoll.length + ' id(s).');
 
         // Run the polling command for each id
         var pollingCommandArgs = {};
@@ -212,6 +237,7 @@ function genericPollingScheduled(){
             // Schedule the next iteration, old version.
             var scheduleTaskRes = setNextRun(args.ids, args.playbookId, args.pollingCommand, args.pollingCommandArgName, args.pendingIds, args.interval, args.timeout, args.tag, args.additionalPollingCommandArgNames, args.additionalPollingCommandArgValues, args.extractMode);
             if (isError(scheduleTaskRes[0])) {
+                logError('[GenericPollingScheduledTask] OLD flow: setNextRun FAILED - polling will NOT continue: ' + scheduleTaskRes[0]);
                 res.push(scheduleTaskRes);
             }
         }

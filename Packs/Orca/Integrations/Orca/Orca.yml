@@ -30,11 +30,27 @@ configuration:
   required: false
   type: 13
   section: Connect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '200'
   display: Max fetch
   name: max_fetch
@@ -42,6 +58,9 @@ configuration:
   type: 0
   additionalinfo: The number of objects to process. Maximum value is 500
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -97,14 +116,14 @@ script:
       type: String
   - name: orca-get-asset
     arguments:
-      - description: Asset unique id.
-        name: asset_unique_id
-        required: true
+    - description: Asset unique id.
+      name: asset_unique_id
+      required: true
     description: Get Description of An asset. Deprecated, disabled.
     outputs:
-      - contextPath: Orca.Manager.Asset
-        description: Asset description.
-        type: String
+    - contextPath: Orca.Manager.Asset
+      description: Asset description.
+      type: String
   - name: orca-set-alert-severity
     description: Change severity for the alert.
     arguments:
@@ -206,7 +225,7 @@ script:
       description: Basic information of the file.
       type: string
     description: Downloads a capture file from CS Enterprise.
-  dockerimage: demisto/python3:3.12.12.7090913
+  dockerimage: demisto/python3:3.12.14.13053055
   isfetch: true
   runonce: false
   script: '-'

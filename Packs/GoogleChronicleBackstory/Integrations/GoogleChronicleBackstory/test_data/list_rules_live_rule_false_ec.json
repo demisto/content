@@ -24,11 +24,11 @@
         "category": "process_creation",
         "product": "windows",
         "mitre": "t1086, execution",
-        "author": "Markus Neis",
+        "author": "Marcus Testman",
         "description": "Detects EmpireMonkey APT reported Activity  License: https://github.com/Neo23x0/sigma/blob/master/LICENSE.Detection.Rules.md.",
         "reference": "https://tdm.socprime.com/tdm/info/jFbYfF51ECXh"
       },
-      "ruleText": "rule empire_monkey {\n\tmeta:\n\t\tauthor = \"Markus Neis\"\n\t\tdescription = \"Detects EmpireMonkey APT reported Activity  License: https://github.com/Neo23x0/sigma/blob/master/LICENSE.Detection.Rules.md.\"\n\t\treference = \"https://tdm.socprime.com/tdm/info/jFbYfF51ECXh\"\n\t\tversion = \"0.01\"\n\t\tcreated = \"2019/04/02\"\n\t\tcategory = \"process_creation\"\n\t\tproduct = \"windows\"\n\t\tmitre = \"t1086, execution\"\n\n\tevents:\n(re.regex($selection_cutil.target.process.command_line, `.*/i:%APPDATA%\\\\logs\\.txt scrobj\\.dll`) and (re.regex($selection_cutil.target.process.file.full_path, `.*\\\\cutil\\.exe`) or $selection_cutil.metadata.description = \"Microsoft(C) Registerserver\"))\n\n\tcondition:\n\t\t$selection_cutil\n}\n",
+      "ruleText": "rule empire_monkey {\n\tmeta:\n\t\tauthor = \"Marcus Testman\"\n\t\tdescription = \"Detects EmpireMonkey APT reported Activity  License: https://github.com/Neo23x0/sigma/blob/master/LICENSE.Detection.Rules.md.\"\n\t\treference = \"https://tdm.socprime.com/tdm/info/jFbYfF51ECXh\"\n\t\tversion = \"0.01\"\n\t\tcreated = \"2019/04/02\"\n\t\tcategory = \"process_creation\"\n\t\tproduct = \"windows\"\n\t\tmitre = \"t1086, execution\"\n\n\tevents:\n(re.regex($selection_cutil.target.process.command_line, `.*/i:%APPDATA%\\\\logs\\.txt scrobj\\.dll`) and (re.regex($selection_cutil.target.process.file.full_path, `.*\\\\cutil\\.exe`) or $selection_cutil.metadata.description = \"Microsoft(C) Registerserver\"))\n\n\tcondition:\n\t\t$selection_cutil\n}\n",
       "versionCreateTime": "2021-02-26T20:04:14.162095Z",
       "compilationState": "SUCCEEDED"
     }

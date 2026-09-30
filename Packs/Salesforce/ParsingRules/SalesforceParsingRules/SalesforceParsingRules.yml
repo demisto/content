@@ -1,6 +1,8 @@
 name: Salesforce Parsing Rule
-id: salesforce_parsing_rule
+id: Salesforce_ParsingRule
 fromversion: 8.3.0
 tags: []
 rules: ''
 samples: ''
+supportedModules:
+- xsiam

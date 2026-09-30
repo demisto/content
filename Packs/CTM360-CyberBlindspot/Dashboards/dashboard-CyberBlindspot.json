@@ -110,7 +110,7 @@
                 "prevName": "Active Incidents - Pie chart",
                 "dataType": "incidents",
                 "widgetType": "pie",
-                "query": "-category:job and -status:archived and -status:closed",
+                "query": "-category:job and -status:archived and -status:closed type:\"CyberBlindspot Incident\"",
                 "isPredefined": true,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -169,7 +169,7 @@
                 "prevName": "Active Incidents - Pie chart",
                 "dataType": "incidents",
                 "widgetType": "pie",
-                "query": "-category:job and -status:archived and -status:closed",
+                "query": "-category:job and -status:archived and -status:closed type:\"CyberBlindspot Incident\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -602,7 +602,7 @@
                 "prevName": "Active Incidents - Pie chart",
                 "dataType": "incidents",
                 "widgetType": "pie",
-                "query": "-category:job and -status:archived and -status:closed",
+                "query": "-category:job and -status:archived and -status:closed and type:\"CyberBlindspot Incident\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",

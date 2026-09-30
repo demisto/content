@@ -1,0 +1,17 @@
+{
+    "id": 1212121,
+    "name": "Private repo nightly build",
+    "node_id": "WFR_ababba",
+    "head_branch": "master",
+    "head_sha": "12121212",
+    "display_title": "Private repo nightly build",
+    "run_number": 1176,
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "success",
+    "workflow_id": 13131313,
+    "url": "https://api.github.com/repos/demisto/test/actions/runs/1212121",
+    "html_url": "https://github.com/demisto/test/actions/runs/1212121",
+    "created_at": "2023-07-03T02:28:14Z",
+    "updated_at": "2023-07-03T03:43:08Z"
+}

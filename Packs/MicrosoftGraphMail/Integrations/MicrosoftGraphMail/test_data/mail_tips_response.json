@@ -1,0 +1,27 @@
+{
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#Collection(microsoft.graph.mailTips)",
+    "value": [
+        {
+            "emailAddress": {
+                "name": "Test User",
+                "address": "test@example.com"
+            },
+            "automaticReplies": {
+                "message": "",
+                "messageLanguage": {
+                    "locale": "en-US",
+                    "displayName": "English (United States)"
+                }
+            },
+            "mailboxFull": false,
+            "customMailTip": null,
+            "externalMemberCount": null,
+            "totalMemberCount": null,
+            "deliveryRestricted": false,
+            "isModerated": false,
+            "recipientScope": 1,
+            "recipientSuggestions": [],
+            "maxMessageSize": 37748736
+        }
+    ]
+}

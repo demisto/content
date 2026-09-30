@@ -1,0 +1,30 @@
+{
+    "id": "incident_vegacreatedby",
+    "version": -1,
+    "name": "Vega Created By",
+    "ownerOnly": false,
+    "description": "The user ID of the person who created this incident in Vega.",
+    "cliName": "vegacreatedby",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Vega Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

@@ -25,6 +25,7 @@ class Brands(StrEnum):
     CORTEX_CORE_IR = "Cortex Core - IR"
     FIREEYE_HX_V2 = "FireEyeHX v2"
     GENERIC_COMMAND = "Generic Command"
+    BUILTIN = "Builtin"
 
     @classmethod
     def get_all_values(cls) -> list[str]:
@@ -134,6 +135,10 @@ class ModuleManager:
             bool: True if the brand is in both the list of brands to run and the set of enabled brands;
                   False otherwise.
         """
+        # Builtin commands are injected by the server on the unified platform,
+        # so they are always available there and are not tied to an installed integration brand.
+        if command.brand == Brands.BUILTIN:
+            return is_platform()
         return False if not self.is_brand_in_brands_to_run(command) else command.brand in self._enabled_brands
 
     def get_enabled_brands(self):
@@ -337,8 +342,19 @@ class EndpointCommandRunner:
 
         for entry in results:
             entry_type = entry.get("Type")
+            contents = entry.get("Contents")
+            if (
+                isinstance(contents, str)
+                and "Unsupported Command : endpoint , verify you have proper integration enabled to support it" in contents
+            ):
+                demisto.debug(f"Skipping unsupported command error for '{command}' command.")
+                continue
+
             if entry_type == EntryType.ERROR or entry_type == EntryType.WARNING:
-                command_error_outputs.append(hr_to_command_results(command, args, entry.get("Contents"), entry_type=entry_type))  # type: ignore[arg-type]
+                # Built-in commands may return no entries (None) on a not-found result
+                # guard against 'NoneType' object is not iterable
+                if error_result := hr_to_command_results(command, args, contents, entry_type=entry_type):  # type: ignore[arg-type]
+                    command_error_outputs.append(error_result)
             elif entry_type == EntryType.NOTE:
                 command_context_outputs.append(entry.get("EntryContext", {}))
                 human_readable_outputs.append(entry.get("HumanReadable") or "")
@@ -501,8 +517,8 @@ def initialize_commands(
             not_found_checker="was not found",
         ),
         Command(
-            brand=Brands.CORTEX_CORE_IR,
-            name="core-list-risky-hosts",
+            brand=Brands.BUILTIN if is_platform() else Brands.CORTEX_CORE_IR,
+            name="getRiskyHosts" if is_platform() else "core-list-risky-hosts",
             output_keys=["Core.RiskyHost"],
             args_mapping={"host_id": "endpoint_hostname"},
             output_mapping={"id": "Hostname", "risk_level": "RiskLevel"},
@@ -524,8 +540,8 @@ def initialize_commands(
 
     list_args_commands = [
         Command(
-            brand=Brands.CORTEX_CORE_IR,
-            name="core-get-endpoints",
+            brand=Brands.BUILTIN if is_platform() else Brands.CORTEX_CORE_IR,
+            name="getEndpoints" if is_platform() else "core-get-endpoints",
             output_keys=["Core.Endpoint"],
             args_mapping={"endpoint_id_list": "endpoint_id", "ip_list": "endpoint_ip", "hostname": "endpoint_hostname"},
             output_mapping={
@@ -606,7 +622,7 @@ def run_single_args_commands(
             )
 
             if endpoint_output:
-                if command.brand in [Brands.CORTEX_XDR_IR, Brands.CORTEX_CORE_IR]:
+                if command.brand in [Brands.CORTEX_XDR_IR, Brands.CORTEX_CORE_IR, Brands.BUILTIN]:
                     update_endpoint_in_mapping(endpoint_output, ir_mapping)
                 else:
                     endpoint_outputs_list.extend(endpoint_output)
@@ -659,7 +675,7 @@ def run_list_args_commands(
         )
 
         if endpoint_output:
-            if command.brand in [Brands.CORTEX_XDR_IR, Brands.CORTEX_CORE_IR]:
+            if command.brand in [Brands.CORTEX_XDR_IR, Brands.CORTEX_CORE_IR, Brands.BUILTIN]:
                 add_endpoint_to_mapping(endpoint_output, ir_mapping)
             else:
                 multiple_endpoint_outputs.extend(endpoint_output)

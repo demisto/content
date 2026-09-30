@@ -67,6 +67,10 @@
         "destinationPort": {
             "type": "int",
             "is_array": false
+        },
+        "deviceDirection": {
+            "type": "string",
+            "is_array": false
         }
     }
 }

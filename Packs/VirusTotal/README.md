@@ -42,7 +42,7 @@ Security team challenges | Solving with VirusTotal + XSOAR
 - Multi-angular detection for files via crowdsourced {[YARA](https://virustotal.github.io/yara/), [SIGMA](https://blog.virustotal.com/2021/05/context-is-king-part-i-crowdsourced.html), [IDS](https://docs.virustotal.com/docs/crowdsourced-ids-rules)} rules.
 - Allowlist (benign) information through the [aggregation of goodware indicators and provenance details](https://blog.virustotal.com/2021/08/introducing-known-distributors.html).
 - Dynamic analysis for files through detonation in [multiple home-grown and 3rd-party partner](https://blog.virustotal.com/search/label/multisandbox) sandbox solutions.
-- Extended file context and metadata through static analysis tools such as sigcheck’s authenticode signature extractor, MS Office macro VBA dissectors, Didier Stevens’ PDF tools, etc.
+- Extended file context and metadata through static analysis tools such as sigcheck’s authenticode signature extractor, MS Office macro VBA dissectors, Didier S PDF tools, etc.
 - Community comments and assessments coming from over 2M monthly users of the free [www.virustotal.com](https://www.virustotal.com/gui/) public site.
 - Threat graph schema tying together the files, domains, IPs and URLs in the dataset through relationships such as downloaded files, communicating files, passive DNS resolutions, etc.
 - Passive DNS information listing historical domains seen behind a given IP address and detailing all infrastructure changes for a given domain.

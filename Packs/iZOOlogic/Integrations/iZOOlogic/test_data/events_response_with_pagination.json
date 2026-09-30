@@ -1,0 +1,36 @@
+{
+    "result": {
+        "currentPage": 1,
+        "nextPage": "encrypted-pagination-token-abc123",
+        "totalRecords": 5,
+        "incidents": [
+            {
+                "incidentID": "page1_001",
+                "createdOn": "1700001100",
+                "detectionDate": "1700001000",
+                "incidentType": "Phishing",
+                "subIncidentType": null,
+                "url": "https://example1.com",
+                "status": "Open",
+                "statusCode": 15,
+                "brand": "TestBrand",
+                "threatType": "Substantial Threat"
+            },
+            {
+                "incidentID": "page1_002",
+                "createdOn": "1700001000",
+                "detectionDate": "1700000900",
+                "incidentType": "Phishing",
+                "subIncidentType": null,
+                "url": "https://example2.com",
+                "status": "Open",
+                "statusCode": 15,
+                "brand": "TestBrand",
+                "threatType": "Substantial Threat"
+            }
+        ]
+    },
+    "success": true,
+    "message": "",
+    "errorCode": ""
+}

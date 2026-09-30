@@ -1,0 +1,100 @@
+{
+   "radware_cloud_ddos_raw":{
+      "source_log_type": {
+         "type":"string",
+         "is_array":false
+      },
+      "accountId": {
+         "type":"string",
+         "is_array":false
+      },
+      "accountName": {
+         "type":"string",
+         "is_array":false
+      },
+      "siteName": {
+         "type":"string",
+         "is_array":false
+      },
+      "averageByteRate": {
+         "type":"int",
+         "is_array":false
+      },
+      "category": {
+         "type":"string",
+         "is_array":false
+      },
+      "classification": {
+         "type":"string",
+         "is_array":false
+      },
+      "duration": {
+         "type":"int",
+         "is_array":false
+      },
+      "packetCount": {
+         "type":"int",
+         "is_array":false
+      },
+      "protocol": {
+         "type":"string",
+         "is_array":false
+      },
+      "risk": {
+         "type":"string",
+         "is_array":false
+      },
+      "status": {
+         "type":"string",
+         "is_array":false
+      },
+      "sourcePort": {
+         "type":"int",
+         "is_array":false
+      },
+      "targetPort": {
+         "type":"int",
+         "is_array":false
+      },
+      "sourceAddress": {
+         "type":"string",
+         "is_array":false
+      },
+      "targetAddress": {
+         "type":"string",
+         "is_array":false
+      },
+      "vectorName": {
+         "type":"string",
+         "is_array":false
+      },
+      "action": {
+         "type":"string",
+         "is_array":false
+      },
+      "severity": {
+         "type":"string",
+         "is_array":false
+      },
+      "triggerName": {
+         "type":"string",
+         "is_array":false
+      },
+      "triggerDescription": {
+         "type":"string",
+         "is_array":false
+      },
+      "triggerOrigin": {
+         "type":"string",
+         "is_array":false
+      },
+      "context": {
+         "type":"string",
+         "is_array":false
+      },
+      "description": {
+         "type":"string",
+         "is_array":false
+      }
+   }
+}

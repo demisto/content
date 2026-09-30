@@ -159,6 +159,8 @@ If MFA is enabled for your user, follow the next steps:
 | Trust any certificate (not secure) |  | False |
 | Incidents Fetch Interval |  | False |
 | Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
+| Interpret comments in the specific format | The format of the ServiceNow comments. Default is Source, the format supplied by ServiceNow during the fetch as part of the comments data. This can be changed to a different format for all comments. Possible values are Source (default), Text, and HTML. Use HTML if a html editor is used within ServiceNow to add comments. | False |
+| Mark attachment as notes | Mark the file attachment as notes. This ensure that note and comments can be found withing the warroom as Notes. Defaults to "false". | False |
 
 3. Click **Test** to validate the URLs, token, and connection.
 4. Click **Done.**
@@ -2003,7 +2005,7 @@ Queries the sys_user table in ServiceNow.
             "Created": "2012-02-18 03:04:50",
             "Email": "sean.bonnet@example.com",
             "ID": "id",
-            "Name": "Sean Bonnet",
+            "Name": "Sean Testman",
             "Updated": "2020-04-25 19:01:46",
             "UserName": "sean.bonnet"
         }
@@ -2017,7 +2019,7 @@ Queries the sys_user table in ServiceNow.
 >
 >|ID|Name|User Name|Email|Created|Updated|
 >|---|---|---|---|---|---|
->| id | Sean Bonnet | sean.bonnet | <sean.bonnet@example.com> | 2012-02-18 03:04:50 | 2020-04-25 19:01:46 |
+>| id | Sean Testman | sean.bonnet | <sean.bonnet@example.com> | 2012-02-18 03:04:50 | 2020-04-25 19:01:46 |
 
 ### servicenow-get-table-name
 

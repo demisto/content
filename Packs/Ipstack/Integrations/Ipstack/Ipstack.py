@@ -11,11 +11,10 @@ API_KEY = demisto.params().get("credentials", {}).get("password") or demisto.par
 RELIABILITY = demisto.params().get("integrationReliability", "C - Fairly reliable")
 BRAND_NAME = "Ipstack"
 
-if not demisto.params()["proxy"]:
-    del os.environ["HTTP_PROXY"]
-    del os.environ["HTTPS_PROXY"]
-    del os.environ["http_proxy"]
-    del os.environ["https_proxy"]
+if not demisto.params().get("proxy", False):
+    # Remove proxy environment variables if they exist
+    for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
+        os.environ.pop(proxy_var, None)
 
 """ HELPER FUNCTIONS """
 

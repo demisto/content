@@ -527,7 +527,7 @@ Returns the members of the specified team.
             },
             {
                 "@odata.type": "#microsoft.graph.aadUserConversationMember",
-                "displayName": "Harry Johnson",
+                "displayName": "Harry Testson",
                 "email": "harry@M365x987948.OnMicrosoft.com",
                 "id": "MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyM3NTJmNTBiNy0yNTZmLTQ1MzktYjc3NS1jNGQxMmYyZTQ3MjI=",
                 "roles": [],
@@ -546,7 +546,7 @@ Returns the members of the specified team.
 >|---|---|---|---|
 >| ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk= | Adele Vance | AdeleV@M365x987948.OnMicrosoft.com |  |
 >| ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM1OThlZmNkNC1lNTQ5LTQwMmEtOTYwMi0wYjUwMjAxZmFlYmU= | MOD Administrator | admin@M365x987948.OnMicrosoft.com | owner |
->| MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyM3NTJmNTBiNy0yNTZmLTQ1MzktYjc3NS1jNGQxMmYyZTQ3MjI= | Harry Johnson | harry@M365x987948.OnMicrosoft.com |  |
+>| MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyM3NTJmNTBiNy0yNTZmLTQ1MzktYjc3NS1jNGQxMmYyZTQ3MjI= | Harry Testson | harry@M365x987948.OnMicrosoft.com |  |
 
 ### microsoft-teams-member-get
 
@@ -653,7 +653,7 @@ Add a user to be a team member.
     "MicrosoftTeams": {
         "TeamMember": {
             "@odata.type": "#microsoft.graph.aadUserConversationMember",
-            "displayName": "Cameron White",
+            "displayName": "Cam Testman",
             "email": "CameronW@M365x987948.OnMicrosoft.com",
             "id": "ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk=",
             "roles": [
@@ -671,7 +671,7 @@ Add a user to be a team member.
 >
 >|id|displayName|email|roles|
 >|---|---|---|---|
->| ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk= | Cameron White | CameronW@M365x987948.OnMicrosoft.com | owner |
+>| ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk= | Cam Testman | CameronW@M365x987948.OnMicrosoft.com | owner |
 
 ### microsoft-teams-member-remove
 

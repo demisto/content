@@ -1,0 +1,4 @@
+### GTI RS Alert Information
+|Alert Name|Alert ID|Status|Priority|Priority Confidence|Priority Reasoning|Severity|Severity Confidence|Severity Reasoning|Relevance|Relevant|Relevance Confidence|Relevance Reasoning|Common Themes|Distinct Themes|Threat Scenario|AI Summary|Created Time|Updated Time|Creator|Updater|Etag|External ID|Finding Count|Findings|Configurations|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| [Test Alert Get 1](https://proactive.virustotal.com/alerts/alert-get-1?project=projects/test-project) | alert-get-1 | New | Low | Low | Test priority reasoning | Medium | Medium | Test severity reasoning | Low | True | High | Test relevance reasoning | theme-1 | distinct-1 | Data leak | Test AI summary for the alert. | 2026-04-22T06:43:07.513Z | 2026-04-22T06:43:07.513Z | creator-1 | updater-1 | etag-value | external-id-1 | 2 | finding-1,<br>finding-2 | config-1 |

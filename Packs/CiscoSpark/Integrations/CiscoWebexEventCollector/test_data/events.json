@@ -11,8 +11,8 @@
                 "roomId": "444444",
                 "roomType": "group",
                 "personId": "222222",
-                "personEmail": "ksolberg@paloaltonetworks.com",
-                "personDisplayName": "Kfir Solberg",
+                "personEmail": "jsmith@example.com",
+                "personDisplayName": "Kfir Testman",
                 "personOrgId": "555555",
                 "isModerator": false,
                 "isMonitor": false,
@@ -32,7 +32,7 @@
                 "roomType": "group",
                 "text": "👋 Welcome to Webex! But, more importantly, welcome to where you'll do the best work ever. In Spaces, you can send messages, share files, set up meetings, and even meet instantly with other people in the space. Pretty cool, right? Try sending a few practice messages, GIFs or files - you can even edit, react and reply to messages. Have some fun! If you’re looking for more, visit help.webex.com or join the Webex Community.",
                 "personId": "222222",
-                "personEmail": "ksolberg@paloaltonetworks.com",
+                "personEmail": "jsmith@example.com",
                 "created": "2023-11-05T13:33:47.045Z"
             }
         },

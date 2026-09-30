@@ -25,7 +25,7 @@ PRIVATE_KEY_CONTENT = (
     demisto.params().get("auth_json_creds", {}).get("password") or demisto.params().get("auth_json", "")
 ).encode("utf-8")
 DISABLE_SSL = demisto.params().get("insecure", False)
-PROXY = demisto.params().get("proxy")
+PROXY = demisto.params().get("proxy", False)
 SERVICE_NAME = "vision"
 SERVICE_VERSION = "v1"
 SERVICE_SCOPES = ["https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/cloud-vision"]

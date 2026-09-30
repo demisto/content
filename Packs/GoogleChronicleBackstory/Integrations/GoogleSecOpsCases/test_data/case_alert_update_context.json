@@ -1,0 +1,31 @@
+{
+    "alertId": "1000001",
+    "identifier": "TEST ALERT_00000000-0000-0000-0000-000000000010",
+    "caseId": 1001,
+    "createTime": "1778778979232",
+    "updateTime": "1779426987796",
+    "ruleGenerator": "Test-Alert-Rule-01",
+    "sourceGroupingIdentifier": "0.0.0.1",
+    "product": "Test Product",
+    "displayName": "TEST ALERT",
+    "vendor": "Test Vendor",
+    "environment": "Default Environment",
+    "ticketId": "0.0.0.1_2026-05-10 08:00:00",
+    "sourceSystemName": "Test Source System",
+    "closureDetails": {
+        "reason": "NOT_MALICIOUS",
+        "comment": "Reviewed and confirmed as false positive.",
+        "rootCause": "Misconfigured DLP policy",
+        "closingTimeMs": "1779447705049"
+    },
+    "sla": {
+        "expirationTime": "1780832620238",
+        "expirationStatus": "OPEN_SLA"
+    },
+    "priority": "HIGH",
+    "additionalProperties": "{\"Name\":\"TEST ALERT\",\"Type\":\"ALERT\"}",
+    "status": "CLOSE",
+    "startTime": "1778778979232",
+    "endTime": "1779426987796",
+    "alertGroupIdentifier": "TEST ALERT_00000000-0000-0000-0000-000000000010"
+}

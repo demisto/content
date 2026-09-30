@@ -1,0 +1,131 @@
+{
+  "next": null,
+  "previous": null,
+  "page_size": 100,
+  "total": 1,
+  "results": [
+    {
+      "id": "rs-001-aaaa-bbbb-cccc-ddddeeee0001",
+      "ctix_created": 1700000000,
+      "ctix_modified": 1700000000,
+      "version": "v3",
+      "title": "Test Result Set",
+      "timestamp": 1700000000,
+      "data": [
+        {
+          "id": "ind-001-aaaa-bbbb-cccc-ddddeeee0001",
+          "name": "1.2.3.4",
+          "sdo_name": "1.2.3.4",
+          "sdo_type": "indicator",
+          "type": "indicator",
+          "ioc_type": "ipv4-addr",
+          "created": 1700000000,
+          "modified": 1700000000,
+          "ctix_created": 1700000001,
+          "ctix_modified": 1700000001,
+          "ctix_score": 85,
+          "confidence_score": 85,
+          "source_tlp": "AMBER",
+          "tlp": "AMBER",
+          "severity": "HIGH",
+          "first_seen": 1699900000,
+          "last_seen": 1700000000,
+          "valid_from": 1699900000,
+          "valid_until": null,
+          "is_deprecated": false,
+          "is_false_positive": false,
+          "is_reviewed": true,
+          "is_revoked": false,
+          "is_whitelist": false,
+          "is_actioned": false,
+          "description": "Malicious IP used in C2 communication",
+          "custom_scores": {
+            "x_ctix_customscore_2": 34
+          },
+          "tags": ["malware", "c2"],
+          "sources": [
+            {"tlp": "AMBER", "name": "ThreatFeed Alpha", "score": 85, "first_seen": 1699900000, "last_seen": null}
+          ],
+          "indicator_type": {"type": "ipv4-addr", "attribute_field": "value"}
+        },
+        {
+          "id": "ind-002-aaaa-bbbb-cccc-ddddeeee0002",
+          "name": "evil.example.com",
+          "sdo_name": "evil.example.com",
+          "sdo_type": "indicator",
+          "type": "indicator",
+          "ioc_type": "domain-name",
+          "created": 1700000100,
+          "modified": 1700000100,
+          "ctix_created": 1700000101,
+          "ctix_modified": 1700000101,
+          "ctix_score": 55,
+          "confidence_score": 55,
+          "source_tlp": "GREEN",
+          "tlp": "GREEN",
+          "severity": "MEDIUM",
+          "first_seen": 1699950000,
+          "last_seen": 1700000100,
+          "valid_from": 1699950000,
+          "valid_until": 1710000000,
+          "is_deprecated": false,
+          "is_false_positive": false,
+          "is_reviewed": false,
+          "is_revoked": false,
+          "is_whitelist": false,
+          "is_actioned": false,
+          "description": "Suspicious domain observed in phishing campaign",
+          "tags": [
+            {"name": "phishing", "id": "tag-001"},
+            {"name": "suspicious", "id": "tag-002"}
+          ],
+          "sources": [
+            {"tlp": "GREEN", "name": "Internal SOC", "score": 55, "first_seen": 1699950000, "last_seen": null}
+          ],
+          "indicator_type": {"type": "domain-name", "attribute_field": "value"}
+        },
+        {
+          "id": "ind-003-aaaa-bbbb-cccc-ddddeeee0003",
+          "name": "https://malware.example.com/payload",
+          "sdo_name": "https://malware.example.com/payload",
+          "sdo_type": "indicator",
+          "type": "indicator",
+          "ioc_type": "url",
+          "created": 1700000200,
+          "modified": 1700000200,
+          "ctix_created": 1700000201,
+          "ctix_modified": 1700000201,
+          "ctix_score": 30,
+          "confidence_score": 30,
+          "source_tlp": "WHITE",
+          "tlp": "WHITE",
+          "severity": "LOW",
+          "first_seen": null,
+          "last_seen": null,
+          "valid_from": 1700000200,
+          "valid_until": null,
+          "is_deprecated": false,
+          "is_false_positive": false,
+          "is_reviewed": false,
+          "is_revoked": false,
+          "is_whitelist": false,
+          "is_actioned": false,
+          "description": null,
+          "tags": [],
+          "sources": [],
+          "indicator_type": {"type": "url", "attribute_field": "value"}
+        },
+        {
+          "id": "sdo-004-not-indicator",
+          "name": "APT29",
+          "sdo_name": "APT29",
+          "sdo_type": "threat-actor",
+          "type": "threat-actor",
+          "ioc_type": null,
+          "created": 1700000300,
+          "modified": 1700000300
+        }
+      ]
+    }
+  ]
+}

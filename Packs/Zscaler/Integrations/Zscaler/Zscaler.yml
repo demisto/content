@@ -1893,6 +1893,13 @@ script:
       description: If set to true, the destination IP address group is non-editable. This field is applicable only to predefined IP address groups, which cannot be modified.
       defaultValue: "False"
       type: textArea
+    - name: override
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: When set to true (default), the existing IP destination group configuration is replaced with the new values. When set to false, the existing configuration is preserved and new entries are appended.
+      defaultValue: "True"
     outputs:
     - contextPath: Zscaler.IPDestinationGroup.ID
       description: Unique identifier for the destination IP group.
@@ -2000,7 +2007,7 @@ script:
     description: Deletes the IP destination group associated with the specified group ID.
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.7090913
+  dockerimage: demisto/python3:3.12.13.10116658
   type: python
 fromversion: 5.0.0
 tests:

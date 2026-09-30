@@ -127,6 +127,23 @@ def test_validate_configuration_parameters(capfd):
     validate_configuration_parameters(integration_params, "test-module")
 
 
+def test_client_max_fetch_default(mock_client):
+    """Test case scenario for default max_fetch value when not configured."""
+    assert mock_client.max_fetch == 100
+
+
+@pytest.mark.parametrize("max_fetch_value, expected", [("100", 100), ("75", 75), ("50", 50), ("25", 25), ("10", 10)])
+def test_client_max_fetch_custom(mocker, max_fetch_value, expected):
+    """Test case scenario for custom max_fetch value from integration parameters."""
+    credentials = {"type": "service_account"}
+    mocker.patch.object(service_account.Credentials, "from_service_account_info", return_value=credentials)
+    mocker.patch.object(auth_requests, "AuthorizedSession", return_value=MockResponse)
+    custom_params = GENERIC_INTEGRATION_PARAMS.copy()
+    custom_params["max_fetch"] = max_fetch_value
+    client = Client(params=custom_params, proxy=False, disable_ssl=True)
+    assert client.max_fetch == expected
+
+
 def test_validate_configuration_parameters_with_v1_alpha_missing_instance_id():
     """Test case scenario for validating configuration parameters with v1 alpha enabled but missing project instance id."""
     integration_params = GENERIC_INTEGRATION_PARAMS.copy()

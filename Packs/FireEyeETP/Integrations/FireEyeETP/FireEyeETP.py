@@ -49,6 +49,11 @@ SCOPES = PARAMS.get(
 ).strip()
 API_KEY = PARAMS.get("credentials_api_key", {}).get("password") or PARAMS.get("api_key")
 
+DEFAULT_TOKEN_URL = "https://auth.trellix.com/auth/realms/IAM/protocol/openid-connect/token"
+TOKEN_URL_SUFFIX = "/iam/v1.0/token"
+_token_url_override = PARAMS.get("token_url", "").strip()
+TOKEN_URL = urljoin(_token_url_override, TOKEN_URL_SUFFIX) if _token_url_override else DEFAULT_TOKEN_URL
+
 BASE_PATH_V1 = "{}/api/v1".format(PARAMS.get("server"))  # Deprecated endpoint
 BASE_PATH_V2 = "{}/api/v2".format(PARAMS.get("server"))
 
@@ -119,8 +124,7 @@ def fetch_oauth_token():
     """
     Fetch OAuth 2.0 access token
     """
-    # Trellix OAuth2 endpoint
-    token_url = "https://auth.trellix.com/auth/realms/IAM/protocol/openid-connect/token"
+    token_url = TOKEN_URL
     credentials = f"{CLIENT_ID}:{CLIENT_SECRET}"
     encoded_credentials = base64.b64encode(credentials.encode()).decode()
 
@@ -315,10 +319,9 @@ class Client(BaseClient):
 
 def set_proxies():
     if not PARAMS.get("proxy", False):
-        del os.environ["HTTP_PROXY"]
-        del os.environ["HTTPS_PROXY"]
-        del os.environ["http_proxy"]
-        del os.environ["https_proxy"]
+        # Remove proxy environment variables if they exist
+        for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
+            os.environ.pop(proxy_var, None)
 
 
 def listify(comma_separated_list):

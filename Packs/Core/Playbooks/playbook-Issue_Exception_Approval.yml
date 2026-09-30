@@ -1,0 +1,494 @@
+description: This playbook manages communication for the approval of a requested issue exception.
+id: 'Issue Exception Approval'
+inputs: []
+name: Issue Exception Approval
+outputs: []
+quiet: true
+adopted: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 221dcc0d-7f5e-418c-8fc5-758098644a9e
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 221dcc0d-7f5e-418c-8fc5-758098644a9e
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            ${requestorName} (${requestorEmail}) is requesting approval for the following Issue Exception:
+            - **Rule Name** : ${ruleName}
+            - **Match Criteria**: ${matchCriteria}
+            - **Number of Matching Issues**: ${matchingIssues}
+            - **Justification**: ${requestorJustification}
+            - **Exception Date UTC**: ${exceptionPeriod}
+
+            Do you approve this exception?
+        options: []
+        optionsarg:
+        - simple: Yes, approve this exception
+        - simple: No, reject this exception
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Approving this exception will pause SLA timers for all matching issues. This pause will remain in effect for the duration specified in the exception rule.
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Decision Comments
+        options: []
+        optionsarg: []
+        placeholder: Enter your comments
+        readonly: false
+        required: true
+        tooltip: Please provide context for your decision. This ensures a clear history of why this exception was granted or denied.
+        type: shortText
+      sender: Cortex Issue Exception Approval Request
+      title: Cortex Issue Exception Approval Request
+      totalanswers: 0
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: |
+          <p>Hello,</p>
+          <br>
+          <p>${requestorName} is requesting your approval to create a security issue exception. Click the link below to approve. You have 7 days to approve this request.</p>
+      cc: {}
+      format: html
+      methods:
+      - email
+      subject:
+        simple: Cortex Issue Exception Approval Request - ${ruleName}
+      timings:
+        completeafterreplies: 1
+        completeaftersla: true
+        completeafterv2: true
+        retriescount: 28
+        retriesinterval: 360
+      to:
+        simple: ${approverEmail}
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    sla:
+      days: 0
+      hours: 0
+      minutes: 0
+      weeks: 1
+    task:
+      brand: ""
+      description: Send data collection form to approver.
+      id: c8dbd48c-d4ad-4ee3-afe1-9ad609a0b3c0
+      iscommand: false
+      name: Send Data Collection Form to Approver
+      type: collection
+      version: -1
+    taskid: c8dbd48c-d4ad-4ee3-afe1-9ad609a0b3c0
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Cortex Issue Exception Approval Request.Answers.0
+          operator: isEqualString
+          right:
+            value:
+              simple: Yes, approve this exception
+      label: Approved
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Cortex Issue Exception Approval Request.Answers.0
+          operator: isEqualString
+          right:
+            value:
+              simple: No, reject this exception
+      label: Rejected
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Cortex Issue Exception Approval Request.Answers
+          operator: isEmpty
+      label: No Answer
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Approved:
+      - "15"
+      No Answer:
+      - "17"
+      Rejected:
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Identify the decision result.
+      id: 10fa4d3f-be2b-4b75-8343-c095075360b0
+      iscommand: false
+      name: What Was the Decision Result?
+      type: condition
+      version: -1
+    taskid: 10fa4d3f-be2b-4b75-8343-c095075360b0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      htmlBody:
+        simple: "<p>Hello,</p>\n\n<p>Your Exception Request <b>${ruleName}</b> has been approved!</p>\n\n<p>Issues matching the established criteria are now suppressed. This exception will remain active until <b>${exceptionPeriod}</b>.</p>\n\n<p>You can view and manage this exception rule  \n<b><a href=\"${demistoUrls.server}/exceptions-configuration/issue-exclusions-and-exceptions/issue-exceptions\">here.</a></b></p>"
+      subject:
+        simple: Cortex Issue Exception Request ${ruleName} Approved
+      to:
+        simple: ${requestorEmail}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: commands.server.mail.sendmail
+      id: 828fdaef-c114-4f43-8477-40203c0d8ff0
+      iscommand: true
+      name: Notify Requestor Of Approval
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 828fdaef-c114-4f43-8477-40203c0d8ff0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 750
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      htmlBody:
+        simple: "<p>Hello,</p>\n\n<p>Your Exception Request <b>${ruleName}</b> has been rejected.</p>\n\n<p>Issues related to this rule will continue to be generated.</p>\n\n<p>Please review the rejection justification and reviewer comments \n<b><a href=\"${demistoUrls.server}/exceptions-configuration/issue-exclusions-and-exceptions/issue-exceptions\">here.</a></b></p>"
+      subject:
+        simple: Cortex Issue Exception Request ${ruleName} Rejected
+      to:
+        simple: ${requestorEmail}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: commands.server.mail.sendmail
+      id: cc21eca5-7044-4121-997a-69803ae13005
+      iscommand: true
+      name: Notify Requestor Of Rejection
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: cc21eca5-7044-4121-997a-69803ae13005
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 750
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      htmlBody:
+        simple: |-
+          <p>Hello,</p>
+
+          <p>No decision was made on Exception Request <b>${ruleName}</b> and as a result the request is no longer active.</p>
+      subject:
+        simple: Cortex Issue Exception Request ${ruleName} Expired
+      to:
+        simple: ${requestorEmail}, ${approverEmail}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: commands.server.mail.sendmail
+      id: 815c27dd-6598-403f-adc1-a3169ec5570f
+      iscommand: true
+      name: Notify Requestor And Approver Of Expiration
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 815c27dd-6598-403f-adc1-a3169ec5570f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 750
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 07a09e9b-b4ad-4c69-aa5d-17d0ea39d3bd
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 07a09e9b-b4ad-4c69-aa5d-17d0ea39d3bd
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1000
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      approval_justification:
+        simple: ${Cortex Issue Exception Approval Request.Answers.1}
+      approver_email:
+        simple: ${approverEmail}
+      exception_id:
+        simple: ${exceptionId}
+      status:
+        simple: APPROVED
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Updates the approval status of an issue exception.
+      id: 29cc5079-aa6a-4f5d-bd36-a00e282ba3cd
+      iscommand: true
+      name: Update Exception as Approved
+      script: Builtin|||updateException
+      type: regular
+      version: -1
+    taskid: 29cc5079-aa6a-4f5d-bd36-a00e282ba3cd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 580
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      approval_justification:
+        simple: ${Cortex Issue Exception Approval Request.Answers.1}
+      approver_email:
+        simple: ${approverEmail}
+      exception_id:
+        simple: ${exceptionId}
+      status:
+        simple: REJECTED
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Updates the approval status of an issue exception.
+      id: a79e0fff-905a-48f2-b66a-7fcdea9c519a
+      iscommand: true
+      name: Update Exception as Rejected
+      script: Builtin|||updateException
+      type: regular
+      version: -1
+    taskid: a79e0fff-905a-48f2-b66a-7fcdea9c519a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      approval_justification:
+        simple: No decision was made within the approval timeout period.
+      approver_email:
+        simple: ${approverEmail}
+      exception_id:
+        simple: ${exceptionId}
+      status:
+        simple: NO_DECISION_MADE
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Updates the approval status of an issue exception.
+      id: e6f71862-2a0d-43b6-9e31-e1967263df09
+      iscommand: true
+      name: Update Exception as No Decision Made
+      script: Builtin|||updateException
+      type: regular
+      version: -1
+    taskid: e6f71862-2a0d-43b6-9e31-e1967263df09
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 580
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1010,
+        "width": 1360,
+        "x": -20,
+        "y": 50
+      }
+    }
+  }
+internal: true
+tests:
+- No tests (auto formatted)
+fromversion: 8.14.0
+marketplaces:
+- platform

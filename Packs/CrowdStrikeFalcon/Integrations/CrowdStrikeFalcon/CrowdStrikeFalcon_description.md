@@ -26,12 +26,14 @@ In order to use the CrowdStrike Falcon integration, the API client and secret mu
 - Identity Protection Assessment - Read
 - Cases - Read and Write
 - NGSIEM Search - Read and Write
+- Recon - monitoring-rules Read and Write
 
 ### Troubleshooting
 
 - When encountering connectivity or authorization errors, it is necessary to include the IP addresses corresponding to the relevant region in the CrowdStrike Falcon allow list. These IP addresses can be found in the [documentation on enabling access to Cortex](<~XSIAM> https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Resources-Required-to-Enable-Access </~XSIAM> <~XSOAR> https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Enable-access-to-Palo-Alto-Networks-resources </~XSOAR>) by searching for **Egress**.
 
 - When encountering HTTP 429 response error code from CrowdStrike Falcon, use an engine as explained in this [link](<~XSIAM> https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Engines </~XSIAM> <~XSOAR> https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Engines </~XSOAR>).
+
 
 <~XSOAR>
 
@@ -47,5 +49,27 @@ Optional types are:
   - OFP Detection
   - NGSIEM Detection
   - Third Party Detection
+  - Recon notifications
   Records from the detection endpoint of the *CrowdStrike Falcon* UI could be of types: Endpoint Detection and OFP Detection.
 </~XSOAR>
+
+### Fetch Assets
+
+- Integration supports **fetch-assets** option. CrowdStrike Falcon assets and vulnerabilities can be fetched and ingest into XSIAM Unified Asset Inventory.
+Supported asset types include:
+  - Spotlight
+  - CNAPP Alerts
+- Spotlight asset and vulnerability collection retrieves only vulnerabilities updated within the last 100 days, keeping each collection focused on recent data.
+
+<~XSIAM>
+
+#### Long running instance for Spotlight vulnerabilities
+
+On large tenants a full Spotlight collection can take many hours - longer than the maximum execution time allowed for a single assets fetch. In such cases, the fetch is terminated before it completes. Enable the *Long running instance for Spotlight vulnerabilities* parameter (under the **Collect** section, **Advanced**) to run the Spotlight fetch in a long-running container instead, which is not bound by that execution time limit and lets a cycle run to completion. A new cycle starts every 24 hours, or immediately after the previous one ends if it ran longer.
+
+When using this parameter, note that:
+
+- **Only one collection mode per instance.** Do not enable *Fetch assets* on the same instance. Configure one instance for the long-running Spotlight fetch, and a separate instance for the regular assets fetch.
+- **Spotlight vulnerabilities only.** The *Asset types to fetch* selection is ignored in this mode, and CNAPP Alerts are not collected. To collect CNAPP Alerts, use a separate instance with the regular assets fetch.
+
+</~XSIAM>

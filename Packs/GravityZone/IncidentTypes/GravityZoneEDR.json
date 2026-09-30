@@ -1,0 +1,22 @@
+{
+    "id": "GravityZone EDR",
+    "name": "GravityZone EDR",
+    "prevName": "GravityZone EDR",
+    "color": "#85c8ff",
+    "version": -1,
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "layout": "GravityZone EDR Incident Layout",
+    "detached": false,
+    "reputationCalc": 0,
+    "fromVersion": "6.10.0"
+}

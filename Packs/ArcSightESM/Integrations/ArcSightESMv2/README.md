@@ -66,7 +66,7 @@ Cortex XSOAR is designed for an automatic response, so make sure to define condi
     - **Product Version**: Select the ArcSight ESM version. 7.4 above using the new Swagger detect-api. Note - not all the commands are using the new API at the moment.
     - **Use REST Endpoints**: Mark this checkbox to use REST endpoints for the commands related to 'entries' instead of the default legacy SOAP endpoints.
 4. Click **Test** to validate the URLs, token, and connection.
-    If you are experiencing issues with the service configuration, please contact Cortex XSOAR support at support@paloaltonetworks.com.
+    If you are experiencing issues with the service configuration, please contact Cortex XSOAR support at support@example.com.
 5. After completing the test successfully, press the ‘Done’ button.
 
 ## Use-Cases

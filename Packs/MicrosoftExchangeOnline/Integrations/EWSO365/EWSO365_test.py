@@ -33,6 +33,7 @@ from EWSO365 import (
 )
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone, FileAttachment
 from exchangelib.attachments import AttachmentId, ItemAttachment
+from exchangelib.errors import ErrorInternalServerTransientError, ErrorServerBusy, MalformedResponseError, RateLimitError
 from exchangelib.items import Item, Message
 from exchangelib.properties import MessageHeader
 from freezegun import freeze_time
@@ -131,7 +132,7 @@ class TestNormalCommands:
         expected = COMMAND_OUTPUTS[command_name]
         client = self.MockClient()
         client.account.walk_res = raw_response
-        res = find_folders(client)
+        res = find_folders(client, {})
         actual_ec = res[1]
         assert expected == actual_ec
 
@@ -156,7 +157,7 @@ class TestNormalCommands:
         mocker.patch.object(GetSearchableMailboxes, "__init__", return_value=None)
         mocker.patch.object(GetSearchableMailboxes, "call", return_value=raw_response)
         client = self.MockClient()
-        res = get_searchable_mailboxes(client)
+        res = get_searchable_mailboxes(client, {})
         actual_ec = res.outputs
         assert expected.get(res.outputs_prefix) == actual_ec
 
@@ -181,7 +182,8 @@ class TestNormalCommands:
         mocker.patch.object(ExpandGroup, "__init__", return_value=None)
         mocker.patch.object(ExpandGroup, "call", return_value=raw_response)
         client = self.MockClient()
-        res = get_expanded_group(client, email_address="testgroup-1@demistodev.onmicrosoft.com")
+        args = {"email_address": "testgroup-1@demistodev.onmicrosoft.com"}
+        res = get_expanded_group(client, args)
         actual_ec = res.outputs
         assert expected.get(res.outputs_prefix) == actual_ec
 
@@ -389,6 +391,67 @@ def test_fetch_and_mark_as_read(mocker):
     client.mark_as_read = True
     fetch_emails_as_incidents(client, {}, RECEIVED_FILTER, False)
     assert mark_item_as_read.called is True
+
+
+@pytest.mark.parametrize(
+    "transient_error",
+    [
+        pytest.param(ErrorServerBusy("Reraised from ErrorInternalServerTransientError"), id="ErrorServerBusy"),
+        pytest.param(ErrorInternalServerTransientError("Caused by HTTP 503 response"), id="TransientError"),
+        pytest.param(MalformedResponseError("Unknown failure in response. Code: 504"), id="MalformedResponse504"),
+        pytest.param(RateLimitError("Too many requests", wait=10), id="RateLimitError"),
+    ],
+)
+def test_fetch_skips_cycle_on_transient_server_error(mocker, transient_error):
+    """
+    Given:
+        - Exchange raises a transient error (HTTP 503/504 throttling) while resolving the folder
+    When:
+        - Running fetch command
+    Then:
+        - The cycle is skipped without raising, and the error counter is incremented in the last run
+    """
+    from EWSO365 import RECEIVED_FILTER
+
+    client = TestNormalCommands.MockClient()
+    client.folder_name = "Inbox"
+    client.get_folder_by_path = mocker.Mock(side_effect=transient_error)
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+    last_run = {"lastRunTime": "2021-07-14T12:59:17Z", "folderName": "Inbox", "ids": []}
+
+    incidents = fetch_emails_as_incidents(client, last_run, RECEIVED_FILTER, False)
+
+    assert incidents == []
+    assert set_last_run.call_args[0][0]["errorCounter"] == 1
+
+
+def test_fetch_raises_when_transient_error_persists(mocker):
+    """
+    Given:
+        - A transient error, and a last run indicating the previous fetches already failed the same way
+    When:
+        - Running fetch command
+    Then:
+        - The error is raised so the failure becomes visible instead of being silently swallowed forever
+    """
+    from EWSO365 import MAX_CONSECUTIVE_TRANSIENT_ERRORS, RECEIVED_FILTER
+
+    client = TestNormalCommands.MockClient()
+    client.folder_name = "Inbox"
+    client.get_folder_by_path = mocker.Mock(side_effect=ErrorServerBusy("still busy"))
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "error")
+
+    last_run = {
+        "lastRunTime": "2021-07-14T12:59:17Z",
+        "folderName": "Inbox",
+        "ids": [],
+        "errorCounter": MAX_CONSECUTIVE_TRANSIENT_ERRORS,
+    }
+
+    with pytest.raises(ErrorServerBusy):
+        fetch_emails_as_incidents(client, last_run, RECEIVED_FILTER, False)
 
 
 HEADERS_PACKAGE = [
@@ -657,7 +720,7 @@ def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
 @pytest.mark.parametrize(
     "mime_content, expected_data, expected_attachmentSHA256",
     [
-        (b"\xc400", "\r\nÄ00", "90daab88e6fac673e12acbbe28879d8d2b60fc2f524f1c2ff02fccb8e3e526a8"),
+        (b"\xc400", "\r\nД00", "90daab88e6fac673e12acbbe28879d8d2b60fc2f524f1c2ff02fccb8e3e526a8"),
         (
             "Hello, this is a sample email with non-ASCII characters: é, ñ, ü.",
             "\r\nHello, this is a sample email with non-ASCII characters: é, ñ, ü.",
@@ -962,7 +1025,7 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
 
     mock_file_result = mocker.patch("EWSO365.fileResult")
 
-    get_item_as_eml(MockEWSClient(), "item", "account@test.com")
+    get_item_as_eml(MockEWSClient(), {"item_id": "item", "target_mailbox": "account@test.com"})
 
     mock_file_result.assert_called_once_with(expected_file_name, expected_data)
 
@@ -1364,6 +1427,70 @@ def test_fetch_attachments_for_message_output(mocker):
             False,
             id="empty_exclude_ids_not_duplicate",
         ),
+        pytest.param(
+            "abc",
+            "2021-01-01T12:00:00Z",
+            {"abc>": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="partial_right_bracket_stored_is_duplicate",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T12:00:00Z",
+            {"<abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="partial_left_bracket_stored_is_duplicate",
+        ),
+        pytest.param(
+            "<abc>",
+            "2021-01-01T12:00:00Z",
+            {"abc>": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="item_full_brackets_stored_right_bracket_is_duplicate",
+        ),
+        pytest.param(
+            "<abc>",
+            "2021-01-01T12:00:00Z",
+            {"<abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="item_full_brackets_stored_left_bracket_is_duplicate",
+        ),
+        pytest.param(
+            "abc>",
+            "2021-01-01T12:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="item_right_bracket_stored_clean_is_duplicate",
+        ),
+        pytest.param(
+            "<abc",
+            "2021-01-01T12:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="item_left_bracket_stored_clean_is_duplicate",
+        ),
+        pytest.param(
+            "abc>",
+            "2021-01-01T13:00:00Z",
+            {"abc>": "2021-01-01T12:00:00Z"},
+            "received-time",
+            False,
+            id="partial_right_bracket_item_newer_not_duplicate",
+        ),
+        pytest.param(
+            "<abc",
+            "2021-01-01T13:00:00Z",
+            {"<abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            False,
+            id="partial_left_bracket_item_newer_not_duplicate",
+        ),
     ],
 )
 def test_is_item_duplicate(message_id, item_time, exclude_ids, incident_filter, expected_result):
@@ -1389,6 +1516,7 @@ def test_is_item_duplicate(message_id, item_time, exclude_ids, incident_filter, 
         6. No ID match - not duplicate
         7. Modified-time filter behavior
         8. Edge cases (no message_id, empty exclude_ids)
+        9. Partial bracket forms (right-only, left-only) - duplicate detection
     """
     item_datetime = EWSDateTime.from_string(item_time)
     msg = Message(

@@ -774,7 +774,7 @@ The authentication process is conducted on behalf of the specific user who initi
 | start_time        | The meeting start time in ISO 8601 format e.g., "2019-07-12T14:30:34.2444915-07:00". | Optional     |
 | end_time          | The meeting end time in ISO 8601 format e.g., "2019-07-12T14:30:34.2444915-07:00".   | Optional     |
 | subject           | The meeting subject.                                                                 | Required     |
-| member            | Display name/mail/UPN of user who created the meeting, e.g., Adam Smith.             | Required     |
+| member            | Display name/mail/UPN of user who created the meeting, e.g., Adam Testman.             | Required     |
 
 ##### Context Output
 
@@ -1514,3 +1514,45 @@ Notes:
 | MicrosoftTeams.MessagesListNextLink | String | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. |
 | MicrosoftTeams.MessagesListMetadata.returned_count | Number | The actual number of messages returned in this specific execution. |
 | MicrosoftTeams.MessagesListMetadata.filtered_count | Number | The total number of messages in the system that match the specified filter criteria. |
+
+### microsoft-teams-send-proactive-message
+
+***
+Sends a proactive message to any Microsoft Teams user across the organization.
+
+This command enables direct communication with users without requiring them to be in a specific team or channel.
+
+##### Base Command
+
+`microsoft-teams-send-proactive-message`
+
+##### Required Permissions
+
+- `User.Read.All` - *Application and Delegated*
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user to send the message to. Accepts any of the following identifiers:<br/>- Email address (e.g., "john.doe@example.com")<br/>- User Principal Name (e.g., "john.doe@domain.onmicrosoft.com")<br/>- Display name (e.g., "John Doe")<br/>- User GUID (e.g., "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2")<br/><br/>The command will automatically resolve the identifier to the user's ID using Microsoft Graph API. | Required |
+| message | The text message to send to the user. | Optional |
+| adaptive_card | The Microsoft Teams adaptive card to send (in JSON format). | Optional |
+
+**Note**: Either `message` or `adaptive_card` must be provided, but not both.
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftTeams.Conversation.ConversationId | String | The ID of the conversation created or used. |
+| MicrosoftTeams.Conversation.UserId | String | The resolved user ID. |
+| MicrosoftTeams.Conversation.ActivityId | String | The ID of the sent message activity. |
+| MicrosoftTeams.Conversation.UserIdentifier | String | The original user identifier provided. |
+
+##### Command Example
+
+```!microsoft-teams-send-proactive-message user_id="user@example.com" message="Your file has been quarantined due to security concerns."```
+
+##### Human Readable Output
+
+Message was sent successfully.

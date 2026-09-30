@@ -1,3 +1,4 @@
+from datetime import UTC
 from typing import Any, cast
 from urllib.parse import urlparse
 
@@ -86,13 +87,13 @@ class OrcaClient:
 
     def get_alerts(
         self, time_from: str | None, page: int | None = 1, limit: int = ORCA_API_LIMIT
-    ) -> tuple[List[dict[str, Any]], bool]:
+    ) -> tuple[List[dict[str, Any]], bool, bool]:
         """
         Fetch alerts
         :param time_from: datetime
         :param page: int
         :param limit: int
-        :return: dict
+        :return: (alerts, is_last_page, had_error)
         """
         demisto.info(f"Get alerts start, {time_from=} {page=} {limit=}")
         alerts: List[dict[str, Any]] = []
@@ -112,6 +113,7 @@ class OrcaClient:
         }
 
         is_last_page = False
+        had_error = False
         try:
             response = self.client._http_request(
                 method="POST",
@@ -121,19 +123,19 @@ class OrcaClient:
             )
             if response.get("status") != "success":
                 demisto.info(f"got bad response, {response.get('error')}")
-                return [], True
+                return [], True, True  # Error occurred, don't advance pagination
             else:
                 alerts = response.get("data")
                 if not isinstance(alerts, list):
                     demisto.info(f"Unexpected data type for alerts: {type(alerts)}")
-                    return [], True
+                    return [], True, False  # Error occurred
 
             total_items = response.get("total_items", 0)
             demisto.info(f"Total items to fetch: {total_items}")
 
             if total_items == 0:
                 is_last_page = True
-                return alerts, is_last_page
+                return alerts, is_last_page, had_error
 
             if limit > 0:
                 total_pages = (total_items + limit - 1) // limit
@@ -141,13 +143,13 @@ class OrcaClient:
 
         except requests.exceptions.ReadTimeout as e:
             demisto.info(f"Alerts Request ReadTimeout error: {str(e)}")
-            return [], True
+            return [], True, True  # Error occurred, don't advance
         except DemistoException as e:
             demisto.info(f"Alerts Request Error: {str(e)}")
-            return [], True
+            return [], True, True  # Error occurred, don't advance
 
         demisto.info(f"done fetching orca alerts, fetched {len(alerts)} alerts.")
-        return alerts, is_last_page
+        return alerts, is_last_page, had_error
 
     def set_alert_score(self, alert_id: str, orca_score: float) -> dict[str, Any]:
         demisto.debug("Set alert score.")
@@ -268,6 +270,86 @@ def get_incidents_from_alerts(alerts: List[dict[str, Any]]) -> List[dict[str, An
     return incidents
 
 
+def get_alert_last_sync(alert: dict[str, Any]) -> str | None:
+    # The API has returned this field both as "Last_sync" and "last_sync"
+    for field in ("Last_sync", "last_sync"):
+        value = alert.get(field)
+        if value and isinstance(value, str):
+            return value
+    return None
+
+
+def parse_last_sync(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    try:
+        parsed = dateutil.parser.parse(value)
+    except (ValueError, OverflowError) as e:
+        demisto.info(f"Failed to parse last_sync value: {value}. Error: {e}")
+        return None
+    if parsed.tzinfo is None:
+        # Naive timestamps from the API are UTC
+        parsed = parsed.replace(tzinfo=UTC)
+    return parsed
+
+
+def filter_boundary_duplicates(alerts: List[dict[str, Any]], boundary_alert_ids: dict[str, str]) -> List[dict[str, Any]]:
+    """Drop alerts that were already delivered at the previous watermark.
+
+    The API filters by last_sync >= from_date, so alerts sitting exactly on the
+    watermark are returned again on the next cycle. An alert is dropped only if
+    both its id and its last_sync are unchanged — if it was updated since, its
+    last_sync differs and it must be delivered again.
+    """
+    if not boundary_alert_ids:
+        return alerts
+
+    filtered = []
+    for alert in alerts:
+        alert_id = alert.get("AlertId")
+        # Recorded boundary values are never None, so an alert missing from the
+        # map (or missing last_sync entirely) never matches and is delivered
+        recorded_sync = boundary_alert_ids.get(alert_id) if alert_id else None
+        if recorded_sync is not None and recorded_sync == get_alert_last_sync(alert):
+            demisto.info(f"Skipping boundary alert {alert_id}, already delivered in the previous cycle")
+            continue
+        filtered.append(alert)
+    return filtered
+
+
+def advance_cycle_sync_state(
+    alerts: List[dict[str, Any]],
+    cycle_max_sync: str | None,
+    cycle_boundary_ids: dict[str, str],
+) -> tuple[str | None, dict[str, str]]:
+    """Fold this page's alerts into the cycle watermark.
+
+    Returns the max last_sync seen so far in the current fetch cycle and the
+    ids of the alerts sitting exactly on that value (the next boundary set).
+    Alerts without a parsable last_sync are ignored for the watermark.
+    """
+    max_dt = parse_last_sync(cycle_max_sync)
+    max_raw = cycle_max_sync
+    boundary = dict(cycle_boundary_ids)
+
+    for alert in alerts:
+        raw = get_alert_last_sync(alert)
+        if raw is None:
+            continue
+        parsed = parse_last_sync(raw)
+        if parsed is None:
+            continue
+        alert_id = alert.get("AlertId")
+        if max_dt is None or parsed > max_dt:
+            max_dt = parsed
+            max_raw = raw
+            boundary = {alert_id: raw} if alert_id else {}
+        elif parsed == max_dt and alert_id:
+            boundary[alert_id] = raw
+
+    return max_raw, boundary
+
+
 def fetch_incidents(
     orca_client: OrcaClient,
     last_run: dict[str, Any],
@@ -284,7 +366,12 @@ def fetch_incidents(
 
     last_run_time = last_run.get("lastRun")
     step = last_run.get("step", STEP_INIT)
-    next_run = {
+    # Alerts delivered at the previous watermark: {AlertId: last_sync}
+    boundary_alert_ids: dict[str, str] = last_run.get("boundary_alert_ids") or {}
+    # Watermark accumulated across the pages of the current fetch cycle
+    cycle_max_sync: str | None = last_run.get("cycle_max_sync")
+    cycle_boundary_ids: dict[str, str] = last_run.get("cycle_boundary_ids") or {}
+    next_run: dict[str, Any] = {
         "step": step,
     }
 
@@ -299,7 +386,6 @@ def fetch_incidents(
             demisto.info("pull_existing_alerts flag is not set, not pulling alerts")
             # Pull only new alerts from now
             time_from = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
-
         next_run["step"] = STEP_FETCH
     else:
         # Not first run, continue exporting alerts from last run time
@@ -311,22 +397,45 @@ def fetch_incidents(
         time_from = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
 
     # Fetch alerts
-    alerts, is_last_page = orca_client.get_alerts(
+    alerts, is_last_page, had_error = orca_client.get_alerts(
         time_from=time_from,
         limit=max_fetch,
         page=fetch_page,
     )
 
-    # Update next_run based on whether it's the last page
-    if is_last_page:
-        # reset page count and update last run time
-        next_run["fetch_page"] = 1
-        next_run["lastRun"] = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
+    # Only update next_run if no error occurred
+    if had_error:
+        # Preserve the current state for retry
+        next_run["fetch_page"] = fetch_page
+        next_run["lastRun"] = last_run_time
+        next_run["step"] = step
+        next_run["boundary_alert_ids"] = boundary_alert_ids
+        next_run["cycle_max_sync"] = cycle_max_sync
+        next_run["cycle_boundary_ids"] = cycle_boundary_ids
+        demisto.info("API error occurred, preserving current fetch state for retry")
     else:
-        # increment page count
-        # Keep the lastRun datetime as is
-        next_run["fetch_page"] = fetch_page + 1
-        next_run["lastRun"] = time_from
+        alerts = filter_boundary_duplicates(alerts, boundary_alert_ids)
+        cycle_max_sync, cycle_boundary_ids = advance_cycle_sync_state(alerts, cycle_max_sync, cycle_boundary_ids)
+        if is_last_page:
+            # Success: cycle finished. Advance the watermark to the latest
+            # last_sync actually received — never the clock, which would skip
+            # alerts that became visible after the data was read (e.g. due to
+            # replication delay). An empty cycle keeps the watermark in place.
+            next_run["fetch_page"] = 1
+            if cycle_max_sync:
+                next_run["lastRun"] = cycle_max_sync
+                next_run["boundary_alert_ids"] = cycle_boundary_ids
+            else:
+                next_run["lastRun"] = time_from
+                next_run["boundary_alert_ids"] = boundary_alert_ids
+        else:
+            # Success: increment page count
+            # Keep the lastRun datetime as is, carry the cycle watermark
+            next_run["fetch_page"] = fetch_page + 1
+            next_run["lastRun"] = time_from
+            next_run["boundary_alert_ids"] = boundary_alert_ids
+            next_run["cycle_max_sync"] = cycle_max_sync
+            next_run["cycle_boundary_ids"] = cycle_boundary_ids
 
     # Prepare incidents
     incidents = get_incidents_from_alerts(alerts)

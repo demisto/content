@@ -1,0 +1,44 @@
+{
+  "Vectra.Entity.Notes(val.entity_id && val.entity_id == obj.entity_id && val.entity_type && val.entity_type == obj.entity_type && val.note_id && val.note_id == obj.note_id)": [
+    {
+      "id": 825,
+      "date_created": "2023-08-09T11:08:53Z",
+      "date_modified": "2023-08-25T11:08:53Z",
+      "created_by": "test_user",
+      "modified_by": "test_user_2",
+      "note": "This entity with the name IP-192.168.30.189 and ID 97 is an host.",
+      "note_id": 825,
+      "entity_id": 1,
+      "entity_type": "account"
+    },
+    {
+      "id": 809,
+      "date_created": "2023-08-09T10:10:21Z",
+      "created_by": "test_user",
+      "note": "This entity with the name IP-192.168.30.189 and ID 97 is an host.",
+      "note_id": 809,
+      "entity_id": 1,
+      "entity_type": "account"
+    },
+    {
+      "id": 798,
+      "date_created": "2023-08-09T10:08:58Z",
+      "date_modified": "2023-08-24T10:08:58Z",
+      "created_by": "test_user",
+      "modified_by": "test_user_2",
+      "note": "This entity with the name IP-192.168.30.189 and ID 97 is an host.",
+      "note_id": 798,
+      "entity_id": 1,
+      "entity_type": "account"
+    },
+    {
+      "id": 787,
+      "date_created": "2023-08-09T09:35:27Z",
+      "created_by": "test_user",
+      "note": "This entity with the name IP-192.168.30.189 and ID 97 is an host.",
+      "note_id": 787,
+      "entity_id": 1,
+      "entity_type": "account"
+    }
+  ]
+}

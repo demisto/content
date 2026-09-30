@@ -1,0 +1,20 @@
+MIME-Version: 1.0
+From: sender@example.com
+To: recipient@example.com
+Subject: Test HTML entities in email
+Date: Mon, 01 Jan 2024 12:00:00 +0000
+Content-Type: multipart/mixed;
+ boundary="----boundary-test-12345"
+
+------boundary-test-12345
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<html><body>
+<p>Visit <a href=3D"https://example.com/page?foo=3Dbar&amp;baz=3D1">our si=
+te</a></p>
+<p>Contact us at <a href=3D"https://example.com/contact?id=3D42&amp;type=3D=
+support">support</a></p>
+</body></html>
+
+------boundary-test-12345--

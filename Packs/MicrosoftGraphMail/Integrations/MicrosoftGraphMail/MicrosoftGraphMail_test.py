@@ -1,3 +1,4 @@
+import base64
 from urllib.parse import quote
 
 import demistomock as demisto
@@ -6,6 +7,7 @@ import requests_mock
 from CommonServerPython import *
 from MicrosoftApiModule import MicrosoftClient
 from MicrosoftGraphMail import *
+from MicrosoftGraphMailApiModule import parse_json_arg
 
 
 class MockedResponse:
@@ -1748,3 +1750,771 @@ def test_get_upload_session_retried_on_notfound(mocker):
     )
 
     assert attempts["n"] == 2
+
+
+def test_build_inline_layout_attachments_small_file(mocker):
+    """
+    Given:
+      - An inline layout attachment whose data is under 3MB (100 bytes).
+
+    When:
+      - _build_inline_layout_attachments_input is called.
+
+    Then:
+      - The result dict contains @odata.type, contentBytes (base64), isInline, name, contentId, size.
+      - The result dict does NOT contain requires_upload or data keys.
+    """
+    small_data = b"x" * 100
+    attachment_input = {
+        "data": small_data,
+        "maintype": "image",
+        "subtype": "png",
+        "name": "image0.png",
+        "cid": "image0.png@abc_def",
+    }
+
+    result = MsGraphMailBaseClient._build_inline_layout_attachments_input([attachment_input])
+
+    assert len(result) == 1
+    att = result[0]
+    assert att["@odata.type"] == "#microsoft.graph.fileAttachment"
+    assert att["contentBytes"] == base64.b64encode(small_data).decode("utf-8")
+    assert att["isInline"] is True
+    assert att["name"] == "image0.png"
+    assert att["contentId"] == "image0.png@abc_def"
+    assert att["size"] == 100
+    assert "requires_upload" not in att
+    assert "data" not in att
+
+
+def test_build_inline_layout_attachments_large_file(mocker):
+    """
+    Given:
+      - An inline layout attachment whose data is over 3MB (3 * 1024 * 1024 + 1 bytes).
+
+    When:
+      - _build_inline_layout_attachments_input is called.
+
+    Then:
+      - The result dict contains data (raw bytes), isInline, name, contentId, requires_upload, size.
+      - The result dict does NOT contain @odata.type or contentBytes keys.
+    """
+    large_data = b"x" * (3 * 1024 * 1024 + 1)
+    attachment_input = {
+        "data": large_data,
+        "maintype": "image",
+        "subtype": "png",
+        "name": "image0.png",
+        "cid": "image0.png@abc_def",
+    }
+
+    result = MsGraphMailBaseClient._build_inline_layout_attachments_input([attachment_input])
+
+    assert len(result) == 1
+    att = result[0]
+    assert att["data"] == large_data
+    assert att["isInline"] is True
+    assert att["name"] == "image0.png"
+    assert att["contentId"] == "image0.png@abc_def"
+    assert att["requires_upload"] is True
+    assert att["size"] == len(large_data)
+    assert "@odata.type" not in att
+    assert "contentBytes" not in att
+
+
+def test_build_inline_layout_attachments_mixed_sizes(mocker):
+    """
+    Given:
+      - Two inline layout attachments: one small (under 3MB) and one large (over 3MB).
+
+    When:
+      - _build_inline_layout_attachments_input is called with both.
+
+    Then:
+      - Both attachments are returned in the result list.
+      - The small attachment uses the contentBytes format (no requires_upload).
+      - The large attachment uses the requires_upload format (no contentBytes).
+    """
+    small_data = b"x" * 100
+    large_data = b"x" * (3 * 1024 * 1024 + 1)
+    attachments_input = [
+        {
+            "data": small_data,
+            "maintype": "image",
+            "subtype": "png",
+            "name": "small.png",
+            "cid": "small.png@abc_def",
+        },
+        {
+            "data": large_data,
+            "maintype": "image",
+            "subtype": "png",
+            "name": "large.png",
+            "cid": "large.png@abc_def",
+        },
+    ]
+
+    result = MsGraphMailBaseClient._build_inline_layout_attachments_input(attachments_input)
+
+    assert len(result) == 2
+
+    # First attachment: small — should have contentBytes format
+    small_att = result[0]
+    assert small_att["@odata.type"] == "#microsoft.graph.fileAttachment"
+    assert small_att["contentBytes"] == base64.b64encode(small_data).decode("utf-8")
+    assert small_att["isInline"] is True
+    assert small_att["name"] == "small.png"
+    assert small_att["size"] == 100
+    assert "requires_upload" not in small_att
+    assert "data" not in small_att
+
+    # Second attachment: large — should have requires_upload format
+    large_att = result[1]
+    assert large_att["data"] == large_data
+    assert large_att["isInline"] is True
+    assert large_att["name"] == "large.png"
+    assert large_att["requires_upload"] is True
+    assert large_att["size"] == len(large_data)
+    assert "@odata.type" not in large_att
+    assert "contentBytes" not in large_att
+
+
+def test_send_mail_with_small_inline_uses_direct_send(mocker):
+    """
+    Given:
+      - send_email_command is called with an htmlBody containing a small embedded base64 image (under 3MB).
+
+    When:
+      - The command processes the inline attachment through handle_html and build_message.
+
+    Then:
+      - The code uses the direct send_mail() path, NOT send_mail_with_upload_session_flow().
+    """
+    client = self_deployed_client()
+
+    # Build a small base64 image (100 bytes of data, well under 3MB)
+    small_image_data = b"x" * 100
+    b64_image = base64.b64encode(small_image_data).decode("utf-8")
+    html_body = f'<html><body><img src="data:image/png;base64,{b64_image}"></body></html>'
+
+    args = {
+        "to": ["recipient@example.com"],
+        "htmlBody": html_body,
+        "subject": "test inline image",
+        "from": "sender@example.com",
+    }
+
+    send_mail_mock = mocker.patch.object(client, "send_mail", return_value=None)
+    upload_flow_mock = mocker.patch.object(client, "send_mail_with_upload_session_flow", return_value=None)
+
+    send_email_command(client, args)
+
+    send_mail_mock.assert_called_once()
+    upload_flow_mock.assert_not_called()
+
+
+def test_send_mail_with_small_attachment_uses_direct_send(mocker):
+    """
+    Given:
+      - send_email_command is called with a small file attachment (under 3MB) via attachIDs.
+
+    When:
+      - The command processes the attachment through build_message.
+
+    Then:
+      - The code uses the direct send_mail() path, NOT send_mail_with_upload_session_flow().
+    """
+    client = self_deployed_client()
+
+    small_file_data = b"x" * 100
+    mocker.patch.object(
+        GraphMailUtils,
+        "read_file",
+        return_value=(small_file_data, len(small_file_data), "small_file.txt"),
+    )
+
+    args = {
+        "to": ["recipient@example.com"],
+        "body": "test body",
+        "subject": "test small attachment",
+        "from": "sender@example.com",
+        "attachIDs": "attach1",
+    }
+
+    send_mail_mock = mocker.patch.object(client, "send_mail", return_value=None)
+    upload_flow_mock = mocker.patch.object(client, "send_mail_with_upload_session_flow", return_value=None)
+
+    send_email_command(client, args)
+
+    send_mail_mock.assert_called_once()
+    upload_flow_mock.assert_not_called()
+
+
+def test_send_mail_with_large_attachment_uses_upload_session(mocker):
+    """
+    Given:
+      - send_email_command is called with a large file attachment (>= 3MB) via attachIDs.
+
+    When:
+      - The command processes the attachment through build_message.
+
+    Then:
+      - The code uses send_mail_with_upload_session_flow(), NOT the direct send_mail().
+    """
+    client = self_deployed_client()
+
+    large_file_data = b"x" * (3 * 1024 * 1024 + 1)
+    mocker.patch.object(
+        GraphMailUtils,
+        "read_file",
+        return_value=(large_file_data, len(large_file_data), "large_file.bin"),
+    )
+
+    args = {
+        "to": ["recipient@example.com"],
+        "body": "test body",
+        "subject": "test large attachment",
+        "from": "sender@example.com",
+        "attachIDs": "attach1",
+    }
+
+    send_mail_mock = mocker.patch.object(client, "send_mail", return_value=None)
+    upload_flow_mock = mocker.patch.object(client, "send_mail_with_upload_session_flow", return_value=None)
+
+    send_email_command(client, args)
+
+    send_mail_mock.assert_not_called()
+    upload_flow_mock.assert_called_once()
+
+
+def test_send_mail_with_large_inline_image_uses_upload_session(mocker):
+    """
+    Given:
+      - send_email_command is called with an htmlBody containing a large embedded base64 image (>= 3MB).
+
+    When:
+      - The command processes the inline attachment through handle_html and build_message.
+
+    Then:
+      - The code uses send_mail_with_upload_session_flow(), NOT the direct send_mail().
+    """
+    client = self_deployed_client()
+
+    # Mock handle_html to return a large inline attachment (> 3MB) without needing a huge base64 string
+    large_data = b"x" * (3 * 1024 * 1024 + 1)
+    fake_inline_attachments = [
+        {
+            "maintype": "image",
+            "subtype": "png",
+            "data": large_data,
+            "name": "image0.png",
+            "cid": "image0.png@abc_def",
+        }
+    ]
+    mocker.patch.object(
+        GraphMailUtils,
+        "handle_html",
+        return_value=("<html><body><img src='cid:image0.png@abc_def'></body></html>", fake_inline_attachments),
+    )
+
+    args = {
+        "to": ["recipient@example.com"],
+        "htmlBody": "<html><body><img src='data:image/png;base64,AAAA'></body></html>",
+        "subject": "test large inline image",
+        "from": "sender@example.com",
+    }
+
+    send_mail_mock = mocker.patch.object(client, "send_mail", return_value=None)
+    upload_flow_mock = mocker.patch.object(client, "send_mail_with_upload_session_flow", return_value=None)
+
+    send_email_command(client, args)
+
+    send_mail_mock.assert_not_called()
+    upload_flow_mock.assert_called_once()
+
+
+def test_create_rule_happy_minimal(mocker):
+    """
+    Given:
+      - Minimal required args (user_id, display_name, actions, sequence=1).
+    When:
+      - Running create_rule_command and mocking the POST to Graph.
+    Then:
+      - HTTP POST goes to /users/{user_id}/mailFolders/inbox/messageRules.
+      - Body contains displayName, sequence=1 and actions.
+      - CommandResults has the expected prefix/key and @odata.* stripped.
+    """
+    client = self_deployed_client()
+    mocker.patch.object(client, "get_access_token")
+    user_id = "user@example.com"
+    api_response = {
+        "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('u')/mailFolders('inbox')/messageRules/$entity",
+        "@odata.etag": 'W/"abc"',
+        "id": "AQAAAJ1=",
+        "displayName": "minimal rule",
+        "sequence": 1,
+        "isEnabled": True,
+        "actions": {"markAsRead": True},
+    }
+    args = {
+        "user_id": user_id,
+        "display_name": "minimal rule",
+        "sequence": 1,
+        "actions": '{"markAsRead": true}',
+    }
+    with requests_mock.Mocker() as m:
+        mocked = m.post(
+            f"https://graph.microsoft.com/v1.0/users/{user_id}/mailFolders/inbox/messageRules",
+            json=api_response,
+        )
+        result = create_rule_command(client, args)
+
+    assert mocked.call_count == 1
+    sent_body = mocked.last_request.json()
+    assert sent_body.get("displayName") == "minimal rule"
+    assert sent_body.get("sequence") == 1
+    assert sent_body.get("actions") == {"markAsRead": True}
+    # No conditions/exceptions/isEnabled should be in body when not provided.
+    assert "conditions" not in sent_body
+    assert "exceptions" not in sent_body
+    assert "isEnabled" not in sent_body
+
+    assert result.outputs_prefix == "MSGraphMail.Rule"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["id"] == "AQAAAJ1="
+    assert result.outputs["displayName"] == "minimal rule"
+    # @odata.* keys stripped
+    for k in result.outputs:
+        assert not k.startswith("@odata")
+
+
+def test_create_rule_happy_full(mocker):
+    """
+    Given:
+      - All supported fields supplied as JSON-string args.
+    When:
+      - Running create_rule_command with conditions, exceptions, is_enabled=true.
+    Then:
+      - The POST body contains all fields nested as Graph expects.
+    """
+    client = self_deployed_client()
+    mocker.patch.object(client, "get_access_token")
+    user_id = "user@example.com"
+    actions = {"markAsRead": True, "moveToFolder": "AAAA="}
+    conditions = {"subjectContains": ["invoice"]}
+    exceptions = {"fromAddresses": [{"emailAddress": {"address": "boss@example.com"}}]}
+    api_response = {"id": "1", "displayName": "full rule", "actions": actions}
+    args = {
+        "user_id": user_id,
+        "display_name": "full rule",
+        "sequence": 2,
+        "is_enabled": "true",
+        "actions": json.dumps(actions),
+        "conditions": json.dumps(conditions),
+        "exceptions": json.dumps(exceptions),
+    }
+    with requests_mock.Mocker() as m:
+        mocked = m.post(
+            f"https://graph.microsoft.com/v1.0/users/{user_id}/mailFolders/inbox/messageRules",
+            json=api_response,
+        )
+        create_rule_command(client, args)
+
+    sent_body = mocked.last_request.json()
+    assert sent_body["displayName"] == "full rule"
+    assert sent_body["sequence"] == 2
+    assert sent_body["isEnabled"] is True
+    assert sent_body["actions"] == actions
+    assert sent_body["conditions"] == conditions
+    assert sent_body["exceptions"] == exceptions
+
+
+def test_create_rule_invalid_json_actions():
+    """
+    Given:
+      - actions is an invalid JSON string.
+    When:
+      - Running create_rule_command.
+    Then:
+      - DemistoException is raised mentioning 'actions' and 'valid JSON'.
+    """
+    client = self_deployed_client()
+    args = {"user_id": "u", "display_name": "x", "sequence": 1, "actions": "{notValidJson"}
+    with pytest.raises(DemistoException) as exc_info:
+        create_rule_command(client, args)
+    msg = str(exc_info.value)
+    assert "actions" in msg
+    assert "valid JSON" in msg
+
+
+def test_create_rule_empty_actions():
+    """
+    Given:
+      - actions is an empty JSON object.
+    When:
+      - Running create_rule_command.
+    Then:
+      - DemistoException is raised mentioning 'non-empty'.
+    """
+    client = self_deployed_client()
+    args = {"user_id": "u", "display_name": "x", "sequence": 1, "actions": "{}"}
+    with pytest.raises(DemistoException) as exc_info:
+        create_rule_command(client, args)
+    assert "non-empty" in str(exc_info.value)
+
+
+def test_update_rule_happy_partial(mocker):
+    """
+    Given:
+      - Only display_name is supplied.
+    When:
+      - Running update_rule_command.
+    Then:
+      - PATCH goes to /users/{user_id}/mailFolders/inbox/messageRules/{rule_id}.
+      - Body contains exactly {"displayName": "..."} (no other keys).
+    """
+    client = self_deployed_client()
+    mocker.patch.object(client, "get_access_token")
+    user_id = "user@example.com"
+    rule_id = "RULE123"
+    api_response = {"id": rule_id, "displayName": "renamed"}
+
+    args = {"user_id": user_id, "rule_id": rule_id, "display_name": "renamed"}
+    with requests_mock.Mocker() as m:
+        mocked = m.patch(
+            f"https://graph.microsoft.com/v1.0/users/{user_id}/mailFolders/inbox/messageRules/{rule_id}",
+            json=api_response,
+        )
+        result = update_rule_command(client, args)
+
+    assert mocked.call_count == 1
+    sent_body = mocked.last_request.json()
+    assert sent_body == {"displayName": "renamed"}
+    assert set(sent_body.keys()) == {"displayName"}
+    assert result.outputs_prefix == "MSGraphMail.Rule"
+    assert result.outputs_key_field == "id"
+
+
+def test_update_rule_happy_disable(mocker):
+    """
+    Given:
+      - is_enabled=false is supplied.
+    When:
+      - Running update_rule_command.
+    Then:
+      - PATCH body contains {"isEnabled": false}.
+    """
+    client = self_deployed_client()
+    mocker.patch.object(client, "get_access_token")
+    user_id = "user@example.com"
+    rule_id = "RULE123"
+    api_response = {"id": rule_id, "isEnabled": False}
+    args = {"user_id": user_id, "rule_id": rule_id, "is_enabled": "false"}
+    with requests_mock.Mocker() as m:
+        mocked = m.patch(
+            f"https://graph.microsoft.com/v1.0/users/{user_id}/mailFolders/inbox/messageRules/{rule_id}",
+            json=api_response,
+        )
+        update_rule_command(client, args)
+
+    sent_body = mocked.last_request.json()
+    assert sent_body.get("isEnabled") is False
+
+
+def test_update_rule_happy_all_fields(mocker):
+    """
+    Given:
+      - All updatable fields are supplied.
+    When:
+      - Running update_rule_command.
+    Then:
+      - PATCH body contains all fields nested as Graph expects.
+    """
+    client = self_deployed_client()
+    mocker.patch.object(client, "get_access_token")
+    user_id = "user@example.com"
+    rule_id = "RULE123"
+    actions = {"markAsRead": True}
+    conditions = {"subjectContains": ["foo"]}
+    exceptions = {"sensitivity": "personal"}
+    api_response = {"id": rule_id, "displayName": "all"}
+
+    args = {
+        "user_id": user_id,
+        "rule_id": rule_id,
+        "display_name": "all",
+        "sequence": 5,
+        "is_enabled": "true",
+        "actions": json.dumps(actions),
+        "conditions": json.dumps(conditions),
+        "exceptions": json.dumps(exceptions),
+    }
+    with requests_mock.Mocker() as m:
+        mocked = m.patch(
+            f"https://graph.microsoft.com/v1.0/users/{user_id}/mailFolders/inbox/messageRules/{rule_id}",
+            json=api_response,
+        )
+        update_rule_command(client, args)
+
+    sent_body = mocked.last_request.json()
+    assert sent_body["displayName"] == "all"
+    assert sent_body["sequence"] == 5
+    assert sent_body["isEnabled"] is True
+    assert "isReadOnly" not in sent_body
+    assert sent_body["actions"] == actions
+    assert sent_body["conditions"] == conditions
+    assert sent_body["exceptions"] == exceptions
+
+
+def test_update_rule_empty_body_guard():
+    """
+    Given:
+      - Only user_id and rule_id are supplied — no updatable fields.
+    When:
+      - Running update_rule_command.
+    Then:
+      - DemistoException is raised before any HTTP call is made.
+    """
+    client = self_deployed_client()
+    args = {"user_id": "u", "rule_id": "R"}
+    with pytest.raises(DemistoException) as exc_info:
+        update_rule_command(client, args)
+    assert str(exc_info.value).startswith("At least one updatable field must be provided")
+
+
+def test_get_settings_happy(mocker):
+    """
+    Given:
+      - A realistic mailboxSettings payload from Graph.
+    When:
+      - Running get_mailbox_settings_command.
+    Then:
+      - GET goes to /users/{user_id}/mailboxSettings.
+      - outputs['userId'] is synthesized to the requested user_id.
+      - @odata.* keys are stripped from outputs.
+      - CommandResults has the expected prefix and key field.
+    """
+    client = self_deployed_client()
+    mocker.patch.object(client, "get_access_token")
+    user_id = "test@example.com"
+    with open("test_data/mailbox_settings_response.json") as f:
+        api_response = json.load(f)
+
+    with requests_mock.Mocker() as m:
+        mocked = m.get(
+            f"https://graph.microsoft.com/v1.0/users/{user_id}/mailboxSettings",
+            json=api_response,
+        )
+        result = get_mailbox_settings_command(client, {"user_id": user_id})
+
+    assert mocked.call_count == 1
+    assert result.outputs_prefix == "MSGraphMail.MailboxSettings"
+    assert result.outputs_key_field == "userId"
+    assert result.outputs["userId"] == user_id  # synthesized
+    assert result.outputs["timeZone"] == "Pacific Standard Time"
+    assert result.outputs["archiveFolder"] == api_response["archiveFolder"]
+    # @odata.* keys stripped
+    for k in result.outputs:
+        assert not k.startswith("@odata")
+
+
+def test_get_mailtips_happy(mocker):
+    """
+    Given:
+      - A mailTips response with a single recipient.
+    When:
+      - Running get_mail_tips_command.
+    Then:
+      - POST goes to /users/{email_address}/getMailTips.
+      - Body contains EmailAddresses=[email_address] and the full
+        mailTipsOptions string.
+      - outputs is a LIST of one item; @odata.* keys stripped.
+    """
+    client = self_deployed_client()
+    mocker.patch.object(client, "get_access_token")
+    email_address = "test@example.com"
+    with open("test_data/mail_tips_response.json") as f:
+        api_response = json.load(f)
+
+    with requests_mock.Mocker() as m:
+        mocked = m.post(
+            f"https://graph.microsoft.com/v1.0/users/{email_address}/getMailTips",
+            json=api_response,
+        )
+        result = get_mail_tips_command(client, {"email_address": email_address})
+
+    assert mocked.call_count == 1
+    sent_body = mocked.last_request.json()
+    assert sent_body.get("EmailAddresses") == [email_address]
+    expected_mail_tips_options = (
+        "automaticReplies,mailboxFullStatus,customMailTip,externalMemberCount,"
+        "totalMemberCount,maxMessageSize,deliveryRestriction,moderationStatus,"
+        "recipientScope,recipientSuggestions"
+    )
+    assert sent_body.get("MailTipsOptions") == expected_mail_tips_options
+    # Sanity-check a few discrete options are present in the option string.
+    for opt in ("automaticReplies", "mailboxFullStatus", "recipientSuggestions"):
+        assert opt in sent_body["MailTipsOptions"]
+
+    assert result.outputs_prefix == "MSGraphMail.MailTips"
+    assert result.outputs_key_field == "emailAddressValue"
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["emailAddress"]["address"] == email_address
+    assert result.outputs[0]["emailAddressValue"] == email_address
+    for k in result.outputs[0]:
+        assert not k.startswith("@odata")
+
+
+def test_get_mailtips_missing_email_address():
+    """
+    Given:
+      - No email_address argument supplied.
+    When:
+      - Running get_mail_tips_command.
+    Then:
+      - DemistoException is raised mentioning 'email_address'.
+    """
+    client = self_deployed_client()
+    with pytest.raises(DemistoException) as exc_info:
+        get_mail_tips_command(client, {})
+    assert "email_address" in str(exc_info.value)
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        (None, None),
+        ("", None),
+        ('{"k": 1}', {"k": 1}),
+        ({"already": "dict"}, {"already": "dict"}),
+        ([1, 2, 3], [1, 2, 3]),
+    ],
+)
+def test_parse_json_arg_valid(value, expected):
+    """
+    Given:
+      - Various valid inputs to parse_json_arg.
+    When:
+      - Parsing them.
+    Then:
+      - None/empty -> None; valid JSON string -> parsed object;
+        already-parsed dict/list -> passthrough.
+    """
+    assert parse_json_arg(value, "myarg") == expected
+
+
+def test_parse_json_arg_invalid_json_raises():
+    """
+    Given:
+      - A malformed JSON string.
+    When:
+      - Calling parse_json_arg.
+    Then:
+      - DemistoException is raised mentioning the arg name and 'valid JSON'.
+    """
+    with pytest.raises(DemistoException) as exc_info:
+        parse_json_arg("{notValidJson", "myarg")
+    msg = str(exc_info.value)
+    assert "myarg" in msg
+    assert "valid JSON" in msg
+
+
+def test_send_mail_with_attach_cids_uses_cid_labels_not_file_ids(mocker):
+    """
+    Given:
+      - send-mail command with attachIDs (War Room file IDs) and attachCIDs (CID labels)
+      - The HTML body references inline images via CID (e.g., <img src="cid:mylogo"/>)
+
+    When:
+      - Sending a mail with inline image attachments
+
+    Then:
+      - The attachCIDs values should be used as contentId labels (not as file IDs for getFilePath)
+      - The files referenced by attachIDs should be marked as inline when they have a corresponding CID
+      - No call to getFilePath should be made with CID labels
+      - The email should be sent successfully with inline images
+    """
+    client = self_deployed_client()
+
+    args = {
+        "to": ["recipient@example.com"],
+        "htmlBody": '<html><body>Hello <img src="cid:mylogo"/> World</body></html>',
+        "subject": "test with inline CID",
+        "from": "sender@example.com",
+        "attachIDs": "15@8",
+        "attachCIDs": "mylogo",
+    }
+
+    # Mock getFilePath to return a valid file for the War Room file ID "15@8"
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "test_data/plant.jpg", "name": "plant.jpg"},
+    )
+
+    with requests_mock.Mocker() as request_mocker:
+        mocker.patch.object(client, "get_access_token")
+        send_mail_mocker = request_mocker.post(f"https://graph.microsoft.com/v1.0/users/{args['from']}/SendMail")
+
+        send_email_command(client, args)
+
+        assert send_mail_mocker.called
+        message = send_mail_mocker.last_request.json().get("message")
+        assert message
+        message_attachments = message.get("attachments", [])
+
+        # Verify the attachment is marked as inline with the correct CID
+        assert len(message_attachments) == 1
+        attachment = message_attachments[0]
+        assert attachment["isInline"] is True
+        assert attachment["contentId"] == "mylogo"
+        assert attachment["name"] == "plant.jpg"
+
+    # Verify getFilePath was called with the War Room file ID, NOT the CID label
+    demisto.getFilePath.assert_called_once_with("15@8")
+
+
+def test_send_mail_with_attach_ids_no_cids_are_not_inline(mocker):
+    """
+    Given:
+      - send-mail command with attachIDs but no attachCIDs
+
+    When:
+      - Sending a mail with regular (non-inline) attachments
+
+    Then:
+      - The attachments should NOT be marked as inline
+      - The contentId should be the file ID (backward compatibility)
+    """
+    client = self_deployed_client()
+
+    args = {
+        "to": ["recipient@example.com"],
+        "htmlBody": "<html><body>Hello World</body></html>",
+        "subject": "test without CIDs",
+        "from": "sender@example.com",
+        "attachIDs": "15@8",
+    }
+
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "test_data/plant.jpg", "name": "plant.jpg"},
+    )
+
+    with requests_mock.Mocker() as request_mocker:
+        mocker.patch.object(client, "get_access_token")
+        send_mail_mocker = request_mocker.post(f"https://graph.microsoft.com/v1.0/users/{args['from']}/SendMail")
+
+        send_email_command(client, args)
+
+        assert send_mail_mocker.called
+        message = send_mail_mocker.last_request.json().get("message")
+        assert message
+        message_attachments = message.get("attachments", [])
+
+        assert len(message_attachments) == 1
+        attachment = message_attachments[0]
+        assert attachment["isInline"] is False
+        assert attachment["contentId"] == "15@8"

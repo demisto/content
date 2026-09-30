@@ -1,5 +1,6 @@
 import contextlib
 import io
+import os
 import shutil
 import tarfile
 from collections.abc import Callable
@@ -23,7 +24,10 @@ FILE_TYPE_SUPPRESS_ERROR = PARAMS.get("suppress_file_type_error")
 RELIABILITY = PARAMS.get("integrationReliability", DBotScoreReliability.B) or DBotScoreReliability.B
 CREATE_RELATIONSHIPS = argToBoolean(PARAMS.get("create_relationships", "true"))
 DEFAULT_HEADERS = {"Content-Type": "application/x-www-form-urlencoded"}
-MULTIPART_HEADERS = {"Content-Type": "multipart/form-data; boundary=upload_boundry"}
+# Values that mean "nothing was configured" but arrive as a non-empty string.
+# UCP can deliver a blank optional secret as the literal "null" (a JSON null that was
+# stringified upstream) and Go renders a nil as "<nil>". These are not credentials.
+NON_TOKEN_SENTINELS = frozenset({"null", "none", "nil", "undefined", "<nil>"})
 WILDFIRE_REPORT_DT_FILE = (
     "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5 || val.URL && val.URL == obj.URL)"
 )
@@ -66,6 +70,10 @@ ERROR_DICT = {
     "502": "Bad Gateway",
     "513": "File upload failed. This may happen for unsupported files such as empty files.",
 }
+
+EXECUTION_METRICS = ExecutionMetrics()
+# Guards return_metrics() so the metrics are reported at most once per execution.
+METRICS_REPORTED = False
 
 VERDICTS_DICT = {
     "0": "benign",
@@ -112,6 +120,42 @@ class NotFoundError(Exception):
         pass
 
 
+def _track_status_code_metric(status_code: int) -> None:
+    """Increment the execution metrics counter that matches the given HTTP status code."""
+    if status_code in (401, 403):
+        EXECUTION_METRICS.auth_error += 1
+    elif status_code == 419:
+        EXECUTION_METRICS.quota_error += 1
+    elif status_code >= 500:
+        EXECUTION_METRICS.service_error += 1
+    else:
+        EXECUTION_METRICS.general_error += 1
+
+
+def _rollback_success_for_pending() -> None:
+    """Roll back a success counted for a still-analyzing (pending) poll response.
+
+    A pending poll is not a completed logical operation, so it must not be counted as a
+    success (mirrors BaseClient.is_polling_in_progress).
+    """
+    if EXECUTION_METRICS.success > 0:
+        EXECUTION_METRICS.success -= 1
+        for metric in EXECUTION_METRICS.get_metric_list():
+            if metric["Type"] == "Successful":
+                metric["APICallsCount"] = EXECUTION_METRICS.success
+                break
+
+
+def return_metrics() -> None:
+    """Report the collected API execution metrics once, if the platform supports them."""
+    global METRICS_REPORTED
+    if METRICS_REPORTED:
+        return
+    if EXECUTION_METRICS.metrics is not None and ExecutionMetrics.is_supported():
+        METRICS_REPORTED = True
+        return_results(EXECUTION_METRICS.metrics)
+
+
 def http_request(
     url: str,
     method: str,
@@ -124,8 +168,25 @@ def http_request(
     ok_codes: list = None,
 ):
     LOG(f"running request with url={url}")
-    result = requests.request(method, url, headers=headers, data=body, verify=USE_SSL, params=params, files=files)
+    try:
+        result = requests.request(method, url, headers=headers, data=body, verify=USE_SSL, params=params, files=files)
+    except requests.exceptions.Timeout:
+        EXECUTION_METRICS.timeout_error += 1
+        raise
+    except requests.exceptions.SSLError:
+        EXECUTION_METRICS.ssl_error += 1
+        raise
+    except requests.exceptions.ProxyError:
+        EXECUTION_METRICS.proxy_error += 1
+        raise
+    except requests.exceptions.ConnectionError:
+        EXECUTION_METRICS.connection_error += 1
+        raise
+
     if str(result.reason) == "Not Found":
+        # WildFire returns 404 when a sample/report is simply not in its database.
+        # The API call itself succeeded, so it is counted as a success.
+        EXECUTION_METRICS.success += 1
         raise NotFoundError("Not Found.")
 
     # invalid argument
@@ -134,15 +195,18 @@ def http_request(
             error_message = json.loads(xml2json(result.text))
             error_message = error_message.get("error", {}).get("error-message")
         except Exception:
+            EXECUTION_METRICS.general_error += 1
             raise Exception(f"Failed to parse response to json. response: {result.text}")
 
         demisto.results({"Type": entryTypes["error"], "Contents": error_message, "ContentsFormat": formats["text"]})
 
     # Check if status code is in ok_codes before treating it as an error
     if ok_codes and result.status_code in ok_codes:
+        EXECUTION_METRICS.success += 1
         return result
 
     if result.status_code < 200 or result.status_code >= 300:
+        _track_status_code_metric(result.status_code)
         if str(result.status_code) in ERROR_DICT:
             if result.status_code == 418 and FILE_TYPE_SUPPRESS_ERROR:
                 demisto.results(
@@ -153,6 +217,8 @@ def http_request(
                         "ContentsFormat": formats["text"],
                     }
                 )
+                # The metrics must be reported before exiting, otherwise they are lost.
+                return_metrics()
                 sys.exit(0)
             else:
                 raise Exception(
@@ -161,22 +227,32 @@ def http_request(
         else:
             raise Exception(f"Request Failed with status: {result.status_code} Reason is: {result.reason}")
     if result.text.find("Forbidden. (403)") != -1:
+        EXECUTION_METRICS.auth_error += 1
         raise Exception("Request Forbidden - 403, check SERVER URL and API Key")
 
     if (
         ("Content-Type" in result.headers and result.headers["Content-Type"] == "application/octet-stream")
         or ("Transfer-Encoding" in result.headers and result.headers["Transfer-Encoding"] == "chunked")
     ) and return_raw:
+        EXECUTION_METRICS.success += 1
         return result
 
     if resp_type == "json":
-        return result.json()
+        try:
+            json_response = result.json()
+        except Exception:
+            EXECUTION_METRICS.general_error += 1
+            raise
+        EXECUTION_METRICS.success += 1
+        return json_response
     try:
         json_res = json.loads(xml2json(result.text))
-        return json_res
     except Exception as exc:
+        EXECUTION_METRICS.general_error += 1
         demisto.error(f"Failed to parse response to json. Error: {exc}")
         raise Exception(f"Failed to parse response to json. response: {result.text}")
+    EXECUTION_METRICS.success += 1
+    return json_res
 
 
 def prettify_upload(upload_body):
@@ -380,8 +456,15 @@ def create_relationship(name: str, entities: tuple, types: tuple) -> list[Entity
 
 
 def test_module():
-    if wildfire_upload_url("https://www.demisto.com")[1]:
-        demisto.results("ok")
+    """Test API connectivity by querying a well-known hash via /get/verdict."""
+    test_hash = "dca86121cc7427e375fd24fe5871d727"
+    try:
+        wildfire_get_verdict(file_hash=test_hash)
+    except NotFoundError:
+        # Hash not found is still a valid API response —
+        # connectivity and authentication are working.
+        pass
+    return "ok"
 
 
 @logger
@@ -393,7 +476,7 @@ def wildfire_upload_file(upload):
     body = BODY_DICT
 
     file_path = demisto.getFilePath(upload)["path"]
-    file_name = demisto.getFilePath(upload)["name"]
+    file_name = os.path.basename(demisto.getFilePath(upload)["name"])
 
     try:
         shutil.copy(file_path, file_name)
@@ -405,7 +488,8 @@ def wildfire_upload_file(upload):
         with open(file_name, "rb") as file:
             result = http_request(upload_file_uri, "POST", body=body, files={"file": file})
     finally:
-        shutil.rmtree(file_name, ignore_errors=True)
+        with contextlib.suppress(FileNotFoundError):
+            os.remove(file_name)
 
     upload_file_data = result["wildfire"]["upload-file-info"]
 
@@ -438,38 +522,13 @@ def wildfire_upload_file_command(args) -> list:
 def wildfire_upload_file_url(upload):
     upload_file_url_uri = URL + URL_DICT["upload_file_url"]
 
-    body = f"""--upload_boundry
-Content-Disposition: form-data; name="apikey"
+    # The WildFire /submit/url endpoint requires multipart/form-data. Passing form
+    # fields as (None, value) tuples via `files=` makes `requests` build a compliant
+    # multipart body (auto-generated boundary, CRLF separators).
+    multipart_fields: dict = {key: (None, value) for key, value in BODY_DICT.items()}
+    multipart_fields["url"] = (None, upload)
 
-{TOKEN}
---upload_boundry
-Content-Disposition: form-data; name="url"
-
-{upload}
---upload_boundry--"""
-
-    body2 = f"""--upload_boundry
-Content-Disposition: form-data; name="apikey"
-
-{TOKEN}
---upload_boundry
-Content-Disposition: form-data; name="url"
-
-{upload}
---upload_boundry
-Content-Disposition: form-data; name="agent"
-
-{AGENT_VALUE}
---upload_boundry--"""
-
-    # check upload value
-    # body2 = 'apikey=' + TOKEN + '&url=' + upload + AGENT_VALUE
-
-    if AGENT_VALUE != "":
-        # we need to attach another form element of agent for this APIKEY
-        body = body2
-
-    result = http_request(upload_file_url_uri, "POST", headers=MULTIPART_HEADERS, body=body)
+    result = http_request(upload_file_url_uri, "POST", files=multipart_fields)
 
     upload_file_url_data = result["wildfire"]["upload-file-info"]
 
@@ -504,37 +563,13 @@ def wildfire_upload_file_url_command(args) -> list:
 def wildfire_upload_url(upload):
     upload_url_uri = URL + URL_DICT["upload_url"]
 
-    body = f"""--upload_boundry
-Content-Disposition: form-data; name="apikey"
+    # The WildFire /submit/link endpoint requires multipart/form-data. Passing form
+    # fields as (None, value) tuples via `files=` makes `requests` build a compliant
+    # multipart body (auto-generated boundary, CRLF separators).
+    multipart_fields: dict = {key: (None, value) for key, value in BODY_DICT.items()}
+    multipart_fields["link"] = (None, upload)
 
-{TOKEN}
---upload_boundry
-Content-Disposition: form-data; name="link"
-
-{upload}
---upload_boundry--"""
-
-    body2 = f"""--upload_boundry
-Content-Disposition: form-data; name="apikey"
-
-{TOKEN}
---upload_boundry
-Content-Disposition: form-data; name="link"
-
-{upload}
---upload_boundry
-Content-Disposition: form-data; name="agent"
-
-{AGENT_VALUE}
---upload_boundry--"""
-
-    # koby test
-    # body2 = 'apikey=' + TOKEN + '&url=' + upload + AGENT_VALUE
-
-    if AGENT_VALUE != "":
-        body = body2
-
-    result = http_request(upload_url_uri, "POST", headers=MULTIPART_HEADERS, body=body)
+    result = http_request(upload_url_uri, "POST", files=multipart_fields)
 
     upload_url_data = result["wildfire"]["submit-link-info"]
 
@@ -726,6 +761,13 @@ def wildfire_get_verdicts(file_path):
         shutil.rmtree(file_path, ignore_errors=True)
 
     verdicts_data = result["wildfire"]["get-verdict-info"]
+
+    # When only a single hash is submitted, the WildFire API returns a plain dict
+    # instead of a list (xmltodict collapses single-element XML arrays to a dict).
+    # Normalize to a list so prettify_verdicts() always iterates over dicts, not string keys.
+    if isinstance(verdicts_data, dict):
+        demisto.debug("Verdicts data is a dict (single hash response), wrapping in a list.")
+        verdicts_data = [verdicts_data]
 
     return result, verdicts_data
 
@@ -1310,6 +1352,8 @@ def wildfire_get_url_report(url: str) -> tuple:
         if not report:
             entry_context["Status"] = "Pending"
             human_readable = "The sample is still being analyzed. Please wait to download the report."
+            # A pending poll is not a completed logical operation, so it is not a success.
+            _rollback_success_for_pending()
 
         else:
             entry_context["Status"] = "Success"
@@ -1331,8 +1375,7 @@ def wildfire_get_url_report(url: str) -> tuple:
 
     finally:
         command_results = CommandResults(
-            outputs_prefix="WildFire.Report",
-            outputs_key_field="url",
+            outputs_prefix=WILDFIRE_REPORT_DT_FILE,
             outputs=report,
             readable_output=human_readable,
             raw_response=report,
@@ -1373,6 +1416,8 @@ def wildfire_get_file_report(file_hash: str, args: dict):
             human_readable = "The sample is still being analyzed. Please wait to download the report."
             indicator = None
             relationships = None
+            # A pending poll is not a completed logical operation, so it is not a success.
+            _rollback_success_for_pending()
 
     except NotFoundError as exc:
         entry_context["Status"] = "NotFound"
@@ -1523,17 +1568,60 @@ def assert_upload_argument(args: dict):
         raise ValueError("Please specify the item you wish to upload using the 'upload' argument.")
 
 
-def get_agent(api_key_source: str, platform: str, token: str) -> str:
+def get_agent(api_key_source: str, token: str) -> str:
     # Auto API expect the agent header to be 'xdr' when running from within XSIAM and 'xsoartim' when running from
     # within XSOAR (both on-prem and cloud).
-    if len(token) == 32:
-        return ""
+    # Explicit source selection always takes priority.
     if api_key_source in ["pcc", "prismaaccessapi", "xsoartim", "xdr"]:
         return api_key_source
-    if (platform == "x2" or is_demisto_version_ge("8")) and not api_key_source:
+    # Auto-detect on XSIAM / XSOAR 8+ platforms — XDR license tokens may be 32 chars
+    # but still require agent=xdr.
+    if (is_xsiam() or is_demisto_version_ge("8")) and not api_key_source:
         return "xdr"
+    # NGFW / WF portal keys are 32 chars and need no agent header.
+    # This check is intentionally after platform detection to avoid masking XDR license tokens.
+    if len(token) == 32:
+        return ""
     # we have an 'other' api key that requires no additional api key headers for agent
     return ""
+
+
+def clean_token(value: Any) -> str:
+    """
+    Normalize a configured secret into a usable token string.
+
+    A blank optional secret can reach the integration as None, an empty/whitespace-only
+    string, a mask placeholder made only of asterisks (for example "****"), or a
+    stringified null such as "null" or "<nil>". All of these mean "no token was
+    configured" and must not be treated as a real API key.
+
+    Args:
+        value: The raw value read from the instance configuration.
+
+    Returns:
+        The stripped token, or an empty string when no real token was configured.
+    """
+    stripped = (value or "").strip()
+    if not stripped or set(stripped) == {"*"} or stripped.lower() in NON_TOKEN_SENTINELS:
+        return ""
+    return stripped
+
+
+def resolve_token(params: dict) -> str:
+    """
+    Resolve the API token from the instance configuration.
+
+    The token may be configured either in the legacy 'token' parameter or in the
+    'credentials' password field. Mask placeholders and blank values in either
+    location are ignored so that the caller can fall back to the TIM license token.
+
+    Args:
+        params: The integration instance parameters.
+
+    Returns:
+        The resolved token, or an empty string when none is configured.
+    """
+    return clean_token(params.get("token")) or clean_token((params.get("credentials") or {}).get("password"))
 
 
 def set_http_params(token, agent_value):
@@ -1555,11 +1643,10 @@ def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
     params = demisto.params()
-    platform = get_demisto_version().get("platform")  # Platform = xsoar_hosted / xsoar / x2 depends on the machine
     demisto.info(f"command is {command}")
 
     try:
-        token = params.get("token") or (params.get("credentials") or {}).get("password")
+        token = resolve_token(params)
         # get the source of the credentials to ensure the correct agent is set for all API calls
         # other = ngfw or wf api based keys that are 32 chars long and require no agent
         # pcc and prismaaccessapi are 64 char long and require the correct agent= value in the api call
@@ -1590,7 +1677,7 @@ def main():  # pragma: no cover
                 sys.exit()
 
         # update the default headers with the correct agent version based on the selection in the instance config.
-        agent_value = get_agent(params.get("credentials_source"), platform, token)
+        agent_value = get_agent(params.get("credentials_source"), token)
 
         # if the apikey is longer than 32 characters agent is not set, and we're not in XSIAM or XSOAR SaaS, send exception
         # otherwise API calls will fail.
@@ -1602,8 +1689,13 @@ def main():  # pragma: no cover
             )
         set_http_params(token, agent_value)
 
+        # Log diagnostic info for troubleshooting credential/agent issues.
+        token_type = type(token).__name__
+        token_length = len(token) if isinstance(token, str) else "N/A"
+        demisto.info(f"WildFire_v2: using agent_value={agent_value}, token_type={token_type}, token_length={token_length}")
+
         if command == "test-module":
-            test_module()
+            return_results(test_module())
 
         elif command == "wildfire-upload":
             if args.get("polling") == "true":
@@ -1648,6 +1740,9 @@ def main():  # pragma: no cover
         return_error(str(err))
 
     finally:
+        # exclude test-module from the reported metrics.
+        if command != "test-module":
+            return_metrics()
         LOG.print_log()
 
 

@@ -209,7 +209,7 @@ class Client(BaseClient):
         self.headers["varonis-integration"] = "XSOAR Cortex"
 
     def varonis_authenticate(self, apiKey: str) -> dict[str, Any]:
-        headers = {"x-api-key": apiKey}
+        headers = {"x-api-key": apiKey, "content-type": "application/x-www-form-urlencoded"}
         response = self._http_request(
             "POST", url_suffix="/api/authentication/api_keys/token", data="grant_type=varonis_custom", headers=headers
         )

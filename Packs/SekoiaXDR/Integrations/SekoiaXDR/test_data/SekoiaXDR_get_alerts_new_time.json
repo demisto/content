@@ -1,0 +1,16 @@
+{
+  "total": 2,
+  "items": [
+    {
+      "short_id": "ALN1234567890",
+      "created_at": 1800000000,
+      "title": "New Alert 1",
+      "status": {"name": "Ongoing"},
+      "urgency": {"display": "Low"},
+      "first_seen_at": "2024-05-25T10:00:00Z",
+      "last_seen_at": "2024-05-25T15:00:00Z",
+      "assets": [],
+      "kill_chain_short_id": null
+    }
+  ]
+}

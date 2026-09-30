@@ -22,6 +22,7 @@ from GetUserData import (
     get_data,
     prisma_cloud_get_user,
     azure_get_risky_user,
+    azure_list_risky_users,
     iam_get_user,
     gsuite_get_user,
 )
@@ -1110,32 +1111,28 @@ class TestGetUserData:
     def test_azure_list_risky_users(self, mocker: MockerFixture):
         """
         Given:
-            A Command object for azure_list_risky_users.
+            A Command object for azure_list_risky_users with a user ID (not email).
         When:
             The function is called with the Command object.
         Then:
             It returns the expected tuple of readable outputs and account output.
         """
-        user_name = "azure_user"
-        command = Command("Azure Risky Users", "azure-risky-user-get", {"user_id": user_name})
-        mock_outputs = {"id": "azure_user", "riskLevel": "HIGH"}
-        expected_account = [
-            {
-                "ID": "azure_user",
-                "RiskLevel": "HIGH",
-                "Source": "Azure Risky Users",
-                "Brand": "Azure Risky Users",
-                "Username": "azure_user",
-                "Instance": None,
+        user_id = "azure_user_id"
+        command = Command("Azure Risky Users", "azure-risky-user-get", {"id": user_id})
+        mock_response = {
+            "AzureRiskyUsers.RiskyUser": {
+                "id": "azure_user_id",
+                "userDisplayName": "Azure User",
+                "userPrincipalName": "azure.user@example.com",
+                "riskLevel": "HIGH",
             }
-        ]
+        }
 
         mocker.patch(
             "GetUserData.run_execute_command",
-            return_value=([mock_outputs], "Human readable output", []),
+            return_value=([mock_response], "Human readable output", []),
         )
         mocker.patch("GetUserData.get_output_key", return_value="AzureRiskyUsers.RiskyUser")
-        mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
         mocker.patch("GetUserData.prepare_human_readable", return_value=[])
 
         result = azure_get_risky_user(command, additional_fields=True)
@@ -1143,7 +1140,48 @@ class TestGetUserData:
         assert isinstance(result, tuple)
         assert len(result) == 2
         assert isinstance(result[0], list)
-        assert result[1] == expected_account
+        assert len(result[1]) == 1
+        assert result[1][0]["ID"] == "azure_user_id"
+        assert result[1][0]["Username"] == "Azure User"
+        assert result[1][0]["Email"] == "azure.user@example.com"
+        assert result[1][0]["RiskLevel"] == "HIGH"
+
+    def test_azure_list_risky_users_with_email(self, mocker: MockerFixture):
+        """
+        Given:
+            A Command object for azure_list_risky_users with an email address to filter.
+        When:
+            The function is called with the Command object containing filter_email.
+        Then:
+            It filters by userPrincipalName and returns the matching user.
+        """
+        user_email = "test.user@example.com"
+        command = Command("AzureRiskyUsers", "azure-risky-users-list", {"filter_email": user_email})
+
+        mock_list_response = {
+            "AzureRiskyUsers.RiskyUser": [
+                {
+                    "id": "user-id-123",
+                    "userPrincipalName": "test.user@example.com",
+                    "userDisplayName": "Test User",
+                    "riskLevel": "high",
+                }
+            ]
+        }
+
+        mocker.patch(
+            "GetUserData.run_execute_command",
+            return_value=([mock_list_response], "Human readable output", []),
+        )
+        mocker.patch("GetUserData.get_output_key", return_value="AzureRiskyUsers.RiskyUser")
+        mocker.patch("GetUserData.prepare_human_readable", return_value=[])
+
+        result = azure_list_risky_users(command, additional_fields=True)
+
+        assert len(result[1]) == 1
+        assert result[1][0]["Email"] == user_email
+        assert result[1][0]["Username"] == "Test User"
+        assert result[1][0]["RiskLevel"] == "high"
 
     def test_prisma_cloud_get_user(self, mocker: MockerFixture):
         """
@@ -2178,6 +2216,7 @@ def _mute_all_other_adapters(mocker: MockerFixture, except_fn: str | None = None
         "iam_get_user",  # <- shared by Okta IAM and AWS-ILM
         "gsuite_get_user",
         "azure_get_risky_user",
+        "azure_list_risky_users",
     }
     for fn in fns:
         if fn == except_fn:
@@ -2322,6 +2361,7 @@ def test_userid_arg_mapping_to_adapter(mocker: MockerFixture, brand_name, comman
     "brand_name,command_name,adapter_fn,expected_key,expected_value",
     [
         ("Active Directory Query v2", "ad-get-user", "ad_get_user", "email", "john@example.com"),
+        ("AzureRiskyUsers", "azure-risky-users-list", "azure_list_risky_users", "filter_email", "john@example.com"),
         ("Okta IAM", "iam-get-user", "iam_get_user", "user-profile", '{"email":"john@example.com"}'),
         ("AWS-ILM", "iam-get-user", "iam_get_user", "user-profile", '{"email":"john@example.com"}'),
         ("GSuiteAdmin", "gsuite-user-get", "gsuite_get_user", "user", "john@example.com"),

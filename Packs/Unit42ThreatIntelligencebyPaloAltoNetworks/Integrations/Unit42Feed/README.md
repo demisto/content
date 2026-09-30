@@ -120,3 +120,11 @@ Gets threat objects from the feed.
 #### Context Output
 
 There is no context output for this command.
+
+## Troubleshooting
+
+- *HTTP 403 Forbidden* error when fetching indicators behind a corporate proxy or firewall.
+  - This occurs when the proxy or firewall blocks outbound requests to the Unit 42 Feed API endpoint (`prod-us.tas.crtx.paloaltonetworks.com`), which is not listed in the standard Cortex XSOAR System Requirements documentation.
+  - **Resolution**: Add `prod-us.tas.crtx.paloaltonetworks.com` (or the wildcard `*.tas.crtx.paloaltonetworks.com`) to your proxy or firewall allowlist. The integration requires outbound HTTPS (port 443) access to the following endpoints:
+    - `https://prod-us.tas.crtx.paloaltonetworks.com/api/v1/feeds/indicators`
+    - `https://prod-us.tas.crtx.paloaltonetworks.com/api/v1/feeds/threat_objects`

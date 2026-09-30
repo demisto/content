@@ -57,11 +57,11 @@ def get_feed_config(services: list, regions: list):
             "mapping": {"region": "region", "service": "service"},
         }
 
-        feed_name_to_config[f"{feed}$$IPv6"] = {
+        feed_name_to_config[f"{feed}$$IPv6CIDR"] = {
             "url": "https://ip-ranges.amazonaws.com/ip-ranges.json",
             "extractor": f"ipv6_prefixes[?service=='{feed}'{region_path}]",
             "indicator": "ipv6_prefix",
-            "indicator_type": FeedIndicatorType.IPv6,
+            "indicator_type": FeedIndicatorType.IPv6CIDR,
             "fields": ["region", "service"],
             "mapping": {"region": "region", "service": "service"},
         }

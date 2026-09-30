@@ -5,7 +5,7 @@ This integration was integrated and tested with version v1 of DeCYFIR Feed
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| DeCYFIR Server URL (e.g. https://decyfir.cyfirma.com) |  | True |
+| DeCYFIR Server URL (e.g. <https://decyfir.cyfirma.com>) |  | True |
 | DeCYFIR API Key |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
@@ -35,9 +35,108 @@ Gets indicators from the feed.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
 There is no context output for this command.
+
+### decyfir-ip-get
+
+***
+Get IP indicators from CYFIRMA.
+
+#### Base Command
+
+`decyfir-ip-get`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!decyfir-ip-get```
+
+#### Human Readable Output
+>
+> IP indicators retrieved successfully.
+
+### decyfir-domain-get
+
+***
+Get Domain indicators from CYFIRMA.
+
+#### Base Command
+
+`decyfir-domain-get`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!decyfir-domain-get```
+
+#### Human Readable Output
+>
+> Domain indicators retrieved successfully.
+
+### decyfir-url-get
+
+***
+Get URL indicators from CYFIRMA.
+
+#### Base Command
+
+`decyfir-url-get`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!decyfir-url-get```
+
+#### Human Readable Output
+>
+> URL indicators retrieved successfully.
+
+### decyfir-file-get
+
+***
+Get File Hash indicators from CYFIRMA.
+
+#### Base Command
+
+`decyfir-file-get`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!decyfir-file-get```
+
+#### Human Readable Output
+>
+> File indicators retrieved successfully.

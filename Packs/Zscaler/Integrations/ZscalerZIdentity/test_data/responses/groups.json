@@ -1,0 +1,16 @@
+[
+    {
+        "id": 10,
+        "name": "Engineering",
+        "idpId": 0,
+        "comments": "Engineering team",
+        "isSystemDefined": false
+    },
+    {
+        "id": 11,
+        "name": "HR",
+        "idpId": 0,
+        "comments": "Human Resources",
+        "isSystemDefined": false
+    }
+]

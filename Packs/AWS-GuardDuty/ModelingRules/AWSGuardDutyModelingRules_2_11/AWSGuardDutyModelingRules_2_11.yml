@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: AWSGuardDuty_ModelingRule
+name: AWSGuardDuty Modeling Rule
+rules: ''
+schema: ''
+tags: AWSGuardDuty
+supportedModules:
+- xsiam

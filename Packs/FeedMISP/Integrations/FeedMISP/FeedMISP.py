@@ -1,9 +1,22 @@
 import demistomock as demisto  # noqa: F401
 import urllib3
+import os
+import tempfile
 from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
 urllib3.disable_warnings()
+
+
+class TempFile:
+    def __init__(self, data):
+        _, self.path = tempfile.mkstemp()
+        with open(self.path, "w") as temp_file:
+            temp_file.write(data)
+
+    def __del__(self):
+        os.remove(self.path)
+
 
 INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
     ThreatIntel.ObjectsNames.ATTACK_PATTERN: {
@@ -125,9 +138,11 @@ class Client(BaseClient):
         proxy: bool,
         performance: bool,
         max_indicator_to_fetch: Optional[int],
+        client_cert: Optional[tuple] = None,
     ):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.timeout = timeout
+        self.client_cert = client_cert
 
         self._headers = {
             "Authorization": authorization,
@@ -150,6 +165,7 @@ class Client(BaseClient):
             resp_type="json",
             data=json.dumps(body),
             timeout=self.timeout,
+            cert=self.client_cert,
         )
 
 
@@ -244,6 +260,7 @@ def build_params_dict(
         },
         "limit": limit,
         "page": page,
+        "includeEventTags": True,
     }
     if from_timestamp:
         params["attribute_timestamp"] = str(from_timestamp)
@@ -257,13 +274,12 @@ def parsing_user_query(query: str, limit: int, page: int = 1, from_timestamp: Op
         query: User's query string
     Returns: Dict which has only needed arguments to be sent to MISP
     """
-    global LIMIT
     try:
         params = json.loads(query)
         params["returnFormat"] = "json"
         if "page" not in params:
             params["page"] = page
-        params["limit"] = params.get("limit") or LIMIT
+        params["limit"] = params.get("limit") or limit
         if params.get("timestamp"):
             params["attribute_timestamp"] = params.pop("timestamp")
         if from_timestamp:
@@ -271,7 +287,20 @@ def parsing_user_query(query: str, limit: int, page: int = 1, from_timestamp: Op
     except Exception as err:
         demisto.debug(str(err))
         raise DemistoException(f"Could not parse user query. \nError massage: {err}")
+    # NOTE: include event-level inherited tags which MISP strips by default;
+    #       setdefault preserves any explicit value from the user's `query`.
+    params.setdefault("includeEventTags", True)
     return params
+
+
+def get_attributes_from_response(response: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Safely extracts the list of attributes from a MISP search response.
+    Args:
+        response: The raw response returned from client.search_query.
+    Returns: The list of attribute dicts, or an empty list if none are present.
+    """
+    return response.get("response", {}).get("Attribute", [])
 
 
 def get_ip_type(ip_attribute: Dict[str, Any]) -> str:
@@ -486,7 +515,7 @@ def test_module(client: Client) -> str:
     Returns:
         ok if feed is accessible
     """
-    client.search_query(body={"limit": 1})
+    client.search_query(body={"returnFormat": "json", "limit": 1})
     return "ok"
 
 
@@ -570,7 +599,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     tags = argToList(params.get("attribute_tags", ""))
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get("attribute_types", ""))
-    fetch_limit = client.max_indicator_to_fetch
+    fetch_limit = client.max_indicator_to_fetch or LIMIT
     last_run = demisto.getLastRun()
     total_fetched_indicators = 0
     query = params.get("query", None)
@@ -578,26 +607,26 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     last_run_page = last_run.get("page") or 1
     last_run_value = last_run.get("last_indicator_value") or ""
     params_dict = (
-        parsing_user_query(query, LIMIT, from_timestamp=last_run_timestamp, page=last_run_page)
+        parsing_user_query(query, fetch_limit, from_timestamp=last_run_timestamp, page=last_run_page)
         if query
         else build_params_dict(
-            tags=tags, attribute_type=attribute_types, limit=LIMIT, page=last_run_page, from_timestamp=last_run_timestamp
+            tags=tags, attribute_type=attribute_types, limit=fetch_limit, page=last_run_page, from_timestamp=last_run_timestamp
         )
     )
 
     search_query_per_page = client.search_query(params_dict)
     demisto.debug(f"params_dict: {params_dict}")
 
-    while len(search_query_per_page.get("response", {}).get("Attribute", [])):
-        demisto.debug(f'search_query_per_page number of attributes:\
-                      {len(search_query_per_page.get("response", {}).get("Attribute", []))} page: {params_dict["page"]}')
-        search_query_per_page.get("response", {}).get("Attribute", []).sort(key=lambda x: x["timestamp"], reverse=False)
+    attributes = get_attributes_from_response(search_query_per_page)
+    while attributes:
+        demisto.debug(f"search_query_per_page number of attributes: {len(attributes)} page: {params_dict['page']}")
+        attributes.sort(key=lambda x: x["timestamp"], reverse=False)
         indicators = build_indicators(
             client, search_query_per_page, attribute_types, tlp_color, params.get("url"), reputation, feed_tags
         )
 
         total_fetched_indicators += len(indicators)
-        latest_indicator = search_query_per_page["response"]["Attribute"]
+        latest_indicator = attributes
         latest_indicator_timestamp = arg_to_number(latest_indicator[-1]["timestamp"])
         latest_indicator_value = latest_indicator[-1]["value"]
 
@@ -620,17 +649,24 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
             return
 
         search_query_per_page = client.search_query(params_dict)
+        attributes = get_attributes_from_response(search_query_per_page)
+
     if error_message := search_query_per_page.get("Error"):
         raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {error_message}")
-    demisto.setLastRun(
-        {"last_indicator_timestamp": last_run.get("candidate_timestamp"), "last_indicator_value": last_run.get("candidate_value")}
-    )
+
+    candidate_timestamp = last_run.get("candidate_timestamp")
+    candidate_value = last_run.get("candidate_value")
+    if candidate_timestamp is None:
+        # No candidate was produced this run.
+        demisto.debug("No candidate produced this run; leaving existing lastRun unchanged")
+        return
+    demisto.setLastRun({"last_indicator_timestamp": candidate_timestamp, "last_indicator_value": candidate_value})
 
 
 def main():  # pragma: no cover
     params = demisto.params()
     base_url = params.get("url").rstrip("/")
-    timeout = arg_to_number(params.get("timeout")) or 60
+    timeout = arg_to_number(params.get("timeout", 60)) or 60
     insecure = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     performance = argToBoolean(params.get("performance") or False)
@@ -639,6 +675,14 @@ def main():  # pragma: no cover
     args = demisto.args()
     if params.get("feedExpirationPolicy") == "suddenDeath":
         raise DemistoException("The feed is incremental, so a sudden-death policy is not applicable.")
+
+    # Handle client certificate
+    certificate = replace_spaces_in_credential(params.get("certificate", {}).get("identifier"))
+    private_key = replace_spaces_in_credential(params.get("certificate", {}).get("password"))
+    cert = TempFile(certificate) if certificate else None
+    key = TempFile(private_key) if private_key else None
+    client_cert = (cert.path, key.path) if cert and key else None
+
     demisto.debug(f"Command being called is {command}")
     try:
         client = Client(
@@ -649,6 +693,7 @@ def main():  # pragma: no cover
             timeout=timeout,
             performance=performance,
             max_indicator_to_fetch=max_indicator_to_fetch,
+            client_cert=client_cert,
         )
 
         if command == "test-module":

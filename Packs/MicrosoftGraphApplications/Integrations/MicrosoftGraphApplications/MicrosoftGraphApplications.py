@@ -299,6 +299,7 @@ def update_service_principal_command(ms_client: Client, args: dict) -> CommandRe
         "app_role_assignment_required": "appRoleAssignmentRequired",
         "display_name": "displayName",
         "preferred_single_sign_on_mode": "preferredSingleSignOnMode",
+        "reply_urls": "replyUrls",
     }
     boolean_fields_to_update = {"account_enabled": "accountEnabled", "app_role_assignment_required": "appRoleAssignmentRequired"}
 
@@ -307,6 +308,9 @@ def update_service_principal_command(ms_client: Client, args: dict) -> CommandRe
     for field in boolean_fields_to_update:
         if field in args:
             data[boolean_fields_to_update[field]] = argToBoolean(args[field])
+
+    if "replyUrls" in data:
+        data["replyUrls"] = argToList(data["replyUrls"])
 
     ms_client.update_single_service_principal(id_for_request, data=data)
 

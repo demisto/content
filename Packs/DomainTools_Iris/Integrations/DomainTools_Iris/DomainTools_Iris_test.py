@@ -12,6 +12,7 @@ from DomainTools_Iris import (
     chunks,
     fetch_domains_from_dt_api,
     create_domain_risk_results,
+    domain_command,
 )
 from test_data import mock_response, expected
 
@@ -239,7 +240,7 @@ def test_http_request(mocker, dt_client, method, attribute, params):
     mocker.patch("DomainTools_Iris.USERNAME", return_value="test_username")
     mocker.patch("DomainTools_Iris.API_KEY", return_value="test_key")
 
-    mocker.patch.object(dt_client, attribute, return_value=expected_response[method])
+    mocker.patch.object(dt_client, attribute, return_value=expected_response[method], create=True)
 
     results = http_request(method, params)
 
@@ -353,3 +354,66 @@ def test_fetch_domains_from_dt_api(mocker):
     test_fetch_result = fetch_domains_from_dt_api("domain", "domaintools.com")
 
     assert len(test_fetch_result) == 1
+
+
+@pytest.mark.parametrize(
+    "domain_result_type, bypass_auto_enrich",
+    [
+        ("Verdict", True),  # test Risk Score (Verdict)
+        ("Iris", True),  # test Iris Enrichment (Iris Investigate)
+    ],
+)
+def test_domain_command(mocker, domain_result_type, bypass_auto_enrich):
+    # mock demisto args and params
+    mocker.patch(
+        "DomainTools_Iris.demisto.args", return_value={"domain": "domaintools.com", "bypass_auto_enrich": bypass_auto_enrich}
+    )
+    mocker.patch(
+        "DomainTools_Iris.demisto.params",
+        return_value={"domain_result_type": domain_result_type, "domain_auto_enrich": "Enabled"},
+    )
+
+    # mock Iris Command helper
+    mock_iris_cmd = {
+        "cmd": mocker.Mock(return_value={"results": [mock_response.domaintools_response], "missing_domains": []}),
+        "formatter": format_investigate_output,
+    }
+    mocker.patch("DomainTools_Iris.get_domaintools_domain_enrichment_command", return_value=mock_iris_cmd)
+
+    # mock Risk Score helper
+    mocker.patch("DomainTools_Iris.get_domain_risk_score", return_value=mock_response.mock_domain_command_risk_result)
+
+    results = domain_command()
+
+    assert isinstance(results, list)
+    assert len(results) > 0
+
+    # get the first CommandResults object in the list
+    res = results[0]
+    assert isinstance(res, CommandResults)
+
+    if domain_result_type == "Verdict":
+        assert res.outputs_prefix is None
+        assert "DomainTools Risk Score for domaintools.com" in res.readable_output
+    else:
+        assert res.outputs_prefix == "DomainTools"
+        assert res.outputs["Name"] == "domaintools.com"
+        assert res.outputs["WebsiteTitle"] == "DomainTools - The first place to go when you need to know."
+
+
+def test_domain_command_disabled(mocker):
+    mock_results = mocker.patch("DomainTools_Iris.demisto.results")
+
+    # mock demisto args and params to disable the `domain ` command
+    mocker.patch("DomainTools_Iris.demisto.args", return_value={"domain": "test.com", "bypass_auto_enrich": "false"})
+    mocker.patch("DomainTools_Iris.demisto.params", return_value={"domain_auto_enrich": "disabled"})
+
+    # This will catch the sys.exit() called by return_warning
+    with pytest.raises(SystemExit):
+        domain_command()
+
+    results_sent_to_demisto = mock_results.call_args[0][0]
+    contents = results_sent_to_demisto.get("Contents")
+
+    assert "Enrichment skipped" in contents
+    assert "To force execution for this specific command, add the argument: bypass_auto_enrich=true" in contents

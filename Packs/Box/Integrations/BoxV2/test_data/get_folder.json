@@ -18,13 +18,13 @@
     "type": "user",
     "id": "14342567114",
     "name": "Andrew Shamah",
-    "login": "ashamah@paloaltonetworks.com"
+    "login": "ashamah@example.com"
   },
   "owned_by": {
     "type": "user",
     "id": "14342567114",
     "name": "Andrew Shamah",
-    "login": "ashamah@paloaltonetworks.com"
+    "login": "ashamah@example.com"
   },
   "item_status": "active",
   "item_collection": {

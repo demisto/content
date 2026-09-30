@@ -1,0 +1,136 @@
+{
+    "command_args": {
+        "ticket_id": "3456",
+        "title": "new_title",
+        "queue": "new_queue",
+        "state": "new_state",
+        "owner": "new_owner",
+        "lock": "unlock",
+        "customer_user": "new_customer_user@example.com",
+        "priority": "new_priority",
+        "article_subject": "new_article_subject",
+        "article_body": "new_article_body",
+        "article_content_type": "text/html; charset=utf8",
+        "type": "new_ticket_type",
+        "dynamic_fields": "testField=new_dynamic"
+    },
+    "response": {
+        "Age": 238078,
+        "ArchiveFlag": "n",
+        "Article": [
+            {
+                "ArticleID": 9999,
+                "ArticleNumber": 1,
+                "ArticlePlain": null,
+                "Bcc": "",
+                "Body": "test123",
+                "Cc": "",
+                "ChangedBy": 18,
+                "ChangeTime": "2023-09-26 11:33:28",
+                "Charset": "utf8",
+                "CommunicationsChannelID": 3,
+                "ContentType": "text/plain; charset=utf8",
+                "ContentCharset": "utf8",
+                "CreateBy": 18,
+                "CreateTime": "2023-09-26 11:33:28",
+                "From": "demistobot",
+                "InReplyTo": "",
+                "IncomingTime": 1695720808,
+                "IsVisibleForCustomer": 1,
+                "MessageID": "",
+                "MimeType": "text/plain",
+                "References": "",
+                "ReplyTo": "",
+                "SenderType": "agent",
+                "SenderTypeID": "1",
+                "Subject": "test",
+                "TicketID": 1234,
+                "TimeUnit": 0,
+                "To": "IncidentResponse"
+            }
+        ],
+        "ChangedBy": 1,
+        "Changed": "2023-09-26 11:33:29",
+        "CreatedBy": 18,
+        "CustomerID": "",
+        "CustomerUserID": "test@mail.com",
+        "DynamicField": [
+            {
+                "Name": "IncidentDescription",
+                "Value": null
+            },
+            {
+                "Name": "TLP",
+                "Value": null
+            }
+        ],
+        "EscalationResponseTime": 0,
+        "EscalationSolutionTime": 0,
+        "EscalationTime": 0,
+        "EscalationUpdateTime": 0,
+        "GroupID": 6,
+        "Lock": "unlock",
+        "LockID": 1,
+        "Owner": "demistobot",
+        "OwnerID": 22,
+        "Priority": "Severity normal",
+        "PriorityBackgroundColor": "#cdcdcd",
+        "PriorityForgroundColor": "#ffffff",
+        "PriorityID": 3,
+        "Queue": "Incident Response",
+        "QueueID": 12,
+        "RealTillTimeNotUsed": 0,
+        "Responsible": "root@localhost",
+        "ResponsibleID": 1,
+        "SLAID": "",
+        "ServiceID": "",
+        "State": "new",
+        "StateID": 1,
+        "StateType": "new",
+        "TicketID": 3456,
+        "TicketNumber": "1911325",
+        "TimeUnit": 0,
+        "Title": "Demisto Test",
+        "Type": "Unclassified",
+        "TypeID": 1,
+        "UnlockTimeout": 1695720808,
+        "UntilTime": 0
+    },
+    "expected_command_results": {
+        "Type": 1,
+        "ContentsFormat": "json",
+        "Contents": {
+            "ID": 3456,
+            "Priority": "new_priority",
+            "Queue": "new_queue",
+            "State": "new_state",
+            "Title": "new_title",
+            "Article": {
+                "Subject": "new_article_subject",
+                "Body": "new_article_body",
+                "ContentType": "text/html; charset=utf8"
+            },
+            "Type": "new_ticket_type"
+        },
+        "HumanReadable": "Updated ticket 3456 successfully",
+        "EntryContext": {
+            "OTRS.Ticket(val.ID && val.ID == obj.ID)": {
+                "ID": 3456,
+                "Priority": "new_priority",
+                "Queue": "new_queue",
+                "State": "new_state",
+                "Title": "new_title",
+                "Article": {
+                    "Subject": "new_article_subject",
+                    "Body": "new_article_body",
+                    "ContentType": "text/html; charset=utf8"
+                },
+                "Type": "new_ticket_type"
+            }
+        },
+        "IndicatorTimeline": [],
+        "IgnoreAutoExtract": false,
+        "Note": false,
+        "Relationships": []
+    }
+}

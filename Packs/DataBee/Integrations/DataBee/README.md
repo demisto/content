@@ -111,7 +111,7 @@ Search for devices based on filters.
                 "email_addr": "secret",
                 "employee_uid": "62626",
                 "end_time": "2024-06-07T07:20:02.352612",
-                "full_name": "Stephen Osborne",
+                "full_name": "Steve Testborne",
                 "given_name": "Stephen",
                 "groups": [
                     {

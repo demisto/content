@@ -1,75 +1,480 @@
 {
-    "code": 200,
-    "status": "OK",
     "result": {
-      "query": "ip=8.8.8.8",
-      "total": 1,
-      "duration": 266,
-      "hits": [
-        {
-          "services": [
+        "hits": [
             {
-              "port": 53,
-              "transport_protocol": "UDP",
-              "extended_service_name": "DNS",
-              "service_name": "DNS"
-            },
-            {
-              "certificate": "XXXXXXX",
-              "extended_service_name": "HTTPS",
-              "port": 443,
-              "transport_protocol": "TCP",
-              "service_name": "HTTP"
-            },
-            {
-              "service_name": "UNKNOWN",
-              "transport_protocol": "QUIC",
-              "extended_service_name": "UNKNOWN",
-              "port": 443
-            },
-            {
-              "transport_protocol": "TCP",
-              "service_name": "UNKNOWN",
-              "port": 853,
-              "certificate": "XXXXXXX",
-              "extended_service_name": "UNKNOWN"
+                "host_v1": {
+                    "resource": {
+                        "ip": "127.0.0.1",
+                        "location": {
+                            "continent": "North America",
+                            "country": "United States",
+                            "country_code": "US",
+                            "city": "Mountain View",
+                            "postal_code": "94043",
+                            "timezone": "America/Los_Angeles",
+                            "province": "California",
+                            "coordinates": {
+                                "latitude": 38.00881,
+                                "longitude": -122.11746
+                            }
+                        },
+                        "autonomous_system": {
+                            "asn": 15169,
+                            "description": "Company Inc",
+                            "bgp_prefix": "127.0.0.1/24",
+                            "name": "Company Inc",
+                            "country_code": "US"
+                        },
+                        "whois": {
+                            "network": {
+                                "handle": "COMPANY-HANDLE",
+                                "name": "Company Inc",
+                                "cidrs": [
+                                    "127.0.0.1/24"
+                                ],
+                                "created": "2023-12-28T00:00:00Z",
+                                "updated": "2023-12-28T00:00:00Z",
+                                "allocation_type": "ALLOCATION"
+                            },
+                            "organization": {
+                                "handle": "ORG-HANDLE",
+                                "name": "Company Inc",
+                                "street": "1600 Amphitheatre Parkway",
+                                "city": "Mountain View",
+                                "state": "CA",
+                                "postal_code": "94043",
+                                "country": "US",
+                                "abuse_contacts": [
+                                    {
+                                        "handle": "ABUSE-HANDLE",
+                                        "name": "Abuse",
+                                        "email": "admin@example.com"
+                                    }
+                                ],
+                                "admin_contacts": [
+                                    {
+                                        "handle": "ADMIN-HANDLE",
+                                        "name": "John Doe",
+                                        "email": "admin@example.com"
+                                    }
+                                ],
+                                "tech_contacts": [
+                                    {
+                                        "handle": "TECH-HANDLE",
+                                        "name": "John Doe",
+                                        "email": "admin@example.com"
+                                    }
+                                ]
+                            }
+                        },
+                        "services": [
+                            {
+                                "port": 53,
+                                "protocol": "DNS",
+                                "transport_protocol": "udp",
+                                "ip": "127.0.0.1",
+                                "scan_time": "2026-01-15T00:29:02Z",
+                                "dns": {
+                                    "server_type": "forwarding",
+                                    "resolves_correctly": true,
+                                    "answers": [
+                                        {
+                                            "name": "ip.example.com.",
+                                            "response": "127.0.0.1",
+                                            "type": "a"
+                                        },
+                                        {
+                                            "name": "ip.example.com.",
+                                            "response": "127.0.0.1",
+                                            "type": "a"
+                                        }
+                                    ],
+                                    "questions": [
+                                        {
+                                            "name": "ip.example.com.",
+                                            "response": ";ip.example.com.\tIN\t A",
+                                            "type": "a"
+                                        }
+                                    ],
+                                    "edns": {
+                                        "do": true,
+                                        "udp": 512
+                                    },
+                                    "r_code": "success"
+                                }
+                            },
+                            {
+                                "port": 443,
+                                "protocol": "UNKNOWN",
+                                "transport_protocol": "quic",
+                                "ip": "127.0.0.1",
+                                "scan_time": "2026-01-14T13:32:45Z"
+                            },
+                            {
+                                "port": 443,
+                                "protocol": "HTTP",
+                                "transport_protocol": "tcp",
+                                "cert": {
+                                    "fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                    "fingerprint_sha1": "0123456789abcdef0123456789abcdef01234567",
+                                    "fingerprint_md5": "0123456789abcdef0123456789abcdef",
+                                    "tbs_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                    "tbs_no_ct_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                    "spki_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                    "parent_spki_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                    "parsed": {
+                                        "version": 3,
+                                        "serial_number": "0123456789abcdef0123456789abcdef01234567",
+                                        "issuer_dn": "C=US, O=Company Inc, CN=Generic CA",
+                                        "issuer": {
+                                            "common_name": [
+                                                "Generic CA"
+                                            ],
+                                            "country": [
+                                                "US"
+                                            ],
+                                            "organization": [
+                                                "Company Inc"
+                                            ]
+                                        },
+                                        "subject_dn": "CN=dns.example.com",
+                                        "subject": {
+                                            "common_name": [
+                                                "dns.example.com"
+                                            ]
+                                        },
+                                        "subject_key_info": {
+                                            "key_algorithm": {
+                                                "name": "RSA",
+                                                "oid": "1.2.840.113549.1.1.1"
+                                            },
+                                            "rsa": {
+                                                "exponent": 65537,
+                                                "modulus": "0123456789abcdef",
+                                                "length": 2048
+                                            },
+                                            "fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                        },
+                                        "validity_period": {
+                                            "not_before": "2025-12-03T15:57:26Z",
+                                            "not_after": "2026-02-25T15:57:25Z",
+                                            "length_seconds": 7257600
+                                        },
+                                        "signature": {
+                                            "signature_algorithm": {
+                                                "name": "SHA256-RSA",
+                                                "oid": "1.2.840.113549.1.1.11"
+                                            },
+                                            "value": "0123456789abcdef"
+                                        },
+                                        "extensions": {
+                                            "key_usage": {
+                                                "digital_signature": true,
+                                                "key_encipherment": true,
+                                                "value": 5
+                                            },
+                                            "basic_constraints": {},
+                                            "subject_alt_name": {
+                                                "dns_names": [
+                                                    "dns.example.com"
+                                                ],
+                                                "ip_addresses": [
+                                                    "127.0.0.1",
+                                                    "127.0.0.1",
+                                                    "::1:1"
+                                                ]
+                                            },
+                                            "crl_distribution_points": [
+                                                "https://example.com"
+                                            ],
+                                            "authority_key_id": "0123456789abcdef0123456789abcdef01234567",
+                                            "subject_key_id": "0123456789abcdef0123456789abcdef01234567",
+                                            "extended_key_usage": {
+                                                "server_auth": true
+                                            },
+                                            "certificate_policies": [
+                                                {
+                                                    "id": "127.0.0.1.2.1"
+                                                }
+                                            ],
+                                            "authority_info_access": {
+                                                "ocsp_urls": [
+                                                    "https://example.com"
+                                                ],
+                                                "issuer_urls": [
+                                                    "https://example.com"
+                                                ]
+                                            },
+                                            "signed_certificate_timestamps": [
+                                                {
+                                                    "log_id": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                                    "timestamp": "2025-12-03T16:57:33Z",
+                                                    "signature": {
+                                                        "hash_algorithm": "SHA256",
+                                                        "signature_algorithm": "ECDSA",
+                                                        "signature": "0123456789abcdef"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "serial_number_hex": "0123456789abcdef",
+                                        "ja4x": "0123456789ab_0123456789ab_0123456789ab"
+                                    },
+                                    "names": [
+                                        "dns.example.com",
+                                        "127.0.0.1"
+                                    ],
+                                    "validation_level": "dv",
+                                    "validation": {
+                                        "nss": {
+                                            "is_valid": true,
+                                            "ever_valid": true,
+                                            "has_trusted_path": true,
+                                            "had_trusted_path": true,
+                                            "chains": [
+                                                {
+                                                    "sha256fp": [
+                                                        "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                                    ]
+                                                }
+                                            ],
+                                            "parents": [
+                                                "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                            ],
+                                            "type": "leaf"
+                                        },
+                                        "microsoft": {
+                                            "is_valid": true,
+                                            "ever_valid": true,
+                                            "has_trusted_path": true,
+                                            "had_trusted_path": true,
+                                            "chains": [
+                                                {
+                                                    "sha256fp": [
+                                                        "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                                    ]
+                                                }
+                                            ],
+                                            "parents": [
+                                                "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                            ],
+                                            "type": "leaf"
+                                        },
+                                        "apple": {
+                                            "is_valid": true,
+                                            "ever_valid": true,
+                                            "has_trusted_path": true,
+                                            "had_trusted_path": true,
+                                            "chains": [
+                                                {
+                                                    "sha256fp": [
+                                                        "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                                    ]
+                                                }
+                                            ],
+                                            "parents": [
+                                                "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                            ],
+                                            "type": "leaf"
+                                        },
+                                        "chrome": {
+                                            "is_valid": true,
+                                            "ever_valid": true,
+                                            "has_trusted_path": true,
+                                            "had_trusted_path": true,
+                                            "chains": [
+                                                {
+                                                    "sha256fp": [
+                                                        "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                                    ]
+                                                }
+                                            ],
+                                            "parents": [
+                                                "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                            ],
+                                            "type": "leaf"
+                                        }
+                                    },
+                                    "revocation": {
+                                        "ocsp": {
+                                            "reason": "unspecified"
+                                        },
+                                        "crl": {
+                                            "reason": "unspecified"
+                                        }
+                                    },
+                                    "ct": {
+                                        "entries": {
+                                            "ct_log_1": {
+                                                "index": 2042607884,
+                                                "added_to_ct_at": "2026-01-13T00:48:07Z",
+                                                "ct_to_censys_at": "2026-01-13T01:59:14Z"
+                                            }
+                                        }
+                                    },
+                                    "ever_seen_in_scan": true,
+                                    "added_at": "2025-12-14T06:07:34Z",
+                                    "modified_at": "2026-01-13T01:59:14Z",
+                                    "validated_at": "2026-01-15T04:32:32Z",
+                                    "parse_status": "success",
+                                    "zlint": {
+                                        "version": 3,
+                                        "timestamp": "2025-12-14T06:07:34Z",
+                                        "notices_present": true,
+                                        "failed_lints": [
+                                            "n_subject_common_name_included"
+                                        ]
+                                    },
+                                    "spki_subject_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                    "parent_spki_subject_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                },
+                                "ip": "127.0.0.1",
+                                "scan_time": "2026-01-15T06:45:37Z",
+                                "tls": {
+                                    "version_selected": "tlsv1_3",
+                                    "cipher_selected": "TLS_CHACHA20_POLY1305_SHA256",
+                                    "fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                    "ja3s": "0123456789abcdef0123456789abcdef",
+                                    "presented_chain": [
+                                        {
+                                            "fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "subject_dn": "C=US, O=Company Inc, CN=Generic CA",
+                                            "issuer_dn": "C=US, O=Company Inc, CN=Generic Root CA"
+                                        }
+                                    ],
+                                    "ja4s": "0123456789ab_0123456789ab_0123456789ab",
+                                    "versions": [
+                                        {
+                                            "version": "tlsv1_3",
+                                            "ja3s": "0123456789abcdef0123456789abcdef",
+                                            "ja4s": "0123456789ab_0123456789ab_0123456789ab"
+                                        }
+                                    ]
+                                },
+                                "banner": "HTTP/1.1 302 Found\r\nX-Content-Type-Options: nosniff\r\nAccess-Control-Allow-Origin: *\r\nLocation: https://example.com\r\nDate:  <REDACTED>\r\nContent-Type: text/html; charset=UTF-8\r\nServer: HTTP server (unknown)\r\nContent-Length: 216\r\nX-XSS-Protection: 0\r\nX-Frame-Options: SAMEORIGIN\r\nAlt-Svc: h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000\r\n",
+                                "banner_hash_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                "jarm": {
+                                    "ip": "127.0.0.1",
+                                    "port": 443,
+                                    "transport_protocol": "tcp",
+                                    "is_success": true,
+                                    "fingerprint": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                    "cipher_and_version_fingerprint": "0123456789abcdef0123456789abcdef",
+                                    "tls_extensions_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                    "scan_time": "2026-01-10T10:15:21Z"
+                                },
+                                "ja4tscan": {
+                                    "scan_time": "2026-01-14T19:33:05Z",
+                                    "fingerprint": "65535_2-4-8-1-3_1412_8_0-2-4-8-16"
+                                },
+                                "endpoints": [
+                                    {
+                                        "hostname": "127.0.0.1",
+                                        "port": 443,
+                                        "path": "/",
+                                        "endpoint_type": "HTTP",
+                                        "transport_protocol": "tcp",
+                                        "scan_time": "2026-01-15T06:45:37Z",
+                                        "banner": "HTTP/1.1 302 Found\r\nX-Content-Type-Options: nosniff\r\nAccess-Control-Allow-Origin: *\r\nLocation: https://example.com\r\nDate:  <REDACTED>\r\nContent-Type: text/html; charset=UTF-8\r\nServer: HTTP server (unknown)\r\nContent-Length: 216\r\nX-XSS-Protection: 0\r\nX-Frame-Options: SAMEORIGIN\r\nAlt-Svc: h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000\r\n",
+                                        "banner_hash_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                        "http": {
+                                            "uri": "https://example.com",
+                                            "protocol": "HTTP/1.1",
+                                            "status_code": 302,
+                                            "status_reason": "Found",
+                                            "headers": {
+                                                "Access-Control-Allow-Origin": {
+                                                    "headers": [
+                                                        "*"
+                                                    ]
+                                                },
+                                                "Alt-Svc": {
+                                                    "headers": [
+                                                        "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+                                                    ]
+                                                },
+                                                "Content-Length": {
+                                                    "headers": [
+                                                        "216"
+                                                    ]
+                                                },
+                                                "Content-Type": {
+                                                    "headers": [
+                                                        "text/html; charset=UTF-8"
+                                                    ]
+                                                },
+                                                "Date": {
+                                                    "headers": [
+                                                        "<REDACTED>"
+                                                    ]
+                                                },
+                                                "Location": {
+                                                    "headers": [
+                                                        "https://example.com"
+                                                    ]
+                                                },
+                                                "Server": {
+                                                    "headers": [
+                                                        "HTTP server (unknown)"
+                                                    ]
+                                                },
+                                                "X-Content-Type-Options": {
+                                                    "headers": [
+                                                        "nosniff"
+                                                    ]
+                                                },
+                                                "X-Frame-Options": {
+                                                    "headers": [
+                                                        "SAMEORIGIN"
+                                                    ]
+                                                },
+                                                "X-XSS-Protection": {
+                                                    "headers": [
+                                                        "0"
+                                                    ]
+                                                }
+                                            },
+                                            "html_tags": [
+                                                "<TITLE>302 Moved</TITLE>",
+                                                "<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">"
+                                            ],
+                                            "body_size": 216,
+                                            "body": "<HTML><HEAD><meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">\n<TITLE>302 Moved</TITLE></HEAD><BODY>\n<H1>302 Moved</H1>\nThe document has moved\n<A HREF=\"https://example.com\">here</A>.\r\n</BODY></HTML>\r\n",
+                                            "html_title": "302 Moved",
+                                            "body_hash_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "body_hash_sha1": "0123456789abcdef0123456789abcdef01234567",
+                                            "supported_versions": [
+                                                "HTTP/1.1",
+                                                "HTTP/2"
+                                            ],
+                                            "redirect_chain": [
+                                                {
+                                                    "hostname": "dns.example.com",
+                                                    "port": 443,
+                                                    "transport_protocol": "tcp",
+                                                    "path": "/",
+                                                    "reason": "HTTP_3XX"
+                                                }
+                                            ]
+                                        },
+                                        "ip": "127.0.0.1"
+                                    }
+                                ]
+                            }
+                        ],
+                        "service_count": 4,
+                        "dns": {
+                            "reverse_dns": {
+                                "resolve_time": "2025-12-24T15:52:57Z",
+                                "names": [
+                                    "dns.example.com"
+                                ]
+                            }
+                        }
+                    },
+                    "extensions": {}
+                }
             }
-          ],
-          "labels": ["database","email","file-sharing","iot","login-page"],
-          "dns": {
-            "reverse_dns": {
-              "names": [
-                "dns.google"
-              ]
-            }
-          },
-          "autonomous_system": {
-            "country_code": "US",
-            "description": "GOOGLE",
-            "name": "GOOGLE",
-            "bgp_prefix": "8.8.8.8",
-            "asn": 15169
-          },
-          "ip": "8.8.8.8",
-          "location": {
-            "country": "United States",
-            "timezone": "America/Los_Angeles",
-            "province": "California",
-            "coordinates": {
-              "latitude": 37.4056,
-              "longitude": -122.0775
-            },
-            "continent": "North America",
-            "postal_code": "94043",
-            "city": "Mountain View",
-            "country_code": "US"
-          },
-          "last_updated_at": "2024-04-07T02:16:23.015Z"
-        }
-      ],
-      "links": {
-        "next": "",
-        "prev": ""
-      }
+        ]
     }
-  }
+}

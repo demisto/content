@@ -1,0 +1,49 @@
+[
+  {
+    "request": {
+      "url": "/api/v1.1/jsonrpc/network",
+      "method": "getTaskStatus",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getTaskStatus",
+        "params": {
+          "taskId": "6941944218d1fb8aea04019b",
+          "options": {
+            "returnSubtasks": true
+          }
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "name": "Kill Process 2025-12-16",
+        "startDate": "2025-12-16T19:17:54",
+        "status": 3,
+        "type": 21,
+        "owner": {
+          "id": "6941466eda1158ec9f0ecb5d",
+          "userName": "USER_EMAIL"
+        },
+        "company": {
+          "id": "COMPANY_ID",
+          "name": "COMPANY_NAME"
+        },
+        "hasMoreSubtasks": false,
+        "subtasks": [
+          {
+            "endpointId": "ENDPOINT_ID",
+            "endpointName": "ENDPOINT_NAME",
+            "endpointType": 262,
+            "startDate": "2025-12-16T19:17:54",
+            "status": 3,
+            "endDate": "2025-12-16T19:17:55"
+          }
+        ],
+        "totalTargetsCount": 1
+      }
+    }
+  }
+]
