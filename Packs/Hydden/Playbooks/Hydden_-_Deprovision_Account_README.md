@@ -10,18 +10,18 @@ Requires a **Hydden Control** integration instance.
 
 1. Reads the account name or email from `${alert.username}`.
 2. Coerces that value to a single identifier with Unique and atIndex, then stages it under `Hydden.Input.AccountId`.
-3. If **RequireApproval** is `True` (the default), waits for an analyst to confirm on the *Confirm deprovision* task.
-4. Calls `hydden-deprovision-account` with the identifier as `account_id`. The command looks up a Hydden UUID via `GET /accounts/lookup` and, if that returns exactly one UUID, calls `POST /account-actions/deprovision`. No matches or more than one match fails the task.
+3. Waits for an analyst to confirm on the *Confirm deprovision* task unless **RequireApproval** is explicitly `False`. **Yes** continues to deprovision. **No** ends at *Deprovision skipped* without calling Hydden.
+4. Calls `hydden-deprovision-account` with the identifier as `account_id`. The command looks up a Hydden UUID via `GET /accounts/lookup?value=` (exact username or email match, not a substring). If that returns exactly one UUID, it calls `POST /account-actions/deprovision`. No matches or more than one match fails the task.
 5. Writes `Hydden.Identity.deprovisioned` (`true` on success). If Hydden returns an error, the playbook fails.
 
-This command is potentially harmful. Point an automation rule at this playbook only for issues you intend to deprovision. Leave **RequireApproval** at `True` unless the automation is already gated elsewhere.
+This command is potentially harmful. Point an automation rule at this playbook only for issues you intend to deprovision. Leave **RequireApproval** at `True` unless the automation is already gated elsewhere. Empty or unexpected values still require confirmation.
 
 ## Inputs
 
 | **Name** | **Description** | **Required** |
 | --- | --- | --- |
 | AccountId | Cortex account name or email from the alert (defaults to `${alert.username}`). | Required |
-| RequireApproval | When `True`, wait for an analyst to confirm before deprovisioning. Default `True`. | Optional |
+| RequireApproval | Skip confirmation only when `False`. Default `True`. | Optional |
 
 ## Outputs
 

@@ -323,7 +323,7 @@ def test_client_forwards_verify_and_proxy_to_content_client(monkeypatch) -> None
     assert seen["proxy"] is True
 
 
-def test_lookup_accounts_sends_the_cortex_identifier_as_q() -> None:
+def test_lookup_accounts_sends_the_cortex_identifier_as_value() -> None:
     client = _client_with_mocked_transport([])
 
     client.lookup_accounts(IDENTIFIER, TOKEN)
@@ -336,7 +336,7 @@ def test_lookup_accounts_sends_the_cortex_identifier_as_q() -> None:
             "content-type": "application/json",
             "Authorization": f"Bearer {TOKEN}",
         },
-        params={"q": IDENTIFIER},
+        params={"value": IDENTIFIER},
     )
 
 

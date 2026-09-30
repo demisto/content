@@ -1,9 +1,9 @@
-id: silent-Hydden - Deprovision Account
+id: Hydden - Deprovision Account
 version: -1
-name: silent-Hydden - Deprovision Account
-description: When a Cortex issue indicates a compromised or otherwise high-risk account, take the account name or email from the alert and deprovision it with Hydden Control. The command looks up a unique Hydden UUID first. When RequireApproval is True, an analyst must confirm before deprovision runs.
+name: Hydden - Deprovision Account
+description: When a Cortex issue indicates a compromised or otherwise high-risk account, take the account name or email from the alert and deprovision it with Hydden Control. The command looks up a unique Hydden UUID first. An analyst must confirm before deprovision unless RequireApproval is explicitly False.
 starttaskid: "0"
-fromversion: "8.9.0"
+fromversion: "8.3.0"
 inputs:
 - key: AccountId
   value:
@@ -15,7 +15,7 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: When True, wait for an analyst to confirm before deprovisioning.
+  description: Skip the confirmation task only when this is False. Any other value waits for an analyst to confirm.
   playbookInputQuery:
 outputs:
 - contextPath: Hydden.Identity.deprovisioned
@@ -105,18 +105,18 @@ tasks:
       id: c1111111-d222-4e33-8f44-a55555555505
       version: -1
       name: Require approval?
-      description: When RequireApproval is True, wait for an analyst to confirm before deprovisioning.
+      description: Skip confirmation only when RequireApproval is explicitly False.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
       - "3"
+      "no":
+      - "4"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: "no"
       condition:
       - - ignorecase: true
           left:
@@ -126,7 +126,7 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: "True"
+              simple: "False"
     continueonerrortype: ""
     view: |-
       {
@@ -157,6 +157,8 @@ tasks:
     nexttasks:
       "yes":
       - "4"
+      "no":
+      - "5"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -214,6 +216,34 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: c1111111-d222-4e33-8f44-a55555555506
+    type: title
+    task:
+      id: c1111111-d222-4e33-8f44-a55555555506
+      version: -1
+      name: Deprovision skipped
+      description: Analyst declined confirmation. The account was not deprovisioned.
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -229,4 +259,3 @@ view: |-
 quiet: false
 tests:
 - No tests
-issilent: true

@@ -48,7 +48,7 @@ After install, open **Hydden Identity System of Record** from **Dashboards & Rep
 | Identity Analytics | [Hydden - Blast Radius](./Playbooks/Hydden_-_Blast_Radius_README.md) |
 | Compromised or high-risk account | [Hydden - Deprovision Account](./Playbooks/Hydden_-_Deprovision_Account_README.md) |
 
-Both playbooks take the account name or email from `${alert.username}` and pass a single identifier to one Hydden Control command. The command looks up a unique Hydden UUID via `GET /accounts/lookup` before blast-radius or deprovision. The deprovision playbook waits for analyst confirmation when **RequireApproval** is `True`.
+Both playbooks take the account name or email from `${alert.username}` and pass a single identifier to one Hydden Control command. The command looks up a unique Hydden UUID via `GET /accounts/lookup?value=` (exact username or email match) before blast-radius or deprovision. The deprovision playbook waits for analyst confirmation unless **RequireApproval** is explicitly `False`.
 
 ## Dependencies
 

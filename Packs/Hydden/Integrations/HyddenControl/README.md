@@ -25,7 +25,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### hydden-blast-radius
 
 ***
-Return the subject's blast radius from Hydden Control. Calls `GET /accounts/lookup?q=ACCOUNT_ID` first. If that returns exactly one Hydden UUID, calls `GET /blast-radius?ref=UUID&type=TYPE`. Otherwise the command fails with no matches or more than one match.
+Return the subject's blast radius from Hydden Control. Calls `GET /accounts/lookup?value=ACCOUNT_ID` first. Lookup is an exact username or email match, not a substring. If that returns exactly one Hydden UUID, calls `GET /blast-radius?ref=UUID&type=TYPE`. Otherwise the command fails with no matches or more than one match.
 
 #### Base Command
 
@@ -35,7 +35,7 @@ Return the subject's blast radius from Hydden Control. Calls `GET /accounts/look
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | Cortex user or account name or email. Looked up to a Hydden UUID via `GET /accounts/lookup`. | Required |
+| account_id | Cortex user or account name or email. Looked up to a Hydden UUID via `GET /accounts/lookup?value=` (exact match). | Required |
 | type | Subject the ref names: `account` (default) or `group`. | Optional |
 
 #### Context Output
@@ -79,7 +79,7 @@ Return the subject's blast radius from Hydden Control. Calls `GET /accounts/look
 ### hydden-deprovision-account
 
 ***
-Deprovision an account across the fabric, including disabling the account and removing group and role memberships. Calls `GET /accounts/lookup?q=ACCOUNT_ID` first. If that returns exactly one Hydden UUID, calls `POST /account-actions/deprovision?ref=UUID`. Otherwise the command fails with no matches or more than one match. This command is potentially harmful.
+Deprovision an account across the fabric, including disabling the account and removing group and role memberships. Calls `GET /accounts/lookup?value=ACCOUNT_ID` first. Lookup is an exact username or email match, not a substring. If that returns exactly one Hydden UUID, calls `POST /account-actions/deprovision?ref=UUID`. Otherwise the command fails with no matches or more than one match. This command is potentially harmful.
 
 #### Base Command
 
@@ -89,7 +89,7 @@ Deprovision an account across the fabric, including disabling the account and re
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | Cortex user or account name or email. Looked up to a Hydden UUID via `GET /accounts/lookup`. | Required |
+| account_id | Cortex user or account name or email. Looked up to a Hydden UUID via `GET /accounts/lookup?value=` (exact match). | Required |
 
 #### Context Output
 

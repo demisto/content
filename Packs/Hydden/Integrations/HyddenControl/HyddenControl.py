@@ -114,7 +114,7 @@ class Client(ContentClient):  # noqa: F405
             method="GET",
             url_suffix="accounts/lookup",
             headers=self._bearer_headers(token),
-            params={"q": query},
+            params={"value": query},
         )
 
     def get_blast_radius(self, account_id: str, token: str, subject_type: str = "account") -> Any:
@@ -170,8 +170,9 @@ def _uuids_from_lookup(response: Any) -> list[str]:
     """Unique Hydden UUIDs from GET /accounts/lookup, in first-seen order.
 
     Documented payload is a JSON array. Each row is a Hydden UUID string or an
-    object with a uuid field. That UUID is not the Cortex identifier that was
-    sent as q; it is the ref for blast-radius and deprovision.
+    object with a uuid field. Lookup is an exact username or email match on
+    value, not a substring. That UUID is not the Cortex identifier; it is the
+    ref for blast-radius and deprovision.
     """
     if isinstance(response, list):
         items = response

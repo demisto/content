@@ -1,9 +1,9 @@
-id: silent-Hydden - Blast Radius
+id: Hydden - Blast Radius
 version: -1
-name: silent-Hydden - Blast Radius
+name: Hydden - Blast Radius
 description: When a Cortex issue flags an account, take the account name or email from the alert and get its blast radius from Hydden Control. The command looks up a unique Hydden UUID first. Returns Hydden.Identity blast-radius fields.
 starttaskid: "0"
-fromversion: "8.9.0"
+fromversion: "8.3.0"
 inputs:
 - key: AccountId
   value:
@@ -171,4 +171,3 @@ view: |-
 quiet: false
 tests:
 - No tests
-issilent: true
