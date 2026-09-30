@@ -4827,33 +4827,35 @@ def nsg_network_interface_create_command(client: AzureClient, params: dict[str, 
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
 
     nic_name = args["nic_name"]
+    vnet_name = args["vnet_name"]
+    subnet_name = args["subnet_name"]
+    ip_config_name = args["ip_config_name"]
+    location = args["location"]
     nsg_name = args.get("nsg_name")
     public_ip_address_name = args.get("public_ip_address_name")
 
     prefix = f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/"
-    subnet_id = f"{prefix}virtualNetworks/{args.get('vnet_name')}/subnets/{args.get('subnet_name')}"
+    subnet_id = f"{prefix}virtualNetworks/{vnet_name}/subnets/{subnet_name}"
+    public_ip_address_id = f"{prefix}publicIPAddresses/{public_ip_address_name}" if public_ip_address_name else None
 
     network_interface_data = {
-        "location": args.get("location"),
+        "location": location,
         "properties": {
             "networkSecurityGroup": {"id": f"{prefix}networkSecurityGroups/{nsg_name}"} if nsg_name else None,
             "ipConfigurations": [
                 {
-                    "name": args.get("ip_config_name"),
+                    "name": ip_config_name,
                     "properties": {
                         "subnet": {"id": subnet_id},
                         "privateIPAddress": args.get("private_ip"),
-                        "publicIPAddress": {"id": public_ip_address_name} if public_ip_address_name else None,
+                        "publicIPAddress": {"id": public_ip_address_id} if public_ip_address_id else None,
                     },
                 }
             ],
         },
     }
 
-    demisto.debug(
-        f"Creating network interface {nic_name} with {subnet_id=}, {nsg_name=}, "
-        f"{public_ip_address_name=}, location={args.get('location')}"
-    )
+    demisto.debug(f"Creating network interface {nic_name} with {subnet_id=}, {nsg_name=}, {public_ip_address_id=}, {location=}")
     response = client.create_network_interface_request(
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,

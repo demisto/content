@@ -4834,7 +4834,7 @@ script:
       name: private_ip
       type: String
       required: false
-    - description: The resource ID of the public IP address to associate with the IP configuration. Run the azure-vn-public-ip-addresses-list command to find available public IP addresses.
+    - description: The name of an existing public IP address to associate with the IP configuration. Run the azure-vn-public-ip-addresses-list command to find available public IP addresses.
       name: public_ip_address_name
       type: String
       required: false

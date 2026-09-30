@@ -7702,9 +7702,7 @@ def test_nsg_network_interface_create_command(mocker):
         "location": "eastus",
         "nsg_name": "test-nsg",
         "private_ip": "1.1.1.1",
-        "public_ip_address_name": (
-            "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/test-ip"
-        ),
+        "public_ip_address_name": "test-ip",
     }
 
     result: CommandResults = nsg_network_interface_create_command(mock_client, params, args)
@@ -7729,7 +7727,7 @@ def test_nsg_network_interface_create_command(mocker):
     assert ip_config["name"] == "ipconfig1"
     assert ip_config["properties"]["subnet"]["id"] == f"{prefix}virtualNetworks/vnet1/subnets/default"
     assert ip_config["properties"]["privateIPAddress"] == "1.1.1.1"
-    assert ip_config["properties"]["publicIPAddress"]["id"] == args["public_ip_address_name"]
+    assert ip_config["properties"]["publicIPAddress"]["id"] == f"{prefix}publicIPAddresses/test-ip"
 
 
 def test_nsg_network_interface_create_command_without_optional_args(mocker):
