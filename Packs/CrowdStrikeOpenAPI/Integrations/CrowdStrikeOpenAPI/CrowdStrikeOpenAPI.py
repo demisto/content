@@ -2997,9 +2997,7 @@ class Client:
 
         return response
 
-    def query_devices_combined_request(
-        self, offset: str | int | None, limit: str | int | None, sort: str, filter_: str
-    ) -> dict:
+    def query_devices_combined_request(self, offset: str | int | None, limit: str | int | None, sort: str, filter_: str) -> dict:
         params = assign_params(offset=offset, limit=limit, sort=sort, filter=filter_)
 
         headers = self.cs_client._headers
