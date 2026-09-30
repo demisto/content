@@ -12,13 +12,13 @@ We highly recommend using the [Microsoft Graph Mail](https://xsoar.pan.dev/docs/
 
 ### Action Required
 
-#### For customers using a Self-Deployed Application
-
 You are responsible for updating your tenant configuration before the October 2026 enforcement takes effect. To ensure this integration continues to function without disruption, you must add the Entra Application (Client) ID used by this integration to your Exchange Online tenant's allow list.
 
 1. Connect to Exchange Online PowerShell and add the Application ID.
 
-    If this is the only application you are allowing, run the following command (replace `<Your-App-ID>` with your actual Application Client ID):
+    If this is the only application you are allowing, run the following command.
+    Replace `<Your-App-ID>` with your actual Application (Client) ID.
+    If you are using the Cortex Application, use the following ID: `c61faf03-1cbc-4409-94a9-ae1497de0883`.
 
     ```powershell
     Set-OrganizationConfig -EwsAllowedAppIDs "<Your-App-ID>"
@@ -36,7 +36,7 @@ You are responsible for updating your tenant configuration before the October 20
 
 #### For customers using the Cortex Application authentication method
 
-Palo Alto Networks is making the necessary updates to align our shared Application ID with Microsoft's new requirements, so you do not need to run the steps above. However, because this change is enforced and controlled entirely by Microsoft, we cannot validate the changes in advance or guarantee uninterrupted functionality. Palo Alto Networks is not responsible for any disruptions resulting from this rollout. We recommend verifying that your integration continues to function as expected once the October 2026 enforcement takes effect.
+Palo Alto Networks is making the necessary updates to align our shared Application ID with Microsoft's new requirements. Palo Alto Networks is not responsible for any disruptions resulting from this rollout. We recommend verifying that your integration continues to function as expected once the October 2026 enforcement takes effect.
 
 ## Retirement of RBAC Application Impersonation
 
