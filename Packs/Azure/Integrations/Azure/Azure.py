@@ -2824,7 +2824,7 @@ class AzureClient:
         """
         if next_token:
             demisto.debug(f"using {next_token=} for retrieving the next page of results.")
-            full_url = next_token
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname)
             parameters = {}
         elif resource == "subscription":
             full_url = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.Network/azureFirewalls"
@@ -2898,7 +2898,7 @@ class AzureClient:
         """
         if next_token:
             demisto.debug(f"using {next_token=} for retrieving the next page of results.")
-            full_url = next_token
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname)
             parameters = {}
         else:
             full_url = (
@@ -2969,7 +2969,7 @@ class AzureClient:
         """
         if next_token:
             demisto.debug(f"using {next_token=} for retrieving the next page of results.")
-            full_url = next_token
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname)
             parameters = {}
         else:
             full_url = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.Network/locations/{location}/serviceTagDetails"
