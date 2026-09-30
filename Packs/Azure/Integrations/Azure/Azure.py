@@ -2940,7 +2940,7 @@ class AzureClient:
         """
         if next_token:
             demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of firewall policies.")
-            full_url = next_token
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname)
             parameters: dict[str, Any] = {}
         else:
             full_url = (
@@ -3144,6 +3144,32 @@ def remove_query_param_from_url(url: str, param: str) -> str:
     qs.pop(param, None)
     new_query = urlencode(qs, doseq=True)
     return urlunparse(parsed._replace(query=new_query))
+
+
+def validate_next_link(next_link: str, expected_host: str | None) -> str:
+    """
+    Validate that a pagination link points at the configured Azure management endpoint.
+
+    The link is sent as a full URL with the integration's bearer token attached, so an arbitrary
+    host would receive a valid Azure access token.
+
+    Args:
+        next_link (str): The pagination link provided by the user.
+        expected_host (str | None): The hostname of the configured Azure management endpoint.
+
+    Returns:
+        str: The validated link.
+
+    Raises:
+        DemistoException: If the link is not an HTTPS URL pointing at the expected host.
+    """
+    parsed = urlparse(next_link)
+    if parsed.scheme != "https" or parsed.hostname != expected_host:
+        demisto.debug(f"[Azure] Rejected next_token with {parsed.scheme=} and {parsed.hostname=}, {expected_host=}")
+        raise DemistoException(
+            "Invalid next_token: it must be the next token value returned by a previous call to the same command."
+        )
+    return next_link
 
 
 def update_nic_properties(args: dict, params: dict, properties: dict):

@@ -8273,6 +8273,10 @@ def test_firewall_policy_list_client_uses_next_token(mocker):
         - Without a token the resource group URL and the api-version are used, and with a token
           the token itself is requested with no extra parameters.
     """
+    next_token = (
+        "https://management.azure.com/subscriptions/sub1/resourceGroups/rg1"
+        "/providers/Microsoft.Network/firewallPolicies?$skipToken=abc"
+    )
     client = AzureClient(app_id="app", subscription_id="sub1", resource_group_name="rg1")
     http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
 
@@ -8281,7 +8285,51 @@ def test_firewall_policy_list_client_uses_next_token(mocker):
     assert first_call["full_url"].endswith("/resourceGroups/rg1/providers/Microsoft.Network/firewallPolicies")
     assert first_call["params"] == {"api-version": Azure.FIREWALL_API_VERSION}
 
-    client.firewall_policy_list(subscription_id="sub1", resource_group_name="rg1", next_token="next_token_value")
+    client.firewall_policy_list(subscription_id="sub1", resource_group_name="rg1", next_token=next_token)
     second_call = http_request.call_args[1]
-    assert second_call["full_url"] == "next_token_value"
+    assert second_call["full_url"] == next_token
     assert second_call["params"] == {}
+
+
+@pytest.mark.parametrize(
+    "next_token",
+    [
+        pytest.param("https://evil.io/subscriptions/sub1", id="other_host"),
+        pytest.param("https://management.azure.com.evil.io/subscriptions/sub1", id="suffixed_host"),
+        pytest.param("https://management.azure.com@evil.io/subscriptions/sub1", id="userinfo_host"),
+        pytest.param("http://management.azure.com/subscriptions/sub1", id="http_scheme"),
+    ],
+)
+def test_firewall_policy_list_client_rejects_foreign_next_token(mocker, next_token):
+    """
+    Given:
+        - A next_token pointing at a host other than the configured Azure management endpoint,
+          or using a non-HTTPS scheme.
+    When:
+        - firewall_policy_list is called with that token.
+    Then:
+        - A DemistoException is raised and no HTTP request is sent, so the bearer token is not leaked.
+    """
+    client = AzureClient(app_id="app", subscription_id="sub1", resource_group_name="rg1")
+    http_request = mocker.patch.object(client, "http_request")
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.firewall_policy_list(subscription_id="sub1", resource_group_name="rg1", next_token=next_token)
+
+    http_request.assert_not_called()
+
+
+def test_validate_next_link_accepts_the_configured_host():
+    """
+    Given:
+        - A pagination link pointing at the configured Azure management endpoint over HTTPS.
+    When:
+        - validate_next_link is called with the endpoint's hostname.
+    Then:
+        - The link is returned unchanged.
+    """
+    from Azure import validate_next_link
+
+    next_link = "https://management.azure.com/subscriptions/sub1/providers/Microsoft.Network/firewallPolicies?$skipToken=abc"
+
+    assert validate_next_link(next_link, "management.azure.com") == next_link
