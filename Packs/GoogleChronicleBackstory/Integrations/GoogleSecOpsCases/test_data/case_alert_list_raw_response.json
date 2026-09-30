@@ -1,0 +1,93 @@
+{
+    "caseAlerts": [
+        {
+            "name": "projects/chronicle-mock-proj/locations/us/instances/00000000-0000-0000-0000-000000000001/cases/1001/caseAlerts/1000001",
+            "identifier": "TEST ALERT_00000000-0000-0000-0000-000000000010",
+            "caseId": 1001,
+            "createTime": "1778778979232",
+            "updateTime": "1779426987796",
+            "ruleGenerator": "Test-Alert-Rule-01",
+            "sourceGroupingIdentifier": "0.0.0.1",
+            "product": "Test Product",
+            "displayName": "TEST ALERT",
+            "vendor": "Test Vendor",
+            "environment": "Default Environment",
+            "ticketId": "0.0.0.1_2026-05-10 08:00:00",
+            "sourceSystemName": "Test Source System",
+            "sla": {
+                "expirationTime": "1780832620238",
+                "expirationStatus": "OPEN_SLA"
+            },
+            "priority": "HIGH",
+            "sourceIdentifier": "Test Source Identifier_00000000-0000-0000-0000-000000000011",
+            "additionalProperties": "{\"Name\":\"TEST ALERT\",\"Type\":\"ALERT\"}",
+            "status": "OPEN",
+            "startTime": "1778778979232",
+            "endTime": "1779426987796",
+            "playbookStatus": "COMPLETED",
+            "attachedPlaybookName": "Test Playbook",
+            "alertGroupIdentifier": "TEST ALERT_00000000-0000-0000-0000-000000000010",
+            "eventCount": 5,
+            "playbookRunCount": 1,
+            "tags": [
+                {
+                    "tag": "demo_1"
+                }
+            ],
+            "involvedRelations": [
+                {
+                    "identifier": "00000000-0000-0000-0000-000000000020",
+                    "alertIdentifier": "TEST ALERT_00000000-0000-0000-0000-000000000010",
+                    "caseId": 1001,
+                    "relationType": "ALERT",
+                    "from": {
+                        "identifier": "0.0.0.1",
+                        "type": "ADDRESS"
+                    },
+                    "to": {
+                        "identifier": "test-host-01",
+                        "type": "HOSTNAME"
+                    },
+                    "deviceProduct": "Test Product",
+                    "deviceVendor": "Test Vendor",
+                    "categoryOutcome": "Blocked",
+                    "destinationPort": "443",
+                    "eventClassId": "Test Event Class"
+                }
+            ]
+        },
+        {
+            "name": "projects/chronicle-mock-proj/locations/us/instances/00000000-0000-0000-0000-000000000001/cases/1001/caseAlerts/1000002",
+            "identifier": "TEST ALERT 2_00000000-0000-0000-0000-000000000030",
+            "caseId": 1001,
+            "createTime": "1778778979000",
+            "updateTime": "1779426987000",
+            "ruleGenerator": "Test-Alert-Rule-02",
+            "sourceGroupingIdentifier": "0.0.0.1",
+            "product": "Test Product 2",
+            "displayName": "TEST ALERT 2",
+            "vendor": "Test Vendor 2",
+            "environment": "Default Environment",
+            "ticketId": "0.0.0.2_2026-05-10 07:00:00",
+            "sourceSystemName": "Test Source System 2",
+            "sla": {
+                "expirationTime": "1779426987000",
+                "expirationStatus": "OPEN_SLA"
+            },
+            "priority": "MEDIUM",
+            "additionalProperties": "{\"Name\":\"TEST ALERT 2\",\"Type\":\"ALERT\"}",
+            "status": "OPEN",
+            "startTime": "1778778979000",
+            "endTime": "1779426987000",
+            "playbookStatus": "PENDING_FOR_USER",
+            "attachedPlaybookName": "Test Playbook 2",
+            "alertGroupIdentifier": "TEST ALERT 2_00000000-0000-0000-0000-000000000030",
+            "eventCount": 2,
+            "playbookRunCount": 0,
+            "tags": [],
+            "involvedRelations": []
+        }
+    ],
+    "nextPageToken": "test-next-page-token",
+    "totalSize": 10
+}

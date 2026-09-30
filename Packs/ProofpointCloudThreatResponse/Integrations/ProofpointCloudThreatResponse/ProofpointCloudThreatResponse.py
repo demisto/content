@@ -289,7 +289,7 @@ def build_filters_body(
     if verdict_filters:
         filters["verdict_filters"] = _validate_allowed(list(verdict_filters), VERDICT_FILTERS_ALLOWED, "verdict_filters")
     if disposition:
-        filters["disposition"] = _validate_allowed(list(disposition), DISPOSITION_ALLOWED, "disposition")
+        filters["disposition_filters"] = _validate_allowed(list(disposition), DISPOSITION_ALLOWED, "disposition")
     if confidence_filters:
         filters["confidence_filters"] = _validate_allowed(
             list(confidence_filters), CONFIDENCE_FILTERS_ALLOWED, "confidence_filters"

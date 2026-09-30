@@ -51,6 +51,13 @@
                 "isExtractingAllIndicatorTypes": true,
                 "extractIndicatorTypesIDs": []
             },
+            "flashpointvulnerabilitydetails": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "cveRep"
+                ]
+            },
             "sha1": {
                 "extractAsIsIndicatorTypeId": "",
                 "isExtractingAllIndicatorTypes": false,

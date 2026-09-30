@@ -1,5 +1,5 @@
 args:
-- description: 'The type of deletion - soft allows restoring, hard does not. Not relevant for O365.'
+- description: 'The type of deletion - soft allows restoring, hard does not.'
   name: delete_type
   auto: PREDEFINED
   predefined:
@@ -9,6 +9,12 @@ args:
   name: delete_from_brand
 - description: 'Argument used for the generic polling flow within the security and compliance search.'
   name: search_name
+- description: 'Argument used for the MS Graph eDiscovery polling flow to hold the case ID. Should not be set by the user.'
+  name: case_id
+  hidden: true
+- description: 'Argument used for the MS Graph eDiscovery polling flow to hold the search ID. Should not be set by the user.'
+  name: search_id
+  hidden: true
 - auto: PREDEFINED
   description: Whether to use the Cortex XSOAR built-in polling to retrieve the result when it's ready.
   name: polling

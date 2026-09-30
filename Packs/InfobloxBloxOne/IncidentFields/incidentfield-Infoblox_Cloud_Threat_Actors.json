@@ -1,0 +1,65 @@
+{
+    "id": "incident_infobloxcloudthreatactors",
+    "version": -1,
+    "modified": "2026-07-07T00:00:00.000000000+05:30",
+    "name": "Infoblox Cloud Threat Actors",
+    "ownerOnly": false,
+    "description": "The threat actors associated with the Infoblox Cloud IQ for TD Insight.",
+    "cliName": "infobloxcloudthreatactors",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Infoblox Cloud IQ for TD Insight"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "actor_name",
+            "displayName": "Actor Name",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "actor_description",
+            "displayName": "Actor Description",
+            "type": "longText",
+            "orgType": "longText",
+            "required": false,
+            "script": "",
+            "width": 450,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

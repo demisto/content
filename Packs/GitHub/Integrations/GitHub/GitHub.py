@@ -170,36 +170,47 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, is_ra
         headers=headers or HEADERS,
     )
     if res.status_code >= 400:
+        demisto.debug(f"GitHub API error response [{res.status_code} {res.reason}] for {method} {url_suffix}: {res.text}")
         try:
             json_res = res.json()
             # add message from GitHub if available
             err_msg = json_res.get("message", "")
             if err_msg and "documentation_url" in json_res:
                 err_msg += f' see: {json_res["documentation_url"]}'
-            if json_res.get("errors") is None:
+            errors = json_res.get("errors")
+            if errors is None:
                 err_msg = f"Error in API call to the GitHub Integration [{res.status_code}] {res.reason}. {err_msg}"
-            else:
-                error_code = json_res.get("errors")[0].get("code")
-                if error_code == "missing_field":
-                    err_msg = f'Error: the field: "{json_res.get("errors")[0].get("field")}" requires a value. {err_msg}'
-                elif error_code == "invalid":
-                    field = json_res.get("errors")[0].get("field")
-                    if field == "q":
-                        err_msg = f'Error: invalid query - {json_res.get("errors")[0].get("message")}. {err_msg}'
-                    else:
-                        err_msg = f'Error: the field: "{field}" has an invalid value. {err_msg}'
-
-                elif error_code == "missing":
-                    err_msg = f"Error: {json_res.get('errors')[0].get('resource')} does not exist. {err_msg}"
-
-                elif error_code == "already_exists":
-                    err_msg = f"Error: the field {json_res.get('errors')[0].get('field')} must be unique. {err_msg}"
-
+            elif isinstance(errors, list) and errors:
+                first_error = errors[0]
+                if isinstance(first_error, str):
+                    # validation-error-simple: errors is list[str]
+                    err_msg = f"Error: {', '.join(str(e) for e in errors)}. {err_msg}"
                 else:
-                    err_msg = f"Error in API call to the GitHub Integration [{res.status_code}] - {res.reason}. {err_msg}"
+                    match first_error:
+                        case {"code": "missing_field", "field": field}:
+                            err_msg = f'Error: the field: "{field}" requires a value. {err_msg}'
+
+                        case {"code": "invalid", "field": "q", "message": message}:
+                            err_msg = f"Error: invalid query - {message}. {err_msg}"
+
+                        case {"code": "invalid", "field": field}:
+                            err_msg = f'Error: the field: "{field}" has an invalid value. {err_msg}'
+
+                        case {"code": "missing", "resource": resource}:
+                            err_msg = f"Error: {resource} does not exist. {err_msg}"
+
+                        case {"code": "already_exists", "field": field}:
+                            err_msg = f"Error: the field {field} must be unique. {err_msg}"
+
+                        case _:
+                            err_msg = f"Error in API call to the GitHub Integration [{res.status_code}] - {res.reason}. {err_msg}"
+            else:
+                # errors is None-like, empty list, or unexpected type
+                err_msg = f"Error in API call to the GitHub Integration [{res.status_code}] - {res.reason}. {err_msg}"
             raise DemistoException(err_msg)
 
-        except ValueError:
+        except ValueError as exc:
+            demisto.debug(f"Failed to parse GitHub error response as JSON: {exc!r}")
             raise DemistoException(f"Error in API call to GitHub Integration [{res.status_code}] - {res.reason}")
 
     try:
@@ -2026,7 +2037,7 @@ def github_trigger_workflow_command():
     inputs = json.loads(args.get("inputs", "{}"), strict=False)
 
     suffix = f"/repos/{owner}/{repository}/actions/workflows/{workflow}/dispatches"
-    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2026-03-10"}
+    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github.v3+json"}
     data = assign_params(ref=branch, inputs=inputs)
     response = http_request("POST", url_suffix=suffix, headers=headers, data=data)
     # http_request returns a dict for 200 (JSON body) and a Response object for 204 No Content.
@@ -2066,7 +2077,7 @@ def github_get_workflow_run_command():
     run_id = args.get("run_id")
 
     suffix = f"/repos/{owner}/{repository}/actions/runs/{run_id}"
-    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2026-03-10"}
+    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github.v3+json"}
 
     response = http_request("GET", url_suffix=suffix, headers=headers)
 
@@ -2504,8 +2515,9 @@ def main():
     try:
         if cmd in COMMANDS:
             COMMANDS[cmd]()
-    except Exception as e:
-        return_error(str(e))
+    except Exception as err:
+        demisto.error(traceback.format_exc())
+        return_error(f"Failed to execute {cmd} command.\nError:\n{str(err)}")
 
 
 # python2 uses __builtin__ python3 uses builtins

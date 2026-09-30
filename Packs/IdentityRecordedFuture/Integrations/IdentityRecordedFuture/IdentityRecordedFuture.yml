@@ -54,6 +54,13 @@ configuration:
   type: 13
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: 'First Incident Fetch: Time Range'
   name: first_fetch
   defaultvalue: "24 hours"
@@ -783,8 +790,8 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-        - never
-        - significant_updates
+      - never
+      - significant_updates
     outputs:
     - contextPath: IdentityRecordedFuture.PlaybookAlerts.playbook_alert_id
       description: Unique id of the playbook alert in Recorded Future.

@@ -581,7 +581,7 @@ MOST_GENERAL_FINDING = {
     "Severity": 123.0,
     "Title": "string",
     "Type": "string",
-    "UpdatedAt": "string",
+    "UpdatedAt": "2015-01-01T00:00:00.000000",
 }
 
 MOST_GENERAL_FINDING_STR = {
@@ -911,5 +911,5 @@ MOST_GENERAL_FINDING_STR = {
     "Severity": 123.0,
     "Title": "string",
     "Type": "string",
-    "UpdatedAt": "string",
+    "UpdatedAt": "2015-01-01T00:00:00.000000",
 }

@@ -34,6 +34,7 @@ Duplication of rule detection incidents when fetched from Google SecOps.
 | Other Region | Specify the region based on the location of the Google SecOps instance. Only applicable if the "Other" option is selected in the Region dropdown. | False |
 | Incident type |  | False |
 | First fetch time | The date or relative timestamp from where to start fetching detections. Default will be the current time.<br/><br/>Note: The API is designed to retrieve data for the past 7 days only. Requests for data beyond that timeframe will result in errors.<br/><br/>Supported formats: N minutes, N hours, N days, N weeks, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ<br/><br/>For example: 10 minutes, 5 hours, 6 days, 1 week, 2024-12-31, 01 Mar 2024, 01 Feb 2024 04:45:33, 2024-04-17T14:05:44Z | False |
+| Max Fetch | Maximum number of detections to fetch in a single batch. Available options are 100, 75, 50, 25 and 10 \(If not selected, defaults to 100\). | False |
 | Google SecOps Alert Type | Select Google SecOps Alert types to be considered for Fetch Incidents. Available options are Curated Rule Detection Alerts and Rule Detection Alerts \(If not selected, fetches all detections\). | False |
 | Severity of Detection | Select the severity of detections to be considered for Fetch Incidents. Available options are 'Critical', 'High', 'Medium', 'Low', 'Informational' and 'Unspecified' \(If not selected, fetches all detections\). | False |
 | Rule Names for Detection Ingestion | Only detections with the given rule names will be allowed for ingestion. | False |

@@ -5,7 +5,7 @@
     "title": "test_page",
     "body": {
         "storage": {
-            "value": "<p>This is the page content</p>",
+            "value": "<h1>Heading</h1><p>This is the page content</p><ul><li>Item one</li><li>Item two</li></ul>",
             "representation": "storage"
         }
     },

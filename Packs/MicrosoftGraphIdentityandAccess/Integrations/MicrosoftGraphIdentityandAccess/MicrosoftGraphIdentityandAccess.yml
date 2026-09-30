@@ -64,6 +64,9 @@ configuration:
   name: incidentType
   type: 13
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - section: Connect
   additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
   display: Use Client Credentials Authorization Flow
@@ -87,6 +90,9 @@ configuration:
   display: Fetch incidents
   type: 8
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - section: Collect
   name: first_fetch
   display: First Fetch Time Interval
@@ -101,12 +107,18 @@ configuration:
   name: max_fetch
   type: 0
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - section: Collect
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"
   type: 19
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - section: Collect
   display: Alerts to Fetch
   name: alerts_to_fetch
