@@ -329,19 +329,19 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/loadBalancers/backendAddressPools/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list", "azure-rm-resource-groups-list"],
     "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read": [
-        "azure-waf-policy-get",
-        "azure-waf-policy-list",
-        "azure-waf-policy-update",
+        "azure-application-gateway-waf-policy-get",
+        "azure-application-gateway-waf-policies-list",
     ],
-    "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/write": ["azure-waf-policy-update"],
-    "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete": ["azure-waf-policy-delete"],
+    "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/write": [
+        "azure-application-gateway-waf-policy-create-or-update"
+    ],
+    "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete": ["azure-application-gateway-waf-policy-delete"],
     "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read": [
-        "azure-waf-front-door-policy-get",
-        "azure-waf-front-door-policy-list",
-        "azure-waf-front-door-policy-update",
+        "azure-front-door-policy-get",
+        "azure-front-door-policies-list",
     ],
-    "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/write": ["azure-waf-front-door-policy-update"],
-    "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/delete": ["azure-waf-front-door-policy-delete"],
+    "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/write": ["azure-front-door-policy-create-or-update"],
+    "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/delete": ["azure-front-door-policy-delete"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -421,17 +421,11 @@ API_FUNCTION_TO_PERMISSIONS = {
     "list_security_rules": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
     "waf_policy_get": ["Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read"],
     "waf_policy_list": ["Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read"],
-    "waf_policy_upsert": [
-        "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read",
-        "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/write",
-    ],
+    "waf_policy_upsert": ["Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/write"],
     "waf_policy_delete": ["Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete"],
     "waf_front_door_policy_get": ["Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read"],
     "waf_front_door_policy_list": ["Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read"],
-    "waf_front_door_policy_upsert": [
-        "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read",
-        "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/write",
-    ],
+    "waf_front_door_policy_upsert": ["Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/write"],
     "waf_front_door_policy_delete": ["Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/delete"],
 }
 
@@ -514,10 +508,16 @@ VM_API_VERSION = "2023-03-01"
 NSG_API_VERSION = "2025-01-01"
 # Application Gateway and Front Door WAF policies are served by two separate resource providers,
 # each with its own independently released API version, so these two versions intentionally differ.
-WAF_POLICY_API_VERSION = "2025-05-01"
-WAF_FRONT_DOOR_POLICY_API_VERSION = "2022-05-01"
+WAF_POLICY_API_VERSION = "2025-09-01"
+WAF_FRONT_DOOR_POLICY_API_VERSION = "2026-04-01"
 WAF_POLICY_PATH = "providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
 WAF_FRONT_DOOR_POLICY_PATH = "providers/Microsoft.Network/FrontDoorWebApplicationFirewallPolicies"
+# WAF policy arguments that carry a JSON object or array. Every other argument is a plain string
+# and must be sent as-is, since parsing it as JSON would coerce values such as "123" to a number,
+# "true" to a boolean, or strip the quotes from a quoted ETag.
+WAF_POLICY_JSON_ARGUMENTS = {"tags", "policy_settings", "custom_rules", "managed_rules"}
+# The columns displayed for both Application Gateway and Front Door WAF policies.
+WAF_POLICY_HEADERS = ["name", "id", "type", "location", "etag", "tags"]
 
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
 # get_command_and_token_scopes.
@@ -2871,7 +2871,7 @@ class AzureClient:
         """
         if next_token:
             demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of WAF policies.")
-            full_url = next_token
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname)
             params: dict[str, Any] = {}
         elif resource_group_name:
             full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/{WAF_POLICY_PATH}"
@@ -3002,7 +3002,7 @@ class AzureClient:
         """
         if next_token:
             demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of Front Door WAF policies.")
-            full_url = next_token
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname)
             params: dict[str, Any] = {}
         elif resource_group_name:
             full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/{WAF_FRONT_DOOR_POLICY_PATH}"
@@ -3262,6 +3262,56 @@ def update_nic_properties(args: dict, params: dict, properties: dict):
     if remove_network_security_group:
         demisto.debug(f"Removing the network security group {properties.get('networkSecurityGroup')}")
         properties.pop("networkSecurityGroup", None)
+
+
+def parse_nested_keys_to_dict(base_dict: dict, keys: list, value: Any) -> None:
+    """
+    Recursively place a value into a nested dictionary following a list of keys.
+
+    A keys list of ["properties", "policySettings"] with the value {"mode": "Prevention"}
+    produces {"properties": {"policySettings": {"mode": "Prevention"}}}.
+
+    Args:
+        base_dict (dict): The dictionary to populate, modified in place.
+        keys (list): The hierarchy of keys leading to the value.
+        value (Any): The value to place at the end of the key hierarchy.
+    """
+    if len(keys) == 1:
+        base_dict[keys[0]] = value
+    else:
+        base_dict.setdefault(keys[0], {})
+        parse_nested_keys_to_dict(base_dict[keys[0]], keys[1:], value)
+
+
+def build_waf_policy_body(args: dict[str, Any], upsert_params: dict[str, str]) -> dict[str, Any]:
+    """
+    Build a WAF policy request body from the command arguments.
+
+    Each argument listed in the given mapping is placed at its dotted location in the body.
+    Only the arguments named in WAF_POLICY_JSON_ARGUMENTS are parsed as JSON; every other
+    argument is a plain string and is sent unchanged. Arguments that were not supplied are
+    skipped entirely.
+
+    Args:
+        args (dict[str, Any]): The command arguments.
+        upsert_params (dict[str, str]): Mapping of argument name to its dotted body location.
+
+    Returns:
+        dict[str, Any]: The request body to send to the Azure API.
+    """
+    body: dict[str, Any] = {}
+    for argument_name, body_path in upsert_params.items():
+        raw_value = args.get(argument_name)
+        if not raw_value:
+            continue
+        value: Any = raw_value
+        if argument_name in WAF_POLICY_JSON_ARGUMENTS and isinstance(raw_value, str):
+            try:
+                value = json.loads(raw_value)
+            except json.JSONDecodeError:
+                value = raw_value
+        parse_nested_keys_to_dict(base_dict=body, keys=body_path.split("."), value=value)
+    return body
 
 
 """ COMMAND FUNCTIONS """
@@ -5716,87 +5766,6 @@ def parse_forecast_table_to_dict(response: dict) -> list[dict]:
         raise DemistoException(f"Failed to parse API response. Malformed data structure: {e}")
 
 
-def parse_nested_keys_to_dict(base_dict: dict, keys: list, value: Any) -> None:
-    """
-    Recursively place a value into a nested dictionary following a list of keys.
-
-    A keys list of ["properties", "policySettings"] with the value {"mode": "Prevention"}
-    produces {"properties": {"policySettings": {"mode": "Prevention"}}}.
-
-    Args:
-        base_dict (dict): The dictionary to populate, modified in place.
-        keys (list): The hierarchy of keys leading to the value.
-        value (Any): The value to place at the end of the key hierarchy.
-    """
-    if len(keys) == 1:
-        base_dict[keys[0]] = value
-    else:
-        base_dict.setdefault(keys[0], {})
-        parse_nested_keys_to_dict(base_dict[keys[0]], keys[1:], value)
-
-
-def build_waf_policy_body(args: dict[str, Any], upsert_params: dict[str, str]) -> dict[str, Any]:
-    """
-    Build a WAF policy request body from the command arguments.
-
-    Each argument listed in the given mapping is placed at its dotted location in the body.
-    Values that are valid JSON are parsed into objects, so a caller may pass either a JSON
-    string or a plain string. Arguments that were not supplied are skipped entirely.
-
-    Args:
-        args (dict[str, Any]): The command arguments.
-        upsert_params (dict[str, str]): Mapping of argument name to its dotted body location.
-
-    Returns:
-        dict[str, Any]: The request body to send to the Azure API.
-    """
-    body: dict[str, Any] = {}
-    for argument_name, body_path in upsert_params.items():
-        raw_value = args.get(argument_name)
-        if not raw_value:
-            continue
-        value: Any = raw_value
-        if isinstance(raw_value, str):
-            try:
-                value = json.loads(raw_value)
-            except json.JSONDecodeError:
-                value = raw_value
-        parse_nested_keys_to_dict(base_dict=body, keys=body_path.split("."), value=value)
-    return body
-
-
-def waf_policies_to_table(policies: list[dict]) -> list[dict]:
-    """
-    Flatten WAF policies into rows suitable for a readable table.
-
-    Args:
-        policies (list[dict]): The WAF policies as returned by the Azure API.
-
-    Returns:
-        list[dict]: One row per policy, holding the fields worth displaying.
-    """
-    rows = []
-    for policy in policies:
-        properties = policy.get("properties", {})
-        policy_settings = properties.get("policySettings", {})
-        # Application Gateway WAF policies expose the state as "state", while Front Door WAF
-        # policies expose the same information as "enabledState".
-        policy_state = policy_settings.get("state") or policy_settings.get("enabledState")
-        rows.append(
-            {
-                "Name": policy.get("name"),
-                "Location": policy.get("location"),
-                "SKU": policy.get("sku", {}).get("name"),
-                "ProvisioningState": properties.get("provisioningState"),
-                "ResourceState": properties.get("resourceState"),
-                "PolicyMode": policy_settings.get("mode"),
-                "PolicyState": policy_state,
-                "ID": policy.get("id"),
-            }
-        )
-    return rows
-
-
 def waf_policy_get_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
     Retrieve a single Application Gateway WAF policy by name.
@@ -5819,13 +5788,14 @@ def waf_policy_get_command(client: AzureClient, params: dict[str, Any], args: di
 
     readable_output = tableToMarkdown(
         name=f"WAF Policy {policy_name}",
-        t=waf_policies_to_table([policy]),
+        t=policy,
+        headers=WAF_POLICY_HEADERS,
         removeNull=True,
-        headerTransform=pascalToSpace,
+        headerTransform=string_to_table_header,
     )
 
     return CommandResults(
-        outputs_prefix="Azure.WAF.Policies",
+        outputs_prefix="Azure.ApplicationGateway.WAFPolicies",
         outputs_key_field="id",
         outputs=policy,
         readable_output=readable_output,
@@ -5849,7 +5819,9 @@ def waf_policy_list_command(client: AzureClient, params: dict[str, Any], args: d
         CommandResults: The list of WAF policies.
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    resource_group_name = args.get("resource_group_name") or params.get("resource_group_name") or ""
+    # Intentionally not falling back to the instance parameter, so that an instance configured
+    # with a default resource group can still list the policies of the entire subscription.
+    resource_group_name = args.get("resource_group_name", "")
     next_token = args.get("next_token", "")
 
     response = client.waf_policy_list(
@@ -5859,26 +5831,31 @@ def waf_policy_list_command(client: AzureClient, params: dict[str, Any], args: d
 
     if not policies:
         scope = f"resource group '{resource_group_name}'" if resource_group_name else f"subscription '{subscription_id}'"
-        return CommandResults(readable_output=f"No WAF policies were found in {scope}.")
+        # Clear the token of the previous page, so that a playbook paging until the token is
+        # empty does not keep reading a stale token from the context and loop forever.
+        return CommandResults(
+            outputs={"Azure.ApplicationGateway(true)": {"WAFPoliciesNextToken": None}},
+            readable_output=f"No WAF policies were found in {scope}.",
+        )
 
     response_next_token = response.get("nextLink")
     outputs = {
-        "Azure.WAF.Policies(val.id && val.id == obj.id)": policies,
-        "Azure.WAF(true)": {"PoliciesNextToken": response_next_token},
+        "Azure.ApplicationGateway.WAFPolicies(val.id && val.id == obj.id)": policies,
+        "Azure.ApplicationGateway(true)": {"WAFPoliciesNextToken": response_next_token},
     }
 
     readable_output = tableToMarkdown(
         name="WAF Policies",
-        t=waf_policies_to_table(policies),
+        t=policies,
+        headers=WAF_POLICY_HEADERS,
         removeNull=True,
-        headerTransform=pascalToSpace,
-        metadata=f"PoliciesNextToken: {response_next_token}" if response_next_token else None,
+        headerTransform=string_to_table_header,
     )
 
     return CommandResults(outputs=outputs, readable_output=readable_output, raw_response=response)
 
 
-def waf_policy_update_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+def waf_policy_create_or_update_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
     Create or update an Application Gateway WAF policy.
 
@@ -5915,14 +5892,15 @@ def waf_policy_update_command(client: AzureClient, params: dict[str, Any], args:
     )
 
     readable_output = tableToMarkdown(
-        name=f"WAF Policy {policy_name} was updated successfully",
-        t=waf_policies_to_table([policy]),
+        name=f"WAF Policy {policy_name} was created or updated successfully",
+        t=policy,
+        headers=WAF_POLICY_HEADERS,
         removeNull=True,
-        headerTransform=pascalToSpace,
+        headerTransform=string_to_table_header,
     )
 
     return CommandResults(
-        outputs_prefix="Azure.WAF.Policies",
+        outputs_prefix="Azure.ApplicationGateway.WAFPolicies",
         outputs_key_field="id",
         outputs=policy,
         readable_output=readable_output,
@@ -5982,13 +5960,14 @@ def waf_front_door_policy_get_command(client: AzureClient, params: dict[str, Any
 
     readable_output = tableToMarkdown(
         name=f"Front Door WAF Policy {policy_name}",
-        t=waf_policies_to_table([policy]),
+        t=policy,
+        headers=WAF_POLICY_HEADERS,
         removeNull=True,
-        headerTransform=pascalToSpace,
+        headerTransform=string_to_table_header,
     )
 
     return CommandResults(
-        outputs_prefix="Azure.WAF.FrontDoorPolicies",
+        outputs_prefix="Azure.FrontDoor.Policies",
         outputs_key_field="id",
         outputs=policy,
         readable_output=readable_output,
@@ -6012,7 +5991,9 @@ def waf_front_door_policy_list_command(client: AzureClient, params: dict[str, An
         CommandResults: The list of Front Door WAF policies.
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    resource_group_name = args.get("resource_group_name") or params.get("resource_group_name") or ""
+    # Intentionally not falling back to the instance parameter, so that an instance configured
+    # with a default resource group can still list the policies of the entire subscription.
+    resource_group_name = args.get("resource_group_name", "")
     next_token = args.get("next_token", "")
 
     response = client.waf_front_door_policy_list(
@@ -6022,26 +6003,33 @@ def waf_front_door_policy_list_command(client: AzureClient, params: dict[str, An
 
     if not policies:
         scope = f"resource group '{resource_group_name}'" if resource_group_name else f"subscription '{subscription_id}'"
-        return CommandResults(readable_output=f"No Front Door WAF policies were found in {scope}.")
+        # Clear the token of the previous page, so that a playbook paging until the token is
+        # empty does not keep reading a stale token from the context and loop forever.
+        return CommandResults(
+            outputs={"Azure.FrontDoor(true)": {"PoliciesNextToken": None}},
+            readable_output=f"No Front Door WAF policies were found in {scope}.",
+        )
 
     response_next_token = response.get("nextLink")
     outputs = {
-        "Azure.WAF.FrontDoorPolicies(val.id && val.id == obj.id)": policies,
-        "Azure.WAF(true)": {"FrontDoorPoliciesNextToken": response_next_token},
+        "Azure.FrontDoor.Policies(val.id && val.id == obj.id)": policies,
+        "Azure.FrontDoor(true)": {"PoliciesNextToken": response_next_token},
     }
 
     readable_output = tableToMarkdown(
         name="Front Door WAF Policies",
-        t=waf_policies_to_table(policies),
+        t=policies,
+        headers=WAF_POLICY_HEADERS,
         removeNull=True,
-        headerTransform=pascalToSpace,
-        metadata=f"FrontDoorPoliciesNextToken: {response_next_token}" if response_next_token else None,
+        headerTransform=string_to_table_header,
     )
 
     return CommandResults(outputs=outputs, readable_output=readable_output, raw_response=response)
 
 
-def waf_front_door_policy_update_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+def waf_front_door_policy_create_or_update_command(
+    client: AzureClient, params: dict[str, Any], args: dict[str, Any]
+) -> CommandResults:
     """
     Create or update a Front Door WAF policy.
 
@@ -6082,14 +6070,15 @@ def waf_front_door_policy_update_command(client: AzureClient, params: dict[str, 
     )
 
     readable_output = tableToMarkdown(
-        name=f"Front Door WAF Policy {policy_name} was updated successfully",
-        t=waf_policies_to_table([policy]),
+        name=f"Front Door WAF Policy {policy_name} was created or updated successfully",
+        t=policy,
+        headers=WAF_POLICY_HEADERS,
         removeNull=True,
-        headerTransform=pascalToSpace,
+        headerTransform=string_to_table_header,
     )
 
     return CommandResults(
-        outputs_prefix="Azure.WAF.FrontDoorPolicies",
+        outputs_prefix="Azure.FrontDoor.Policies",
         outputs_key_field="id",
         outputs=policy,
         readable_output=readable_output,
@@ -6572,14 +6561,14 @@ def main():  # pragma: no cover
             "azure-postgres-config-set-log-retention-period-quick-action": set_postgres_config_command,
             "azure-postgres-config-set-statement-logging-quick-action": set_postgres_config_command,
             "azure-postgres-server-update-ssl-enforcement-quick-action": postgres_server_update_command,
-            "azure-waf-policy-get": waf_policy_get_command,
-            "azure-waf-policy-list": waf_policy_list_command,
-            "azure-waf-policy-update": waf_policy_update_command,
-            "azure-waf-policy-delete": waf_policy_delete_command,
-            "azure-waf-front-door-policy-get": waf_front_door_policy_get_command,
-            "azure-waf-front-door-policy-list": waf_front_door_policy_list_command,
-            "azure-waf-front-door-policy-update": waf_front_door_policy_update_command,
-            "azure-waf-front-door-policy-delete": waf_front_door_policy_delete_command,
+            "azure-application-gateway-waf-policy-get": waf_policy_get_command,
+            "azure-application-gateway-waf-policies-list": waf_policy_list_command,
+            "azure-application-gateway-waf-policy-create-or-update": waf_policy_create_or_update_command,
+            "azure-application-gateway-waf-policy-delete": waf_policy_delete_command,
+            "azure-front-door-policy-get": waf_front_door_policy_get_command,
+            "azure-front-door-policies-list": waf_front_door_policy_list_command,
+            "azure-front-door-policy-create-or-update": waf_front_door_policy_create_or_update_command,
+            "azure-front-door-policy-delete": waf_front_door_policy_delete_command,
         }
 
         azure_ad_endpoint = params.get("azure_ad_endpoint") or DEFAULT_AZURE_AD_ENDPOINT

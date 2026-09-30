@@ -3173,7 +3173,7 @@ Lists the Application Gateway Web Application Firewall (WAF) policies of a resou
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group to list policies from. When not provided, the policies of the entire subscription are listed. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group to list policies from. When not provided, the policies of the entire subscription are listed. | Optional |
 | next_token | The URI to fetch the next page of results. Use the value of Azure.WAF.PoliciesNextToken from the previous response. | Optional |
 
 #### Context Output
@@ -3197,7 +3197,7 @@ Lists the Application Gateway Web Application Firewall (WAF) policies of a resou
 ### azure-waf-policy-update
 
 ***
-Creates or updates an Application Gateway Web Application Firewall (WAF) policy. An existing policy with the same name is overwritten. Required Permissions: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read, Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/write.
+Creates an Application Gateway Web Application Firewall (WAF) policy, or fully replaces an existing one. Warning: this is a full replacement and not a partial update. Any property that is not provided as an argument is removed from the policy or reset to its default, since the policy is not read before it is written. Required Permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/write.
 
 #### Base Command
 
@@ -3304,7 +3304,7 @@ Lists the Front Door Web Application Firewall (WAF) policies of a resource group
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group to list policies from. When not provided, the policies of the entire subscription are listed. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group to list policies from. When not provided, the policies of the entire subscription are listed. | Optional |
 | next_token | The URI to fetch the next page of results. Use the value of Azure.WAF.FrontDoorPoliciesNextToken from the previous response. | Optional |
 
 #### Context Output
@@ -3328,7 +3328,7 @@ Lists the Front Door Web Application Firewall (WAF) policies of a resource group
 ### azure-waf-front-door-policy-update
 
 ***
-Creates or updates a Front Door Web Application Firewall (WAF) policy. An existing policy with the same name is overwritten. Required Permissions: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read, Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/write.
+Creates a Front Door Web Application Firewall (WAF) policy, or fully replaces an existing one. Warning: this is a full replacement and not a partial update. Any property that is not provided as an argument is removed from the policy or reset to its default, since the policy is not read before it is written. Required Permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/write.
 
 #### Base Command
 
