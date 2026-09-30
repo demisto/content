@@ -36,7 +36,9 @@ You are responsible for updating your tenant configuration before the October 20
 
 #### For customers using the Cortex Application authentication method
 
-Palo Alto Networks is making the necessary updates to align our shared Application ID with Microsoft's new requirements. Palo Alto Networks is not responsible for any disruptions resulting from this rollout. We recommend verifying that your integration continues to function as expected once the October 2026 enforcement takes effect.
+Palo Alto Networks is making the necessary updates to align our shared Application ID with Microsoft's new requirements.
+However, because this change is enforced and controlled entirely by Microsoft, we cannot validate the changes in advance or guarantee uninterrupted functionality.
+Palo Alto Networks is not responsible for any disruptions resulting from this rollout. We recommend verifying that your integration continues to function as expected once the October 2026 enforcement takes effect.
 
 ## Retirement of RBAC Application Impersonation
 
