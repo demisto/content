@@ -860,6 +860,90 @@ def test_resolve_reachable_api_url_returns_unmapped_url_when_unreachable(mocker)
     assert result == original_url
 
 
+class TestQueryLoggingsErrorHandling:
+    """Tests that Client.query_loggings translates low-level SDK exceptions from create_query into short,
+    human-readable DemistoExceptions (keeping the raw traceback in the debug log only)."""
+
+    @staticmethod
+    def _build_client_raising(mocker, side_effect):
+        """Builds a Client mock whose create_query raises the given exception, for query_loggings error tests."""
+        from CortexDataLake import Client
+
+        client = mocker.Mock(spec=Client)
+        client.add_instance_id_to_query = mocker.Mock(side_effect=lambda query: query)
+        query_service = mocker.Mock()
+        query_service.create_query = mocker.Mock(side_effect=side_effect)
+        client.initial_query_service = mocker.Mock(return_value=query_service)
+        return client
+
+    def test_raises_readable_error_on_http_error(self, mocker):
+        """
+        Given:
+            - A transport-level failure (connection/timeout), so the SDK raises exceptions.HTTPError from create_query.
+        When:
+            - Calling Client.query_loggings.
+        Then:
+            - A short, human-readable DemistoException about connectivity is raised (no raw traceback in the message).
+        """
+        from CortexDataLake import Client
+        from pan_cortex_data_lake import exceptions
+
+        client = self._build_client_raising(mocker, exceptions.HTTPError("Connection refused"))
+
+        with pytest.raises(DemistoException) as exc_info:
+            Client.query_loggings(client, "SELECT * FROM `firewall.traffic` limit 1")
+
+        message = str(exc_info.value)
+        assert "Failed to reach Strata Logging Service" in message
+        assert "Traceback" not in message
+
+    def test_raises_readable_error_on_partial_credentials(self, mocker):
+        """
+        Given:
+            - The SDK cannot assemble complete credentials, so create_query raises exceptions.PartialCredentialsError.
+        When:
+            - Calling Client.query_loggings.
+        Then:
+            - A short, human-readable DemistoException about incomplete credentials is raised.
+        """
+        from CortexDataLake import Client
+        from pan_cortex_data_lake import exceptions
+
+        client = self._build_client_raising(mocker, exceptions.PartialCredentialsError("missing access_token"))
+
+        with pytest.raises(DemistoException) as exc_info:
+            Client.query_loggings(client, "SELECT * FROM `firewall.traffic` limit 1")
+
+        message = str(exc_info.value)
+        assert "Incomplete credentials for Strata Logging Service" in message
+        assert "Traceback" not in message
+
+    def test_raises_readable_error_on_invalid_json(self, mocker):
+        """
+        Given:
+            - Invalid credentials, so the API responds with a non-2xx, empty/non-JSON body and the SDK raises a
+              low-level CortexError ("Invalid JSON") from create_query.
+        When:
+            - Calling Client.query_loggings.
+        Then:
+            - A short, human-readable authentication DemistoException is raised instead of the raw SDK "Invalid JSON"
+              message (which is relegated to the debug log).
+        """
+        from CortexDataLake import Client
+        from pan_cortex_data_lake import exceptions
+
+        client = self._build_client_raising(
+            mocker, exceptions.CortexError("Invalid JSON: Expecting value: line 1 column 1 (char 0)")
+        )
+
+        with pytest.raises(DemistoException) as exc_info:
+            Client.query_loggings(client, "SELECT * FROM `firewall.traffic` limit 1")
+
+        message = str(exc_info.value)
+        assert "Failed to authenticate to Strata Logging Service" in message
+        assert "Invalid JSON" not in message
+
+
 # A valid base64-encoded 32-byte AES-GCM encryption key used across the SCM tests.
 VALID_SCM_ENC_KEY_B64 = base64.b64encode(b"0123456789abcdef0123456789abcdef").decode("ascii")
 SCM_CLIENT_SECRET = "super-secret-client-secret"  # guardrails-disable-line

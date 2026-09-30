@@ -512,7 +512,21 @@ class Client(BaseClient):
         query_data = {"query": self.add_instance_id_to_query(query), "language": "csql"}
         demisto.debug(f"Query being executed in SLS: {str(query_data)}")
         query_service = self.initial_query_service()
-        response = query_service.create_query(query_params=query_data, enforce_json=True)
+        try:
+            response = query_service.create_query(query_params=query_data, enforce_json=True)
+        except exceptions.HTTPError as e:
+            # Transport-level failure (connection/timeout/TLS/DNS).
+            demisto.debug("CDL - create_query transport error")
+            raise DemistoException("Failed to reach Strata Logging Service. Please verify connectivity.", e) from e
+        except exceptions.PartialCredentialsError as e:
+            demisto.debug("CDL - create_query incomplete credentials")
+            raise DemistoException("Incomplete credentials for Strata Logging Service.", e) from e
+        except exceptions.CortexError as e:
+            # Non-JSON error body (enforce_json=True) - typically an auth failure.
+            demisto.debug("CDL - create_query returned a non-JSON body (likely auth failure)")
+            raise DemistoException(
+                "Failed to authenticate to Strata Logging Service. Please verify the integration credentials.", e
+            ) from e
         query_result = response.json()
 
         if not response.ok:
