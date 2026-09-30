@@ -14,6 +14,7 @@ from mcp.client.streamable_http import streamable_http_client
 from typing import Any
 import base64
 from base64 import b64encode
+
 # mcp 2.0 replaced its httpx dependency with httpx2. The two libraries are not
 # interchangeable at runtime, so the client handed to streamable_http_client must be an
 # httpx2 client. httpx2 is API-compatible with httpx, so it is used throughout.
@@ -263,8 +264,7 @@ class OAuthHandler:
                 return client_id, client_secret
             else:
                 raise DemistoException(
-                    f"Failed to register OAuth client: Received status code {response.status_code}, "
-                    f"and response: {response.text}"
+                    f"Failed to register OAuth client: Received status code {response.status_code}, and response: {response.text}"
                 )
         except Exception as e:
             demisto.error(f"Error registering OAuth client: {str(e)}")
