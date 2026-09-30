@@ -418,6 +418,70 @@ def test_fetch_events_isolates_failing_event_type(mock_client: Client, mocker):
     assert "nextTrigger" not in next_run
 
 
+def test_fetch_events_for_type_keeps_events_when_later_page_fails(mock_client: Client, mocker):
+    """
+    Given: The first page succeeds and a later page fails with a server error.
+    When: Calling `fetch_events_for_type`.
+    Then: Ensure the first page's events are returned and the last run advances past them.
+
+    Regression for XSUP-77377: a 500/504 on page 2 discarded page 1, so the last run never advanced and the same
+    window failed on every fetch.
+    """
+    from CloudflareZeroTrustEventCollector import fetch_events_for_type
+
+    mocker.patch.object(demisto, "error")
+    first_page = [{"id": str(i), "created_at": f"2024-01-01T00:00:{i:02d}Z"} for i in range(3)]
+    mocker.patch.object(
+        Client,
+        "get_events",
+        side_effect=[{"result": first_page}, DemistoException("Error in API call [504] - Gateway Timeout")],
+    )
+
+    events, next_run = fetch_events_for_type(
+        client=mock_client,
+        last_run={"last_fetch": "2024-01-01T00:00:00Z", "events_ids": []},
+        max_fetch=10,
+        max_page_size=3,
+        event_type=ACCESS_AUTHENTICATION_TYPE,
+    )
+
+    assert [event["id"] for event in events] == ["0", "1", "2"]
+    assert next_run == {"last_fetch": "2024-01-01T00:00:02Z", "events_ids": ["2"]}
+
+
+def test_fetch_events_for_type_raises_when_first_page_fails(mock_client: Client, mocker):
+    """
+    Given: The first page fails.
+    When: Calling `fetch_events_for_type`.
+    Then: Ensure the error is raised, since no progress was made.
+    """
+    from CloudflareZeroTrustEventCollector import fetch_events_for_type
+
+    mocker.patch.object(Client, "get_events", side_effect=DemistoException("Error in API call [500] - Internal Server Error"))
+
+    with pytest.raises(DemistoException, match="500"):
+        fetch_events_for_type(
+            client=mock_client, last_run={}, max_fetch=10, max_page_size=3, event_type=ACCESS_AUTHENTICATION_TYPE
+        )
+
+
+def test_fetch_events_for_type_propagates_timeout_on_later_page(mock_client: Client, mocker):
+    """
+    Given: The first page succeeds and the execution timeout fires while fetching a later page.
+    When: Calling `fetch_events_for_type`.
+    Then: Ensure the timeout propagates so `fetch_events` applies its timeout handling.
+    """
+    from CloudflareZeroTrustEventCollector import fetch_events_for_type
+
+    first_page = [{"id": str(i), "created_at": "2024-01-01T00:00:00Z"} for i in range(3)]
+    mocker.patch.object(Client, "get_events", side_effect=[{"result": first_page}, SignalTimeoutError()])
+
+    with pytest.raises(SignalTimeoutError):
+        fetch_events_for_type(
+            client=mock_client, last_run={}, max_fetch=10, max_page_size=3, event_type=ACCESS_AUTHENTICATION_TYPE
+        )
+
+
 def test_fetch_events_raises_when_all_event_types_fail(mock_client: Client, mocker):
     """
     Given: Every event type raises an API error.

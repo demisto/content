@@ -1,4 +1,5 @@
 import hashlib
+import traceback
 from typing import Any
 
 import demistomock as demisto
@@ -151,7 +152,21 @@ def fetch_events_for_type(
     page = 1
     events: list[dict[str, Any]] = []
     while len(events) < events_to_fetch:
-        response = client.get_events(start_date, page_size, page, event_type)
+        try:
+            response = client.get_events(start_date, page_size, page, event_type)
+        except SignalTimeoutError:
+            # Let the execution timeout propagate so fetch_events applies its existing timeout handling.
+            raise
+        except Exception as e:
+            if not events:
+                raise
+            # A later page failed (e.g. HTTP 500/504 when paging deep into a large backlog). Keep the events already
+            # fetched so the last run still advances; otherwise the same window is retried and fails on every fetch.
+            demisto.error(
+                f"[Fetch] Failed fetching {event_type=} on {page=}: {e}. "
+                f"Continuing with the {len(events)} events already fetched.\n{traceback.format_exc()}"
+            )
+            break
         result = response.get("result", [])
         demisto.debug(f"Fetched {len(result)} events of {event_type=} on {page=}.")
         events.extend(result)
@@ -239,7 +254,7 @@ def fetch_events(
                 event_type_is_finished[event_type] = True
         except Exception as e:
             # Isolate failures per event type so an error in one does not discard the events and progress of the others.
-            demisto.error(f"Failed fetching {event_type=}: {e}")
+            demisto.error(f"[Fetch] Failed fetching {event_type=}: {e}\n{traceback.format_exc()}")
             event_type_errors[event_type] = str(e)
             # Keep the existing last run (including any reduced max fetch) so the next iteration retries the same window.
             next_run[event_type] = {**event_type_kwargs[event_type]["last_run"], "max_fetch": event_type_max_fetch}
