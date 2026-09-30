@@ -19,7 +19,6 @@ urllib3.disable_warnings()
 
 BLOB_SERVICE_PREFIX = "blob.core.windows.net"
 TABLE_SERVICE_PREFIX = "table.core.windows.net"
-TABLE_STORAGE_API_VERSION = "2020-12-06"
 TABLE_NAME_REGEX = "^[A-Za-z][A-Za-z0-9]{2,62}$"
 # The Azure Table data-plane returns entity Timestamps with up to 7 fractional-second digits and a
 # trailing "Z" (e.g. "2021-08-16T14:52:20.7422729Z"). Python's %f directive only supports up to 6

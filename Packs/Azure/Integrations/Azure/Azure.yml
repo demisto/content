@@ -1483,6 +1483,7 @@ script:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
+      required:platform: true
     - name: account_name
       description: The storage account name.
       required: true
@@ -1499,6 +1500,7 @@ script:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
+      required:platform: true
     - name: account_name
       description: The storage account name.
       required: true
@@ -1511,6 +1513,7 @@ script:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
+      required:platform: true
     - name: account_name
       description: The storage account name.
       required: true
@@ -1531,6 +1534,7 @@ script:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
+      required:platform: true
     - name: account_name
       description: The storage account name.
       required: true
@@ -1562,6 +1566,7 @@ script:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
+      required:platform: true
     - name: account_name
       description: The storage account name.
       required: true
@@ -1583,6 +1588,7 @@ script:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
+      required:platform: true
     - name: account_name
       description: The storage account name.
       required: true
@@ -1604,6 +1610,7 @@ script:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
+      required:platform: true
     - name: account_name
       description: The storage account name.
       required: true
@@ -1642,6 +1649,7 @@ script:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
+      required:platform: true
     - name: account_name
       description: The storage account name.
       required: true
