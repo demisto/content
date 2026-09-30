@@ -852,6 +852,15 @@ script:
     - contextPath: Azure.Storage.StorageAccounts.kind
       description: The kind of storage account.
       type: String
+    - contextPath: Azure.Storage.StorageAccounts.tags
+      description: The tags assigned to the storage account.
+      type: Unknown
+    - contextPath: Azure.Storage.StorageAccounts.identity
+      description: The identity of the storage account.
+      type: Unknown
+    - contextPath: Azure.Storage.StorageAccounts.extendedLocation
+      description: The extended location of the storage account.
+      type: Unknown
     - contextPath: Azure.Storage.StorageAccounts.sku.name
       description: The SKU name of the storage account.
       type: String
@@ -861,12 +870,57 @@ script:
     - contextPath: Azure.Storage.StorageAccounts.properties.provisioningState
       description: The status of the storage account when the operation was called.
       type: String
+    - contextPath: Azure.Storage.StorageAccounts.properties.primaryLocation
+      description: The location of the primary data center for the storage account.
+      type: String
+    - contextPath: Azure.Storage.StorageAccounts.properties.secondaryLocation
+      description: The location of the geo-replicated secondary for the storage account.
+      type: String
     - contextPath: Azure.Storage.StorageAccounts.properties.statusOfPrimary
       description: The status indicating whether the primary location of the storage account is available.
       type: String
     - contextPath: Azure.Storage.StorageAccounts.properties.statusOfSecondary
       description: The status indicating whether the secondary location of the storage account is available.
       type: String
+    - contextPath: Azure.Storage.StorageAccounts.properties.creationTime
+      description: The creation date and time of the storage account, in UTC.
+      type: Date
+    - contextPath: Azure.Storage.StorageAccounts.properties.primaryEndpoints
+      description: The URLs used to retrieve a public blob, queue, or table object from the primary location.
+      type: Unknown
+    - contextPath: Azure.Storage.StorageAccounts.properties.secondaryEndpoints
+      description: The URLs used to retrieve a public blob, queue, or table object from the secondary location.
+      type: Unknown
+    - contextPath: Azure.Storage.StorageAccounts.properties.accessTier
+      description: The access tier for billing, used by BlobStorage accounts.
+      type: String
+    - contextPath: Azure.Storage.StorageAccounts.properties.supportsHttpsTrafficOnly
+      description: Whether the storage account allows only HTTPS traffic.
+      type: Boolean
+    - contextPath: Azure.Storage.StorageAccounts.properties.minimumTlsVersion
+      description: The minimum TLS version permitted on requests to storage.
+      type: String
+    - contextPath: Azure.Storage.StorageAccounts.properties.allowBlobPublicAccess
+      description: Whether public access to all blobs or containers in the storage account is permitted.
+      type: Boolean
+    - contextPath: Azure.Storage.StorageAccounts.properties.allowSharedKeyAccess
+      description: Whether the storage account permits requests to be authorized with the account access key via Shared Key.
+      type: Boolean
+    - contextPath: Azure.Storage.StorageAccounts.properties.publicNetworkAccess
+      description: Whether public network access to the storage account is allowed.
+      type: String
+    - contextPath: Azure.Storage.StorageAccounts.properties.networkAcls
+      description: The network rule set of the storage account.
+      type: Unknown
+    - contextPath: Azure.Storage.StorageAccounts.properties.encryption
+      description: The encryption settings of the storage account.
+      type: Unknown
+    - contextPath: Azure.Storage.StorageAccounts.properties.keyCreationTime
+      description: The creation date and time of the storage account keys.
+      type: Unknown
+    - contextPath: Azure.Storage.StorageAccounts.properties.privateEndpointConnections
+      description: The list of private endpoint connections associated with the storage account.
+      type: Unknown
 
   - name: azure-storage-blob-containers-list
     description: "Lists blob containers, or retrieves a single blob container when a container name is provided. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/read."
@@ -903,23 +957,65 @@ script:
     - contextPath: Azure.Storage.BlobContainers.type
       description: The resource type.
       type: String
+    - contextPath: Azure.Storage.BlobContainers.etag
+      description: The resource etag.
+      type: String
+    - contextPath: Azure.Storage.BlobContainers.properties.version
+      description: The version of the deleted blob container.
+      type: String
+    - contextPath: Azure.Storage.BlobContainers.properties.deleted
+      description: Whether the blob container was deleted.
+      type: Boolean
+    - contextPath: Azure.Storage.BlobContainers.properties.deletedTime
+      description: The date and time when the blob container was deleted.
+      type: Date
+    - contextPath: Azure.Storage.BlobContainers.properties.remainingRetentionDays
+      description: The number of remaining days after which the blob container is permanently deleted.
+      type: Number
+    - contextPath: Azure.Storage.BlobContainers.properties.defaultEncryptionScope
+      description: The default encryption scope to use for blob operations in the container.
+      type: String
+    - contextPath: Azure.Storage.BlobContainers.properties.denyEncryptionScopeOverride
+      description: Whether to block the override of the encryption scope from the container default.
+      type: Boolean
     - contextPath: Azure.Storage.BlobContainers.properties.publicAccess
       description: The access level, which specifies whether data in the container can be accessed publicly.
       type: String
+    - contextPath: Azure.Storage.BlobContainers.properties.lastModifiedTime
+      description: The date and time when the container was last modified, in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
+      type: Date
     - contextPath: Azure.Storage.BlobContainers.properties.leaseStatus
       description: The lease status of the container.
       type: String
     - contextPath: Azure.Storage.BlobContainers.properties.leaseState
       description: The lease state of the container.
       type: String
-    - contextPath: Azure.Storage.BlobContainers.properties.lastModifiedTime
-      description: The date and time when the container was last modified, in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
-      type: Date
+    - contextPath: Azure.Storage.BlobContainers.properties.leaseDuration
+      description: The duration of the lease, specified whether the lease is of infinite or fixed duration, only when the container is leased.
+      type: String
+    - contextPath: Azure.Storage.BlobContainers.properties.metadata
+      description: A name-value pair to associate with the container as metadata.
+      type: Unknown
+    - contextPath: Azure.Storage.BlobContainers.properties.immutabilityPolicy
+      description: The ImmutabilityPolicy property of the container.
+      type: Unknown
+    - contextPath: Azure.Storage.BlobContainers.properties.legalHold
+      description: The LegalHold property of the container.
+      type: Unknown
+    - contextPath: Azure.Storage.BlobContainers.properties.hasLegalHold
+      description: Whether at least one legal hold tag exists for the container.
+      type: Boolean
     - contextPath: Azure.Storage.BlobContainers.properties.hasImmutabilityPolicy
       description: Whether an ImmutabilityPolicy exists for the container.
       type: Boolean
-    - contextPath: Azure.Storage.BlobContainers.properties.hasLegalHold
-      description: Whether at least one legal hold tag exists for the container.
+    - contextPath: Azure.Storage.BlobContainers.properties.immutableStorageWithVersioning
+      description: The object level immutability property of the container.
+      type: Unknown
+    - contextPath: Azure.Storage.BlobContainers.properties.enableNfsV3RootSquash
+      description: Whether NFSv3 root squash is enabled for the container.
+      type: Boolean
+    - contextPath: Azure.Storage.BlobContainers.properties.enableNfsV3AllSquash
+      description: Whether NFSv3 all squash is enabled for the container.
       type: Boolean
 
   - name: azure-storage-blob-container-update

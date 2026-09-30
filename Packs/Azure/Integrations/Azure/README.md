@@ -98,11 +98,29 @@ Lists storage accounts, or retrieves a single storage account when an account na
 | Azure.Storage.StorageAccounts.type | String | The resource type. |
 | Azure.Storage.StorageAccounts.location | String | The geo-location where the resource lives. |
 | Azure.Storage.StorageAccounts.kind | String | The kind of storage account. |
+| Azure.Storage.StorageAccounts.tags | Unknown | The tags assigned to the storage account. |
+| Azure.Storage.StorageAccounts.identity | Unknown | The identity of the storage account. |
+| Azure.Storage.StorageAccounts.extendedLocation | Unknown | The extended location of the storage account. |
 | Azure.Storage.StorageAccounts.sku.name | String | The SKU name of the storage account. |
 | Azure.Storage.StorageAccounts.sku.tier | String | The SKU tier of the storage account. |
 | Azure.Storage.StorageAccounts.properties.provisioningState | String | The status of the storage account when the operation was called. |
+| Azure.Storage.StorageAccounts.properties.primaryLocation | String | The location of the primary data center for the storage account. |
+| Azure.Storage.StorageAccounts.properties.secondaryLocation | String | The location of the geo-replicated secondary for the storage account. |
 | Azure.Storage.StorageAccounts.properties.statusOfPrimary | String | The status indicating whether the primary location of the storage account is available. |
 | Azure.Storage.StorageAccounts.properties.statusOfSecondary | String | The status indicating whether the secondary location of the storage account is available. |
+| Azure.Storage.StorageAccounts.properties.creationTime | Date | The creation date and time of the storage account, in UTC. |
+| Azure.Storage.StorageAccounts.properties.primaryEndpoints | Unknown | The URLs used to retrieve a public blob, queue, or table object from the primary location. |
+| Azure.Storage.StorageAccounts.properties.secondaryEndpoints | Unknown | The URLs used to retrieve a public blob, queue, or table object from the secondary location. |
+| Azure.Storage.StorageAccounts.properties.accessTier | String | The access tier for billing, used by BlobStorage accounts. |
+| Azure.Storage.StorageAccounts.properties.supportsHttpsTrafficOnly | Boolean | Whether the storage account allows only HTTPS traffic. |
+| Azure.Storage.StorageAccounts.properties.minimumTlsVersion | String | The minimum TLS version permitted on requests to storage. |
+| Azure.Storage.StorageAccounts.properties.allowBlobPublicAccess | Boolean | Whether public access to all blobs or containers in the storage account is permitted. |
+| Azure.Storage.StorageAccounts.properties.allowSharedKeyAccess | Boolean | Whether the storage account permits requests to be authorized with the account access key via Shared Key. |
+| Azure.Storage.StorageAccounts.properties.publicNetworkAccess | String | Whether public network access to the storage account is allowed. |
+| Azure.Storage.StorageAccounts.properties.networkAcls | Unknown | The network rule set of the storage account. |
+| Azure.Storage.StorageAccounts.properties.encryption | Unknown | The encryption settings of the storage account. |
+| Azure.Storage.StorageAccounts.properties.keyCreationTime | Unknown | The creation date and time of the storage account keys. |
+| Azure.Storage.StorageAccounts.properties.privateEndpointConnections | Unknown | The list of private endpoint connections associated with the storage account. |
 
 ### azure-storage-blob-containers-list
 
@@ -131,12 +149,26 @@ Lists blob containers, or retrieves a single blob container when a container nam
 | Azure.Storage.BlobContainers.id | String | The fully qualified resource ID of the resource. |
 | Azure.Storage.BlobContainers.name | String | The name of the resource. |
 | Azure.Storage.BlobContainers.type | String | The resource type. |
+| Azure.Storage.BlobContainers.etag | String | The resource etag. |
+| Azure.Storage.BlobContainers.properties.version | String | The version of the deleted blob container. |
+| Azure.Storage.BlobContainers.properties.deleted | Boolean | Whether the blob container was deleted. |
+| Azure.Storage.BlobContainers.properties.deletedTime | Date | The date and time when the blob container was deleted. |
+| Azure.Storage.BlobContainers.properties.remainingRetentionDays | Number | The number of remaining days after which the blob container is permanently deleted. |
+| Azure.Storage.BlobContainers.properties.defaultEncryptionScope | String | The default encryption scope to use for blob operations in the container. |
+| Azure.Storage.BlobContainers.properties.denyEncryptionScopeOverride | Boolean | Whether to block the override of the encryption scope from the container default. |
 | Azure.Storage.BlobContainers.properties.publicAccess | String | The access level, which specifies whether data in the container can be accessed publicly. |
+| Azure.Storage.BlobContainers.properties.lastModifiedTime | Date | The date and time when the container was last modified, in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
 | Azure.Storage.BlobContainers.properties.leaseStatus | String | The lease status of the container. |
 | Azure.Storage.BlobContainers.properties.leaseState | String | The lease state of the container. |
-| Azure.Storage.BlobContainers.properties.lastModifiedTime | Date | The date and time when the container was last modified, in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
-| Azure.Storage.BlobContainers.properties.hasImmutabilityPolicy | Boolean | Whether an ImmutabilityPolicy exists for the container. |
+| Azure.Storage.BlobContainers.properties.leaseDuration | String | The duration of the lease, specified whether the lease is of infinite or fixed duration, only when the container is leased. |
+| Azure.Storage.BlobContainers.properties.metadata | Unknown | A name-value pair to associate with the container as metadata. |
+| Azure.Storage.BlobContainers.properties.immutabilityPolicy | Unknown | The ImmutabilityPolicy property of the container. |
+| Azure.Storage.BlobContainers.properties.legalHold | Unknown | The LegalHold property of the container. |
 | Azure.Storage.BlobContainers.properties.hasLegalHold | Boolean | Whether at least one legal hold tag exists for the container. |
+| Azure.Storage.BlobContainers.properties.hasImmutabilityPolicy | Boolean | Whether an ImmutabilityPolicy exists for the container. |
+| Azure.Storage.BlobContainers.properties.immutableStorageWithVersioning | Unknown | The object level immutability property of the container. |
+| Azure.Storage.BlobContainers.properties.enableNfsV3RootSquash | Boolean | Whether NFSv3 root squash is enabled for the container. |
+| Azure.Storage.BlobContainers.properties.enableNfsV3AllSquash | Boolean | Whether NFSv3 all squash is enabled for the container. |
 
 ### azure-storage-account-update
 
