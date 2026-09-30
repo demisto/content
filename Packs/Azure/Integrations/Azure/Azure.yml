@@ -1478,6 +1478,243 @@ script:
     description: "Blocks public access to a container. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action."
     name: azure-storage-container-public-access-block
 
+  - name: azure-storage-fileshare-create
+    description: "Creates a new Azure file share under the specified storage account via the Microsoft.Storage resource provider. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/write."
+    arguments:
+    - name: subscription_id
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: resource_group_name
+      required: false
+      required:platform: true
+      description: The resource group name. Required for Cortex Platform. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: account_name
+      required: true
+      description: The storage account name.
+    - name: share_name
+      required: true
+      description: The name of the file share to create. Share names must be lowercase, 3-63 characters, and can contain only letters, numbers, and single hyphens.
+
+  - name: azure-storage-fileshare-delete
+    description: "Deletes a file share under the specified storage account via the Microsoft.Storage resource provider. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/delete."
+    execution: true
+    arguments:
+    - name: subscription_id
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: resource_group_name
+      required: false
+      required:platform: true
+      description: The resource group name. Required for Cortex Platform. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: account_name
+      required: true
+      description: The storage account name.
+    - name: share_name
+      required: true
+      description: The name of the file share to delete.
+
+  - name: azure-storage-fileshare-list
+    description: "Lists Azure file shares under the specified storage account via the Microsoft.Storage resource provider. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/read."
+    arguments:
+    - name: subscription_id
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: resource_group_name
+      required: false
+      required:platform: true
+      description: The resource group name. Required for Cortex Platform. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: account_name
+      required: true
+      description: The storage account name.
+    - name: limit
+      defaultValue: '50'
+      description: The maximum number of shares to retrieve per page. Default is 50.
+    outputs:
+    - contextPath: Azure.Storage.FileShares.id
+      description: Fully qualified resource ID for the file share.
+      type: String
+    - contextPath: Azure.Storage.FileShares.name
+      description: The name of the file share.
+      type: String
+    - contextPath: Azure.Storage.FileShares.type
+      description: The type of the resource.
+      type: String
+    - contextPath: Azure.Storage.FileShares.etag
+      description: Resource Etag.
+      type: String
+    - contextPath: Azure.Storage.FileShares.properties.accessTier
+      description: Access tier for the share (TransactionOptimized, Hot, Cool, or Premium).
+      type: String
+    - contextPath: Azure.Storage.FileShares.properties.lastModifiedTime
+      description: The date and time the share was last modified.
+      type: Date
+    - contextPath: Azure.Storage.FileShares.properties.shareQuota
+      description: The provisioned size of the share, in gibibytes.
+      type: Number
+    - contextPath: Azure.Storage.FileShares.properties.shareUsageBytes
+      description: The approximate size of the data stored on the share, in bytes.
+      type: Number
+    - contextPath: Azure.Storage.FileShares.properties.enabledProtocols
+      description: The authentication protocol used for the file share (SMB or NFS).
+      type: String
+    - contextPath: Azure.Storage.FileShares.properties.leaseState
+      description: Lease state of the share.
+      type: String
+    - contextPath: Azure.Storage.FileShares.properties.leaseStatus
+      description: The lease status of the share.
+      type: String
+    - contextPath: Azure.Storage.FileShares.properties.deleted
+      description: Indicates whether the share was deleted.
+      type: Boolean
+    - contextPath: Azure.Storage.FileShares.properties.version
+      description: The version of the share.
+      type: String
+
+  - name: azure-storage-fileshare-content-list
+    description: "Lists files and directories under the specified share or directory. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/files/read."
+    arguments:
+    - name: subscription_id
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: account_name
+      required: true
+      description: The storage account name.
+    - name: share_name
+      required: true
+      description: The name of the file share.
+    - name: directory_path
+      description: The path to the directory whose content to list. If not provided, the share root is listed.
+    - name: limit
+      defaultValue: '50'
+      description: The maximum number of entries to retrieve. Default is 50.
+    - name: prefix
+      description: Filters the results to return only entries whose name begins with the specified prefix.
+    outputs:
+    - contextPath: Azure.Storage.FileShare.Name
+      description: Share name.
+      type: String
+    - contextPath: Azure.Storage.FileShare.Content.Path
+      description: Directory path.
+      type: String
+    - contextPath: Azure.Storage.FileShare.Content.DirectoryId
+      description: Directory ID.
+      type: String
+    - contextPath: Azure.Storage.FileShare.Content.File.FileId
+      description: File ID.
+      type: String
+    - contextPath: Azure.Storage.FileShare.Content.File.Name
+      description: File name.
+      type: String
+    - contextPath: Azure.Storage.FileShare.Content.Directory.FileId
+      description: Directory ID.
+      type: String
+    - contextPath: Azure.Storage.FileShare.Content.Directory.Name
+      description: Directory name.
+      type: String
+
+  - name: azure-storage-fileshare-directory-create
+    description: "Creates a new directory under the specified share or parent directory. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/files/write."
+    arguments:
+    - name: subscription_id
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: account_name
+      required: true
+      description: The storage account name.
+    - name: share_name
+      required: true
+      description: The name of the file share.
+    - name: directory_name
+      required: true
+      description: The name of the directory to create.
+    - name: directory_path
+      description: The path to the parent directory under which to create the new directory.
+
+  - name: azure-storage-fileshare-directory-delete
+    description: "Deletes the specified empty directory. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/files/delete."
+    execution: true
+    arguments:
+    - name: subscription_id
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: account_name
+      required: true
+      description: The storage account name.
+    - name: share_name
+      required: true
+      description: The name of the file share.
+    - name: directory_name
+      required: true
+      description: The name of the directory to delete. The directory must be empty.
+    - name: directory_path
+      description: The path to the parent directory of the directory to delete.
+
+  - name: azure-storage-fileshare-file-create
+    description: "Creates a new file in a share from a War Room file entry ID. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/files/write."
+    arguments:
+    - name: subscription_id
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: account_name
+      required: true
+      description: The storage account name.
+    - name: share_name
+      required: true
+      description: The name of the file share.
+    - name: file_entry_id
+      required: true
+      description: The War Room entry ID of the file to upload.
+    - name: file_name
+      description: The name to give the created file. Defaults to the original file name.
+    - name: directory_path
+      description: The path to the directory where the file should be created.
+
+  - name: azure-storage-fileshare-file-get
+    description: "Retrieves a file from a share and returns it to the War Room. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/files/read."
+    arguments:
+    - name: subscription_id
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: account_name
+      required: true
+      description: The storage account name.
+    - name: share_name
+      required: true
+      description: The name of the file share.
+    - name: file_name
+      required: true
+      description: The name of the file to retrieve.
+    - name: directory_path
+      description: The path to the directory where the file resides.
+
+  - name: azure-storage-fileshare-file-delete
+    description: "Deletes a file from a share. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/files/delete."
+    execution: true
+    arguments:
+    - name: subscription_id
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: account_name
+      required: true
+      description: The storage account name.
+    - name: share_name
+      required: true
+      description: The name of the file share.
+    - name: file_name
+      required: true
+      description: The name of the file to delete.
+    - name: directory_path
+      description: The path to the directory where the file resides.
+
   - arguments:
     - name: name
       required: true
