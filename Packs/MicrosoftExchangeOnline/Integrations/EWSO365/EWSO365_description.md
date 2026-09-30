@@ -64,4 +64,4 @@ In order to function as expected, set the following permissions:
 **eDiscovery** permissions to the Exchange Server.
 **full_access_as_app** to the _application used for authentication_.
 
-Fore more information check the [documentation](https://xsoar.pan.dev/docs/reference/integrations/ewso365)
+For more information, check the [documentation](https://xsoar.pan.dev/docs/reference/integrations/ewso365)
