@@ -796,6 +796,7 @@ async def test_module(client: Client, last_run: dict) -> str:
 
 async def main() -> None:  # pragma: no cover
     try:
+        demisto.debug("Running NetskopeEventCollector_v2 integration | Ticket: XSUP-77875 | Spec size: m")
         params = demisto.params()
 
         url = params.get("url")
