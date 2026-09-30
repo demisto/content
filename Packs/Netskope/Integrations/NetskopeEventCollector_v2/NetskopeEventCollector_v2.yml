@@ -93,7 +93,7 @@ script:
   subtype: python3
   type: python
   isfetchevents: true
-  Spec: m
+  Spec: l
 tests:
 - No tests (auto formatted)
 marketplaces:
