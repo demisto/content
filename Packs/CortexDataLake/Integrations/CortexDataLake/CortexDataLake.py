@@ -319,10 +319,10 @@ class Client(BaseClient):
             )
         # Following the SLS migration, the URL returned by oproxy may point to a pre-migration (unreachable) host.
         # Probe it and, if unreachable, fall back to the migrated URL from the mapping table before it is persisted.
-        api_url = self._resolve_reachable_api_url(api_url)
+        api_url = self._resolve_reachable_api_url(api_url, access_token)
         return access_token, api_url, instance_id, refresh_token, expires_in
 
-    def _resolve_reachable_api_url(self, api_url: str) -> str:
+    def _resolve_reachable_api_url(self, api_url: str, access_token: str) -> str:
         """Returns a reachable SLS API URL.
 
         Probes the URL returned by oproxy; if it is unreachable (timeout / connection error / any error),
@@ -331,11 +331,12 @@ class Client(BaseClient):
 
         Args:
             api_url: The API URL as returned by oproxy.
+            access_token: The freshly obtained access token used to authenticate the probe.
 
         Returns:
             The reachable (or best-effort) API URL to use and persist.
         """
-        if self._is_url_reachable(api_url):
+        if self._is_url_reachable(api_url, access_token):
             demisto.debug(f"CDL - oproxy api_url is reachable, using it as-is: {api_url}")
             return api_url
 
@@ -345,22 +346,24 @@ class Client(BaseClient):
             demisto.info(f"CDL - Using migrated SLS api_url: {mapped_url}")
         return mapped_url
 
-    def _is_url_reachable(self, url: str) -> bool:
-        """Probes the URL, treating only a non-error HTTP status as reachable.
+    def _is_url_reachable(self, url: str, access_token: str) -> bool:
+        """Probes the URL with an authenticated query, treating only a non-error HTTP status as reachable.
 
-        An error status or any transport failure is treated as not reachable,
-        since a decommissioned host may answer at its root while no longer serving the query API.
+        Uses the query service against the given candidate URL. A decommissioned host answers the query endpoint
+        with an error status while a live host answers < 400, so status_code is the signal.
+        Any error status or transport failure is treated as not reachable.
 
         Args:
             url: The URL to probe.
+            access_token: The access token used to authenticate the probe request.
 
         Returns:
             True if the host responded with status_code < 400, otherwise False.
         """
         try:
-            with requests.Session() as session:
-                session.trust_env = self.trust_env
-                response = session.get(url, timeout=URL_REACHABILITY_TIMEOUT, verify=self.use_ssl)
+            query_service = self.initial_query_service(url=url, access_token=access_token)
+            query_data = {"query": "SELECT * FROM `firewall.traffic` limit 1", "language": "csql"}  # noqa: S608
+            response = query_service.create_query(query_params=query_data, enforce_json=False, raise_for_status=False)
             if response.status_code < requests.codes.bad_request:
                 demisto.debug(f"CDL - URL reachable: {url} ({response.status_code=})")
                 return True
@@ -554,12 +557,23 @@ class Client(BaseClient):
 
         return extended_results, raw_results
 
-    def initial_query_service(self) -> QueryService:
-        credentials = Credentials(access_token=self.access_token, verify=self.use_ssl)
+    def initial_query_service(self, url: Optional[str] = None, access_token: Optional[str] = None) -> QueryService:
+        """Builds a QueryService for querying the SLS API.
+
+        Args:
+            url: The API URL to query. Defaults to self.api_url, but can be overridden.
+            access_token: The access token to authenticate with. Defaults to self.access_token, but can be overridden.
+
+        Returns:
+            A configured QueryService.
+        """
+        credentials = Credentials(access_token=access_token or self.access_token, verify=self.use_ssl)
         # `verify` has to be handed to the QueryService explicitly: passing it to Credentials only
         # affects the SDK's own token-refresh call, leaving the data-plane session verifying against
         # the default CA bundle. Without this the "Trust any certificate" parameter is ignored for queries.
-        query_service = QueryService(url=self.api_url, credentials=credentials, trust_env=self.trust_env, verify=self.use_ssl)
+        query_service = QueryService(
+            url=url or self.api_url, credentials=credentials, trust_env=self.trust_env, verify=self.use_ssl
+        )
         return query_service
 
     def add_instance_id_to_query(self, query: str) -> str:
