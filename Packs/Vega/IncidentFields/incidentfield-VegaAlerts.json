@@ -3,7 +3,7 @@
     "version": -1,
     "name": "Vega Alerts",
     "ownerOnly": false,
-    "description": "Alerts associated with this Vega incident. The grid stores the full alert record. Only the main columns are shown by default.",
+    "description": "Alerts associated with this Vega incident. Full alert metadata is stored when Include alert metadata on incidents is enabled. Otherwise the grid keeps the alert ID, name, and created time. Only the main columns are shown by default.",
     "cliName": "vegaalerts",
     "type": "grid",
     "closeForm": false,

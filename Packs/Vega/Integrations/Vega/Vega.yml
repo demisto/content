@@ -235,6 +235,17 @@ configuration:
       - INCONCLUSIVE
       - NA
     defaultvalue: MALICIOUS,SUSPICIOUS,BENIGN,INCONCLUSIVE,NA
+  - display: Include alert metadata on incidents
+    additionalinfo: >-
+      Store the full metadata of every alert related to a fetched Vega incident.
+      Full alert metadata can make incidents large and slow to open. Leave this unchecked
+      unless you need the complete alert record on the incident. Use vega-get-alert-metadata
+      to load alert metadata in the War Room on demand.
+    name: include_incident_alert_metadata
+    type: 8
+    section: Collect
+    required: false
+    defaultvalue: "false"
   - display: Incident type
     name: incidentType
     type: 13
@@ -304,6 +315,52 @@ script:
           type: Boolean
         - contextPath: Vega.AlertEvents.CustomFields
           description: Incident custom fields to persist for the Alert Events layout section.
+          type: Unknown
+    - name: vega-get-alert-metadata
+      arguments:
+        - name: incident_id
+          description: >-
+            A single Vega incident ID. Returns metadata for the alerts related to that incident.
+            When omitted, a Vega Incident investigation uses its related alert IDs, and a Vega Alert
+            investigation uses its own alert ID.
+          required: false
+      description: >-
+        Return Vega alert metadata to the War Room. Pass one incident_id to load the alerts related
+        to that Vega incident. When run from a Vega Incident without incident_id, the investigation's
+        related alert IDs are used. When run from a Vega Alert, that alert ID is used.
+        The War Room entry is a direct JSON object for one alert or an array for multiple alerts.
+        Each alert contains the ten highest-priority metadata fields.
+        The result is not written onto the incident.
+      outputs:
+        - contextPath: Vega.AlertMetadata.id
+          description: Vega alert API ID.
+          type: String
+        - contextPath: Vega.AlertMetadata.vegaAlertId
+          description: Vega display alert ID.
+          type: String
+        - contextPath: Vega.AlertMetadata.detectionId
+          description: Vega detection ID for the alert.
+          type: String
+        - contextPath: Vega.AlertMetadata.name
+          description: Vega alert name.
+          type: String
+        - contextPath: Vega.AlertMetadata.severity
+          description: Vega alert severity.
+          type: String
+        - contextPath: Vega.AlertMetadata.status
+          description: Vega alert status.
+          type: String
+        - contextPath: Vega.AlertMetadata.verdict
+          description: Vega alert verdict.
+          type: String
+        - contextPath: Vega.AlertMetadata.createdAt
+          description: Vega alert creation time.
+          type: String
+        - contextPath: Vega.AlertMetadata.dataSources
+          description: Vega alert data source names.
+          type: Unknown
+        - contextPath: Vega.AlertMetadata.labels
+          description: Vega alert labels.
           type: Unknown
     - name: vega-set-detections-state
       arguments:

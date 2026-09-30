@@ -25,6 +25,7 @@ This is the default integration for this content pack when configured by the Dat
 | Incident User Statuses to fetch | The analyst user statuses by which to filter incidents. If empty, all user statuses are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
 | Incident Investigation Statuses to fetch | The Vega investigation statuses by which to filter incidents. If empty, all investigation statuses are fetched. NEW is shown as Pending in Vega. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
 | Incident Verdicts to fetch | The verdicts by which to filter incidents. If empty, all verdicts are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. Filter incidents by verdict. If empty, all verdicts are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
+| Include alert metadata on incidents | Store the full metadata of every alert related to a fetched Vega incident. Full alert metadata can make incidents large and slow to open. Leave this unchecked unless you need the complete alert record on the incident. Use vega-get-alert-metadata to load alert metadata in the War Room on demand. | False |
 | Incident type |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
@@ -65,6 +66,36 @@ Fetch aggregated alert events for up to 10 Vega alerts using internal API pagina
 | Vega.AlertEvents.Cached | Boolean | Whether the response was served from cached incident data. |
 | Vega.AlertEvents.Events | Unknown | Enriched alert events for the current page. JSON `fields` are parsed and `fields._raw` contents are promoted to top-level keys under `fields`. |
 | Vega.AlertEvents.CustomFields | Unknown | Incident custom fields to persist for the Alert Events layout section. |
+
+### vega-get-alert-metadata
+
+***
+Return Vega alert metadata to the War Room. Pass one incident_id to load the alerts related to that Vega incident. When run from a Vega Incident without incident_id, the investigation's related alert IDs are used. When run from a Vega Alert, that alert ID is used. The War Room entry is a direct JSON object for one alert or an array for multiple alerts. Each alert contains the ten highest-priority metadata fields. The result is not written onto the incident.
+
+#### Base Command
+
+`vega-get-alert-metadata`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | A single Vega incident ID. Returns metadata for the alerts related to that incident. When omitted, a Vega Incident investigation uses its related alert IDs, and a Vega Alert investigation uses its own alert ID. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vega.AlertMetadata.id | String | Vega alert API ID. |
+| Vega.AlertMetadata.vegaAlertId | String | Vega display alert ID. |
+| Vega.AlertMetadata.detectionId | String | Vega detection ID for the alert. |
+| Vega.AlertMetadata.name | String | Vega alert name. |
+| Vega.AlertMetadata.severity | String | Vega alert severity. |
+| Vega.AlertMetadata.status | String | Vega alert status. |
+| Vega.AlertMetadata.verdict | String | Vega alert verdict. |
+| Vega.AlertMetadata.createdAt | String | Vega alert creation time. |
+| Vega.AlertMetadata.dataSources | Unknown | Vega alert data source names. |
+| Vega.AlertMetadata.labels | Unknown | Vega alert labels. |
 
 ### vega-set-detections-state
 

@@ -1927,6 +1927,8 @@ def _collect_incident_custom_fields(incident: dict[str, Any]) -> dict[str, Any]:
         "vegaverdict",
         "vegaverdictreasoning",
         VEGA_SEVERITY_FIELD,
+        "vegacreatedat",
+        VEGA_ALERTS_FIELD,
     ):
         if field_name not in custom_fields and incident.get(field_name) is not None:
             custom_fields[field_name] = incident.get(field_name)
@@ -2071,6 +2073,165 @@ def _alert_events_command_for_fetched(
             "CustomFields": persisted_fields,
         },
     )
+
+
+def _single_incident_id_argument(args: dict[str, Any]) -> str | None:
+    """Return one Vega incident ID, or None when incident_id was omitted."""
+    raw_value = args.get("incident_id")
+    if raw_value is None or not str(raw_value).strip():
+        return None
+    incident_ids = [str(item).strip() for item in argToList(raw_value) if str(item).strip()]
+    if len(incident_ids) != 1:
+        raise DemistoException("incident_id accepts a single Vega incident ID.")
+    return incident_ids[0]
+
+
+def _investigation_raw_entity(incident: dict[str, Any]) -> dict[str, Any]:
+    """Parse the raw Vega entity stored on the current investigation."""
+    raw_json = incident.get("rawJSON") or incident.get("rawJson")
+    if not raw_json:
+        return {}
+    try:
+        raw = json.loads(raw_json) if isinstance(raw_json, str) else raw_json
+    except (json.JSONDecodeError, TypeError, ValueError):
+        return {}
+    return raw if isinstance(raw, dict) else {}
+
+
+def _created_at_from_investigation(incident: dict[str, Any]) -> Any:
+    """Return the Vega created time stored on the current investigation."""
+    custom_fields = _collect_incident_custom_fields(incident)
+    created_at = custom_fields.get("vegacreatedat")
+    if created_at is not None and str(created_at).strip():
+        return created_at
+    return _investigation_raw_entity(incident).get("createdAt")
+
+
+def _related_alert_stubs_from_investigation(incident: dict[str, Any]) -> list[dict[str, Any]] | None:
+    """Return related alert references from the investigation, or None when no alert list is stored."""
+    custom_fields = _collect_incident_custom_fields(incident)
+    alerts = custom_fields.get(VEGA_ALERTS_FIELD)
+    if not isinstance(alerts, list):
+        alerts = _investigation_raw_entity(incident).get("alerts")
+    if not isinstance(alerts, list):
+        return None
+    return [alert for alert in alerts if isinstance(alert, dict) and _incident_alert_id(alert)]
+
+
+INCIDENT_ID_LOOKUP_FROM_TIME = "2024-01-01T00:00:00Z"
+
+
+def _alert_stubs_for_incident_id(client: Client, incident_id: str) -> list[dict[str, Any]]:
+    """Load the alert references stored on one Vega incident."""
+    incident = client.get_incident_by_id(incident_id, from_time=INCIDENT_ID_LOOKUP_FROM_TIME)
+    if not incident:
+        raise DemistoException(f"Vega incident '{incident_id}' was not found.")
+    alerts = incident.get("alerts")
+    if not isinstance(alerts, list):
+        return []
+    return [alert for alert in alerts if isinstance(alert, dict) and _incident_alert_id(alert)]
+
+
+def _alert_stubs_for_current_investigation(client: Client, investigation: dict[str, Any]) -> list[dict[str, Any]]:
+    """Resolve alert references from the open Vega Incident or Vega Alert investigation."""
+    entity_type = _entity_type_from_mirror_payload(investigation)
+    if entity_type == "Vega Alert":
+        alert_id = resolve_alert_id_from_incident({}, investigation)
+        if not alert_id:
+            raise DemistoException("Could not resolve the Vega alert ID from the current investigation.")
+        return [{"alertId": alert_id, "createdAt": _created_at_from_investigation(investigation)}]
+
+    if entity_type == "Vega Incident":
+        stubs = _related_alert_stubs_from_investigation(investigation)
+        if stubs is not None:
+            return stubs
+        resolved_incident_id = resolve_incident_id_from_incident({}, investigation)
+        if resolved_incident_id:
+            return _alert_stubs_for_incident_id(client, resolved_incident_id)
+        raise DemistoException("Could not resolve related alert IDs from the current Vega Incident. Pass incident_id explicitly.")
+
+    raise DemistoException(
+        "incident_id is required when the command is not run from a Vega Incident or Vega Alert investigation."
+    )
+
+
+ALERT_METADATA_RESPONSE_FIELDS = (
+    "id",
+    "vegaAlertId",
+    "detectionId",
+    "name",
+    "severity",
+    "status",
+    "verdict",
+    "createdAt",
+    "dataSources",
+    "labels",
+)
+
+
+def _select_alert_metadata_fields(alert: dict[str, Any], alert_id: str) -> dict[str, Any]:
+    """Return the ten highest-priority alert metadata fields."""
+    selected = {field: alert.get(field) for field in ALERT_METADATA_RESPONSE_FIELDS}
+    selected["id"] = selected["id"] or alert_id
+    return selected
+
+
+def _alert_metadata_api_records(client: Client, stubs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Fetch related alerts and return only the ten highest-priority metadata fields."""
+    ordered_stubs: list[dict[str, Any]] = []
+    ordered_ids: list[str] = []
+    created_at_by_id: dict[str, Any] = {}
+    for stub in stubs:
+        if not isinstance(stub, dict):
+            continue
+        alert_id = _incident_alert_id(stub)
+        if not alert_id:
+            continue
+        ordered_stubs.append(stub)
+        if alert_id not in created_at_by_id:
+            ordered_ids.append(alert_id)
+            created_at_by_id[alert_id] = stub.get("createdAt")
+    details = _fetch_incident_alerts_by_ids(client, ordered_ids, created_at_by_id) if ordered_ids else []
+    alerts_by_id = {_incident_alert_id(alert): alert for alert in details if _incident_alert_id(alert)}
+
+    records: list[dict[str, Any]] = []
+    for stub in ordered_stubs:
+        alert_id = _incident_alert_id(stub)
+        full_alert = alerts_by_id.get(alert_id)
+        records.append(_select_alert_metadata_fields(full_alert or stub, alert_id))
+    return records
+
+
+def _alert_metadata_command_results(rows: list[dict[str, Any]]) -> CommandResults:
+    """Return alert metadata as a JSON object or array without updating the incident."""
+    if not rows:
+        readable_output = "No related alert metadata was found."
+    else:
+        response: dict[str, Any] | list[dict[str, Any]] = rows[0] if len(rows) == 1 else rows
+        readable_output = json.dumps(response, indent=2, ensure_ascii=False)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Vega.AlertMetadata",
+        outputs_key_field="id",
+        outputs=rows,
+        ignore_auto_extract=True,
+    )
+
+
+def get_alert_metadata_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Return related Vega alert metadata to the War Room.
+
+    An explicit incident_id loads that Vega incident's related alerts. Without it, a Vega Incident
+    investigation uses its related alert IDs, and a Vega Alert investigation uses its own alert ID.
+    The War Room entry and context contain ten high-priority fields as direct JSON.
+    """
+    incident_id = _single_incident_id_argument(args)
+    if incident_id:
+        stubs = _alert_stubs_for_incident_id(client, incident_id)
+    else:
+        stubs = _alert_stubs_for_current_investigation(client, load_current_incident())
+    rows = _alert_metadata_api_records(client, stubs) if stubs else []
+    return _alert_metadata_command_results(rows)
 
 
 def set_detections_state_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -3811,6 +3972,18 @@ def _format_incident_alert_stub_row(stub: dict[str, Any]) -> dict[str, str]:
     }
 
 
+def _incident_alert_reference_rows(alerts: Any) -> list[dict[str, str]]:
+    """Keep only the alert ID, name, and created time so the incident stays small."""
+    stubs = [alert for alert in alerts if isinstance(alert, dict)] if isinstance(alerts, list) else []
+    return [_format_incident_alert_stub_row(stub) for stub in stubs if _incident_alert_id(stub)]
+
+
+def _include_incident_alert_metadata(params: dict[str, Any] | None = None) -> bool:
+    """Return True when fetched incidents should store full related-alert metadata."""
+    params = demisto.params() if params is None else params
+    return argToBoolean(params.get("include_incident_alert_metadata", False))
+
+
 def _format_incident_alert_grid_row(alert: dict[str, Any]) -> dict[str, Any]:
     """Build a Vega Alerts row from a full getAlerts record.
 
@@ -3917,6 +4090,7 @@ def incident_to_xsoar_incident(
     incident: dict,
     timeline_events: list[dict] | None = None,
     client: Client | None = None,
+    include_alert_metadata: bool = False,
 ) -> dict:
     """Convert a Vega incident to an XSOAR incident."""
     raw = dict(incident)
@@ -3926,8 +4100,11 @@ def incident_to_xsoar_incident(
     if timeline_events is not None:
         raw["timelineEvents"] = timeline_events
         raw["vegaTimelineEvents"] = _format_timeline_events_html(timeline_events)
-    if client is not None and isinstance(raw.get("alerts"), list):
-        raw["alerts"] = _enrich_incident_alerts(client, raw.get("alerts"))
+    if isinstance(raw.get("alerts"), list):
+        if include_alert_metadata and client is not None:
+            raw["alerts"] = _enrich_incident_alerts(client, raw.get("alerts"))
+        else:
+            raw["alerts"] = _incident_alert_reference_rows(raw.get("alerts"))
     _apply_vega_entity_link(raw)
     _format_raw_entity_for_xsoar(raw)
     return _build_xsoar_incident_dict(raw, "Vega Incident", MIRROR_ENTITY_SUFFIX_INCIDENT, _build_vega_incident_custom_fields)
@@ -5074,7 +5251,12 @@ def _mirror_incident_alert_stubs(entity: dict[str, Any], details: dict[str, Any]
     return None
 
 
-def _enrich_mirror_incident_entity(client: Client, entity: dict[str, Any], last_update: str | None) -> dict[str, Any]:
+def _enrich_mirror_incident_entity(
+    client: Client,
+    entity: dict[str, Any],
+    last_update: str | None,
+    include_alert_metadata: bool = False,
+) -> dict[str, Any]:
     """Fetch additional incident details needed for incoming mirror sync."""
     entity_id = _normalize_entity_id(entity)
     if not entity_id:
@@ -5103,7 +5285,10 @@ def _enrich_mirror_incident_entity(client: Client, entity: dict[str, Any], last_
 
     alert_stubs = _mirror_incident_alert_stubs(entity, details)
     if alert_stubs is not None:
-        entity["alerts"] = _enrich_incident_alerts(client, alert_stubs)
+        if include_alert_metadata:
+            entity["alerts"] = _enrich_incident_alerts(client, alert_stubs)
+        else:
+            entity["alerts"] = _incident_alert_reference_rows(alert_stubs)
     return entity
 
 
@@ -5152,6 +5337,7 @@ def get_remote_data_command(
     client: Client,
     args: dict[str, Any],
     integration_url: str | None = None,
+    include_alert_metadata: bool = False,
 ) -> GetRemoteDataResponse:
     """Fetch updated Vega alert or incident data and incoming mirror entries."""
     del integration_url
@@ -5173,7 +5359,12 @@ def get_remote_data_command(
             return _build_not_found_mirror_response(remote_id, preferred_entity_type, context_entity_type)
 
         if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
-            entity = _enrich_mirror_incident_entity(client, entity, remote_args.last_update)
+            entity = _enrich_mirror_incident_entity(
+                client,
+                entity,
+                remote_args.last_update,
+                include_alert_metadata=include_alert_metadata,
+            )
 
         mirror_context = (
             _mirror_dict(args.get("data")) or _mirror_dict(args.get("remoteIncidentData")) or _mirror_dict(args.get("incident"))
@@ -5591,6 +5782,7 @@ def _ingest_fetched_incidents(
     limit: int,
     backfill_days: str | int | None = None,
     lookback_minutes: int = DEFAULT_LOOKBACK_MINUTES,
+    include_alert_metadata: bool = False,
 ) -> int:
     try:
         batch_last_run = _batch_fetch_last_run(
@@ -5644,7 +5836,14 @@ def _ingest_fetched_incidents(
 
             new_ids.append(incident_id)
             timeline_events = _fetch_incident_timeline_events(client, incident_id) if incident_id else []
-            xsoar_incidents.append(incident_to_xsoar_incident(incident, timeline_events=timeline_events, client=client))
+            xsoar_incidents.append(
+                incident_to_xsoar_incident(
+                    incident,
+                    timeline_events=timeline_events,
+                    client=client,
+                    include_alert_metadata=include_alert_metadata,
+                )
+            )
             ingested.append(incident)
 
         next_run["incidents_last_ids"] = list(set(current_cycle_ids))
@@ -5775,6 +5974,7 @@ def fetch_incidents_command(
     max_fetch: int = DEFAULT_MAX_FETCH,
     lookback_minutes: int = DEFAULT_LOOKBACK_MINUTES,
     incident_investigation_statuses: list[str] | None = None,
+    include_incident_alert_metadata: bool = False,
 ) -> tuple[dict, list[dict]]:
     xsoar_incidents: list[dict] = []
     next_run: dict = dict(last_run)
@@ -5827,6 +6027,7 @@ def fetch_incidents_command(
             limit=remaining,
             backfill_days=backfill_days,
             lookback_minutes=lookback_minutes,
+            include_alert_metadata=include_incident_alert_metadata,
         )
         remaining -= ingested_incidents
         working_run = next_run
@@ -5879,6 +6080,7 @@ def fetch_incidents_command(
             limit=remaining,
             backfill_days=backfill_days,
             lookback_minutes=lookback_minutes,
+            include_alert_metadata=include_incident_alert_metadata,
         )
         remaining -= ingested_incidents
         working_run = next_run
@@ -5954,6 +6156,7 @@ def _parse_vega_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         "first_fetch_time": parse_backfill_days(backfill_days),
         "max_fetch": _resolve_max_fetch(params.get("max_fetch")),
         "lookback_minutes": _parse_lookback_minutes(params.get("lookback_minutes")),
+        "include_incident_alert_metadata": _include_incident_alert_metadata(params),
     }
 
 
@@ -5977,12 +6180,18 @@ def _dispatch_vega_command(client: Client, command: str, config: dict[str, Any])
             )
         ),
         "vega-get-alert-events": lambda: return_results(fetch_alert_events_command(client, demisto.args())),
+        "vega-get-alert-metadata": lambda: return_results(get_alert_metadata_command(client, demisto.args())),
         "vega-set-detections-state": lambda: return_results(set_detections_state_command(client, demisto.args())),
         "vega-update-detections": lambda: return_results(update_detections_command(client, demisto.args())),
         "vega-update-alert": lambda: return_results(update_alert_command(client, demisto.args())),
         "vega-update-incident": lambda: return_results(update_incident_command(client, demisto.args())),
         "get-remote-data": lambda: return_results(
-            get_remote_data_command(client, demisto.args(), integration_url=config["base_url"])
+            get_remote_data_command(
+                client,
+                demisto.args(),
+                integration_url=config["base_url"],
+                include_alert_metadata=config["include_incident_alert_metadata"],
+            )
         ),
         "get-modified-remote-data": lambda: return_results(get_modified_remote_data_command(client, demisto.args())),
         "update-remote-system": lambda: return_results(update_remote_system_command(client, demisto.args())),
@@ -6009,6 +6218,7 @@ def _dispatch_vega_command(client: Client, command: str, config: dict[str, Any])
             integration_url=config["base_url"],
             max_fetch=config["max_fetch"],
             lookback_minutes=config["lookback_minutes"],
+            include_incident_alert_metadata=config["include_incident_alert_metadata"],
         )
         demisto.setLastRun(next_run)
         demisto.incidents(xsoar_incidents)

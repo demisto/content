@@ -58,6 +58,7 @@ from Vega import (
     alert_to_incident,
     build_alert_events_custom_fields,
     fetch_alert_events_command,
+    get_alert_metadata_command,
     fetch_alert_events_page,
     fetch_incidents_command,
     _fetch_alert_events_for_ids,
@@ -70,6 +71,7 @@ from Vega import (
     load_current_incident,
     resolve_alert_id_from_incident,
     resolve_incident_id_from_incident,
+    INCIDENT_ID_LOOKUP_FROM_TIME,
     update_alert_command,
     update_incident_command,
     _build_comment_war_room_entry,
@@ -1689,7 +1691,7 @@ def test_incident_to_xsoar_incident_enriches_alerts(mocker):
         "alerts": [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}],
     }
 
-    xsoar_incident = incident_to_xsoar_incident(incident, client=mock_client)
+    xsoar_incident = incident_to_xsoar_incident(incident, client=mock_client, include_alert_metadata=True)
     raw = json.loads(xsoar_incident["rawJSON"])
     row = raw["alerts"][0]
 
@@ -1817,6 +1819,7 @@ def test_fetch_incidents_command_enriches_incident_alerts(mocker):
         incident_statuses=None,
         incident_verdicts=None,
         first_fetch_time=FIRST_FETCH_TIME,
+        include_incident_alert_metadata=True,
     )
 
     assert incidents[0]["CustomFields"]["vegaalerts"][0]["detectionId"] == "det-1"
@@ -1857,6 +1860,7 @@ def test_get_remote_data_command_mirrors_incident_alerts(mocker):
             "lastUpdate": "2026-06-15T11:00:00Z",
             "data": {"type": "Vega Incident"},
         },
+        include_alert_metadata=True,
     )
 
     mirrored_alerts = result.mirrored_object["CustomFields"]["vegaalerts"]
@@ -1870,6 +1874,132 @@ def test_get_remote_data_command_mirrors_incident_alerts(mocker):
         limit=1,
         offset=0,
     )
+
+
+def test_fetch_incidents_command_omits_alert_metadata_by_default(mocker):
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock()
+    mock_client.get_incidents.return_value = {
+        "incidents": [
+            {
+                "id": "inc-1",
+                "name": "Inc 1",
+                "severity": "HIGH",
+                "createdAt": TIMESTAMP_T1,
+                "alerts": [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1, "severity": "HIGH"}],
+            }
+        ],
+        "total": 1,
+        "limit": 200,
+        "offset": 0,
+    }
+    mock_client.get_incident_timeline.return_value = {"events": []}
+
+    _, incidents = fetch_incidents_command(
+        client=mock_client,
+        last_run={},
+        fetch_alerts=False,
+        fetch_incidents=True,
+        alert_severities=None,
+        alert_statuses=None,
+        alert_verdicts=None,
+        has_related_incidents=None,
+        incident_severities=None,
+        incident_statuses=None,
+        incident_verdicts=None,
+        first_fetch_time=FIRST_FETCH_TIME,
+    )
+
+    assert incidents[0]["CustomFields"]["vegaalerts"] == [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}]
+    mock_client.get_alerts.assert_not_called()
+
+
+def test_get_alert_metadata_command_uses_single_incident_id(mocker):
+    mocker.patch.object(demisto, "info")
+    mocker.patch("Vega.load_current_incident", return_value={})
+    mock_client = mocker.Mock()
+    mock_client.get_incident_by_id.return_value = {
+        "id": "inc-1",
+        "alerts": [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}],
+    }
+    mock_client.get_alerts.return_value = {"alerts": [_full_incident_alert()], "total": 1}
+
+    result = get_alert_metadata_command(mock_client, {"incident_id": "inc-1"})
+
+    assert set(result.outputs[0]) == {
+        "id",
+        "vegaAlertId",
+        "detectionId",
+        "name",
+        "severity",
+        "status",
+        "verdict",
+        "createdAt",
+        "dataSources",
+        "labels",
+    }
+    assert result.outputs[0]["id"] == "alert-1"
+    assert result.outputs[0]["detectionId"] == "det-1"
+    assert result.outputs[0]["dataSources"] == ["CloudTrail", "Okta"]
+    assert result.outputs[0]["labels"] is None
+    assert json.loads(result.readable_output) == result.outputs[0]
+    mock_client.get_incident_by_id.assert_called_once_with("inc-1", from_time=INCIDENT_ID_LOOKUP_FROM_TIME)
+    assert INCIDENT_ID_LOOKUP_FROM_TIME == "2024-01-01T00:00:00Z"
+
+
+def test_get_alert_metadata_command_rejects_multiple_incident_ids(mocker):
+    with pytest.raises(DemistoException, match="single Vega incident ID"):
+        get_alert_metadata_command(mocker.Mock(), {"incident_id": "inc-1,inc-2"})
+
+
+def test_get_alert_metadata_command_uses_related_alert_ids_from_incident(mocker):
+    mocker.patch.object(demisto, "info")
+    mocker.patch(
+        "Vega.load_current_incident",
+        return_value={
+            "id": "100",
+            "type": "Vega Incident",
+            "CustomFields": {
+                "vegaincidentid": "inc-1",
+                "vegaalerts": [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}],
+            },
+        },
+    )
+    mock_client = mocker.Mock()
+    mock_client.get_alerts.return_value = {"alerts": [_full_incident_alert()], "total": 1}
+
+    result = get_alert_metadata_command(mock_client, {})
+
+    mock_client.get_incident_by_id.assert_not_called()
+    assert mock_client.get_alerts.call_args.kwargs["alert_ids"] == ["alert-1"]
+    assert result.outputs[0]["name"] == "Suspicious login"
+
+
+def test_get_alert_metadata_command_uses_current_alert_id(mocker):
+    mocker.patch.object(demisto, "info")
+    mocker.patch(
+        "Vega.load_current_incident",
+        return_value={
+            "id": "200",
+            "type": "Vega Alert",
+            "CustomFields": {"alertid": "alert-1", "vegacreatedat": TIMESTAMP_T1},
+        },
+    )
+    mock_client = mocker.Mock()
+    mock_client.get_alerts.return_value = {"alerts": [_full_incident_alert()], "total": 1}
+
+    result = get_alert_metadata_command(mock_client, {})
+
+    mock_client.get_incident_by_id.assert_not_called()
+    assert mock_client.get_alerts.call_args.kwargs["alert_ids"] == ["alert-1"]
+    assert result.outputs[0]["id"] == "alert-1"
+
+
+def test_get_alert_metadata_command_requires_incident_id_outside_investigation(mocker):
+    mocker.patch("Vega.load_current_incident", return_value={})
+
+    with pytest.raises(DemistoException, match="incident_id is required"):
+        get_alert_metadata_command(mocker.Mock(), {})
 
 
 def test_format_raw_entity_for_xsoar_prefers_key_findings():
