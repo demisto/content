@@ -3215,7 +3215,7 @@ def storage_account_list_command(client: AzureClient, params: dict, args: dict) 
 
     outputs = {
         "Azure.Storage.StorageAccounts(val.id && val.id == obj.id)": accounts,
-        "Azure.Storage(true)": {"StorageAccountsNextToken": response.get("nextLink") or None},
+        "Azure.Storage(true)": {"StorageAccountsNextToken": response.get("nextLink")},
     }
 
     return CommandResults(
