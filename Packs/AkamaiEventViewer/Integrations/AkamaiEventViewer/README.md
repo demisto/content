@@ -1,5 +1,5 @@
 Use the Akamai Event Viewer integration to collect Control Center portal-visible events (such as configuration changes, login attempts, alert activity, and log deliveries) stored in the Akamai Event Logger system.
-This integration was integrated and tested with version xx of AkamaiEventViewer.
+This integration uses version 1 of the Akamai Event Viewer API.
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
