@@ -53,7 +53,9 @@
         "marketplacev2",
         "platform"
     ],
-    "githubUser": [],
+    "githubUser": [
+        "bcsummers"
+    ],
     "supportedModules": [
         "agentix",
         "xsiam"
