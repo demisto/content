@@ -723,44 +723,48 @@ def test_map_to_migrated_url_passthrough_for_unlisted_url(unmapped_url):
     assert map_to_migrated_url(unmapped_url) == unmapped_url
 
 
-@pytest.mark.parametrize("status_code", [200, 204, 301, 399])
+@pytest.mark.parametrize("status_code", [200, 201, 204, 301, 399])
 def test_is_url_reachable_returns_true_on_success_status(mocker, status_code):
     """
     Given:
-        - A URL that responds with a non-error HTTP status (< 400).
+        - A candidate URL whose query service responds with a non-error HTTP status (< 400).
     When:
         - Calling Client._is_url_reachable.
     Then:
-        - True is returned.
+        - True is returned, and the query service is built for the candidate URL.
     """
-    from CortexDataLake import Client, requests
+    from CortexDataLake import Client
 
     client = mocker.Mock(spec=Client)
-    client.use_ssl = True
-    client.trust_env = False
-    mocker.patch.object(requests.Session, "get", return_value=mocker.Mock(status_code=status_code))
+    query_service = mocker.Mock()
+    query_service.create_query = mocker.Mock(return_value=mocker.Mock(status_code=status_code))
+    client.initial_query_service = mocker.Mock(return_value=query_service)
 
-    assert Client._is_url_reachable(client, "https://api.unknown.cdl.paloaltonetworks.com") is True
+    url = "https://api.de1.ew3.cdl.paloaltonetworks.com"
+    access_token = "test-token"
+    assert Client._is_url_reachable(client, url, access_token) is True
+    client.initial_query_service.assert_called_once_with(url=url, access_token=access_token)
 
 
-@pytest.mark.parametrize("status_code", [403, 404, 500, 503])
+@pytest.mark.parametrize("status_code", [400, 403, 404, 500, 503])
 def test_is_url_reachable_returns_false_on_error_status(mocker, status_code):
     """
     Given:
-        - A URL that responds with an error HTTP status (>= 400), e.g. a decommissioned host.
+        - A candidate URL whose query service responds with an error HTTP status (>= 400),
+          e.g. a decommissioned host.
     When:
         - Calling Client._is_url_reachable.
     Then:
         - False is returned.
     """
-    from CortexDataLake import Client, requests
+    from CortexDataLake import Client
 
     client = mocker.Mock(spec=Client)
-    client.use_ssl = True
-    client.trust_env = False
-    mocker.patch.object(requests.Session, "get", return_value=mocker.Mock(status_code=status_code))
+    query_service = mocker.Mock()
+    query_service.create_query = mocker.Mock(return_value=mocker.Mock(status_code=status_code))
+    client.initial_query_service = mocker.Mock(return_value=query_service)
 
-    assert Client._is_url_reachable(client, "https://api.unknown.cdl.paloaltonetworks.com") is False
+    assert Client._is_url_reachable(client, "https://api.de1.ew3.cdl.paloaltonetworks.com", "test-token") is False
 
 
 @pytest.mark.parametrize(
@@ -773,20 +777,20 @@ def test_is_url_reachable_returns_false_on_error_status(mocker, status_code):
 def test_is_url_reachable_returns_false_on_error(mocker, raised_exception):
     """
     Given:
-        - A URL probe that raises an error (e.g. timeout / connection error).
+        - A candidate URL whose query service raises an error (e.g. timeout / connection error).
     When:
         - Calling Client._is_url_reachable.
     Then:
         - False is returned.
     """
-    from CortexDataLake import Client, requests
+    from CortexDataLake import Client
 
     client = mocker.Mock(spec=Client)
-    client.use_ssl = True
-    client.trust_env = False
-    mocker.patch.object(requests.Session, "get", side_effect=raised_exception)
+    query_service = mocker.Mock()
+    query_service.create_query = mocker.Mock(side_effect=raised_exception)
+    client.initial_query_service = mocker.Mock(return_value=query_service)
 
-    assert Client._is_url_reachable(client, "https://api.de1.ew3.cdl.paloaltonetworks.com") is False
+    assert Client._is_url_reachable(client, "https://api.de1.ew3.cdl.paloaltonetworks.com", "test-token") is False
 
 
 def test_resolve_reachable_api_url_keeps_url_when_reachable(mocker):
@@ -796,7 +800,8 @@ def test_resolve_reachable_api_url_keeps_url_when_reachable(mocker):
     When:
         - Calling Client._resolve_reachable_api_url.
     Then:
-        - The original URL is returned unchanged and no mapping is attempted.
+        - The original URL is returned unchanged, the probe is authenticated with the access token,
+          and no mapping is attempted.
     """
     from CortexDataLake import Client
 
@@ -805,10 +810,11 @@ def test_resolve_reachable_api_url_keeps_url_when_reachable(mocker):
     mock_map = mocker.patch("CortexDataLake.map_to_migrated_url")
 
     original_url = "https://api.de1.ew3.cdl.paloaltonetworks.com"
-    result = Client._resolve_reachable_api_url(client, original_url)
+    access_token = "test-token"
+    result = Client._resolve_reachable_api_url(client, original_url, access_token)
 
     assert result == original_url
-    client._is_url_reachable.assert_called_once_with(original_url)
+    client._is_url_reachable.assert_called_once_with(original_url, access_token)
     mock_map.assert_not_called()
 
 
@@ -829,7 +835,7 @@ def test_resolve_reachable_api_url_maps_url_when_unreachable(mocker):
     original_url = "https://api.de1.ew3.cdl.paloaltonetworks.com"
     migrated_url = "https://read-api.de1.prd.strata.logging.paloaltonetworks.com"
 
-    result = Client._resolve_reachable_api_url(client, original_url)
+    result = Client._resolve_reachable_api_url(client, original_url, "test-token")
 
     assert result == migrated_url
 
@@ -849,7 +855,7 @@ def test_resolve_reachable_api_url_returns_unmapped_url_when_unreachable(mocker)
     client._is_url_reachable = mocker.Mock(return_value=False)
 
     original_url = "https://api.unknown.cdl.paloaltonetworks.com"
-    result = Client._resolve_reachable_api_url(client, original_url)
+    result = Client._resolve_reachable_api_url(client, original_url, "test-token")
 
     assert result == original_url
 
