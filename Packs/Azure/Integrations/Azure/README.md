@@ -3150,11 +3150,19 @@ Gets a list of managed clusters in the specified subscription. Requires the foll
 | Azure.AKS.ManagedCluster.name | String | The resource name. |
 | Azure.AKS.ManagedCluster.tags | Unknown | The resource tags. |
 | Azure.AKS.ManagedCluster.type | String | The resource type. |
+| Azure.AKS.ManagedCluster.kind | String | The kind of the managed cluster, primarily used to expose different UI experiences in the portal. |
+| Azure.AKS.ManagedCluster.sku | Unknown | The managed cluster SKU, including the name and tier. |
+| Azure.AKS.ManagedCluster.identity | Unknown | The identity of the managed cluster, if configured. |
 | Azure.AKS.ManagedCluster.properties.provisioningState | String | The current deployment or provisioning state, which only appears in the response. |
+| Azure.AKS.ManagedCluster.properties.powerState | Unknown | The power state of the cluster, indicating whether it is running or stopped. |
 | Azure.AKS.ManagedCluster.properties.kubernetesVersion | String | The version of Kubernetes specified when creating the managed cluster. |
+| Azure.AKS.ManagedCluster.properties.currentKubernetesVersion | String | The version of Kubernetes the managed cluster is currently running. |
 | Azure.AKS.ManagedCluster.properties.maxAgentPools | Number | The maximum number of agent pools of the managed cluster. |
 | Azure.AKS.ManagedCluster.properties.dnsPrefix | String | The DNS prefix specified when creating the managed cluster. |
 | Azure.AKS.ManagedCluster.properties.fqdn | String | The FQDN of the master pool. |
+| Azure.AKS.ManagedCluster.properties.azurePortalFQDN | String | The special FQDN used by the Azure Portal to access the managed cluster. |
+| Azure.AKS.ManagedCluster.properties.disableLocalAccounts | Boolean | Whether local accounts are disabled on the managed cluster. |
+| Azure.AKS.ManagedCluster.properties.publicNetworkAccess | String | Whether public network access to the managed cluster is allowed or denied. |
 | Azure.AKS.ManagedCluster.properties.agentPoolProfiles | Unknown | The agent pool profiles, including name, count, VM size, max pods, OS type, provisioning state, and orchestrator version. |
 | Azure.AKS.ManagedCluster.properties.linuxProfile | Unknown | The Linux profile, including the administrator account name and SSH public keys used to authenticate with VMs. |
 | Azure.AKS.ManagedCluster.properties.servicePrincipalProfile | Unknown | The service principal profile, including the client ID of the service principal. |

@@ -3423,11 +3423,26 @@ script:
     - contextPath: Azure.AKS.ManagedCluster.type
       description: The resource type.
       type: String
+    - contextPath: Azure.AKS.ManagedCluster.kind
+      description: The kind of the managed cluster, primarily used to expose different UI experiences in the portal.
+      type: String
+    - contextPath: Azure.AKS.ManagedCluster.sku
+      description: The managed cluster SKU, including the name and tier.
+      type: Unknown
+    - contextPath: Azure.AKS.ManagedCluster.identity
+      description: The identity of the managed cluster, if configured.
+      type: Unknown
     - contextPath: Azure.AKS.ManagedCluster.properties.provisioningState
       description: The current deployment or provisioning state, which only appears in the response.
       type: String
+    - contextPath: Azure.AKS.ManagedCluster.properties.powerState
+      description: The power state of the cluster, indicating whether it is running or stopped.
+      type: Unknown
     - contextPath: Azure.AKS.ManagedCluster.properties.kubernetesVersion
       description: The version of Kubernetes specified when creating the managed cluster.
+      type: String
+    - contextPath: Azure.AKS.ManagedCluster.properties.currentKubernetesVersion
+      description: The version of Kubernetes the managed cluster is currently running.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.maxAgentPools
       description: The maximum number of agent pools of the managed cluster.
@@ -3437,6 +3452,15 @@ script:
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.fqdn
       description: The FQDN of the master pool.
+      type: String
+    - contextPath: Azure.AKS.ManagedCluster.properties.azurePortalFQDN
+      description: The special FQDN used by the Azure Portal to access the managed cluster.
+      type: String
+    - contextPath: Azure.AKS.ManagedCluster.properties.disableLocalAccounts
+      description: Whether local accounts are disabled on the managed cluster.
+      type: Boolean
+    - contextPath: Azure.AKS.ManagedCluster.properties.publicNetworkAccess
+      description: Whether public network access to the managed cluster is allowed or denied.
       type: String
     - contextPath: Azure.AKS.ManagedCluster.properties.agentPoolProfiles
       description: The agent pool profiles, including name, count, VM size, max pods, OS type, provisioning state, and orchestrator version.
