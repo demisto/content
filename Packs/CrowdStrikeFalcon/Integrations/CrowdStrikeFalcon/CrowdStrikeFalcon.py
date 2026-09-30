@@ -123,9 +123,6 @@ LONG_RUNNING_SLEEP_CHUNK_SECONDS = 60
 # gateway blip, so the attempts are spaced out to let it clear.
 XSIAM_SEND_RETRY_BACKOFF_SECONDS = 1
 MAX_PENDING_TASKS_PER_SEVERITY = 5  # Backpressure: max concurrent pending XSIAM send tasks per severity stream
-# Chunks of one batch are all created at once, and MAX_PENDING_TASKS_PER_SEVERITY counts batches, not
-# chunks, so without this a single batch can hold dozens of compressed buffers in flight at once.
-MAX_CONCURRENT_CHUNK_SENDS = 4
 # Asset enrichment tasks in flight at once. Nothing else bounds them: they are spawned from the
 # vulnerability stream and only awaited at the end of the cycle, so on a large tenant hundreds of
 # device payloads could otherwise pile up alongside the vulnerability pages.
@@ -134,18 +131,23 @@ MAX_PENDING_ASSET_TASKS = 5
 # they share one event loop, so concurrency drives both peak memory and how long a cursor waits
 # between requests. 2 keeps the peak well under the limit without serialising the whole cycle.
 MAX_CONCURRENT_SEVERITIES = 2
-# Fetch order, smallest severity first, so the two heaviest never run together at cycle start and
-# the largest tends to run alone at the tail. Distinct from SPOTLIGHT_SEVERITIES, which stays the
-# reference set for the seal-completeness check.
+# Fetch order, lightest severity first. This does not lower the peak - MEDIUM and HIGH still overlap,
+# at the tail instead of the start - it decides what a cut-short cycle gets through: the cheap
+# severities complete early, and HIGH is the one left unfinished rather than several at once.
+# Distinct from SPOTLIGHT_SEVERITIES, which stays the reference set for the seal-completeness check.
 SPOTLIGHT_SEVERITY_FETCH_ORDER = ["UNKNOWN", "NONE", "LOW", "CRITICAL", "MEDIUM", "HIGH"]
-# The Spotlight 'after' cursor expires roughly this long after the page that produced it. Used only
-# to bound retries and to warn when a cursor is left idle; the exact value is not documented.
+# The Spotlight 'after' cursor expires roughly this long after the page that produced it. Not
+# documented, so an estimate: useful for sizing retries, not something to rely on.
 SPOTLIGHT_CURSOR_TTL_SECONDS = 120
-# Cap on total time spent retrying one page down the shrink ladder. Beyond this the cursor is likely
-# dead anyway, so burning the remaining rungs only delays the inevitable restart of the severity.
+# Checked before each shrink-ladder sleep: if the elapsed retry time plus the next backoff exceeds
+# this, the severity is abandoned instead of trying a smaller page. Only the sleeps are gated - an
+# in-flight request is never interrupted - so in practice this reduces to "stop retrying once
+# failing requests average more than ~7.7s", which is where the third check (3R + 22 > 45) trips.
+# Faster failures never reach it: the whole ladder costs 22s of backoff. Deliberately loose rather
+# than tuned, since it cannot keep the ladder inside the cursor TTL anyway - four slow rungs plus
+# an unbounded final request can outlive the cursor regardless. The point is to stop throwing good
+# time after bad, not to guarantee the cursor survives.
 SPOTLIGHT_LADDER_BUDGET_SECONDS = 45
-# Warn when this much of the TTL was spent between receiving a page and requesting the next one.
-SPOTLIGHT_CURSOR_IDLE_WARN_SECONDS = SPOTLIGHT_CURSOR_TTL_SECONDS // 2
 SPOTLIGHT_LOOKBACK_DAYS = 100  # Default lookback; overridable per instance (bounds dataset size)
 # Period between Spotlight fetch cycle starts for a long-running instance. Not configurable, so it
 # can never be set below the time a full fetch needs (~2.3h typical, longer on large tenants).
@@ -4226,11 +4228,6 @@ def _loop_semaphore(name: str, value: int) -> asyncio.Semaphore:
     return _LOOP_SEMAPHORES[name]
 
 
-def get_chunk_send_semaphore() -> asyncio.Semaphore:
-    """Bounds how many compressed chunks are uploaded at the same time."""
-    return _loop_semaphore("chunk_send", MAX_CONCURRENT_CHUNK_SENDS)
-
-
 def get_severity_semaphore() -> asyncio.Semaphore:
     """Bounds how many severities fetch at the same time."""
     return _loop_semaphore("severity", MAX_CONCURRENT_SEVERITIES)
@@ -4440,17 +4437,13 @@ def send_data_to_xsiam_async(
         )
 
     async def send_compressed_async(zipped_data: bytes, chunk_size_val: int) -> int:
-        # Every chunk of a batch is created at once below, and each holds its compressed buffer
-        # until its request returns. MAX_PENDING_TASKS_PER_SEVERITY counts batches, not chunks, so
-        # this semaphore is the only thing bounding how many uploads are in flight together.
-        async with get_chunk_send_semaphore():
-            await xsiam_api_call_async(
-                xsiam_url=xsiam_url,
-                zipped_data=zipped_data,
-                headers=headers,
-                num_of_attempts=num_of_attempts,
-                data_type=data_type,
-            )
+        await xsiam_api_call_async(
+            xsiam_url=xsiam_url,
+            zipped_data=zipped_data,
+            headers=headers,
+            num_of_attempts=num_of_attempts,
+            data_type=data_type,
+        )
         return chunk_size_val
 
     tasks = [asyncio.create_task(send_compressed_async(zipped, size)) for zipped, size in compressed_chunks]
@@ -5036,7 +5029,6 @@ async def fetch_vulnerabilities_by_severity(
     # Next page, requested before the current page's downstream work runs so the cursor is not left
     # idle while this severity compresses and uploads.
     next_page_task: asyncio.Task | None = None
-    page_received_at = time.monotonic()
     # The first fetched record is withheld from the data batches to be sent in the seal.
     withheld_records: list[dict] = []
     # Each send task reports how many records XSIAM actually stored, and only that number is added
@@ -5122,8 +5114,6 @@ async def fetch_vulnerabilities_by_severity(
                     severity=severity,
                     page_size=page_size,
                 )
-            page_received_at = time.monotonic()
-
             log_falcon_assets(f"[{severity}] Fetched {len(vulnerabilities)} vulnerabilities in batch {batch_counter + 1}")
 
             batch_counter += 1
@@ -5137,7 +5127,8 @@ async def fetch_vulnerabilities_by_severity(
             if new_after_token:
                 # Issued ahead of the AID hand-off, send-task creation and backpressure wait below.
                 # Each of those can stall for longer than the cursor's TTL, so none of them may sit
-                # between this page arriving and the next one being asked for.
+                # between this page arriving and the next one being asked for. Only the first await
+                # after this point actually starts the request, so nothing slow may go above it.
                 next_page_task = asyncio.create_task(
                     fetch_spotlight_page_with_shrink(
                         client=client,
@@ -5147,13 +5138,6 @@ async def fetch_vulnerabilities_by_severity(
                         page_size=page_size,
                     )
                 )
-                cursor_idle = time.monotonic() - page_received_at
-                if cursor_idle > SPOTLIGHT_CURSOR_IDLE_WARN_SECONDS:
-                    log_falcon_assets(
-                        f"[{severity}] Cursor idle {cursor_idle:.1f}s before requesting batch {batch_counter + 1} "
-                        f"(TTL is about {SPOTLIGHT_CURSOR_TTL_SECONDS}s)",
-                        "warning",
-                    )
 
             # Everything below is downstream work on the page just received. The next request is
             # already in flight, so a stall here costs throughput but can no longer kill the cursor.

@@ -13501,18 +13501,18 @@ class TestSpotlightFetchTuning:
 
     @pytest.mark.asyncio
     async def test_semaphores_of_different_names_coexist(self, mocker):
-        """Fetching the chunk-send semaphore must not disturb the severity one.
+        """Looking up a new name must not disturb the semaphores already handed out.
 
-        Both are cached in one dict. If the cache were reset whenever a name was missing rather
-        than when the loop changed, the first chunk-send lookup mid-cycle would replace the
-        severity semaphore that running tasks were already holding, silently removing the limit.
+        All names share one cache. If it were reset whenever a name was missing rather than when
+        the loop changed, the first lookup of a new name mid-cycle would replace the severity
+        semaphore that running tasks were already holding, silently removing the limit.
         """
         import CrowdStrikeFalcon
 
         severity_sem = CrowdStrikeFalcon.get_severity_semaphore()
         await severity_sem.acquire()
 
-        CrowdStrikeFalcon.get_chunk_send_semaphore()
+        CrowdStrikeFalcon._loop_semaphore("some_other_name", 3)
 
         assert (
             CrowdStrikeFalcon.get_severity_semaphore() is severity_sem
