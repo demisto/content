@@ -20,14 +20,12 @@ alter
     source_ip_address = network_details -> local_address,
     source_port = network_details -> local_port,
     destination_ip_address = network_details -> peer_address,
-    // container_context (research-directed correlation fields)
     container_id = container_context -> container_id,
     container_image_name = container_context -> container_image_name,
     container_image_digest = container_context -> container_image_digest,
     pod_name = container_context -> pod_name,
     pod_ip_address = container_context -> pod_ip_address,
     workload_hostname = workload_information -> hostname,
-    // gpu identity + kernel module (new 3.5.2 events)
     gpu_uuid = gpu_details -> gpu_uuid,
     gpu_display_name = gpu_details -> gpu_display_name,
     gpu_product_brand = gpu_details -> gpu_product_brand,
@@ -38,12 +36,12 @@ alter
 | alter
     ipv4_list = arraydistinct(arrayconcat(regextract(interfaces_blob, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), arraycreate(pod_ip_address))),
     ipv6_list = regextract(interfaces_blob, "::1|[0-9a-fA-F]{1,4}::[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}"),
-    mac_list = regextract(interfaces_blob, "([0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2})")
+    mac_list = regextract(interfaces_blob, "([0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2})"),
+    event_name_lc = lowercase(to_string(event_name))
 | alter
     xdm.event.type = message_type,
     xdm.alert.severity = if(message_type = "ALERT",severity,null),
     xdm.event.log_level = if(severity = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL , severity = "WARNING", XDM_CONST.LOG_LEVEL_WARNING , severity = "ERROR", XDM_CONST.LOG_LEVEL_ERROR, severity = "CRITICAL", XDM_CONST.LOG_LEVEL_CRITICAL), 
-    event_name_lc = lowercase(to_string(event_name)),
     xdm.event.operation = if(
     event_name_lc = "process_created", XDM_CONST.OPERATION_TYPE_PROCESS_CREATE,
     event_name_lc = "process_terminated", XDM_CONST.OPERATION_TYPE_PROCESS_TERMINATE,
@@ -94,7 +92,7 @@ alter
         "load_mem_regions_successful",
         "invalid_sbom_configuration_file",
         "invalid_sbom_configuration_folder"
-    ), XDM_CONST.OPERATION_TYPE_READ,
+    ), XDM_CONST.OPERATION_TYPE_READ,null),
     xdm.event.description = object_merge(activity_data, container_context),
     xdm.source.host.device_id = device_id,
     xdm.source.host.ipv4_addresses = ipv4_list,
