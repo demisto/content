@@ -3255,7 +3255,7 @@ def storage_blob_container_list_command(client: AzureClient, params: dict, args:
 
     outputs = {
         "Azure.Storage.BlobContainers(val.id && val.id == obj.id)": containers,
-        "Azure.Storage(true)": {"BlobContainersNextToken": response.get("nextLink") or None},
+        "Azure.Storage(true)": {"BlobContainersNextToken": response.get("nextLink")},
     }
 
     return CommandResults(
