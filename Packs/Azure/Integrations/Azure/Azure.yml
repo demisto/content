@@ -3398,13 +3398,15 @@ script:
     description: "Updates a logical database's transparent data encryption configuration. Required permissions: Microsoft.Sql/servers/databases/transparentDataEncryption/read, Microsoft.Sql/servers/databases/transparentDataEncryption/write."
     name: azure-sql-db-transparent-data-encryption-set
     outputs: [] # has no outputs for this command from response
-  - name: azure-aks-managed-cluster-list
+  - name: azure-aks-managed-clusters-list
     description: "Gets a list of managed clusters in the specified subscription. Requires the following permission: Microsoft.ContainerService/managedClusters/read."
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
+    - name: next_token
+      description: The token for the next set of items to return, used for pagination. Returned by a previous call as ManagedClusterNextToken.
     outputs:
     - contextPath: Azure.AKS.ManagedCluster.id
       description: The resource ID.
@@ -3460,15 +3462,18 @@ script:
     - contextPath: Azure.AKS.ManagedCluster.properties.addonProfiles
       description: The managed cluster add-on profiles, including the Operations Management Suite Agent and HTTP application routing configurations.
       type: Unknown
+    - contextPath: Azure.AKS.ManagedClusterNextToken
+      description: The token for the next set of managed clusters, used for pagination.
+      type: String
 
   - name: azure-aks-managed-cluster-addon-update
     description: "Updates a managed cluster with the specified configuration. Requires the following permissions: Microsoft.ContainerService/managedClusters/read, Microsoft.ContainerService/managedClusters/write."
     arguments:
     - name: resource_name
-      description: The name of the managed cluster resource. Can be retrieved using the azure-aks-managed-cluster-list command.
+      description: The name of the managed cluster resource. Can be retrieved using the azure-aks-managed-clusters-list command.
       required: true
     - name: location
-      description: The resource location. Can be retrieved using the azure-aks-managed-cluster-list command.
+      description: The resource location. Can be retrieved using the azure-aks-managed-clusters-list command.
       auto: PREDEFINED
       predefined:
       - 'australiacentral'
@@ -3536,8 +3541,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group.
-      required: true
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     outputs: []
 
   - arguments:

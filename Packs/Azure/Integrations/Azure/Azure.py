@@ -320,7 +320,7 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-sql-db-transparent-data-encryption-enable-tde-quick-action",
     ],
     "Microsoft.ContainerService/managedClusters/read": [
-        "azure-aks-managed-cluster-list",
+        "azure-aks-managed-clusters-list",
         "azure-aks-managed-cluster-addon-update",
     ],
     "Microsoft.ContainerService/managedClusters/write": ["azure-aks-managed-cluster-addon-update"],
@@ -2021,12 +2021,13 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def aks_clusters_list(self, subscription_id: str):
+    def aks_clusters_list(self, subscription_id: str, next_token: str = ""):
         """
         Lists all managed AKS clusters in the specified subscription.
 
         Args:
             subscription_id (str): Azure subscription ID.
+            next_token (str): The URL to fetch the next page of results, returned by a previous call.
 
         Returns:
             dict: The response from the Azure REST API containing the list of managed clusters.
@@ -2040,6 +2041,10 @@ class AzureClient:
         """
         params = {"api-version": AKS_API_VERSION}
         full_url = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.ContainerService/managedClusters"
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of AKS managed clusters.")
+            full_url = next_token
+            params = {}
         demisto.debug("Listing AKS managed clusters.")
         try:
             return self.http_request("GET", full_url=full_url, params=params)
@@ -4368,36 +4373,31 @@ def aks_clusters_list_command(client: AzureClient, params: dict[str, Any], args:
     Args:
         client (AzureClient): The Azure client instance.
         params (dict): Configuration parameters.
-        args (dict): Command arguments, optionally including the subscription ID.
+        args (dict): Command arguments, optionally including the subscription ID and next_token.
 
     Returns:
         CommandResults: The list of managed clusters.
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    response = client.aks_clusters_list(subscription_id=subscription_id)
+    next_token = args.get("next_token", "")
+    response = client.aks_clusters_list(subscription_id=subscription_id, next_token=next_token)
     clusters = response.get("value", [])
 
-    readable_output = [
-        {
-            "Name": cluster.get("name"),
-            "Status": cluster.get("properties", {}).get("provisioningState"),
-            "Location": cluster.get("location"),
-            "Tags": cluster.get("tags"),
-            "Kubernetes version": cluster.get("properties", {}).get("kubernetesVersion"),
-            "API server address": cluster.get("properties", {}).get("fqdn"),
-            "Network type (plugin)": cluster.get("properties", {}).get("networkProfile", {}).get("networkPlugin"),
-        }
-        for cluster in clusters
-    ]
+    if not clusters:
+        return CommandResults(readable_output="No AKS managed clusters were found.", raw_response=response)
+
+    outputs = {
+        "Azure.AKS.ManagedCluster(val.id && val.id == obj.id)": clusters,
+        "Azure.AKS(true)": {"ManagedClusterNextToken": response.get("nextLink") or None},
+    }
     return CommandResults(
-        outputs_prefix="Azure.AKS.ManagedCluster",
-        outputs_key_field="id",
-        outputs=clusters,
+        outputs=outputs,
         readable_output=tableToMarkdown(
-            "AKS Clusters List",
-            readable_output,
-            ["Name", "Status", "Location", "Tags", "Kubernetes version", "API server address", "Network type (plugin)"],
+            "AKS Managed Clusters List",
+            clusters,
+            ["id", "name", "location", "type"],
             removeNull=True,
+            headerTransform=pascalToSpace,
         ),
         raw_response=response,
     )
@@ -6009,7 +6009,7 @@ def main():  # pragma: no cover
             "azure-sqldb-security-alert-policy-update": sql_db_threat_policy_update_command,
             "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
             "azure-sql-db-transparent-data-encryption-enable-tde-quick-action": sql_db_tde_set_command,
-            "azure-aks-managed-cluster-list": aks_clusters_list_command,
+            "azure-aks-managed-clusters-list": aks_clusters_list_command,
             "azure-aks-managed-cluster-addon-update": aks_cluster_addon_update_command,
             "azure-cosmos-db-update": cosmosdb_update_command,
             "azure-cosmos-db-disable-key-quick-action": cosmosdb_update_command,

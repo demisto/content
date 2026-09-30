@@ -3125,20 +3125,21 @@ There are no input arguments for this command.
 
 There is no context output for this command.
 
-### azure-aks-managed-cluster-list
+### azure-aks-managed-clusters-list
 
 ***
 Gets a list of managed clusters in the specified subscription. Requires the following permission: Microsoft.ContainerService/managedClusters/read.
 
 #### Base Command
 
-`azure-aks-managed-cluster-list`
+`azure-aks-managed-clusters-list`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| next_token | The token for the next set of items to return, used for pagination. Returned by a previous call as ManagedClusterNextToken. | Optional |
 
 #### Context Output
 
@@ -3162,6 +3163,7 @@ Gets a list of managed clusters in the specified subscription. Requires the foll
 | Azure.AKS.ManagedCluster.properties.diskEncryptionSetID | String | The resource ID of the disk encryption set used to enable encryption at rest. |
 | Azure.AKS.ManagedCluster.properties.networkProfile | Unknown | The network configuration, including the network plugin, pod CIDR, service CIDR, and DNS service IP. |
 | Azure.AKS.ManagedCluster.properties.addonProfiles | Unknown | The managed cluster add-on profiles, including the Operations Management Suite Agent and HTTP application routing configurations. |
+| Azure.AKS.ManagedClusterNextToken | String | The token for the next set of managed clusters, used for pagination. |
 
 ### azure-aks-managed-cluster-addon-update
 
@@ -3176,13 +3178,13 @@ Updates a managed cluster with the specified configuration. Requires the followi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_name | The name of the managed cluster resource. Can be retrieved using the azure-aks-managed-cluster-list command. | Required |
-| location | The resource location. Can be retrieved using the azure-aks-managed-cluster-list command. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilse, brazilsouth, canadacentral, canadaeast, centralfrance, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, germanyn, germanywc, japaneast, japanwest, koreacentral, koreasouth, northcentralus, northeurope, norwaye, norwayw, southafricanorth, southafricawest, southcentralus, southeastasia, southfrance, southindia, switzerlandn, switzerlandw, uaecentral, uaenorth, uknorth, uksouth, uksouth2, ukwest, westcentralus, westeurope, westindia, westus, westus2. | Required |
+| resource_name | The name of the managed cluster resource. Can be retrieved using the azure-aks-managed-clusters-list command. | Required |
+| location | The resource location. Can be retrieved using the azure-aks-managed-clusters-list command. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilse, brazilsouth, canadacentral, canadaeast, centralfrance, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, germanyn, germanywc, japaneast, japanwest, koreacentral, koreasouth, northcentralus, northeurope, norwaye, norwayw, southafricanorth, southafricawest, southcentralus, southeastasia, southfrance, southindia, switzerlandn, switzerlandw, uaecentral, uaenorth, uknorth, uksouth, uksouth2, ukwest, westcentralus, westeurope, westindia, westus, westus2. | Required |
 | http_application_routing_enabled | Whether to configure ingress with automatic public DNS name creation. Possible values are: true, false. | Optional |
 | monitoring_agent_enabled | Whether to turn on Log Analytics monitoring. If enabled and monitoring_resource_name is not specified, it uses the currently configured workspace resource ID. Possible values are: true, false. | Optional |
 | monitoring_resource_name | The name of an existing Log Analytics workspace to use for storing monitoring data. Can be retrieved in the Log Analytics workspace from the Azure portal. | Optional |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. | Required |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 
 #### Context Output
 

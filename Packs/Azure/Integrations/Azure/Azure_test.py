@@ -868,29 +868,44 @@ def test_sql_db_tde_set_command(mocker, client, mock_params):
 
 def test_aks_clusters_list_command(mocker, client, mock_params):
     """
-    Given: An Azure client whose aks_clusters_list returns a list of managed clusters.
+    Given: An Azure client whose aks_clusters_list returns a list of managed clusters with a nextLink.
     When: The aks_clusters_list_command function is called.
-    Then: The function returns CommandResults with the clusters and the Azure.AKS.ManagedCluster prefix.
+    Then: The function returns CommandResults with the clusters keyed by id and the next-token nested output.
     """
     from CommonServerPython import CommandResults
 
     api_response = util_load_json("test_data/aks_clusters_list_response.json")
+    api_response["nextLink"] = "mock_next_link"
     mocker.patch.object(client, "aks_clusters_list", return_value=api_response)
 
     args = {"subscription_id": "mock_subscription_id"}
     result = aks_clusters_list_command(client, mock_params, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.AKS.ManagedCluster"
-    assert result.outputs_key_field == "id"
-    assert result.outputs == api_response.get("value")
+    assert result.outputs["Azure.AKS.ManagedCluster(val.id && val.id == obj.id)"] == api_response.get("value")
+    assert result.outputs["Azure.AKS(true)"] == {"ManagedClusterNextToken": "mock_next_link"}
+
+
+def test_aks_clusters_list_command_pagination(mocker, client, mock_params):
+    """
+    Given: An Azure client and a next_token argument for pagination.
+    When: The aks_clusters_list_command function is called with next_token.
+    Then: The next_token is forwarded to the client method.
+    """
+    api_response = util_load_json("test_data/aks_clusters_list_response.json")
+    mock_list = mocker.patch.object(client, "aks_clusters_list", return_value=api_response)
+
+    args = {"subscription_id": "mock_subscription_id", "next_token": "mock_next_link"}
+    aks_clusters_list_command(client, mock_params, args)
+
+    assert mock_list.call_args.kwargs["next_token"] == "mock_next_link"
 
 
 def test_aks_clusters_list_command_no_results(mocker, client, mock_params):
     """
     Given: An Azure client whose aks_clusters_list returns an empty cluster list.
     When: The aks_clusters_list_command function is called.
-    Then: The function returns CommandResults with empty outputs.
+    Then: The function returns CommandResults with a "no clusters found" readable output and no context.
     """
     from CommonServerPython import CommandResults
 
@@ -900,7 +915,8 @@ def test_aks_clusters_list_command_no_results(mocker, client, mock_params):
     result = aks_clusters_list_command(client, mock_params, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs == []
+    assert result.outputs is None
+    assert result.readable_output == "No AKS managed clusters were found."
 
 
 def test_aks_cluster_addon_update_command(mocker, client, mock_params):
