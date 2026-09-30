@@ -890,7 +890,9 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def storage_account_list_request(self, account_name: str, resource_group_name: str, subscription_id: str):
+    def storage_account_list_request(
+        self, account_name: str, resource_group_name: str, subscription_id: str, next_token: str = ""
+    ):
         """
         Send the get storage account/s request to the API.
 
@@ -898,6 +900,7 @@ class AzureClient:
             account_name (str): The storage account name, optional. When empty, all accounts are listed.
             resource_group_name (str): The resource group name.
             subscription_id (str): The subscription id.
+            next_token (str): The URL to fetch the next page of results, returned by a previous call.
 
         Returns:
             dict: The json response from the API call.
@@ -906,18 +909,24 @@ class AzureClient:
             ValueError: If the storage account is not found.
             DemistoException: If there are permission or other API errors.
         """
-        full_url = (
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-            f"/providers/Microsoft.Storage/storageAccounts"
-        )
-        if account_name:
-            full_url += f"/{account_name}"
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of storage accounts.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname)
+            params: dict = {}
+        else:
+            full_url = (
+                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+                f"/providers/Microsoft.Storage/storageAccounts"
+            )
+            if account_name:
+                full_url += f"/{account_name}"
+            params = {"api-version": API_VERSION}
         try:
             demisto.debug(f'Listing storage account(s) "{account_name}".')
             return self.http_request(
                 method="GET",
                 full_url=full_url,
-                params={"api-version": API_VERSION},
+                params=params,
             )
         except Exception as e:
             self.handle_azure_error(
@@ -936,7 +945,7 @@ class AzureClient:
         Args:
             subscription_id (str): The subscription id.
             resource_group_name (str): The resource group name.
-            args (dict): The user arguments (like account name, container name).
+            args (dict): The user arguments (like account name, container name, limit, next_token).
 
         Returns:
             dict: The json response from the API call.
@@ -947,19 +956,25 @@ class AzureClient:
         """
         account_name = args.get("account_name", "")
         container_name = args.get("container_name", "")
-        full_url = (
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-            f"/providers/Microsoft.Storage/storageAccounts/{account_name}"
-            f"/blobServices/default/containers"
-        )
-        if container_name:
-            full_url += f"/{container_name}"
-        params = {"api-version": API_VERSION}
-        if argToBoolean(args.get("include_deleted", False)):
-            params["$include"] = "deleted"
-        if limit := arg_to_number(args.get("limit")):
-            validate_limit(limit, max_limit=BLOB_CONTAINERS_MAX_PAGE_SIZE)
-            params["$maxpagesize"] = str(limit)
+        next_token = args.get("next_token", "")
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of blob containers.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname)
+            params: dict = {}
+        else:
+            full_url = (
+                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+                f"/providers/Microsoft.Storage/storageAccounts/{account_name}"
+                f"/blobServices/default/containers"
+            )
+            if container_name:
+                full_url += f"/{container_name}"
+            params = {"api-version": API_VERSION}
+            if argToBoolean(args.get("include_deleted", False)):
+                params["$include"] = "deleted"
+            if limit := arg_to_number(args.get("limit")):
+                validate_limit(limit, max_limit=BLOB_CONTAINERS_MAX_PAGE_SIZE)
+                params["$maxpagesize"] = str(limit)
 
         try:
             demisto.debug(f'Listing blob container(s) "{container_name}" under account "{account_name}".')
@@ -3185,24 +3200,32 @@ def storage_account_list_command(client: AzureClient, params: dict, args: dict) 
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     account_name = args.get("account_name", "")
+    next_token = args.get("next_token", "")
 
     response = client.storage_account_list_request(
-        account_name=account_name, resource_group_name=resource_group_name, subscription_id=subscription_id
+        account_name=account_name,
+        resource_group_name=resource_group_name,
+        subscription_id=subscription_id,
+        next_token=next_token,
     )
     accounts = response.get("value", [response])
 
     if not accounts:
         return CommandResults(readable_output="No storage accounts were found.", raw_response=response)
 
+    outputs = {
+        "Azure.Storage.StorageAccounts(val.id && val.id == obj.id)": accounts,
+        "Azure.Storage(true)": {"StorageAccountsNextToken": response.get("nextLink") or None},
+    }
+
     return CommandResults(
-        outputs_prefix="Azure.Storage.StorageAccounts",
-        outputs_key_field="id",
-        outputs=accounts,
+        outputs=outputs,
         readable_output=tableToMarkdown(
             "Azure Storage Account List",
             accounts,
             ["id", "name", "type", "kind", "location"],
             removeNull=True,
+            headerTransform=pascalToSpace,
         ),
         raw_response=response,
     )
@@ -3230,15 +3253,19 @@ def storage_blob_container_list_command(client: AzureClient, params: dict, args:
     if not containers:
         return CommandResults(readable_output="No blob containers were found.", raw_response=response)
 
+    outputs = {
+        "Azure.Storage.BlobContainers(val.id && val.id == obj.id)": containers,
+        "Azure.Storage(true)": {"BlobContainersNextToken": response.get("nextLink") or None},
+    }
+
     return CommandResults(
-        outputs_prefix="Azure.Storage.BlobContainers",
-        outputs_key_field="id",
-        outputs=containers,
+        outputs=outputs,
         readable_output=tableToMarkdown(
             "Azure Storage Blob Containers List",
             containers,
             ["id", "name", "type"],
             removeNull=True,
+            headerTransform=pascalToSpace,
         ),
         raw_response=response,
     )

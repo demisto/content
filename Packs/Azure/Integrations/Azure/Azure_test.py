@@ -7619,13 +7619,12 @@ def test_storage_account_list_command(mocker):
     result: CommandResults = storage_account_list_command(mock_client, params, args)
 
     mock_client.storage_account_list_request.assert_called_once_with(
-        account_name="", resource_group_name="mock_resource_group", subscription_id="mock_subscription_id"
+        account_name="", resource_group_name="mock_resource_group", subscription_id="mock_subscription_id", next_token=""
     )
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.Storage.StorageAccounts"
-    assert result.outputs_key_field == "id"
-    assert result.outputs == mock_response.get("value")
+    accounts_key = "Azure.Storage.StorageAccounts(val.id && val.id == obj.id)"
+    assert result.outputs[accounts_key] == mock_response.get("value")
     assert "Azure Storage Account List" in result.readable_output
     assert "mock_account_name_1" in result.readable_output
     assert "mock_account_name_2" in result.readable_output
@@ -7650,12 +7649,15 @@ def test_storage_account_list_command_single(mocker):
     result: CommandResults = storage_account_list_command(mock_client, params, args)
 
     mock_client.storage_account_list_request.assert_called_once_with(
-        account_name="mock_account_name", resource_group_name="mock_resource_group", subscription_id="mock_subscription_id"
+        account_name="mock_account_name",
+        resource_group_name="mock_resource_group",
+        subscription_id="mock_subscription_id",
+        next_token="",
     )
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.Storage.StorageAccounts"
-    assert result.outputs[0] == mock_response
+    accounts_key = "Azure.Storage.StorageAccounts(val.id && val.id == obj.id)"
+    assert result.outputs[accounts_key][0] == mock_response
     assert "mock_account_name" in result.readable_output
 
 
@@ -7720,9 +7722,8 @@ def test_storage_blob_container_list_command(mocker):
     )
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.Storage.BlobContainers"
-    assert result.outputs_key_field == "id"
-    assert result.outputs == mock_response.get("value")
+    containers_key = "Azure.Storage.BlobContainers(val.id && val.id == obj.id)"
+    assert result.outputs[containers_key] == mock_response.get("value")
     assert "Azure Storage Blob Containers List" in result.readable_output
     assert "test" in result.readable_output
     assert "test2" in result.readable_output
@@ -7751,8 +7752,8 @@ def test_storage_blob_container_list_command_single(mocker):
     )
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.Storage.BlobContainers"
-    assert result.outputs[0] == mock_response
+    containers_key = "Azure.Storage.BlobContainers(val.id && val.id == obj.id)"
+    assert result.outputs[containers_key][0] == mock_response
     assert "test" in result.readable_output
 
 
@@ -7923,3 +7924,74 @@ def test_storage_blob_container_list_request_invalid_limit_raises(mocker, client
         )
 
     http_request.assert_not_called()
+
+
+def test_storage_account_list_command_surfaces_next_token(mocker):
+    """
+    Given: An Azure client mock returning a list of storage accounts with a nextLink.
+    When: storage_account_list_command is called.
+    Then: The nextLink is surfaced under the StorageAccountsNextToken context key.
+    """
+    from Azure import storage_account_list_command
+
+    mock_response = util_load_json("test_data/storage_account_list_response.json")
+    mock_response["nextLink"] = "https://management.azure.com/next-accounts-page"
+
+    mock_client = mocker.Mock()
+    mock_client.storage_account_list_request.return_value = mock_response
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {}
+
+    result: CommandResults = storage_account_list_command(mock_client, params, args)
+
+    assert result.outputs["Azure.Storage(true)"]["StorageAccountsNextToken"] == "https://management.azure.com/next-accounts-page"
+
+
+def test_storage_account_list_command_passes_next_token(mocker):
+    """
+    Given: A next_token argument.
+    When: storage_account_list_command is called.
+    Then: The next_token is forwarded to the client request method.
+    """
+    from Azure import storage_account_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.storage_account_list_request.return_value = {"value": [{"id": "a1", "name": "acc1"}]}
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {"next_token": "https://management.azure.com/next-accounts-page"}
+
+    storage_account_list_command(mock_client, params, args)
+
+    mock_client.storage_account_list_request.assert_called_once_with(
+        account_name="",
+        resource_group_name="mock_resource_group",
+        subscription_id="mock_subscription_id",
+        next_token="https://management.azure.com/next-accounts-page",
+    )
+
+
+def test_storage_blob_container_list_command_surfaces_next_token(mocker):
+    """
+    Given: An Azure client mock returning a list of blob containers with a nextLink.
+    When: storage_blob_container_list_command is called.
+    Then: The nextLink is surfaced under the BlobContainersNextToken context key.
+    """
+    from Azure import storage_blob_container_list_command
+
+    mock_response = util_load_json("test_data/blob_containers_list_response.json")
+    mock_response["nextLink"] = "https://management.azure.com/next-containers-page"
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_container_list_request.return_value = mock_response
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {"account_name": "mock_account_name"}
+
+    result: CommandResults = storage_blob_container_list_command(mock_client, params, args)
+
+    assert (
+        result.outputs["Azure.Storage(true)"]["BlobContainersNextToken"]
+        == "https://management.azure.com/next-containers-page"
+    )
