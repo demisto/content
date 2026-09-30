@@ -9,7 +9,6 @@ from CommonServerUserPython import *
 import pytest
 
 from Vega import (
-    ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN,
     _alert_events_command_results,
     _enrich_alert_event,
     _enrich_alert_events,
@@ -61,6 +60,7 @@ from Vega import (
     fetch_alert_events_command,
     fetch_alert_events_page,
     fetch_incidents_command,
+    _fetch_alert_events_for_ids,
     _fetch_alert_events_for_ingest,
     set_detections_state_command,
     update_detections_command,
@@ -2422,7 +2422,118 @@ def test_fetch_alert_events_page(mocker):
     mock_client.get_alert_events.assert_called_once_with("alert-1", limit=50, offset=0)
 
 
-def test_fetch_alert_events_for_ingest_returns_not_available_for_bad_shape(mocker):
+def test_get_alert_events_sends_up_to_ten_alert_ids(requests_mock, mocker):
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch.object(demisto, "info")
+    requests_mock.post(f"{BASE_URL}/api/v1/login_machine", json=MOCK_JWT_RESPONSE)
+    requests_mock.post(
+        f"{BASE_URL}/api/v1/query",
+        json={
+            "data": {
+                "getAlertsEvents": {
+                    "alerts": [{"alertId": "alert-1", "total": 1, "results": [{"timestamp": "t1"}]}],
+                }
+            }
+        },
+    )
+    client = Client(
+        base_url=BASE_URL,
+        verify=False,
+        proxy=False,
+        access_key="test-key",
+        access_key_id="test-key-id",
+    )
+
+    result = client.get_alert_events("alert-1", alert_ids=["alert-2"], limit=100, offset=0)
+
+    request_json = requests_mock.request_history[-1].json()
+    assert request_json["variables"] == {"alertIds": ["alert-2", "alert-1"], "limit": 100, "offset": 0}
+    assert "$alertIds: [ID!]" in request_json["query"]
+    assert "alerts {" in request_json["query"]
+    assert result["alerts"][0]["alertId"] == "alert-1"
+
+
+def test_get_alert_events_rejects_more_than_ten_ids():
+    client = Client(
+        base_url=BASE_URL,
+        verify=False,
+        proxy=False,
+        access_key="test-key",
+        access_key_id="test-key-id",
+    )
+    with pytest.raises(DemistoException, match="maximum of 10"):
+        client.get_alert_events(alert_ids=[f"alert-{index}" for index in range(11)])
+
+
+def test_fetch_alert_events_page_reads_per_alert_results(mocker):
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_alert_events.return_value = {
+        "total": 2,
+        "results": [{"timestamp": "other", "source": "combined"}],
+        "alerts": [
+            {"alertId": "alert-1", "total": 1, "results": [{"timestamp": "t1", "source": "one"}]},
+            {"alertId": "alert-2", "total": 1, "results": [{"timestamp": "t2", "source": "two"}]},
+        ],
+    }
+
+    events, total = fetch_alert_events_page(mock_client, "alert-1", limit=50, offset=0)
+
+    assert total == 1
+    assert events[0]["timestamp"] == "t1"
+    assert events[0]["source"] == "one"
+
+
+def test_fetch_alert_events_for_ids_requests_in_batches_of_ten(mocker):
+    mocker.patch.object(demisto, "debug")
+    mock_client = mocker.Mock(spec=Client)
+    alert_ids = [f"alert-{index}" for index in range(12)]
+
+    def _page(*_args, **kwargs):
+        requested = kwargs.get("alert_ids") or []
+        return {
+            "alerts": [
+                {"alertId": alert_id, "total": 1, "results": [{"timestamp": alert_id, "source": "src"}]} for alert_id in requested
+            ]
+        }
+
+    mock_client.get_alert_events.side_effect = _page
+
+    fetched = _fetch_alert_events_for_ids(mock_client, alert_ids)
+
+    assert mock_client.get_alert_events.call_count == 2
+    assert mock_client.get_alert_events.call_args_list[0].kwargs["alert_ids"] == alert_ids[:10]
+    assert mock_client.get_alert_events.call_args_list[1].kwargs["alert_ids"] == alert_ids[10:]
+    assert fetched["alert-11"][1]["vegaalerteventsloadedfor"] == "alert-11"
+    assert "Alert Events (1)" in fetched["alert-11"][1]["vegaalertevents"]
+
+
+def test_fetch_alert_events_command_returns_one_result_per_alert_id(mocker):
+    mocker.patch("Vega.load_current_incident", return_value={})
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_alert_events.return_value = {
+        "alerts": [
+            {"alertId": "alert-1", "total": 1, "results": [{"timestamp": "t1", "source": "one"}]},
+            {"alertId": "alert-2", "total": 1, "results": [{"timestamp": "t2", "source": "two"}]},
+        ]
+    }
+
+    results = fetch_alert_events_command(mock_client, {"alert_ids": "alert-1,alert-2"})
+
+    assert [result.outputs["AlertId"] for result in results] == ["alert-1", "alert-2"]
+    assert results[0].outputs["Count"] == 1
+    assert results[1].outputs["Events"][0]["source"] == "two"
+    mock_client.get_alert_events.assert_called_once()
+    assert mock_client.get_alert_events.call_args.kwargs["alert_ids"] == ["alert-1", "alert-2"]
+
+
+def test_fetch_alert_events_command_rejects_more_than_ten_alert_ids(mocker):
+    mocker.patch("Vega.load_current_incident", return_value={})
+    with pytest.raises(DemistoException, match="maximum of 10"):
+        fetch_alert_events_command(mocker.Mock(), {"alert_ids": ",".join(f"alert-{index}" for index in range(11))})
+
+
+def test_fetch_alert_events_for_ingest_displays_vendor_raw_rows(mocker):
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alert_events.return_value = {
         "total": 1,
@@ -2431,8 +2542,12 @@ def test_fetch_alert_events_for_ingest_returns_not_available_for_bad_shape(mocke
 
     events, custom_fields = _fetch_alert_events_for_ingest(mock_client, "alert-1")
 
-    assert events == []
-    assert "No alert events found" in custom_fields["vegaalertevents"]
+    assert events[0]["cid"] == "123"
+    assert events[0]["eid"] == "118"
+    markdown = custom_fields["vegaalertevents"]
+    assert "|Timestamp|Source|Log|" in markdown
+    assert "Access from IP with bad reputation" in markdown
+    assert "No alert events found" not in markdown
     assert custom_fields["vegaalerteventsloadedfor"] == "alert-1"
 
 
@@ -2500,14 +2615,13 @@ def test_fetch_alert_events_command_fetches_all_and_slices_page(mocker):
     assert mock_client.get_alert_events.call_count == 4
 
 
-def test_fetch_alert_events_command_returns_not_available_for_vendor_parse_fields(
-    mocker,
-):
+def test_fetch_alert_events_command_displays_vendor_raw_rows(mocker):
     mocker.patch(
         "Vega.load_current_incident",
         return_value={"CustomFields": {"vegaalertid": "alert-1"}},
     )
     mock_client = mocker.Mock(spec=Client)
+    long_command = "powershell.exe " + ("A" * 400)
     mock_client.get_alert_events.return_value = {
         "total": 1,
         "results": [
@@ -2520,6 +2634,7 @@ def test_fetch_alert_events_command_returns_not_available_for_vendor_parse_field
                 "MitreAttack": [{"Tactic": "Initial Access", "TechniqueID": "T1078"}],
                 "SourceVendors": "CrowdStrike",
                 "SourceProducts": "Falcon Identity Protection",
+                "CommandLine": long_command,
                 "timestamp": 1774165347000,
             }
         ],
@@ -2527,12 +2642,22 @@ def test_fetch_alert_events_command_returns_not_available_for_vendor_parse_field
 
     result = fetch_alert_events_command(mock_client, {"alert_id": "alert-1"})
 
-    assert result.readable_output == ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN
-    assert result.outputs["Total"] == 0
-    assert result.outputs["Count"] == 0
-    assert result.outputs["HasAlertEvents"] is False
-    assert "does not have alert events" not in result.outputs["CustomFields"]["vegaalertevents"]
-    assert "No alert events found" in result.outputs["CustomFields"]["vegaalertevents"]
+    readable = result.readable_output
+    assert "|Timestamp|Source|Log|" in readable
+    assert "03/22/26 07:42:27" in readable
+    assert "CrowdStrike" in readable
+    assert "12345678901234567890123456789012" in readable
+    assert '"eid":"118"' in readable
+    assert "Falcon Identity Protection" in readable
+    assert "T1078" in readable
+    assert long_command in readable
+    assert "1774165347000" not in readable
+    assert '"SourceVendors"' not in readable
+    assert result.outputs["Total"] == 1
+    assert result.outputs["Count"] == 1
+    assert result.outputs["HasAlertEvents"] is True
+    assert result.outputs["Events"][0]["cid"] == "12345678901234567890123456789012"
+    assert "No alert events found" not in result.outputs["CustomFields"]["vegaalertevents"]
     mock_client.get_alert_events.assert_called_once()
 
 

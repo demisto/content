@@ -37,7 +37,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### vega-get-alert-events
 
 ***
-Fetch all aggregated alert events for a Vega alert using internal API pagination, then return the requested display page as a markdown table and CustomFields for the Alert Events layout section.
+Fetch aggregated alert events for up to 10 Vega alerts using internal API pagination, then return the requested display page as a markdown table and CustomFields for the Alert Events layout section.
 
 #### Base Command
 
@@ -47,7 +47,8 @@ Fetch all aggregated alert events for a Vega alert using internal API pagination
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The Vega alert API id (UUID). When omitted, resolves the alert id from the current Vega Alert incident. | Optional |
+| alert_ids | Comma-separated Vega alert API ids (UUIDs). A maximum of 10 IDs can be requested in one call. When omitted, alert_id is used, or the alert id is resolved from the current Vega Alert incident. | Optional |
+| alert_id | The Vega alert API id (UUID). When omitted, resolves the alert id from the current Vega Alert incident. Combined with alert_ids when both are provided. | Optional |
 | limit | The number of alert events to display per page. Also used as the Vega API batch size when fetching all events. Default is 200. | Optional |
 | offset | The pagination offset for alert events. Default is 0. | Optional |
 

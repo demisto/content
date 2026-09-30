@@ -261,8 +261,15 @@ script:
   commands:
     - name: vega-get-alert-events
       arguments:
+        - name: alert_ids
+          description: >-
+            Comma-separated Vega alert API ids (UUIDs). A maximum of 10 IDs can be requested in one call.
+            When omitted, alert_id is used, or the alert id is resolved from the current Vega Alert incident.
+          required: false
         - name: alert_id
-          description: The Vega alert API id (UUID). When omitted, resolves the alert id from the current Vega Alert incident.
+          description: >-
+            The Vega alert API id (UUID). When omitted, resolves the alert id from the current Vega Alert incident.
+            Combined with alert_ids when both are provided.
           required: false
         - name: limit
           description: The number of alert events to display per page. Also used as the Vega API batch size when fetching all events.
@@ -271,7 +278,7 @@ script:
           description: The pagination offset for alert events.
           defaultValue: "0"
       description: >-
-        Fetch all aggregated alert events for a Vega alert using internal API pagination,
+        Fetch aggregated alert events for up to 10 Vega alerts using internal API pagination,
         then return the requested display page as a markdown table and CustomFields for the Alert Events layout section.
       outputs:
         - contextPath: Vega.AlertEvents.AlertId
@@ -290,7 +297,7 @@ script:
           description: Number of alert events returned in the current page.
           type: Number
         - contextPath: Vega.AlertEvents.HasAlertEvents
-          description: Whether the alert returned real alert events instead of aggregated parse-field summary rows.
+          description: Whether alert events were returned for display.
           type: Boolean
         - contextPath: Vega.AlertEvents.Cached
           description: Whether the response was served from cached incident data.

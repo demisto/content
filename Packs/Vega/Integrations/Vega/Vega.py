@@ -157,13 +157,28 @@ RATE_LIMIT_WAIT_INCREMENT_SECONDS = 2
 FETCH_ENTITIES_PAGE_SIZE = 100
 _RETRYABLE_HTTP_STATUS_CODES = frozenset({429, 502, 503, 504})
 DEFAULT_ALERT_EVENTS_PAGE_SIZE = 200
+MAX_ALERT_EVENTS_IDS = 10
 ALERT_EVENT_JSON_MERGE_KEYS = frozenset({"fields"})
 ALERT_EVENT_JSON_TRUNCATE_KEYS = frozenset({"raw", "_raw"})
 ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN = "### Alert Events\n\nNo alert events found."
 ALERT_EVENT_MAX_FLATTEN_DEPTH = 3
 ALERT_EVENT_MAX_COLUMNS = 20
 ALERT_EVENT_MAX_CELL_LENGTH = 300
+VENDOR_ALERT_EVENT_TIMESTAMP_COLUMN = "Timestamp"
+VENDOR_ALERT_EVENT_SOURCE_COLUMN = "Source"
+VENDOR_ALERT_EVENT_LOG_COLUMN = "Log"
+VENDOR_ALERT_EVENT_COLUMNS = frozenset(
+    {
+        VENDOR_ALERT_EVENT_TIMESTAMP_COLUMN,
+        VENDOR_ALERT_EVENT_SOURCE_COLUMN,
+        VENDOR_ALERT_EVENT_LOG_COLUMN,
+    }
+)
+VENDOR_ALERT_EVENT_PROMOTED_KEYS = frozenset({"timestamp", "SourceVendors"})
 ALERT_EVENT_PREFERRED_COLUMNS: tuple[str, ...] = (
+    VENDOR_ALERT_EVENT_TIMESTAMP_COLUMN,
+    VENDOR_ALERT_EVENT_SOURCE_COLUMN,
+    VENDOR_ALERT_EVENT_LOG_COLUMN,
     "timestamp",
     "index_timestamp",
     "timeframe",
@@ -413,10 +428,13 @@ UPDATE_DETECTIONS_MUTATION = (
 )
 
 GET_ALERTS_EVENTS_QUERY = (
-    "query GetAlertsEvents($alertId: ID!, $limit: Int, $offset: Int) { "
-    " getAlertsEvents(alertId: $alertId, limit: $limit, offset: $offset) { "
+    "query GetAlertsEvents($alertId: ID, $alertIds: [ID!], $limit: Int, $offset: Int) { "
+    " getAlertsEvents(alertId: $alertId, alertIds: $alertIds, limit: $limit, offset: $offset) { "
     "  total limit offset results "
-    "  error { code message } } }"
+    "  error { code message } "
+    "  alerts { "
+    "   alertId total results "
+    "   error { code message } } } }"
 )
 # ? ---------------------------- GRAPHQL QUERIES --------------------------------------
 
@@ -766,6 +784,21 @@ def _build_incidents_query_variables(
     if incident_ids:
         variables["incidentIds"] = incident_ids
     return variables
+
+
+def _normalize_alert_event_ids(alert_id: str | None = None, alert_ids: list[str] | None = None) -> list[str]:
+    """Return unique alert IDs for getAlertsEvents, capped at MAX_ALERT_EVENTS_IDS."""
+    collected: list[str] = []
+    if alert_ids:
+        collected.extend(str(item).strip() for item in alert_ids if str(item).strip())
+    if alert_id is not None and str(alert_id).strip():
+        collected.append(str(alert_id).strip())
+    unique_ids = list(dict.fromkeys(collected))
+    if not unique_ids:
+        raise DemistoException("At least one alert ID is required to fetch alert events.")
+    if len(unique_ids) > MAX_ALERT_EVENTS_IDS:
+        raise DemistoException(f"A maximum of {MAX_ALERT_EVENTS_IDS} alert IDs can be requested per getAlertsEvents call.")
+    return unique_ids
 
 
 def _validate_test_connection_roles(get_access_key: dict[str, Any]) -> None:
@@ -1137,24 +1170,33 @@ class Client(BaseClient):
         result = data.get("getIncidentTimeline") or {}
         return result if isinstance(result, dict) else {}
 
-    def get_alert_events(self, alert_id: str, limit: int | None = None, offset: int = 0) -> dict:
-        """Fetch aggregated alert events for a Vega alert.
+    def get_alert_events(
+        self,
+        alert_id: str | None = None,
+        limit: int | None = None,
+        offset: int = 0,
+        alert_ids: list[str] | None = None,
+    ) -> dict:
+        """Fetch aggregated alert events for one or more Vega alerts.
 
         Args:
-            alert_id: Vega alert ID.
+            alert_id: Single Vega alert ID. Combined with alert_ids when both are set.
             limit: Maximum number of events per request.
-            offset: Pagination offset.
+            offset: Pagination offset applied to the request.
+            alert_ids: Vega alert IDs. At most MAX_ALERT_EVENTS_IDS (10) IDs are accepted.
 
         Returns:
-            The getAlertsEvents response data.
+            The getAlertsEvents response data, including per-alert results under alerts.
         """
-        variables: dict[str, Any] = {"alertId": alert_id, "offset": offset}
+        ids = _normalize_alert_event_ids(alert_id, alert_ids)
+        variables: dict[str, Any] = {"alertIds": ids, "offset": offset}
         if limit is not None:
             variables["limit"] = limit
 
         response = self._graphql_request(GET_ALERTS_EVENTS_QUERY, variables)
         data = response.get("data") or {}
-        return data.get("getAlertsEvents") or {}
+        result = data.get("getAlertsEvents") or {}
+        return result if isinstance(result, dict) else {}
 
     def set_detections_state(self, detection_ids: list[str], state: str) -> dict:
         """Set the state for one or more Vega detections."""
@@ -1189,8 +1231,57 @@ def _event_has_bad_alert_events_shape(event: dict) -> bool:
 
 
 def _events_have_bad_alert_events_shape(events: list[dict]) -> bool:
-    """Return True when getAlertsEvents results contain vendor raw rows instead of alert events."""
+    """Return True when getAlertsEvents results contain vendor raw rows identified by cid/eid."""
     return any(_event_has_bad_alert_events_shape(event) for event in events)
+
+
+def _format_vendor_alert_event_timestamp(value: Any) -> str:
+    """Format a vendor alert-event timestamp for the Timestamp column."""
+    if isinstance(value, bool) or value is None:
+        return ""
+    if isinstance(value, int | float):
+        numeric = float(value)
+    else:
+        text = str(value).strip()
+        if not text:
+            return ""
+        try:
+            numeric = float(text)
+        except ValueError:
+            return text
+    if abs(numeric) >= 1_000_000_000_000:
+        numeric = numeric / 1000.0
+    try:
+        parsed = datetime.fromtimestamp(numeric, tz=UTC)
+    except (OverflowError, OSError, ValueError):
+        return str(value).strip()
+    return parsed.strftime("%m/%d/%y %H:%M:%S")
+
+
+def _format_vendor_alert_event_source(value: Any) -> str:
+    """Format SourceVendors for the Source column."""
+    if value is None:
+        return ""
+    if isinstance(value, list):
+        return ", ".join(str(item).strip() for item in value if str(item).strip())
+    return str(value).strip()
+
+
+def _vendor_alert_event_log(event: dict[str, Any]) -> str:
+    """Serialize every vendor-row field except the Timestamp and Source columns."""
+    log_fields = {key: value for key, value in event.items() if key not in VENDOR_ALERT_EVENT_PROMOTED_KEYS}
+    return json.dumps(log_fields, ensure_ascii=False, default=str, separators=(",", ":"))
+
+
+def _reshape_vendor_raw_alert_event(event: dict[str, Any]) -> dict[str, Any]:
+    """Map a cid/eid vendor row to Timestamp, Source, and Log columns."""
+    if not _event_has_bad_alert_events_shape(event):
+        return event
+    return {
+        VENDOR_ALERT_EVENT_TIMESTAMP_COLUMN: _format_vendor_alert_event_timestamp(event.get("timestamp")),
+        VENDOR_ALERT_EVENT_SOURCE_COLUMN: _format_vendor_alert_event_source(event.get("SourceVendors")),
+        VENDOR_ALERT_EVENT_LOG_COLUMN: _vendor_alert_event_log(event),
+    }
 
 
 def _parse_alert_events_results(results: Any) -> list[dict]:
@@ -1441,7 +1532,7 @@ def _enrich_alert_events(events: list[dict]) -> list[dict]:
     return [_enrich_alert_event(event) for event in events]
 
 
-def _format_alert_events_cell_value(value: Any) -> str:
+def _format_alert_events_cell_value(value: Any, *, max_length: int | None = ALERT_EVENT_MAX_CELL_LENGTH) -> str:
     """Format a single alert-event table cell for markdown display."""
     if value is None:
         return "—"
@@ -1451,8 +1542,8 @@ def _format_alert_events_cell_value(value: Any) -> str:
         text = str(value).strip()
     if not text:
         return "—"
-    if len(text) > ALERT_EVENT_MAX_CELL_LENGTH:
-        return f"{text[: ALERT_EVENT_MAX_CELL_LENGTH - 3]}..."
+    if max_length is not None and len(text) > max_length:
+        return f"{text[: max_length - 3]}..."
     return text
 
 
@@ -1497,6 +1588,9 @@ def _normalize_alert_event_for_display(event: dict) -> dict[str, Any]:
     flattened: dict[str, Any] = {}
     for key, value in event.items():
         key_name = str(key)
+        if key_name == VENDOR_ALERT_EVENT_LOG_COLUMN:
+            flattened[key_name] = value
+            continue
         parsed_value = _try_parse_json_value(value)
 
         if key_name in ALERT_EVENT_JSON_TRUNCATE_KEYS:
@@ -1526,7 +1620,7 @@ def _collect_alert_event_columns(normalized_events: list[dict[str, Any]]) -> lis
     discovered: set[str] = set()
     for event in normalized_events:
         for key, value in event.items():
-            if _format_alert_events_cell_value(value) != "—":
+            if key in VENDOR_ALERT_EVENT_COLUMNS or _format_alert_events_cell_value(value) != "—":
                 discovered.add(key)
 
     if not discovered:
@@ -1545,7 +1639,13 @@ def _alert_events_table_rows(events: list[dict]) -> tuple[list[str], list[dict[s
 
     rows: list[dict[str, str]] = []
     for normalized_event in normalized_events:
-        row = {header: _format_alert_events_cell_value(normalized_event.get(header)) for header in headers}
+        row = {
+            header: _format_alert_events_cell_value(
+                normalized_event.get(header),
+                max_length=None if header == VENDOR_ALERT_EVENT_LOG_COLUMN else ALERT_EVENT_MAX_CELL_LENGTH,
+            )
+            for header in headers
+        }
         rows.append(row)
     return headers, rows
 
@@ -1560,7 +1660,8 @@ def _format_alert_events_markdown(
     if not events:
         return f"### Alert Events ({total})\n\nNo alert events are available for this alert."
 
-    headers, rows = _alert_events_table_rows(events)
+    display_events = [_reshape_vendor_raw_alert_event(event) for event in events]
+    headers, rows = _alert_events_table_rows(display_events)
     if not headers:
         return f"### Alert Events ({total})\n\nNo displayable alert event fields were found in the Vega response."
 
@@ -1607,6 +1708,39 @@ def build_alert_events_custom_fields(
     return custom_fields
 
 
+def _select_alert_events_payload(response: dict[str, Any], alert_id: str) -> dict[str, Any]:
+    """Return the per-alert getAlertsEvents entry when the response includes alerts."""
+    alerts = response.get("alerts")
+    if not isinstance(alerts, list) or not alerts:
+        return response
+    wanted = str(alert_id).strip()
+    for item in alerts:
+        if isinstance(item, dict) and str(item.get("alertId") or "").strip() == wanted:
+            return item
+    return {"alertId": wanted, "total": 0, "results": []}
+
+
+def _raise_alert_events_api_error(payload: dict[str, Any]) -> None:
+    """Raise when a getAlertsEvents payload reports an API error message."""
+    api_error = payload.get("error")
+    if isinstance(api_error, dict) and api_error.get("message"):
+        raise DemistoException(f"Vega API error: {api_error.get('message')}")
+
+
+def _alert_events_page_from_payload(payload: dict[str, Any]) -> tuple[list[dict], int]:
+    """Parse one getAlertsEvents payload into enriched events and a total count."""
+    total_raw = payload.get("total")
+    try:
+        total = int(total_raw) if total_raw is not None else 0
+    except (TypeError, ValueError):
+        total = 0
+
+    events = _enrich_alert_events(_parse_alert_events_results(payload.get("results")))
+    if total == 0 and events:
+        total = len(events)
+    return events, total
+
+
 def fetch_alert_events_page(
     client: Client,
     alert_id: str,
@@ -1615,20 +1749,11 @@ def fetch_alert_events_page(
 ) -> tuple[list[dict], int]:
     """Fetch a single page of alert events from the Vega API."""
     response = client.get_alert_events(alert_id, limit=limit, offset=offset)
-    api_error = response.get("error")
-    if isinstance(api_error, dict) and api_error.get("message"):
-        raise DemistoException(f"Vega API error: {api_error.get('message')}")
-
-    total_raw = response.get("total")
-    try:
-        total = int(total_raw) if total_raw is not None else 0
-    except (TypeError, ValueError):
-        total = 0
-
-    events = _enrich_alert_events(_parse_alert_events_results(response.get("results")))
-    if total == 0 and events:
-        total = len(events)
-    return events, total
+    if not isinstance(response, dict):
+        response = {}
+    payload = _select_alert_events_payload(response, alert_id)
+    _raise_alert_events_api_error(payload)
+    return _alert_events_page_from_payload(payload)
 
 
 def fetch_all_alert_events(
@@ -1643,8 +1768,6 @@ def fetch_all_alert_events(
 
     while True:
         page_events, page_total = fetch_alert_events_page(client, alert_id, limit=page_limit, offset=offset)
-        if page_events and _events_have_bad_alert_events_shape(page_events):
-            return [], 0
         if page_total > 0:
             total = page_total
         if not page_events:
@@ -1662,22 +1785,128 @@ def fetch_all_alert_events(
     return events, total
 
 
+def _advance_alert_events_state(
+    state: dict[str, Any],
+    page_events: list[dict],
+    page_total: int,
+    page_limit: int,
+) -> None:
+    """Merge one page into an in-progress alert-events fetch state."""
+    if page_total > 0:
+        state["total"] = page_total
+    if not page_events:
+        state["done"] = True
+        return
+
+    state["events"].extend(page_events)
+    offset = int(state["offset"])
+    total = int(state["total"] or 0)
+    if total and offset + len(page_events) >= total:
+        state["done"] = True
+        return
+    if len(page_events) < page_limit:
+        state["done"] = True
+        return
+    state["offset"] = offset + len(page_events)
+
+
+def fetch_all_alert_events_by_ids(
+    client: Client,
+    alert_ids: list[str],
+    page_limit: int = DEFAULT_ALERT_EVENTS_PAGE_SIZE,
+) -> dict[str, tuple[list[dict], int]]:
+    """Fetch all alert events for up to 10 alert IDs per getAlertsEvents request."""
+    ids = _normalize_alert_event_ids(alert_ids=alert_ids)
+    states: dict[str, dict[str, Any]] = {alert_id: {"events": [], "offset": 0, "total": 0, "done": False} for alert_id in ids}
+
+    while True:
+        active = [alert_id for alert_id, state in states.items() if not state["done"]]
+        if not active:
+            break
+
+        offset_groups: dict[int, list[str]] = {}
+        for alert_id in active:
+            offset_groups.setdefault(int(states[alert_id]["offset"]), []).append(alert_id)
+
+        offset = min(offset_groups)
+        group = offset_groups[offset][:MAX_ALERT_EVENTS_IDS]
+        response = client.get_alert_events(alert_ids=group, limit=page_limit, offset=offset)
+        if not isinstance(response, dict):
+            response = {}
+
+        for alert_id in group:
+            payload = _select_alert_events_payload(response, alert_id)
+            try:
+                _raise_alert_events_api_error(payload)
+            except DemistoException as exc:
+                demisto.debug(f"Vega: skipped alert events fetch for {alert_id}: {exc}")
+                states[alert_id]["events"] = []
+                states[alert_id]["total"] = 0
+                states[alert_id]["done"] = True
+                continue
+            page_events, page_total = _alert_events_page_from_payload(payload)
+            _advance_alert_events_state(states[alert_id], page_events, page_total, page_limit)
+
+    fetched: dict[str, tuple[list[dict], int]] = {}
+    for alert_id, state in states.items():
+        events = state["events"]
+        total = int(state["total"] or 0)
+        if total == 0:
+            total = len(events)
+        fetched[alert_id] = (events, total)
+    return fetched
+
+
 def _fetch_alert_events_for_ingest(client: Client, alert_id: str) -> tuple[list[dict], dict[str, Any]]:
     """Fetch alert events for a Vega alert during incident ingest."""
     alert_id = str(alert_id).strip()
     try:
         all_events, total = fetch_all_alert_events(client, alert_id, page_limit=DEFAULT_ALERT_EVENTS_PAGE_SIZE)
-        events_markdown, offset, _, has_alert_events = _resolve_alert_events_page(
-            all_events,
-            total,
-            offset=0,
-            page_limit=DEFAULT_ALERT_EVENTS_PAGE_SIZE,
-        )
-        custom_fields = build_alert_events_custom_fields(alert_id, events_markdown, total, offset)
-        return (all_events if has_alert_events else []), custom_fields
+        return _alert_events_ingest_result(alert_id, all_events, total)
     except Exception as exc:
         demisto.debug(f"Vega: skipped alert events fetch for {alert_id}: {exc}")
         return [], build_alert_events_custom_fields(alert_id, ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN, 0, 0)
+
+
+def _alert_events_ingest_result(alert_id: str, all_events: list[dict], total: int) -> tuple[list[dict], dict[str, Any]]:
+    """Build the ingest event list and custom fields for one alert."""
+    events_markdown, offset, _, has_alert_events = _resolve_alert_events_page(
+        all_events,
+        total,
+        offset=0,
+        page_limit=DEFAULT_ALERT_EVENTS_PAGE_SIZE,
+    )
+    custom_fields = build_alert_events_custom_fields(alert_id, events_markdown, total, offset)
+    return (all_events if has_alert_events else []), custom_fields
+
+
+def _fetch_alert_events_for_ids(client: Client, alert_ids: list[str]) -> dict[str, tuple[list[dict], dict[str, Any]]]:
+    """Fetch alert events for ingest in batches of at most 10 alert IDs."""
+    results: dict[str, tuple[list[dict], dict[str, Any]]] = {}
+    unique_ids = list(dict.fromkeys(str(alert_id).strip() for alert_id in alert_ids if str(alert_id).strip()))
+    for start in range(0, len(unique_ids), MAX_ALERT_EVENTS_IDS):
+        chunk = unique_ids[start : start + MAX_ALERT_EVENTS_IDS]
+        try:
+            fetched = fetch_all_alert_events_by_ids(client, chunk, page_limit=DEFAULT_ALERT_EVENTS_PAGE_SIZE)
+        except Exception as exc:
+            demisto.debug(f"Vega: skipped alert events fetch for {', '.join(chunk)}: {exc}")
+            for alert_id in chunk:
+                results[alert_id] = (
+                    [],
+                    build_alert_events_custom_fields(alert_id, ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN, 0, 0),
+                )
+            continue
+        for alert_id in chunk:
+            all_events, total = fetched.get(alert_id, ([], 0))
+            try:
+                results[alert_id] = _alert_events_ingest_result(alert_id, all_events, total)
+            except Exception as exc:
+                demisto.debug(f"Vega: skipped alert events fetch for {alert_id}: {exc}")
+                results[alert_id] = (
+                    [],
+                    build_alert_events_custom_fields(alert_id, ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN, 0, 0),
+                )
+    return results
 
 
 def _collect_incident_custom_fields(incident: dict[str, Any]) -> dict[str, Any]:
@@ -1763,8 +1992,7 @@ def _resolve_alert_events_page(
     page_limit: int,
 ) -> tuple[str, int, list[dict], bool]:
     """Resolve pagination state and markdown for alert events."""
-    has_alert_events = bool(all_events) and not _events_have_bad_alert_events_shape(all_events)
-    if not has_alert_events:
+    if not all_events:
         return ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN, 0, [], False
 
     if offset >= total and total > 0:
@@ -1775,13 +2003,17 @@ def _resolve_alert_events_page(
     return events_markdown, offset, page_events, True
 
 
-def fetch_alert_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Fetch alert events for a Vega alert and return a markdown table for the layout section."""
+def fetch_alert_events_command(client: Client, args: dict[str, Any]) -> CommandResults | list[CommandResults]:
+    """Fetch alert events for up to 10 Vega alerts and return markdown tables for the layout section."""
     incident = load_current_incident()
     custom_fields = _collect_incident_custom_fields(incident)
 
-    alert_id = resolve_alert_id_from_incident(args, incident)
-    if not alert_id:
+    alert_ids = _collect_alert_ids_from_args(args)
+    if not alert_ids:
+        resolved_alert_id = resolve_alert_id_from_incident(args, incident)
+        if resolved_alert_id:
+            alert_ids = [resolved_alert_id]
+    if not alert_ids:
         incident_type = str(incident.get("type") or incident.get("Type") or "unknown")
         incident_id = incident.get("id") or "none"
         raise DemistoException(
@@ -1789,8 +2021,9 @@ def fetch_alert_events_command(client: Client, args: dict[str, Any]) -> CommandR
             f"Could not resolve alert ID from incident id={incident_id}, type={incident_type}. "
             "Open a Vega Alert investigation or pass alert_id explicitly."
         )
+    if len(alert_ids) > MAX_ALERT_EVENTS_IDS:
+        raise DemistoException(f"A maximum of {MAX_ALERT_EVENTS_IDS} alert IDs can be requested.")
 
-    alert_id = str(alert_id).strip()
     offset = arg_to_number(args.get("offset"))
     if offset is None:
         offset = arg_to_number(custom_fields.get("vegaalerteventsoffset")) or 0
@@ -1799,9 +2032,30 @@ def fetch_alert_events_command(client: Client, args: dict[str, Any]) -> CommandR
     page_limit = arg_to_number(args.get("limit")) or DEFAULT_ALERT_EVENTS_PAGE_SIZE
     page_limit = max(1, int(page_limit))
 
-    all_events, total = fetch_all_alert_events(client, alert_id, page_limit=page_limit)
-    events_markdown, offset, page_events, has_alert_events = _resolve_alert_events_page(all_events, total, offset, page_limit)
+    if len(alert_ids) == 1:
+        return _alert_events_command_for_id(client, alert_ids[0], offset, page_limit)
 
+    fetched = fetch_all_alert_events_by_ids(client, alert_ids, page_limit=page_limit)
+    return [
+        _alert_events_command_for_fetched(alert_id, fetched.get(alert_id, ([], 0)), offset, page_limit) for alert_id in alert_ids
+    ]
+
+
+def _alert_events_command_for_id(client: Client, alert_id: str, offset: int, page_limit: int) -> CommandResults:
+    """Fetch and format alert events for a single Vega alert."""
+    all_events, total = fetch_all_alert_events(client, alert_id, page_limit=page_limit)
+    return _alert_events_command_for_fetched(alert_id, (all_events, total), offset, page_limit)
+
+
+def _alert_events_command_for_fetched(
+    alert_id: str,
+    fetched: tuple[list[dict], int],
+    offset: int,
+    page_limit: int,
+) -> CommandResults:
+    """Format one alert's fetched events as a command result."""
+    all_events, total = fetched
+    events_markdown, offset, page_events, has_alert_events = _resolve_alert_events_page(all_events, total, offset, page_limit)
     persisted_fields = build_alert_events_custom_fields(alert_id, events_markdown, total, offset)
     return _alert_events_command_results(
         events_markdown,
@@ -3506,6 +3760,7 @@ def alert_to_incident(
     alert: dict,
     integration_url: str | None = None,
     client: Client | None = None,
+    prefetched_alert_events: tuple[list[dict], dict[str, Any]] | None = None,
 ) -> dict:
     """Convert a Vega alert to an XSOAR incident."""
     raw = dict(alert)
@@ -3513,7 +3768,11 @@ def alert_to_incident(
     raw.update(_get_mirroring_fields())
     _apply_mirror_metadata(raw, MIRROR_ENTITY_SUFFIX_ALERT)
     _apply_vega_entity_link(raw, integration_url=integration_url)
-    if client is not None:
+    if prefetched_alert_events is not None:
+        alert_events, event_custom_fields = prefetched_alert_events
+        raw["alertEvents"] = alert_events
+        raw["_alertEventsCustomFields"] = event_custom_fields
+    elif client is not None:
         alert_id = _normalize_entity_id(raw)
         if alert_id:
             alert_events, event_custom_fields = _fetch_alert_events_for_ingest(client, alert_id)
@@ -5453,6 +5712,7 @@ def _ingest_fetched_alerts(
 
         current_cycle_ids = list(next_run.get("alerts_last_ids", []))
 
+        pending_alerts: list[tuple[str, dict]] = []
         for alert in alerts:
             alert_id = _normalize_entity_id(alert)
             if not alert_id:
@@ -5471,7 +5731,17 @@ def _ingest_fetched_alerts(
                 continue
 
             new_ids.append(alert_id)
-            xsoar_incidents.append(alert_to_incident(alert, integration_url=integration_url, client=client))
+            pending_alerts.append((alert_id, alert))
+
+        prefetched_events = _fetch_alert_events_for_ids(client, new_ids)
+        for alert_id, alert in pending_alerts:
+            xsoar_incidents.append(
+                alert_to_incident(
+                    alert,
+                    integration_url=integration_url,
+                    prefetched_alert_events=prefetched_events.get(alert_id),
+                )
+            )
             ingested.append(alert)
 
         next_run["alerts_last_ids"] = list(set(current_cycle_ids))
