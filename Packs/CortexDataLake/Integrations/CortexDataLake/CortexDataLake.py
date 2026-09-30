@@ -98,6 +98,26 @@ MIGRATED_SLS_URL_BY_ORIGINAL_URL = {
     "https://api.sg1.se1.cdl.paloaltonetworks.com": "https://read-api.sg1.prd.strata.logging.paloaltonetworks.com",
     # uk
     "https://api.uk.cdl.paloaltonetworks.com": "https://read-api.uk1.prd.strata.logging.paloaltonetworks.com",
+    # es
+    "https://api.es1.sw1.cdl.paloaltonetworks.com": "https://read-api.es1.prd.strata.logging.paloaltonetworks.com",
+    # pl
+    "https://api.pl1.ec2.cdl.paloaltonetworks.com": "https://read-api.pl1.prd.strata.logging.paloaltonetworks.com",
+    # kr
+    "https://api.kr1.ne3.cdl.paloaltonetworks.com": "https://read-api.kr1.prd.strata.logging.paloaltonetworks.com",
+    # it
+    "https://api.it1.ew8.cdl.paloaltonetworks.com": "https://read-api.it1.prd.strata.logging.paloaltonetworks.com",
+    # il
+    "https://api.il1.mw1.cdl.paloaltonetworks.com": "https://read-api.il1.prd.strata.logging.paloaltonetworks.com",
+    # qa
+    "https://api.qa1.mc1.cdl.paloaltonetworks.com": "https://read-api.qa1.prd.strata.logging.paloaltonetworks.com",
+    # ch
+    "https://api.ch1.ew6.cdl.paloaltonetworks.com": "https://read-api.ch1.prd.strata.logging.paloaltonetworks.com",
+    # sa
+    "https://api.sa1.mc2.cdl.paloaltonetworks.com": "https://read-api.sa1.prd.strata.logging.paloaltonetworks.com",
+    # tw
+    "https://api.tw1.ae1.cdl.paloaltonetworks.com": "https://read-api.tw1.prd.strata.logging.paloaltonetworks.com",
+    # za
+    "https://api.za1.as1.cdl.paloaltonetworks.com": "https://read-api.za1.prd.strata.logging.paloaltonetworks.com",
 }
 URL_REACHABILITY_TIMEOUT = 10
 
