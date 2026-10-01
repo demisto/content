@@ -1,5 +1,4 @@
 Use TypeSafe Jev typed judgments and calibrated probabilities in Cortex XSIAM and XSOAR playbooks.
-This integration was integrated and tested with version xx of TypeSafe Jev.
 
 ## Configure TypeSafe Jev in Cortex
 
