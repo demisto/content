@@ -48,7 +48,7 @@ class Client(ContentClient):
             json_data=payload,
             resp_type="json",
             retries=3,
-            status_list_to_retry=(429, 529),
+            status_list_to_retry=(429, 529),  # type: ignore[arg-type]
             backoff_factor=1,
         )
 
@@ -58,7 +58,7 @@ class Client(ContentClient):
             url_suffix="/v1/models",
             resp_type="json",
             retries=3,
-            status_list_to_retry=(429, 529),
+            status_list_to_retry=(429, 529),  # type: ignore[arg-type]
             backoff_factor=1,
         )
 
@@ -257,7 +257,7 @@ def main() -> None:
         model=selected_model,
         verify=not params.get("insecure", False),
         proxy=params.get("proxy", False),
-        timeout=arg_to_number(params.get("timeout", 30)),
+        timeout=arg_to_number(params.get("timeout", 30)),  # type: ignore[arg-type]
     )
 
     command = demisto.command()
