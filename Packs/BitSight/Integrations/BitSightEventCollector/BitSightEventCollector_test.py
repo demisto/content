@@ -271,6 +271,8 @@ class TestBitSightEventCollector:
         mock_client.get_company_findings.assert_called_once_with(
             "test-guid", first_seen_gte="2024-01-15", last_seen_lte="2024-01-16", limit=100, offset=10
         )
+        # New findings should be tracked for de-duplication
+        assert len(new_last_run["already_fetched_findings"]) == 2
 
     def test_fetch_events_no_results(self, mock_client, mocker):
         """
@@ -478,6 +480,7 @@ class TestBitSightEventCollector:
             "last_seen_lte": "2024-01-16",
             "unsampled": "true",
             "expand": "attributed_companies",
+            "sort": "first_seen",
             "limit": 100,
             "offset": 0,
         }
@@ -485,3 +488,57 @@ class TestBitSightEventCollector:
         mock_client._http_request.assert_called_once_with(
             method="GET", url_suffix="v1/companies/test-guid/findings", params=expected_params
         )
+
+    def test_fetch_events_skips_already_fetched_findings(self, mock_client, mocker):
+        """
+        Given: last_run already contains a finding key (rolledup_observation_id-#-first_seen)
+
+        When: The API returns that same finding again alongside a new one
+
+        Then: The already-seen finding is skipped and only the new finding is returned,
+              while the offset still advances by the raw number of findings returned.
+        """
+        findings = [
+            {"rolledup_observation_id": "SEEN==", "first_seen": "2026-09-01", "risk_vector": "web_appsec"},
+            {"rolledup_observation_id": "NEW==", "first_seen": "2026-09-01", "risk_vector": "web_appsec"},
+        ]
+        mocker.patch.object(mock_client, "get_company_findings", return_value={"results": findings})
+
+        last_run = {
+            "first_fetch": "2026-09-01",
+            "offset": 5,
+            "already_fetched_findings": ["SEEN==-#-2026-09-01"],
+        }
+
+        with freeze_time("2026-09-02 12:00:00"):
+            events, new_last_run, _ = fetch_events(client=mock_client, guid="test-guid", max_fetch=100, last_run=last_run)
+
+        # Only the new finding is emitted
+        assert len(events) == 1
+        assert events[0]["rolledup_observation_id"] == "NEW=="
+        # Offset advances by RAW findings (2), not by de-duplicated events (1)
+        assert new_last_run["offset"] == 7
+        # Both keys are now tracked
+        assert set(new_last_run["already_fetched_findings"]) == {"SEEN==-#-2026-09-01", "NEW==-#-2026-09-01"}
+
+    def test_fetch_events_new_finding_not_skipped(self, mock_client, mocker):
+        """
+        Given: A previously-unseen finding (the XSUP-77274 'GK4e' scenario)
+
+        When: fetch_events runs with an empty dedup set
+
+        Then: The finding is emitted and its key is recorded for future de-duplication.
+        """
+        findings = [
+            {"rolledup_observation_id": "GK4e==", "first_seen": "2026-09-01", "risk_vector": "web_appsec"},
+        ]
+        mocker.patch.object(mock_client, "get_company_findings", return_value={"results": findings})
+
+        last_run = {"first_fetch": "2026-09-01", "offset": 0, "already_fetched_findings": []}
+
+        with freeze_time("2026-09-02 12:00:00"):
+            events, new_last_run, _ = fetch_events(client=mock_client, guid="test-guid", max_fetch=100, last_run=last_run)
+
+        assert len(events) == 1
+        assert events[0]["rolledup_observation_id"] == "GK4e=="
+        assert new_last_run["already_fetched_findings"] == ["GK4e==-#-2026-09-01"]
