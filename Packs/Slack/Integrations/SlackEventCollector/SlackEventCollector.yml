@@ -97,6 +97,7 @@ script:
   type: python
   subtype: python3
   isfetchevents: true
+  Spec: l
   dockerimage: demisto/python3:3.12.13.10116658
 marketplaces:
 - marketplacev2

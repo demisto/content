@@ -1288,51 +1288,37 @@ def test_fetch_events_no_oldest_arg_skips_range_validation(mocker):
     assert [e["id"] for e in events] == ["a"]
 
 
-def test_fetch_events_sets_next_trigger_when_limit_reached(mocker):
+THREE_EVENTS_PAGE = [{"id": "3", "date_create": 300}, {"id": "2", "date_create": 200}, {"id": "1", "date_create": 100}]
+FETCH_PARAMS = {"url": "https://api.slack.com/audit/v1/", "user_token": {"password": "token"}, "limit": "2", "oldest": "100"}
+
+
+@pytest.mark.parametrize(
+    "limit, page_events, incoming_last_run, expected_next_trigger",
+    [
+        (2, THREE_EVENTS_PAGE, {}, "1"),
+        (2, THREE_EVENTS_PAGE, {"nextTrigger": "0"}, "1"),
+        (10, [{"id": "1", "date_create": 100}], {}, None),
+        (10, [{"id": "1", "date_create": 100}], {"nextTrigger": "1"}, None),
+        (10, [], {"nextTrigger": "1"}, None),
+    ],
+    ids=[
+        "full_batch_sets_next_trigger",
+        "full_batch_replaces_legacy_zero",
+        "caught_up_no_next_trigger",
+        "caught_up_clears_stale_next_trigger",
+        "empty_window_clears_stale_next_trigger",
+    ],
+)
+def test_fetch_events_next_trigger(mocker, limit, page_events, incoming_last_run, expected_next_trigger):
     """
     Given:
-        - A window holding more events than the limit (limit=2, three new events available).
+        - A fetch run that either fills the limit (backlog remains), is caught up, or finds no events,
+          optionally with a lastRun that still carries a nextTrigger from a previous run (including the
+          legacy "0" written by an earlier build).
     When:
         - Running fetch_events_command (the automated collector).
     Then:
-        - The run fills the limit (there are still more events to drain), so lastRun carries
-          nextTrigger=0, instructing the platform to re-invoke fetch-events immediately instead
-          of waiting for the next scheduled interval. (Regression guard for the backlog-stall
-          timeout: a busy backlog must keep draining across back-to-back runs.)
-    """
-    from SlackEventCollector import fetch_events_command
-
-    mocker.patch("SlackEventCollector.get_now_timestamp", return_value=1000)
-    mocker.patch.object(
-        Client,
-        "_http_request",
-        return_value=make_page(
-            [
-                {"id": "3", "date_create": 300},
-                {"id": "2", "date_create": 200},
-                {"id": "1", "date_create": 100},
-            ]
-        ),
-    )
-    events, last_run = fetch_events_command(
-        Client(base_url=""),
-        params={"limit": 2, "oldest": "100"},
-        last_run={},
-    )
-
-    assert len(events) == 2  # a full batch was returned
-    assert last_run.get("nextTrigger") == "0"  # more events remain -> re-trigger immediately
-
-
-def test_fetch_events_clears_next_trigger_when_caught_up(mocker):
-    """
-    Given:
-        - A window holding fewer events than the limit (limit=10, one event available), and a
-          lastRun that still carries a stale nextTrigger from a previous busy run.
-    When:
-        - Running fetch_events_command.
-    Then:
-        - The run does NOT fill the limit (caught up), so nextTrigger is cleared and the
+        - A full batch sets nextTrigger to the string "1"; otherwise nextTrigger is removed so the
           collector reverts to its normal fetch interval.
     """
     from SlackEventCollector import fetch_events_command
@@ -1341,16 +1327,101 @@ def test_fetch_events_clears_next_trigger_when_caught_up(mocker):
     # The mock returns the same page regardless of oldest/latest, so keep the whole
     # [oldest, now] range inside a single window (one API query) to match that assumption.
     mocker.patch("SlackEventCollector.Config.DEFAULT_MAX_FETCH_WINDOW", 10_000)
-    mocker.patch.object(
-        Client,
-        "_http_request",
-        return_value=make_page([{"id": "1", "date_create": 100}]),
-    )
+    mocker.patch.object(Client, "_http_request", return_value=make_page(page_events))
+
     events, last_run = fetch_events_command(
         Client(base_url=""),
-        params={"limit": 10, "oldest": "100"},
-        last_run={"nextTrigger": "0"},
+        params={"limit": limit, "oldest": "100"},
+        last_run=dict(incoming_last_run),
     )
 
-    assert len(events) == 1  # fewer than the limit -> caught up
-    assert "nextTrigger" not in last_run  # stale nextTrigger cleared
+    assert len(events) == min(limit, len(page_events))
+    assert last_run.get("nextTrigger") == expected_next_trigger
+
+
+def test_fetch_events_next_trigger_stored_with_advanced_position(mocker):
+    """
+    Given:
+        - A window holding more events than the limit (limit=2, three events available).
+    When:
+        - Running fetch_events_command.
+    Then:
+        - The single returned lastRun carries BOTH the advanced fetch position (last_fetched_time and
+          last_fetched_ids of the newest SENT event) and nextTrigger="1", and it is the same dict the
+          caller passed in, so main() persists one consistent object.
+    """
+    from SlackEventCollector import fetch_events_command
+
+    mocker.patch("SlackEventCollector.get_now_timestamp", return_value=1000)
+    mocker.patch("SlackEventCollector.Config.DEFAULT_MAX_FETCH_WINDOW", 10_000)
+    mocker.patch.object(Client, "_http_request", return_value=make_page(THREE_EVENTS_PAGE))
+    incoming_last_run: dict = {}
+
+    events, last_run = fetch_events_command(Client(base_url=""), params={"limit": 2, "oldest": "100"}, last_run=incoming_last_run)
+
+    assert [e["id"] for e in events] == ["1", "2"]
+    assert last_run is incoming_last_run
+    assert last_run == {"last_fetched_time": 200, "last_fetched_ids": ["2"], "nextTrigger": "1"}
+
+
+def test_main_fetch_events_persists_next_trigger_with_position_after_send(mocker):
+    """
+    Given:
+        - The fetch-events command and a window holding more events than the limit.
+    When:
+        - Running main().
+    Then:
+        - setLastRun is called exactly once, AFTER send_events_to_xsiam, with the advanced position and
+          nextTrigger="1" together, so the re-triggered run starts from the new position.
+    """
+    import SlackEventCollector
+
+    call_order: list[str] = []
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+    mocker.patch.object(demisto, "params", return_value=dict(FETCH_PARAMS))
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    set_last_run = mocker.patch.object(demisto, "setLastRun", side_effect=lambda _: call_order.append("setLastRun"))
+    send = mocker.patch.object(
+        SlackEventCollector, "send_events_to_xsiam", side_effect=lambda *_, **__: call_order.append("send_events_to_xsiam")
+    )
+    mocker.patch.object(SlackEventCollector, "get_now_timestamp", return_value=1000)
+    mocker.patch.object(SlackEventCollector.Config, "DEFAULT_MAX_FETCH_WINDOW", 10_000)
+    mocker.patch.object(Client, "_http_request", return_value=make_page(THREE_EVENTS_PAGE))
+
+    SlackEventCollector.main()
+
+    assert call_order == ["send_events_to_xsiam", "setLastRun"]
+    assert [e["id"] for e in send.call_args.args[0]] == ["1", "2"]
+    set_last_run.assert_called_once_with({"last_fetched_time": 200, "last_fetched_ids": ["2"], "nextTrigger": "1"})
+
+
+def test_main_fetch_events_does_not_persist_when_send_fails(mocker):
+    """
+    Given:
+        - The fetch-events command, a full batch (nextTrigger would be "1"), and a failing send to XSIAM.
+    When:
+        - Running main().
+    Then:
+        - setLastRun is never called, so neither the advanced position nor nextTrigger is stored and the
+          next run re-collects the same batch (no data loss), and the error is reported.
+    """
+    import SlackEventCollector
+
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+    mocker.patch.object(demisto, "params", return_value=dict(FETCH_PARAMS))
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "error")
+    mocker.patch.object(SlackEventCollector, "send_events_to_xsiam", side_effect=DemistoException("XSIAM unavailable"))
+    return_error = mocker.patch.object(SlackEventCollector, "return_error")
+    mocker.patch.object(SlackEventCollector, "get_now_timestamp", return_value=1000)
+    mocker.patch.object(SlackEventCollector.Config, "DEFAULT_MAX_FETCH_WINDOW", 10_000)
+    mocker.patch.object(Client, "_http_request", return_value=make_page(THREE_EVENTS_PAGE))
+
+    SlackEventCollector.main()
+
+    set_last_run.assert_not_called()
+    return_error.assert_called_once()
+    assert "XSIAM unavailable" in return_error.call_args.args[0]
