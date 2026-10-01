@@ -413,7 +413,7 @@ class TestOAuthHandler:
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
         mock_client.__aexit__ = AsyncMock(return_value=None)
 
-        mocker.patch("MCPApiModule.httpx.AsyncClient", return_value=mock_client)
+        mocker.patch("MCPApiModule.httpx2.AsyncClient", return_value=mock_client)
         mocker.patch("MCPApiModule.demisto.debug")
 
         # The test function is structured to fail with UnboundLocalError
@@ -696,12 +696,13 @@ class TestClient:
         """
         mocker.patch.object(Client, "_resolve_headers", return_value={"Authorization": "Bearer test-token"})
 
-        # Mock the session and its initialize method with proper return values
+        # Mock the session and its initialize method with proper return values.
+        # mcp 2.0 renamed serverInfo -> server_info, so mock the snake_case name.
         mock_session = mocker.MagicMock()
         mock_server_info = Mock()
         mock_server_info.name = "TestServer"
-        mock_init_result = Mock()
-        mock_init_result.serverInfo = mock_server_info
+        mock_init_result = Mock(spec=["server_info"])
+        mock_init_result.server_info = mock_server_info
         mock_session.initialize = mocker.AsyncMock(return_value=mock_init_result)
 
         # Mock tools with proper name attributes
@@ -711,11 +712,12 @@ class TestClient:
         mock_tool2.name = "analysis_tool"
         mock_tools = Mock()
         mock_tools.tools = [mock_tool1, mock_tool2]
+        mock_tools.model_dump.return_value = {"tools": [{"name": "search_tool"}, {"name": "analysis_tool"}]}
         mock_session.list_tools = mocker.AsyncMock(return_value=mock_tools)
 
-        # FIX: Explicitly mock streamablehttp_client context manager return value
+        # mcp 2.0 dropped the get_session_id callback, so the transport yields 2 values.
         mock_streamable_client = mocker.patch("MCPApiModule.streamable_http_client")
-        mock_streamable_client.return_value.__aenter__ = mocker.AsyncMock(return_value=("r", "w", None))
+        mock_streamable_client.return_value.__aenter__ = mocker.AsyncMock(return_value=("r", "w"))
         mock_streamable_client.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
 
         # Mock the ClientSession context manager return value
@@ -730,6 +732,9 @@ class TestClient:
         assert "['search_tool', 'analysis_tool']" in result.readable_output
         assert result.outputs_prefix == "ListTools"
         mock_session.list_tools.assert_called_once()
+        # The wire format must stay camelCase across mcp versions, so the dump has to
+        # be taken with by_alias=True (mcp 2.0 emits snake_case without it).
+        mock_tools.model_dump.assert_called_once_with(mode="json", by_alias=True)
 
     @pytest.mark.asyncio
     async def test_call_tool_success(self, mocker: MockerFixture, mock_client_instance: Client):
@@ -739,14 +744,16 @@ class TestClient:
         Then: Returns a CommandResults object with the tool execution results and NOTE entry type.
         """
         mock_session = mocker.AsyncMock()
-        mock_result = mocker.MagicMock(isError=False)
+        # mcp 2.0 renamed isError -> is_error, so mock the snake_case name.
+        mock_result = mocker.MagicMock(spec=["is_error", "model_dump"])
+        mock_result.is_error = False
         mock_result.model_dump.return_value = {"content": {"status": "ok"}}
         mock_session.call_tool.return_value = mock_result
         mock_session.initialize = mocker.AsyncMock()
 
-        # FIX: Explicitly mock streamablehttp_client context manager return value
+        # mcp 2.0 dropped the get_session_id callback, so the transport yields 2 values.
         mock_streamable_client = mocker.patch("MCPApiModule.streamable_http_client")
-        mock_streamable_client.return_value.__aenter__ = mocker.AsyncMock(return_value=(None, None, None))
+        mock_streamable_client.return_value.__aenter__ = mocker.AsyncMock(return_value=(None, None))
         mock_streamable_client.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
 
         # Mock the ClientSession context manager return value
@@ -762,6 +769,8 @@ class TestClient:
         assert isinstance(result, CommandResults)
         assert result.entry_type == EntryType.NOTE
         mock_session.call_tool.assert_called_once_with("test_tool", {"param1": "value1"})
+        # The wire format must stay camelCase across mcp versions.
+        mock_result.model_dump.assert_called_once_with(mode="json", by_alias=True)
 
 
 # --- Command Function Tests ---
