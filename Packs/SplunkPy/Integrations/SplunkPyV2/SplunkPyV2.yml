@@ -344,7 +344,7 @@ configuration:
   supportedModules:
   - agentix
   - xsiam
-description: Run queries on Splunk and fetch Splunk ES Findings and Investigations (Splunk ES 8.2+).
+description: Run queries on Splunk and fetch Splunk ES Findings and Investigations (Splunk ES 8.2+) and mirror Splunk notes to Cortex XSOAR.
 display: SplunkPy v2
 name: SplunkPy v2
 script:
