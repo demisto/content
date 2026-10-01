@@ -41,7 +41,7 @@ configuration:
   required: false
   section: Connect
   advanced: true
-description: Cloud Security Protection.
+description: Cloud Security Protection and Endpoint Security.
 display: TrendAI™ Deep Security™
 name: Trend Micro Deep Security
 script:

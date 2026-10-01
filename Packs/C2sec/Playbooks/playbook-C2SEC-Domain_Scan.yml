@@ -3,7 +3,7 @@ version: -1
 name: C2SEC-Domain Scan
 fromversion: 5.0.0
 description: |
-  Launches a C2sec scan by domain name and waits for the scan to finish by polling its status in pre-defined intervals.
+  Launches a C2sec scan by domain name and waits for the scan to finish by polling its status in pre-defined intervals and timeout.
 starttaskid: "0"
 tasks:
   "0":

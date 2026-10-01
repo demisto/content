@@ -33,7 +33,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Integration to GitLab API.
+description: Integration to GitLab API and GitLab CI.
 display: GitLab v2
 name: GitLabv2
 script:

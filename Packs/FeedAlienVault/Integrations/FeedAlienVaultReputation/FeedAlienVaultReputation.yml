@@ -81,7 +81,7 @@ configuration:
   name: feedTags
   type: 0
   required: false
-description: Use the AlienVault Reputation feed integration to fetch indicators from the feed.
+description: Use the AlienVault Reputation feed integration to fetch indicators from the feed and add them to the system.
 display: AlienVault Reputation Feed
 name: AlienVault Reputation Feed
 script:

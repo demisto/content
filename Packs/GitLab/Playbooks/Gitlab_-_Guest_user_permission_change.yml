@@ -8,6 +8,7 @@ description: |+
   * Enrichment for Verdict
   * Block IP - Generic v3
   * Block Account - Generic v2
+  * Search Endpoints By IP - Generic v3
 
 starttaskid: "0"
 tasks:
