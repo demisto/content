@@ -1,0 +1,23 @@
+{
+    "name": "Dummy Collector Managed",
+    "description": "Dummy event collector (managed-content pack) that generates fake events for testing managed-content pipelines.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam"
+    ],
+    "managed": true,
+    "source": "agentix"
+}

@@ -1,0 +1,8 @@
+fromversion: 8.4.0
+id: DummyCollector_ParsingRule
+name: Dummy Collector Parsing Rule
+tags: []
+rules: ''
+samples: ''
+supportedModules:
+- xsiam

@@ -1,0 +1,9 @@
+{
+  "feature": "agentix",
+  "packs": [
+    {
+      "id": "DummyCollectorManaged",
+      "version": "1.0.0"
+    }
+  ]
+}
