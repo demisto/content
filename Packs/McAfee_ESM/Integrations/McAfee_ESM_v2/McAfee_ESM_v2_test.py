@@ -142,7 +142,7 @@ def test_edit_case(mocker):
         "url": "https://example.com",
         "insecure": True,
         "credentials": {"identifier": "TEST", "password": "TEST"},
-        "version": "11.3",
+        "version": "11.6.11",
     }
     raw_response_has_event_list = {
         "assignedTo": 8207,
@@ -167,7 +167,7 @@ def test_edit_case(mocker):
         "summary": "ALERT - Scan",
     }
 
-    mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__login", return_value={})
+    mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__set_session", return_value={})
     mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__request", return_value={})
     mocker.patch.object(McAfeeESMClient, "get_case_detail", return_value=("", {}, raw_response_has_event_list))
     try:
@@ -212,7 +212,7 @@ def test_alarm_to_incidents(mocker):
         "url": "https://example.com",
         "insecure": True,
         "credentials": {"identifier": "TEST", "password": "TEST"},
-        "version": "11.3",
+        "version": "11.6.11",
         "fetchTime": create_time_difference_string(days=3, hours=6),
         "startingFetchID": 0,
     }
@@ -240,7 +240,7 @@ def test_alarm_to_incidents(mocker):
         return demisto.setLastRun.call_args[0][0]
 
     mocker.patch("McAfee_ESM_v2.parse_date_range", return_value=["", ""])
-    mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__login", return_value={})
+    mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__set_session", return_value={})
     mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__request", return_value={})
     mocker.patch.object(demisto, "getLastRun", return_value={"alarms": {"time": create_time_difference_string(days=3)}})
     mocker.patch.object(demisto, "setLastRun")
@@ -273,9 +273,9 @@ class TestTestModule:
             "url": "https://example.com",
             "insecure": True,
             "credentials": {"identifier": "Shahaf", "password": "TEST"},
-            "version": "11.3",
+            "version": "11.6.11",
         }
-        mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__login", return_value={})
+        mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__set_session", return_value={})
         mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__request", return_value={})
         try:
             client = McAfeeESMClient(params)
@@ -293,13 +293,367 @@ class TestTestModule:
                 "identifier": "Shahaf",
                 "password": "TEST",
             },
-            "version": "11.3",
+            "version": "11.6.11",
             "startingFetchID": "",
             "isFetch": True,
         }
-        mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__login", return_value={})
+        mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__set_session", return_value={})
         mocker.patch.object(McAfeeESMClient, "_http_request")
         mocker.patch.object(demisto, "params", return_value=params)
         client = McAfeeESMClient(params)
         with pytest.raises(DemistoException):
             client.test_module()
+
+
+# Test vectors published by Trellix in KB90289 (https://support.trellix.com/s/article/KB90289).
+# The article's prose labels the second plaintext "Trellix123!", but its ciphertext actually
+# decrypts to "Mcafee123!" - a stale value left over from the McAfee-to-Trellix rebrand.
+# The plaintext below is the one that genuinely round-trips against the published ciphertext.
+data_test_encrypt_credential = [
+    ("NGCP", "jwNLgaSY2PFsAjF87bRyPg=="),
+    ("Mcafee123!", "uTl8FIeRQJNFOybh6521Hg=="),
+]
+
+
+@pytest.mark.parametrize("plaintext, expected", data_test_encrypt_credential)
+def test_encrypt_credential_matches_vendor_vectors(plaintext, expected):
+    """
+    Given:
+    - A credential and the matching AES ciphertext published by Trellix in KB90289.
+
+    When:
+    - Encrypting the credential for an ESM 11.6.11+ login.
+
+    Then:
+    - The result matches the vendor's published ciphertext exactly, confirming the
+      integration interoperates with the ESM login API (AES-128-CBC, PKCS7, base64).
+    """
+    assert encrypt_credential(plaintext) == expected
+
+
+def test_encode_credential_aes_version():
+    """
+    Given:
+    - An instance configured with ESM 11.6.11 (AES threshold).
+
+    When:
+    - Encoding a credential for the login request.
+
+    Then:
+    - The credential is AES-encrypted rather than only base64-encoded.
+    """
+    assert encode_credential("NGCP", "11.6.11") == "jwNLgaSY2PFsAjF87bRyPg=="
+
+
+def test_encode_credential_base64_version():
+    """
+    Given:
+    - An instance configured with ESM 11.6.10 (last Base64 version).
+
+    When:
+    - Encoding a credential for the login request.
+
+    Then:
+    - The legacy base64 encoding is used, unchanged from previous versions.
+    """
+    assert encode_credential("NGCP", "11.6.10") == base64.b64encode(b"NGCP").decode()
+
+
+def test_encode_credential_non_ascii():
+    """
+    Given:
+    - A password containing non-ASCII characters.
+
+    When:
+    - Encoding it for both the Base64 (11.6.0) and AES (11.6.11) paths.
+
+    Then:
+    - Encoding succeeds (UTF-8), and the AES result decrypts back to the original password.
+    """
+    password = "sécrèt-ñ-密碼"
+    assert encode_credential(password, "11.6.0") == base64.b64encode(password.encode("utf-8")).decode()
+
+    from cryptography.hazmat.primitives import padding as crypto_padding
+    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+
+    ciphertext = base64.b64decode(encode_credential(password, "11.6.11"))
+    decryptor = Cipher(algorithms.AES(ESM_AES_KEY), modes.CBC(ESM_AES_IV)).decryptor()
+    padded = decryptor.update(ciphertext) + decryptor.finalize()
+    unpadder = crypto_padding.PKCS7(AES_BLOCK_SIZE_BITS).unpadder()
+    assert (unpadder.update(padded) + unpadder.finalize()).decode("utf-8") == password
+
+
+@pytest.mark.parametrize("version", ["10.2", "11.1", "11.3", "11.5.9", "11.5"])
+def test_validate_version_rejects_below_11_6(version):
+    """
+    Given:
+    - An instance configured with an ESM version below 11.6.0 (Trellix end-of-life).
+
+    When:
+    - Validating the version.
+
+    Then:
+    - A DemistoException is raised immediately, naming the configured version and the
+      minimum supported version, so the user can fix the instance.
+    """
+    with pytest.raises(DemistoException) as exception_info:
+        validate_version(version)
+
+    message = str(exception_info.value)
+    assert version in message
+    assert "11.6.0" in message
+
+
+@pytest.mark.parametrize("version", ["", "latest", "11.6.11 and later", "v11,6,11", "eleven"])
+def test_validate_version_rejects_invalid_version_string(version):
+    """
+    Given:
+    - A *Version* parameter that is not a version number (for example a label or free text).
+
+    When:
+    - Validating the version.
+
+    Then:
+    - A DemistoException with an actionable message is raised instead of an unhandled
+      packaging.version.InvalidVersion error.
+    """
+    with pytest.raises(DemistoException) as exception_info:
+        validate_version(version)
+
+    message = str(exception_info.value)
+    assert "Invalid ESM version" in message
+    assert "11.6.11" in message
+
+
+@pytest.mark.parametrize(
+    "version",
+    ["11.6.0", "11.6.5", "11.6.10", "11.6.11", "11.6.20", "11.7.0", "12.0.0", "11.6", "11.7"],
+)
+def test_validate_version_accepts_supported(version):
+    """
+    Given:
+    - An instance configured with a supported ESM version (11.6.0 or later), including
+      short two-part versions like "11.6" and "11.7".
+
+    When:
+    - Validating the version.
+
+    Then:
+    - No exception is raised.
+    """
+    validate_version(version)
+
+
+@pytest.mark.filterwarnings("ignore::pytest.PytestUnraisableExceptionWarning")
+def test_client_init_rejects_unsupported_version(mocker):
+    """
+    Given:
+    - An existing instance that was configured before support for versions earlier than 11.6 was removed.
+
+    When:
+    - The client is initialized after the upgrade.
+
+    Then:
+    - Initialization fails fast with an actionable error, before any login attempt is made.
+    """
+    mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__set_session", return_value={})
+    params = {
+        "url": "https://example.com",
+        "insecure": True,
+        "credentials": {"identifier": "TEST", "password": "TEST"},
+        "version": "11.3",
+    }
+    with pytest.raises(DemistoException, match="is not supported"):
+        McAfeeESMClient(params)
+
+
+@pytest.mark.filterwarnings(
+    "ignore::urllib3.exceptions.InsecureRequestWarning", "ignore::pytest.PytestUnraisableExceptionWarning"
+)
+@pytest.mark.parametrize(
+    "version, expected_username",
+    [
+        ("11.6.11", "jwNLgaSY2PFsAjF87bRyPg=="),
+        ("11.6.10", base64.b64encode(b"NGCP").decode()),
+    ],
+)
+def test_login_body_encoding_per_version(mocker, version, expected_username):
+    """
+    Given:
+    - An instance configured with each of the supported ESM versions.
+
+    When:
+    - The client logs in.
+
+    Then:
+    - The login request body carries the credentials encoded as that version requires,
+      and the session headers are taken from the response.
+    """
+
+    class MockResponse:
+        status_code = 200
+        text = ""
+        headers = {"Xsrf-Token": "test-xsrf"}
+
+        class cookies:  # noqa: N801
+            @staticmethod
+            def get(_name):
+                return "test-jwt"
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+    http_request = mocker.patch.object(McAfeeESMClient, "_http_request", return_value=MockResponse())
+    params = {
+        "url": "https://example.com",
+        "insecure": True,
+        "credentials": {"identifier": "NGCP", "password": "NGCP"},
+        "version": version,
+    }
+
+    client = McAfeeESMClient(params)
+
+    login_body = json.loads(http_request.call_args.kwargs["data"])
+    assert login_body["username"] == expected_username
+    assert login_body["password"] == expected_username
+    assert login_body["locale"] == "en_US"
+    assert client._headers["Cookie"] == "JWTToken=test-jwt"
+    assert client._headers["X-Xsrf-Token"] == "test-xsrf"
+
+
+@pytest.mark.filterwarnings(
+    "ignore::urllib3.exceptions.InsecureRequestWarning", "ignore::pytest.PytestUnraisableExceptionWarning"
+)
+def test_session_is_cached_in_integration_context(mocker):
+    """
+    Given:
+    - An instance with no cached ESM session.
+
+    When:
+    - The client is initialized and logs in.
+
+    Then:
+    - The JWT and XSRF tokens are stored in the integration context with an expiry,
+      so the next execution can reuse them instead of logging in again.
+    """
+
+    class MockResponse:
+        status_code = 200
+        text = ""
+        headers = {"Xsrf-Token": "test-xsrf"}
+
+        class cookies:  # noqa: N801
+            @staticmethod
+            def get(_name):
+                return "test-jwt"
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    set_context = mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch.object(McAfeeESMClient, "_http_request", return_value=MockResponse())
+
+    McAfeeESMClient(
+        {
+            "url": "https://example.com",
+            "insecure": True,
+            "credentials": {"identifier": "NGCP", "password": "NGCP"},
+            "version": "11.6.11",
+        }
+    )
+
+    cached_session = set_context.call_args[0][0][SESSION_CACHE_KEY]
+    assert cached_session["cookie"] == "JWTToken=test-jwt"
+    assert cached_session["xsrf_token"] == "test-xsrf"
+    assert cached_session["expiry"] > time.time()
+
+
+@pytest.mark.filterwarnings(
+    "ignore::urllib3.exceptions.InsecureRequestWarning", "ignore::pytest.PytestUnraisableExceptionWarning"
+)
+def test_valid_cached_session_is_reused_without_login(mocker):
+    """
+    Given:
+    - A cached ESM session in the integration context that has not expired.
+
+    When:
+    - The client is initialized.
+
+    Then:
+    - The cached tokens are used for the session headers and no login request is sent.
+    """
+    mocker.patch.object(
+        demisto,
+        "getIntegrationContext",
+        return_value={
+            SESSION_CACHE_KEY: {
+                "cookie": "JWTToken=cached-jwt",
+                "xsrf_token": "cached-xsrf",
+                "expiry": time.time() + SESSION_TTL_SECONDS,
+            }
+        },
+    )
+    http_request = mocker.patch.object(McAfeeESMClient, "_http_request")
+
+    client = McAfeeESMClient(
+        {
+            "url": "https://example.com",
+            "insecure": True,
+            "credentials": {"identifier": "NGCP", "password": "NGCP"},
+            "version": "11.6.11",
+        }
+    )
+
+    assert client._headers["Cookie"] == "JWTToken=cached-jwt"
+    assert client._headers["X-Xsrf-Token"] == "cached-xsrf"
+    http_request.assert_not_called()
+
+
+@pytest.mark.filterwarnings(
+    "ignore::urllib3.exceptions.InsecureRequestWarning", "ignore::pytest.PytestUnraisableExceptionWarning"
+)
+def test_expired_cached_session_triggers_login(mocker):
+    """
+    Given:
+    - A cached ESM session in the integration context whose expiry has passed.
+
+    When:
+    - The client is initialized.
+
+    Then:
+    - The stale session is discarded and a new login request is sent.
+    """
+
+    class MockResponse:
+        status_code = 200
+        text = ""
+        headers = {"Xsrf-Token": "fresh-xsrf"}
+
+        class cookies:  # noqa: N801
+            @staticmethod
+            def get(_name):
+                return "fresh-jwt"
+
+    mocker.patch.object(
+        demisto,
+        "getIntegrationContext",
+        return_value={
+            SESSION_CACHE_KEY: {
+                "cookie": "JWTToken=stale-jwt",
+                "xsrf_token": "stale-xsrf",
+                "expiry": time.time() - 1,
+            }
+        },
+    )
+    mocker.patch.object(demisto, "setIntegrationContext")
+    http_request = mocker.patch.object(McAfeeESMClient, "_http_request", return_value=MockResponse())
+
+    client = McAfeeESMClient(
+        {
+            "url": "https://example.com",
+            "insecure": True,
+            "credentials": {"identifier": "NGCP", "password": "NGCP"},
+            "version": "11.6.11",
+        }
+    )
+
+    assert http_request.call_args.args[1] == "login"
+    assert client._headers["Cookie"] == "JWTToken=fresh-jwt"
+    assert client._headers["X-Xsrf-Token"] == "fresh-xsrf"
