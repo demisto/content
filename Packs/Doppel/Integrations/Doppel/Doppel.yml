@@ -14,28 +14,45 @@ configuration:
   required: true
   type: 0
   section: Connect
-- additionalinfo: The API Key to use for connection with Doppel.
+- additionalinfo: 'The Doppel API version to use. V1 authenticates with a static API Key; V2 authenticates with OAuth 2.0 client credentials (Client ID and Client Secret). New Doppel API capabilities are added to V2 only, so V2 is recommended.'
+  defaultvalue: V1 (API Key)
+  display: API Version
+  name: api_version
+  required: true
+  type: 15
+  options:
+  - V1 (API Key)
+  - V2 (OAuth 2.0 Client Credentials)
+  section: Connect
+- additionalinfo: The API Key to use for connection with Doppel. Required when API Version is V1.
   display: ""
-  displaypassword: API Key
+  displaypassword: API Key (V1)
   hiddenusername: true
   name: credentials
-  required: true
+  required: false
   type: 9
   section: Connect
-- additionalinfo: The User API Key (Optional) to use for connection with Doppel.
+- additionalinfo: The User API Key (Optional) to use for connection with Doppel. Applies to API Version V1 only.
   display: ""
-  displaypassword: User API Key
+  displaypassword: User API Key (V1)
   hiddenusername: true
   name: user_credentials
   required: false
   type: 9
   section: Connect
-- display: Organization Code
+- display: Organization Code (V1)
   name: organization_code
   required: false
   type: 0
   section: Connect
-  additionalinfo: The Organization Code to use for connection with Doppel.
+  additionalinfo: The Organization Code to use for connection with Doppel. Applies to API Version V1 only; V2 scopes requests to your organization automatically.
+- additionalinfo: 'The OAuth 2.0 client credentials to use for connection with Doppel. Required when API Version is V2. An organization admin can create these from the Version 2 tab on the API Settings page in Doppel Vision.'
+  display: Client ID (V2)
+  displaypassword: Client Secret (V2)
+  name: client_credentials
+  required: false
+  type: 9
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -100,6 +117,13 @@ configuration:
   supportedModules:
   - agentix
   - xsiam
+- additionalinfo: Whether incoming mirroring downloads the alert screenshot and attaches it to the incident as a War Room file entry whenever the screenshot version changes. Screenshots are stored in your Cortex instance. The doppel-get-alert-screenshot command works regardless of this setting.
+  display: Attach alert screenshots to incidents
+  name: attach_screenshots
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -110,6 +134,35 @@ configuration:
   type: 8
   section: Connect
   required: false
+triggers:
+- conditions:
+  - name: api_version
+    operator: equal
+    value: V1 (API Key)
+  effects:
+  - name: credentials
+    action:
+      required: true
+  - name: client_credentials
+    action:
+      hidden: true
+- conditions:
+  - name: api_version
+    operator: equal
+    value: V2 (OAuth 2.0 Client Credentials)
+  effects:
+  - name: credentials
+    action:
+      hidden: true
+  - name: user_credentials
+    action:
+      hidden: true
+  - name: organization_code
+    action:
+      hidden: true
+  - name: client_credentials
+    action:
+      required: true
 description: |-
   Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively.
   The Cortex XSOAR pack for Doppel mirrors the alerts created by Doppel as Cortex XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.
@@ -445,6 +498,29 @@ script:
     - contextPath: Doppel.GetAlerts.metadata.page_size
       description: 'The number of alerts per page.'
       type: Integer
+  - arguments:
+    - description: The Doppel alert ID to fetch the screenshot for.
+      name: id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to re-download and attach the screenshot even when the attached version is already current.
+      name: force
+      predefined:
+      - 'true'
+      - 'false'
+    description: Fetch the alert's current screenshot from Doppel and attach it to the incident as a War Room file entry. The image is downloaded immediately after the URL is signed and stored durably in Cortex, so the signed URL's expiry does not matter. A file is attached only when the screenshot version changed since the last attachment; otherwise the command reports that the attached screenshot is already current.
+    name: doppel-get-alert-screenshot
+    outputs:
+    - contextPath: Doppel.AlertScreenshot.id
+      description: 'The Doppel alert ID.'
+      type: String
+    - contextPath: Doppel.AlertScreenshot.version
+      description: 'The screenshot version identifier (storage object name) currently attached.'
+      type: String
+    - contextPath: Doppel.AlertScreenshot.attached
+      description: 'Whether this run attached a new screenshot file.'
+      type: Boolean
   - arguments: []
     description: Returns the list of fields for an incident type.
     name: get-mapping-fields

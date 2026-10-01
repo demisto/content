@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+import time
 import pytest
 import demistomock as demisto
 from unittest.mock import MagicMock
@@ -14,6 +15,10 @@ from Doppel import (
     doppel_get_alerts_command,
     doppel_create_alert_command,
     doppel_create_abuse_alert_command,
+    doppel_get_alert_screenshot_command,
+    _screenshot_blob_path,
+    _attach_screenshot_if_new,
+    _track_screenshot_version,
     get_modified_remote_data_command,
     format_datetime,
     _paginated_call_to_get_alerts,
@@ -1298,6 +1303,246 @@ def test_client_sends_attribution_headers(requests_mock):
     assert alert_mock.last_request.headers["x-api-key"] == "test-api-key"
 
 
+SIGNED_URL_V1 = "https://storage.googleapis.com/screenshots-bucket/TET-1234/shot-v1.png?X-Goog-Signature=abc&X-Goog-Expires=3600"
+SIGNED_URL_V1_RESIGNED = (
+    "https://storage.googleapis.com/screenshots-bucket/TET-1234/shot-v1.png?X-Goog-Signature=zzz&X-Goog-Expires=3600"
+)
+SIGNED_URL_V2 = "https://storage.googleapis.com/screenshots-bucket/TET-1234/shot-v2.png?X-Goog-Signature=def&X-Goog-Expires=3600"
+
+
+def _mock_screenshot_context(mocker, initial=None):
+    """Mock the integration context read/write used for screenshot version tracking.
+
+    Returns copies on read and stores copies on write, mirroring the real server
+    behavior (the context is serialized, so callers never share object references).
+    """
+    import copy
+
+    state = {"screenshot_versions": dict(initial or {})}
+    mocker.patch("Doppel.get_integration_context", side_effect=lambda: copy.deepcopy(state))
+
+    def _set(new_context):
+        snapshot = copy.deepcopy(new_context)
+        state.clear()
+        state.update(snapshot)
+
+    mocker.patch("Doppel.set_integration_context", side_effect=_set)
+    return state
+
+
+def test_screenshot_blob_path_ignores_signature():
+    """Re-signed URLs for the same object must map to the same dedup key."""
+    assert _screenshot_blob_path(SIGNED_URL_V1) == _screenshot_blob_path(SIGNED_URL_V1_RESIGNED)
+    assert _screenshot_blob_path(SIGNED_URL_V1) != _screenshot_blob_path(SIGNED_URL_V2)
+    assert _screenshot_blob_path(SIGNED_URL_V1) == "storage.googleapis.com/screenshots-bucket/TET-1234/shot-v1.png"
+
+
+def test_get_alert_screenshot_command_attaches_new_screenshot(mocker):
+    """First run downloads the screenshot and returns a file entry plus summary."""
+    _mock_screenshot_context(mocker)
+    file_entry = {"Type": 3, "File": "TET-1234-screenshot-shot-v1.png"}
+    mocker.patch("Doppel.fileResult", return_value=file_entry)
+
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {"id": "TET-1234", "screenshot_url": SIGNED_URL_V1}
+    mock_client.download_screenshot.return_value = b"png-bytes"
+
+    results = doppel_get_alert_screenshot_command(mock_client, {"id": "TET-1234"})
+
+    mock_client.download_screenshot.assert_called_once_with(SIGNED_URL_V1)
+    assert results[0] is file_entry
+    summary = results[1]
+    assert summary.outputs["attached"] is True
+    assert summary.outputs["version"] == "shot-v1.png"
+
+
+def test_get_alert_screenshot_command_skips_unchanged_screenshot(mocker):
+    """A re-signed URL for the already-attached version attaches nothing."""
+    _mock_screenshot_context(mocker, {"TET-1234": _screenshot_blob_path(SIGNED_URL_V1)})
+    file_result = mocker.patch("Doppel.fileResult")
+
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {"id": "TET-1234", "screenshot_url": SIGNED_URL_V1_RESIGNED}
+
+    results = doppel_get_alert_screenshot_command(mock_client, {"id": "TET-1234"})
+
+    mock_client.download_screenshot.assert_not_called()
+    file_result.assert_not_called()
+    assert len(results) == 1
+    assert results[0].outputs["attached"] is False
+    assert "already current" in results[0].readable_output
+
+
+def test_get_alert_screenshot_command_force_reattaches(mocker):
+    """force=true re-downloads even when the version is current."""
+    _mock_screenshot_context(mocker, {"TET-1234": _screenshot_blob_path(SIGNED_URL_V1)})
+    mocker.patch("Doppel.fileResult", return_value={"Type": 3})
+
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {"id": "TET-1234", "screenshot_url": SIGNED_URL_V1_RESIGNED}
+    mock_client.download_screenshot.return_value = b"png-bytes"
+
+    results = doppel_get_alert_screenshot_command(mock_client, {"id": "TET-1234", "force": "true"})
+
+    mock_client.download_screenshot.assert_called_once()
+    assert results[-1].outputs["attached"] is True
+
+
+def test_get_alert_screenshot_command_new_version_replaces_tracked(mocker):
+    """A new screenshot version is attached and becomes the tracked version."""
+    context = _mock_screenshot_context(mocker, {"TET-1234": _screenshot_blob_path(SIGNED_URL_V1)})
+    mocker.patch("Doppel.fileResult", return_value={"Type": 3})
+
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {"id": "TET-1234", "screenshot_url": SIGNED_URL_V2}
+    mock_client.download_screenshot.return_value = b"new-png-bytes"
+
+    results = doppel_get_alert_screenshot_command(mock_client, {"id": "TET-1234"})
+
+    assert results[-1].outputs["attached"] is True
+    assert context["screenshot_versions"]["TET-1234"] == _screenshot_blob_path(SIGNED_URL_V2)
+
+
+def test_get_alert_screenshot_command_no_screenshot(mocker):
+    """Alerts without screenshots return a readable message and no file."""
+    _mock_screenshot_context(mocker)
+
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {"id": "TET-1234"}
+
+    results = doppel_get_alert_screenshot_command(mock_client, {"id": "TET-1234"})
+
+    mock_client.download_screenshot.assert_not_called()
+    assert len(results) == 1
+    assert "no screenshot available" in results[0].readable_output
+
+
+def test_get_alert_screenshot_command_requires_id(mocker):
+    with pytest.raises(ValueError, match="id must be specified"):
+        doppel_get_alert_screenshot_command(MagicMock(), {})
+
+
+def test_mirroring_attaches_screenshot_when_param_enabled(mocker):
+    """get-remote-data appends the screenshot file entry when the opt-in param is set."""
+    from Doppel import _get_remote_updated_incident_data_with_entry
+
+    _mock_screenshot_context(mocker)
+    file_entry = {"Type": 3, "File": "TET-1234-screenshot-shot-v1.png"}
+    mocker.patch("Doppel.fileResult", return_value=file_entry)
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {"queue_state": "archived", "screenshot_url": SIGNED_URL_V1, "audit_logs": []}
+    mock_client.download_screenshot.return_value = b"png-bytes"
+
+    _, entries = _get_remote_updated_incident_data_with_entry(
+        mock_client, "TET-1234", "2025-01-19T08:44:52Z", attach_screenshots=True
+    )
+
+    assert file_entry in entries
+
+
+def test_mirroring_skips_screenshot_when_param_disabled(mocker):
+    """Default behavior: no screenshot download during mirroring."""
+    from Doppel import _get_remote_updated_incident_data_with_entry
+
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {"queue_state": "archived", "screenshot_url": SIGNED_URL_V1, "audit_logs": []}
+
+    _, entries = _get_remote_updated_incident_data_with_entry(mock_client, "TET-1234", "2025-01-19T08:44:52Z")
+
+    mock_client.download_screenshot.assert_not_called()
+    assert entries == []
+
+
+def test_mirroring_skips_unchanged_screenshot_version(mocker):
+    """Re-signed URL for an unchanged screenshot never duplicates the file on sync."""
+    from Doppel import _get_remote_updated_incident_data_with_entry
+
+    _mock_screenshot_context(mocker, {"TET-1234": _screenshot_blob_path(SIGNED_URL_V1)})
+    file_result = mocker.patch("Doppel.fileResult")
+
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {"queue_state": "archived", "screenshot_url": SIGNED_URL_V1_RESIGNED, "audit_logs": []}
+
+    _, entries = _get_remote_updated_incident_data_with_entry(
+        mock_client, "TET-1234", "2025-01-19T08:44:52Z", attach_screenshots=True
+    )
+
+    mock_client.download_screenshot.assert_not_called()
+    file_result.assert_not_called()
+    assert entries == []
+
+
+def test_mirroring_screenshot_failure_does_not_block_sync(mocker):
+    """A download error must not prevent the field sync itself."""
+    from Doppel import _get_remote_updated_incident_data_with_entry
+
+    _mock_screenshot_context(mocker)
+
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {"queue_state": "archived", "screenshot_url": SIGNED_URL_V1, "audit_logs": []}
+    mock_client.download_screenshot.side_effect = Exception("GCS unreachable")
+
+    updated_alert, entries = _get_remote_updated_incident_data_with_entry(
+        mock_client, "TET-1234", "2025-01-19T08:44:52Z", attach_screenshots=True
+    )
+
+    assert updated_alert is not None
+    assert entries == []
+
+
+def test_download_screenshot_rejects_non_https():
+    """The screenshot downloader refuses cleartext URLs outright."""
+    from CommonServerPython import DemistoException
+
+    client = Client(base_url="https://api.doppel.com/v1", api_key="test-api-key", verify=True)
+    with pytest.raises(DemistoException, match="non-HTTPS"):
+        client.download_screenshot("http://storage.googleapis.com/screenshots-bucket/TET-1234/shot-v1.png")
+
+
+def test_track_screenshot_version_prunes_oldest(mocker):
+    """The tracking map never grows beyond the cap; oldest entries are evicted first."""
+    import Doppel as doppel_module
+
+    context = _mock_screenshot_context(mocker)
+    mocker.patch.object(doppel_module, "SCREENSHOT_VERSIONS_MAX_TRACKED", 3)
+
+    for i in range(5):
+        _track_screenshot_version(f"TET-{i}", f"bucket/shot-{i}.png")
+
+    versions = context["screenshot_versions"]
+    assert len(versions) == 3
+    assert set(versions) == {"TET-2", "TET-3", "TET-4"}
+
+
+def test_attach_screenshot_if_new_reports_missing_url(mocker):
+    _mock_screenshot_context(mocker)
+    file_entry, blob_path, message = _attach_screenshot_if_new(MagicMock(), "TET-1", None)
+    assert file_entry is None
+    assert blob_path is None
+    assert "no screenshot available" in message
+
+
+def test_pack_version_matches_pack_metadata():
+    """PACK_VERSION (used in attribution headers) must match pack_metadata.json.
+
+    pack_metadata.json is not readable at runtime, so Doppel.py carries the version as a
+    hardcoded constant that must be bumped manually on every release. This test makes CI
+    fail if the two ever drift apart.
+    """
+    from pathlib import Path
+
+    from Doppel import PACK_VERSION
+
+    pack_metadata_path = Path(__file__).resolve().parents[2] / "pack_metadata.json"
+    pack_metadata = json.loads(pack_metadata_path.read_text())
+
+    assert pack_metadata["currentVersion"] == PACK_VERSION, (
+        f"pack_metadata.json currentVersion ({pack_metadata['currentVersion']}) does not match "
+        f"PACK_VERSION ({PACK_VERSION}) in Doppel.py; bump the constant so the x-doppel-client "
+        f"attribution header reports the released pack version."
+    )
+
+
 def test_main_function_with_proxy_enabled(mocker):
     """Test main function when proxy is enabled in params."""
     # Mock demisto functions
@@ -1540,3 +1785,161 @@ def test_reopen_entry_requires_parseable_last_update():
     audit_logs = [{"type": "queue_state_change", "value": "actioned", "timestamp": "2025-03-02T10:00:00"}]
 
     assert _reopen_entry_if_revived(alert, audit_logs, None) is None
+
+
+# ---------------- API V2 (OAuth 2.0 client credentials) ----------------
+
+V2_BASE_URL = "https://api.doppel.com/v2"
+V2_TOKEN_URL = "https://api.doppel.com/oauth/token"
+
+
+def _v2_client():
+    return Client(
+        base_url=V2_BASE_URL,
+        verify=True,
+        api_version="v2",
+        oauth_client_id="test-client-id",
+        oauth_client_secret="test-client-secret",
+        token_url=V2_TOKEN_URL,
+    )
+
+
+def _mock_integration_context(mocker, initial=None):
+    """Replace the integration context with an in-memory store; returns the store."""
+    store = {"ctx": initial or {}}
+    mocker.patch("Doppel.get_integration_context", side_effect=lambda: store["ctx"])
+    mocker.patch("Doppel.set_integration_context", side_effect=lambda ctx: store.update(ctx=ctx))
+    return store
+
+
+def test_v2_mints_token_and_sends_bearer(mocker, requests_mock):
+    """With no cached token, a request first mints a token, caches it, and sends it as a Bearer header."""
+    store = _mock_integration_context(mocker)
+    token_mock = requests_mock.post(V2_TOKEN_URL, json={"access_token": "tok-1", "expires_in": 86400})
+    alert_mock = requests_mock.get(f"{V2_BASE_URL}/alert", json={"id": "TET-1"})
+
+    result = _v2_client().get_alert(id="TET-1", entity="")
+
+    assert result == {"id": "TET-1"}
+    assert token_mock.call_count == 1
+    assert token_mock.last_request.json() == {
+        "client_id": "test-client-id",
+        "client_secret": "test-client-secret",
+        "audience": "doppel-external",
+        "grant_type": "client_credentials",
+    }
+    assert alert_mock.last_request.headers["Authorization"] == "Bearer tok-1"
+    assert store["ctx"]["oauth_token"]["access_token"] == "tok-1"
+    # Attribution headers ride along on both the token mint and the API request.
+    from Doppel import CLIENT_ATTRIBUTION
+
+    assert token_mock.last_request.headers["x-doppel-client"] == CLIENT_ATTRIBUTION
+    assert alert_mock.last_request.headers["x-doppel-client"] == CLIENT_ATTRIBUTION
+    assert alert_mock.last_request.headers["User-Agent"] == f"doppel-{CLIENT_ATTRIBUTION}"
+
+
+def test_v2_reuses_cached_token(mocker, requests_mock):
+    """A cached, unexpired token is reused without calling the token endpoint."""
+    future_expiry = int(time.time()) + 3600
+    _mock_integration_context(mocker, {"oauth_token": {"access_token": "cached-tok", "expiry_epoch": future_expiry}})
+    token_mock = requests_mock.post(V2_TOKEN_URL, json={"access_token": "should-not-be-minted"})
+    alert_mock = requests_mock.get(f"{V2_BASE_URL}/alert", json={"id": "TET-1"})
+
+    _v2_client().get_alert(id="TET-1", entity="")
+
+    assert token_mock.call_count == 0
+    assert alert_mock.last_request.headers["Authorization"] == "Bearer cached-tok"
+
+
+def test_v2_expired_token_is_reminted(mocker, requests_mock):
+    """A cached token past its expiry is replaced with a freshly minted one."""
+    past_expiry = int(time.time()) - 10
+    store = _mock_integration_context(mocker, {"oauth_token": {"access_token": "old-tok", "expiry_epoch": past_expiry}})
+    requests_mock.post(V2_TOKEN_URL, json={"access_token": "fresh-tok", "expires_in": 86400})
+    alert_mock = requests_mock.get(f"{V2_BASE_URL}/alert", json={"id": "TET-1"})
+
+    _v2_client().get_alert(id="TET-1", entity="")
+
+    assert alert_mock.last_request.headers["Authorization"] == "Bearer fresh-tok"
+    assert store["ctx"]["oauth_token"]["access_token"] == "fresh-tok"
+
+
+def test_v2_401_retries_once_with_fresh_token(mocker, requests_mock):
+    """A 401 on a cached token invalidates the cache, mints once, and retries the request once."""
+    future_expiry = int(time.time()) + 3600
+    _mock_integration_context(mocker, {"oauth_token": {"access_token": "revoked-tok", "expiry_epoch": future_expiry}})
+    token_mock = requests_mock.post(V2_TOKEN_URL, json={"access_token": "fresh-tok", "expires_in": 86400})
+    alert_mock = requests_mock.get(
+        f"{V2_BASE_URL}/alert",
+        [
+            {"status_code": 401, "json": {"error": "unauthorized"}},
+            {"status_code": 200, "json": {"id": "TET-1"}},
+        ],
+    )
+
+    result = _v2_client().get_alert(id="TET-1", entity="")
+
+    assert result == {"id": "TET-1"}
+    assert token_mock.call_count == 1
+    assert alert_mock.call_count == 2
+    assert alert_mock.request_history[0].headers["Authorization"] == "Bearer revoked-tok"
+    assert alert_mock.request_history[1].headers["Authorization"] == "Bearer fresh-tok"
+
+
+def test_v2_token_429_raises_readable_error(mocker, requests_mock):
+    """A 429 from the token endpoint surfaces the mint quota and the Retry-After value."""
+    _mock_integration_context(mocker)
+    requests_mock.post(V2_TOKEN_URL, status_code=429, headers={"Retry-After": "1200"}, json={})
+
+    with pytest.raises(DemistoException, match="token request limit.*1200"):
+        _v2_client().get_alert(id="TET-1", entity="")
+
+
+def test_v2_token_401_raises_credentials_error(mocker, requests_mock):
+    """A 401 from the token endpoint points at the Client ID / Client Secret."""
+    _mock_integration_context(mocker)
+    requests_mock.post(V2_TOKEN_URL, status_code=401, json={})
+
+    with pytest.raises(DemistoException, match="Client ID and.*Client Secret"):
+        _v2_client().get_alert(id="TET-1", entity="")
+
+
+def test_v1_client_sends_api_key_not_bearer(requests_mock):
+    """A V1 client keeps the legacy header auth and never touches the OAuth flow."""
+    client = Client(base_url="https://api.doppel.com/v1", api_key="test-api-key", verify=True)
+    alert_mock = requests_mock.get("https://api.doppel.com/v1/alert", json={"id": "TET-1"})
+
+    client.get_alert(id="TET-1", entity="")
+
+    assert alert_mock.last_request.headers["x-api-key"] == "test-api-key"
+    assert "Authorization" not in alert_mock.last_request.headers
+
+
+def test_main_v2_requires_client_credentials(mocker):
+    """Selecting V2 without client credentials fails fast with a clear message."""
+    from Doppel import main
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"url": "https://api.doppel.com/", "api_version": "V2 (OAuth 2.0 Client Credentials)"},
+    )
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    return_error_mock = mocker.patch("Doppel.return_error")
+
+    main()
+
+    assert "Client ID and a Client Secret" in return_error_mock.call_args[0][0]
+
+
+def test_main_v1_requires_api_key(mocker):
+    """The V1 default without an API Key fails fast with a clear message."""
+    from Doppel import main
+
+    mocker.patch.object(demisto, "params", return_value={"url": "https://api.doppel.com/"})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    return_error_mock = mocker.patch("Doppel.return_error")
+
+    main()
+
+    assert "requires an API Key" in return_error_mock.call_args[0][0]
