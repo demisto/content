@@ -184,7 +184,7 @@ script:
     description: Makes a DML change in the database.
     execution: true
     name: snowflake-update
-  dockerimage: demisto/snowflake:1.0.0.10238860
+  dockerimage: demisto/snowflake:1.0.0.12844876
   isfetch: true
   script: '-'
   type: python

@@ -2,7 +2,7 @@
     "name": "Microsoft Graph Teams (Standard Connector)",
     "description": "Satellite pack of Microsoft Graph Teams used for the Standard Connector deployment. Shares core logic with the Microsoft Graph Teams pack via the MicrosoftGraphTeamsApiModule.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "serverMinVersion": "8.15.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
@@ -25,6 +25,7 @@
         "cloud_posture",
         "xsiam",
         "edr",
-        "cloud"
+        "cloud",
+        "data_security"
     ]
 }

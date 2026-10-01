@@ -59,7 +59,7 @@ def test_main_test_module_branch(mocker):
     mocker.patch.object(
         PanoraysFindingsAPI.demisto,
         "params",
-        return_value={"apikey": "123", "url": "https://test.com", "insecure": False, "proxy": False},
+        return_value={"apikey": {"password": "123"}, "url": "https://test.com", "insecure": False, "proxy": False},
     )
     mocker.patch.object(PanoraysFindingsAPI.demisto, "command", return_value="test-module")
     mocker.patch.object(PanoraysFindingsAPI, "verify_module", return_value="ok")

@@ -74,7 +74,7 @@ def find_top_used_playbooks(uri_prefix):
 def main():
     try:
         if is_demisto_version_ge("8.0.0"):
-            uri_prefix = "xsoar/public/v1/"
+            uri_prefix = ""
             resolution_email = RESOLUTION_EMAIL_ASK_USER_V8
             resolution_tasks = RESOLUTION_MULTI_TASKS_V8
         else:
