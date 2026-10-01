@@ -3,21 +3,21 @@ version: -1
 name: OktaV2-Test
 starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 16d44437-894f-4718-8d1d-d33cc973de38
     type: start
     task:
       id: 16d44437-894f-4718-8d1d-d33cc973de38
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -32,8 +32,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+    continueonerrortype: ""
+  '1':
+    id: '1'
     taskid: 06a64bf1-ac61-43a4-83bb-e3e2c7b1d811
     type: regular
     task:
@@ -44,15 +45,14 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "60"
+      - '60'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -67,28 +67,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+    continueonerrortype: ""
+  '5':
+    id: '5'
     taskid: 8a906748-548e-4940-a0eb-1a35af7c0ea0
     type: regular
     task:
       id: 8a906748-548e-4940-a0eb-1a35af7c0ea0
       version: -1
       name: create user with activation
-      description: Creates a new user with an option of setting a password, recovery
-        question, and answer. The new user will immediately be able to log in after
-        activation with the assigned password. This flow is common when developing
-        a custom user registration experience.
+      description: Creates a new user with an option of setting a password, recovery question, and answer. The new user will immediately be able to log in after activation with the assigned password. This flow is common when developing a custom user registration experience.
       script: '|||okta-create-user'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       activate:
-        simple: "true"
+        simple: 'true'
       city:
         simple: Tel-Aviv
       displayName:
@@ -96,7 +94,7 @@ tasks:
       email:
         simple: ${RandomString}@test.com
       employeeNumber:
-        simple: "12345"
+        simple: '12345'
       firstName:
         simple: 'Test 1 '
       lastName:
@@ -116,7 +114,6 @@ tasks:
       providerType:
         simple: OKTA
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -131,8 +128,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+    continueonerrortype: ""
+  '7':
+    id: '7'
     taskid: bd7e302e-94de-4986-8f19-14d960321a71
     type: regular
     task:
@@ -146,12 +144,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       username:
         simple: ${RandomString}@test.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -166,8 +163,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
+    continueonerrortype: ""
+  '8':
+    id: '8'
     taskid: ced12544-5b43-406c-8d38-5965bcaf9fa1
     type: regular
     task:
@@ -178,18 +176,17 @@ tasks:
       script: '|||okta-add-to-group'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "11"
-      - "10"
+      - '11'
+      - '10'
     scriptarguments:
       groupName:
         simple: Demisto
       username:
         simple: ${RandomString}@test.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -204,8 +201,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
+    continueonerrortype: ""
+  '9':
+    id: '9'
     taskid: a9813344-8cb6-423d-8e0c-2bbdf3bfb5f4
     type: regular
     task:
@@ -219,13 +217,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
-      - "8"
+      - '15'
+      - '8'
     scriptarguments:
       username:
         simple: ${RandomString}@test.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -240,8 +237,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
+    continueonerrortype: ""
+  '10':
+    id: '10'
     taskid: 64db5ca8-68ec-42b1-85d8-671147a279d4
     type: regular
     task:
@@ -255,12 +253,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
     scriptarguments:
       groupName:
         simple: Demisto
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -275,8 +272,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
+    continueonerrortype: ""
+  '11':
+    id: '11'
     taskid: be8bd78e-1b90-48a0-81f6-a6a2f4daebce
     type: regular
     task:
@@ -290,12 +288,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     scriptarguments:
       username:
         simple: ${RandomString}@test.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -310,8 +307,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
+    continueonerrortype: ""
+  '13':
+    id: '13'
     taskid: eb06cece-2468-4a33-809e-a8ebee139c80
     type: regular
     task:
@@ -325,14 +323,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
     scriptarguments:
       groupName:
         simple: Demisto
       username:
         simple: ${RandomString}@test.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -347,30 +344,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
+    continueonerrortype: ""
+  '14':
+    id: '14'
     taskid: ce5ce5fc-39a8-4a17-8e30-661cd4fd1ce0
     type: regular
     task:
       id: ce5ce5fc-39a8-4a17-8e30-661cd4fd1ce0
       version: -1
       name: update user
-      description: Update user with a given login, all fields are optional, fields
-        which are not set will not be overriden.
+      description: Update user with a given login, all fields are optional, fields which are not set will not be overriden.
       script: '|||okta-update-user'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     scriptarguments:
       firstName:
         simple: Test1 Updated
       username:
         simple: ${RandomString}@test.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -385,29 +381,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+    continueonerrortype: ""
+  '15':
+    id: '15'
     taskid: a3a2f780-2eaf-4aea-80cb-b64cc76ca713
     type: regular
     task:
       id: a3a2f780-2eaf-4aea-80cb-b64cc76ca713
       version: -1
       name: suspend user
-      description: Suspends a user. This operation can only be performed on users
-        with an ACTIVE status. The user has a status of SUSPENDED when the process
-        is completed
+      description: Suspends a user. This operation can only be performed on users with an ACTIVE status. The user has a status of SUSPENDED when the process is completed
       script: '|||okta-suspend-user'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
     scriptarguments:
       username:
         simple: ${RandomString}@test.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -422,29 +416,28 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
+    continueonerrortype: ""
+  '16':
+    id: '16'
     taskid: 478605fa-8a85-483a-83b4-bffae9384633
     type: regular
     task:
       id: 478605fa-8a85-483a-83b4-bffae9384633
       version: -1
       name: unsuspend user
-      description: Returns a user to ACTIVE status. This operation can only be performed
-        on users that have a SUSPENDED status.
+      description: Returns a user to ACTIVE status. This operation can only be performed on users that have a SUSPENDED status.
       script: '|||okta-unsuspend-user'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
-      - "30"
+      - '14'
+      - '30'
     scriptarguments:
       username:
         simple: ${RandomString}@test.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -459,8 +452,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
+    continueonerrortype: ""
+  '22':
+    id: '22'
     taskid: 548646c8-c2e5-4b0c-803d-372a397faa8b
     type: condition
     task:
@@ -469,13 +463,13 @@ tasks:
       name: verify results
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "13"
+      yes:
+      - '13'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -485,7 +479,6 @@ tasks:
           right:
             value:
               simple: Demisto
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -500,8 +493,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
+    continueonerrortype: ""
+  '23':
+    id: '23'
     taskid: f2a39d80-c084-441c-898b-0e1f72553fb3
     type: condition
     task:
@@ -510,13 +504,13 @@ tasks:
       name: verify results
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "13"
+      yes:
+      - '13'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsString
           left:
@@ -527,7 +521,6 @@ tasks:
             value:
               simple: ${RandomString}
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -542,28 +535,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
+    continueonerrortype: ""
+  '27':
+    id: '27'
     taskid: 6d21ccf9-76a0-45d6-8f8e-f44b0c6f2e97
     type: regular
     task:
       id: 6d21ccf9-76a0-45d6-8f8e-f44b0c6f2e97
       version: -1
       name: get-user
-      description: Fetches information for a specific user. You must enter one or
-        more parameters for the command to run
+      description: Fetches information for a specific user. You must enter one or more parameters for the command to run
       script: '|||okta-get-user'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "28"
+      - '28'
     scriptarguments:
       username:
         simple: ${RandomString}@test.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -578,8 +570,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
+    continueonerrortype: ""
+  '28':
+    id: '28'
     taskid: 920dda09-4514-41d3-8814-c085d25c9b53
     type: condition
     task:
@@ -588,13 +581,13 @@ tasks:
       name: verify result
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "34"
+      yes:
+      - '34'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsString
           left:
@@ -604,7 +597,6 @@ tasks:
           right:
             value:
               simple: Test1 Updated
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -619,8 +611,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
+    continueonerrortype: ""
+  '29':
+    id: '29'
     taskid: 475f0210-6b13-4324-8f3e-71b36a1499f2
     type: regular
     task:
@@ -634,12 +627,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+      - '39'
     scriptarguments:
       username:
         simple: ${RandomString}@test.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -654,8 +646,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
+    continueonerrortype: ""
+  '30':
+    id: '30'
     taskid: c73fbca2-3e8f-4f25-81f1-81e45c7b4853
     type: regular
     task:
@@ -669,14 +662,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     scriptarguments:
       password:
         simple: Bb123456
       username:
         simple: ${RandomString}@test.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -691,8 +683,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
+    continueonerrortype: ""
+  '34':
+    id: '34'
     taskid: 72aac069-b11d-48cf-8bfe-7d846b8028f6
     type: regular
     task:
@@ -706,12 +699,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+      - '35'
     scriptarguments:
       term:
         simple: ${RandomString}@test.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -726,8 +718,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
+    continueonerrortype: ""
+  '35':
+    id: '35'
     taskid: c38d49f8-c94a-4dde-82b9-0828b1309d57
     type: condition
     task:
@@ -736,13 +729,13 @@ tasks:
       name: verify result
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "29"
+      yes:
+      - '29'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsString
           left:
@@ -753,7 +746,6 @@ tasks:
             value:
               simple: RandomString
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -768,8 +760,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
+    continueonerrortype: ""
+  '36':
+    id: '36'
     taskid: 49f7da2f-bb82-48d3-a144-d4ae3d7569af
     type: regular
     task:
@@ -780,15 +773,14 @@ tasks:
       script: '|||okta-get-user-factors'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "37"
+      - '37'
     scriptarguments:
       userId:
         simple: 0oa14a2biag1C04gW1d8
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -803,8 +795,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
+    continueonerrortype: ""
+  '37':
+    id: '37'
     taskid: 4fc0e66d-4276-49f7-86e3-123334994e7c
     type: condition
     task:
@@ -813,13 +806,13 @@ tasks:
       name: verify result
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "8"
+      yes:
+      - '8'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsString
           left:
@@ -833,7 +826,6 @@ tasks:
           right:
             value:
               simple: sms
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -848,8 +840,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "38":
-    id: "38"
+    continueonerrortype: ""
+  '38':
+    id: '38'
     taskid: c320a226-41aa-4c49-81d7-0f20b7030cb4
     type: title
     task:
@@ -858,9 +851,9 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -875,8 +868,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "39":
-    id: "39"
+    continueonerrortype: ""
+  '39':
+    id: '39'
     taskid: 8d90b8db-8ed2-4ff9-8c1a-3c0d7cfa06a0
     type: regular
     task:
@@ -887,15 +881,14 @@ tasks:
       script: '|||okta-search'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "42"
+      - '42'
     scriptarguments:
       term:
         simple: ${RandomString}@test.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -910,8 +903,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
+    continueonerrortype: ""
+  '40':
+    id: '40'
     taskid: fe42decf-1592-456a-8bf8-2fa9dde7b4da
     type: regular
     task:
@@ -922,15 +916,14 @@ tasks:
       script: '|||okta-get-group-members'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "41"
+      - '41'
     scriptarguments:
       groupName:
         simple: Demisto
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -945,8 +938,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
+    continueonerrortype: ""
+  '41':
+    id: '41'
     taskid: 68cbc010-2612-426a-8f05-14fa2498d444
     type: condition
     task:
@@ -955,13 +949,13 @@ tasks:
       name: verify results
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "43"
+      yes:
+      - '43'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: notContainsString
           left:
@@ -971,7 +965,6 @@ tasks:
           right:
             value:
               simple: ${RandomString}@test.com
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -986,8 +979,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "42":
-    id: "42"
+    continueonerrortype: ""
+  '42':
+    id: '42'
     taskid: 4e7fcedf-5890-4205-8a36-473edcce8153
     type: condition
     task:
@@ -996,13 +990,13 @@ tasks:
       name: verify result
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "63"
+      yes:
+      - '63'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: notContainsString
           left:
@@ -1012,7 +1006,6 @@ tasks:
           right:
             value:
               simple: ${RandomString}@test.com
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1027,28 +1020,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "43":
-    id: "43"
+    continueonerrortype: ""
+  '43':
+    id: '43'
     taskid: 2834b370-fceb-4a54-89a7-b536540569aa
     type: regular
     task:
       id: 2834b370-fceb-4a54-89a7-b536540569aa
       version: -1
       name: list groups with query =de
-      description: Lists groups in your organization. A subset of groups can be returned
-        that match a supported filter expression or query.
+      description: Lists groups in your organization. A subset of groups can be returned that match a supported filter expression or query.
       script: '|||okta-list-groups'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "44"
+      - '44'
     scriptarguments:
       query:
         simple: de
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1063,8 +1055,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "44":
-    id: "44"
+    continueonerrortype: ""
+  '44':
+    id: '44'
     taskid: a87f37f8-2a94-476d-8c3d-60d1057e6841
     type: condition
     task:
@@ -1073,13 +1066,13 @@ tasks:
       name: verify results
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "51"
+      yes:
+      - '51'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -1089,7 +1082,6 @@ tasks:
           right:
             value:
               simple: Demisto
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1104,8 +1096,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "47":
-    id: "47"
+    continueonerrortype: ""
+  '47':
+    id: '47'
     taskid: f7374d33-b4ab-42c5-8516-598f60507a9e
     type: regular
     task:
@@ -1116,15 +1109,14 @@ tasks:
       script: '|||okta-get-group-assignments'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "48"
+      - '48'
     scriptarguments:
       limit:
-        simple: "1"
+        simple: '1'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1139,8 +1131,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "48":
-    id: "48"
+    continueonerrortype: ""
+  '48':
+    id: '48'
     taskid: 0843dccd-2e69-474a-8680-ff5559213724
     type: condition
     task:
@@ -1149,13 +1142,13 @@ tasks:
       name: verify results
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "52"
+      yes:
+      - '52'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsGeneral
           left:
@@ -1167,7 +1160,6 @@ tasks:
           right:
             value:
               simple: Add user to group membership
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1182,8 +1174,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "50":
-    id: "50"
+    continueonerrortype: ""
+  '50':
+    id: '50'
     taskid: b7bda056-0f47-41fe-81d6-99adc83d5e97
     type: condition
     task:
@@ -1192,13 +1185,13 @@ tasks:
       name: verify results
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "52"
+      yes:
+      - '52'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsGeneral
           left:
@@ -1210,7 +1203,6 @@ tasks:
           right:
             value:
               simple: Add user to application membership
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1225,8 +1217,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "51":
-    id: "51"
+    continueonerrortype: ""
+  '51':
+    id: '51'
     taskid: c1dc64e7-06be-4522-8c30-bedc5e7fb391
     type: title
     task:
@@ -1235,13 +1228,13 @@ tasks:
       name: Logs
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "47"
-      - "53"
+      - '47'
+      - '53'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1256,8 +1249,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "52":
-    id: "52"
+    continueonerrortype: ""
+  '52':
+    id: '52'
     taskid: 42cb8eba-dede-4626-8d82-5cf5270d57c9
     type: title
     task:
@@ -1266,12 +1260,12 @@ tasks:
       name: End of Logs
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "38"
+      - '38'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1286,8 +1280,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "53":
-    id: "53"
+    continueonerrortype: ""
+  '53':
+    id: '53'
     taskid: 6ab0dc69-3123-41f5-845b-b90605f2f65f
     type: regular
     task:
@@ -1298,15 +1293,14 @@ tasks:
       script: '|||okta-get-application-assignments'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "50"
+      - '50'
     scriptarguments:
       limit:
-        simple: "1"
+        simple: '1'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1321,8 +1315,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "60":
-    id: "60"
+    continueonerrortype: ""
+  '60':
+    id: '60'
     taskid: 328322e8-557e-4663-803d-02626b016bba
     type: regular
     task:
@@ -1333,23 +1328,22 @@ tasks:
       scriptName: GenerateRandomString
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "61"
+      - '61'
     scriptarguments:
       Digits:
-        simple: "True"
+        simple: 'True'
       Length:
-        simple: "8"
+        simple: '8'
       Lowercase:
-        simple: "True"
+        simple: 'True'
       Punctuation:
-        simple: "False"
+        simple: 'False'
       Uppercase:
-        simple: "False"
+        simple: 'False'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1364,50 +1358,41 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "61":
-    id: "61"
+    continueonerrortype: ""
+  '61':
+    id: '61'
     taskid: 547dfeda-bf97-4245-8b69-1da0221a6c41
     type: regular
     task:
       id: 547dfeda-bf97-4245-8b69-1da0221a6c41
       version: -1
       name: GeneratePassword
-      description: "This function generates a password and allows various parameters
-        to customize the properties of the password depending on the use case (e.g.
-        password complexity requirements).  The default behavior is to generate a
-        password of  *random length* including all four character classes (upper,
-        lower, digits, symbols) with at least five and at most ten characters per
-        class. \n\nThe min_* values all default to 0. This means that if the command
-        is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that
-        a password of length zero could be generated. It is therefore recommended
-        to always include a min_* parameter that matches. \n\nThe debug parameter
-        will print certain properties of the command into the WarRoom for easy diagnostics."
+      description: "This function generates a password and allows various parameters to customize the properties of the password depending on the use case (e.g. password complexity requirements).  The default behavior is to generate a password of  *random length* including all four character classes (upper, lower, digits, symbols) with at least five and at most ten characters per class. \n\nThe min_* values all default to 0. This means that if the command is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that a password of length zero could be generated. It is therefore recommended to always include a min_* parameter that matches. \n\nThe debug parameter will print certain properties of the command into the WarRoom for easy diagnostics."
       scriptName: GeneratePassword
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       max_digits:
-        simple: "6"
+        simple: '6'
       max_lcase:
-        simple: "1"
+        simple: '1'
       max_symbols:
-        simple: "0"
+        simple: '0'
       max_ucase:
-        simple: "1"
+        simple: '1'
       min_digits:
-        simple: "6"
+        simple: '6'
       min_lcase:
-        simple: "1"
+        simple: '1'
       min_symbols:
-        simple: "0"
+        simple: '0'
       min_ucase:
-        simple: "1"
+        simple: '1'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1422,8 +1407,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "63":
-    id: "63"
+    continueonerrortype: ""
+  '63':
+    id: '63'
     taskid: fec12244-a381-4dde-8c1b-62b42dd2e037
     type: regular
     task:
@@ -1437,12 +1423,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "64"
+      - '64'
     scriptarguments:
       limit:
-        simple: "1"
+        simple: '1'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1457,8 +1442,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "64":
-    id: "64"
+    continueonerrortype: ""
+  '64':
+    id: '64'
     taskid: dc2a990c-7707-4710-88b6-7849bd5c1e29
     type: condition
     task:
@@ -1467,20 +1453,19 @@ tasks:
       name: verify results
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "65"
+      yes:
+      - '65'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: Account
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1495,8 +1480,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "65":
-    id: "65"
+    continueonerrortype: ""
+  '65':
+    id: '65'
     taskid: ee32a071-0494-4b12-89b4-0f80e8b2b7e8
     type: regular
     task:
@@ -1510,12 +1496,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "66"
+      - '66'
     scriptarguments:
       limit:
-        simple: "1"
+        simple: '1'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1530,8 +1515,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "66":
-    id: "66"
+    continueonerrortype: ""
+  '66':
+    id: '66'
     taskid: 3d355c2d-2424-4be7-8c2b-ee97c40d6ce1
     type: condition
     task:
@@ -1540,20 +1526,19 @@ tasks:
       name: verify results
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "38"
+      yes:
+      - '38'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: Okta.Zone
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1568,6 +1553,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {},
