@@ -1438,7 +1438,7 @@ Creates a new Container under the specified account. Required permission: Micros
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| container_name | The name of the Container to create. Rules for naming containers can be found here:<br/>https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata<br/>. | Required |
+| container_name | The name of the Container to create. Rules for naming containers can be found here:<br/><https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata><br/>. | Required |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |

@@ -24,6 +24,8 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 STORAGE_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
 API_VERSION = "2022-09-01"
 NEW_API_VERSION_PARAMS = {"api-version": "2024-05-01"}
+RESOURCE_GRAPH_API_VERSION = "2022-10-01"
+RESOURCE_GRAPH_MAX_PAGE_SIZE = 50
 GRANT_BY_CONNECTION = {
     "Device Code": DEVICE_CODE,
     "Authorization Code": AUTHORIZATION_CODE,
@@ -41,6 +43,8 @@ STORAGE_RESOURCE = "https://storage.azure.com/"
 DEFAULT_AZURE_AD_ENDPOINT = "https://login.microsoftonline.com"
 
 PERMISSIONS_TO_COMMANDS = {
+    "Microsoft.ResourceGraph/operations/read": ["azure-rg-list-operations"],
+    "Microsoft.ResourceGraph/resources/read": ["azure-rg-query"],
     "Microsoft.Network/networkSecurityGroups/read": ["azure-nsg-security-groups-list", "azure-vn-security-groups-list"],
     "Microsoft.Network/networkSecurityGroups/securityRules/read": [
         "azure-nsg-security-rule-update",
@@ -405,6 +409,8 @@ API_FUNCTION_TO_PERMISSIONS = {
     "get_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
     "get_all_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
     "list_security_rules": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
+    "resource_graph_list_operations": ["Microsoft.ResourceGraph/operations/read"],
+    "resource_graph_query_resources": ["Microsoft.ResourceGraph/resources/read"],
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
@@ -460,6 +466,8 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Consumption/usageDetails/read",
     "Microsoft.Consumption/budgets/read",
     "Microsoft.CostManagement/forecast/read",
+    "Microsoft.ResourceGraph/operations/read",
+    "Microsoft.ResourceGraph/resources/read",
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -2782,6 +2790,68 @@ class AzureClient:
                 resource_type="Budget",
                 subscription_id=subscription_id,
                 api_function_name="billing_budgets_list",
+            )
+
+    def resource_graph_list_operations(self):
+        """
+        Send the list Azure Resource Graph operations request to the API.
+
+        Returns:
+            dict: The JSON response from the API call, containing the available operations.
+
+        Raises:
+            DemistoException: If there are permission or other API errors.
+        """
+        management_host = urlparse(PREFIX_URL_AZURE).hostname
+        full_url = f"https://{management_host}/providers/Microsoft.ResourceGraph/operations"
+        params = {"api-version": RESOURCE_GRAPH_API_VERSION}
+        demisto.debug("Listing Azure Resource Graph operations.")
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name="operations",
+                resource_type="Resource Graph Operations",
+                api_function_name="resource_graph_list_operations",
+            )
+
+    def resource_graph_query_resources(
+        self, query: str, paging_options: dict[str, Any], subscriptions: list, management_groups: list
+    ):
+        """
+        Send the Azure Resource Graph query request to the API.
+
+        Args:
+            query (str): The KQL query to execute.
+            paging_options (dict): The paging options (e.g. $skip, $top, $skipToken) for the query.
+            subscriptions (list): The subscriptions against which to execute the query.
+            management_groups (list): The management groups against which to execute the query.
+
+        Returns:
+            dict: The JSON response from the API call, containing the query results.
+
+        Raises:
+            DemistoException: If there are permission or other API errors.
+        """
+        request_data: dict[str, Any] = {"query": query, "options": paging_options}
+        if subscriptions:
+            request_data["subscriptions"] = subscriptions
+        if management_groups:
+            request_data["managementGroups"] = management_groups
+
+        management_host = urlparse(PREFIX_URL_AZURE).hostname
+        full_url = f"https://{management_host}/providers/Microsoft.ResourceGraph/resources"
+        params = {"api-version": RESOURCE_GRAPH_API_VERSION}
+        demisto.debug(f"Executing Azure Resource Graph query with options: {paging_options}.")
+        try:
+            return self.http_request(method="POST", full_url=full_url, params=params, json_data=request_data)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name="resources",
+                resource_type="Resource Graph Query",
+                api_function_name="resource_graph_query_resources",
             )
 
 
@@ -5372,6 +5442,153 @@ def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: 
     )
 
 
+def resource_graph_pagination(response: list, page_size: int, page_number: int) -> list:
+    """
+    Generate a page (slice) of data for client-side pagination.
+
+    Args:
+        response (list): The full list of items to paginate.
+        page_size (int): The maximum number of items per page.
+        page_number (int): The page number to return (1-based).
+
+    Returns:
+        list: The slice of items for the requested page.
+    """
+    if page_size > RESOURCE_GRAPH_MAX_PAGE_SIZE:
+        page_size = RESOURCE_GRAPH_MAX_PAGE_SIZE
+
+    starting_index = (page_number - 1) * page_size
+    ending_index = starting_index + page_size
+    return response[starting_index:ending_index]
+
+
+def resource_graph_list_operations_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Lists all available Azure Resource Graph operations and their descriptions.
+
+    Args:
+        client (AzureClient): Azure client instance for API communication.
+        params (dict): Configuration parameters from integration settings.
+        args (dict): Command arguments including the optional limit, page_size, and page.
+
+    Returns:
+        CommandResults: Contains the list of Azure Resource Graph operations.
+    """
+    limit = arg_to_number(args.get("limit"))
+    page_size = arg_to_number(args.get("page_size"))
+    page = arg_to_number(args.get("page"))
+
+    if page and not page_size:
+        raise DemistoException('Please enter a value for "page_size" when using "page".')
+    if page_size and not page:
+        raise DemistoException('Please enter a value for "page" when using "page_size".')
+
+    response = client.resource_graph_list_operations()
+    operations_list = response.get("value", [])
+    md_output_notes = ""
+
+    if page and page_size:
+        if limit:
+            md_output_notes = '"limit" was ignored for paging parameters.'
+            demisto.debug('"limit" was ignored for paging parameters.')
+        operations_list = resource_graph_pagination(operations_list, page_size, page)
+
+    if page_size:
+        limit = page_size
+
+    operations = []
+    for operation in operations_list[:limit]:
+        operations.append({"Name": operation.get("name"), "Display": operation.get("display")})
+
+    title = "List of Azure Resource Graph Operations\n\n" + md_output_notes
+    readable_output = tableToMarkdown(title, operations, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Azure.ResourceGraph.Operations",
+        outputs_key_field="Name",
+        outputs=operations,
+        raw_response=response,
+    )
+
+
+def resource_graph_query_resources_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Executes an Azure Resource Graph query (KQL) and returns the matching resources.
+
+    Args:
+        client (AzureClient): Azure client instance for API communication.
+        params (dict): Configuration parameters from integration settings.
+        args (dict): Command arguments including the required query and the optional limit,
+            page_size, page, management_groups, and subscriptions.
+
+    Returns:
+        CommandResults: Contains the resources returned by the query.
+    """
+    limit = arg_to_number(args.get("limit"))
+    page_size = arg_to_number(args.get("page_size"))
+    page_number = arg_to_number(args.get("page"))
+    management_groups = argToList(args.get("management_groups"))
+    subscriptions = argToList(args.get("subscriptions"))
+    query = args.get("query", "")
+
+    if page_number and not page_size:
+        raise DemistoException('Please enter a value for "page_size" when using "page".')
+    if page_size and not page_number:
+        raise DemistoException('Please enter a value for "page" when using "page_size".')
+
+    list_of_query_results: list = []
+    total_records = 0
+
+    if page_number and page_size:
+        skip = (page_number - 1) * page_size + 1
+        paging_options: dict[str, Any] = {"$skip": skip, "$top": page_size}
+        response = client.resource_graph_query_resources(
+            query=query, paging_options=paging_options, management_groups=management_groups, subscriptions=subscriptions
+        )
+        total_records = response.get("totalRecords", 0)
+        list_of_query_results = response.get("data", [])
+    else:
+        query_results: list = []
+        skip_token = ""
+        counter = 0
+
+        while True:
+            paging_options = {"$skipToken": skip_token} if skip_token else {}
+            response = client.resource_graph_query_resources(
+                query=query,
+                paging_options=paging_options,
+                management_groups=management_groups,
+                subscriptions=subscriptions,
+            )
+            current_results = response.get("data", [])
+            query_results.extend(current_results)
+            counter += len(current_results)
+            if limit and counter >= limit:
+                break
+            if "$skipToken" in response and (not limit or counter < limit):
+                skip_token = response.get("$skipToken")
+            else:
+                break
+
+        total_records = response.get("totalRecords", 0)
+        list_of_query_results = query_results
+
+    if limit:
+        list_of_query_results = list_of_query_results[:limit]
+
+    title = f"Results of query:\n```{query}```\n\n Total Number of Possible Records: {total_records} \n"
+    readable_output = tableToMarkdown(title, list_of_query_results, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Azure.ResourceGraph.Query",
+        outputs_key_field="id",
+        outputs=list_of_query_results,
+        raw_response=response,
+    )
+
+
 def parse_forecast_table_to_dict(response: dict) -> list[dict]:
     """
     Parses a generic Azure table-like API response and organizes the data into a list of dictionaries.
@@ -5721,6 +5938,8 @@ def main():  # pragma: no cover
     handle_proxy()
     try:
         commands_with_params_and_args = {
+            "azure-rg-list-operations": resource_graph_list_operations_command,
+            "azure-rg-query": resource_graph_query_resources_command,
             "azure-nsg-security-rule-update": update_security_rule_command,
             "azure-vn-security-rule-update": update_security_rule_command,
             "azure-billing-usage-list": azure_billing_usage_list_command,
