@@ -6,6 +6,9 @@ from MicrosoftApiModule import *  # noqa: E402
 from COOCApiModule import *
 from requests.exceptions import ConnectionError, Timeout
 import datetime as dt
+import hmac
+import hashlib
+import base64
 import defusedxml.ElementTree as defused_ET
 import urllib.parse
 from urllib.parse import parse_qs, urlparse, urlencode, urlunparse
@@ -99,20 +102,26 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-storage-container-create",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action": ["azure-storage-container-public-access-block"],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/read": ["azure-storage-container-property-get"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/read": [
+        "azure-storage-container-property-get",
+        "azure-storage-container-list",
+    ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/delete": ["azure-storage-container-delete"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": [
         "azure-storage-container-blob-create",
         "azure-storage-blob-create",
         "azure-storage-container-blob-property-set",
         "azure-storage-blob-property-set",
+        "azure-storage-blob-update",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read": [
         "azure-storage-container-blob-get",
         "azure-storage-blob-get",
         "azure-storage-container-blob-property-get",
         "azure-storage-blob-property-get",
+        "azure-storage-blob-list",
     ],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete": ["azure-storage-blob-delete"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read": [
         "azure-storage-container-blob-tag-get",
         "azure-storage-blob-tag-get",
@@ -385,6 +394,9 @@ API_FUNCTION_TO_PERMISSIONS = {
     "storage_container_blob_property_get_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"],
     "storage_container_blob_properties_set_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write"],
     "storage_container_block_public_access_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action"],
+    "storage_containers_list_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/read"],
+    "storage_container_blobs_list_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"],
+    "storage_container_blob_delete_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete"],
     "get_rule": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
     "update_webapp_auth": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
     "set_webapp_config": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
@@ -422,6 +434,7 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Storage/storageAccounts/blobServices/containers/read",
     "Microsoft.Storage/storageAccounts/blobServices/containers/delete",
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read",
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete",
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read",
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write",
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write",
@@ -488,6 +501,9 @@ STORAGE_BLOB_SPECIAL_COMMANDS = [
     "azure-storage-blob-create",
     "azure-storage-blob-get",
     "azure-storage-blob-tag-set",
+    "azure-storage-blob-list",
+    "azure-storage-blob-update",
+    "azure-storage-blob-delete",
 ]
 
 COMMANDS_TO_OUTPUTS_PREFIX = {
@@ -1343,6 +1359,89 @@ class AzureClient:
         self.storage_container_set_headers()
 
         response = self.http_request(method="PUT", full_url=full_url, params=params, resp_type="response")
+
+        return response
+
+    def storage_containers_list_request(self, account_name: str, args: dict) -> str:
+        """
+        List Containers under the specified storage account.
+
+        Args:
+            account_name (str): Storage account name.
+            args (dict): The user arguments (like prefix, limit, next_token).
+
+        Returns:
+            str: API response from Azure.
+
+        """
+        next_token = args.get("next_token", "")
+        params: dict = {"comp": "list"}
+        if prefix := args.get("prefix"):
+            params["prefix"] = prefix
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of containers.")
+            params["marker"] = next_token
+        if limit := arg_to_number(args.get("limit")):
+            validate_limit(limit, max_limit=BLOB_CONTAINERS_MAX_PAGE_SIZE)
+            params["maxresults"] = str(limit)
+
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/"
+        self.storage_container_set_headers()
+
+        demisto.debug(f'Listing containers under account "{account_name}".')
+        response = self.http_request(method="GET", full_url=full_url, params=params, resp_type="text")
+
+        return response
+
+    def storage_container_blobs_list_request(self, account_name: str, container_name: str, args: dict) -> str:
+        """
+        List Blobs under the specified container.
+
+        Args:
+            account_name (str): Storage account name.
+            container_name (str): Container name.
+            args (dict): The user arguments (like prefix, limit, next_token).
+
+        Returns:
+            str: API response from Azure.
+
+        """
+        next_token = args.get("next_token", "")
+        params: dict = {"restype": "container", "comp": "list"}
+        if prefix := args.get("prefix"):
+            params["prefix"] = prefix
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of blobs.")
+            params["marker"] = next_token
+        if limit := arg_to_number(args.get("limit")):
+            validate_limit(limit, max_limit=BLOB_CONTAINERS_MAX_PAGE_SIZE)
+            params["maxresults"] = str(limit)
+
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}"
+        self.storage_container_set_headers()
+
+        demisto.debug(f'Listing blobs under container "{container_name}" in account "{account_name}".')
+        response = self.http_request(method="GET", full_url=full_url, params=params, resp_type="text")
+
+        return response
+
+    def storage_container_blob_delete_request(self, container_name: str, blob_name: str, account_name: str) -> requests.Response:
+        """
+        Delete Blob from the specified Container.
+
+        Args:
+            container_name (str): Container name.
+            blob_name (str): Blob name.
+            account_name (str): Storage account name.
+
+        Returns:
+            Response: API response from Azure.
+
+        """
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}/{blob_name}"
+        self.storage_container_set_headers()
+
+        response = self.http_request(method="DELETE", full_url=full_url, resp_type="response")
 
         return response
 
@@ -3654,6 +3753,293 @@ def storage_container_block_public_access_command(client: AzureClient, params: d
     return command_results
 
 
+def storage_container_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    List Containers under the specified storage account.
+
+    Args:
+        client (AzureClient): Azure Blob Storage API client.
+        params (dict): The configuration parameters.
+        args (dict): Command arguments (account_name, prefix, limit, next_token).
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+
+    """
+    account_name = args.get("account_name", "")
+
+    response = client.storage_containers_list_request(account_name, args)
+
+    tree = ET.ElementTree(defused_ET.fromstring(response))
+    root = tree.getroot()
+
+    containers = []
+    for element in root.iter("Container"):
+        properties = {}
+        for container_property in element.findall("Properties"):
+            for attribute in container_property:
+                properties[attribute.tag] = attribute.text
+        containers.append({"name": element.findtext("Name"), "Property": properties})
+
+    if not containers:
+        return CommandResults(readable_output="No containers were found.", raw_response=response)
+
+    next_token = root.findtext("NextMarker")
+
+    outputs = {
+        "Azure.Storage.Container(val.name && val.name == obj.name)": containers,
+        "Azure.Storage(true)": {"ContainersNextToken": next_token},
+    }
+
+    readable_output = tableToMarkdown(
+        f"Containers List in account {account_name}:",
+        containers,
+        headers=["name"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs=remove_empty_elements(outputs),
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def storage_container_blob_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    List Blobs under the specified container.
+
+    Args:
+        client (AzureClient): Azure Blob Storage API client.
+        params (dict): The configuration parameters.
+        args (dict): Command arguments (account_name, container_name, prefix, limit, next_token).
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+
+    """
+    account_name = args.get("account_name", "")
+    container_name = args["container_name"]
+
+    response = client.storage_container_blobs_list_request(account_name, container_name, args)
+
+    tree = ET.ElementTree(defused_ET.fromstring(response))
+    root = tree.getroot()
+
+    blobs = []
+    for element in root.iter("Blob"):
+        properties = {}
+        for blob_property in element.findall("Properties"):
+            for attribute in blob_property:
+                properties[attribute.tag] = attribute.text
+        blobs.append({"name": element.findtext("Name"), "Property": properties})
+
+    if not blobs:
+        return CommandResults(readable_output=f"No blobs were found in container {container_name}.", raw_response=response)
+
+    next_token = root.findtext("NextMarker")
+
+    outputs = {
+        "Azure.Storage.Blob(val.name && val.name == obj.name)": {"ContainerName": container_name, "Blob": blobs},
+        "Azure.Storage(true)": {"BlobsNextToken": next_token},
+    }
+
+    readable_output = tableToMarkdown(
+        f"Blobs List in container {container_name}:",
+        blobs,
+        headers=["name"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs=remove_empty_elements(outputs),
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def storage_container_blob_update_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Update the content of an existing Blob under the specified Container.
+
+    Args:
+        client (AzureClient): Azure Blob Storage API client.
+        params (dict): The configuration parameters.
+        args (dict): Command arguments (account_name, container_name, file_entry_id, blob_name).
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+
+    """
+    container_name = args["container_name"]
+    account_name = args.get("account_name", "")
+    file_entry_id = args["file_entry_id"]
+    blob_name = args["blob_name"]
+
+    file_data = demisto.getFilePath(file_entry_id)  # Retrieve system file path and name, given file entry ID.
+    system_file_path = file_data["path"]
+
+    client.storage_container_create_blob_request(container_name, account_name, file_entry_id, blob_name, system_file_path)
+
+    return CommandResults(readable_output=f"Blob {blob_name} successfully updated.")
+
+
+def storage_container_blob_delete_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Delete Blob from the specified Container.
+
+    Args:
+        client (AzureClient): Azure Blob Storage API client.
+        params (dict): The configuration parameters.
+        args (dict): Command arguments (account_name, container_name, blob_name).
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+
+    """
+    container_name = args["container_name"]
+    blob_name = args["blob_name"]
+    account_name = args.get("account_name", "")
+
+    client.storage_container_blob_delete_request(container_name, blob_name, account_name)
+
+    return CommandResults(readable_output=f"Blob {blob_name} successfully deleted.")
+
+
+def check_valid_permission(valid_permissions: str, input_permissions: str) -> bool:
+    """
+    Check the permissions follow a valid permission order.
+
+    Args:
+        valid_permissions (str): Valid permissions order.
+        input_permissions (str): Permissions given.
+
+    Returns:
+        bool: True if the given permissions are valid and in the correct order.
+
+    """
+    permissions_length = len(input_permissions)
+    if len(valid_permissions) < permissions_length:
+        return False
+    for i in range(permissions_length - 1):
+        last = valid_permissions.rindex(input_permissions[i])
+        first = valid_permissions.index(input_permissions[i + 1])
+        if last == -1 or first == -1 or last > first:
+            return False
+    return True
+
+
+def generate_sas_signature(
+    account_key: str,
+    canonicalized_resource: str,
+    signed_permissions: str,
+    signed_start: str,
+    signed_expiry: str,
+    signed_resource: str,
+    api_version: str,
+    signed_ip: str = "",
+) -> str:
+    """
+    Generate a SAS token for a Container.
+
+    Args:
+        account_key (str): Account key of the storage account.
+        canonicalized_resource (str): Canonicalized resource.
+        signed_permissions (str): Signed permissions.
+        signed_start (str): Start time for the SAS token.
+        signed_expiry (str): Expiry time for the SAS token.
+        signed_resource (str): Signed resource type.
+        api_version (str): The signed version.
+        signed_ip (str): Public IP address or range from which to accept requests.
+
+    Returns:
+        str: The URL-encoded SAS token.
+
+    """
+    if signed_ip is None:
+        signed_ip = ""
+    string_to_sign = (
+        f"{signed_permissions}\n{signed_start}\n{signed_expiry}\n{canonicalized_resource}\n\n"
+        f"{signed_ip}\nhttps\n{api_version}\n{signed_resource}\n\n\n\n\n\n"
+    ).encode()
+    signed_hmac_sha256 = hmac.new(base64.b64decode(account_key), string_to_sign, hashlib.sha256)
+    sig = base64.b64encode(signed_hmac_sha256.digest())
+
+    token = {
+        "sp": signed_permissions,
+        "st": signed_start,
+        "se": signed_expiry,
+        "sip": signed_ip,
+        "spr": "https",
+        "sv": api_version,
+        "sr": signed_resource,
+        "sig": sig,
+    }
+    remove_nulls_from_dictionary(token)
+
+    return urllib.parse.urlencode(token)
+
+
+def generate_sas_token_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Generate a SAS URL for a Container.
+
+    Args:
+        client (AzureClient): Azure Blob Storage API client.
+        params (dict): The configuration parameters.
+        args (dict): Command arguments (account_name, container_name, expiry_time, signed_resources,
+            signed_permissions, signed_ip, account_key).
+
+    Returns:
+        CommandResults: outputs and raw response.
+
+    """
+    account_name = args.get("account_name", "")
+    container_name = args["container_name"]
+    signed_resource = args["signed_resources"]
+    signed_permissions = args["signed_permissions"]
+    signed_ip = args.get("signed_ip", "")
+    valid_permissions = "racwdxltmeop"
+    api_version = "2020-10-02"
+
+    if not check_valid_permission(valid_permissions, signed_permissions):
+        raise DemistoException(
+            "Permissions are invalid or in the wrong order. The correct order for permissions is 'racwdxltmeop'."
+        )
+
+    account_key = params.get("credentials", {}).get("password") or args.get("account_key")
+    if not account_key:
+        raise DemistoException("An account key must be given to generate the SAS token.")
+
+    signed_start = (dt.datetime.utcnow() - dt.timedelta(minutes=2)).strftime(DATE_FORMAT)
+    expiry_time = arg_to_number(args["expiry_time"])
+    signed_expiry = (dt.datetime.utcnow() + dt.timedelta(hours=expiry_time)).strftime(DATE_FORMAT)  # type: ignore[arg-type]
+
+    canonicalized_resource = f"/blob/{account_name}/{container_name}"
+    url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}"
+
+    sas_token = generate_sas_signature(
+        account_key,
+        canonicalized_resource,
+        signed_permissions,
+        signed_start,
+        signed_expiry,
+        signed_resource,
+        api_version,
+        signed_ip,
+    )
+    sas_url = f"{url}?{sas_token}"
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Azure Storage Container SAS URL", {"SAS URL": sas_url}, headerTransform=pascalToSpace),
+        outputs_prefix="Azure.Storage.Container.SAS",
+        outputs_key_field="name",
+        outputs={"name": container_name, "SASURL": sas_url},
+    )
+
+
 def create_policy_assignment_command(client: AzureClient, params: dict, args: dict):
     """
         Creates a policy assignment.
@@ -5749,6 +6135,11 @@ def main():  # pragma: no cover
             "azure-storage-container-blob-property-set": storage_container_blob_property_set_command,
             "azure-storage-blob-property-set": storage_container_blob_property_set_command,
             "azure-storage-container-public-access-block": storage_container_block_public_access_command,
+            "azure-storage-container-list": storage_container_list_command,
+            "azure-storage-blob-list": storage_container_blob_list_command,
+            "azure-storage-blob-update": storage_container_blob_update_command,
+            "azure-storage-blob-delete": storage_container_blob_delete_command,
+            "azure-storage-container-sas-create": generate_sas_token_command,
             "azure-policy-assignment-create": create_policy_assignment_command,
             "azure-postgres-config-set": set_postgres_config_command,
             "azure-postgres-server-update": postgres_server_update_command,

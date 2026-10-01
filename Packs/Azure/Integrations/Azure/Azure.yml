@@ -952,6 +952,156 @@ script:
     execution: true
     name: azure-storage-container-delete
 
+  - name: azure-storage-container-list
+    description: "Lists Containers under the specified storage account. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/read."
+    arguments:
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: subscription_id
+      required: false
+      required:platform: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: Filters the results to return only Containers whose names begin with the specified prefix.
+      name: prefix
+    - description: The maximum number of Containers to retrieve. Valid range 1-5000.
+      name: limit
+      defaultValue: '50'
+    - description: The token for the next set of items to return, used for pagination.
+      name: next_token
+    outputs:
+    - contextPath: Azure.Storage.Container.name
+      description: Container name.
+      type: String
+    - contextPath: Azure.Storage.ContainersNextToken
+      description: The token to use when requesting the next set of Containers.
+      type: String
+
+  - name: azure-storage-blob-list
+    description: "Lists Blobs under the specified container. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read."
+    arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: subscription_id
+      required: false
+      required:platform: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: Filters the results to return only Blobs whose names begin with the specified prefix.
+      name: prefix
+    - description: The maximum number of Blobs to retrieve. Valid range 1-5000.
+      name: limit
+      defaultValue: '50'
+    - description: The token for the next set of items to return, used for pagination.
+      name: next_token
+    outputs:
+    - contextPath: Azure.Storage.Blob.ContainerName
+      description: Container name.
+      type: String
+    - contextPath: Azure.Storage.Blob.Blob.name
+      description: Blob name.
+      type: String
+    - contextPath: Azure.Storage.BlobsNextToken
+      description: The token to use when requesting the next set of Blobs.
+      type: String
+
+  - name: azure-storage-blob-update
+    description: "Updates the content of an existing Blob. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
+    arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The entry ID of the file to upload as the Blob content. Available from the war room while the context data contains file output.
+      name: file_entry_id
+      required: true
+    - description: The name of the Blob to update.
+      name: blob_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: subscription_id
+      required: false
+      required:platform: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+
+  - name: azure-storage-blob-delete
+    description: "Marks a specific Blob for deletion. The Blob will be deleted during garbage collection. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete."
+    execution: true
+    arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the Blob to delete.
+      name: blob_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: subscription_id
+      required: false
+      required:platform: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+
+  - name: azure-storage-container-sas-create
+    description: "Creates a SAS token for a Container."
+    arguments:
+    - description: The name of the Container.
+      name: container_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: subscription_id
+      required: false
+      required:platform: true
+    - defaultValue: '1'
+      description: Expiry time for the SAS token (in hours).
+      name: expiry_time
+      required: true
+    - auto: PREDEFINED
+      defaultValue: c
+      description: Specifies which resources are accessible via the shared access signature. Options available c(container), b(blob), bv(blob version), bs(blob snapshot), d(directory).
+      name: signed_resources
+      predefined:
+      - c
+      - b
+      - bv
+      - bs
+      - d
+      required: true
+    - defaultValue: r
+      description: 'The permissions that are associated with the shared access signature. The user is restricted to operations that are allowed by the permissions. Possible permissions: r = Read, a = Add, c = Create, w = Write. The permissions must follow this order "racwdxltmeop". Example: r, c, a, w, rac, racw.'
+      name: signed_permissions
+      required: true
+    - description: Specifies a public IP address or a range of public IP addresses from which to accept requests.
+      name: signed_ip
+    - description: The account key to create the SAS token with. If not provided, the account key from the integration configuration is used.
+      name: account_key
+    outputs:
+    - contextPath: Azure.Storage.Container.SAS.name
+      description: Container name.
+      type: String
+    - contextPath: Azure.Storage.Container.SAS.SASURL
+      description: The generated SAS URL for the container.
+      type: String
+
   - arguments:
     - description: The name of the Blob Container.
       name: container_name
