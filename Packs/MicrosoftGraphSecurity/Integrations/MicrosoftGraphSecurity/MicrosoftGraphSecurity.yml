@@ -223,7 +223,7 @@ configuration:
   required: false
   additionalinfo: When selected, the hunting query result is also saved to the Microsoft 365 Defender context path. Relevant only for the msg-advanced-hunting command.
   section: Collect
-description: Unified gateway to security insights - all from a unified Microsoft Graph Security API.
+description: Unified gateway to security insights - all from a unified Microsoft Graph Security API and Microsoft 365 Defender.
 display: Microsoft Graph Security
 name: Microsoft Graph
 script:

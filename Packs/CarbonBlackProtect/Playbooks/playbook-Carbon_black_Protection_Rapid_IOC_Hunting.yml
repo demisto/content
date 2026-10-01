@@ -3,7 +3,7 @@ fromversion: 5.0.0
 system: true
 version: -1
 name: Carbon black Protection Rapid IOC Hunting
-description: Hunt for endpoint activity involving hash and domain IOCs, using Carbon black Protection (Bit9).
+description: Hunt for endpoint activity involving hash and domain IOCs, using Carbon black Protection (Bit9) and Carbon black Response (CB Response).
 starttaskid: "0"
 tasks:
   "0":

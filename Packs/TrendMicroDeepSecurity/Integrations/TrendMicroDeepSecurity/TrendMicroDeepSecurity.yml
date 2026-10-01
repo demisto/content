@@ -41,7 +41,7 @@ configuration:
   required: false
   section: Connect
   advanced: true
-description: Cloud Security Protection.
+description: Cloud Security Protection and Endpoint Security.
 display: TrendAI™ Deep Security™
 name: Trend Micro Deep Security
 script:
@@ -4070,7 +4070,7 @@ script:
       - contextPath: TrendMicro.ScheduledTask.ID
         description: The ID of the scheduled task.
         type: Number
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.13053055
   runonce: false
   subtype: python3
   type: python
