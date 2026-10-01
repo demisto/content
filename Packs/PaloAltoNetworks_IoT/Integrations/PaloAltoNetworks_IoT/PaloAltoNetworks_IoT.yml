@@ -103,7 +103,7 @@ configuration:
   type: 8
   section: Collect
   required: false
-description: This is the Palo Alto Networks IoT integration (previously Zingbox).
+description: This is the Palo Alto Networks IoT integration (previously Zingbox) and it is used to fetch alerts and vulnerabilities from the IoT Security Portal.
 display: Palo Alto Networks IoT
 name: Palo Alto Networks IoT
 script:

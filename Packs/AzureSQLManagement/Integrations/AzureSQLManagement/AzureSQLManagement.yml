@@ -95,7 +95,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Microsoft Azure SQL Management Integration manages the Auditing and Threat Policies for Azure SQL.
+description: Microsoft Azure SQL Management Integration manages the Auditing and Threat Policies for Azure SQL and SQL Managed Instances.
 display: Azure SQL Management
 name: Azure SQL Management
 script:

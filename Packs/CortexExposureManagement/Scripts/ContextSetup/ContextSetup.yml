@@ -55,7 +55,7 @@ args:
   - "false"
 comment: |-
   This script simplifies how you add data to Cortex XSOAR's context. Use it to set static values or to map different values to existing context paths. Instead of a value you can enter TIMESTAMP to get the current timestamp in ISO format. For example:
-  `!ContextSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" context_key="key"`.
+  `!ContextSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" context_key="key"` and it will set the context key to `{"ip": "1.1.1.1", "src": "AWS", "timestamp": "2023-01-01T12:00:00.000Z"}`.
 commonfields:
   id: ContextSetup
   version: -1

@@ -223,7 +223,7 @@ configuration:
   required: false
   additionalinfo: When selected, the hunting query result is also saved to the Microsoft 365 Defender context path. Relevant only for the msg-advanced-hunting command.
   section: Collect
-description: Unified gateway to security insights - all from a unified Microsoft Graph Security API.
+description: Unified gateway to security insights - all from a unified Microsoft Graph Security API and Microsoft 365 Defender.
 display: Microsoft Graph Security
 name: Microsoft Graph
 script:
@@ -3169,7 +3169,7 @@ script:
     - contextPath: MsGraph.eDiscoveryCase.Export.Location
       description: The Location header URL returned for the export operation.
       type: String
-  dockerimage: demisto/crypto:1.0.0.10120494
+  dockerimage: demisto/crypto:1.0.0.12833174
   isfetch: true
   runonce: false
   script: '-'
