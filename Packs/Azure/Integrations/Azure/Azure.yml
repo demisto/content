@@ -1574,7 +1574,7 @@ script:
       type: String
 
   - name: azure-storage-fileshare-content-list
-    description: "Lists files and directories under the specified share or directory. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/files/read."
+    description: "Lists files and directories under the specified share or directory. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/read, Microsoft.Storage/storageAccounts/fileServices/readFileBackupSemantics/action. These are included in the Storage File Data Privileged Reader role."
     arguments:
     - name: subscription_id
       required: false
@@ -1617,7 +1617,7 @@ script:
       type: String
 
   - name: azure-storage-fileshare-directory-create
-    description: "Creates a new directory under the specified share or parent directory. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/files/write."
+    description: "Creates a new directory under the specified share or parent directory. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write, Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action. These are included in the Storage File Data Privileged Contributor role."
     arguments:
     - name: subscription_id
       required: false
@@ -1636,7 +1636,7 @@ script:
       description: The path to the parent directory under which to create the new directory.
 
   - name: azure-storage-fileshare-directory-delete
-    description: "Deletes the specified empty directory. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/files/delete."
+    description: "Deletes the specified empty directory. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete, Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action. These are included in the Storage File Data Privileged Contributor role."
     execution: true
     arguments:
     - name: subscription_id
@@ -1656,7 +1656,7 @@ script:
       description: The path to the parent directory of the directory to delete.
 
   - name: azure-storage-fileshare-file-create
-    description: "Creates a new file in a share from a War Room file entry ID. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/files/write."
+    description: "Creates a new file in a share from a War Room file entry ID. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write, Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action. These are included in the Storage File Data Privileged Contributor role."
     arguments:
     - name: subscription_id
       required: false
@@ -1677,7 +1677,7 @@ script:
       description: The path to the directory where the file should be created.
 
   - name: azure-storage-fileshare-file-get
-    description: "Retrieves a file from a share and returns it to the War Room. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/files/read."
+    description: "Retrieves a file from a share and returns it to the War Room. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/read, Microsoft.Storage/storageAccounts/fileServices/readFileBackupSemantics/action. These are included in the Storage File Data Privileged Reader role."
     arguments:
     - name: subscription_id
       required: false
@@ -1696,7 +1696,7 @@ script:
       description: The path to the directory where the file resides.
 
   - name: azure-storage-fileshare-file-delete
-    description: "Deletes a file from a share. Required permission: Microsoft.Storage/storageAccounts/fileServices/shares/files/delete."
+    description: "Deletes a file from a share. Required permissions (data actions): Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete, Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action. These are included in the Storage File Data Privileged Contributor role."
     execution: true
     arguments:
     - name: subscription_id

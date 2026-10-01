@@ -7929,3 +7929,29 @@ def test_storage_fileshare_file_delete_command_success(mocker, client, mock_para
 
     assert isinstance(result, CommandResults)
     assert result.readable_output == "File mock_file.txt successfully deleted from mock-share."
+
+
+@pytest.mark.parametrize(
+    "method_name, method_kwargs",
+    [
+        ("list_directories_and_files_request", {}),
+        ("create_directory_request", {"directory_name": "mock-dir"}),
+        ("delete_directory_request", {"directory_name": "mock-dir"}),
+        ("create_file_request", {"file_name": "mock_file.txt", "content_length": 10}),
+        ("add_file_content_request", {"file_name": "mock_file.txt", "file_data": b"0123456789", "content_length": 10}),
+        ("get_file_request", {"file_name": "mock_file.txt"}),
+        ("delete_file_request", {"file_name": "mock_file.txt"}),
+    ],
+)
+def test_fileshare_data_plane_requests_send_file_request_intent(mocker, client, method_name, method_kwargs):
+    """
+    Given: An Azure client calling an Azure Files data-plane (file.core.windows.net) request method.
+    When: The request is sent with an OAuth token.
+    Then: The x-ms-file-request-intent header required by Azure Files for OAuth requests is set to "backup".
+    """
+    mocker.patch.object(client, "http_request")
+
+    getattr(client, method_name)(account_name="mockaccount", share_name="mock-share", **method_kwargs)
+
+    client.http_request.assert_called_once()
+    assert client.headers["x-ms-file-request-intent"] == "backup"

@@ -23,6 +23,8 @@ BLOB_SERVICE_PREFIX = "blob.core.windows.net"
 FILE_SERVICE_PREFIX = "file.core.windows.net"
 FILESHARE_GENERAL_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 FILESHARE_STORAGE_API_VERSION = "2023-11-03"
+# Azure Files data-plane requests authorized with an OAuth token must declare the request intent.
+FILESHARE_OAUTH_HEADERS = {"x-ms-file-request-intent": "backup"}
 # Microsoft.Storage resource provider (ARM control plane) API version used for share-level operations.
 FILESHARE_ARM_API_VERSION = "2026-06-01"
 
@@ -395,13 +397,34 @@ API_FUNCTION_TO_PERMISSIONS = {
     "create_share_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/write"],
     "delete_share_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/delete"],
     "list_shares_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/read"],
-    "list_directories_and_files_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/files/read"],
-    "create_directory_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/files/write"],
-    "delete_directory_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/files/delete"],
-    "create_file_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/files/write"],
-    "add_file_content_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/files/write"],
-    "get_file_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/files/read"],
-    "delete_file_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/files/delete"],
+    "list_directories_and_files_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/read",
+        "Microsoft.Storage/storageAccounts/fileServices/readFileBackupSemantics/action",
+    ],
+    "create_directory_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write",
+        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
+    ],
+    "delete_directory_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete",
+        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
+    ],
+    "create_file_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write",
+        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
+    ],
+    "add_file_content_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write",
+        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
+    ],
+    "get_file_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/read",
+        "Microsoft.Storage/storageAccounts/fileServices/readFileBackupSemantics/action",
+    ],
+    "delete_file_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete",
+        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
+    ],
     "get_rule": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
     "update_webapp_auth": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
     "set_webapp_config": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
@@ -446,9 +469,11 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Storage/storageAccounts/fileServices/shares/read",
     "Microsoft.Storage/storageAccounts/fileServices/shares/write",
     "Microsoft.Storage/storageAccounts/fileServices/shares/delete",
-    "Microsoft.Storage/storageAccounts/fileServices/shares/files/read",
-    "Microsoft.Storage/storageAccounts/fileServices/shares/files/write",
-    "Microsoft.Storage/storageAccounts/fileServices/shares/files/delete",
+    "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/read",
+    "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write",
+    "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete",
+    "Microsoft.Storage/storageAccounts/fileServices/readFileBackupSemantics/action",
+    "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
     "Microsoft.Authorization/policyAssignments/read",
     "Microsoft.Authorization/policyAssignments/write",
     "Microsoft.DBforPostgreSQL/servers/read",
@@ -778,7 +803,9 @@ class AzureClient:
             DemistoException: For permission errors and other API errors
         """
         error_msg = str(e).lower()
-        demisto.debug(f"Azure API error for {resource_type} '{resource_name}': {type(e).__name__}")
+        demisto.debug(
+            f"Azure API error for {subscription_id=} {error_msg=} {resource_type} '{resource_name}': {type(e).__name__}"
+        )
 
         if "404" in error_msg or "not found" in error_msg:
             error_details = f'{resource_type} "{resource_name}"'
@@ -789,7 +816,7 @@ class AzureClient:
             raise ValueError(f"{error_details} was not found. {str(e)}")
 
         elif ("403" in error_msg or "forbidden" in error_msg) or ("401" in error_msg or "unauthorized" in error_msg):
-            demisto.debug("Permission error, trying to find the missing permission.")
+            demisto.debug(f"Permission error, trying to find the missing permission. {e=}")
             found_permission = []
             # If we have api_function_name, use the reverse mapping for O(1) lookup
             if api_function_name in API_FUNCTION_TO_PERMISSIONS:
@@ -1507,7 +1534,7 @@ class AzureClient:
         params = assign_params(
             restype="directory", comp="list", include="Timestamps", prefix=prefix, maxresults=limit, marker=marker
         )
-        self.storage_container_set_headers()
+        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS)
         try:
             return self.http_request(method="GET", full_url=full_url, params=params, resp_type="text")
         except Exception as e:
@@ -1541,6 +1568,7 @@ class AzureClient:
             "x-ms-file-attributes": "None",
             "x-ms-file-creation-time": "now",
             "x-ms-file-last-write-time": "now",
+            **FILESHARE_OAUTH_HEADERS,
         }
         self.storage_container_set_headers(headers)
         try:
@@ -1571,7 +1599,7 @@ class AzureClient:
         suffix = f"{share_name}/{directory_path}/{directory_name}" if directory_path else f"{share_name}/{directory_name}"
         full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
         params = assign_params(restype="directory")
-        self.storage_container_set_headers()
+        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS)
         try:
             return self.http_request(method="DELETE", full_url=full_url, params=params, resp_type="response")
         except Exception as e:
@@ -1609,6 +1637,7 @@ class AzureClient:
             "x-ms-file-creation-time": "now",
             "x-ms-file-last-write-time": "now",
             "x-ms-content-length": str(content_length),
+            **FILESHARE_OAUTH_HEADERS,
         }
         self.storage_container_set_headers(headers)
         try:
@@ -1648,6 +1677,7 @@ class AzureClient:
             "x-ms-range": f"bytes=0-{max_range}",
             "Content-Length": str(content_length),
             "x-ms-type": "file",
+            **FILESHARE_OAUTH_HEADERS,
         }
         params = {"comp": "range"}
         self.storage_container_set_headers(headers)
@@ -1678,7 +1708,7 @@ class AzureClient:
         """
         suffix = f"{share_name}/{directory_path}/{file_name}" if directory_path else f"{share_name}/{file_name}"
         full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
-        self.storage_container_set_headers()
+        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS)
         try:
             return self.http_request(method="GET", full_url=full_url, resp_type="response")
         except Exception as e:
@@ -1706,7 +1736,7 @@ class AzureClient:
         """
         suffix = f"{share_name}/{directory_path}/{file_name}" if directory_path else f"{share_name}/{file_name}"
         full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
-        self.storage_container_set_headers()
+        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS)
         try:
             return self.http_request(method="DELETE", full_url=full_url, resp_type="response")
         except Exception as e:
