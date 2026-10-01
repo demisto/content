@@ -129,9 +129,11 @@ from Vega import (
     RECONCILE_COMPLETED_INCIDENTS_KEY,
     RECONCILE_COMPLETED_ALERTS_KEY,
     RECONCILE_NOT_FOUND_ALERTS_KEY,
+    RECONCILE_NOT_FOUND_INCIDENTS_KEY,
     _parse_comma_separated_ids,
     _parse_reconcile_window,
     _collect_paged_ids,
+    _collect_xsoar_entity_ids,
     _normalize_entity_id,
     _xsoar_vega_entity_id,
     reconcile_incidents_command,
@@ -5539,11 +5541,10 @@ def test_collect_paged_ids_follows_total():
         RECONCILE_PAGE_SIZE: {"alerts": [{"id": "a-last"}], "total": RECONCILE_PAGE_SIZE + 1},
     }
 
-    ids, truncated = _collect_paged_ids(lambda offset: pages[offset], "alerts", _normalize_entity_id)
+    ids = _collect_paged_ids(lambda offset: pages[offset], "alerts", _normalize_entity_id)
 
     assert ids[-1] == "a-last"
     assert len(ids) == RECONCILE_PAGE_SIZE + 1
-    assert truncated is False
 
 
 def test_collect_paged_ids_continues_after_short_page_when_total_remains():
@@ -5552,21 +5553,55 @@ def test_collect_paged_ids_continues_after_short_page_when_total_remains():
             return {"alerts": [{"id": "a-1"}], "total": 2}
         return {"alerts": [{"id": "a-2"}], "total": 2}
 
-    ids, truncated = _collect_paged_ids(fetch_page, "alerts", _normalize_entity_id, max_pages=5)
+    ids = _collect_paged_ids(fetch_page, "alerts", _normalize_entity_id)
 
     assert ids == ["a-1", "a-2"]
-    assert truncated is False
 
 
-def test_collect_paged_ids_marks_truncated_at_page_cap():
+def test_collect_paged_ids_reads_past_the_former_page_cap():
+    page_count = 51
+    total = RECONCILE_PAGE_SIZE * page_count
+
     def fetch_page(offset: int) -> dict:
-        del offset
-        return {"alerts": [{"id": f"a-{index}"} for index in range(RECONCILE_PAGE_SIZE)], "total": 10000}
+        return {
+            "alerts": [{"id": f"a-{offset + index}"} for index in range(RECONCILE_PAGE_SIZE)],
+            "total": total,
+        }
 
-    ids, truncated = _collect_paged_ids(fetch_page, "alerts", _normalize_entity_id, max_pages=1)
+    ids = _collect_paged_ids(fetch_page, "alerts", _normalize_entity_id)
 
-    assert len(ids) == RECONCILE_PAGE_SIZE
-    assert truncated is True
+    assert len(ids) == total
+    assert ids[0] == "a-0"
+    assert ids[-1] == f"a-{total - 1}"
+
+
+def test_collect_xsoar_entity_ids_reads_every_vega_incident_and_alert(mocker):
+    page_count = 51
+    total = RECONCILE_PAGE_SIZE * page_count
+    pages_requested: dict[str, list[int]] = {"Vega Incident": [], "Vega Alert": []}
+
+    def search(_method, _uri, body=None):
+        payload = json.loads(body)
+        query = payload["filter"]["query"]
+        page = payload["filter"]["page"]
+        entity_type = "Vega Incident" if 'type:"Vega Incident"' in query else "Vega Alert"
+        suffix = "incident" if entity_type == "Vega Incident" else "alert"
+        pages_requested[entity_type].append(page)
+        start = page * RECONCILE_PAGE_SIZE
+        data = [{"dbotMirrorId": f"{suffix}:id-{start + index}", "type": entity_type} for index in range(RECONCILE_PAGE_SIZE)]
+        return {"statusCode": 200, "body": json.dumps({"data": data, "total": total})}
+
+    mocker.patch("Vega.demisto.internalHttpRequest", side_effect=search)
+
+    incident_ids = _collect_xsoar_entity_ids("Vega Incident", "incident", "2024-06-01T00:00:00Z", "2024-06-02T23:59:59Z")
+    alert_ids = _collect_xsoar_entity_ids("Vega Alert", "alert", "2024-06-01T00:00:00Z", "2024-06-02T23:59:59Z")
+
+    assert len(incident_ids) == total
+    assert len(alert_ids) == total
+    assert pages_requested["Vega Incident"] == list(range(page_count))
+    assert pages_requested["Vega Alert"] == list(range(page_count))
+    assert "id-0" in incident_ids
+    assert f"id-{total - 1}" in alert_ids
 
 
 def test_xsoar_vega_entity_id_uses_mirror_uuid_not_display_id():
@@ -5745,3 +5780,108 @@ def test_fetch_reconciliation_leaves_ids_pending_on_transient_error(mocker):
     assert created == []
     assert next_run[RECONCILE_NOT_FOUND_ALERTS_KEY] == []
     assert next_run[RECONCILE_COMPLETED_ALERTS_KEY] == []
+
+
+def _invalid_uuid_exception(detail: str) -> DemistoException:
+    payload = {
+        "message": "Invalid request fields",
+        "extensions": {
+            "error_code": "E000000057",
+            "error_code_name": "INVALID_REQUEST_FIELDS",
+            "extra_args": {"error": detail},
+            "trace_id": 1,
+        },
+    }
+    return DemistoException(f"GraphQL error: {[payload]}")
+
+
+def test_fetch_reconciliation_skips_invalid_uuid_and_fetches_the_rest(mocker):
+    """One invalid UUID is logged and skipped. Valid IDs in the same list are still fetched."""
+    _patch_reconciliation_runtime(mocker)
+    info = mocker.patch("Vega.demisto.info")
+    error = mocker.patch("Vega.demisto.error")
+    good_id = "019e1b27-6d49-7ea1-a9d2-f30bf8c69165"
+    bad_incident_id = "sdfsdfsafasdfsdfsda"
+    bad_alert_id = "asdfsdf"
+    client = mocker.Mock()
+
+    def get_incidents(**kwargs):
+        if bad_incident_id in kwargs["incident_ids"]:
+            raise _invalid_uuid_exception(f'incidentIds entry "{bad_incident_id}" is not a valid UUID')
+        return {
+            "incidents": [{"id": good_id, "name": "One", "createdAt": "2024-06-01T00:00:00Z", "severity": "LOW"}],
+            "total": 1,
+        }
+
+    client.get_incidents.side_effect = get_incidents
+    client.get_alerts.side_effect = _invalid_uuid_exception(f'alertIds "{bad_alert_id}" is not a valid UUID')
+
+    next_run, created = fetch_reconciliation_incidents_command(
+        client,
+        last_run={},
+        alert_ids=[bad_alert_id],
+        incident_ids=[bad_incident_id, good_id],
+        max_fetch=50,
+        integration_url="https://vega.example",
+    )
+
+    assert [incident["dbotMirrorId"] for incident in created] == [f"incident:{good_id}"]
+    assert next_run[RECONCILE_COMPLETED_INCIDENTS_KEY] == [good_id]
+    assert next_run[RECONCILE_NOT_FOUND_INCIDENTS_KEY] == [bad_incident_id]
+    assert next_run[RECONCILE_NOT_FOUND_ALERTS_KEY] == [bad_alert_id]
+    error_lines = [call.args[0] for call in error.call_args_list]
+    assert f"Skipped incident ID '{bad_incident_id}' because it is not a valid UUID." in error_lines[0]
+    assert f"Skipped alert ID '{bad_alert_id}' because it is not a valid UUID." in error_lines[1]
+    assert all("GraphQL" not in line and "trace_id" not in line for line in error_lines)
+    assert "Fetched 1 Vega incident." in [call.args[0] for call in info.call_args_list]
+
+    info.reset_mock()
+    client.get_incidents.reset_mock()
+    client.get_alerts.reset_mock()
+    _, created_again = fetch_reconciliation_incidents_command(
+        client,
+        last_run=next_run,
+        alert_ids=[bad_alert_id],
+        incident_ids=[bad_incident_id, good_id],
+        max_fetch=50,
+        integration_url="https://vega.example",
+    )
+
+    assert created_again == []
+    client.get_incidents.assert_not_called()
+    client.get_alerts.assert_not_called()
+    assert "No Vega incidents or alerts were fetched." in [call.args[0] for call in info.call_args_list]
+
+
+def test_fetch_reconciliation_skips_uuid_error_that_uses_single_quotes(mocker):
+    _patch_reconciliation_runtime(mocker)
+    mocker.patch("Vega.demisto.error")
+    bad_id = "019e1b27-6d49-7ea1-a9d2-f30bf8c69165rtrtrfiyf t"
+    client = mocker.Mock()
+    client.get_incidents.side_effect = _invalid_uuid_exception(f"incidents entry '{bad_id}' is not valid UUID")
+
+    next_run, created = fetch_reconciliation_incidents_command(
+        client,
+        last_run={},
+        alert_ids=[],
+        incident_ids=[bad_id],
+        max_fetch=50,
+    )
+
+    assert created == []
+    assert next_run[RECONCILE_NOT_FOUND_INCIDENTS_KEY] == [bad_id]
+
+
+def test_fetch_reconciliation_still_fails_on_other_graphql_errors(mocker):
+    _patch_reconciliation_runtime(mocker)
+    client = mocker.Mock()
+    client.get_alerts.side_effect = DemistoException("GraphQL error: [{'message': 'Something else'}]")
+
+    with pytest.raises(DemistoException, match="Something else"):
+        fetch_reconciliation_incidents_command(
+            client,
+            last_run={},
+            alert_ids=["a-1"],
+            incident_ids=[],
+            max_fetch=50,
+        )

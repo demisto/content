@@ -159,7 +159,6 @@ RATE_LIMIT_INITIAL_WAIT_SECONDS = 2
 RATE_LIMIT_WAIT_INCREMENT_SECONDS = 2
 FETCH_ENTITIES_PAGE_SIZE = 100
 RECONCILE_PAGE_SIZE = FETCH_ENTITIES_PAGE_SIZE
-RECONCILE_MAX_PAGES = 50
 RECONCILE_COMPLETED_ALERTS_KEY = "reconciliation_completed_alert_ids"
 RECONCILE_COMPLETED_INCIDENTS_KEY = "reconciliation_completed_incident_ids"
 RECONCILE_NOT_FOUND_ALERTS_KEY = "reconciliation_not_found_alert_ids"
@@ -296,7 +295,7 @@ _CONNECTION_ERROR_MARKERS = (
 _URL_UNREACHABLE_STATUS_CODES = frozenset({404, 405, 502, 503, 504})
 _AUTH_FAILURE_STATUS_CODES = frozenset({401, 403})
 TEST_CONNECTION_URL_ERROR = (
-    "Unable to connect to the Vega API. Please verify the Base URL is correct " "and reachable from the Cortex XSOAR engine."
+    "Unable to connect to the Vega API. Please verify the Base URL is correct and reachable from the Cortex XSOAR engine."
 )
 TEST_CONNECTION_BASE_URL_ERROR = "Unable to reach the Vega API at the configured Base URL. Please verify the Base URL is correct."
 TEST_CONNECTION_ACCESS_KEY_ERROR = "Incorrect Access Key. Please check your credentials."
@@ -443,7 +442,7 @@ UPDATE_INCIDENTS_MUTATION = (
 )
 
 SET_DETECTIONS_STATE_MUTATION = (
-    "mutation SetDetectionsState($input: SetDetectionsStateInput!) { " " setDetectionsState(input: $input) { " "  ids } }"
+    "mutation SetDetectionsState($input: SetDetectionsStateInput!) {  setDetectionsState(input: $input) {   ids } }"
 )
 
 UPDATE_DETECTIONS_MUTATION = (
@@ -999,7 +998,7 @@ class Client(BaseClient):
 
         session_jwt: str = login_res.get("session_jwt", "") if login_res else ""
         if not session_jwt:
-            raise ValueError("Authentication failed: no session token received. " "Please verify the Access Key and Base URL.")
+            raise ValueError("Authentication failed: no session token received. Please verify the Access Key and Base URL.")
         return session_jwt
 
     def _query_access_key_for_test_connection(self, session_jwt: str) -> dict:
@@ -1765,7 +1764,7 @@ def _format_alert_events_markdown(
     if page_size and total > page_size:
         current_page = (offset // page_size) + 1
         total_pages = max(1, math.ceil(total / page_size))
-        table_md += f"\n\nPage {current_page} of {total_pages} " f"(showing {len(events)} of {total} events)"
+        table_md += f"\n\nPage {current_page} of {total_pages} (showing {len(events)} of {total} events)"
     return table_md
 
 
@@ -2925,7 +2924,7 @@ def _timeline_footer_html(event: dict) -> str:
     if not parts:
         return ""
 
-    return f"<div style='display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;'>" f"{''.join(parts)}</div>"
+    return f"<div style='display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;'>{''.join(parts)}</div>"
 
 
 def _timeline_axis_html(is_last: bool) -> str:
@@ -3077,8 +3076,8 @@ def _format_key_findings_html(findings: Any, assets: Any, observables: Any) -> s
     """Render Vega key findings as HTML (black background, numbered list, entity pills)."""
     finding_texts = _normalize_findings_list(findings)
     highlight_values = set(_normalize_list_items(assets) + _normalize_list_items(observables))
-    header = "<div style='font-size:15px;font-weight:600;margin-bottom:4px;color:#ffffff;'>" "Key findings</div>"
-    container_style = f"background:#000000;color:#ffffff;padding:16px;" f"font-family:{_VEGA_DARK_UI_FONT};"
+    header = "<div style='font-size:15px;font-weight:600;margin-bottom:4px;color:#ffffff;'>Key findings</div>"
+    container_style = f"background:#000000;color:#ffffff;padding:16px;font-family:{_VEGA_DARK_UI_FONT};"
 
     if not finding_texts:
         return (
@@ -5232,8 +5231,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     fetch_incidents = "Incidents" in vega_entities
 
     demisto.info(
-        f"Command started: fetch_alerts={fetch_alerts}, fetch_incidents={fetch_incidents}, "
-        f"last_update={remote_args.last_update}"
+        f"Command started: fetch_alerts={fetch_alerts}, fetch_incidents={fetch_incidents}, last_update={remote_args.last_update}"
     )
 
     modified_ids: list[str] = []
@@ -6138,14 +6136,12 @@ def _collect_paged_ids(
     fetch_page: Callable[[int], dict[str, Any]],
     entities_key: str,
     id_from_item: Callable[[dict[str, Any]], str],
-    max_pages: int = RECONCILE_MAX_PAGES,
-) -> tuple[list[str], bool]:
-    """Page a Vega ID query at RECONCILE_PAGE_SIZE and stop at RECONCILE_MAX_PAGES."""
+) -> list[str]:
+    """Page a Vega ID query at RECONCILE_PAGE_SIZE until every matching ID is collected."""
     collected: list[str] = []
     seen: set[str] = set()
     offset = 0
-    truncated = False
-    for page_index in range(max_pages):
+    while True:
         response = fetch_page(offset) or {}
         _raise_vega_collection_error(response, entities_key)
         page_items = [item for item in (response.get(entities_key) or []) if isinstance(item, dict)]
@@ -6160,9 +6156,7 @@ def _collect_paged_ids(
         offset += len(page_items)
         if _page_reached_end(offset, len(page_items), total):
             break
-        if page_index == max_pages - 1:
-            truncated = True
-    return collected, truncated
+    return collected
 
 
 def _xsoar_query_timestamp(iso_time: str) -> str:
@@ -6243,15 +6237,14 @@ def _collect_xsoar_entity_ids(
     entity_suffix: str,
     start_time: str,
     end_time: str,
-    max_pages: int = RECONCILE_MAX_PAGES,
-) -> tuple[set[str], bool]:
-    """Page Cortex XSOAR investigations and collect Vega UUIDs for one entity type."""
+) -> set[str]:
+    """Page every Cortex XSOAR investigation of this type and collect its Vega UUIDs."""
     query = _xsoar_reconciliation_query(entity_type, start_time, end_time)
     found: set[str] = set()
     scanned = 0
-    truncated = False
-    for page_index in range(max_pages):
-        incidents, total = _search_xsoar_incidents_page(query, page_index)
+    page = 0
+    while True:
+        incidents, total = _search_xsoar_incidents_page(query, page)
         if not incidents:
             break
         for incident in incidents:
@@ -6261,9 +6254,8 @@ def _collect_xsoar_entity_ids(
         scanned += len(incidents)
         if _page_reached_end(scanned, len(incidents), total):
             break
-        if page_index == max_pages - 1:
-            truncated = True
-    return found, truncated
+        page += 1
+    return found
 
 
 def _missing_ids(source_ids: list[str], present_ids: set[str]) -> list[str]:
@@ -6347,7 +6339,7 @@ def reconcile_incidents_command(client: Client, args: dict[str, Any]) -> Command
 
     if include_incidents:
         incident_filters = _reconcile_incident_filters(args)
-        vega_incident_ids, _incidents_truncated = _collect_paged_ids(
+        vega_incident_ids = _collect_paged_ids(
             lambda offset: client.get_incident_ids(
                 from_time=start_time,
                 to_time=end_time,
@@ -6359,7 +6351,7 @@ def reconcile_incidents_command(client: Client, args: dict[str, Any]) -> Command
             "incidents",
             _normalize_entity_id,
         )
-        xsoar_incident_ids, _xsoar_incidents_truncated = _collect_xsoar_entity_ids(
+        xsoar_incident_ids = _collect_xsoar_entity_ids(
             "Vega Incident",
             MIRROR_ENTITY_SUFFIX_INCIDENT,
             start_time,
@@ -6374,7 +6366,7 @@ def reconcile_incidents_command(client: Client, args: dict[str, Any]) -> Command
 
     if include_alerts:
         alert_filters = _reconcile_alert_filters(args)
-        vega_alert_ids, _alerts_truncated = _collect_paged_ids(
+        vega_alert_ids = _collect_paged_ids(
             lambda offset: client.get_alert_ids(
                 from_time=start_time,
                 to_time=end_time,
@@ -6386,7 +6378,7 @@ def reconcile_incidents_command(client: Client, args: dict[str, Any]) -> Command
             "alerts",
             _normalize_entity_id,
         )
-        xsoar_alert_ids, _xsoar_alerts_truncated = _collect_xsoar_entity_ids(
+        xsoar_alert_ids = _collect_xsoar_entity_ids(
             "Vega Alert",
             MIRROR_ENTITY_SUFFIX_ALERT,
             start_time,
@@ -6473,14 +6465,118 @@ def _fetch_reconciliation_records(client: Client, entity_ids: list[str], *, inci
     return _vega_entities_or_raise(response, "alerts", "alerts")
 
 
-def _load_reconciliation_batch(client: Client, entity_ids: list[str], *, incidents: bool) -> list[dict[str, Any]] | None:
-    """Load one reconciliation batch. Transient API errors leave the IDs pending."""
-    label = "reconciliation incidents" if incidents else "reconciliation alerts"
-    try:
-        return _fetch_reconciliation_records(client, entity_ids, incidents=incidents)
-    except Exception as exc:
-        _handle_fetch_entity_error(label, exc)
+_INVALID_UUID_ID_PATTERN = re.compile(
+    r"""(?P<label>alertIds|incidentIds|alerts|incidents)(?:\s+entry)?\s+["'](?P<entity_id>.*?)["']"""
+    r"""\s+is not (?:a )?valid UUID""",
+    re.IGNORECASE,
+)
+
+
+def _invalid_uuid_error(exc: Exception) -> tuple[bool, str | None]:
+    """Return whether Vega rejected a UUID, and the ID from the error when it is present."""
+    message = str(exc)
+    lowered = message.lower()
+    if "invalid_request_fields" not in lowered and "not a valid uuid" not in lowered and "not valid uuid" not in lowered:
+        return False, None
+    match = _INVALID_UUID_ID_PATTERN.search(message)
+    if match is None:
+        return True, None
+    return True, match.group("entity_id")
+
+
+def _pending_id_named_in_error(pending: list[str], bad_id: str | None) -> str | None:
+    """Return the configured ID that matches the ID Vega rejected."""
+    if not bad_id:
         return None
+    if bad_id in pending:
+        return bad_id
+    stripped = bad_id.strip()
+    for entity_id in pending:
+        if entity_id.strip() == stripped:
+            return entity_id
+    return None
+
+
+def _log_skipped_invalid_uuid(entity_id: str, *, incidents: bool) -> None:
+    """Write a connector log line for one ID Vega rejected as an invalid UUID."""
+    kind = "incident" if incidents else "alert"
+    demisto.error(
+        f"Skipped {kind} ID '{entity_id}' because it is not a valid UUID. The other IDs in this fetch will still be processed."
+    )
+
+
+def _remember_invalid_uuid(pending: list[str], invalid: list[str], entity_id: str) -> list[str]:
+    """Record one rejected ID and remove it from the IDs still to fetch."""
+    invalid.append(entity_id)
+    return [item for item in pending if item != entity_id]
+
+
+def _fetch_ids_one_by_one(
+    client: Client,
+    entity_ids: list[str],
+    *,
+    incidents: bool,
+) -> tuple[list[dict[str, Any]] | None, list[str]]:
+    """Fetch each ID alone so one invalid UUID does not reject the rest of the list."""
+    records: list[dict[str, Any]] = []
+    invalid: list[str] = []
+    for entity_id in entity_ids:
+        one_records, one_invalid = _fetch_ids_skipping_invalid_uuids(client, [entity_id], incidents=incidents)
+        invalid.extend(one_invalid)
+        if one_records is None:
+            return None, invalid
+        records.extend(one_records)
+    return records, invalid
+
+
+def _fetch_ids_skipping_invalid_uuids(
+    client: Client,
+    entity_ids: list[str],
+    *,
+    incidents: bool,
+) -> tuple[list[dict[str, Any]] | None, list[str]]:
+    """Fetch records and drop IDs Vega rejects as invalid UUIDs.
+
+    None means a transient API error. Invalid IDs are still returned so they are not sent again.
+    """
+    pending = list(entity_ids)
+    invalid: list[str] = []
+    label = "reconciliation incidents" if incidents else "reconciliation alerts"
+    while pending:
+        try:
+            return _fetch_reconciliation_records(client, pending, incidents=incidents), invalid
+        except Exception as exc:
+            is_invalid_uuid, bad_id = _invalid_uuid_error(exc)
+            if not is_invalid_uuid:
+                _handle_fetch_entity_error(label, exc)
+                return None, invalid
+            matched = _pending_id_named_in_error(pending, bad_id)
+            if matched:
+                _log_skipped_invalid_uuid(matched, incidents=incidents)
+                pending = _remember_invalid_uuid(pending, invalid, matched)
+                continue
+            if len(pending) == 1:
+                _log_skipped_invalid_uuid(pending[0], incidents=incidents)
+                pending = _remember_invalid_uuid(pending, invalid, pending[0])
+                continue
+            one_records, one_invalid = _fetch_ids_one_by_one(client, pending, incidents=incidents)
+            return one_records, invalid + one_invalid
+    return [], invalid
+
+
+def _log_id_fetch_result(incident_count: int, alert_count: int) -> None:
+    """Log a short fetch result for the integration connector."""
+    if incident_count == 0 and alert_count == 0:
+        demisto.info("No Vega incidents or alerts were fetched.")
+        return
+    parts: list[str] = []
+    if incident_count:
+        noun = "incident" if incident_count == 1 else "incidents"
+        parts.append(f"{incident_count} Vega {noun}")
+    if alert_count:
+        noun = "alert" if alert_count == 1 else "alerts"
+        parts.append(f"{alert_count} Vega {noun}")
+    demisto.info(f"Fetched {' and '.join(parts)}.")
 
 
 def _partition_reconciliation_ids(requested: list[str], entities: list[dict[str, Any]]) -> tuple[list[str], list[str]]:
@@ -6553,33 +6649,36 @@ def fetch_reconciliation_incidents_command(
     incident_batch = pending_incidents[:max_fetch]
     alert_batch = pending_alerts[: max(max_fetch - len(incident_batch), 0)]
     xsoar_incidents: list[dict[str, Any]] = []
+    created_incidents: list[dict[str, Any]] = []
+    created_alerts: list[dict[str, Any]] = []
 
     if incident_batch:
-        incident_records = _load_reconciliation_batch(client, incident_batch, incidents=True)
+        incident_records, invalid_incidents = _fetch_ids_skipping_invalid_uuids(client, incident_batch, incidents=True)
+        not_found_incidents = _extend_unique_ids(not_found_incidents, invalid_incidents)
         if incident_records is not None:
-            found, missing = _partition_reconciliation_ids(incident_batch, incident_records)
+            requested = [entity_id for entity_id in incident_batch if entity_id not in invalid_incidents]
+            found, missing = _partition_reconciliation_ids(requested, incident_records)
             completed_incidents = _extend_unique_ids(completed_incidents, found)
             not_found_incidents = _extend_unique_ids(not_found_incidents, missing)
-            xsoar_incidents.extend(
-                _xsoar_incidents_for_reconciliation_incidents(client, incident_records, include_alert_metadata)
-            )
+            created_incidents = _xsoar_incidents_for_reconciliation_incidents(client, incident_records, include_alert_metadata)
+            xsoar_incidents.extend(created_incidents)
 
     if alert_batch:
-        alert_records = _load_reconciliation_batch(client, alert_batch, incidents=False)
+        alert_records, invalid_alerts = _fetch_ids_skipping_invalid_uuids(client, alert_batch, incidents=False)
+        not_found_alerts = _extend_unique_ids(not_found_alerts, invalid_alerts)
         if alert_records is not None:
-            found, missing = _partition_reconciliation_ids(alert_batch, alert_records)
+            requested = [entity_id for entity_id in alert_batch if entity_id not in invalid_alerts]
+            found, missing = _partition_reconciliation_ids(requested, alert_records)
             completed_alerts = _extend_unique_ids(completed_alerts, found)
             not_found_alerts = _extend_unique_ids(not_found_alerts, missing)
-            xsoar_incidents.extend(_xsoar_incidents_for_reconciliation_alerts(client, alert_records, integration_url))
+            created_alerts = _xsoar_incidents_for_reconciliation_alerts(client, alert_records, integration_url)
+            xsoar_incidents.extend(created_alerts)
 
     next_run[RECONCILE_COMPLETED_INCIDENTS_KEY] = completed_incidents
     next_run[RECONCILE_NOT_FOUND_INCIDENTS_KEY] = not_found_incidents
     next_run[RECONCILE_COMPLETED_ALERTS_KEY] = completed_alerts
     next_run[RECONCILE_NOT_FOUND_ALERTS_KEY] = not_found_alerts
-    demisto.info(
-        "Reconciliation fetch finished: "
-        f"incidents={len(incident_batch)}, alerts={len(alert_batch)}, created={len(xsoar_incidents)}"
-    )
+    _log_id_fetch_result(len(created_incidents), len(created_alerts))
     return next_run, xsoar_incidents
 
 
