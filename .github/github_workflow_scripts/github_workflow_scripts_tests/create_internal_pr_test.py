@@ -1,10 +1,19 @@
 from unittest.mock import MagicMock, patch
 
 from github_workflow_scripts.create_internal_pr import (
+    MAPPING_LABEL,
+    SKIP_AI_REVIEW_LABEL,
     main,
     prepare_body,
+    prepare_labels,
     replace_fixes_with_relates_in_pr_body,
 )
+
+
+def _make_label(name: str):
+    label = MagicMock()
+    label.name = name
+    return label
 
 
 def _make_mock_pr(html_url: str, number: int, body: str = "", login: str = "contributor1"):
@@ -246,3 +255,62 @@ class TestCrossReferencePRs:
         main()
 
         main_pr.edit.assert_not_called()
+
+
+class TestSkipAiReviewLabel:
+    """Tests that internal PRs (both main and mapping) are labeled to skip the AI reviewer."""
+
+    def test_prepare_labels_adds_skip_ai_review_label(self):
+        """
+        Given:
+            - An external PR with an arbitrary set of labels.
+        When:
+            - prepare_labels() is invoked to build the label set for the internal PR.
+        Then:
+            - The 'skip-ai-review' label is present in the returned labels.
+        """
+        pr = MagicMock()
+        pr.labels = [_make_label("Contribution"), _make_label("docs-approved")]
+
+        labels = prepare_labels(pr)
+
+        assert SKIP_AI_REVIEW_LABEL in labels
+
+    def test_prepare_labels_does_not_duplicate_skip_ai_review_label(self):
+        """
+        Given:
+            - An external PR that already has a 'skip-ai-review' label.
+        When:
+            - prepare_labels() is invoked.
+        Then:
+            - The 'skip-ai-review' label appears exactly once (no duplicate).
+        """
+        pr = MagicMock()
+        pr.labels = [_make_label(SKIP_AI_REVIEW_LABEL), _make_label("Contribution")]
+
+        labels = prepare_labels(pr)
+
+        assert labels.count(SKIP_AI_REVIEW_LABEL) == 1
+
+    def test_mapping_labels_inherit_skip_ai_review_label(self):
+        """
+        Given:
+            - The labels derived from prepare_labels() (containing 'skip-ai-review').
+        When:
+            - The mapping PR labels are derived (dropping 'ready-for-pipeline-running',
+              adding the Mapping label) as done in main().
+        Then:
+            - The mapping PR labels still include 'skip-ai-review' and the Mapping label,
+              and do not include 'ready-for-pipeline-running'.
+        """
+        pr = MagicMock()
+        pr.labels = [_make_label("Contribution")]
+
+        labels = prepare_labels(pr)
+
+        mapping_labels = [label for label in labels if label != "ready-for-pipeline-running"]
+        mapping_labels.append(MAPPING_LABEL)
+
+        assert SKIP_AI_REVIEW_LABEL in mapping_labels
+        assert MAPPING_LABEL in mapping_labels
+        assert "ready-for-pipeline-running" not in mapping_labels
