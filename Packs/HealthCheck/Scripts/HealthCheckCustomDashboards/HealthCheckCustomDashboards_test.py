@@ -1,80 +1,51 @@
-"""HelloWorld Script for Cortex XSOAR - Unit Tests file
+import importlib
+import sys
 
-This file contains the Unit Tests for the HelloWorld Script based
-on pytest. Cortex XSOAR contribution requirements mandate that every
-script should have a proper set of unit tests to automatically
-verify that the integration is behaving as expected during CI/CD pipeline.
+import demistomock as demisto
 
-Test Execution
---------------
-
-Unit tests can be checked in 3 ways:
-- Using the command `lint` of demisto-sdk. The command will build a dedicated
-  docker instance for your integration locally and use the docker instance to
-  execute your tests in a dedicated docker instance.
-- From the command line using `pytest -v` or `pytest -vv`
-- From PyCharm
-
-Example with demisto-sdk (from the content root directory):
-demisto-sdk lint -d Packs/HelloWorld/Scripts/HelloWorldScript
-
-Coverage
---------
-
-There should be at least one unit test per  function. In each unit
-test, the target command function is executed with specific parameters and the
-output of the command function is checked against an expected output.
-
-NOTE: we do not have to import or build a requests-mock instance explicitly.
-requests-mock library uses a pytest specific mechanism to provide a
-requests_mock instance to any function with an argument named requests_mock.
-
-More Details
-------------
-
-More information about Unit Tests in Cortex XSOAR:
-https://xsoar.pan.dev/docs/integrations/unit-testing
-
-Also please check the HelloWorld Integration Unit Tests file.
-
-"""
-
-from HelloWorldScript import say_hello, say_hello_command
+MODULE_NAME = "HealthCheckCustomDashboards"
 
 
-def test_say_hello():
+def run_script(mocker, api_response):
+    """Import the script fresh with demisto calls mocked and return recorded calls."""
+    recorded_calls = []
+
+    def fake_execute_command(command, args=None):
+        recorded_calls.append((command, args))
+        if command == "core-api-post":
+            return api_response
+        return []
+
+    mocker.patch.object(demisto, "executeCommand", side_effect=fake_execute_command)
+    mocker.patch.object(demisto, "results")
+    sys.modules.pop(MODULE_NAME, None)
+    importlib.import_module(MODULE_NAME)
+    return recorded_calls
+
+
+def test_dashboard_count_is_written_to_incident(mocker):
     """
-    Tests the 'say_hello' function.
-
-        Given:
-            - An input string.
-
-        When:
-            - Running the 'say_hello' function.
-
-        Then:
-            - Verify that the output is as expected (an 'Hello' prefix was added to the input string).
+    Given: The dashboards API returns an objects_count value.
+    When: The script runs.
+    Then: The count is stored on the incident via setIncident.
     """
-    result = say_hello("Dbot")
+    api_response = [{"Type": 1, "Contents": {"response": {"objects_count": 7}}}]
 
-    assert result == "Hello Dbot"
+    calls = run_script(mocker, api_response)
+
+    set_incident_calls = [args for command, args in calls if command == "setIncident"]
+    assert set_incident_calls == [{"healthcheckcustomdashboardcount": 7}]
 
 
-def test_say_hello_command():
+def test_dashboards_endpoint_is_queried(mocker):
     """
-        Tests the 'say_hello_command'.
-
-            Given:
-                - Demisto args object with a name argument..
-
-            When:
-                - Running the 'say_hello_command'.
-    ˚
-            Then:
-                - Verify that the output is as expected (an 'Hello' prefix was added to the name).
+    Given: A valid dashboards API response.
+    When: The script runs.
+    Then: The dashboards get endpoint is called with an empty request_data body.
     """
-    args = {"name": "Dbot"}
+    api_response = [{"Type": 1, "Contents": {"response": {"objects_count": 0}}}]
 
-    response = say_hello_command(args)
+    calls = run_script(mocker, api_response)
 
-    assert response.outputs == {"HelloWorld": {"hello": "Hello Dbot"}}
+    post_calls = [args for command, args in calls if command == "core-api-post"]
+    assert post_calls == [{"uri": "/public_api/v1/dashboards/get", "body": {"request_data": {}}}]

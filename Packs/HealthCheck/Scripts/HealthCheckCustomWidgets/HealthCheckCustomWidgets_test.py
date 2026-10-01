@@ -1,38 +1,51 @@
-"""Base Script for Cortex XSOAR - Unit Tests file
+import importlib
+import sys
 
-Pytest Unit Tests: all funcion names must start with "test_"
+import demistomock as demisto
 
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-"""
-
-import json
+MODULE_NAME = "HealthCheckCustomWidgets"
 
 
-def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
-        return json.loads(f.read())
+def run_script(mocker, api_response):
+    """Import the script fresh with demisto calls mocked and return recorded calls."""
+    recorded_calls = []
+
+    def fake_execute_command(command, args=None):
+        recorded_calls.append((command, args))
+        if command == "core-api-post":
+            return api_response
+        return []
+
+    mocker.patch.object(demisto, "executeCommand", side_effect=fake_execute_command)
+    mocker.patch.object(demisto, "results")
+    sys.modules.pop(MODULE_NAME, None)
+    importlib.import_module(MODULE_NAME)
+    return recorded_calls
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_basescript_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+def test_widget_count_is_written_to_incident(mocker):
     """
-    from BaseScript import basescript_dummy_command
+    Given: The widgets API returns an objects_count value.
+    When: The script runs.
+    Then: The count is stored on the incident via setIncident.
+    """
+    api_response = [{"Type": 1, "Contents": {"response": {"objects_count": 12}}}]
 
-    args = {"dummy": "this is a dummy response"}
-    response = basescript_dummy_command(args)
+    calls = run_script(mocker, api_response)
 
-    mock_response = util_load_json("test_data/basescript-dummy.json")
-
-    assert response.outputs == mock_response
+    set_incident_calls = [args for command, args in calls if command == "setIncident"]
+    assert set_incident_calls == [{"healthcheckcustomwidgetcount": 12}]
 
 
-# TODO: ADD HERE your unit tests
+def test_widgets_endpoint_is_queried(mocker):
+    """
+    Given: A valid widgets API response.
+    When: The script runs.
+    Then: The widgets get endpoint is called with an empty request_data body.
+    """
+    api_response = [{"Type": 1, "Contents": {"response": {"objects_count": 0}}}]
+
+    calls = run_script(mocker, api_response)
+
+    post_calls = [args for command, args in calls if command == "core-api-post"]
+    assert post_calls == [{"uri": "/public_api/v1/widgets/get", "body": {"request_data": {}}}]

@@ -1,80 +1,119 @@
-"""HelloWorld Script for Cortex XSOAR - Unit Tests file
+import importlib
+import sys
 
-This file contains the Unit Tests for the HelloWorld Script based
-on pytest. Cortex XSOAR contribution requirements mandate that every
-script should have a proper set of unit tests to automatically
-verify that the integration is behaving as expected during CI/CD pipeline.
+import demistomock as demisto
 
-Test Execution
---------------
-
-Unit tests can be checked in 3 ways:
-- Using the command `lint` of demisto-sdk. The command will build a dedicated
-  docker instance for your integration locally and use the docker instance to
-  execute your tests in a dedicated docker instance.
-- From the command line using `pytest -v` or `pytest -vv`
-- From PyCharm
-
-Example with demisto-sdk (from the content root directory):
-demisto-sdk lint -d Packs/HelloWorld/Scripts/HelloWorldScript
-
-Coverage
---------
-
-There should be at least one unit test per  function. In each unit
-test, the target command function is executed with specific parameters and the
-output of the command function is checked against an expected output.
-
-NOTE: we do not have to import or build a requests-mock instance explicitly.
-requests-mock library uses a pytest specific mechanism to provide a
-requests_mock instance to any function with an argument named requests_mock.
-
-More Details
-------------
-
-More information about Unit Tests in Cortex XSOAR:
-https://xsoar.pan.dev/docs/integrations/unit-testing
-
-Also please check the HelloWorld Integration Unit Tests file.
-
-"""
-
-from HelloWorldScript import say_hello, say_hello_command
+MODULE_NAME = "HealthCheckCustomFields"
 
 
-def test_say_hello():
+def run_script(mocker, fields):
+    """Import the script fresh with demisto calls mocked and return recorded calls."""
+    recorded_calls = []
+    api_response = [{"Type": 1, "Contents": {"response": fields}}]
+
+    def fake_execute_command(command, args=None):
+        recorded_calls.append((command, args))
+        if command == "core-api-get":
+            return api_response
+        return []
+
+    mocker.patch.object(demisto, "executeCommand", side_effect=fake_execute_command)
+    mocker.patch.object(demisto, "results")
+    sys.modules.pop(MODULE_NAME, None)
+    importlib.import_module(MODULE_NAME)
+    return recorded_calls
+
+
+def get_health_details(calls):
+    """Return the health details list passed to setIncident as a field->value mapping."""
+    for command, args in calls:
+        if command == "setIncident":
+            return {entry["field"]: entry["value"] for entry in args["healthcheckcustomfielddetails"]}
+    raise AssertionError("setIncident was never called")
+
+
+def custom_field(field_id):
+    """Build a field entry that qualifies as custom."""
+    return {"id": field_id, "system": False, "XDRBuiltInField": False, "content": False}
+
+
+def system_field(field_id):
+    """Build a field entry that qualifies as system-owned."""
+    return {"id": field_id, "system": True, "XDRBuiltInField": False, "content": False}
+
+
+def test_custom_issue_and_case_fields_are_counted(mocker):
     """
-    Tests the 'say_hello' function.
-
-        Given:
-            - An input string.
-
-        When:
-            - Running the 'say_hello' function.
-
-        Then:
-            - Verify that the output is as expected (an 'Hello' prefix was added to the input string).
+    Given: Issue and case fields, one custom in each group.
+    When: The script runs.
+    Then: Custom counts and percentages are reported per group.
     """
-    result = say_hello("Dbot")
+    fields = [
+        system_field("incident_one"),
+        custom_field("incident_two"),
+        system_field("case_one"),
+        custom_field("case_two"),
+    ]
 
-    assert result == "Hello Dbot"
+    details = get_health_details(run_script(mocker, fields))
+
+    assert details["Total Issue Fields"] == 2
+    assert details["Custom Issue Fields Count"] == 1
+    assert details["Custom Issue Fields Percentage"] == "50.0%"
+    assert details["Total Case Fields"] == 2
+    assert details["Custom Case Fields Count"] == 1
+    assert details["Custom Case Fields Percentage"] == "50.0%"
 
 
-def test_say_hello_command():
+def test_indicator_fields_are_ignored(mocker):
     """
-        Tests the 'say_hello_command'.
-
-            Given:
-                - Demisto args object with a name argument..
-
-            When:
-                - Running the 'say_hello_command'.
-    ˚
-            Then:
-                - Verify that the output is as expected (an 'Hello' prefix was added to the name).
+    Given: Only indicator-prefixed fields.
+    When: The script runs.
+    Then: Neither issue nor case totals are incremented.
     """
-    args = {"name": "Dbot"}
+    fields = [custom_field("indicator_one"), custom_field("indicator_two")]
 
-    response = say_hello_command(args)
+    details = get_health_details(run_script(mocker, fields))
 
-    assert response.outputs == {"HelloWorld": {"hello": "Hello Dbot"}}
+    assert details["Total Issue Fields"] == 0
+    assert details["Total Case Fields"] == 0
+
+
+def test_fields_with_trigger_scripts_are_counted(mocker):
+    """
+    Given: Fields where some declare a change-trigger script.
+    When: The script runs.
+    Then: Only fields with a non-empty script are counted.
+    """
+    with_script = system_field("incident_scripted")
+    with_script["script"] = "SomeAutomation"
+    without_script = system_field("incident_plain")
+    without_script["script"] = ""
+
+    details = get_health_details(run_script(mocker, [with_script, without_script]))
+
+    assert details["Issue and Case Fields with Trigger Scripts"] == 1
+
+
+def test_empty_field_list_avoids_division_by_zero(mocker):
+    """
+    Given: The incident fields endpoint returns no fields.
+    When: The script runs.
+    Then: Percentages render as 0% rather than raising.
+    """
+    details = get_health_details(run_script(mocker, []))
+
+    assert details["Custom Issue Fields Percentage"] == "0%"
+    assert details["Custom Case Fields Percentage"] == "0%"
+
+
+def test_incident_fields_endpoint_is_queried(mocker):
+    """
+    Given: A valid incident fields response.
+    When: The script runs.
+    Then: The sessionDataSync incidentFields endpoint is called.
+    """
+    calls = run_script(mocker, [])
+
+    get_calls = [args for command, args in calls if command == "core-api-get"]
+    assert get_calls == [{"uri": "/sessionDataSync/incidentFields", "body": {}}]
