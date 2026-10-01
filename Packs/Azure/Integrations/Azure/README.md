@@ -72,6 +72,139 @@ Update a security rule. If one does not exist, it will be created. The command i
 | Azure.NSGRule.priority | Number | The rule's priority. Can be from 100 to 4096. |
 | Azure.NSGRule.direction | String | The rule's direction. Can be "Inbound" or "Outbound". |
 
+### azure-storage-accounts-list
+
+***
+Lists storage accounts, or retrieves a single storage account when an account name is provided. Required permission: Microsoft.Storage/storageAccounts/read.
+
+#### Base Command
+
+`azure-storage-accounts-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| account_name | The storage account name. When provided, retrieves the specified storage account only; otherwise all storage accounts in the resource group are listed. | Optional |
+| next_token | A token for retrieving the next page of results, returned by a previous call to this command. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Storage.StorageAccounts.id | String | The fully qualified resource ID of the storage account. |
+| Azure.Storage.StorageAccounts.name | String | The name of the storage account. |
+| Azure.Storage.StorageAccounts.type | String | The resource type. |
+| Azure.Storage.StorageAccounts.location | String | The geo-location where the resource lives. |
+| Azure.Storage.StorageAccounts.kind | String | The kind of the storage account. |
+| Azure.Storage.StorageAccounts.tags | Unknown | The resource tags. |
+| Azure.Storage.StorageAccounts.identity | Unknown | The identity of the resource. |
+| Azure.Storage.StorageAccounts.extendedLocation | Unknown | The extended location of the resource. |
+| Azure.Storage.StorageAccounts.placement | Unknown | The zonal placement details for the storage account. |
+| Azure.Storage.StorageAccounts.zones | Unknown | The availability zones. |
+| Azure.Storage.StorageAccounts.sku | Unknown | The SKU of the storage account. |
+| Azure.Storage.StorageAccounts.systemData | Unknown | Azure Resource Manager metadata containing createdBy and modifiedBy information. |
+| Azure.Storage.StorageAccounts.properties.provisioningState | String | The status of the storage account when the operation was called. |
+| Azure.Storage.StorageAccounts.properties.primaryLocation | String | The location of the primary data center for the storage account. |
+| Azure.Storage.StorageAccounts.properties.secondaryLocation | String | The location of the geo-replicated secondary for the storage account. Only available if the account type is Standard_GRS or Standard_RAGRS. |
+| Azure.Storage.StorageAccounts.properties.statusOfPrimary | String | The status indicating whether the primary location of the storage account is available or unavailable. |
+| Azure.Storage.StorageAccounts.properties.statusOfSecondary | String | The status indicating whether the secondary location of the storage account is available or unavailable. |
+| Azure.Storage.StorageAccounts.properties.lastGeoFailoverTime | Date | The timestamp of the most recent instance of a failover to the secondary location. |
+| Azure.Storage.StorageAccounts.properties.creationTime | Date | The creation date and time of the storage account, in UTC. |
+| Azure.Storage.StorageAccounts.properties.primaryEndpoints | Unknown | The URLs used to retrieve a public blob, queue, or table object from the primary location. |
+| Azure.Storage.StorageAccounts.properties.secondaryEndpoints | Unknown | The URLs used to retrieve a public blob, queue, or table object from the secondary location. Only available if the SKU name is Standard_RAGRS. |
+| Azure.Storage.StorageAccounts.properties.customDomain | Unknown | The custom domain the user assigned to the storage account. |
+| Azure.Storage.StorageAccounts.properties.accessTier | String | The access tier for billing, used by BlobStorage accounts. |
+| Azure.Storage.StorageAccounts.properties.supportsHttpsTrafficOnly | Boolean | Whether the storage account allows only HTTPS traffic. |
+| Azure.Storage.StorageAccounts.properties.minimumTlsVersion | String | The minimum TLS version permitted on requests to storage. |
+| Azure.Storage.StorageAccounts.properties.allowBlobPublicAccess | Boolean | Whether public access to all blobs or containers in the storage account is permitted. |
+| Azure.Storage.StorageAccounts.properties.allowSharedKeyAccess | Boolean | Whether the storage account permits requests to be authorized with the account access key via Shared Key. |
+| Azure.Storage.StorageAccounts.properties.allowSharedKeyAccessForServices | Unknown | The shared key access properties at the service level. |
+| Azure.Storage.StorageAccounts.properties.allowCrossTenantReplication | Boolean | Whether cross AAD tenant object replication is allowed. |
+| Azure.Storage.StorageAccounts.properties.allowCrossTenantDelegationSas | Boolean | Whether cross AAD tenant user delegation SAS is allowed. |
+| Azure.Storage.StorageAccounts.properties.allowedCopyScope | String | Restricts copy to and from storage accounts within an AAD tenant or with Private Links to the same VNet. |
+| Azure.Storage.StorageAccounts.properties.defaultToOAuthAuthentication | Boolean | Whether the default authentication is OAuth. |
+| Azure.Storage.StorageAccounts.properties.publicNetworkAccess | String | Whether public network access to the storage account is allowed. |
+| Azure.Storage.StorageAccounts.properties.networkAcls | Unknown | The network rule set of the storage account. |
+| Azure.Storage.StorageAccounts.properties.encryption | Unknown | The encryption settings used for server-side encryption for the storage account. |
+| Azure.Storage.StorageAccounts.properties.keyCreationTime | Unknown | The creation date and time of the storage account keys. |
+| Azure.Storage.StorageAccounts.properties.keyPolicy | Unknown | The KeyPolicy assigned to the storage account. |
+| Azure.Storage.StorageAccounts.properties.sasPolicy | Unknown | The SasPolicy assigned to the storage account. |
+| Azure.Storage.StorageAccounts.properties.privateEndpointConnections | Unknown | The list of private endpoint connections associated with the storage account. |
+| Azure.Storage.StorageAccounts.properties.routingPreference | Unknown | The network routing choice opted by the user for data transfer. |
+| Azure.Storage.StorageAccounts.properties.blobRestoreStatus | Unknown | The blob restore status. |
+| Azure.Storage.StorageAccounts.properties.geoReplicationStats | Unknown | The geo replication stats. |
+| Azure.Storage.StorageAccounts.properties.geoPriorityReplicationStatus | String | The status indicating whether Geo Priority Replication is enabled for the account. |
+| Azure.Storage.StorageAccounts.properties.failoverInProgress | Boolean | Whether a failover is in progress. |
+| Azure.Storage.StorageAccounts.properties.accountMigrationInProgress | Boolean | Whether a customer-initiated account migration is in progress. |
+| Azure.Storage.StorageAccounts.properties.isSkuConversionBlocked | Boolean | Whether the SKU conversion is blocked during an ongoing migration. |
+| Azure.Storage.StorageAccounts.properties.storageAccountSkuConversionStatus | Unknown | The storage account SKU conversion status. |
+| Azure.Storage.StorageAccounts.properties.isHnsEnabled | Boolean | Whether the account HierarchicalNamespace is enabled. |
+| Azure.Storage.StorageAccounts.properties.isNfsV3Enabled | Boolean | Whether NFS 3.0 protocol support is enabled. |
+| Azure.Storage.StorageAccounts.properties.isSftpEnabled | Boolean | Whether Secure File Transfer Protocol is enabled. |
+| Azure.Storage.StorageAccounts.properties.isLocalUserEnabled | Boolean | Whether the local users feature is enabled. |
+| Azure.Storage.StorageAccounts.properties.enableExtendedGroups | Boolean | Whether extended group support with the local users feature is enabled. |
+| Azure.Storage.StorageAccounts.properties.largeFileSharesState | String | Whether large file shares are allowed. |
+| Azure.Storage.StorageAccounts.properties.azureFilesIdentityBasedAuthentication | Unknown | The identity-based authentication settings for Azure Files. |
+| Azure.Storage.StorageAccounts.properties.immutableStorageWithVersioning | Unknown | The account-level object immutability property. |
+| Azure.Storage.StorageAccounts.properties.dnsEndpointType | String | The type of endpoint for the storage account. |
+| Azure.Storage.StorageAccounts.properties.dualStackEndpointPreference | Unknown | Information about the internet protocol opted by the user. |
+| Azure.Storage.StorageAccounts.properties.dataCollaborationPolicyProperties | Unknown | The data collaboration policy for the storage account. |
+| Azure.Storage.StorageAccountsNextToken | String | A token for retrieving the next page of storage accounts. Pass it as the next_token argument in a subsequent call. |
+
+### azure-storage-blob-containers-list
+
+***
+Lists blob containers, or retrieves a single blob container when a container name is provided. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/read.
+
+#### Base Command
+
+`azure-storage-blob-containers-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| account_name | The storage account name. | Required |
+| container_name | The container name. When provided, retrieves the specified container only; otherwise all containers in the storage account are listed. | Optional |
+| include_deleted | Whether to include soft-deleted blob containers in the response. Possible values are: true, false. | Optional |
+| limit | The maximum number of containers to return (1-5000). | Optional |
+| next_token | A token for retrieving the next page of results, returned by a previous call to this command. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Storage.BlobContainers.id | String | The fully qualified resource ID of the resource. |
+| Azure.Storage.BlobContainers.name | String | The name of the resource. |
+| Azure.Storage.BlobContainers.type | String | The resource type. |
+| Azure.Storage.BlobContainers.etag | String | The resource etag. |
+| Azure.Storage.BlobContainers.properties.version | String | The version of the deleted blob container. |
+| Azure.Storage.BlobContainers.properties.deleted | Boolean | Whether the blob container was deleted. |
+| Azure.Storage.BlobContainers.properties.deletedTime | Date | The date and time when the blob container was deleted. |
+| Azure.Storage.BlobContainers.properties.remainingRetentionDays | Number | The number of remaining days after which the blob container is permanently deleted. |
+| Azure.Storage.BlobContainers.properties.defaultEncryptionScope | String | The default encryption scope to use for blob operations in the container. |
+| Azure.Storage.BlobContainers.properties.denyEncryptionScopeOverride | Boolean | Whether to block the override of the encryption scope from the container default. |
+| Azure.Storage.BlobContainers.properties.publicAccess | String | The access level, which specifies whether data in the container can be accessed publicly. |
+| Azure.Storage.BlobContainers.properties.lastModifiedTime | Date | The date and time when the container was last modified, in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| Azure.Storage.BlobContainers.properties.leaseStatus | String | The lease status of the container. |
+| Azure.Storage.BlobContainers.properties.leaseState | String | The lease state of the container. |
+| Azure.Storage.BlobContainers.properties.leaseDuration | String | The duration of the lease, specified whether the lease is of infinite or fixed duration, only when the container is leased. |
+| Azure.Storage.BlobContainers.properties.metadata | Unknown | A name-value pair to associate with the container as metadata. |
+| Azure.Storage.BlobContainers.properties.immutabilityPolicy | Unknown | The ImmutabilityPolicy property of the container. |
+| Azure.Storage.BlobContainers.properties.legalHold | Unknown | The LegalHold property of the container. |
+| Azure.Storage.BlobContainers.properties.hasLegalHold | Boolean | Whether at least one legal hold tag exists for the container. |
+| Azure.Storage.BlobContainers.properties.hasImmutabilityPolicy | Boolean | Whether an ImmutabilityPolicy exists for the container. |
+| Azure.Storage.BlobContainers.properties.immutableStorageWithVersioning | Unknown | The object level immutability property of the container. |
+| Azure.Storage.BlobContainers.properties.enableNfsV3RootSquash | Boolean | Whether NFSv3 root squash is enabled for the container. |
+| Azure.Storage.BlobContainers.properties.enableNfsV3AllSquash | Boolean | Whether NFSv3 all squash is enabled for the container. |
+| Azure.Storage.BlobContainers.systemData | Unknown | Azure Resource Manager metadata containing createdBy and modifiedBy information. |
+| Azure.Storage.BlobContainersNextToken | String | A token for retrieving the next page of blob containers. Pass it as the next_token argument in a subsequent call. |
+
 ### azure-storage-account-update
 
 ***

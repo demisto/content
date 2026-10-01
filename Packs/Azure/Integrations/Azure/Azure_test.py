@@ -7598,3 +7598,400 @@ def test_extract_fallback_prefix_returns_empty_for_unknown_handler():
 
     # When / Then: the unknown name yields nothing, and no error is raised
     assert extract_fallback_prefix("no_such_command", symbol_index) == set()
+
+
+def test_storage_account_list_command(mocker):
+    """
+    Given: An Azure client mock returning a list of storage accounts.
+    When: storage_account_list_command is called without an account_name argument.
+    Then: It returns CommandResults with the Azure.Storage.StorageAccounts prefix and the full account list.
+    """
+    from Azure import storage_account_list_command
+
+    mock_response = util_load_json("test_data/storage_account_list_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_account_list_request.return_value = mock_response
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {}
+
+    result: CommandResults = storage_account_list_command(mock_client, params, args)
+
+    mock_client.storage_account_list_request.assert_called_once_with(
+        account_name="", resource_group_name="mock_resource_group", subscription_id="mock_subscription_id", next_token=""
+    )
+
+    assert isinstance(result, CommandResults)
+    accounts_key = "Azure.Storage.StorageAccounts(val.id && val.id == obj.id)"
+    assert result.outputs[accounts_key] == mock_response.get("value")
+    assert "Azure Storage Account List" in result.readable_output
+    assert "mock_account_name_1" in result.readable_output
+    assert "mock_account_name_2" in result.readable_output
+
+
+def test_storage_account_list_command_single(mocker):
+    """
+    Given: An Azure client mock returning a single storage account.
+    When: storage_account_list_command is called with an account_name argument.
+    Then: It returns CommandResults wrapping the single account in a list under the expected prefix.
+    """
+    from Azure import storage_account_list_command
+
+    mock_response = util_load_json("test_data/storage_account_single_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_account_list_request.return_value = mock_response
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {"account_name": "mock_account_name"}
+
+    result: CommandResults = storage_account_list_command(mock_client, params, args)
+
+    mock_client.storage_account_list_request.assert_called_once_with(
+        account_name="mock_account_name",
+        resource_group_name="mock_resource_group",
+        subscription_id="mock_subscription_id",
+        next_token="",
+    )
+
+    assert isinstance(result, CommandResults)
+    accounts_key = "Azure.Storage.StorageAccounts(val.id && val.id == obj.id)"
+    assert result.outputs[accounts_key][0] == mock_response
+    assert "mock_account_name" in result.readable_output
+
+
+def test_storage_account_list_command_no_results(mocker):
+    """
+    Given: An Azure client mock returning an empty storage account list.
+    When: storage_account_list_command is called.
+    Then: It returns CommandResults with a "No storage accounts were found." readable output.
+    """
+    from Azure import storage_account_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.storage_account_list_request.return_value = {"value": []}
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {}
+
+    result: CommandResults = storage_account_list_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No storage accounts were found."
+
+
+def test_storage_account_list_command_error_response(mocker):
+    """
+    Given: An Azure client whose storage_account_list_request raises a permission error.
+    When: storage_account_list_command is called.
+    Then: The error propagates through the client layer and surfaces to main().
+    """
+    from Azure import storage_account_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.storage_account_list_request.side_effect = DemistoException("403 Forbidden")
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {}
+
+    with pytest.raises(DemistoException):
+        storage_account_list_command(mock_client, params, args)
+
+
+def test_storage_blob_container_list_command(mocker):
+    """
+    Given: An Azure client mock returning a list of blob containers.
+    When: storage_blob_container_list_command is called without a container_name argument.
+    Then: It returns CommandResults with the Azure.Storage.BlobContainers prefix and the full container list.
+    """
+    from Azure import storage_blob_container_list_command
+
+    mock_response = util_load_json("test_data/blob_containers_list_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_container_list_request.return_value = mock_response
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {"account_name": "mock_account_name"}
+
+    result: CommandResults = storage_blob_container_list_command(mock_client, params, args)
+
+    mock_client.storage_blob_container_list_request.assert_called_once_with(
+        subscription_id="mock_subscription_id", resource_group_name="mock_resource_group", args=args
+    )
+
+    assert isinstance(result, CommandResults)
+    containers_key = "Azure.Storage.BlobContainers(val.id && val.id == obj.id)"
+    assert result.outputs[containers_key] == mock_response.get("value")
+    assert "Azure Storage Blob Containers List" in result.readable_output
+    assert "test" in result.readable_output
+    assert "test2" in result.readable_output
+
+
+def test_storage_blob_container_list_command_single(mocker):
+    """
+    Given: An Azure client mock returning a single blob container.
+    When: storage_blob_container_list_command is called with account_name and container_name arguments.
+    Then: It returns CommandResults wrapping the single container in a list under the expected prefix.
+    """
+    from Azure import storage_blob_container_list_command
+
+    mock_response = util_load_json("test_data/blob_containers_single_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_container_list_request.return_value = mock_response
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {"account_name": "mock_account_name", "container_name": "test"}
+
+    result: CommandResults = storage_blob_container_list_command(mock_client, params, args)
+
+    mock_client.storage_blob_container_list_request.assert_called_once_with(
+        subscription_id="mock_subscription_id", resource_group_name="mock_resource_group", args=args
+    )
+
+    assert isinstance(result, CommandResults)
+    containers_key = "Azure.Storage.BlobContainers(val.id && val.id == obj.id)"
+    assert result.outputs[containers_key][0] == mock_response
+    assert "test" in result.readable_output
+
+
+def test_storage_blob_container_list_command_no_results(mocker):
+    """
+    Given: An Azure client mock returning an empty blob container list.
+    When: storage_blob_container_list_command is called.
+    Then: It returns CommandResults with a "No blob containers were found." readable output.
+    """
+    from Azure import storage_blob_container_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_container_list_request.return_value = {"value": []}
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {"account_name": "mock_account_name"}
+
+    result: CommandResults = storage_blob_container_list_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No blob containers were found."
+
+
+def test_storage_blob_container_list_command_error_response(mocker):
+    """
+    Given: An Azure client whose storage_blob_container_list_request raises a permission error.
+    When: storage_blob_container_list_command is called.
+    Then: The error propagates through the client layer and surfaces to main().
+    """
+    from Azure import storage_blob_container_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_container_list_request.side_effect = DemistoException("403 Forbidden")
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {"account_name": "mock_account_name"}
+
+    with pytest.raises(DemistoException):
+        storage_blob_container_list_command(mock_client, params, args)
+
+
+@pytest.mark.parametrize("limit", [1, 100, 5000, None])
+def test_validate_limit_valid_input(limit):
+    """
+    Given: A limit value within the allowed range (or None).
+    When: validate_limit is called.
+    Then: No exception is raised.
+    """
+    from Azure import validate_limit
+
+    validate_limit(limit)
+
+
+@pytest.mark.parametrize("limit", [0, -1, 5001])
+def test_validate_limit_invalid_input(limit):
+    """
+    Given: A limit value outside the allowed range (1-5000 inclusive).
+    When: validate_limit is called.
+    Then: A DemistoException is raised.
+    """
+    from Azure import validate_limit
+
+    with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 5000"):
+        validate_limit(limit)
+
+
+def test_storage_blob_container_list_request_limit_sets_maxpagesize(mocker, client):
+    """
+    Given: A limit argument within the allowed range.
+    When: storage_blob_container_list_request is called.
+    Then: The request is sent with the $maxpagesize query parameter set to the limit value.
+    """
+    http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.storage_blob_container_list_request(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        args={"account_name": "mock_account_name", "limit": "100"},
+    )
+
+    sent_params = http_request.call_args.kwargs["params"]
+    assert sent_params["$maxpagesize"] == "100"
+
+
+def test_storage_blob_container_list_request_url_without_container(mocker, client):
+    """
+    Given: No container_name argument.
+    When: storage_blob_container_list_request is called.
+    Then: The URL ends at the containers collection (no trailing container segment).
+    """
+    http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.storage_blob_container_list_request(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        args={"account_name": "mock_account_name"},
+    )
+
+    assert http_request.call_args.kwargs["full_url"].endswith(
+        "/providers/Microsoft.Storage/storageAccounts/mock_account_name/blobServices/default/containers"
+    )
+
+
+def test_storage_blob_container_list_request_url_with_container(mocker, client):
+    """
+    Given: A container_name argument.
+    When: storage_blob_container_list_request is called.
+    Then: The URL includes the specific container segment.
+    """
+    http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.storage_blob_container_list_request(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        args={"account_name": "mock_account_name", "container_name": "mock_container"},
+    )
+
+    assert http_request.call_args.kwargs["full_url"].endswith("/blobServices/default/containers/mock_container")
+
+
+def test_storage_account_list_request_url_without_account(mocker, client):
+    """
+    Given: No account_name argument.
+    When: storage_account_list_request is called.
+    Then: The URL ends at the storageAccounts collection (no trailing account segment).
+    """
+    http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.storage_account_list_request(
+        account_name="",
+        resource_group_name="mock_resource_group",
+        subscription_id="mock_subscription_id",
+    )
+
+    assert http_request.call_args.kwargs["full_url"].endswith("/providers/Microsoft.Storage/storageAccounts")
+
+
+def test_storage_account_list_request_url_with_account(mocker, client):
+    """
+    Given: An account_name argument.
+    When: storage_account_list_request is called.
+    Then: The URL includes the specific storage account segment.
+    """
+    http_request = mocker.patch.object(client, "http_request", return_value={})
+
+    client.storage_account_list_request(
+        account_name="mock_account_name",
+        resource_group_name="mock_resource_group",
+        subscription_id="mock_subscription_id",
+    )
+
+    assert http_request.call_args.kwargs["full_url"].endswith("/storageAccounts/mock_account_name")
+
+
+def test_storage_blob_container_list_request_invalid_limit_raises(mocker, client):
+    """
+    Given: A limit argument outside the allowed range.
+    When: storage_blob_container_list_request is called.
+    Then: A DemistoException is raised before any request is sent.
+    """
+    http_request = mocker.patch.object(client, "http_request")
+
+    with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 5000"):
+        client.storage_blob_container_list_request(
+            subscription_id="mock_subscription_id",
+            resource_group_name="mock_resource_group",
+            args={"account_name": "mock_account_name", "limit": "6000"},
+        )
+
+    http_request.assert_not_called()
+
+
+def test_storage_account_list_command_surfaces_next_token(mocker):
+    """
+    Given: An Azure client mock returning a list of storage accounts with a nextLink.
+    When: storage_account_list_command is called.
+    Then: The nextLink is surfaced under the StorageAccountsNextToken context key.
+    """
+    from Azure import storage_account_list_command
+
+    mock_response = util_load_json("test_data/storage_account_list_response.json")
+    mock_response["nextLink"] = "https://management.azure.com/next-accounts-page"
+
+    mock_client = mocker.Mock()
+    mock_client.storage_account_list_request.return_value = mock_response
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {}
+
+    result: CommandResults = storage_account_list_command(mock_client, params, args)
+
+    assert result.outputs["Azure.Storage(true)"]["StorageAccountsNextToken"] == "https://management.azure.com/next-accounts-page"
+
+
+def test_storage_account_list_command_passes_next_token(mocker):
+    """
+    Given: A next_token argument.
+    When: storage_account_list_command is called.
+    Then: The next_token is forwarded to the client request method.
+    """
+    from Azure import storage_account_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.storage_account_list_request.return_value = {"value": [{"id": "a1", "name": "acc1"}]}
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {"next_token": "https://management.azure.com/next-accounts-page"}
+
+    storage_account_list_command(mock_client, params, args)
+
+    mock_client.storage_account_list_request.assert_called_once_with(
+        account_name="",
+        resource_group_name="mock_resource_group",
+        subscription_id="mock_subscription_id",
+        next_token="https://management.azure.com/next-accounts-page",
+    )
+
+
+def test_storage_blob_container_list_command_surfaces_next_token(mocker):
+    """
+    Given: An Azure client mock returning a list of blob containers with a nextLink.
+    When: storage_blob_container_list_command is called.
+    Then: The nextLink is surfaced under the BlobContainersNextToken context key.
+    """
+    from Azure import storage_blob_container_list_command
+
+    mock_response = util_load_json("test_data/blob_containers_list_response.json")
+    mock_response["nextLink"] = "https://management.azure.com/next-containers-page"
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_container_list_request.return_value = mock_response
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {"account_name": "mock_account_name"}
+
+    result: CommandResults = storage_blob_container_list_command(mock_client, params, args)
+
+    assert (
+        result.outputs["Azure.Storage(true)"]["BlobContainersNextToken"]
+        == "https://management.azure.com/next-containers-page"
+    )
