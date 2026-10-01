@@ -17600,13 +17600,13 @@ script:
   - arguments:
     - description: The offset to start retrieving records from.
       name: offset
-    - description: The maximum records to return. [1-5000].
+    - description: The maximum records to return. You use any value between 1 and 10000. Default value is 100.
       name: limit
     - description: The property to sort by (e.g. status.desc or hostname.asc).
       name: sort
     - description: The filter expression that should be used to limit the results.
-      name: filter_
-    description: Search for hosts in your environment by platform, hostname, IP, and other criteria and return full device details in a single call using the devices/combined/devices/v1 endpoint.
+      name: filter
+    description: Search for hosts in your environment by platform, hostname, IP, and other criteria and return full device details in a single call.
     name: cs-query-devices-combined
     outputs:
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.errors.code
