@@ -4849,7 +4849,7 @@ script:
     arguments:
     - name: asset_id
       required: true
-      description: A URL-encoded URI for the source media. The asset ID can be retrieved from the output context path (Ignite.Alert.resource.media_v2.storage_uri) of the flashpoint-ignite-alert-list command, the output context path (Ignite.IP.media.storage_uri) of the ip command, or some other investigation.
+      description: The URL-encoded URI for the source media. The asset ID can be retrieved from the output context path (Ignite.Alert.resource.media_v2.storage_uri) of the flashpoint-ignite-alert-list command, the output context path (Ignite.IP.media.storage_uri) of the ip command, or some other investigation.
     - name: cdn
       auto: PREDEFINED
       description: "Whether to route the request for the media through the Content Delivery Network (CDN).\n\nNote: Set this to false if your network blocks access to the CDN location."

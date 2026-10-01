@@ -87,7 +87,7 @@ def execute_command_safe(command: str, args: dict) -> tuple[dict, Any]:
         raw = [raw]
     result = get_command_result(raw)
     if not result:
-        error = raw[0].get("Contents", "Unknown error") if raw else "Unknown error"
+        error = raw[0].get("Contents", "Unknown error") if raw and isinstance(raw[0], dict) else "Unknown error"
         return {}, error
     return result, None
 

@@ -185,6 +185,11 @@ def test_create_threat_intel_report_when_fields_are_absent(mocker, report, expec
             ERROR_MESSAGES["NO_REPORT"].format(REPORT_ID),
         ),
         (
+            [None],
+            None,
+            ERROR_MESSAGES["FAILED_COMMAND"].format(REPORT_GET_COMMAND, "Unknown error"),
+        ),
+        (
             None,
             [{"Type": 4, "Contents": "Object creation failed", "ContentsFormat": "text"}],
             ERROR_MESSAGES["FAILED_COMMAND"].format(CREATE_XSOAR_THREAT_INTEL_REPORT_COMMAND, "Object creation failed"),

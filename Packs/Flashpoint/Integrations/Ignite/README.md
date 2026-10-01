@@ -4689,6 +4689,56 @@ List products using provided filters.
 
 #### To retrieve the next set of result use, from = 2, size = 2
 
+### flashpoint-ignite-source-media-download
+
+***
+Retrieves the source media file for the provided asset ID.
+
+#### Base Command
+
+`flashpoint-ignite-source-media-download`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | The URL-encoded URI for the source media. The asset ID can be retrieved from the output context path \(Ignite.Alert.resource.media_v2.storage_uri\) of the flashpoint-ignite-alert-list command, the output context path \(Ignite.IP.media.storage_uri\) of the ip command, or some other investigation. | Required |
+| cdn | Whether to route the request for the media through the Content Delivery Network (CDN).<br/><br/>Note: Set this to false if your network blocks access to the CDN location. Possible values are: True, False. Default is True. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | String | The name of the downloaded media file. |
+| InfoFile.EntryID | String | The entry ID of the downloaded media file. |
+| InfoFile.Size | Number | The size of the downloaded media file in bytes. |
+| InfoFile.Type | String | The type of the downloaded media file. |
+| InfoFile.Extension | String | The extension of the downloaded media file. |
+| InfoFile.Info | String | The info of the downloaded media file. |
+
+#### Command example
+
+```!flashpoint-ignite-source-media-download asset_id="kr://00/asset_123"```
+
+#### Context Example
+
+```json
+{
+    "InfoFile": {
+        "EntryID": "10000@a1b2c3d4-e5f6",
+        "Extension": "jpg",
+        "Info": "image/jpeg",
+        "Name": "asset_123.jpg",
+        "Size": 84288,
+        "Type": "JPEG image data, JFIF standard 1.01, aspect ratio, density 1x1, segment length 16, progressive, precision 8, 750x422, components 3"
+    }
+}
+```
+
+#### Human Readable Output
+
+>Uploaded file: asset_123.jpg
+
 ## Migration Guide
 
 **Note:**  
@@ -4727,54 +4777,3 @@ Some of the previous integration's commands have been deprecated from the Flashp
 |flashpoint-search-forum-posts|
 |filename|
 |email|
-
-### flashpoint-ignite-source-media-download
-
-***
-Retrieves the source media file for the provided asset ID.
-
-#### Base Command
-
-`flashpoint-ignite-source-media-download`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| asset_id | A URL-encoded URI for the source media. The asset ID can be retrieved from the output context path \(Ignite.Alert.resource.media_v2.storage_uri\) of the flashpoint-ignite-alert-list command, the output context path \(Ignite.IP.media.storage_uri\) of the ip command, or some other investigation. | Required |
-| cdn | Whether to route the request for the media through the Content Delivery Network (CDN).<br/><br/>Note: Set this to false if your network blocks access to the CDN location. Possible values are: True, False. Default is True. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| InfoFile.Name | String | The name of the downloaded media file. |
-| InfoFile.EntryID | String | The entry ID of the downloaded media file. |
-| InfoFile.Size | Number | The size of the downloaded media file in bytes. |
-| InfoFile.Type | String | The type of the downloaded media file. |
-| InfoFile.Extension | String | The extension of the downloaded media file. |
-| InfoFile.Info | String | The info of the downloaded media file. |
-
-#### Command Example
-
-```!flashpoint-ignite-source-media-download asset_id="kr://00/asset_123"
-```
-
-#### Context Example
-
-```json
-{
-    "InfoFile": {
-        "EntryID": "10000@a1b2c3d4-e5f6",
-        "Extension": "jpg",
-        "Info": "image/jpeg",
-        "Name": "asset_123.jpg",
-        "Size": 84288,
-        "Type": "JPEG image data, JFIF standard 1.01, aspect ratio, density 1x1, segment length 16, progressive, precision 8, 750x422, components 3"
-    }
-}
-```
-
-#### Human Readable Output
-
->Uploaded file: asset_123.jpg
