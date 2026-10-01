@@ -91,13 +91,14 @@ def test_with_empty_file(mocker: MockerFixture, tmp_path):
 def test_with_non_image_file(mocker: MockerFixture):
     """
     Given:
-        A file that is not an image.
+        A non-empty file that is not a parseable image (e.g. a PDF or truncated image),
+        such as a PDF attachment misrouted to the QR code task.
 
     When:
         - Calling the ReadQRCode script.
 
     Then:
-        Return an informative error.
+        Return a warning entry instead of an error, so the calling playbook can continue.
     """
     from ReadQRCode import extract_info_from_qr_code
 
@@ -107,8 +108,10 @@ def test_with_non_image_file(mocker: MockerFixture):
         return_value={"path": "test_data/text.txt"},
     )
 
-    with pytest.raises(DemistoException, match="Error parsing file. Please make sure it is a valid image file."):
-        extract_info_from_qr_code("entry_id")
+    result = extract_info_from_qr_code("entry_id")
+
+    assert result.readable_output == "The file could not be parsed as an image. No QR code could be read."
+    assert result.entry_type == EntryType.WARNING
 
 
 def test_read_qr_code_multiple_codes():
