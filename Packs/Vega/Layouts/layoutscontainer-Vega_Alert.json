@@ -356,6 +356,15 @@
 								"startCol": 0
 							},
 							{
+								"endCol": 1,
+								"fieldId": "vegalastupdated",
+								"height": 53,
+								"id": "a7c4e1b2-9d08-4f6a-b3c5-1e2f4a6b8d90",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
 								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "vegaalertseverity",

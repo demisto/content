@@ -36,6 +36,9 @@
                 "Vega Created At": {
                     "simple": "createdAt"
                 },
+                "Vega Last Updated": {
+                    "simple": "updatedAt"
+                },
                 "occurred": {
                     "simple": "createdAt"
                 },

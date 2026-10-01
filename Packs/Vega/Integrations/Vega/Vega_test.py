@@ -538,7 +538,7 @@ def test_fetch_paginated_entities_multiple_pages(mocker):
     }
     mock_get_alerts = mocker.Mock(side_effect=[page_one, page_two])
 
-    results, next_offset = _fetch_paginated_entities(
+    results, next_offset, api_total = _fetch_paginated_entities(
         mock_get_alerts,
         entities_key="alerts",
         from_time=FIRST_FETCH_TIME,
@@ -546,6 +546,7 @@ def test_fetch_paginated_entities_multiple_pages(mocker):
 
     assert len(results) == 2
     assert next_offset is None
+    assert api_total == 2
     assert results[0]["id"] == "1"
     assert results[1]["id"] == "2"
     assert mock_get_alerts.call_count == 2
@@ -575,7 +576,7 @@ def test_fetch_paginated_entities_fetches_beyond_single_page(mocker):
     }
     mock_get_alerts = mocker.Mock(side_effect=[page_one, page_two, page_three])
 
-    results, next_offset = _fetch_paginated_entities(
+    results, next_offset, api_total = _fetch_paginated_entities(
         mock_get_alerts,
         entities_key="alerts",
         from_time=FIRST_FETCH_TIME,
@@ -583,10 +584,53 @@ def test_fetch_paginated_entities_fetches_beyond_single_page(mocker):
 
     assert len(results) == 250
     assert next_offset is None
+    assert api_total == 250
     assert mock_get_alerts.call_count == 3
     assert mock_get_alerts.call_args_list[0].kwargs["limit"] == 100
     assert mock_get_alerts.call_args_list[0].kwargs["offset"] == 0
     assert mock_get_alerts.call_args_list[2].kwargs["offset"] == 200
+
+
+def test_fetch_incidents_command_logs_created_against_api_totals(mocker):
+    mocker.patch.object(demisto, "debug")
+    info = mocker.patch.object(demisto, "info")
+    mock_client = mocker.Mock()
+    mock_client.get_incident_timeline.return_value = {"events": []}
+    mock_client.get_incidents.return_value = {
+        "incidents": [
+            {"id": "inc-1", "name": "Inc 1", "severity": "LOW", "createdAt": TIMESTAMP_T1},
+            {"id": "inc-2", "name": "Inc 2", "severity": "LOW", "createdAt": TIMESTAMP_T1},
+        ],
+        "total": 2,
+    }
+    mock_client.get_alerts.return_value = {
+        "alerts": [
+            {"id": "alert-1", "name": "Alert 1", "severity": "LOW", "createdAt": TIMESTAMP_T2},
+        ],
+        "total": 10,
+    }
+
+    _, incidents = fetch_incidents_command(
+        client=mock_client,
+        last_run={},
+        fetch_alerts=True,
+        fetch_incidents=True,
+        alert_severities=None,
+        alert_statuses=None,
+        alert_verdicts=None,
+        has_related_incidents=None,
+        incident_severities=None,
+        incident_statuses=None,
+        incident_verdicts=None,
+        first_fetch_time=FIRST_FETCH_TIME,
+        max_fetch=3,
+    )
+
+    messages = [call.args[0] for call in info.call_args_list]
+    assert len(incidents) == 3
+    assert "Vega getIncidents total=2." in messages
+    assert "Vega getAlerts total=10." in messages
+    assert "Vega fetch cycle finished: 3 incidents created out of 12 (incidents total 2 + alerts total 10)." in messages
 
 
 def test_fetch_incidents_command_incidents_first_then_alerts(mocker):
@@ -2474,12 +2518,14 @@ def test_load_current_incident_handles_demisto_incident_failure(mocker):
         "Vega.demisto.incident",
         side_effect=TypeError("'NoneType' object is not subscriptable"),
     )
-    mocker.patch("Vega.demisto.incidents", return_value=[])
-    mocker.patch.object(demisto, "debug")
+    incidents = mocker.patch("Vega.demisto.incidents")
+    debug = mocker.patch.object(demisto, "debug")
 
     incident = load_current_incident()
 
     assert incident == {}
+    incidents.assert_not_called()
+    debug.assert_not_called()
 
 
 def test_resolve_alert_id_from_incident_uses_raw_json():
@@ -3593,6 +3639,7 @@ def test_build_mirror_sync_object_includes_only_sync_fields():
         "verdict": "SUSPICIOUS",
         "userVerdict": {"value": "BENIGN"},
         "verdictReasoning": "Confirmed benign",
+        "lastUpdated": "2026-06-16T12:00:00Z",
         "incidentSummary": "Should not mirror",
         "assignee": {"displayName": "Analyst"},
         "comments": [{"text": "note", "addedAt": "2026-06-16T12:00:00Z", "addedBy": "a"}],
@@ -3608,6 +3655,7 @@ def test_build_mirror_sync_object_includes_only_sync_fields():
     assert sync_object["verdict"] == "BENIGN"
     assert sync_object["verdictReasoning"] == "Confirmed benign"
     assert sync_object["status"] == "INVESTIGATING"
+    assert sync_object["lastUpdated"] == "2026-06-16T12:00:00Z"
     assert sync_object["CustomFields"]["vegaincidentid"] == "inc-1"
     assert sync_object["CustomFields"]["vegaincidentstatus"] == "INVESTIGATING"
     assert sync_object["CustomFields"]["vegaseverity"] == "MEDIUM"
@@ -3707,6 +3755,7 @@ def test_build_mirror_sync_object_includes_alert_severity():
         "severity": "HIGH",
         "verdict": "SUSPICIOUS",
         "verdictReasoning": "Suspicious activity",
+        "updatedAt": "2026-06-15T12:00:00Z",
     }
 
     sync_object = _build_mirror_sync_object(alert, MIRROR_ENTITY_SUFFIX_ALERT)
@@ -3720,6 +3769,7 @@ def test_build_mirror_sync_object_includes_alert_severity():
     assert sync_object["CustomFields"]["alertid"] == "alert-1"
     assert sync_object["CustomFields"]["vegaalertseverity"] == "HIGH"
     assert sync_object["CustomFields"]["vegastatus"] == "OPEN"
+    assert sync_object["updatedAt"] == "2026-06-15T12:00:00Z"
 
 
 def test_build_mirror_sync_object_strips_prefixed_remote_id():
@@ -4995,11 +5045,14 @@ def test_get_remote_data_command_passes_last_update_to_incident_lookup(mocker):
 
 def test_suppress_noisy_http_integration_logs_filters_header_lines(mocker):
     import http.client as http_client
+    import logging
 
     mocker.patch("Vega.is_debug_mode", return_value=True)
     captured: list[str] = []
     integration_logger_write = LOG.write
     had_filter_flag = getattr(LOG, "_vega_http_log_filter_installed", False)
+    urllib3_logger = logging.getLogger("urllib3")
+    previous_urllib3_level = urllib3_logger.level
 
     def capture_write(msg):
         text = msg.decode(LOG.encoding) if isinstance(msg, bytes) else str(msg)
@@ -5017,9 +5070,11 @@ def test_suppress_noisy_http_integration_logs_filters_header_lines(mocker):
 
         assert captured == ["Vega mirror | stage=resolve-entity | lookup completed\n"]
         assert http_client.HTTPConnection.debuglevel == 0
+        assert urllib3_logger.level == logging.WARNING
     finally:
         LOG.write = integration_logger_write
         LOG._vega_http_log_filter_installed = had_filter_flag
+        urllib3_logger.setLevel(previous_urllib3_level)
 
 
 def test_get_remote_data_command_not_found_preserves_incident_type(mocker):

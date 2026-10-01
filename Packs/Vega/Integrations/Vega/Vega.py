@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import html as html_module
 import http.client as http_client
+import logging
 import math
 import re
 import time
@@ -15,11 +16,13 @@ from typing import Any
 
 
 def _suppress_noisy_http_integration_logs() -> None:
-    """Suppress http.client wire logs such as CloudFront response headers from integration logs."""
+    """Suppress http.client wire logs and urllib3 request lines from integration logs."""
     try:
         http_client.HTTPConnection.debuglevel = 0
     except Exception as exc:
         demisto.debug(f"Vega: unable to disable HTTP wire logging: {exc}")
+
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
 
     if not is_debug_mode():
         return
@@ -2024,20 +2027,16 @@ def _collect_incident_custom_fields(incident: dict[str, Any]) -> dict[str, Any]:
 
 
 def load_current_incident() -> dict[str, Any]:
-    """Load the current investigation incident from the integration runtime context."""
-    incident: dict[str, Any] = {}
+    """Load the current investigation incident from the integration runtime context.
+
+    Fetch and other commands that are not running inside an incident have no incident
+    context. demisto.incidents() submits incidents and cannot be used to read one.
+    """
     try:
         incident = demisto.incident() or {}
-    except (TypeError, AttributeError, KeyError) as exc:
-        demisto.debug(f"Vega: demisto.incident() unavailable: {exc}")
-    if not incident.get("id"):
-        try:
-            incidents = demisto.incidents()
-            if incidents:
-                incident = incidents[0] or {}
-        except Exception as exc:
-            demisto.debug(f"Vega: demisto.incidents() failed: {exc}")
-    return incident
+    except (TypeError, AttributeError, KeyError):
+        return {}
+    return incident if isinstance(incident, dict) else {}
 
 
 def resolve_alert_id_from_incident(args: dict[str, Any], incident: dict[str, Any]) -> str | None:
@@ -4353,14 +4352,15 @@ def _fetch_paginated_entities(
     max_entities: int | None = None,
     start_offset: int = 0,
     **fetch_kwargs: Any,
-) -> tuple[list[dict], int | None]:
+) -> tuple[list[dict], int | None, int | None]:
     """Fetch entities from the Vega API.
 
-    Returns the entity list and an optional next offset when max_entities stops
-    the fetch before all matching records are retrieved.
+    Returns the entity list, an optional next offset when max_entities stops
+    the fetch before all matching records are retrieved, and the API total.
     """
     entities: list[dict] = []
     offset = start_offset
+    api_total: int | None = None
 
     while True:
         request_kwargs = dict(fetch_kwargs)
@@ -4373,6 +4373,9 @@ def _fetch_paginated_entities(
         request_kwargs["limit"] = page_limit
 
         response = fetch_func(offset=offset, **request_kwargs)
+        page_total = _optional_int(response.get("total"))
+        if page_total is not None:
+            api_total = page_total
 
         page = response.get(entities_key) or []
         if not page:
@@ -4381,20 +4384,18 @@ def _fetch_paginated_entities(
         entities.extend(page)
         if max_entities is not None and len(entities) >= max_entities:
             entities = entities[:max_entities]
-            total = response.get("total")
-            if total is not None:
+            if api_total is not None:
                 next_offset = start_offset + len(entities)
-                if next_offset < total:
-                    return entities, next_offset
+                if next_offset < api_total:
+                    return entities, next_offset, api_total
             break
 
-        total = response.get("total")
-        if total is not None and offset + len(page) >= total:
+        if api_total is not None and offset + len(page) >= api_total:
             break
 
         offset += len(page)
 
-    return entities, None
+    return entities, None, api_total
 
 
 def _build_fetch_filter_fingerprint(
@@ -4997,7 +4998,7 @@ def _build_mirror_sync_object(
         "vegaEntityType": vega_entity_type,
         "CustomFields": custom_fields,
     }
-    for key in ("status", "severity", "verdict", "verdictReasoning", "investigationStatus"):
+    for key in ("status", "severity", "verdict", "verdictReasoning", "investigationStatus", "updatedAt", "lastUpdated"):
         value = raw.get(key)
         if value is not None and str(value).strip() != "":
             sync_object[key] = value
@@ -5805,6 +5806,27 @@ def _resolve_max_fetch(max_fetch: int | str | None) -> int:
     return int(arg_to_number(max_fetch, arg_name="max_fetch", required=False))  # type: ignore[arg-type]
 
 
+def _log_vega_collection_total(entities_key: str, api_total: int | None) -> None:
+    """Log the total returned by getAlerts or getIncidents."""
+    query_name = "getIncidents" if entities_key == "incidents" else "getAlerts"
+    total_text = api_total if api_total is not None else "unknown"
+    demisto.info(f"Vega {query_name} total={total_text}.")
+
+
+def _log_fetch_cycle_status(created: int, incidents_total: int | None, alerts_total: int | None) -> None:
+    """Log how many XSOAR incidents this fetch cycle created against the Vega totals."""
+    incidents_text = str(incidents_total) if incidents_total is not None else "not fetched"
+    alerts_text = str(alerts_total) if alerts_total is not None else "not fetched"
+    if incidents_total is None and alerts_total is None:
+        combined: int | str = "unknown"
+    else:
+        combined = (incidents_total or 0) + (alerts_total or 0)
+    demisto.info(
+        f"Vega fetch cycle finished: {created} incidents created out of {combined} "
+        f"(incidents total {incidents_text} + alerts total {alerts_text})."
+    )
+
+
 def _fetch_vega_entity_batch(
     last_run: dict,
     next_run: dict,
@@ -5816,13 +5838,13 @@ def _fetch_vega_entity_batch(
     fetch_func: Callable[..., dict],
     entities_key: str,
     **fetch_kwargs: Any,
-) -> list[dict]:
+) -> tuple[list[dict], int | None]:
     """Fetch up to `limit` Vega entities and store offset state when more remain."""
     saved_offset = last_run.get(offset_key)
     offset = int(saved_offset) if saved_offset is not None else 0
     from_time = str(last_run.get(pagination_from_key) or default_from_time) if offset > 0 else default_from_time
 
-    entities, next_offset = _fetch_paginated_entities(
+    entities, next_offset, api_total = _fetch_paginated_entities(
         fetch_func,
         entities_key=entities_key,
         max_entities=limit,
@@ -5838,7 +5860,8 @@ def _fetch_vega_entity_batch(
         next_run.pop(offset_key, None)
         next_run.pop(pagination_from_key, None)
 
-    return entities
+    _log_vega_collection_total(entities_key, api_total)
+    return entities, api_total
 
 
 def _fetch_incident_timeline_events(client: Client, incident_id: str) -> list[dict]:
@@ -5871,7 +5894,7 @@ def _ingest_fetched_incidents(
     backfill_days: str | int | None = None,
     lookback_minutes: int = DEFAULT_LOOKBACK_MINUTES,
     include_alert_metadata: bool = False,
-) -> int:
+) -> tuple[int, int | None]:
     try:
         batch_last_run = _batch_fetch_last_run(
             last_run,
@@ -5881,7 +5904,7 @@ def _ingest_fetched_incidents(
             fetch_config_key="incidents_fetch_config",
             fetch_config=incidents_fetch_config,
         )
-        incidents = _fetch_vega_entity_batch(
+        incidents, incidents_total = _fetch_vega_entity_batch(
             batch_last_run,
             next_run,
             offset_key=INCIDENTS_OFFSET_KEY,
@@ -5941,10 +5964,10 @@ def _ingest_fetched_incidents(
             next_run["incidents_last_fetch"] = _current_fetch_timestamp()
 
         next_run["incidents_fetch_config"] = incidents_fetch_config
-        return len(ingested)
+        return len(ingested), incidents_total
     except Exception as exc:
         _handle_fetch_entity_error("incidents", exc)
-        return 0
+        return 0, None
 
 
 def _ingest_fetched_alerts(
@@ -5965,7 +5988,7 @@ def _ingest_fetched_alerts(
     limit: int,
     backfill_days: str | int | None = None,
     lookback_minutes: int = DEFAULT_LOOKBACK_MINUTES,
-) -> int:
+) -> tuple[int, int | None]:
     try:
         batch_last_run = _batch_fetch_last_run(
             last_run,
@@ -5975,7 +5998,7 @@ def _ingest_fetched_alerts(
             fetch_config_key="alerts_fetch_config",
             fetch_config=alerts_fetch_config,
         )
-        alerts = _fetch_vega_entity_batch(
+        alerts, alerts_total = _fetch_vega_entity_batch(
             batch_last_run,
             next_run,
             offset_key=ALERTS_OFFSET_KEY,
@@ -6038,10 +6061,10 @@ def _ingest_fetched_alerts(
             next_run["alerts_last_fetch"] = _current_fetch_timestamp()
 
         next_run["alerts_fetch_config"] = alerts_fetch_config
-        return len(ingested)
+        return len(ingested), alerts_total
     except Exception as exc:
         _handle_fetch_entity_error("alerts", exc)
-        return 0
+        return 0, None
 
 
 def _parse_comma_separated_ids(value: Any) -> list[str]:
@@ -6603,6 +6626,8 @@ def fetch_incidents_command(
     working_run = last_run
     incidents_touched = False
     alerts_touched = False
+    cycle_incidents_total: int | None = None
+    cycle_alerts_total: int | None = None
 
     def _get_from_time(last_fetch_key: str) -> str:
         last_fetch = working_run.get(last_fetch_key)
@@ -6615,7 +6640,7 @@ def fetch_incidents_command(
 
     if fetch_incidents and remaining > 0 and working_run.get(INCIDENTS_OFFSET_KEY) is not None:
         incidents_from_time = _get_from_time("incidents_last_fetch")
-        ingested_incidents = _ingest_fetched_incidents(
+        ingested_incidents, incidents_total = _ingest_fetched_incidents(
             client,
             working_run,
             next_run,
@@ -6633,6 +6658,8 @@ def fetch_incidents_command(
             lookback_minutes=lookback_minutes,
             include_alert_metadata=include_incident_alert_metadata,
         )
+        if incidents_total is not None:
+            cycle_incidents_total = incidents_total
         remaining -= ingested_incidents
         working_run = next_run
         incidents_touched = True
@@ -6644,7 +6671,7 @@ def fetch_incidents_command(
         and working_run.get(ALERTS_OFFSET_KEY) is not None
     ):
         alerts_from_time = _get_from_time("alerts_last_fetch")
-        ingested_alerts = _ingest_fetched_alerts(
+        ingested_alerts, alerts_total = _ingest_fetched_alerts(
             client,
             working_run,
             next_run,
@@ -6662,13 +6689,15 @@ def fetch_incidents_command(
             backfill_days=backfill_days,
             lookback_minutes=lookback_minutes,
         )
+        if alerts_total is not None:
+            cycle_alerts_total = alerts_total
         remaining -= ingested_alerts
         working_run = next_run
         alerts_touched = True
 
     if fetch_incidents and remaining > 0 and not incidents_touched and next_run.get(INCIDENTS_OFFSET_KEY) is None:
         incidents_from_time = _get_from_time("incidents_last_fetch")
-        ingested_incidents = _ingest_fetched_incidents(
+        ingested_incidents, incidents_total = _ingest_fetched_incidents(
             client,
             working_run,
             next_run,
@@ -6686,6 +6715,8 @@ def fetch_incidents_command(
             lookback_minutes=lookback_minutes,
             include_alert_metadata=include_incident_alert_metadata,
         )
+        if incidents_total is not None:
+            cycle_incidents_total = incidents_total
         remaining -= ingested_incidents
         working_run = next_run
 
@@ -6697,7 +6728,7 @@ def fetch_incidents_command(
         and next_run.get(ALERTS_OFFSET_KEY) is None
     ):
         alerts_from_time = _get_from_time("alerts_last_fetch")
-        _ingest_fetched_alerts(
+        _, alerts_total = _ingest_fetched_alerts(
             client,
             working_run,
             next_run,
@@ -6715,7 +6746,10 @@ def fetch_incidents_command(
             backfill_days=backfill_days,
             lookback_minutes=lookback_minutes,
         )
+        if alerts_total is not None:
+            cycle_alerts_total = alerts_total
 
+    _log_fetch_cycle_status(len(xsoar_incidents), cycle_incidents_total, cycle_alerts_total)
     return next_run, xsoar_incidents
 
 
