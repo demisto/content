@@ -75,6 +75,12 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  defaultvalue: "true"
 script:
   commands:
   - name: workday-get-activity-logging
@@ -107,8 +113,8 @@ script:
       defaultValue: "false"
       description: If true, the command creates events; otherwise, it only displays them.
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
       required: false
     outputs: []
   runonce: false

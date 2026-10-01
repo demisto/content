@@ -1,0 +1,92 @@
+{
+  "F5_ASM_raw": {
+    "cefName": {
+      "type": "string",
+      "is_array": false
+    },
+    "cn1": {
+      "type": "int",
+      "is_array": false
+    },
+    "cs4": {
+      "type": "string",
+      "is_array": false
+    },
+    "cs3": {
+      "type": "string",
+      "is_array": false
+    },
+    "cs1": {
+      "type": "string",
+      "is_array": false
+    },
+    "c6a2": {
+      "type": "string",
+      "is_array": false
+    },
+    "c6a3": {
+      "type": "string",
+      "is_array": false
+    },
+    "src": {
+      "type": "string",
+      "is_array": false
+    },
+    "dst": {
+      "type": "string",
+      "is_array": false
+    },
+    "spt": {
+      "type": "int",
+      "is_array": false
+    },
+    "dpt": {
+      "type": "int",
+      "is_array": false
+    },
+    "app": {
+      "type": "string",
+      "is_array": false
+    },
+    "deviceExternalId": {
+      "type": "string",
+      "is_array": false
+    },
+    "dvchost": {
+      "type": "string",
+      "is_array": false
+    },
+    "requestMethod": {
+      "type": "string",
+      "is_array": false
+    },
+    "dvc": {
+      "type": "string",
+      "is_array": false
+    },
+    "act": {
+      "type": "string",
+      "is_array": false
+    },
+    "suid": {
+      "type": "string",
+      "is_array": false
+    },
+    "externalID": {
+      "type": "int",
+      "is_array": false
+    },
+    "cefseverity": {
+      "type": "int",
+      "is_array": false
+    },
+    "cs5": {
+      "type": "string",
+      "is_array": false
+    },        
+    "request": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

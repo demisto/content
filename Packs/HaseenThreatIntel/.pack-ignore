@@ -9,9 +9,8 @@ ignore=BA130,IN122
 
 # BA130: see above - the pack intentionally omits 'platform'.
 # PB121: 'incident.id:' is a literal query prefix passed to a concat transformer, not a context reference.
-# RM116: the playbook image is provided as doc_files/Haseen-DeltaFeed-Generic.png.
 [file:Haseen_-_Delta_Feed_-_Generic.yml]
-ignore=BA130,PB121,RM116
+ignore=BA130,PB121
 
 [known_words]
 Haseen

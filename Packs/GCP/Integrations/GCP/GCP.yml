@@ -12699,6 +12699,300 @@ script:
 #      description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
 #      required: true
 #    outputs: []
+  - name: gcp-resource-manager-project-create
+    description: "Creates a new GCP project under the specified parent (organization or folder). Required Permission: resourcemanager.projects.create."
+    arguments:
+    - name: identifier
+      description: The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions < 3.0.
+      required:platform: true
+      required: false
+    - name: project_id
+      description: The unique, user-assigned ID of the project to create. Must be 6 to 30 lowercase letters, digits, or hyphens, and must start with a letter. Trailing hyphens are prohibited (for example, tokyo-rain-123).
+      required: true
+    - name: parent
+      description: The resource name of the parent under which to create the project, in the form "organizations/[organization_id]" or "folders/[folder_id]".
+      required: true
+    - name: display_name
+      description: The user-assigned display name of the project. Must be 4 to 30 characters.
+    - name: labels
+      description: 'An object containing a list of "key": value pairs to associate with the project, without spaces. Example: key=abc,value=123;key=ABC,value=321.'
+    outputs:
+    - contextPath: GCP.ResourceManager.Operations.name
+      description: The server-assigned name of the long-running operation tracking the request (for example, operations/cp.1234567890).
+      type: String
+    - contextPath: GCP.ResourceManager.Operations.done
+      description: Whether the operation has completed. If false, the operation is still in progress.
+      type: Boolean
+    - contextPath: GCP.ResourceManager.Operations.metadata
+      description: Service-specific metadata associated with the operation.
+      type: Object
+    - contextPath: GCP.ResourceManager.Operations.response
+      description: The normal response of the operation on success. Present only when the operation has completed.
+      type: Object
+    - contextPath: GCP.ResourceManager.Operations.error
+      description: The error result of the operation in case of failure or cancellation.
+      type: Object
+  - name: gcp-resource-manager-project-get
+    description: "Retrieves a GCP project by its project ID. Required Permission: resourcemanager.projects.get."
+    arguments:
+    - name: identifier
+      description: The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions < 3.0.
+      required:platform: true
+      required: false
+    - name: project_id
+      description: The unique ID of the project to fetch (for example, tokyo-rain-123).
+      required: true
+    outputs:
+    - contextPath: GCP.ResourceManager.Projects.name
+      description: The resource name of the project (for example, projects/415104041262).
+      type: String
+    - contextPath: GCP.ResourceManager.Projects.projectId
+      description: The unique, user-assigned ID of the project.
+      type: String
+    - contextPath: GCP.ResourceManager.Projects.displayName
+      description: The user-assigned display name of the project.
+      type: String
+    - contextPath: GCP.ResourceManager.Projects.state
+      description: The project lifecycle state.
+      type: String
+    - contextPath: GCP.ResourceManager.Projects.createTime
+      description: The time the project was created, in ISO 8601 format (for example, "2024-01-15T12:34:56Z").
+      type: String
+    - contextPath: GCP.ResourceManager.Projects.parent
+      description: The resource name of the project's parent.
+      type: String
+    - contextPath: GCP.ResourceManager.Projects.labels
+      description: The labels associated with the project.
+      type: Object
+    - contextPath: GCP.ResourceManager.Projects.updateTime
+      description: The time the project was last modified, in ISO 8601 format (for example, "2024-01-15T12:34:56Z").
+      type: String
+    - contextPath: GCP.ResourceManager.Projects.deleteTime
+      description: The time the project was marked for deletion, in ISO 8601 format (for example, "2024-01-15T12:34:56Z"). Present only when the project is in the DELETE_REQUESTED state.
+      type: String
+    - contextPath: GCP.ResourceManager.Projects.etag
+      description: A checksum computed by the server, used for optimistic concurrency control.
+      type: String
+    - contextPath: GCP.ResourceManager.Projects.tags
+      description: 'The tags bound to the project, in the format {tag_key: tag_value}.'
+      type: Object
+    - contextPath: GCP.ResourceManager.Projects.configuredCapabilities
+      description: The capabilities configured on the project.
+      type: Unknown
+  - name: gcp-resource-manager-project-search
+    description: "Searches for GCP projects that are visible to the caller and match an optional query. Required Permission: resourcemanager.projects.get."
+    arguments:
+    - name: identifier
+      description: The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version >=3.0 , Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions < 3.0.
+      required:platform: true
+      required: false
+    - name: query
+      description: 'The optional query string to filter the projects. Supported fields include displayName, parent, id, state, and labels.[KEY] (for example, "state:ACTIVE" or "displayName:how*").'
+    - name: limit
+      description: The maximum number of results to return. Acceptable values are 1 to 500, inclusive.
+      defaultValue: '50'
+    - name: next_token
+      description: The pagination token returned from a previous call, indicating where the listing should continue.
+    outputs:
+    - contextPath: GCP.ResourceManager.Projects.name
+      description: The resource name of the project (for example, projects/415104041262).
+      type: String
+    - contextPath: GCP.ResourceManager.Projects.projectId
+      description: The unique, user-assigned ID of the project.
+      type: String
+    - contextPath: GCP.ResourceManager.Projects.displayName
+      description: The user-assigned display name of the project.
+      type: String
+    - contextPath: GCP.ResourceManager.Projects.state
+      description: The project lifecycle state.
+      type: String
+    - contextPath: GCP.ResourceManager.Projects.createTime
+      description: The time the project was created, in ISO 8601 format (for example, "2024-01-15T12:34:56Z").
+      type: String
+    - contextPath: GCP.ResourceManager.Projects.parent
+      description: The resource name of the project's parent.
+      type: String
+    - contextPath: GCP.ResourceManager.Projects.labels
+      description: The labels associated with the project.
+      type: Object
+    - contextPath: GCP.ResourceManager.Projects.updateTime
+      description: The time the project was last modified, in ISO 8601 format (for example, "2024-01-15T12:34:56Z").
+      type: String
+    - contextPath: GCP.ResourceManager.Projects.deleteTime
+      description: The time the project was marked for deletion, in ISO 8601 format (for example, "2024-01-15T12:34:56Z"). Present only when the project is in the DELETE_REQUESTED state.
+      type: String
+    - contextPath: GCP.ResourceManager.Projects.etag
+      description: A checksum computed by the server, used for optimistic concurrency control.
+      type: String
+    - contextPath: GCP.ResourceManager.Projects.tags
+      description: 'The tags bound to the project, in the format {tag_key: tag_value}.'
+      type: Object
+    - contextPath: GCP.ResourceManager.Projects.configuredCapabilities
+      description: The capabilities configured on the project.
+      type: Unknown
+    - contextPath: GCP.ResourceManager.ProjectsNextToken
+      description: The token to use to retrieve the next batch of projects.
+      type: String
+  - name: gcp-resource-manager-project-update
+    description: "Updates the display name and/or labels of an existing GCP project. Required Permission: resourcemanager.projects.update."
+    arguments:
+    - name: identifier
+      description: The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions < 3.0.
+      required:platform: true
+      required: false
+    - name: project_id
+      description: The unique ID of the project to update (for example, tokyo-rain-123).
+      required: true
+    - name: display_name
+      description: The new display name for the project. Must be 4 to 30 characters.
+    - name: labels
+      description: 'An object containing a list of "key": value pairs to associate with the project, without spaces. Example: key=abc,value=123;key=ABC,value=321.'
+    outputs:
+    - contextPath: GCP.ResourceManager.Operations.name
+      description: The server-assigned name of the long-running operation tracking the request (for example, operations/cp.1234567890).
+      type: String
+    - contextPath: GCP.ResourceManager.Operations.done
+      description: Whether the operation has completed. If false, the operation is still in progress.
+      type: Boolean
+    - contextPath: GCP.ResourceManager.Operations.metadata
+      description: Service-specific metadata associated with the operation.
+      type: Object
+    - contextPath: GCP.ResourceManager.Operations.response
+      description: The normal response of the operation on success. Present only when the operation has completed.
+      type: Object
+    - contextPath: GCP.ResourceManager.Operations.error
+      description: The error result of the operation in case of failure or cancellation.
+      type: Object
+  - name: gcp-resource-manager-project-delete
+    description: "Marks a GCP project for deletion (sets its state to DELETE_REQUESTED). Required Permission: resourcemanager.projects.delete."
+    execution: true
+    arguments:
+    - name: identifier
+      description: The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions < 3.0.
+      required:platform: true
+      required: false
+    - name: project_id
+      description: The unique ID of the project to delete (for example, tokyo-rain-123).
+      required: true
+    outputs:
+    - contextPath: GCP.ResourceManager.Operations.name
+      description: The server-assigned name of the long-running operation tracking the request (for example, operations/cp.1234567890).
+      type: String
+    - contextPath: GCP.ResourceManager.Operations.done
+      description: Whether the operation has completed. If false, the operation is still in progress.
+      type: Boolean
+    - contextPath: GCP.ResourceManager.Operations.metadata
+      description: Service-specific metadata associated with the operation.
+      type: Object
+    - contextPath: GCP.ResourceManager.Operations.response
+      description: The normal response of the operation on success. Present only when the operation has completed.
+      type: Object
+    - contextPath: GCP.ResourceManager.Operations.error
+      description: The error result of the operation in case of failure or cancellation.
+      type: Object
+  - name: gcp-resource-manager-project-undelete
+    description: "Restores a GCP project that was previously marked for deletion. Required Permission: resourcemanager.projects.undelete."
+    arguments:
+    - name: identifier
+      description: The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions < 3.0.
+      required:platform: true
+      required: false
+    - name: project_id
+      description: The unique ID of the project to restore (for example, tokyo-rain-123).
+      required: true
+    outputs:
+    - contextPath: GCP.ResourceManager.Operations.name
+      description: The server-assigned name of the long-running operation tracking the request (for example, operations/cp.1234567890).
+      type: String
+    - contextPath: GCP.ResourceManager.Operations.done
+      description: Whether the operation has completed. If false, the operation is still in progress.
+      type: Boolean
+    - contextPath: GCP.ResourceManager.Operations.metadata
+      description: Service-specific metadata associated with the operation.
+      type: Object
+    - contextPath: GCP.ResourceManager.Operations.response
+      description: The normal response of the operation on success. Present only when the operation has completed.
+      type: Object
+    - contextPath: GCP.ResourceManager.Operations.error
+      description: The error result of the operation in case of failure or cancellation.
+      type: Object
+  - name: gcp-resource-manager-organization-search
+    description: "Searches for GCP organizations that are visible to the caller and match an optional query. Required Permission: resourcemanager.organizations.get."
+    arguments:
+    - name: identifier
+      description: The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions < 3.0.
+      required:platform: true
+      required: false
+    - name: query
+      description: 'The optional query string to filter the organizations. Organizations may be filtered by owner.directoryCustomerId or by domain (for example, "domain:google.com").'
+    - name: limit
+      description: The maximum number of results to return. Acceptable values are 1 to 500, inclusive.
+      defaultValue: '50'
+    - name: next_token
+      description: The pagination token returned from a previous call, indicating where the listing should continue.
+    outputs:
+    - contextPath: GCP.ResourceManager.Organizations.name
+      description: 'The resource name of the organization, in the form "organizations/[organization_id]".'
+      type: String
+    - contextPath: GCP.ResourceManager.Organizations.displayName
+      description: The organization's display name.
+      type: String
+    - contextPath: GCP.ResourceManager.Organizations.state
+      description: The organization's current lifecycle state.
+      type: String
+    - contextPath: GCP.ResourceManager.Organizations.directoryCustomerId
+      description: The G Suite / Cloud Identity customer ID used in the Directory API.
+      type: String
+    - contextPath: GCP.ResourceManager.Organizations.createTime
+      description: The time the organization was created, in ISO 8601 format (for example, "2024-01-15T12:34:56Z").
+      type: String
+    - contextPath: GCP.ResourceManager.Organizations.updateTime
+      description: The time the organization was last modified, in ISO 8601 format (for example, "2024-01-15T12:34:56Z").
+      type: String
+    - contextPath: GCP.ResourceManager.Organizations.deleteTime
+      description: The time the organization was marked for deletion, in ISO 8601 format (for example, "2024-01-15T12:34:56Z"). Present only when the organization is in the DELETE_REQUESTED state.
+      type: String
+    - contextPath: GCP.ResourceManager.Organizations.etag
+      description: A checksum computed by the server, used for optimistic concurrency control.
+      type: String
+    - contextPath: GCP.ResourceManager.OrganizationsNextToken
+      description: The token to use to retrieve the next batch of organizations.
+      type: String
+  - name: gcp-resource-manager-organization-get
+    description: "Retrieves a GCP organization by its resource name. Required Permission: resourcemanager.organizations.get."
+    arguments:
+    - name: identifier
+      description: The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Used only to obtain credentials, not to filter results. Not required for Cortex XSOAR and Cortex XSIAM versions < 3.0.
+      required:platform: true
+      required: false
+    - name: name
+      description: 'The resource name of the organization to fetch, in the form "organizations/[organization_id]" (e.g. organizations/1234).'
+      required: true
+    outputs:
+    - contextPath: GCP.ResourceManager.Organizations.name
+      description: 'The resource name of the organization, in the form "organizations/[organization_id]".'
+      type: String
+    - contextPath: GCP.ResourceManager.Organizations.displayName
+      description: The organization's display name.
+      type: String
+    - contextPath: GCP.ResourceManager.Organizations.state
+      description: The organization's current lifecycle state.
+      type: String
+    - contextPath: GCP.ResourceManager.Organizations.directoryCustomerId
+      description: The G Suite / Cloud Identity customer ID used in the Directory API.
+      type: String
+    - contextPath: GCP.ResourceManager.Organizations.createTime
+      description: The time the organization was created, in ISO 8601 format (for example, "2024-01-15T12:34:56Z").
+      type: String
+    - contextPath: GCP.ResourceManager.Organizations.updateTime
+      description: The time the organization was last modified, in ISO 8601 format (for example, "2024-01-15T12:34:56Z").
+      type: String
+    - contextPath: GCP.ResourceManager.Organizations.deleteTime
+      description: The time the organization was marked for deletion, in ISO 8601 format (for example, "2024-01-15T12:34:56Z"). Present only when the organization is in the DELETE_REQUESTED state.
+      type: String
+    - contextPath: GCP.ResourceManager.Organizations.etag
+      description: A checksum computed by the server, used for optimistic concurrency control.
+      type: String
 
   isfetch: false
   runonce: false

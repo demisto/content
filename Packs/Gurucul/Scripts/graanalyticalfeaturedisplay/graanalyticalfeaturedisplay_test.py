@@ -61,3 +61,91 @@ def test_gra_analytical_feature_display(monkeypatch, mocker):
     response = displayAnalyticalFeatures()
     expected = None
     assert response == expected
+
+
+_INCIDENT_GRA = {
+    "CustomFields": {
+        "graincident": "IN-1",
+        "graincidentanomalydetails": [
+            {
+                "anomalyname": "anomaly_name",
+                "assignee": "assignee_name",
+                "assigneetype": "assignee_type",
+                "resourcename": "resource_name",
+                "riskaccepteddate": "null",
+                "riskscore": "0",
+                "status": "open",
+            },
+        ],
+    },
+    "id": 28863,
+    "sourceInstance": "instance_name",
+    "labels": [
+        {"type": "entityTypeId", "value": "51"},
+        {"type": "riskDate", "value": "01/01/2021 00:00:00"},
+        {"type": "entity", "value": "entityValue"},
+    ],
+}
+
+
+def test_gra_analytical_feature_display_incident_path(monkeypatch, mocker):
+    """Ensure graincidentanomalydetails is used for GRA Incident incidents."""
+    monkeypatch.setattr(graanalyticalfeaturedisplay, "_get_incident", lambda: _INCIDENT_GRA)
+    execute_mocker = mocker.patch.object(graanalyticalfeaturedisplay, "execute_command", return_value=None)
+    response = displayAnalyticalFeatures()
+    assert response is None
+    execute_mocker.assert_called_once_with(
+        "gra-analytical-features-entity-value",
+        {
+            "entityValue": "entityValue",
+            "modelName": "anomaly_name",
+            "fromDate": "01/01/2021 00:00:00",
+            "toDate": "01/01/2021 00:00:00",
+            "entityTypeId": "51",
+            "using": "instance_name",
+        },
+    )
+
+
+_INCIDENT_ISO_RISK = {
+    "CustomFields": {
+        "graincident": "IN-2",
+        "graincidentanomalydetails": [
+            {
+                "anomalyname": "anomaly_name",
+                "assignee": "assignee_name",
+                "assigneetype": "assignee_type",
+                "resourcename": "resource_name",
+                "riskaccepteddate": "null",
+                "riskscore": "0",
+                "status": "open",
+            },
+        ],
+    },
+    "id": 28864,
+    "sourceInstance": "instance_name",
+    "labels": [
+        {"type": "entityTypeId", "value": "51"},
+        {"type": "riskDate", "value": "2026-08-27T18:30:00.000Z"},
+        {"type": "entity", "value": "entityValue"},
+    ],
+}
+
+
+def test_gra_analytical_feature_display_passes_iso_risk_date(monkeypatch, mocker):
+    """Incident ISO riskDate is passed through; the integration command normalizes it."""
+    monkeypatch.setattr(graanalyticalfeaturedisplay, "_get_incident", lambda: _INCIDENT_ISO_RISK)
+    execute_mocker = mocker.patch.object(graanalyticalfeaturedisplay, "execute_command", return_value=None)
+    response = displayAnalyticalFeatures()
+    assert response is None
+    execute_mocker.assert_called_once_with(
+        "gra-analytical-features-entity-value",
+        {
+            "entityValue": "entityValue",
+            "modelName": "anomaly_name",
+            "fromDate": "2026-08-27T18:30:00.000Z",
+            "toDate": "2026-08-27T18:30:00.000Z",
+            "entityTypeId": "51",
+            "using": "instance_name",
+        },
+    )

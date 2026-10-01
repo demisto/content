@@ -7,8 +7,8 @@ This is the default integration for this content pack when configured by the Dat
 
 | **Parameter**                                                                    | **Description**                                                                                                                | **Required** |
 |----------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|--------------|
-| Server URL (e.g. https://WORKDAY-HOST/ccx/api/privacy/v1/TENANT_NAME)                   | REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application                       | True         |
-| Token endpoint (e.g. https://WORKDAY-HOST/ccx/oauth2/TENANT_NAME/token)          | Token endpoint of the Workday server. Can be obtained from View API Clients report in Workday application.                     | True         |
+| Server URL (e.g. <https://WORKDAY-HOST/ccx/api/privacy/v1/TENANT_NAME>)                   | REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application                       | True         |
+| Token endpoint (e.g. <https://WORKDAY-HOST/ccx/oauth2/TENANT_NAME/token>)          | Token endpoint of the Workday server. Can be obtained from View API Clients report in Workday application.                     | True         |
 | Client ID                                                                        | Copy the Client ID and Secret from the Register API Client for Integrations stage at Workday.                                  | True         |
 | Client Secret                                                                    |                                                                                                                                | True         |
 | Refresh Token                                                                    | Non-expiry Workday API refresh token.                                                                                          | True         |
@@ -59,3 +59,7 @@ There is no context output for this command.
 | test_action | test_device | 1.1.1.1 | 2023-04-24T07:00:00Z | test_session_id | 123 | id: 1234<br>descriptor: test_descriptor<br>href: test_href | test_display | 2 | 1234 | test_agent |
 | test_action | test_device | 1.1.1.1 | 2023-04-24T07:00:00Z | test_session_id | 123 | id: 1234<br>descriptor: test_descriptor<br>href: test_href | test_display | 3 | 1234 | test_agent |
 | test_action | test_device | 1.1.1.1 | 2023-04-24T07:00:00Z | test_session_id | 123 | id: 1234<br>descriptor: test_descriptor<br>href: test_href | test_display | 4 | 1234 | test_agent |
+
+## Known Limitations
+
+By design, each fetch only requests events up to `now - 60 seconds`, so the collector always lags 60 seconds behind the current time. This lag is required because Workday publishes a minute's events gradually and not strictly in timestamp order. Waiting ensures each time window is fully published before it is fetched, which prevents events from being missed. As a result, the most recent ~60 seconds of events are collected on the next fetch cycle rather than the current one.

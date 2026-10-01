@@ -6,7 +6,7 @@ Note: Netskope has deprecated the legacy single-step API token generation proces
 
 #### Step 1: Create a Service Account (RBACv3)
 
-Follow the instructions under the section [Create a New Service Account](https://example.com).
+Follow the instructions under the section [Create a New Service Account](https://docs.netskope.com/en/administrators-rbac-v3#create-a-new-service-account).
 
 ### Step 2: Assign required functional roles
 

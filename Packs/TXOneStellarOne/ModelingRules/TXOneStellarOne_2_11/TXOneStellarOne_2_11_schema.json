@@ -1,0 +1,196 @@
+{
+    "txone_stellarone_raw": {
+        "accessimagepath": {
+            "type": "string",
+            "is_array": false
+        },
+        "accessuser": {
+            "type": "string",
+            "is_array": false
+        },
+        "act": {
+            "type": "string",
+            "is_array": false
+        },
+        "actionresult": {
+            "type": "string",
+            "is_array": false
+        },
+        "activeuser": {
+            "type": "string",
+            "is_array": false
+        },
+        "agentendpoint": {
+            "type": "string",
+            "is_array": false
+        },
+        "agentgrpguid": {
+            "type": "string",
+            "is_array": false
+        },
+        "agentgrpname": {
+            "type": "string",
+            "is_array": false
+        },
+        "agentip": {
+            "type": "string",
+            "is_array": false
+        },
+        "agentos": {
+            "type": "string",
+            "is_array": false
+        },
+        "blockedprocess": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefdeviceeventclassid": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefdeviceversion": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefname": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefseverity": {
+            "type": "string",
+            "is_array": false
+        },
+        "clientip": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs1": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs1label": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs2": {
+            "type": "string",
+            "is_array": false
+        },
+        "desc": {
+            "type": "string",
+            "is_array": false
+        },
+        "detailmsg": {
+            "type": "string",
+            "is_array": false
+        },
+        "deviceexternalid": {
+            "type": "string",
+            "is_array": false
+        },
+        "devicetype": {
+            "type": "string",
+            "is_array": false
+        },
+        "dst": {
+            "type": "string",
+            "is_array": false
+        },
+        "dvc": {
+            "type": "string",
+            "is_array": false
+        },
+        "dvchost": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventid": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventtime": {
+            "type": "string",
+            "is_array": false
+        },
+        "filename": {
+            "type": "string",
+            "is_array": false
+        },
+        "filepath": {
+            "type": "string",
+            "is_array": false
+        },
+        "logguid": {
+            "type": "string",
+            "is_array": false
+        },
+        "msg": {
+            "type": "string",
+            "is_array": false
+        },
+        "path": {
+            "type": "string",
+            "is_array": false
+        },
+        "pid": {
+            "type": "string",
+            "is_array": false
+        },
+        "processid": {
+            "type": "string",
+            "is_array": false
+        },
+        "result": {
+            "type": "string",
+            "is_array": false
+        },
+        "rt": {
+            "type": "string",
+            "is_array": false
+        },
+        "serverip": {
+            "type": "string",
+            "is_array": false
+        },
+        "src": {
+            "type": "string",
+            "is_array": false
+        },
+        "start": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "suser": {
+            "type": "string",
+            "is_array": false
+        },
+        "threatattackid": {
+            "type": "string",
+            "is_array": false
+        },
+        "threatimagepath": {
+            "type": "string",
+            "is_array": false
+        },
+        "threatname": {
+            "type": "string",
+            "is_array": false
+        },
+        "threatuser": {
+            "type": "string",
+            "is_array": false
+        },
+        "username": {
+            "type": "string",
+            "is_array": false
+        },
+        "userrole": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

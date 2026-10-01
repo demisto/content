@@ -105,7 +105,7 @@ def check_pivotable_ssl_email(ssl_infos: list[dict[str, Any]], max_property_coun
     pivotable = []
     try:
         for ssl_info in ssl_infos:
-            emails = ssl_info.get("email", []) if ssl_info is not None else []
+            emails = ssl_info.get("email") or [] if ssl_info is not None else []
             for email in emails:
                 count = int(email.get("count") or 0)
                 if max_property_count >= count >= 1:
@@ -256,13 +256,13 @@ def check_pivotable_domains(args: dict[str, Any]) -> CommandResults:
         results["PivotableNameServerHost"]["pivotable"] = True
         results["PivotableNameServerHost"]["items"] = pivotable_ns_hosts
 
-    pivotable_ns_ips = check_pivotable_nameserver_ip(domain_hosting_data.get("NameServers"), max_name_server_ip_count)
+    pivotable_ns_ips = check_pivotable_nameserver_ip(domain_hosting_data.get("NameServers") or [], max_name_server_ip_count)
     if len(pivotable_ns_ips) > 0:
         results["PivotableNameServerIp"]["pivotable"] = True
         results["PivotableNameServerIp"]["items"] = pivotable_ns_ips
 
     pivotable_ns_domains = check_pivotable_nameserver_host_or_domain(
-        domain_hosting_data.get("NameServers"), "domain", max_name_server_domain_count
+        domain_hosting_data.get("NameServers") or [], "domain", max_name_server_domain_count
     )
     if len(pivotable_ns_domains) > 0:
         results["PivotableNameServerDomain"]["pivotable"] = True
@@ -270,14 +270,14 @@ def check_pivotable_domains(args: dict[str, Any]) -> CommandResults:
 
     # Registrant
     pivotable_registrant_contact_name = check_pivotable_registrant_contact_name(
-        domain_identity_data.get("RegistrantContact"), max_registrant_contact_name_count
+        domain_identity_data.get("RegistrantContact") or {}, max_registrant_contact_name_count
     )
     if pivotable_registrant_contact_name is not None:
         results["PivotableRegistrantContactName"]["pivotable"] = True
         results["PivotableRegistrantContactName"]["items"] = pivotable_registrant_contact_name
 
     pivotable_registrant_org_name = check_pivotable_registrant_org(
-        domain_identity_data.get("RegistrantContact"), max_registrant_org_count
+        domain_identity_data.get("RegistrantContact") or {}, max_registrant_org_count
     )
     if pivotable_registrant_org_name is not None:
         results["PivotableRegistrantOrg"]["pivotable"] = True
@@ -291,7 +291,7 @@ def check_pivotable_domains(args: dict[str, Any]) -> CommandResults:
 
     # SSL
     pivotable_ssl_org = check_pivotable_ssl_info(
-        domain_hosting_data.get("SSLCertificate"),
+        domain_hosting_data.get("SSLCertificate") or [],
         "organization",
         max_ssl_info_organization_count,
     )
@@ -299,58 +299,64 @@ def check_pivotable_domains(args: dict[str, Any]) -> CommandResults:
         results["PivotableSslInfoOrganization"]["pivotable"] = True
         results["PivotableSslInfoOrganization"]["items"] = pivotable_ssl_org
 
-    pivotable_ssl_hash = check_pivotable_ssl_info(domain_hosting_data.get("SSLCertificate"), "hash", max_ssl_info_hash_count)
+    pivotable_ssl_hash = check_pivotable_ssl_info(
+        domain_hosting_data.get("SSLCertificate") or [], "hash", max_ssl_info_hash_count
+    )
     if len(pivotable_ssl_hash) > 0:
         results["PivotableSslInfoHash"]["pivotable"] = True
         results["PivotableSslInfoHash"]["items"] = pivotable_ssl_hash
 
-    pivotalbe_ssl_subject = check_pivotable_ssl_info(domain_hosting_data.get("SSLCertificate"), "subject", max_ssl_subject_count)
+    pivotalbe_ssl_subject = check_pivotable_ssl_info(
+        domain_hosting_data.get("SSLCertificate") or [], "subject", max_ssl_subject_count
+    )
     if len(pivotalbe_ssl_subject) > 0:
         results["PivotableSslSubject"]["pivotable"] = True
         results["PivotableSslSubject"]["items"] = pivotalbe_ssl_subject
 
     # PivotableSslEmail
-    pivotable_ssl_email = check_pivotable_ssl_email(domain_hosting_data.get("SSLCertificate"), max_ssl_email_count)
+    pivotable_ssl_email = check_pivotable_ssl_email(domain_hosting_data.get("SSLCertificate") or [], max_ssl_email_count)
     if len(pivotable_ssl_email) > 0:
         results["PivotableSslEmail"]["pivotable"] = True
         results["PivotableSslEmail"]["items"] = pivotable_ssl_email
 
     # SOA
-    pivotable_soa_email = check_pivotable_soa_email(domain_identity_data.get("SOAEmail"), max_soa_email_count)
+    pivotable_soa_email = check_pivotable_soa_email(domain_identity_data.get("SOAEmail") or [], max_soa_email_count)
     if len(pivotable_soa_email) > 0:
         results["PivotableSoaEmail"]["pivotable"] = True
         results["PivotableSoaEmail"]["items"] = pivotable_soa_email
 
-    pivotable_ip_address = check_pivotable_ip_address(domain_hosting_data.get("IPAddresses"), max_ip_address_count)
+    pivotable_ip_address = check_pivotable_ip_address(domain_hosting_data.get("IPAddresses") or [], max_ip_address_count)
     if len(pivotable_ip_address) > 0:
         results["PivotableIpAddress"]["pivotable"] = True
         results["PivotableIpAddress"]["items"] = pivotable_ip_address
 
-    pivotable_mx_ip = check_pivotable_mx_ip(domain_hosting_data.get("MailServers"), max_mx_ip_count)
+    pivotable_mx_ip = check_pivotable_mx_ip(domain_hosting_data.get("MailServers") or [], max_mx_ip_count)
     if len(pivotable_mx_ip) > 0:
         results["PivotableMxIp"]["pivotable"] = True
         results["PivotableMxIp"]["items"] = pivotable_mx_ip
 
-    pivotable_mx_host = check_pivotable_mx_host_or_domain(domain_hosting_data.get("MailServers"), "host", max_mx_host_count)
+    pivotable_mx_host = check_pivotable_mx_host_or_domain(domain_hosting_data.get("MailServers") or [], "host", max_mx_host_count)
     if len(pivotable_mx_host) > 0:
         results["PivotableMxHost"]["pivotable"] = True
         results["PivotableMxHost"]["items"] = pivotable_mx_host
 
-    pivotable_mx_domain = check_pivotable_mx_host_or_domain(domain_hosting_data.get("MailServers"), "domain", max_mx_domain_count)
+    pivotable_mx_domain = check_pivotable_mx_host_or_domain(
+        domain_hosting_data.get("MailServers") or [], "domain", max_mx_domain_count
+    )
     if len(pivotable_mx_domain) > 0:
         results["PivotableMxDomain"]["pivotable"] = True
         results["PivotableMxDomain"]["items"] = pivotable_mx_domain
 
     # Google props
     pivotable_google_analytics = check_pivotable_google_props(
-        domain_analytics_data.get("GoogleAnalyticTrackingCode"), max_google_analytics_count
+        domain_analytics_data.get("GoogleAnalyticTrackingCode") or {}, max_google_analytics_count
     )
     if pivotable_google_analytics is not None:
         results["PivotableGoogleAnalytics"]["pivotable"] = True
         results["PivotableGoogleAnalytics"]["item"] = pivotable_google_analytics
 
     pivotable_google_adsense = check_pivotable_google_props(
-        domain_analytics_data.get("GoogleAdsenseTrackingCode"), max_google_adsense_count
+        domain_analytics_data.get("GoogleAdsenseTrackingCode") or {}, max_google_adsense_count
     )
     if pivotable_google_adsense is not None:
         results["PivotableAdsense"]["pivotable"] = True

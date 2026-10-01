@@ -98,6 +98,16 @@ Note: in versions preceding 1.1.0, URL escaping was performed as default. The `E
 <td style="width: 482px;">Define as "true" to run the search using receipt time. By default, searches do not run by receipt time.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
+<tr>
+<td style="width: 187px;">waitForSearchComplete</td>
+<td style="width: 482px;">If "true", the search will wait for the query to iterate over all messages before returning results. This is useful when working with aggregate records, as otherwise the query may return partial values.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 187px;">requiresRawMessages</td>
+<td style="width: 482px;">Whether the search job retains raw messages so they can be retrieved alongside aggregate records. Set to "false" to improve performance for aggregate-only queries where raw messages are not needed.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
 </tbody>
 </table>
 <p> </p>

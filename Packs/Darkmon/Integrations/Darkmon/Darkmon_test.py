@@ -882,7 +882,8 @@ def test_nrd_endpoint_and_filter(monkeypatch):
     calls = patch_http(monkeypatch, NRD_RESPONSE)
     src.dmontip_get_nrd_command(make_client(), {})
     assert calls["url_suffix"] == "ioc"
-    assert calls["params"]["filter"] == '{"iocClassifications": ["NEWLY_REGISTERED_DOMAIN"]}'
+    assert calls["params"]["iocClassifications"] == "NEWLY_REGISTERED_DOMAIN"
+    assert "filter" not in calls["params"]
 
 
 def test_nrd_rendering(monkeypatch):
@@ -921,7 +922,8 @@ def test_tbf_endpoint_and_filter(monkeypatch):
     calls = patch_http(monkeypatch, TBF_RESPONSE)
     src.dmontip_get_tbf_command(make_client(), {})
     assert calls["url_suffix"] == "ioc"
-    assert calls["params"]["filter"] == '{"iocClassifications": ["TELNET_BRUTE_FORCE"]}'
+    assert calls["params"]["iocClassifications"] == "TELNET_BRUTE_FORCE"
+    assert "filter" not in calls["params"]
 
 
 def test_tbf_rendering(monkeypatch):
@@ -2302,7 +2304,7 @@ def test_pack_metadata_present_and_valid():
         assert k in data, f"pack_metadata.json missing '{k}'"
     assert data["support"] == "developer"
     assert "certification" not in data, "'certification' is reserved for Cortex XSOAR; developer-supported packs must omit it"
-    assert data["currentVersion"] == "1.0.1"
+    assert data["currentVersion"] == "1.0.2"
 
 
 def test_yaml_script_body_is_empty(yml):

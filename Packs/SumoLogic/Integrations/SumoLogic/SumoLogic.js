@@ -43,7 +43,7 @@ var doReq = function(method, path, parameters, cookies) {
     return {body: result.Body, obj: obj, statusCode: result.StatusCode, cookies: result.Cookies};
 };
 
-var search = function(query, from, to, limit, offset, timezone, maxTimeToWaitForResults, byReceiptTime, sleep, waitForSearchComplete) {
+var search = function(query, from, to, limit, offset, timezone, maxTimeToWaitForResults, byReceiptTime, sleep, waitForSearchComplete, requiresRawMessages) {
     var p = {query: query};
     if (from) {
         p.from = from;
@@ -57,6 +57,10 @@ var search = function(query, from, to, limit, offset, timezone, maxTimeToWaitFor
     if (byReceiptTime) {
         p.byReceiptTime = byReceiptTime;
     }
+    // Explicitly request raw message retention so the /messages endpoint remains
+    // available regardless of the Sumo Logic server-side default for aggregate jobs.
+    // Default is true to preserve backward-compatible behaviour for non-aggregate queries.
+    p.requiresRawMessages = (requiresRawMessages !== false);
     // Create the job
     var res = doReq('POST', 'search/jobs', p, null);
     try {
@@ -77,8 +81,14 @@ var search = function(query, from, to, limit, offset, timezone, maxTimeToWaitFor
         if (done) {
             var results = {};
             if (stat.obj.messageCount > 0) {
-                var msg = doReq('GET', 'search/jobs/' + res.obj.id + '/messages', {offset: offset, limit: limit}, res.cookies);
-                results.messages = msg.obj.messages.map(function(m) {return m.map;});
+                try {
+                    var msg = doReq('GET', 'search/jobs/' + res.obj.id + '/messages', {offset: offset, limit: limit}, res.cookies);
+                    results.messages = msg.obj.messages.map(function(m) {return m.map;});
+                } catch (msgErr) {
+                    // Aggregate queries may not retain raw messages (searchjob.raw.messages.not.available).
+                    // Log and continue so the /records fetch below is not aborted.
+                    logInfo('SumoLogic: skipping messages fetch - ' + msgErr);
+                }
             }
             if (stat.obj.recordCount > 0) {
                 var rec = doReq('GET', 'search/jobs/' + res.obj.id + '/records', {offset: offset, limit: limit}, res.cookies);
@@ -196,9 +206,10 @@ switch (command) {
         var headers = 'headers' in args ? argToList(args.headers) : undefined;
         var waitForSearchComplete = args.waitForSearchComplete == 'true';
         commandLimit = a2i(args.limit, limit)
+        var requiresRawMessages = args.requiresRawMessages !== 'false';
         var s = search(query, args.from, args.to, commandLimit, a2i(args.offset, 0), args.timezone,
             a2i(args.maxTimeToWaitForResults, defaultSearchTimeout) * 60, args.byReceiptTime, a2i(params.sleepBetweenChecks, defaultSleep),
-            waitForSearchComplete);
+            waitForSearchComplete, requiresRawMessages);
         var md = '';
         var ec = {};
         if (s.messages && s.messages.length > 0) {
