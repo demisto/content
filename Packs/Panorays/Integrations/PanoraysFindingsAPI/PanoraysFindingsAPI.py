@@ -86,6 +86,20 @@ def fetch_incidents_command(client: Client, last_run: dict, first_fetch_time: st
                 "details": finding.get("finding_text", ""),
                 "occurred": finding.get("insert_ts"),
                 "rawJSON": json.dumps(finding),
+                "CustomFields": {
+                    "panoraysfindingid": finding.get("id"),
+                    "panoraysfindingseverity": finding.get("severity"),
+                    "panoraysfindingstatus": finding.get("status"),
+                    "panoraysfindingcategory": finding.get("category"),
+                    "panoraysfindingsubcategory": finding.get("sub_category"),
+                    "panoraysfindingassetname": finding.get("asset_name"),
+                    "panoraysfindingcves": finding.get("cves"),
+                    "panoraysfindingdescription": finding.get("description"),
+                    "panoraysfindingfindingtext": finding.get("finding_text"),
+                    "panoraysfindinginsertts": finding.get("insert_ts"),
+                    "panoraysfindingupdatets": finding.get("update_ts"),
+                    "panoraysfindingstestname": finding.get("test_name"),
+                },
             }
         )
 
@@ -101,7 +115,7 @@ def main() -> None:
         params = demisto.params()
         command = demisto.command()
 
-        api_key = params.get("apikey")
+        api_key = (params.get("apikey") or {}).get("password", "")
         base_url = params.get("url", "https://api.panoraysapp.com")
 
         headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
