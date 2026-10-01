@@ -6,7 +6,7 @@ display: LogRhythmRest v2
 fromversion: 5.5.0
 category: Analytics & SIEM
 provider: Exabeam
-description: LogRhythm security intelligence.
+description: LogRhythm security intelligence and SOAR integration.
 configuration:
 - name: url
   display: Server URL
