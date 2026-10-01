@@ -1,8 +1,29 @@
 # Intel471 Credentials
 
-Fetches leaked credentials from the Intel471 Credentials API (`/credentials/stream`).
+Fetches leaked credentials from the Intel471 Credentials API (`/credentials/stream`) and creates an incident per credential. Indicators are then extracted from each credential and associated with the incident that produced them.
 
-The primary command is `fetch-indicators`: each credential is converted into one Cortex indicator (`Email` if the login contains `@`, otherwise `Account`). While iterating the indicator-creation loop, the integration also creates an associated Cortex incident for the same credential and links it back via the indicator's `relatedIncidents` field.
+Some changes have been made that might affect your existing content.
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---intel471-credentials).
+
+## How it works
+
+The primary command is `fetch-incidents`:
+
+1. Leaked credentials are pulled from `/credentials/stream`.
+2. Each credential becomes one incident of type **Intel471 Leaked Credential** (configurable), named `Intel471 Leaked Credential: <login> @ <domain>`, with the info stealer attributes attached as incident labels and the raw API record kept in `rawJSON`.
+3. The incidents are created and their server-assigned IDs are read back.
+4. Every observable the credential carries is then extracted as its own indicator:
+
+   | Source field | Indicator type |
+   | --- | --- |
+   | `data.credential_login` | `Email` if the login contains `@`, otherwise `Account` |
+   | `data.detection_domain`, `data.credential_domain` | `Domain` |
+   | `data.info_stealer.ip` | `IP` or `IPv6` |
+   | `data.info_stealer.pc_name` | `Host` |
+
+5. Each extracted indicator is associated with the incident it came from via its `relatedIncidents` field, then created.
+
+Only the login indicator carries the `intel471infostealer*` custom fields — those describe the host the credential was stolen from, so repeating them on the host's own IP and Host indicators would be redundant. Malformed observables (unparseable domains, invalid IPs) are skipped rather than created.
 
 ## Notes
 
@@ -24,24 +45,33 @@ The integration authenticates to the Intel471 Credentials API with HTTP Basic au
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Username | HTTP Basic auth credentials for the Intel471 Credentials API — enter your API username and API key. | True |
-| Password | HTTP Basic auth credentials for the Intel471 Credentials API — enter your API username and API key. | True |
+| Password |  | True |
 | Use system proxy settings | When enabled, requests are routed through the system proxy configured on the Cortex engine. | False |
 | Trust any certificate (not secure) | When enabled, SSL certificate verification is skipped. Not recommended for production use. | False |
-| Fetch indicators |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | The time to go back when performing the first fetch. | False |
-| Maximum items per fetch | The maximum number of credentials to pull per fetch \(each one becomes one indicator and one incident\). | False |
-| Feed Fetch Interval | How often \(in minutes\) the integration polls the Intel471 API for new credentials. | False |
-| Indicator Reputation | The reputation to apply to indicators from this integration instance. | False |
-| Source Reliability | The reliability of the source providing the intelligence data. | True |
-| Tags | A comma-separated list of tags. | False |
-| Bypass exclusion list | Whether to ignore the exclusion list for indicators from this feed. | False |
+| Maximum number of incidents per fetch | The maximum number of credentials to pull per fetch. Each credential becomes one incident, plus one indicator per observable it carries. | False |
+| Incidents Fetch Interval | How often \(in minutes\) the integration polls the Intel471 API for new credentials. | False |
+| Indicator Reputation | Indicators extracted from the fetched credentials will be marked with this reputation. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to the extracted indicators. | False |
+| Tags | Tags to apply to every extracted indicator. Supports CSV values. | False |
 | Credential set name | The credential set name to filter results by. | False |
 | Credential set id | The credential set ID to filter results by. | False |
+| Credential login | Search results by credential login. | False |
 | Domain | The credential detection domain to filter results by. | False |
 | Affiliation group | The affiliation group to filter results by. Possible values: my_employees, my_customers, third_parties, vip_emails. | False |
 | Password strength | The password strength to filter results by. | False |
 | Detected malware | The detected info stealer malware family to filter results by \(e.g., agent_tesla, Lumma, VIDAR\). | False |
 | GIRs | A comma-separated list of custom GIRs \(General Intelligence Requirements\), my_girs or company_pirs, to filter results by. | False |
+| Password length (&gt;=) | Minimum total password length to filter results by. Must be greater than or equal to 0. | False |
+| Password lowercase count (&gt;=) | Minimum number of lowercase characters in the password to filter results by. Must be greater than or equal to 0. | False |
+| Password uppercase count (&gt;=) | Minimum number of uppercase characters in the password to filter results by. Must be greater than or equal to 0. | False |
+| Password numbers count (&gt;=) | Minimum number of numeric characters in the password to filter results by. Must be greater than or equal to 0. | False |
+| Password punctuation count (&gt;=) | Minimum number of punctuation characters in the password to filter results by. Must be greater than or equal to 0. | False |
+| Password symbols count (&gt;=) | Minimum number of symbol characters in the password to filter results by. Must be greater than or equal to 0. | False |
+| Password separators count (&gt;=) | Minimum number of separator characters in the password to filter results by. Must be greater than or equal to 0. | False |
 
 ## Commands
 
@@ -51,7 +81,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### intel471-credentials-get-indicators
 
 ***
-Gets a preview of indicators that the feed would pull on the next run (no state is persisted).
+Gets a preview of the indicators that the next fetch would extract, along with the incident each one would be associated with. No state is persisted and nothing is created.
 
 #### Base Command
 
@@ -61,17 +91,20 @@ Gets a preview of indicators that the feed would pull on the next run (no state 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. Default is 50. | Optional |
+| limit | The maximum number of credentials to read when building the preview. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Intel471Credentials.Indicators.value | String | The credential login value (email address or account username). |
-| Intel471Credentials.Indicators.type | String | The indicator type — Email or Account. |
+| Intel471Credentials.Indicators.value | String | The indicator value. |
+| Intel471Credentials.Indicators.type | String | The indicator type — Email, Account, Domain, IP, IPv6, or Host. |
+| Intel471Credentials.Indicators.score | Number | The reputation score applied to the indicator, derived from the Indicator Reputation parameter. |
+| Intel471Credentials.Indicators.relatedIncidents | Unknown | The incident the indicator is associated with. Populated during fetch only. |
 | Intel471Credentials.Indicators.fields.firstseenbysource | Date | Timestamp when the credential was first observed by Intel471. |
 | Intel471Credentials.Indicators.fields.lastseenbysource | Date | Timestamp when the credential was last observed by Intel471. |
-| Intel471Credentials.Indicators.fields.tags | Unknown | Aggregated tags — malware families, affiliations, and configured feed tags. |
+| Intel471Credentials.Indicators.fields.tags | Unknown | Aggregated tags — malware families, affiliations, and the configured instance tags. |
+| Intel471Credentials.Indicators.fields.trafficlightprotocol | String | The Traffic Light Protocol designation applied to the indicator. |
 | Intel471Credentials.Indicators.fields.intel471infostealerantivirussoftware | String | Antivirus software detected on the machine infected by the info stealer. |
 | Intel471Credentials.Indicators.fields.intel471infostealercomputerusername | String | Operating-system username logged in on the infected machine. |
 | Intel471Credentials.Indicators.fields.intel471infostealerinfectiontimestamp | Date | Timestamp when the info stealer infection was recorded. |
@@ -81,50 +114,31 @@ Gets a preview of indicators that the feed would pull on the next run (no state 
 | Intel471Credentials.Indicators.fields.intel471infostealermalwarefamily | String | Family of info stealer malware that captured the credential. |
 | Intel471Credentials.Indicators.fields.intel471infostealermalwareinstallpath | String | Filesystem path where the info stealer malware was installed. |
 | Intel471Credentials.Indicators.fields.intel471infostealeros | String | Operating system reported for the machine infected by the info stealer. |
-| Intel471Credentials.Indicators.fields.intel471infostealerpcname | String | Hostname (PC name) of the machine infected by the info stealer. |
+| Intel471Credentials.Indicators.fields.intel471infostealerpcname | String | Hostname \(PC name\) of the machine infected by the info stealer. |
 | Intel471Credentials.Indicators.fields.intel471infostealerscreenshotpath | String | Path to the desktop screenshot captured by the info stealer. |
 | Intel471Credentials.Indicators.fields.intel471infostealerversion | String | Version identifier reported by the info stealer malware. |
 
-#### Command example
+## Breaking changes from the previous version of this integration - Intel471 Credentials
 
-```!intel471-credentials-get-indicators limit=5```
+The integration changed from a feed to a fetch-incidents integration. Existing instances must be reconfigured after the upgrade — the differences below describe what changed.
 
-#### Context Example
+### Fetch mode
 
-```json
-{
-    "Intel471Credentials": {
-        "Indicators": [
-            {
-                "value": "victim@example.com",
-                "type": "Email",
-                "fields": {
-                    "firstseenbysource": "2026-06-01T00:00:00Z",
-                    "lastseenbysource": "2026-06-20T00:00:00Z",
-                    "tags": ["lumma", "my_employees"],
-                    "intel471infostealerantivirussoftware": "Defender",
-                    "intel471infostealercomputerusername": "jdoe",
-                    "intel471infostealerinfectiontimestamp": "2026-06-19T12:00:00Z",
-                    "intel471infostealerip": "1.2.3.4, 5.6.7.8",
-                    "intel471infostealerisp": "ExampleISP",
-                    "intel471infostealermachineid": "m-1",
-                    "intel471infostealermalwarefamily": "lumma",
-                    "intel471infostealermalwareinstallpath": "C:/Users/jdoe/AppData/Roaming",
-                    "intel471infostealeros": "Windows 11",
-                    "intel471infostealerpcname": "DESKTOP-XYZ",
-                    "intel471infostealerscreenshotpath": "screens/abc.png",
-                    "intel471infostealerversion": "1.2.3"
-                }
-            }
-        ]
-    }
-}
-```
+The previous version was a feed and ran `fetch-indicators`; this version runs `fetch-incidents`. The **Fetch indicators** toggle is replaced by **Fetch incidents**, and **Feed Fetch Interval** by **Incidents Fetch Interval**. The feed-only parameters **Bypass exclusion list**, **Indicator Expiration Method** and **Indicator Expiration Interval** no longer apply; **Source Reliability** is now a plain integration parameter instead of a feed parameter.
 
-#### Human Readable Output
+### Indicators
 
->### Indicators from Intel471 Credentials
->
->|Value|Type|fields|
->|---|---|---|
->| victim@example.com | Email | firstseenbysource: 2026-06-01T00:00:00Z<br>lastseenbysource: 2026-06-20T00:00:00Z<br>tags: lumma, my_employees<br>intel471infostealermalwarefamily: lumma<br>intel471infostealerip: 1.2.3.4, 5.6.7.8<br>intel471infostealeros: Windows 11<br>intel471infostealerpcname: DESKTOP-XYZ<br>intel471infostealerversion: 1.2.3 |
+The previous version created exactly one indicator per credential (the login). This version additionally extracts the detection and credential domains, the infected host's IP addresses, and its PC name — so one credential can now yield several indicators. Each one is associated with the incident created for that credential.
+
+The previous version set the indicator's `relatedIncidents` to the incident *name*, because the feed handed the incidents to the server without learning their IDs. This version creates the incidents first and uses the real incident ID, falling back to the name only if the server does not report one.
+
+### Commands
+
+#### The following commands were changed in this version
+
+* *intel471-credentials-get-indicators* - now also reports the incident each previewed indicator would be associated with, and previews the domain, IP and host indicators in addition to the login.
+
+## Additional Considerations for this version
+
+* Incidents are created directly from the fetch rather than returned to the server, so that the extracted indicators can reference the incident IDs the server assigns. Incident counts in the fetch history view may therefore read as 0 even though incidents were created — the actual counts are written to the integration log.
+* Indicator deduplication is the server's, not the integration's: the same login seen in a later credential updates the existing indicator and gains an additional entry in `relatedIncidents`.
