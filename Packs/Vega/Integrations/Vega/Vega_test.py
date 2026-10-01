@@ -134,7 +134,7 @@ from Vega import (
     _collect_paged_ids,
     _normalize_entity_id,
     _xsoar_vega_entity_id,
-    reconcile_ids_command,
+    reconcile_incidents_command,
     fetch_reconciliation_incidents_command,
 )
 
@@ -5522,7 +5522,7 @@ def test_xsoar_vega_entity_id_uses_mirror_uuid_not_display_id():
     assert _xsoar_vega_entity_id(incident, "alert") == "uuid-1"
 
 
-def test_reconcile_ids_command_returns_missing_uuids(mocker):
+def test_reconcile_incidents_command_returns_missing_uuids(mocker):
     client = mocker.Mock()
     client.get_alert_ids.return_value = {"alerts": [{"id": "a-1"}, {"id": "a-2"}], "total": 2}
     client.get_incident_ids.return_value = {"incidents": [{"id": "i-1"}, {"id": "i-2"}], "total": 2}
@@ -5538,21 +5538,65 @@ def test_reconcile_ids_command_returns_missing_uuids(mocker):
         return {"statusCode": 200, "body": json.dumps({"data": data, "total": 1})}
 
     mocker.patch("Vega.demisto.internalHttpRequest", side_effect=search)
-    result = reconcile_ids_command(
+    result = reconcile_incidents_command(
         client,
-        {"start_date": "2024-06-01", "end_date": "2024-06-02", "alert_severities": "HIGH"},
+        {
+            "start_date": "2024-06-01",
+            "end_date": "2024-06-02",
+            "vega_entities": "Alerts,Incidents",
+            "alert_severities": "HIGH",
+        },
     )
 
     assert result.outputs["MissingAlertIds"] == ["a-2"]
     assert result.outputs["MissingIncidentIds"] == ["i-2"]
+    assert list(result.outputs).index("MissingIncidentIds") < list(result.outputs).index("MissingAlertIds")
     assert "Truncated" not in result.outputs
+    assert result.readable_output.index("Missing Vega incident IDs") < result.readable_output.index("Missing Vega alert IDs")
     assert "a-2" in result.readable_output
     assert "i-2" in result.readable_output
     assert client.get_alert_ids.call_args.kwargs["from_time"] == "2024-06-01T00:00:00Z"
     assert client.get_alert_ids.call_args.kwargs["to_time"] == "2024-06-02T23:59:59Z"
     assert client.get_alert_ids.call_args.kwargs["limit"] == RECONCILE_PAGE_SIZE
     assert client.get_alert_ids.call_args.kwargs["severities"] == ["HIGH"]
+    assert "has_related_incidents" not in client.get_alert_ids.call_args.kwargs
     assert "statuses" not in client.get_alert_ids.call_args.kwargs or client.get_alert_ids.call_args.kwargs["statuses"] is None
+
+
+def test_reconcile_incidents_command_skips_unselected_entity(mocker):
+    """Alert filters are ignored when Alerts is not selected."""
+    client = mocker.Mock()
+    client.get_incident_ids.return_value = {"incidents": [{"id": "i-1"}], "total": 1}
+    queries: list[str] = []
+
+    def search(_method, _uri, body=None):
+        query = json.loads(body)["filter"]["query"]
+        queries.append(query)
+        return {"statusCode": 200, "body": json.dumps({"data": [], "total": 0})}
+
+    mocker.patch("Vega.demisto.internalHttpRequest", side_effect=search)
+    result = reconcile_incidents_command(
+        client,
+        {
+            "start_date": "2024-06-01T12:00:00Z",
+            "end_date": "2024-06-02T18:30:00Z",
+            "vega_entities": "Incidents",
+            "alert_severities": "HIGH",
+        },
+    )
+
+    client.get_alert_ids.assert_not_called()
+    assert queries
+    assert all('type:"Vega Alert"' not in query for query in queries)
+    assert "MissingAlertIds" not in result.outputs
+    assert result.outputs["MissingIncidentIds"] == ["i-1"]
+    assert client.get_incident_ids.call_args.kwargs["from_time"] == "2024-06-01T12:00:00Z"
+    assert client.get_incident_ids.call_args.kwargs["to_time"] == "2024-06-02T18:30:00Z"
+
+
+def test_reconcile_incidents_command_requires_an_entity(mocker):
+    with pytest.raises(DemistoException, match="vega_entities"):
+        reconcile_incidents_command(mocker.Mock(), {"start_date": "2024-06-01", "end_date": "2024-06-02"})
 
 
 def _patch_reconciliation_runtime(mocker):

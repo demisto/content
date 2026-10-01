@@ -26,9 +26,9 @@ This is the default integration for this content pack when configured by the Dat
 | Incident Investigation Statuses to fetch | The Vega investigation statuses by which to filter incidents. If empty, all investigation statuses are fetched. NEW is shown as Pending in Vega. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
 | Incident Verdicts to fetch | The verdicts by which to filter incidents. If empty, all verdicts are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. Filter incidents by verdict. If empty, all verdicts are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
 | Include alert metadata on incidents | Store the full metadata of every alert related to a fetched Vega incident. Full alert metadata can make incidents large and slow to open. Leave this unchecked unless you need the complete alert record on the incident. Use vega-get-alert-metadata to load alert metadata in the War Room on demand. | False |
-| Incident reconciliation fetch instance | Use this on a separate instance from the one that fetches the live stream. When selected, this instance fetches only the alert and incident IDs below. Severity, status, verdict, related-incident, entity, backfill, and lookback settings are ignored. IDs that already exist in Cortex XSOAR are created again as new investigations. Paste only IDs returned by vega-reconcile-ids. | False |
-| Reconciliation alert IDs | Comma-separated Vega alert UUIDs. Used only when Incident reconciliation fetch instance is selected. IDs that already exist in Cortex XSOAR are created again as new investigations. | False |
-| Reconciliation incident IDs | Comma-separated Vega incident UUIDs. Used only when Incident reconciliation fetch instance is selected. IDs that already exist in Cortex XSOAR are created again as new investigations. | False |
+| Fetch alerts and incidents by ID | When selected, other Collect filters are ignored and only the IDs below are fetched. An ID already in Cortex XSOAR is created again. | False |
+| Alert IDs to fetch | Comma-separated alert UUIDs (id-1,id-2) to re-fetch missed records. Used only when Fetch alerts and incidents by ID is selected. | False |
+| Incident IDs to fetch | Comma-separated incident UUIDs (id-1,id-2) to re-fetch missed records. Used only when Fetch alerts and incidents by ID is selected. | False |
 | Incident type |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
@@ -217,25 +217,25 @@ Immediately update Vega incident user status, verdict, verdict reasoning, severi
 | Vega.Incident.severity | String | Updated Vega incident severity. |
 | Vega.Incident.assignee | String | Updated Vega incident assignee email, display name, or user ID. |
 
-### vega-reconcile-ids
+### vega-reconcile-incidents
 
 ***
-Compare Vega alert and incident UUIDs with Cortex XSOAR investigations in a created-time window and return the IDs that are missing from Cortex XSOAR. Vega is queried for id only, 100 records per page. Paste the comma-separated lists into a Vega instance that has Incident reconciliation fetch instance selected.
+Compare selected Vega alert and incident UUIDs with Cortex XSOAR in a created-time window and return the IDs missing from Cortex XSOAR. Only selected entities are queried. Paste the lists into a Vega instance that has Fetch alerts and incidents by ID selected.
 
 #### Base Command
 
-`vega-reconcile-ids`
+`vega-reconcile-incidents`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_date | Window start. Sent to Vega as the getAlerts and getIncidents from filter. Use YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ. | Required |
-| end_date | Window end. Sent to Vega as the getAlerts and getIncidents to filter. A date without a time includes that whole day. Use YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ. | Required |
+| start_date | Created-time start (Vega from). UTC date (YYYY-MM-DD) or UTC date and time (YYYY-MM-DDTHH:MM:SSZ). | Required |
+| end_date | Created-time end (Vega to). A UTC date (YYYY-MM-DD) includes that whole day. A UTC date and time (YYYY-MM-DDTHH:MM:SSZ) is used as given. | Required |
+| vega_entities | Entities to compare. Select Alerts, Incidents, or both. An entity that is not selected is not queried in Vega or Cortex XSOAR, even if its filters are set. Possible values are: Alerts, Incidents. | Required |
 | alert_severities | Alert severities to include. Leave empty to include all severities. Possible values are: LOW, MEDIUM, HIGH, CRITICAL. | Optional |
 | alert_statuses | Alert statuses to include. Leave empty to include all statuses. Possible values are: OPEN, IN PROGRESS, PEER REVIEW, RESOLVED. | Optional |
 | alert_verdicts | Alert verdicts to include. Leave empty to include all verdicts. Possible values are: MALICIOUS, SUSPICIOUS, BENIGN, INCONCLUSIVE, NA. | Optional |
-| alert_has_related_incidents | Whether alerts have related incidents. Yes, No, or both. Leave empty to include all alerts. | Optional |
 | incident_severities | Incident severities to include. Leave empty to include all severities. Possible values are: LOW, MEDIUM, HIGH, CRITICAL. | Optional |
 | incident_statuses | Incident user statuses to include. Leave empty to include all user statuses. Possible values are: OPEN, IN REVIEW, ON HOLD, RESOLVED. | Optional |
 | incident_investigation_statuses | Incident investigation statuses to include. Leave empty to include all investigation statuses. Possible values are: NEW, INVESTIGATING, COMPLETED, FAILED. | Optional |
@@ -245,12 +245,12 @@ Compare Vega alert and incident UUIDs with Cortex XSOAR investigations in a crea
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vega.Reconciliation.MissingAlertIds | String | Vega alert UUIDs that have no matching Cortex XSOAR investigation. |
 | Vega.Reconciliation.MissingIncidentIds | String | Vega incident UUIDs that have no matching Cortex XSOAR investigation. |
-| Vega.Reconciliation.VegaAlertCount | Number | Number of Vega alert UUIDs found in the window. |
-| Vega.Reconciliation.XsoarAlertCount | Number | Number of matching Vega Alert investigations found in Cortex XSOAR. |
 | Vega.Reconciliation.VegaIncidentCount | Number | Number of Vega incident UUIDs found in the window. |
 | Vega.Reconciliation.XsoarIncidentCount | Number | Number of matching Vega Incident investigations found in Cortex XSOAR. |
+| Vega.Reconciliation.MissingAlertIds | String | Vega alert UUIDs that have no matching Cortex XSOAR investigation. |
+| Vega.Reconciliation.VegaAlertCount | Number | Number of Vega alert UUIDs found in the window. |
+| Vega.Reconciliation.XsoarAlertCount | Number | Number of matching Vega Alert investigations found in Cortex XSOAR. |
 | Vega.Reconciliation.StartDate | String | Vega from time used for the scan. |
 | Vega.Reconciliation.EndDate | String | Vega to time used for the scan. |
 

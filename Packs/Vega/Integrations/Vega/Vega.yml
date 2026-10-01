@@ -246,34 +246,35 @@ configuration:
     section: Collect
     required: false
     defaultvalue: "false"
-  - display: Incident reconciliation fetch instance
+    advanced: true
+  - display: Fetch alerts and incidents by ID
     additionalinfo: >-
-      Use this on a separate instance from the one that fetches the live stream.
-      When selected, this instance fetches only the alert and incident IDs below.
-      Severity, status, verdict, related-incident, entity, backfill, and lookback settings are ignored.
-      IDs that already exist in Cortex XSOAR are created again as new investigations.
-      Paste only IDs returned by vega-reconcile-ids.
+      When selected, other Collect filters are ignored and only the IDs below are fetched.
+      An ID already in Cortex XSOAR is created again.
     name: incident_reconciliation
     type: 8
     section: Collect
     required: false
     defaultvalue: "false"
-  - display: Reconciliation alert IDs
+    advanced: true
+  - display: Alert IDs to fetch
     additionalinfo: >-
-      Comma-separated Vega alert UUIDs. Used only when Incident reconciliation fetch instance is selected.
-      IDs that already exist in Cortex XSOAR are created again as new investigations.
+      Comma-separated alert UUIDs (id-1,id-2) to re-fetch missed records.
+      Used only when Fetch alerts and incidents by ID is selected.
     name: reconciliation_alert_ids
     type: 12
     section: Collect
     required: false
-  - display: Reconciliation incident IDs
+    advanced: true
+  - display: Incident IDs to fetch
     additionalinfo: >-
-      Comma-separated Vega incident UUIDs. Used only when Incident reconciliation fetch instance is selected.
-      IDs that already exist in Cortex XSOAR are created again as new investigations.
+      Comma-separated incident UUIDs (id-1,id-2) to re-fetch missed records.
+      Used only when Fetch alerts and incidents by ID is selected.
     name: reconciliation_incident_ids
     type: 12
     section: Collect
     required: false
+    advanced: true
   - display: Incident type
     name: incidentType
     type: 13
@@ -601,18 +602,27 @@ script:
         - contextPath: Vega.Incident.assignee
           description: Updated Vega incident assignee email, display name, or user ID.
           type: String
-    - name: vega-reconcile-ids
+    - name: vega-reconcile-incidents
       arguments:
         - name: start_date
           description: >-
-            Window start. Sent to Vega as the getAlerts and getIncidents from filter.
-            Use YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ.
+            Created-time start (Vega from). UTC date (YYYY-MM-DD) or UTC date and time (YYYY-MM-DDTHH:MM:SSZ).
           required: true
         - name: end_date
           description: >-
-            Window end. Sent to Vega as the getAlerts and getIncidents to filter.
-            A date without a time includes that whole day. Use YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ.
+            Created-time end (Vega to). A UTC date (YYYY-MM-DD) includes that whole day.
+            A UTC date and time (YYYY-MM-DDTHH:MM:SSZ) is used as given.
           required: true
+        - name: vega_entities
+          description: >-
+            Entities to compare. Select Alerts, Incidents, or both.
+            An entity that is not selected is not queried in Vega or Cortex XSOAR, even if its filters are set.
+          required: true
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - Alerts
+            - Incidents
         - name: alert_severities
           description: Alert severities to include. Leave empty to include all severities.
           isArray: true
@@ -641,14 +651,6 @@ script:
             - BENIGN
             - INCONCLUSIVE
             - NA
-        - name: alert_has_related_incidents
-          description: >-
-            Whether alerts have related incidents. Yes, No, or both. Leave empty to include all alerts.
-          isArray: true
-          auto: PREDEFINED
-          predefined:
-            - "Yes"
-            - "No"
         - name: incident_severities
           description: Incident severities to include. Leave empty to include all severities.
           isArray: true
@@ -687,28 +689,27 @@ script:
             - INCONCLUSIVE
             - NA
       description: >-
-        Compare Vega alert and incident UUIDs with Cortex XSOAR investigations in a created-time window
-        and return the IDs that are missing from Cortex XSOAR. Vega is queried for id only, 100 records
-        per page. Paste the comma-separated lists into a Vega instance that has Incident reconciliation
-        fetch instance selected.
+        Compare selected Vega alert and incident UUIDs with Cortex XSOAR in a created-time window
+        and return the IDs missing from Cortex XSOAR. Only selected entities are queried.
+        Paste the lists into a Vega instance that has Fetch alerts and incidents by ID selected.
       outputs:
-        - contextPath: Vega.Reconciliation.MissingAlertIds
-          description: Vega alert UUIDs that have no matching Cortex XSOAR investigation.
-          type: String
         - contextPath: Vega.Reconciliation.MissingIncidentIds
           description: Vega incident UUIDs that have no matching Cortex XSOAR investigation.
+          type: String
+        - contextPath: Vega.Reconciliation.VegaIncidentCount
+          description: Number of Vega incident UUIDs found in the window.
+          type: Number
+        - contextPath: Vega.Reconciliation.XsoarIncidentCount
+          description: Number of matching Vega Incident investigations found in Cortex XSOAR.
+          type: Number
+        - contextPath: Vega.Reconciliation.MissingAlertIds
+          description: Vega alert UUIDs that have no matching Cortex XSOAR investigation.
           type: String
         - contextPath: Vega.Reconciliation.VegaAlertCount
           description: Number of Vega alert UUIDs found in the window.
           type: Number
         - contextPath: Vega.Reconciliation.XsoarAlertCount
           description: Number of matching Vega Alert investigations found in Cortex XSOAR.
-          type: Number
-        - contextPath: Vega.Reconciliation.VegaIncidentCount
-          description: Number of Vega incident UUIDs found in the window.
-          type: Number
-        - contextPath: Vega.Reconciliation.XsoarIncidentCount
-          description: Number of matching Vega Incident investigations found in Cortex XSOAR.
           type: Number
         - contextPath: Vega.Reconciliation.StartDate
           description: Vega from time used for the scan.

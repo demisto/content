@@ -6248,13 +6248,22 @@ def _missing_ids(source_ids: list[str], present_ids: set[str]) -> list[str]:
     return [entity_id for entity_id in source_ids if entity_id not in present_ids]
 
 
+def _reconcile_selected_entities(args: dict[str, Any]) -> tuple[bool, bool]:
+    """Return which entity types the command should compare. At least one is required."""
+    selected = {str(value).strip().lower() for value in argToList(args.get("vega_entities")) if str(value).strip()}
+    include_alerts = "alerts" in selected
+    include_incidents = "incidents" in selected
+    if not include_alerts and not include_incidents:
+        raise DemistoException("vega_entities must include Alerts, Incidents, or both.")
+    return include_alerts, include_incidents
+
+
 def _reconcile_alert_filters(args: dict[str, Any]) -> dict[str, Any]:
     """Map command arguments to Vega alert ID-query filters. Empty means all values."""
     return {
         "severities": filter_alert_severities(argToList(args.get("alert_severities")) or None),
         "statuses": filter_alert_statuses(argToList(args.get("alert_statuses")) or None),
         "verdicts": filter_alert_verdicts(argToList(args.get("alert_verdicts")) or None),
-        "has_related_incidents": resolve_has_related_incidents(argToList(args.get("alert_has_related_incidents"))),
     }
 
 
@@ -6278,108 +6287,109 @@ def _comma_id_text(entity_ids: list[str]) -> str:
 def _reconciliation_readable_output(
     start_time: str,
     end_time: str,
-    vega_alert_count: int,
-    xsoar_alert_count: int,
-    missing_alert_ids: list[str],
-    vega_incident_count: int,
-    xsoar_incident_count: int,
-    missing_incident_ids: list[str],
+    missing_incident_ids: list[str] | None,
+    missing_alert_ids: list[str] | None,
+    vega_incident_count: int | None,
+    xsoar_incident_count: int | None,
+    vega_alert_count: int | None,
+    xsoar_alert_count: int | None,
 ) -> str:
-    """Build the War Room summary and comma-separated missing ID lists."""
-    summary = tableToMarkdown(
-        "Vega reconciliation",
-        [
-            {
-                "Start": start_time,
-                "End": end_time,
-                "Vega alerts": vega_alert_count,
-                "XSOAR alerts": xsoar_alert_count,
-                "Missing alerts": len(missing_alert_ids),
-                "Vega incidents": vega_incident_count,
-                "XSOAR incidents": xsoar_incident_count,
-                "Missing incidents": len(missing_incident_ids),
-            }
-        ],
-    )
-    return "\n".join(
-        [
-            summary,
-            "### Missing Vega alert IDs",
-            _comma_id_text(missing_alert_ids),
-            "### Missing Vega incident IDs",
-            _comma_id_text(missing_incident_ids),
-        ]
-    )
+    """Build the War Room summary with incident IDs listed before alert IDs."""
+    row: dict[str, Any] = {"Start": start_time, "End": end_time}
+    if missing_incident_ids is not None:
+        row["Vega incidents"] = vega_incident_count
+        row["XSOAR incidents"] = xsoar_incident_count
+        row["Missing incidents"] = len(missing_incident_ids)
+    if missing_alert_ids is not None:
+        row["Vega alerts"] = vega_alert_count
+        row["XSOAR alerts"] = xsoar_alert_count
+        row["Missing alerts"] = len(missing_alert_ids)
+    sections = [tableToMarkdown("Vega reconciliation", [row])]
+    if missing_incident_ids is not None:
+        sections.extend(["### Missing Vega incident IDs", _comma_id_text(missing_incident_ids)])
+    if missing_alert_ids is not None:
+        sections.extend(["### Missing Vega alert IDs", _comma_id_text(missing_alert_ids)])
+    return "\n".join(sections)
 
 
-def reconcile_ids_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Return Vega alert and incident UUIDs that have no matching Cortex XSOAR investigation."""
+def reconcile_incidents_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Return Vega UUIDs for the selected entity types that are missing from Cortex XSOAR."""
     start_time, end_time = _parse_reconcile_window(args)
-    alert_filters = _reconcile_alert_filters(args)
-    incident_filters = _reconcile_incident_filters(args)
+    include_alerts, include_incidents = _reconcile_selected_entities(args)
+    missing_alert_ids: list[str] | None = None
+    missing_incident_ids: list[str] | None = None
+    vega_alert_count = xsoar_alert_count = None
+    vega_incident_count = xsoar_incident_count = None
+    outputs: dict[str, Any] = {}
 
-    def _alert_page(offset: int) -> dict[str, Any]:
-        return (
-            client.get_alert_ids(
-                from_time=start_time,
-                to_time=end_time,
-                limit=RECONCILE_PAGE_SIZE,
-                offset=offset,
-                **alert_filters,
-            )
-            or {}
-        )
-
-    def _incident_page(offset: int) -> dict[str, Any]:
-        return (
-            client.get_incident_ids(
+    if include_incidents:
+        incident_filters = _reconcile_incident_filters(args)
+        vega_incident_ids, _incidents_truncated = _collect_paged_ids(
+            lambda offset: client.get_incident_ids(
                 from_time=start_time,
                 to_time=end_time,
                 limit=RECONCILE_PAGE_SIZE,
                 offset=offset,
                 **incident_filters,
             )
-            or {}
+            or {},
+            "incidents",
+            _normalize_entity_id,
         )
+        xsoar_incident_ids, _xsoar_incidents_truncated = _collect_xsoar_entity_ids(
+            "Vega Incident",
+            MIRROR_ENTITY_SUFFIX_INCIDENT,
+            start_time,
+            end_time,
+        )
+        missing_incident_ids = _missing_ids(vega_incident_ids, xsoar_incident_ids)
+        vega_incident_count = len(vega_incident_ids)
+        xsoar_incident_count = len(xsoar_incident_ids)
+        outputs["MissingIncidentIds"] = missing_incident_ids
+        outputs["VegaIncidentCount"] = vega_incident_count
+        outputs["XsoarIncidentCount"] = xsoar_incident_count
 
-    vega_alert_ids, _alerts_truncated = _collect_paged_ids(_alert_page, "alerts", _normalize_entity_id)
-    vega_incident_ids, _incidents_truncated = _collect_paged_ids(_incident_page, "incidents", _normalize_entity_id)
-    xsoar_alert_ids, _xsoar_alerts_truncated = _collect_xsoar_entity_ids(
-        "Vega Alert",
-        MIRROR_ENTITY_SUFFIX_ALERT,
-        start_time,
-        end_time,
-    )
-    xsoar_incident_ids, _xsoar_incidents_truncated = _collect_xsoar_entity_ids(
-        "Vega Incident",
-        MIRROR_ENTITY_SUFFIX_INCIDENT,
-        start_time,
-        end_time,
-    )
-    missing_alert_ids = _missing_ids(vega_alert_ids, xsoar_alert_ids)
-    missing_incident_ids = _missing_ids(vega_incident_ids, xsoar_incident_ids)
-    outputs: dict[str, Any] = {
-        "MissingAlertIds": missing_alert_ids,
-        "MissingIncidentIds": missing_incident_ids,
-        "VegaAlertCount": len(vega_alert_ids),
-        "XsoarAlertCount": len(xsoar_alert_ids),
-        "VegaIncidentCount": len(vega_incident_ids),
-        "XsoarIncidentCount": len(xsoar_incident_ids),
-        "StartDate": start_time,
-        "EndDate": end_time,
-    }
+    if include_alerts:
+        alert_filters = _reconcile_alert_filters(args)
+        vega_alert_ids, _alerts_truncated = _collect_paged_ids(
+            lambda offset: client.get_alert_ids(
+                from_time=start_time,
+                to_time=end_time,
+                limit=RECONCILE_PAGE_SIZE,
+                offset=offset,
+                **alert_filters,
+            )
+            or {},
+            "alerts",
+            _normalize_entity_id,
+        )
+        xsoar_alert_ids, _xsoar_alerts_truncated = _collect_xsoar_entity_ids(
+            "Vega Alert",
+            MIRROR_ENTITY_SUFFIX_ALERT,
+            start_time,
+            end_time,
+        )
+        missing_alert_ids = _missing_ids(vega_alert_ids, xsoar_alert_ids)
+        vega_alert_count = len(vega_alert_ids)
+        xsoar_alert_count = len(xsoar_alert_ids)
+        outputs["MissingAlertIds"] = missing_alert_ids
+        outputs["VegaAlertCount"] = vega_alert_count
+        outputs["XsoarAlertCount"] = xsoar_alert_count
+
+    outputs["StartDate"] = start_time
+    outputs["EndDate"] = end_time
     return CommandResults(
         outputs_prefix="Vega.Reconciliation",
         outputs=outputs,
         readable_output=_reconciliation_readable_output(
             start_time,
             end_time,
-            len(vega_alert_ids),
-            len(xsoar_alert_ids),
-            missing_alert_ids,
-            len(vega_incident_ids),
-            len(xsoar_incident_ids),
             missing_incident_ids,
+            missing_alert_ids,
+            vega_incident_count,
+            xsoar_incident_count,
+            vega_alert_count,
+            xsoar_alert_count,
         ),
     )
 
@@ -6782,7 +6792,7 @@ def _dispatch_vega_command(client: Client, command: str, config: dict[str, Any])
         "vega-update-detections": lambda: return_results(update_detections_command(client, demisto.args())),
         "vega-update-alert": lambda: return_results(update_alert_command(client, demisto.args())),
         "vega-update-incident": lambda: return_results(update_incident_command(client, demisto.args())),
-        "vega-reconcile-ids": lambda: return_results(reconcile_ids_command(client, demisto.args())),
+        "vega-reconcile-incidents": lambda: return_results(reconcile_incidents_command(client, demisto.args())),
         "get-remote-data": lambda: return_results(
             get_remote_data_command(
                 client,
