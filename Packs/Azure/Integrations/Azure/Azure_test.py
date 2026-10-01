@@ -6292,16 +6292,17 @@ def test_delete_table_command(mocker, client, mock_params):
 
 def test_list_tables_command(mocker, client, mock_params):
     """
-    Given: An Azure client whose list_tables_request returns two tables.
+    Given: An Azure client whose list_tables_request returns two tables and a continuation header.
     When: list_tables_command is called with valid snake_case args.
-    Then: It returns CommandResults with the Azure.Storage.Table prefix and both table names.
+    Then: It returns CommandResults with both table names and the continuation token as TablesNextToken.
     """
     from Azure import list_tables_command
 
+    mocker.patch("Azure.validate_limit")
     mock_response = util_load_json("test_data/table_list_response.json")
     mock_http = mocker.Mock()
     mock_http.json.return_value = mock_response
-    mock_http.headers = {}
+    mock_http.headers = {"x-ms-continuation-NextTableName": "next-table-token"}
     mocker.patch.object(client, "list_tables_request", return_value=mock_http)
 
     args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount"}
@@ -6309,10 +6310,11 @@ def test_list_tables_command(mocker, client, mock_params):
     result = list_tables_command(client, mock_params, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.Storage.Table"
-    assert len(result.outputs) == 2
-    assert result.outputs[0].get("TableName") == "mocktable1"
-    assert result.outputs[1].get("TableName") == "mocktable2"
+    tables = result.outputs["Azure.Storage.Table(val.TableName && val.TableName == obj.TableName)"]
+    assert len(tables) == 2
+    assert tables[0].get("TableName") == "mocktable1"
+    assert tables[1].get("TableName") == "mocktable2"
+    assert result.outputs["Azure.Storage(true)"]["TablesNextToken"] == "next-table-token"
 
 
 def test_list_tables_command_empty(mocker, client, mock_params):
@@ -6323,6 +6325,7 @@ def test_list_tables_command_empty(mocker, client, mock_params):
     """
     from Azure import list_tables_command
 
+    mocker.patch("Azure.validate_limit")
     mock_http = mocker.Mock()
     mock_http.json.return_value = {"value": []}
     mock_http.headers = {}
@@ -6452,6 +6455,7 @@ def test_query_entity_command(mocker, client, mock_params):
     """
     from Azure import query_entity_command
 
+    mocker.patch("Azure.validate_limit")
     mock_response = util_load_json("test_data/table_query_entity_response.json")
     mock_http = mocker.Mock()
     mock_http.json.return_value = mock_response
@@ -6478,6 +6482,7 @@ def test_query_entity_command_partial_keys(mocker, client, mock_params):
     """
     from Azure import query_entity_command
 
+    mocker.patch("Azure.validate_limit")
     args = {
         "subscription_id": "mock_subscription_id",
         "account_name": "mockaccount",
@@ -6500,6 +6505,7 @@ def test_query_entity_command_empty(mocker, client, mock_params):
     """
     from Azure import query_entity_command
 
+    mocker.patch("Azure.validate_limit")
     mock_http = mocker.Mock()
     mock_http.json.return_value = {"value": []}
     mock_http.headers = {}

@@ -1524,9 +1524,15 @@ script:
     - name: filter
       description: An OData query expression used to filter the returned tables.
       required: false
+    - name: next_token
+      description: A continuation token returned by a previous call (Azure.Storage.Table.TablesNextToken), used to retrieve the next page of results.
+      required: false
     outputs:
     - contextPath: Azure.Storage.Table.TableName
       description: The name of the table.
+      type: String
+    - contextPath: Azure.Storage.TablesNextToken
+      description: The continuation token to retrieve the next page of tables. Empty when there are no more results.
       type: String
   - name: azure-storage-table-entity-insert
     description: "Inserts a new entity into a table. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/entities/write."

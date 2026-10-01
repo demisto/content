@@ -25,6 +25,8 @@ TABLE_NAME_REGEX = "^[A-Za-z][A-Za-z0-9]{2,62}$"
 # fractional digits, so the raw value is trimmed to 6 digits (matching the legacy AzureStorageTable
 # pack) before it is parsed with this fractional-second format.
 TABLE_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+# The Azure Table data-plane caps the number of results a single query can return via the $top parameter.
+TABLE_MAX_PAGE_SIZE = 1000
 
 DEFAULT_LIMIT = "50"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -1410,7 +1412,9 @@ class AzureClient:
                 api_function_name="delete_table_request",
             )
 
-    def list_tables_request(self, account_name: str, limit: str = None, query_filter: str = None) -> requests.Response:
+    def list_tables_request(
+        self, account_name: str, limit: str = None, query_filter: str = None, next_token: str = None
+    ) -> requests.Response:
         """
         List tables under the specified account.
 
@@ -1418,12 +1422,13 @@ class AzureClient:
             account_name (str): The storage account name.
             limit (str): Retrieve top n tables.
             query_filter (str): Query expression.
+            next_token (str): Continuation token (NextTableName) for retrieving the next page of results.
 
         Returns:
             Response: API response from Azure.
         """
         full_url = f"https://{account_name}.{TABLE_SERVICE_PREFIX}/Tables"
-        params = remove_empty_elements({"$top": limit, "$filter": query_filter})
+        params = remove_empty_elements({"$top": limit, "$filter": query_filter, "NextTableName": next_token})
         self.storage_container_set_headers({"Accept": "application/json;odata=nometadata"})
         try:
             return self.http_request(method="GET", full_url=full_url, params=params, resp_type="response")  # type: ignore[return-value]
@@ -3973,32 +3978,35 @@ def list_tables_command(client: AzureClient, params: dict, args: dict) -> Comman
         CommandResults: outputs, readable output and raw response for XSOAR.
     """
     account_name = args["account_name"]
-    limit = args.get("limit") or DEFAULT_LIMIT
+    limit = arg_to_number(args.get("limit")) or int(DEFAULT_LIMIT)
+    validate_limit(limit, max_limit=TABLE_MAX_PAGE_SIZE)
     query_filter = args.get("filter")
+    next_token = args.get("next_token", "")
 
-    raw_response = client.list_tables_request(account_name, limit, query_filter).json()
+    demisto.debug(f"[Azure] listing tables for {account_name=} with {limit=} {query_filter=} next_token={bool(next_token)}")
+    response = client.list_tables_request(account_name, str(limit), query_filter, next_token)
+    raw_response = response.json()
 
     tables = raw_response.get("value", [])
     if not tables:
-        return CommandResults(
-            readable_output=f"No tables found in storage account {account_name}.",
-            raw_response=raw_response,
-        )
+        return CommandResults(readable_output=f"No tables found in storage account {account_name}.", raw_response=raw_response)
 
-    outputs = [{"TableName": table.get("TableName")} for table in tables]
-
-    readable_output = tableToMarkdown(
-        f"Azure Storage Tables (account: {account_name})",
-        outputs,
-        headerTransform=pascalToSpace,
-        removeNull=True,
-    )
+    # The Table data-plane returns the continuation token for the next page in the
+    # 'x-ms-continuation-NextTableName' response header (empty when there are no more results).
+    outputs = {
+        "Azure.Storage.Table(val.TableName && val.TableName == obj.TableName)": tables,
+        "Azure.Storage(true)": {"TablesNextToken": response.headers.get("x-ms-continuation-NextTableName")},
+    }
 
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix="Azure.Storage.Table",
-        outputs_key_field="TableName",
         outputs=outputs,
+        readable_output=tableToMarkdown(
+            f"Azure Storage Tables (account: {account_name})",
+            tables,
+            ["TableName"],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        ),
         raw_response=raw_response,
     )
 
@@ -4113,22 +4121,24 @@ def query_entity_command(client: AzureClient, params: dict, args: dict) -> Comma
     row_key = args.get("row_key")
     query_filter = args.get("filter")
     select = args.get("select")
-    limit = None if partition_key else (args.get("limit") or DEFAULT_LIMIT)
+    limit = None if partition_key else (arg_to_number(args.get("limit")) or int(DEFAULT_LIMIT))
+    validate_limit(limit, max_limit=TABLE_MAX_PAGE_SIZE)
 
     if (partition_key and not row_key) or (row_key and not partition_key):
         raise ValueError("Please provide both 'partition_key' and 'row_key' arguments, or none of them.")
 
+    demisto.debug(
+        f"[Azure] querying entities in {table_name=} for {account_name=} with "
+        f"partition_key={bool(partition_key)} {query_filter=} {select=} {limit=}"
+    )
     raw_response = client.query_entity_request(
-        account_name, table_name, partition_key, row_key, query_filter, select, limit
+        account_name, table_name, partition_key, row_key, query_filter, select, str(limit) if limit else None
     ).json()
 
     entities = [raw_response] if partition_key else raw_response.get("value", [])
 
     if not entities:
-        return CommandResults(
-            readable_output=f"No entities found in table {table_name}.",
-            raw_response=raw_response,
-        )
+        return CommandResults(readable_output=f"No entities found in table {table_name}.", raw_response=raw_response)
 
     for entity in entities:
         # Trim the Table data-plane's 7th fractional-second digit (and trailing "Z") down to the 6 digits
