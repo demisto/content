@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: FortiGate_ModelingRule
+name: FortiGate Modeling Rule
+rules: ''
+schema: ''
+tags: FortinetFortiGate
+supportedModules:
+- xsiam
