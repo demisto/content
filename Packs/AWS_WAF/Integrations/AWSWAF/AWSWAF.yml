@@ -110,7 +110,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Amazon Web Services Web Application Firewall (WAF).
+description: Amazon Web Services Web Application Firewall (WAF) and Firewall Manager (WAF Classic) are web application firewall services that help protect your web applications or APIs against common web exploits that may affect availability, security, and compliance.
 display: AWS-WAF
 name: AWS-WAF
 script:
