@@ -664,10 +664,10 @@ class Client(OktaClient):
             for user in raw_users:
                 user = {
                     "ID": user.get("id"),
-                    "Login": user.get("profile").get("login"),
-                    "First Name": user.get("profile").get("firstName"),
-                    "Last Name": user.get("profile").get("lastName"),
-                    "Mobile Phone": user.get("profile").get("mobilePhone"),
+                    "Login": user.get("profile", {}).get("login"),
+                    "First Name": user.get("profile", {}).get("firstName"),
+                    "Last Name": user.get("profile", {}).get("lastName"),
+                    "Mobile Phone": user.get("profile", {}).get("mobilePhone"),
                     "Last Login": user.get("lastLogin"),
                     "Status": user.get("status"),
                     "Manager": user.get("profile", {}).get("manager"),
@@ -758,7 +758,7 @@ class Client(OktaClient):
             if key == "query":
                 key = "q"
             query_params[key] = encode_string_results(value)
-        limit = int(args.get("limit"))
+        limit = int(args.get("limit", 200))
         response = self.http_request(method="GET", url_suffix=uri, resp_type="response", params=query_params)
         paged_results = response.json()
         if limit > 200:

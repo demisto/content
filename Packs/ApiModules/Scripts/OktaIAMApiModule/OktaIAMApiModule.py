@@ -122,25 +122,18 @@ class Client(BaseClient):
     def http_request(self, method, url_suffix, full_url=None, params=None, data=None, headers=None):
         full_url = full_url if full_url else urljoin(self._base_url, url_suffix)
 
-        # Under UCP route through BaseClient._http_request so the brokered credential is injected;
-        # resp_type="response" preserves the requests.Response return contract callers rely on.
-        if should_use_ucp_auth():
-            return self._http_request(
-                method=method,
-                url_suffix=url_suffix if not full_url else "",
-                full_url=full_url,
-                params=params,
-                json_data=data,
-                headers=headers,
-                resp_type="response",
-                ok_codes=None,
-            )
-
-        if headers is None:
-            headers = self._headers
-
-        res = requests.request(method, full_url, verify=self._verify, headers=headers, params=params, json=data)
-        return res
+        # Route through BaseClient._http_request so under UCP the brokered credential is injected.
+        # Callers inspect status_code/.json()/.links, so return the response and never raise on status.
+        return self._http_request(
+            method=method,
+            url_suffix=url_suffix if not full_url else "",
+            full_url=full_url,
+            params=params,
+            json_data=data,
+            headers=headers,
+            resp_type="response",
+            ok_codes=tuple(range(100, 600)),
+        )
 
     def search_group(self, group_name):
         uri = "groups"
@@ -162,7 +155,7 @@ class Client(BaseClient):
             raise Exception(f"Error occurred while calling Okta API: {response.request.url}. Response: {response.json()}")
         while "next" in response.links and len(response.json()) > 0:
             next_page = response.links.get("next").get("url")
-            response = self._http_request(method="GET", full_url=next_page, url_suffix="")
+            response = self._http_request(method="GET", full_url=next_page, url_suffix="", resp_type="response")
             if response.status_code != 200:
                 raise Exception(f"Error occurred while calling Okta API: {response.request.url}. Response: {response.json()}")
             paged_results += response.json()

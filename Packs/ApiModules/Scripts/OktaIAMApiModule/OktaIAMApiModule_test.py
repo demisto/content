@@ -715,3 +715,42 @@ def test_test_module_validates_first_fetch_when_provided(mocker):
         )
 
     assert "First fetch timestamp parameter is not in the correct format." in str(e.value)
+
+
+def _make_response(status_code, json_body=None):
+    res = Response()
+    res.status_code = status_code
+    res._content = json.dumps(json_body if json_body is not None else {}).encode("utf-8")
+    return res
+
+
+def test_http_request_returns_raw_response(mocker):
+    """
+    Given: A client configured with ok_codes=(200,).
+    When: http_request receives a 200 response.
+    Then: The raw requests.Response is returned (callers rely on .json()/.status_code/.links).
+    """
+    client = Client(base_url=BASE_URL, headers={}, ok_codes=(200,))
+    mocker.patch.object(Session, "request", return_value=_make_response(200, [{"id": "g1"}]))
+
+    res = client.http_request(method="GET", url_suffix="groups")
+
+    assert isinstance(res, Response)
+    assert res.status_code == 200
+    assert res.json() == [{"id": "g1"}]
+
+
+def test_http_request_returns_response_on_error_without_raising(mocker):
+    """
+    Given: A client configured with ok_codes=(200,).
+    When: http_request receives a non-2xx response (404).
+    Then: The response is returned, not raised - get_group_command branches on status_code itself.
+    """
+    client = Client(base_url=BASE_URL, headers={}, ok_codes=(200,))
+    mocker.patch.object(Session, "request", return_value=_make_response(404, {"errorCode": "E0000007"}))
+
+    res = client.http_request(method="GET", url_suffix="groups/missing")
+
+    assert isinstance(res, Response)
+    assert res.status_code == 404
+    assert res.json().get("errorCode") == "E0000007"
