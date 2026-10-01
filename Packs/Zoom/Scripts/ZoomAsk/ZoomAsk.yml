@@ -41,7 +41,7 @@ args:
 - description: Default response in case the question expires.
   name: defaultResponse
   defaultValue: NoResponse
-comment: Sends a message (question) to either user (in a direct message) or to a channel. The message includes predefined reply options. The response can also close a task (might be conditional) in a playbook.
+comment: Sends a message (question) to either user (in a direct message) or to a channel. The message includes predefined reply options. The response can also close a task (might be conditional) in a playbook and can be used to trigger other playbook tasks.
 commonfields:
   id: ZoomAsk
   version: -1
