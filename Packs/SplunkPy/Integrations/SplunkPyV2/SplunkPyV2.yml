@@ -1142,7 +1142,7 @@ script:
     - contextPath: Splunk.Investigation.risk_object_type
       description: The list of risk object types for a finding, finding group, or investigation.
       type: Unknown
-  dockerimage: demisto/splunksdk-py3:1.0.0.10133006
+  dockerimage: demisto/splunksdk-py3:1.0.0.12826098
   isfetch: true
   ismappable: true
   isremotesyncin: true

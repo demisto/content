@@ -1547,7 +1547,7 @@ script:
     - contextPath: CBP.UserDelete.Name
       description: The name of the user account.
     description: Sends request to delete user account.
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.13053055
   subtype: python3
   isfetch: true
   script: ''

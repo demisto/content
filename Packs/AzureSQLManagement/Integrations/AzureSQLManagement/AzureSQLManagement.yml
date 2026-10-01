@@ -773,7 +773,7 @@ script:
     - contextPath: AzureSQL.FirewallRule.properties.endIpAddress
       description: The end IP address of the firewall rule.
       type: String
-  dockerimage: demisto/crypto:1.0.0.10120494
+  dockerimage: demisto/crypto:1.0.0.13447173
   runonce: false
   script: '-'
   subtype: python3
