@@ -195,7 +195,6 @@ script:
   subtype: python3
   type: python
 fromversion: 6.10.0
-supportlevelheader: community
 tests:
 - No tests (auto formatted)
 marketplaces:
