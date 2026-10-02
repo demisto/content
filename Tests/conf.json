@@ -5886,6 +5886,14 @@
             "timeout": 600
         },
         {
+            "playbookID": "BlockURL - Test",
+            "integrations": ["Panorama"],
+            "instance_names": [
+                "palo_alto_panorama_11"
+            ],
+            "timeout": 600
+        },
+        {
             "playbookID": "FileEnrichment - Test",
             "integrations": [
                 "VirusTotal (API v3)",
