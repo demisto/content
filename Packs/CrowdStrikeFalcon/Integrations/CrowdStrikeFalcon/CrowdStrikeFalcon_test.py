@@ -408,6 +408,54 @@ def test_run_script(requests_mock, mocker):
     assert results["EntryContext"] == expected_results
 
 
+def test_run_script_with_command_line(requests_mock, mocker):
+    """
+    Given:
+        A command_line argument in addition to the script_name argument.
+    When:
+        Running the cs-falcon-run-script command.
+    Then:
+        Verify that -CommandLine={command_line} is appended after the base command and before -Timeout.
+    """
+    from CrowdStrikeFalcon import run_script_command
+
+    response = {
+        "combined": {
+            "resources": {
+                "284771ee197e422d5176d6634a62b934": {
+                    "aid": "284771ee197e422d5176d6634a62b934",
+                    "base_command": "runscript",
+                    "complete": True,
+                    "errors": None,
+                    "query_time": 4.111527091,
+                    "session_id": "4d41588e-8455-4f0f-a3ee-0515922a8d94",
+                    "stderr": "",
+                    "stdout": "Hello, World!",
+                    "task_id": "6d78e0ab-ec8a-4a5b-a948-1dca6381a9d1",
+                }
+            }
+        },
+        "errors": [],
+        "meta": {"powered_by": "empower-api", "query_time": 4.112103195, "trace_id": "07kk11c3-496g-42df-9157-834e499e279d"},
+    }
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "host_id": "284771ee197e422d5176d6634a62b934",
+            "script_name": "MyScript",
+            "command_line": "-Foo bar -Baz qux",
+        },
+    )
+    requests_mock.post(
+        f"{SERVER_URL}/real-time-response/combined/batch-init-session/v1", json={"batch_id": "batch_id"}, status_code=201
+    )
+    requests_mock.post(f"{SERVER_URL}/real-time-response/combined/batch-admin-command/v1", json=response, status_code=201)
+    results = run_script_command()
+    expected_command = "runscript -CloudFile=MyScript -CommandLine=-Foo bar -Baz qux -Timeout=30"
+    assert results["EntryContext"]["CrowdStrike"]["Command"][0]["Command"] == expected_command
+
+
 def test_run_script_failure_bad_inputs(mocker):
     from CrowdStrikeFalcon import run_script_command
 
@@ -422,6 +470,12 @@ def test_run_script_failure_bad_inputs(mocker):
     with pytest.raises(ValueError) as e:
         run_script_command()
     assert str(e.value) == "One of the arguments script_name or raw must be provided, none given."
+
+    # test failure command_line provided with raw instead of script_name
+    mocker.patch.object(demisto, "args", return_value={"raw": "Write-Output 'Hello'", "command_line": "-Foo bar"})
+    with pytest.raises(ValueError) as e:
+        run_script_command()
+    assert str(e.value) == "The command_line argument can only be used together with the script_name argument."
 
 
 def test_upload_script_given_content(requests_mock, mocker):
