@@ -377,22 +377,6 @@ script:
         - contextPath: ReversingLabs.advanced_search
           description: The advanced search.
           type: Unknown
-    - name: reversinglabs-titaniumcloud-expression-search
-      description: Search provides samples first seen on a particular date, filtered by search criteria.
-      arguments:
-        - name: query
-          description: Query string.
-          default: true
-          required: true
-        - name: date
-          description: Search date.
-        - name: result_limit
-          description: Maximum number of results to be returned Default is 5000.
-          defaultValue: 5000
-      outputs:
-        - contextPath: ReversingLabs.expression_search
-          description: The expression search.
-          type: Unknown
     - name: reversinglabs-titaniumcloud-file-download
       description: Download files associated with a SHA1, MD5 or SHA256 hash.
       arguments:

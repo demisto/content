@@ -1,0 +1,4 @@
+{
+  "breakingChanges":true,
+  "breakingChangesNotes":"This version removes the following command: reversinglabs-titaniumcloud-expression-search. For more details read the release notes."
+}
