@@ -1520,7 +1520,7 @@ script:
     arguments:
     - name: workspace_ref
       required: true
-      description: The workspace UUID or slug.
+      description: The workspace slug (its UUID is also accepted) identifying the workspace to update.
     - name: name
       description: The new workspace display name.
     - name: description
@@ -1528,7 +1528,7 @@ script:
     - name: icon
       description: The new workspace icon identifier.
     - name: defaults
-      description: Default settings for the workspace as a JSON object.
+      description: 'Default settings for the workspace as a JSON object of key/value pairs (e.g. {"config_id": "9ff8ead5-2438-xxxx"}).'
     - name: usage_limits
       description: Usage-limit definitions as a JSON array.
     - name: rate_limits

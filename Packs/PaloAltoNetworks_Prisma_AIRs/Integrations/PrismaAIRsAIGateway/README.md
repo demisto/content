@@ -2029,11 +2029,11 @@ Updates an AI Gateway workspace by UUID or slug (admin plane). Partial patch - s
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| workspace_ref | The workspace UUID or slug. | Required |
+| workspace_ref | The workspace slug (its UUID is also accepted) identifying the workspace to update. | Required |
 | name | The new workspace display name. | Optional |
 | description | The new workspace description. | Optional |
 | icon | The new workspace icon identifier. | Optional |
-| defaults | Default settings for the workspace as a JSON object. | Optional |
+| defaults | Default settings for the workspace as a JSON object of key/value pairs (e.g. {"config_id": "9ff8ead5-2438-xxxx"}). | Optional |
 | usage_limits | Usage-limit definitions as a JSON array. | Optional |
 | rate_limits | Rate-limit definitions as a JSON array. | Optional |
 
