@@ -7598,3 +7598,611 @@ def test_extract_fallback_prefix_returns_empty_for_unknown_handler():
 
     # When / Then: the unknown name yields nothing, and no error is raised
     assert extract_fallback_prefix("no_such_command", symbol_index) == set()
+
+
+# ---------------------------------------------------------------------------
+# WAF policy commands (Application Gateway and Front Door).
+# ---------------------------------------------------------------------------
+
+WAF_POLICY = {
+    "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network"
+    "/ApplicationGatewayWebApplicationFirewallPolicies/policy1",
+    "name": "policy1",
+    "type": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies",
+    "location": "westus2",
+    "properties": {
+        "provisioningState": "Succeeded",
+        "resourceState": "Enabled",
+        "policySettings": {"mode": "Prevention", "state": "Enabled"},
+        "managedRules": {"managedRuleSets": [{"ruleSetType": "OWASP", "ruleSetVersion": "3.2"}]},
+    },
+}
+
+FRONT_DOOR_POLICY = {
+    "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network"
+    "/FrontDoorWebApplicationFirewallPolicies/fdpolicy1",
+    "name": "fdpolicy1",
+    "type": "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies",
+    "location": "Global",
+    "sku": {"name": "Classic_AzureFrontDoor"},
+    "properties": {
+        "provisioningState": "Succeeded",
+        "resourceState": "Enabled",
+        "policySettings": {"mode": "Prevention", "enabledState": "Enabled"},
+        "managedRules": {"managedRuleSets": [{"ruleSetType": "DefaultRuleSet", "ruleSetVersion": "1.0"}]},
+    },
+}
+
+
+def test_waf_policy_get_command_success(mocker):
+    """
+    Given: An AzureClient whose waf_policy_get returns a WAF policy.
+    When: waf_policy_get_command is called with a policy name.
+    Then: The policy is returned under the Azure.ApplicationGateway.WAFPolicies prefix and the client is
+          called with the resolved subscription and resource group.
+    """
+    from Azure import waf_policy_get_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_policy_get.return_value = WAF_POLICY
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1", "policy_name": "policy1"}
+    result = waf_policy_get_command(mock_client, {}, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.ApplicationGateway.WAFPolicies"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == WAF_POLICY
+    assert "policy1" in result.readable_output
+    mock_client.waf_policy_get.assert_called_once_with(policy_name="policy1", subscription_id="sub1", resource_group_name="rg1")
+
+
+def test_waf_policy_list_command_success(mocker):
+    """
+    Given: An AzureClient whose waf_policy_list returns one policy and a next link.
+    When: waf_policy_list_command is called for a resource group.
+    Then: The policies and the continuation token are placed in the context outputs.
+    """
+    from Azure import waf_policy_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_policy_list.return_value = {"value": [WAF_POLICY], "nextLink": "next-page-token"}
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+    result = waf_policy_list_command(mock_client, {}, args)
+
+    assert result.outputs["Azure.ApplicationGateway.WAFPolicies(val.id && val.id == obj.id)"] == [WAF_POLICY]
+    assert result.outputs["Azure.ApplicationGateway(true)"] == {"WAFPoliciesNextToken": "next-page-token"}
+    assert "policy1" in result.readable_output
+    mock_client.waf_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="rg1", next_token="")
+
+
+def test_waf_policy_list_command_subscription_scope(mocker):
+    """
+    Given: No resource group, and several policies returned by the API.
+    When: waf_policy_list_command is called.
+    Then: The client is called with an empty resource group, so the whole subscription is
+          listed, and all the returned policies are placed in the context outputs.
+    """
+    from Azure import waf_policy_list_command
+
+    mock_client = mocker.Mock()
+    second_policy = {**WAF_POLICY, "name": "policy2", "id": "policy2-id"}
+    mock_client.waf_policy_list.return_value = {"value": [WAF_POLICY, second_policy]}
+
+    result = waf_policy_list_command(mock_client, {}, {"subscription_id": "sub1"})
+
+    assert result.outputs["Azure.ApplicationGateway.WAFPolicies(val.id && val.id == obj.id)"] == [WAF_POLICY, second_policy]
+    mock_client.waf_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="", next_token="")
+
+
+def test_waf_policy_list_command_ignores_the_resource_group_parameter(mocker):
+    """
+    Given: An instance configured with a default resource group, and a command call that does
+           not pass one.
+    When: waf_policy_list_command is called.
+    Then: The client is called with an empty resource group, so the instance default does not
+          prevent listing the policies of the whole subscription.
+    """
+    from Azure import waf_policy_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_policy_list.return_value = {"value": [WAF_POLICY]}
+
+    waf_policy_list_command(mock_client, {"resource_group_name": "default-rg"}, {"subscription_id": "sub1"})
+
+    mock_client.waf_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="", next_token="")
+
+
+def test_waf_front_door_policy_list_command_ignores_the_resource_group_parameter(mocker):
+    """
+    Given: An instance configured with a default resource group, and a command call that does
+           not pass one.
+    When: waf_front_door_policy_list_command is called.
+    Then: The client is called with an empty resource group, so the instance default does not
+          prevent listing the policies of the whole subscription.
+    """
+    from Azure import waf_front_door_policy_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_list.return_value = {"value": [FRONT_DOOR_POLICY]}
+
+    waf_front_door_policy_list_command(mock_client, {"resource_group_name": "default-rg"}, {"subscription_id": "sub1"})
+
+    mock_client.waf_front_door_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="", next_token="")
+
+
+def test_waf_policy_list_command_no_results(mocker):
+    """
+    Given: An AzureClient that returns no policies.
+    When: waf_policy_list_command is called.
+    Then: A readable "not found" message is returned, and the next token is cleared so that a
+          token left in the context by a previous page cannot be read again.
+    """
+    from Azure import waf_policy_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_policy_list.return_value = {"value": []}
+
+    result = waf_policy_list_command(mock_client, {}, {"subscription_id": "sub1", "resource_group_name": "rg1"})
+
+    assert result.readable_output == "No WAF policies were found in resource group 'rg1'."
+    assert result.outputs == {"Azure.ApplicationGateway(true)": {"WAFPoliciesNextToken": None}}
+
+
+def test_waf_policy_create_or_update_command_success(mocker):
+    """
+    Given: A policy name, location and managed rules supplied as JSON strings.
+    When: waf_policy_create_or_update_command is called.
+    Then: The JSON arguments are parsed and nested into the request body at their
+          documented locations, and the created or updated policy is returned.
+    """
+    from Azure import waf_policy_create_or_update_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_policy_upsert.return_value = WAF_POLICY
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "policy_name": "policy1",
+        "location": "westus2",
+        "managed_rules": '{"managedRuleSets": [{"ruleSetType": "OWASP", "ruleSetVersion": "3.2"}]}',
+        "policy_settings": '{"mode": "Prevention"}',
+        "tags": '{"env": "prod"}',
+    }
+    result = waf_policy_create_or_update_command(mock_client, {}, args)
+
+    assert result.outputs_prefix == "Azure.ApplicationGateway.WAFPolicies"
+    assert result.outputs == WAF_POLICY
+    assert "created or updated successfully" in result.readable_output
+
+    sent_body = mock_client.waf_policy_upsert.call_args.kwargs["data"]
+    assert sent_body["location"] == "westus2"
+    assert sent_body["tags"] == {"env": "prod"}
+    assert sent_body["properties"]["policySettings"] == {"mode": "Prevention"}
+    assert sent_body["properties"]["managedRules"]["managedRuleSets"][0]["ruleSetType"] == "OWASP"
+
+
+@pytest.mark.parametrize(
+    "status_code, expected_message",
+    [
+        (200, "WAF Policy policy1 was deleted successfully."),
+        (202, "The delete request for WAF Policy policy1 was accepted and the operation will complete asynchronously."),
+        (204, "WAF Policy policy1 was not found."),
+    ],
+)
+def test_waf_policy_delete_command_status_codes(mocker, status_code, expected_message):
+    """
+    Given: A delete call that returns 200, 202 or 204.
+    When: waf_policy_delete_command is called.
+    Then: The readable output reflects the distinct meaning of each status code.
+    """
+    from Azure import waf_policy_delete_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_policy_delete.return_value = mocker.Mock(status_code=status_code)
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1", "policy_name": "policy1"}
+    result = waf_policy_delete_command(mock_client, {}, args)
+
+    assert result.readable_output == expected_message
+
+
+def test_waf_front_door_policy_get_command_success(mocker):
+    """
+    Given: An AzureClient whose waf_front_door_policy_get returns a Front Door WAF policy.
+    When: waf_front_door_policy_get_command is called with a policy name.
+    Then: The policy is returned under the Azure.FrontDoor.Policies prefix.
+    """
+    from Azure import waf_front_door_policy_get_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_get.return_value = FRONT_DOOR_POLICY
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1", "policy_name": "fdpolicy1"}
+    result = waf_front_door_policy_get_command(mock_client, {}, args)
+
+    assert result.outputs_prefix == "Azure.FrontDoor.Policies"
+    assert result.outputs == FRONT_DOOR_POLICY
+    assert "fdpolicy1" in result.readable_output
+    mock_client.waf_front_door_policy_get.assert_called_once_with(
+        policy_name="fdpolicy1", subscription_id="sub1", resource_group_name="rg1"
+    )
+
+
+def test_waf_front_door_policy_list_command_success(mocker):
+    """
+    Given: An AzureClient whose waf_front_door_policy_list returns one policy and a next link.
+    When: waf_front_door_policy_list_command is called for a resource group.
+    Then: The policies and the continuation token are placed in the context outputs.
+    """
+    from Azure import waf_front_door_policy_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_list.return_value = {"value": [FRONT_DOOR_POLICY], "nextLink": "next-page-token"}
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+    result = waf_front_door_policy_list_command(mock_client, {}, args)
+
+    assert result.outputs["Azure.FrontDoor.Policies(val.id && val.id == obj.id)"] == [FRONT_DOOR_POLICY]
+    assert result.outputs["Azure.FrontDoor(true)"] == {"PoliciesNextToken": "next-page-token"}
+    mock_client.waf_front_door_policy_list.assert_called_once_with(
+        subscription_id="sub1", resource_group_name="rg1", next_token=""
+    )
+
+
+def test_waf_front_door_policy_list_command_no_results(mocker):
+    """
+    Given: An AzureClient that returns no Front Door policies.
+    When: waf_front_door_policy_list_command is called.
+    Then: A readable "not found" message is returned, and the next token is cleared so that a
+          token left in the context by a previous page cannot be read again.
+    """
+    from Azure import waf_front_door_policy_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_list.return_value = {"value": []}
+
+    result = waf_front_door_policy_list_command(mock_client, {}, {"subscription_id": "sub1"})
+
+    assert result.readable_output == "No Front Door WAF policies were found in subscription 'sub1'."
+    assert result.outputs == {"Azure.FrontDoor(true)": {"PoliciesNextToken": None}}
+
+
+def test_waf_front_door_policy_create_or_update_command_applies_global_defaults(mocker):
+    """
+    Given: Only a policy name and managed rules, with no location or SKU.
+    When: waf_front_door_policy_create_or_update_command is called.
+    Then: The body defaults to the Global location and the classic Front Door SKU, which
+          the API requires when creating the policy.
+    """
+    from Azure import waf_front_door_policy_create_or_update_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_upsert.return_value = FRONT_DOOR_POLICY
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "policy_name": "fdpolicy1",
+        "managed_rules": '{"managedRuleSets": [{"ruleSetType": "DefaultRuleSet", "ruleSetVersion": "1.0"}]}',
+    }
+    result = waf_front_door_policy_create_or_update_command(mock_client, {}, args)
+
+    assert result.outputs_prefix == "Azure.FrontDoor.Policies"
+    sent_body = mock_client.waf_front_door_policy_upsert.call_args.kwargs["data"]
+    assert sent_body["location"] == "Global"
+    assert sent_body["sku"] == {"name": "Classic_AzureFrontDoor"}
+    assert sent_body["properties"]["managedRules"]["managedRuleSets"][0]["ruleSetType"] == "DefaultRuleSet"
+
+
+def test_waf_front_door_policy_create_or_update_command_honours_explicit_sku(mocker):
+    """
+    Given: An explicit SKU argument.
+    When: waf_front_door_policy_create_or_update_command is called.
+    Then: The supplied SKU is nested under sku.name rather than being overridden by the
+          default.
+    """
+    from Azure import waf_front_door_policy_create_or_update_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_upsert.return_value = FRONT_DOOR_POLICY
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "policy_name": "fdpolicy1",
+        "managed_rules": '{"managedRuleSets": []}',
+        "sku": "Premium_AzureFrontDoor",
+    }
+    waf_front_door_policy_create_or_update_command(mock_client, {}, args)
+
+    sent_body = mock_client.waf_front_door_policy_upsert.call_args.kwargs["data"]
+    assert sent_body["sku"] == {"name": "Premium_AzureFrontDoor"}
+
+
+@pytest.mark.parametrize(
+    "etag",
+    [
+        '"abc"',
+        "123",
+        "true",
+    ],
+)
+def test_waf_front_door_policy_create_or_update_command_sends_plain_strings_unchanged(mocker, etag):
+    """
+    Given: An ETag that looks like JSON, such as a quoted string, a number or a boolean.
+    When: waf_front_door_policy_create_or_update_command is called.
+    Then: The ETag is sent to the API exactly as supplied, keeping its quotes and its string
+          type, because only the JSON arguments of the policy are parsed.
+    """
+    from Azure import waf_front_door_policy_create_or_update_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_upsert.return_value = FRONT_DOOR_POLICY
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "policy_name": "fdpolicy1",
+        "managed_rules": '{"managedRuleSets": []}',
+        "etag": etag,
+    }
+    waf_front_door_policy_create_or_update_command(mock_client, {}, args)
+
+    sent_body = mock_client.waf_front_door_policy_upsert.call_args.kwargs["data"]
+    assert sent_body["etag"] == etag
+
+
+def test_build_waf_policy_body_parses_only_the_json_arguments():
+    """
+    Given: A mapping holding both JSON arguments and plain string arguments, where the plain
+           strings contain values that are valid JSON.
+    When: build_waf_policy_body is called.
+    Then: The JSON arguments are parsed into objects while the plain strings keep their
+          original string value.
+    """
+    from Azure import build_waf_policy_body
+
+    body = build_waf_policy_body(
+        {
+            "resource_id": "12345",
+            "location": "true",
+            "tags": '{"env": "prod"}',
+            "policy_settings": '{"mode": "Prevention"}',
+        },
+        {
+            "resource_id": "id",
+            "location": "location",
+            "tags": "tags",
+            "policy_settings": "properties.policySettings",
+        },
+    )
+
+    assert body["id"] == "12345"
+    assert body["location"] == "true"
+    assert body["tags"] == {"env": "prod"}
+    assert body["properties"]["policySettings"] == {"mode": "Prevention"}
+
+
+@pytest.mark.parametrize(
+    "status_code, expected_message",
+    [
+        (200, "Front Door WAF Policy fdpolicy1 was deleted successfully."),
+        (
+            202,
+            "The delete request for Front Door WAF Policy fdpolicy1 was accepted "
+            "and the operation will complete asynchronously.",
+        ),
+        (204, "Front Door WAF Policy fdpolicy1 was not found."),
+    ],
+)
+def test_waf_front_door_policy_delete_command_status_codes(mocker, status_code, expected_message):
+    """
+    Given: A delete call that returns 200, 202 or 204.
+    When: waf_front_door_policy_delete_command is called.
+    Then: The readable output reflects the distinct meaning of each status code.
+    """
+    from Azure import waf_front_door_policy_delete_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_delete.return_value = mocker.Mock(status_code=status_code)
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1", "policy_name": "fdpolicy1"}
+    result = waf_front_door_policy_delete_command(mock_client, {}, args)
+
+    assert result.readable_output == expected_message
+
+
+def test_build_waf_policy_body_nests_and_skips_missing_arguments():
+    """
+    Given: A mix of JSON, plain string and absent arguments.
+    When: build_waf_policy_body is called.
+    Then: JSON values are parsed into objects, plain strings are kept as-is, dotted paths
+          are expanded into nested dictionaries, and absent arguments are omitted entirely.
+    """
+    from Azure import build_waf_policy_body
+
+    args = {"location": "westus2", "policy_settings": '{"mode": "Prevention"}', "tags": None}
+    body = build_waf_policy_body(
+        args,
+        {"location": "location", "policy_settings": "properties.policySettings", "tags": "tags"},
+    )
+
+    assert body == {"location": "westus2", "properties": {"policySettings": {"mode": "Prevention"}}}
+
+
+def test_build_waf_policy_body_keeps_invalid_json_as_plain_string():
+    """
+    Given: An argument whose value is not valid JSON.
+    When: build_waf_policy_body is called.
+    Then: The raw string is used as the value rather than raising, so a caller may pass a
+          plain string where the API accepts one.
+    """
+    from Azure import build_waf_policy_body
+
+    body = build_waf_policy_body({"location": "west us"}, {"location": "location"})
+
+    assert body == {"location": "west us"}
+
+
+def test_waf_client_methods_use_the_expected_urls_and_api_versions(mocker):
+    """
+    Given: An AzureClient with a mocked http_request.
+    When: The WAF policy and Front Door WAF policy client methods are called.
+    Then: Each targets its documented resource path and pins the api-version its API
+          expects, so a change to either is caught here.
+    """
+    from Azure import (
+        AzureClient,
+        WAF_POLICY_API_VERSION,
+        WAF_FRONT_DOOR_POLICY_API_VERSION,
+        WAF_POLICY_PATH,
+        WAF_FRONT_DOOR_POLICY_PATH,
+    )
+
+    client = mocker.Mock(spec=AzureClient)
+    client.http_request.return_value = WAF_POLICY
+
+    AzureClient.waf_policy_get(client, policy_name="policy1", subscription_id="sub1", resource_group_name="rg1")
+    call = client.http_request.call_args
+    assert call.kwargs["params"] == {"api-version": WAF_POLICY_API_VERSION}
+    assert call.kwargs["full_url"].endswith(f"{WAF_POLICY_PATH}/policy1")
+
+    AzureClient.waf_front_door_policy_get(client, policy_name="fdpolicy1", subscription_id="sub1", resource_group_name="rg1")
+    call = client.http_request.call_args
+    assert call.kwargs["params"] == {"api-version": WAF_FRONT_DOOR_POLICY_API_VERSION}
+    assert call.kwargs["full_url"].endswith(f"{WAF_FRONT_DOOR_POLICY_PATH}/fdpolicy1")
+
+
+def test_waf_policy_get_client_method_raises_value_error_on_404(mocker):
+    """
+    Given: An AzureClient whose http_request raises a 404 error.
+    When: waf_policy_get is called.
+    Then: handle_azure_error converts it into a ValueError naming the policy, so the user
+          learns the requested policy does not exist.
+    """
+    from Azure import AzureClient
+
+    client = AzureClient(
+        app_id="app",
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        verify=False,
+        proxy=False,
+        connection_type="Client Credentials",
+    )
+    mocker.patch.object(AzureClient, "http_request", side_effect=Exception("Error in API call [404] - Not Found"))
+
+    with pytest.raises(ValueError, match="policy1"):
+        client.waf_policy_get(policy_name="policy1", subscription_id="sub1", resource_group_name="rg1")
+
+
+def test_waf_policy_delete_client_method_names_the_permission_quoted_in_a_403(mocker):
+    """
+    Given: An AzureClient whose http_request raises a 403 that names the missing action,
+           which is how Azure reports an RBAC denial.
+    When: waf_policy_delete is called.
+    Then: The named delete permission is resolved from the api_function_name mapping and
+          reported through return_multiple_permissions_error, so the user is told exactly
+          which permission to grant instead of seeing a bare 403.
+    """
+    from Azure import AzureClient
+
+    client = AzureClient(
+        app_id="app",
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        verify=False,
+        proxy=False,
+        connection_type="Client Credentials",
+    )
+    error = Exception(
+        "Error in API call [403] - Forbidden. The client does not have authorization to perform action "
+        "'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete' over scope."
+    )
+    mocker.patch.object(AzureClient, "http_request", side_effect=error)
+    permissions_error = mocker.patch("Azure.return_multiple_permissions_error")
+
+    client.waf_policy_delete(policy_name="policy1", subscription_id="sub1", resource_group_name="rg1")
+
+    error_entries = permissions_error.call_args[0][0]
+    assert error_entries[0]["account_id"] == "sub1"
+    assert error_entries[0]["name"] == "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete"
+
+
+def test_waf_policy_delete_client_method_falls_back_when_403_names_no_permission(mocker):
+    """
+    Given: An AzureClient whose http_request raises a 403 that does not name any action.
+    When: waf_policy_delete is called.
+    Then: A permission error is still reported, with the name falling back to "N/A" rather
+          than the command guessing a permission the error never mentioned.
+    """
+    from Azure import AzureClient
+
+    client = AzureClient(
+        app_id="app",
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        verify=False,
+        proxy=False,
+        connection_type="Client Credentials",
+    )
+    mocker.patch.object(AzureClient, "http_request", side_effect=Exception("Error in API call [403] - Forbidden"))
+    permissions_error = mocker.patch("Azure.return_multiple_permissions_error")
+
+    client.waf_policy_delete(policy_name="policy1", subscription_id="sub1", resource_group_name="rg1")
+
+    error_entries = permissions_error.call_args[0][0]
+    assert error_entries[0]["name"] == "N/A"
+
+
+def test_waf_policy_list_client_method_scopes_by_resource_group_and_next_token(mocker):
+    """
+    Given: An AzureClient with a mocked http_request.
+    When: waf_policy_list is called with a resource group, without one, and with a next token.
+    Then: The resource-group URL, the subscription-wide URL and the verbatim next-token URL
+          are used respectively, with the api-version omitted when following a next link,
+          since the token already carries the full query string.
+    """
+    from Azure import AzureClient, WAF_POLICY_API_VERSION
+
+    client = mocker.Mock(spec=AzureClient)
+    client.http_request.return_value = {"value": []}
+    next_token = "https://management.azure.com/subscriptions/sub1/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies?$skipToken=abc"  # noqa: E501
+
+    AzureClient.waf_policy_list(client, subscription_id="sub1", resource_group_name="rg1")
+    assert "resourceGroups/rg1" in client.http_request.call_args.kwargs["full_url"]
+    assert client.http_request.call_args.kwargs["params"] == {"api-version": WAF_POLICY_API_VERSION}
+
+    AzureClient.waf_policy_list(client, subscription_id="sub1", resource_group_name="")
+    assert "resourceGroups" not in client.http_request.call_args.kwargs["full_url"]
+
+    AzureClient.waf_policy_list(client, subscription_id="sub1", resource_group_name="rg1", next_token=next_token)
+    assert client.http_request.call_args.kwargs["full_url"] == next_token
+    assert client.http_request.call_args.kwargs["params"] == {}
+
+
+@pytest.mark.parametrize(
+    "next_token",
+    [
+        pytest.param("https://evil.com/subscriptions/sub1", id="foreign_host"),
+        pytest.param("http://management.azure.com/subscriptions/sub1", id="non_https_scheme"),
+        pytest.param("next-page-token", id="not_a_url"),
+    ],
+)
+def test_waf_policy_list_client_method_rejects_invalid_next_token(mocker, next_token):
+    """
+    Given: A next token that does not point at the configured Azure management endpoint over HTTPS.
+    When: waf_policy_list is called with that token.
+    Then: A DemistoException is raised and no request is sent, so the bearer token is not leaked.
+    """
+    from Azure import AzureClient
+
+    client = mocker.Mock(spec=AzureClient)
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        AzureClient.waf_policy_list(client, subscription_id="sub1", resource_group_name="rg1", next_token=next_token)
+
+    client.http_request.assert_not_called()
