@@ -1,0 +1,42 @@
+{
+    "name": "test-nic",
+    "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/test-nic",
+    "etag": "W/\"etag\"",
+    "type": "Microsoft.Network/networkInterfaces",
+    "location": "eastus",
+    "properties": {
+        "provisioningState": "Succeeded",
+        "resourceGuid": "33333333-3333-3333-3333-333333333333",
+        "ipConfigurations": [
+            {
+                "name": "ipconfig1",
+                "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/test-nic/ipConfigurations/ipconfig1",
+                "properties": {
+                    "provisioningState": "Succeeded",
+                    "privateIPAddress": "1.1.1.1",
+                    "privateIPAllocationMethod": "Static",
+                    "publicIPAddress": {
+                        "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/test-ip"
+                    },
+                    "subnet": {
+                        "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1/subnets/default"
+                    },
+                    "primary": true,
+                    "privateIPAddressVersion": "IPv4"
+                }
+            }
+        ],
+        "networkSecurityGroup": {
+            "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/test-nsg"
+        },
+        "dnsSettings": {
+            "dnsServers": [],
+            "appliedDnsServers": [],
+            "internalDomainNameSuffix": "test.bx.internal.cloudapp.net"
+        },
+        "macAddress": "00-0D-3A-1B-C7-21",
+        "enableAcceleratedNetworking": false,
+        "enableIPForwarding": false,
+        "nicType": "Standard"
+    }
+}
