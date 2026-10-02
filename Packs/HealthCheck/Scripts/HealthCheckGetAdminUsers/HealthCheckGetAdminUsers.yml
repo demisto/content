@@ -1,0 +1,33 @@
+args:
+- auto: PREDEFINED
+  defaultValue: "False"
+  name: RunInPlaybook
+  predefined:
+  - "True"
+  - "False"
+  supportedModules: []
+comment: Fetches Account Admin and Instance Administrator users via core-api-post and displays them in a markdown table.
+commonfields:
+  id: 'HealthCheckGetAdminUsers'
+  version: -1
+dockerimage: demisto/python3:3.12.13.7444307
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: HealthCheckGetAdminUsers
+outputs:
+- contextPath: AdminUsers
+  description: List of Account Admin and Instance Administrator users.
+  type: Array
+pswd: ""
+restrictioncenter: {}
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+signature: ""
+subtype: python3
+tags:
+- widget
+- dynamic-section
+type: python
