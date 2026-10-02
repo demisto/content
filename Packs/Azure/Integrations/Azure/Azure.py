@@ -18,6 +18,15 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 BLOB_SERVICE_PREFIX = "blob.core.windows.net"
+TABLE_SERVICE_PREFIX = "table.core.windows.net"
+TABLE_NAME_REGEX = "^[A-Za-z][A-Za-z0-9]{2,62}$"
+# The Azure Table data-plane returns entity Timestamps with up to 7 fractional-second digits and a
+# trailing "Z" (e.g. "2021-08-16T14:52:20.7422729Z"). Python's %f directive only supports up to 6
+# fractional digits, so the raw value is trimmed to 6 digits (matching the legacy AzureStorageTable
+# pack) before it is parsed with this fractional-second format.
+TABLE_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+# The Azure Table data-plane caps the number of results a single query can return via the $top parameter.
+TABLE_MAX_PAGE_SIZE = 1000
 
 DEFAULT_LIMIT = "50"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -328,6 +337,16 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/networkSecurityGroups/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Network/loadBalancers/backendAddressPools/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list", "azure-rm-resource-groups-list"],
+    "Microsoft.Storage/storageAccounts/tableServices/tables/write": ["azure-storage-table-create"],
+    "Microsoft.Storage/storageAccounts/tableServices/tables/delete": ["azure-storage-table-delete"],
+    "Microsoft.Storage/storageAccounts/tableServices/tables/read": ["azure-storage-table-list"],
+    "Microsoft.Storage/storageAccounts/tableServices/tables/entities/write": [
+        "azure-storage-table-entity-insert",
+        "azure-storage-table-entity-update",
+        "azure-storage-table-entity-replace",
+    ],
+    "Microsoft.Storage/storageAccounts/tableServices/tables/entities/read": ["azure-storage-table-entity-query"],
+    "Microsoft.Storage/storageAccounts/tableServices/tables/entities/delete": ["azure-storage-table-entity-delete"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -405,6 +424,14 @@ API_FUNCTION_TO_PERMISSIONS = {
     "get_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
     "get_all_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
     "list_security_rules": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
+    "create_table_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/write"],
+    "delete_table_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/delete"],
+    "list_tables_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/read"],
+    "insert_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/write"],
+    "update_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/write"],
+    "replace_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/write"],
+    "query_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/read"],
+    "delete_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/delete"],
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
@@ -460,6 +487,12 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Consumption/usageDetails/read",
     "Microsoft.Consumption/budgets/read",
     "Microsoft.CostManagement/forecast/read",
+    "Microsoft.Storage/storageAccounts/tableServices/tables/read",
+    "Microsoft.Storage/storageAccounts/tableServices/tables/write",
+    "Microsoft.Storage/storageAccounts/tableServices/tables/delete",
+    "Microsoft.Storage/storageAccounts/tableServices/tables/entities/read",
+    "Microsoft.Storage/storageAccounts/tableServices/tables/entities/write",
+    "Microsoft.Storage/storageAccounts/tableServices/tables/entities/delete",
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -488,6 +521,14 @@ STORAGE_BLOB_SPECIAL_COMMANDS = [
     "azure-storage-blob-create",
     "azure-storage-blob-get",
     "azure-storage-blob-tag-set",
+    "azure-storage-table-create",
+    "azure-storage-table-delete",
+    "azure-storage-table-list",
+    "azure-storage-table-entity-insert",
+    "azure-storage-table-entity-update",
+    "azure-storage-table-entity-replace",
+    "azure-storage-table-entity-query",
+    "azure-storage-table-entity-delete",
 ]
 
 COMMANDS_TO_OUTPUTS_PREFIX = {
@@ -1325,6 +1366,226 @@ class AzureClient:
         response = self.http_request(method="PUT", full_url=full_url, params=params, resp_type="response")
 
         return response
+
+    def create_table_request(self, account_name: str, table_name: str) -> dict[str, Any]:
+        """
+        Create a new table in a storage account.
+
+        Args:
+            account_name (str): The storage account name.
+            table_name (str): Table name.
+
+        Returns:
+            dict: API response from Azure.
+        """
+        full_url = f"https://{account_name}.{TABLE_SERVICE_PREFIX}/Tables"
+        data = {"TableName": table_name}
+        self.storage_container_set_headers({"Content-Type": "application/json", "Accept": "application/json;odata=nometadata"})
+        try:
+            return self.http_request(method="POST", full_url=full_url, json_data=data, resp_type="json")  # type: ignore[return-value]
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{account_name}/{table_name}",
+                resource_type="Storage Table",
+                api_function_name="create_table_request",
+            )
+            return {}
+
+    def delete_table_request(self, account_name: str, table_name: str) -> None:
+        """
+        Delete the specified table and any data it contains.
+
+        Args:
+            account_name (str): The storage account name.
+            table_name (str): Table name.
+        """
+        full_url = f"https://{account_name}.{TABLE_SERVICE_PREFIX}/Tables('{table_name}')"
+        self.storage_container_set_headers()
+        try:
+            self.http_request(method="DELETE", full_url=full_url, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{account_name}/{table_name}",
+                resource_type="Storage Table",
+                api_function_name="delete_table_request",
+            )
+
+    def list_tables_request(
+        self, account_name: str, limit: str = None, query_filter: str = None, next_token: str = None
+    ) -> requests.Response:
+        """
+        List tables under the specified account.
+
+        Args:
+            account_name (str): The storage account name.
+            limit (str): Retrieve top n tables.
+            query_filter (str): Query expression.
+            next_token (str): Continuation token (NextTableName) for retrieving the next page of results.
+
+        Returns:
+            Response: API response from Azure.
+        """
+        full_url = f"https://{account_name}.{TABLE_SERVICE_PREFIX}/Tables"
+        params = remove_empty_elements({"$top": limit, "$filter": query_filter, "NextTableName": next_token})
+        self.storage_container_set_headers({"Accept": "application/json;odata=nometadata"})
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=params, resp_type="response")  # type: ignore[return-value]
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=account_name,
+                resource_type="Storage Table",
+                api_function_name="list_tables_request",
+            )
+            return requests.Response()
+
+    def insert_entity_request(self, account_name: str, table_name: str, entity_fields: dict) -> dict[str, Any]:
+        """
+        Insert a new entity into a table.
+
+        Args:
+            account_name (str): The storage account name.
+            table_name (str): Table name.
+            entity_fields (dict): Entity fields data.
+
+        Returns:
+            dict: API response from Azure.
+        """
+        full_url = f"https://{account_name}.{TABLE_SERVICE_PREFIX}/{table_name}"
+        self.storage_container_set_headers({"Content-Type": "application/json", "Accept": "application/json;odata=nometadata"})
+        try:
+            return self.http_request(method="POST", full_url=full_url, json_data=entity_fields, resp_type="json")  # type: ignore[return-value]
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{account_name}/{table_name}",
+                resource_type="Storage Table Entity",
+                api_function_name="insert_entity_request",
+            )
+            return {}
+
+    def update_entity_request(
+        self, account_name: str, table_name: str, partition_key: str, row_key: str, entity_fields: dict
+    ) -> None:
+        """
+        Update an existing entity in a table (merge, does not replace the entity).
+
+        Args:
+            account_name (str): The storage account name.
+            table_name (str): Table name.
+            partition_key (str): Unique identifier for the partition within a given table.
+            row_key (str): Unique identifier for an entity within a given partition.
+            entity_fields (dict): Entity fields data.
+        """
+        full_url = (
+            f"https://{account_name}.{TABLE_SERVICE_PREFIX}/{table_name}(PartitionKey='{partition_key}',RowKey='{row_key}')"
+        )
+        self.storage_container_set_headers({"Content-Type": "application/json"})
+        try:
+            self.http_request(method="MERGE", full_url=full_url, json_data=entity_fields, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{account_name}/{table_name}",
+                resource_type="Storage Table Entity",
+                api_function_name="update_entity_request",
+            )
+
+    def replace_entity_request(
+        self, account_name: str, table_name: str, partition_key: str, row_key: str, entity_fields: dict
+    ) -> None:
+        """
+        Replace an existing entity in a table (replaces the entire entity).
+
+        Args:
+            account_name (str): The storage account name.
+            table_name (str): Table name.
+            partition_key (str): Unique identifier for the partition within a given table.
+            row_key (str): Unique identifier for an entity within a given partition.
+            entity_fields (dict): Entity fields data.
+        """
+        full_url = (
+            f"https://{account_name}.{TABLE_SERVICE_PREFIX}/{table_name}(PartitionKey='{partition_key}',RowKey='{row_key}')"
+        )
+        self.storage_container_set_headers({"Content-Type": "application/json"})
+        try:
+            self.http_request(method="PUT", full_url=full_url, json_data=entity_fields, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{account_name}/{table_name}",
+                resource_type="Storage Table Entity",
+                api_function_name="replace_entity_request",
+            )
+
+    def query_entity_request(
+        self,
+        account_name: str,
+        table_name: str,
+        partition_key: str = None,
+        row_key: str = None,
+        query_filter: str = None,
+        select: str = None,
+        limit: str = None,
+    ) -> requests.Response:
+        """
+        Query entities in a table.
+
+        Args:
+            account_name (str): The storage account name.
+            table_name (str): Table name.
+            partition_key (str): Unique identifier for the partition within a given table.
+            row_key (str): Unique identifier for an entity within a given partition.
+            query_filter (str): Query expression.
+            select (str): Entity properties to return.
+            limit (str): Retrieve top n entities.
+
+        Returns:
+            Response: API response from Azure.
+        """
+        if partition_key:
+            resource = f"{table_name}(PartitionKey='{partition_key}',RowKey='{row_key}')"
+        else:
+            resource = f"{table_name}()"
+        full_url = f"https://{account_name}.{TABLE_SERVICE_PREFIX}/{resource}"
+        params = remove_empty_elements({"$filter": query_filter, "$select": select, "$top": limit})
+        self.storage_container_set_headers({"Accept": "application/json;odata=nometadata"})
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=params, resp_type="response")  # type: ignore[return-value]
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{account_name}/{table_name}",
+                resource_type="Storage Table Entity",
+                api_function_name="query_entity_request",
+            )
+            return requests.Response()
+
+    def delete_entity_request(self, account_name: str, table_name: str, partition_key: str, row_key: str) -> None:
+        """
+        Delete an existing entity in a table.
+
+        Args:
+            account_name (str): The storage account name.
+            table_name (str): Table name.
+            partition_key (str): Unique identifier for the partition within a given table.
+            row_key (str): Unique identifier for an entity within a given partition.
+        """
+        full_url = (
+            f"https://{account_name}.{TABLE_SERVICE_PREFIX}/{table_name}(PartitionKey='{partition_key}',RowKey='{row_key}')"
+        )
+        self.storage_container_set_headers({"If-Match": "*"})
+        try:
+            self.http_request(method="DELETE", full_url=full_url, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{account_name}/{table_name}",
+                resource_type="Storage Table Entity",
+                api_function_name="delete_entity_request",
+            )
 
     def storage_container_block_public_access_request(self, account_name: str, container_name: str):
         """
@@ -3654,6 +3915,276 @@ def storage_container_block_public_access_command(client: AzureClient, params: d
     return command_results
 
 
+def create_table_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Create a new table in a storage account.
+
+    Args:
+        client (AzureClient): Azure Storage Table API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable output and raw response for XSOAR.
+    """
+    account_name = args["account_name"]
+    table_name = args["table_name"]
+
+    if not re.search(TABLE_NAME_REGEX, table_name):
+        raise ValueError("The specified table name is invalid.")
+
+    response = client.create_table_request(account_name, table_name)
+    outputs = {"TableName": response.get("TableName")}
+
+    return CommandResults(
+        readable_output=f"Table {table_name} successfully created.",
+        outputs_prefix="Azure.Storage.Table",
+        outputs_key_field="TableName",
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def delete_table_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Delete the specified table and any data it contains.
+
+    Args:
+        client (AzureClient): Azure Storage Table API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: readable output for XSOAR.
+    """
+    account_name = args["account_name"]
+    table_name = args["table_name"]
+
+    client.delete_table_request(account_name, table_name)
+
+    return CommandResults(readable_output=f"Table {table_name} successfully deleted.")
+
+
+def list_tables_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    List tables under the specified account.
+
+    Args:
+        client (AzureClient): Azure Storage Table API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable output and raw response for XSOAR.
+    """
+    account_name = args["account_name"]
+    limit = arg_to_number(args.get("limit")) or int(DEFAULT_LIMIT)
+    validate_limit(limit, max_limit=TABLE_MAX_PAGE_SIZE)
+    query_filter = args.get("filter")
+    next_token = args.get("next_token", "")
+
+    demisto.debug(f"[Azure] listing tables for {account_name=} with {limit=} {query_filter=} next_token={bool(next_token)}")
+    response = client.list_tables_request(account_name, str(limit), query_filter, next_token)
+    raw_response = response.json()
+
+    tables = raw_response.get("value", [])
+    if not tables:
+        return CommandResults(readable_output=f"No tables found in storage account {account_name}.", raw_response=raw_response)
+
+    # The Table data-plane returns the continuation token for the next page in the
+    # 'x-ms-continuation-NextTableName' response header (empty when there are no more results).
+    outputs = {
+        "Azure.Storage.Table(val.TableName && val.TableName == obj.TableName)": tables,
+        "Azure.Storage(true)": {"TablesNextToken": response.headers.get("x-ms-continuation-NextTableName")},
+    }
+
+    return CommandResults(
+        outputs=outputs,
+        readable_output=tableToMarkdown(
+            f"Azure Storage Tables (account: {account_name})",
+            tables,
+            ["TableName"],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        ),
+        raw_response=raw_response,
+    )
+
+
+def insert_entity_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Insert a new entity into a table.
+
+    Args:
+        client (AzureClient): Azure Storage Table API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable output and raw response for XSOAR.
+    """
+    account_name = args["account_name"]
+    table_name = args["table_name"]
+
+    entity_fields = json.loads(args["entity_fields"])
+    kwargs = {**entity_fields, "PartitionKey": args["partition_key"], "RowKey": args["row_key"]}
+    remove_nulls_from_dictionary(kwargs)
+
+    response = client.insert_entity_request(account_name, table_name, kwargs)
+
+    outputs = dict(response)
+    # The Table data-plane returns Timestamp with 7 fractional-second digits (e.g.
+    # "2021-08-16T14:52:20.7422729Z"), but Python's %f directive supports only 6 digits. As in the legacy
+    # AzureStorageTable pack, trim the last 2 characters (the 7th fractional digit and the trailing "Z")
+    # and re-append "Z" before parsing with the fractional-aware TABLE_TIMESTAMP_FORMAT.
+    if outputs.get("Timestamp"):
+        outputs["Timestamp"] = outputs["Timestamp"][:-2] + "Z"
+    convert_dict_time_format(outputs, ["Timestamp"], date_format=TABLE_TIMESTAMP_FORMAT)
+
+    readable_output = tableToMarkdown(
+        f"Entity Fields for {table_name} Table:",
+        [outputs],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Azure.Storage.Table.Entity",
+        outputs_key_field=["PartitionKey", "RowKey"],
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def update_entity_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Update an existing entity in a table. This operation does not replace the existing entity.
+
+    Args:
+        client (AzureClient): Azure Storage Table API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: readable output for XSOAR.
+    """
+    account_name = args["account_name"]
+    table_name = args["table_name"]
+    partition_key = args["partition_key"]
+    row_key = args["row_key"]
+    entity_fields = json.loads(args["entity_fields"])
+
+    client.update_entity_request(account_name, table_name, partition_key, row_key, entity_fields)
+
+    return CommandResults(readable_output=f"Entity in {table_name} table successfully updated.")
+
+
+def replace_entity_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Replace an existing entity in a table. Replaces the entire entity and can be used to remove properties.
+
+    Args:
+        client (AzureClient): Azure Storage Table API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: readable output for XSOAR.
+    """
+    account_name = args["account_name"]
+    table_name = args["table_name"]
+    partition_key = args["partition_key"]
+    row_key = args["row_key"]
+    entity_fields = json.loads(args["entity_fields"])
+
+    client.replace_entity_request(account_name, table_name, partition_key, row_key, entity_fields)
+
+    return CommandResults(readable_output=f"Entity in {table_name} table successfully replaced.")
+
+
+def query_entity_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Query entities in a table.
+
+    Args:
+        client (AzureClient): Azure Storage Table API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable output and raw response for XSOAR.
+    """
+    account_name = args["account_name"]
+    table_name = args["table_name"]
+    partition_key = args.get("partition_key")
+    row_key = args.get("row_key")
+    query_filter = args.get("filter")
+    select = args.get("select")
+    limit = None if partition_key else (arg_to_number(args.get("limit")) or int(DEFAULT_LIMIT))
+    validate_limit(limit, max_limit=TABLE_MAX_PAGE_SIZE)
+
+    if (partition_key and not row_key) or (row_key and not partition_key):
+        raise ValueError("Please provide both 'partition_key' and 'row_key' arguments, or none of them.")
+
+    demisto.debug(
+        f"[Azure] querying entities in {table_name=} for {account_name=} with "
+        f"partition_key={bool(partition_key)} {query_filter=} {select=} {limit=}"
+    )
+    raw_response = client.query_entity_request(
+        account_name, table_name, partition_key, row_key, query_filter, select, str(limit) if limit else None
+    ).json()
+
+    entities = [raw_response] if partition_key else raw_response.get("value", [])
+
+    if not entities:
+        return CommandResults(readable_output=f"No entities found in table {table_name}.", raw_response=raw_response)
+
+    for entity in entities:
+        # Trim the Table data-plane's 7th fractional-second digit (and trailing "Z") down to the 6 digits
+        # Python's %f supports, matching the legacy AzureStorageTable pack, before parsing the timestamp.
+        if entity.get("Timestamp"):
+            entity["Timestamp"] = entity["Timestamp"][:-2] + "Z"
+        convert_dict_time_format(entity, ["Timestamp"], date_format=TABLE_TIMESTAMP_FORMAT)
+
+    readable_output = tableToMarkdown(
+        f"Entity Fields for {table_name} table:",
+        entities,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Azure.Storage.Table.Entity",
+        outputs_key_field=["PartitionKey", "RowKey"],
+        outputs=entities,
+        raw_response=raw_response,
+    )
+
+
+def delete_entity_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Delete an existing entity in a table.
+
+    Args:
+        client (AzureClient): Azure Storage Table API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: readable output for XSOAR.
+    """
+    account_name = args["account_name"]
+    table_name = args["table_name"]
+    partition_key = args["partition_key"]
+    row_key = args["row_key"]
+
+    client.delete_entity_request(account_name, table_name, partition_key, row_key)
+
+    return CommandResults(readable_output=f"Entity in {table_name} table successfully deleted.")
+
+
 def create_policy_assignment_command(client: AzureClient, params: dict, args: dict):
     """
         Creates a policy assignment.
@@ -5749,6 +6280,14 @@ def main():  # pragma: no cover
             "azure-storage-container-blob-property-set": storage_container_blob_property_set_command,
             "azure-storage-blob-property-set": storage_container_blob_property_set_command,
             "azure-storage-container-public-access-block": storage_container_block_public_access_command,
+            "azure-storage-table-create": create_table_command,
+            "azure-storage-table-delete": delete_table_command,
+            "azure-storage-table-list": list_tables_command,
+            "azure-storage-table-entity-insert": insert_entity_command,
+            "azure-storage-table-entity-update": update_entity_command,
+            "azure-storage-table-entity-replace": replace_entity_command,
+            "azure-storage-table-entity-query": query_entity_command,
+            "azure-storage-table-entity-delete": delete_entity_command,
             "azure-policy-assignment-create": create_policy_assignment_command,
             "azure-postgres-config-set": set_postgres_config_command,
             "azure-postgres-server-update": postgres_server_update_command,

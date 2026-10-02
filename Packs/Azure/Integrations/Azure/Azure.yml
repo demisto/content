@@ -1477,6 +1477,197 @@ script:
       required: true
     description: "Blocks public access to a container. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action."
     name: azure-storage-container-public-access-block
+  - name: azure-storage-table-create
+    description: "Creates a new table in a storage account. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/write."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: account_name
+      description: The storage account name.
+      required: true
+    - name: table_name
+      description: The name of the table to create. Must be alphanumeric, start with a letter, and be 3 to 63 characters long.
+      required: true
+    outputs:
+    - contextPath: Azure.Storage.Table.TableName
+      description: The name of the created table.
+      type: String
+  - name: azure-storage-table-delete
+    description: "Deletes the specified table and any data it contains. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/delete."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: account_name
+      description: The storage account name.
+      required: true
+    - name: table_name
+      description: The name of the table to delete.
+      required: true
+  - name: azure-storage-table-list
+    description: "Lists tables under the specified storage account. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/read."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: account_name
+      description: The storage account name.
+      required: true
+    - name: limit
+      description: The maximum number of tables to return.
+      required: false
+      defaultValue: '50'
+    - name: filter
+      description: An OData query expression used to filter the returned tables.
+      required: false
+    - name: next_token
+      description: A continuation token returned by a previous call (Azure.Storage.Table.TablesNextToken), used to retrieve the next page of results.
+      required: false
+    outputs:
+    - contextPath: Azure.Storage.Table.TableName
+      description: The name of the table.
+      type: String
+    - contextPath: Azure.Storage.TablesNextToken
+      description: The continuation token to retrieve the next page of tables. Empty when there are no more results.
+      type: String
+  - name: azure-storage-table-entity-insert
+    description: "Inserts a new entity into a table. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/entities/write."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: account_name
+      description: The storage account name.
+      required: true
+    - name: table_name
+      description: The name of the table to insert the entity into.
+      required: true
+    - name: partition_key
+      description: The PartitionKey property of the entity. Unique identifier for the partition within a given table.
+      required: true
+    - name: row_key
+      description: The RowKey property of the entity. Unique identifier for an entity within a given partition.
+      required: true
+    - name: entity_fields
+      description: 'A JSON object of the entity''s fields and their values, for example {"Age": 20}.'
+      required: true
+    outputs:
+    - contextPath: Azure.Storage.Table.Entity.PartitionKey
+      description: The PartitionKey property of the entity.
+      type: String
+    - contextPath: Azure.Storage.Table.Entity.RowKey
+      description: The RowKey property of the entity.
+      type: String
+    - contextPath: Azure.Storage.Table.Entity.Timestamp
+      description: The timestamp of the entity.
+      type: Date
+  - name: azure-storage-table-entity-update
+    description: "Updates an existing entity in a table by merging the provided properties. Does not replace the existing entity. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/entities/write."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: account_name
+      description: The storage account name.
+      required: true
+    - name: table_name
+      description: The name of the table containing the entity.
+      required: true
+    - name: partition_key
+      description: The PartitionKey property of the entity to update.
+      required: true
+    - name: row_key
+      description: The RowKey property of the entity to update.
+      required: true
+    - name: entity_fields
+      description: 'A JSON object of the entity''s fields and their values to merge, for example {"Address": "New York"}.'
+      required: true
+  - name: azure-storage-table-entity-replace
+    description: "Replaces an existing entity in a table. Replaces the entire entity and can be used to remove properties. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/entities/write."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: account_name
+      description: The storage account name.
+      required: true
+    - name: table_name
+      description: The name of the table containing the entity.
+      required: true
+    - name: partition_key
+      description: The PartitionKey property of the entity to replace.
+      required: true
+    - name: row_key
+      description: The RowKey property of the entity to replace.
+      required: true
+    - name: entity_fields
+      description: 'A JSON object of the entity''s fields and their values. Replaces the entire entity, for example {"Address": "New York"}.'
+      required: true
+  - name: azure-storage-table-entity-query
+    description: "Queries entities in a table. Provide partition_key and row_key together to retrieve a single entity, or omit them to query multiple entities. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/entities/read."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: account_name
+      description: The storage account name.
+      required: true
+    - name: table_name
+      description: The name of the table to query.
+      required: true
+    - name: partition_key
+      description: The PartitionKey property of a specific entity to retrieve. Must be provided together with row_key.
+      required: false
+    - name: row_key
+      description: The RowKey property of a specific entity to retrieve. Must be provided together with partition_key.
+      required: false
+    - name: filter
+      description: An OData query expression used to filter the returned entities.
+      required: false
+    - name: select
+      description: A comma-separated list of entity properties to return.
+      required: false
+    - name: limit
+      description: The maximum number of entities to return.
+      required: false
+      defaultValue: '50'
+    outputs:
+    - contextPath: Azure.Storage.Table.Entity.PartitionKey
+      description: The PartitionKey property of the entity.
+      type: String
+    - contextPath: Azure.Storage.Table.Entity.RowKey
+      description: The RowKey property of the entity.
+      type: String
+    - contextPath: Azure.Storage.Table.Entity.Timestamp
+      description: The timestamp of the entity.
+      type: Date
+  - name: azure-storage-table-entity-delete
+    description: "Deletes an existing entity in a table. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/entities/delete."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: account_name
+      description: The storage account name.
+      required: true
+    - name: table_name
+      description: The name of the table containing the entity.
+      required: true
+    - name: partition_key
+      description: The PartitionKey property of the entity to delete.
+      required: true
+    - name: row_key
+      description: The RowKey property of the entity to delete.
+      required: true
 
   - arguments:
     - name: name
