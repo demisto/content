@@ -2111,6 +2111,350 @@ script:
     name: azure-mysql-flexible-server-param-set
     description: "Updates a server configuration. Required permissions: Microsoft.DBforMySQL/flexibleServers/configurations/read, Microsoft.DBforMySQL/flexibleServers/configurations/write."
     outputs: [] # No outputs are returned in response
+  - name: azure-postgres-flexible-server-configuration-update
+    description: "Updates a configuration of a PostgreSQL Flexible Server. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write."
+    arguments:
+    - name: resource_group_name
+      type: string
+      required: true
+      description: The resource group name.
+    - name: subscription_id
+      type: string
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL Flexible Server.
+    - name: configuration_name
+      type: string
+      required: true
+      description: The name of the server configuration parameter to update.
+    - name: source
+      type: string
+      required: false
+      description: Source of the configuration value (e.g. "user-override").
+    - name: value
+      type: string
+      required: true
+      description: The new value of the configuration (also known as server parameter). Required to update the value assigned to a specific modifiable configuration.
+    outputs: [] # No outputs are returned in response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL Flexible Server.
+      prettyname: Postgres Flexible Server Name
+      defaultValue: Postgres Flexible Server Name
+      prettypredefined:
+        Postgres Flexible Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: log_disconnections
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-flexible-server-set-disconnection-logging-quick-action
+    prettyname: Set Disconnection Logging on PostgreSQL Flexible Server
+    hidden: true
+    quickaction: true
+    description: "Enables logging client disconnections on the PostgreSQL Flexible Server. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write."
+    outputs: [] # No outputs are returned in response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL Flexible Server.
+      prettyname: Postgres Flexible Server Name
+      defaultValue: Postgres Flexible Server Name
+      prettypredefined:
+        Postgres Flexible Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'log_checkpoints'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-flexible-server-set-checkpoint-logging-quick-action
+    prettyname: Set PostgreSQL Flexible Server Checkpoint Logging
+    hidden: true
+    quickaction: true
+    description: "Enables checkpoint logging on the PostgreSQL Flexible Server. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write."
+    outputs: [] # No outputs are returned in response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL Flexible Server.
+      prettyname: Postgres Flexible Server Name
+      defaultValue: Postgres Flexible Server Name
+      prettypredefined:
+        Postgres Flexible Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'connection_throttling'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-flexible-server-set-connection-throttling-quick-action
+    prettyname: Set Connection Throttling on PostgreSQL Flexible Server
+    hidden: true
+    quickaction: true
+    description: "Enables connection throttling on the PostgreSQL Flexible Server to manage log verbosity for concurrent connection queries and errors. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write."
+    outputs: [] # No outputs are returned in response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL Flexible Server.
+      prettyname: Postgres Flexible Server Name
+      defaultValue: Postgres Flexible Server Name
+      prettypredefined:
+        Postgres Flexible Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'log_connections'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-flexible-server-set-session-connection-logging-quick-action
+    prettyname: Set Session Connection Logging on PostgreSQL Flexible Server
+    hidden: true
+    quickaction: true
+    description: "Enables logging client connections on the PostgreSQL Flexible Server. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write."
+    outputs: [] # No outputs are returned in response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL Flexible Server.
+      prettyname: Postgres Flexible Server Name
+      defaultValue: Postgres Flexible Server Name
+      prettypredefined:
+        Postgres Flexible Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'log_retention_days'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: '4'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-flexible-server-set-log-retention-period-quick-action
+    prettyname: Set PostgreSQL Flexible Server Log Retention
+    hidden: true
+    quickaction: true
+    description: 'Sets the log retention period for the PostgreSQL Flexible Server to 4 days. NOTE: The recommended log retention period can be from 4 to 7 days. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write.'
+    outputs: [] # No outputs are returned in response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL Flexible Server.
+      prettyname: Postgres Flexible Server Name
+      defaultValue: Postgres Flexible Server Name
+      prettypredefined:
+        Postgres Flexible Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'log_duration'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-flexible-server-set-statement-logging-quick-action
+    prettyname: Set PostgreSQL Flexible Server Statement Logging
+    hidden: true
+    quickaction: true
+    description: "Enables logging statement execution duration on the PostgreSQL Flexible Server to help with performance analysis. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write."
+    outputs: [] # No outputs are returned in response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL Flexible Server.
+      prettyname: Postgres Flexible Server Name
+      defaultValue: Postgres Flexible Server Name
+      prettypredefined:
+        Postgres Flexible Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'require_secure_transport'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-flexible-server-set-secure-transport-quick-action
+    prettyname: Set Secure Transport on PostgreSQL Flexible Server
+    hidden: true
+    quickaction: true
+    description: "Enforces SSL/TLS connections for the PostgreSQL Flexible Server by enabling the require_secure_transport configuration parameter. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write."
+    outputs: [] # No outputs are returned in response
   - arguments:
     - name: log_profile_name
       description: The name of the log profile to update.
