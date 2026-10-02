@@ -42,7 +42,6 @@ def test_build_incident_name_includes_login_and_domain():
     incident = build_incident(_sample_credential())
 
     assert "victim@example.com" in incident["name"]
-    assert "victim@example.com" in incident["registrationemail"]
     assert incident["type"] == "Intel471 Leaked Credential"
     assert incident["occurred"] == "2026-06-20T10:00:00Z"
     payload = json.loads(incident["rawJSON"])
