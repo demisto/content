@@ -225,8 +225,7 @@ call esxi_event_classification
     xdm.target.process.command_line = command_line,
     xdm.target.process.name = exec_name,
     xdm.target.process.executable.path = exec_path,
-    xdm.event.operation = XDM_CONST.OPERATION_TYPE_PROCESS_START,
-    xdm.event.operation_sub_type = "crond process start";
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_PROCESS_START;
 
 // ------------------------------------------
 // Virtualization event type 2: Connection
