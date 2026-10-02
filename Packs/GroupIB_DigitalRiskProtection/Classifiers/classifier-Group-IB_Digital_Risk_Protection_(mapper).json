@@ -76,7 +76,19 @@
                     "simple": "images"
                 },
                 "occurred": {
-                    "simple": "detected"
+                    "simple": "occurred"
+                },
+                "GIB DRP Stages": {
+                    "simple": "stages"
+                },
+                "name": {
+                    "simple": "name"
+                },
+                "GIB DRP Indicator Wanted": {
+                    "simple": "indicator_wanted"
+                },
+                "GIB DRP Expire Indicator On Close": {
+                    "simple": "indicator_expire_on_close"
                 }
             }
         }
