@@ -514,3 +514,14 @@ outputs:
 tests:
 - Detonate File From URL - ANYRUN - Test
 deprecated: true
+marketplaces:
+- xsoar
+- platform
+- xpanse
+- xsoar_saas
+- marketplacev2
+supportedModules:
+- agentix
+- xsiam
+- cloud
+- cloud_runtime_security
