@@ -1,0 +1,25 @@
+#!/bin/sh
+# Block accidental direct pushes to protected branches of the official repos.
+# Pushes to forks and any other remote are left alone.
+# Bypass intentionally with: git push --no-verify
+
+# git invokes this hook as: pre-push <remote-name> <remote-url>
+case "$2" in
+	*demisto/content*|*cortex-content/content*) ;;
+	*) exit 0 ;;
+esac
+
+protected="master main"
+
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+	branch=${remote_ref#refs/heads/}
+	for p in $protected; do
+		if [ "$branch" = "$p" ]; then
+			echo "pre-push: refusing to push directly to '$p'." >&2
+			echo "          Open a PR, or use 'git push --no-verify' if you really mean it." >&2
+			exit 1
+		fi
+	done
+done
+
+exit 0
