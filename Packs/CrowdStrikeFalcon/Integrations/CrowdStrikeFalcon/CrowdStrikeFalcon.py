@@ -3972,6 +3972,12 @@ class AssetsDeviceHandler:
         self.asset_batch_counter = 0
         self.asset_last_saved_batch_number = 0
 
+        # Assets XSIAM confirmed it stored, accumulated across the bulk batches. The final batch
+        # adds its own rows to this and declares the sum, sealing the snapshot. It counts confirmed
+        # storage rather than enrichment because a snapshot declaring more rows than were stored can
+        # never seal (XSUP-77575), and bulk send failures are swallowed by the gather below.
+        self.stored_assets_count = 0
+
         self.running_tasks: set[asyncio.Task] = set()
 
     async def receive_new_aids(self, new_aids: set[str]) -> None:
@@ -4004,13 +4010,23 @@ class AssetsDeviceHandler:
             self.running_tasks.add(task)
             task.add_done_callback(self.running_tasks.discard)
 
-    async def enrich_and_ingest_batch(self, aid_batch: list[str], final_items_count: int = 1) -> None:
+    async def enrich_and_ingest_batch(self, aid_batch: list[str], is_final: bool = False) -> asyncio.Task | None:
         """
         Enrich a batch of AIDs via Devices API and send to XSIAM.
 
+        Intermediate batches declare an items count of 1, which leaves the snapshot open. The final
+        batch declares the cycle total and seals it. ``flush_remaining`` waits for every other batch
+        to finish before sending the final one, so the total is known by then.
+
         Args:
             aid_batch: List of AIDs to enrich
-            final_items_count: Total items count to send to XSIAM (1 for intermediate batches, actual total for final batch)
+            is_final: Whether this is the sealing batch. Only ``flush_remaining`` sets this.
+
+        Returns:
+            The send task, so the sealing batch can be awaited for its outcome. The send happens in
+            a task rather than inline, so returning it is the only way for the caller to observe a
+            failure: the shared ``gather(..., return_exceptions=True)`` in ``flush_remaining``
+            swallows whatever it collects. ``None`` when nothing was sent.
         """
         # Increment ASSET batch counter (separate from vulnerability chain)
         self.asset_batch_counter += 1
@@ -4020,14 +4036,14 @@ class AssetsDeviceHandler:
 
         try:
             # 1. Enrich the AID batch via ContentClient.
-            # /devices/entities/devices/v2 returns HTTP 400 on partial success (valid devices in
-            # "resources", rejected IDs in "errors"). Accept 400 (ok_codes) to ingest the resolved
+            # /devices/entities/devices/v2 returns HTTP 400 or 404 on partial success (valid devices
+            # in "resources", rejected IDs in "errors"). Accept both (ok_codes) to ingest the resolved
             # devices instead of discarding the whole batch and raising on the full response body.
             response = await self.client._request(
                 method="POST",
                 url_suffix="/devices/entities/devices/v2",
                 json_data={"ids": aid_batch},
-                ok_codes=(200, 400),
+                ok_codes=(200, 400, 404),
             )
             log_falcon_assets(
                 f"AssetsDeviceHandler: [Batch {current_batch_number}] CrowdStrike response status={response.status_code}"
@@ -4039,6 +4055,16 @@ class AssetsDeviceHandler:
 
             # Log any invalid device IDs returned in the partial-success "errors" array.
             errors = response_data.get("errors") or []
+
+            # 404 is accepted above because the Devices API uses it for partial success, but it is
+            # also the status for a wrong path, a retired API version, or a proxy that cannot route
+            # the request.
+            if response.status_code == 404 and not devices and not errors:
+                raise DemistoException(
+                    f"CrowdStrike Devices API returned HTTP 404 with no resources and no errors for "
+                    f"{len(aid_batch)} submitted ID(s). Treating this as an endpoint failure rather "
+                    f"than a partial success that resolved nothing."
+                )
             if errors:
                 log_falcon_assets(
                     f"AssetsDeviceHandler: [Batch {current_batch_number}] CrowdStrike returned "
@@ -4053,31 +4079,51 @@ class AssetsDeviceHandler:
 
             if not devices:
                 log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] No devices returned from API")
-                return
+                return None
 
             log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Enriched {len(devices)} devices")
 
             devices = self._filter_asset_fields(devices)
 
-            # 2. Send to XSIAM using existing generic function (fire-and-forget)
+            # The final batch declares the cycle total: everything XSIAM confirmed it stored for the
+            # earlier batches, plus the rows sent here.
+            batch_size = len(devices)
+            items_count = (self.stored_assets_count + batch_size) if is_final else 1
+
+            if is_final:
+                log_falcon_assets(
+                    f"AssetsDeviceHandler: [Batch {current_batch_number}] Sealing snapshot_id={self.snapshot_id} with "
+                    f"total-items-count={items_count} ({self.stored_assets_count} stored earlier + {batch_size} here)",
+                    "info",
+                )
+
             send_task = create_task_send_batch_to_xsiam_and_save_context(
                 data=devices,
                 product=SPOTLIGHT_ASSETS_PRODUCT,
                 snapshot_id=self.snapshot_id,
-                items_count=final_items_count,
+                items_count=items_count,
                 batch_number=current_batch_number,
                 last_saved_batch_number=self.asset_last_saved_batch_number,
                 context_store=self.context_store,
                 state=self.spotlight_state,
                 save_state_callback=save_spotlight_state,
                 data_type="assets",
+                count_stored=True,
             )
 
             # Track task with callback to update last_saved_batch_number
             def update_last_saved(future):
                 # 'self' is accessible from enclosing method scope - no nonlocal needed
                 try:
-                    saved_batch_num, _records_stored = future.result()
+                    saved_batch_num, records_stored = future.result()
+                    # Only confirmed-stored rows count towards the total the final batch declares.
+                    self.stored_assets_count += records_stored
+                    if records_stored < batch_size:
+                        log_falcon_assets(
+                            f"AssetsDeviceHandler: [Batch {current_batch_number}] Only {records_stored}/{batch_size} "
+                            f"asset(s) were stored; the snapshot will seal at the smaller count.",
+                            "warning",
+                        )
                     if saved_batch_num > self.asset_last_saved_batch_number:
                         self.asset_last_saved_batch_number = saved_batch_num
                         log_falcon_assets(f"AssetsDeviceHandler: Updated asset_last_saved_batch_number to {saved_batch_num}")
@@ -4086,7 +4132,13 @@ class AssetsDeviceHandler:
                         f"AssetsDeviceHandler: [Batch {current_batch_number}] Send task was cancelled (script exiting)."
                     )
                 except Exception as e:
-                    log_falcon_assets(f"AssetsDeviceHandler: Enrichment task failed: {e}", "error")
+                    # Nothing is added to stored_assets_count, so the declared total excludes this
+                    # batch and the snapshot can still seal on the rows that did land.
+                    log_falcon_assets(
+                        f"AssetsDeviceHandler: [Batch {current_batch_number}] Send failed, "
+                        f"{batch_size} asset(s) not counted towards the total: {e}",
+                        "error",
+                    )
                 finally:
                     self.running_tasks.discard(future)
 
@@ -4094,34 +4146,32 @@ class AssetsDeviceHandler:
             self.running_tasks.add(send_task)
             send_task.add_done_callback(update_last_saved)
             log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Created send task")
+            return send_task
 
         except Exception as e:
-            log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Error enriching assets: {e}", "error")
+            log_falcon_assets(
+                f"AssetsDeviceHandler: [Batch {current_batch_number}] Error enriching assets: {e}\n{traceback.format_exc()}",
+                "error",
+            )
             raise
 
-    async def flush_remaining(self, total_items_count: int) -> None:
+    async def flush_remaining(self, submitted_aids_count: int) -> None:
         """
-        Flush remaining AIDs in buffer and wait for all enrichment tasks.
-        This is the FINAL batch, so we send the actual total_items_count.
+        Wait for the in-flight batches, then send the leftover AIDs as the sealing batch.
+
+        The in-flight batches are drained first so ``stored_assets_count`` is final before the last
+        batch declares the cycle total. Sending the leftovers first - as this did previously - meant
+        the sealing batch had to declare a total it could not yet know (XSUP-77575).
+
+        ``receive_new_aids`` dispatches at ``batch_limit + 1`` and removes ``batch_limit``, so it
+        always leaves at least one AID behind for this batch. If those AIDs happen to resolve no
+        devices there is no final row to carry the count, and the snapshot stays open.
 
         Args:
-            total_items_count: The final count of unique assets to report to XSIAM.
+            submitted_aids_count: Number of unique AIDs submitted. Logged for context only; the
+                total declared to XSIAM is the count of rows it confirmed storing.
         """
-        # Handle leftover AIDs that didn't reach batch_limit
-        if self.pending_buffer:
-            log_falcon_assets(
-                f"AssetsDeviceHandler: Flushing {len(self.pending_buffer)} remaining AIDs with final count {total_items_count}",
-                "info",
-            )
-            # Create task for remaining batch (fire-and-forget)
-            task = asyncio.create_task(
-                self.enrich_and_ingest_batch(list(self.pending_buffer), final_items_count=total_items_count)
-            )
-            self.running_tasks.add(task)
-            task.add_done_callback(self.running_tasks.discard)
-            self.pending_buffer.clear()
-
-        # Wait for all enrichment and send tasks to complete
+        # Wait for all in-flight enrichment and send tasks, so their stored counts are known.
         while self.running_tasks:
             log_falcon_assets("AssetsDeviceHandler: Starting flush of remaining assets.", "info")
             # Create a snapshot of the current tasks
@@ -4134,6 +4184,41 @@ class AssetsDeviceHandler:
             await asyncio.gather(*current_batch, return_exceptions=True)
             self.running_tasks.difference_update(current_batch)
         log_falcon_assets("AssetsDeviceHandler: All enrichment/send tasks completed successfully", "info")
+
+        if not self.pending_buffer:
+            # The dispatch loop never empties the buffer, so this means no AID was ever received:
+            # the cycle found no vulnerabilities carrying a device ID.
+            log_falcon_assets(
+                f"AssetsDeviceHandler: No AIDs were received this cycle; nothing to seal for "
+                f"snapshot_id={self.snapshot_id} (empty snapshot).",
+                "info",
+            )
+            return
+
+        log_falcon_assets(
+            f"AssetsDeviceHandler: Sealing with the final {len(self.pending_buffer)} AID(s), submitted AIDs "
+            f"{submitted_aids_count}, stored so far {self.stored_assets_count}",
+            "info",
+        )
+        final_batch = list(self.pending_buffer)
+        self.pending_buffer.clear()
+        # Awaited rather than fire-and-forget: this batch declares the total, so the cycle must not
+        # finish before it has been sent.
+        seal_task = await self.enrich_and_ingest_batch(final_batch, is_final=True)
+
+        # Drain the rest first, then await the seal on its own. The seal must not go through the
+        # gather below: return_exceptions=True turns a failed send into a returned value, so a
+        # rejected seal would look like success, and the caller would reset snapshot_id and
+        # completed_severities - destroying the state needed to retry while the snapshot is left
+        # declaring more rows than were stored. Awaiting it directly re-raises instead.
+        other_tasks = [task for task in self.running_tasks if task is not seal_task]
+        if other_tasks:
+            await asyncio.gather(*other_tasks, return_exceptions=True)
+
+        if seal_task is not None:
+            await seal_task
+
+        self.running_tasks.clear()
 
     @staticmethod
     def _filter_asset_fields(assets: list[Dict]) -> list[Dict]:
@@ -5297,16 +5382,17 @@ async def finalize_severity_fetch(
                 "info",
             )
 
-        # Flush remaining AIDs and wait for all asset enrichment tasks
         total_assets_count = len(all_unique_aids)
         log_falcon_assets(
-            f"Flushing remaining AIDs and waiting for asset enrichment tasks. Total assets: {total_assets_count}", "info"
+            f"Flushing remaining AIDs and waiting for asset enrichment tasks. Submitted AIDs: {total_assets_count}", "info"
         )
-        await asset_handler.flush_remaining(total_items_count=total_assets_count)
+        await asset_handler.flush_remaining(submitted_aids_count=total_assets_count)
 
+        # "Enriched assets" is what the Devices API resolved; "stored assets" is what XSIAM kept
+        # and therefore what the snapshot was sealed with.
         log_falcon_assets(
             f"Parallel severity fetch completed. Total vulnerabilities: {total_vulnerabilities}, "
-            f"Total unique hosts: {len(all_unique_aids)}, Enriched assets: {len(asset_handler.processed_aids)}",
+            f"Total unique hosts: {len(all_unique_aids)}, Stored assets: {asset_handler.stored_assets_count}",
             "info",
         )
 
