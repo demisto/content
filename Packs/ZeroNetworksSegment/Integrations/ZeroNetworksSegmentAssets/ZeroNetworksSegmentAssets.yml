@@ -1,0 +1,160 @@
+name: ZeroNetworksSegmentAssets
+display: Zero Networks Segment Assets
+description: Looks up Zero Networks Segment assets by FQDN and quarantines or releases them.
+category: Network Security
+provider: Zero Networks
+supportlevelheader: xsoar
+sectionorder:
+- Connect
+commonfields:
+  id: ZeroNetworksSegmentAssets
+  version: -1
+configuration:
+- display: Server URL
+  additionalinfo: The URL of the Zero Networks portal. The API path is appended to it.
+  name: url
+  required: true
+  type: 0
+  defaultvalue: "https://portal.zeronetworks.com"
+  section: Connect
+- displaypassword: API Key
+  additionalinfo: The API key to use for connection. The key must allow write operations for the quarantine commands.
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+- display: Use system proxy settings
+  additionalinfo: Whether to route requests through the system proxy.
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- display: Trust any certificate (not secure)
+  additionalinfo: Whether to accept any certificate presented by the server. Do not enable this outside of testing.
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+script:
+  commands:
+  - name: zero-networks-segment-asset-search
+    description: Searches for an asset by its fully qualified domain name (FQDN) and returns the properties of the matching asset.
+    arguments:
+    - name: fqdn
+      description: The fully qualified domain name of the asset to search for. For example, server.domain.local.
+      required: true
+      isArray: false
+    outputs:
+    - contextPath: ZeroNetworks.Asset.ID
+      description: The Zero Networks asset ID.
+      type: String
+    - contextPath: ZeroNetworks.Asset.Name
+      description: The asset display name.
+      type: String
+    - contextPath: ZeroNetworks.Asset.FQDN
+      description: The fully qualified domain name of the asset.
+      type: String
+    - contextPath: ZeroNetworks.Asset.Domain
+      description: The domain the asset belongs to.
+      type: String
+    - contextPath: ZeroNetworks.Asset.AssetType
+      description: The asset type. For example, Client, Server, or Printer.
+      type: String
+    - contextPath: ZeroNetworks.Asset.OSType
+      description: The operating system family of the asset. For example, Windows, Linux, or Mac.
+      type: String
+    - contextPath: ZeroNetworks.Asset.OperatingSystem
+      description: The operating system reported for the asset.
+      type: String
+    - contextPath: ZeroNetworks.Asset.IPv4Addresses
+      description: The IPv4 addresses of the asset.
+      type: Unknown
+    - contextPath: ZeroNetworks.Asset.IPv6Addresses
+      description: The IPv6 addresses of the asset.
+      type: Unknown
+    - contextPath: ZeroNetworks.Asset.ProtectionState
+      description: The segmentation protection state of the asset. For example, Segmented or Learning.
+      type: String
+    - contextPath: ZeroNetworks.Asset.IdentityProtectionState
+      description: The identity protection state of the asset.
+      type: String
+    - contextPath: ZeroNetworks.Asset.RPCProtectionState
+      description: The RPC protection state of the asset.
+      type: String
+    - contextPath: ZeroNetworks.Asset.IsQuarantined
+      description: Whether the asset is currently quarantined.
+      type: Boolean
+    - contextPath: ZeroNetworks.Asset.RiskScore
+      description: The risk score of the asset.
+      type: Number
+    - contextPath: ZeroNetworks.Asset.Source
+      description: The source the asset was discovered from. For example, Active Directory or AWS.
+      type: String
+    - contextPath: ZeroNetworks.Asset.HealthStatus
+      description: The health status of the asset. For example, Healthy, Warning, or Error.
+      type: String
+    - contextPath: ZeroNetworks.Asset.Labels
+      description: The names of the labels assigned to the asset.
+      type: Unknown
+    - contextPath: ZeroNetworks.Asset.LastLogon
+      description: The date of the last logon recorded for the asset, in UTC (e.g., 2024-08-29T12:00:15.000Z).
+      type: Date
+    - contextPath: ZeroNetworks.Asset.ProtectedAt
+      description: The date the asset became protected, in UTC (e.g., 2024-07-30T12:00:15.000Z).
+      type: Date
+    - contextPath: ZeroNetworks.Asset.InactiveSince
+      description: The date the asset became inactive, in UTC (e.g., 2024-07-30T12:00:15.000Z).
+      type: Date
+  - name: zero-networks-segment-asset-quarantine
+    description: Quarantines an asset, which blocks its network traffic. Specify the asset either by its asset ID or by its FQDN.
+    arguments:
+    - name: asset_id
+      description: The ID of the asset to quarantine. For example, a:a:JF2xro6g. Cannot be used together with the fqdn argument.
+      required: false
+      isArray: false
+    - name: fqdn
+      description: The fully qualified domain name of the asset to quarantine. The asset ID is resolved from it. Cannot be used together with the asset_id argument.
+      required: false
+      isArray: false
+    outputs:
+    - contextPath: ZeroNetworks.Asset.ID
+      description: The Zero Networks asset ID.
+      type: String
+    - contextPath: ZeroNetworks.Asset.FQDN
+      description: The fully qualified domain name the asset was resolved from, when the fqdn argument was used.
+      type: String
+    - contextPath: ZeroNetworks.Asset.IsQuarantined
+      description: Whether the asset is quarantined. Always true when the command succeeds.
+      type: Boolean
+  - name: zero-networks-segment-asset-unquarantine
+    description: Releases an asset from quarantine, which restores its network traffic. Specify the asset either by its asset ID or by its FQDN.
+    arguments:
+    - name: asset_id
+      description: The ID of the asset to release from quarantine. For example, a:a:JF2xro6g. Cannot be used together with the fqdn argument.
+      required: false
+      isArray: false
+    - name: fqdn
+      description: The fully qualified domain name of the asset to release from quarantine. The asset ID is resolved from it. Cannot be used together with the asset_id argument.
+      required: false
+      isArray: false
+    outputs:
+    - contextPath: ZeroNetworks.Asset.ID
+      description: The Zero Networks asset ID.
+      type: String
+    - contextPath: ZeroNetworks.Asset.FQDN
+      description: The fully qualified domain name the asset was resolved from, when the fqdn argument was used.
+      type: String
+    - contextPath: ZeroNetworks.Asset.IsQuarantined
+      description: Whether the asset is quarantined. Always false when the command succeeds.
+      type: Boolean
+  dockerimage: demisto/python3:3.12.13.11879924
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
