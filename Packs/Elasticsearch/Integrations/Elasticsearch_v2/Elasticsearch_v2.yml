@@ -1435,6 +1435,143 @@ script:
     - contextPath: Elasticsearch.Kibana.SecurityAlertSetStatus.updated
       description: The number of alerts that were updated.
       type: Number
+  - name: es-kibana-endpoint-execute-command
+    description: Run a shell command on an endpoint.
+    arguments:
+    - name: space_id
+      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+    - name: endpoint_ids
+      description: Endpoint IDs to isolate. A maximum of 250 IDs can be specified.
+      required: true
+      isArray: true
+    - name: agent_type
+      description: The type of agent on which to run the isolation action.
+      defaultValue: endpoint
+      auto: PREDEFINED
+      predefined:
+      - endpoint
+      - sentinel_one
+      - crowdstrike
+      - microsoft_defender_endpoint
+    - name: alert_ids
+      description: Alert IDs associated with the action. A maximum of 50 IDs can be specified.
+      isArray: true
+    - name: case_ids
+      description: Case IDs in which to log the action. A maximum of 50 IDs can be specified.
+      isArray: true
+    - name: comment
+      description: An optional comment for the isolation action. Maximum length is 30,000 characters.
+    - name: command
+      description: The shell command to run on the endpoint.
+      required: true
+    - name: timeout
+      description: The maximum timeout value in seconds before the command is terminated. Minimum value is 1.
+    outputs:
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.agents
+      description: The agent IDs to which the response action was sent.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.agentState
+      description: The response action state for each agent ID.
+      type: Unknown
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.agentType
+      description: The agent type.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.command
+      description: The response action command.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.completedAt
+      description: The response action completion time.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.createdBy
+      description: The user who created the response action.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.hosts
+      description: The host names associated with the agent IDs.
+      type: Unknown
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.id
+      description: The ID of the response action.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.isComplete
+      description: Whether the response action is complete.
+      type: Boolean
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.isExpired
+      description: Whether the response action is expired.
+      type: Boolean
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.outputs
+      description: The response action outputs for each agent ID.
+      type: Unknown
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.parameters
+      description: The response action parameters for each agent ID.
+      type: Unknown
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.startedAt
+      description: The response action start time.
+      type: Date
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.status
+      description: The response action status.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.wasCancelled
+      description: Whether the response action was cancelled.
+      type: Boolean
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.wasSuccessful
+      description: Whether the response action was successful.
+      type: Boolean
+  - name: es-kibana-endpoint-action-details
+    description: Get the details of a response action using the action ID.
+    arguments:
+    - name: space_id
+      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+    - name: action_id
+      description: The ID of the response action to retrieve.
+      required: true
+    outputs:
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.agents
+      description: The agent IDs to which the response action was sent.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.agentState
+      description: The response action state for each agent ID.
+      type: Unknown
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.agentType
+      description: The agent type.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.command
+      description: The response action command.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.completedAt
+      description: The response action completion time.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.createdBy
+      description: The user who created the response action.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.hosts
+      description: The host names associated with the agent IDs.
+      type: Unknown
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.id
+      description: The ID of the response action.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.isComplete
+      description: Whether the response action is complete.
+      type: Boolean
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.isExpired
+      description: Whether the response action is expired.
+      type: Boolean
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.outputs
+      description: The response action outputs for each agent ID.
+      type: Unknown
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.parameters
+      description: The response action parameters for each agent ID.
+      type: Unknown
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.startedAt
+      description: The response action start time.
+      type: Date
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.status
+      description: The response action status.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.wasCancelled
+      description: Whether the response action was cancelled.
+      type: Boolean
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.wasSuccessful
+      description: Whether the response action was successful.
+      type: Boolean
   - name: es-kibana-endpoint-isolate
     description: Isolate an endpoint from the network. The endpoint remains isolated until it's released.
     arguments:
@@ -1483,7 +1620,7 @@ script:
     - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.hosts
       description: The host names associated with the agent IDs.
       type: Unknown
-    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.isCompleted
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.isComplete
       description: Whether the response action is complete.
       type: Boolean
     - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.isExpired
@@ -1498,9 +1635,115 @@ script:
     - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.status
       description: The response action status.
       type: String
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.wasCancelled
+      description: Whether the response action was cancelled.
+      type: Boolean
     - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.wasSuccessful
       description: Whether the response action was successful.
       type: Boolean
+  - name: es-kibana-endpoint-get_metadata
+    description: Get host metadata for a specific endpoint.
+    arguments:
+    - name: space_id
+      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+    - name: id
+      description: The agent ID of the endpoint. Maximum length is 256.
+      required: true
+    outputs:
+    - contextPath: Elasticsearch.Kibana.EndpointGetMetadata.data.host_status
+      description: The host status of the endpoint.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointGetMetadata.data.last_checkin
+      description: The last check-in time of the endpoint.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointGetMetadata.data.metadata
+      description: The metadata of the endpoint.
+      type: Unknown
+  - name: es-kibana-endpoint-get-agents
+    description: Retrieves Elastic Fleet agents with optional filtering and pagination. Requires the fleet-agents-read privilege.
+    arguments:
+    - name: space_id
+      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+    - name: page
+      description: Page number.
+      type: Number
+    - name: per_page
+      description: Number of results per page.
+      type: Number
+    - name: kuery
+      description: A KQL query string to filter agents.
+    - name: show_agentless
+      description: When true, include agentless agents.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: show_inactive
+      description: When true, include inactive agents.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: with_metrics
+      description: When true, include CPU and memory metrics in the response.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: show_upgradeable
+      description: When true, only return agents that are upgradeable.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: get_status_summary
+      description: When true, return a summary of agent statuses.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: sort_field
+      description: Field to sort results by.
+    - name: sort_order
+      description: Sort order, ascending or descending.
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    - name: search_after
+      description: JSON-encoded array of sort values for search_after pagination.
+    - name: open_pit
+      description: When true, open a point-in-time for pagination.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: pit_id
+      description: Point-in-time ID for pagination.
+    - name: pit_keep_alive
+      description: Duration to keep the point-in-time alive, for example 1m.
+    outputs:
+    - contextPath: Elasticsearch.Kibana.EndpointAgents.items
+      description: Fleet agents matching the request.
+      type: Unknown
+    - contextPath: Elasticsearch.Kibana.EndpointAgents.nextSearchAfter
+      description: Search-after value for the next page.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointAgents.page
+      description: Current page number.
+      type: Number
+    - contextPath: Elasticsearch.Kibana.EndpointAgents.perPage
+      description: Number of results per page.
+      type: Number
+    - contextPath: Elasticsearch.Kibana.EndpointAgents.pit
+      description: Point-in-time ID for pagination.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointAgents.statusSummary
+      description: Summary of agent statuses.
+      type: Unknown
+    - contextPath: Elasticsearch.Kibana.EndpointAgents.total
+      description: Total number of matching agents.
+      type: Number
   - name: es-kibana-endpoint-exception-list-item-create
     description: Create an Elastic Endpoint exception list item, and associate it with the Elastic Endpoint exception list.
     arguments:

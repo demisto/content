@@ -2846,6 +2846,208 @@ class TestEsKibanaEndpointIsolateCommand:
             Elasticsearch_v2.es_kibana_endpoint_isolate_command({}, {})
 
 
+class TestEsKibanaEndpointGetAgentsCommand:
+    """Tests for es_kibana_endpoint_get_agents_command."""
+
+    def test_get_agents_passes_query_params(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "items": [{"id": "agent-1", "status": "online"}],
+            "nextSearchAfter": '["agent-1"]',
+            "page": 1,
+            "perPage": 20,
+            "total": 1,
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Fleet agents")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_get_agents_command(
+            {
+                "space_id": "security",
+                "page": "1",
+                "per_page": "20",
+                "kuery": 'agent.name:"host 1"',
+                "show_agentless": "false",
+                "show_inactive": "true",
+                "with_metrics": "true",
+                "show_upgradeable": "false",
+                "get_status_summary": "true",
+                "sort_field": "hostname",
+                "sort_order": "desc",
+                "search_after": '["agent-1"]',
+                "open_pit": "true",
+                "pit_id": "pit-1",
+                "pit_keep_alive": "1m",
+            },
+            {},
+        )
+
+        mock_request.assert_called_once_with(
+            "GET",
+            "/api/fleet/agents",
+            space_id="security",
+            params={
+                "page": "1",
+                "perPage": "20",
+                "kuery": 'agent.name:"host 1"',
+                "showAgentless": False,
+                "showInactive": True,
+                "withMetrics": True,
+                "showUpgradeable": False,
+                "getStatusSummary": True,
+                "sortField": "hostname",
+                "sortOrder": "desc",
+                "searchAfter": '["agent-1"]',
+                "openPit": True,
+                "pitId": "pit-1",
+                "pitKeepAlive": "1m",
+            },
+            proxies={},
+        )
+        assert result.outputs == response
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointAgents"
+        assert result.readable_output == "Fleet agents"
+
+    def test_get_agents_without_optional_params(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"items": []})
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="No agents")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_get_agents_command({}, {})
+
+        mock_request.assert_called_once_with("GET", "/api/fleet/agents", space_id=None, params={}, proxies={})
+        assert result.readable_output == "No agents"
+
+
+class TestEsKibanaEndpointExecuteCommand:
+    """Tests for es_kibana_endpoint_execute_command."""
+
+    def test_execute_command_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "data": {
+                "id": "action-1",
+                "agents": ["agent-1"],
+                "agentType": "endpoint",
+                "command": "execute",
+                "status": "pending",
+                "parameters": {"command": "ls -al", "timeout": 600},
+            }
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Command submitted")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_execute_command(
+            {
+                "space_id": "security",
+                "endpoint_ids": "agent-1,agent-2",
+                "command": "ls -al",
+                "timeout": "600",
+                "alert_ids": "alert-1",
+                "case_ids": "case-1,case-2",
+                "agent_type": "endpoint",
+                "comment": "investigation",
+            },
+            {},
+        )
+
+        mock_request.assert_called_once_with(
+            "POST",
+            "/api/endpoint/action/execute",
+            space_id="security",
+            json_data={
+                "endpoint_ids": ["agent-1", "agent-2"],
+                "parameters": {"command": "ls -al", "timeout": 600},
+                "alert_ids": ["alert-1"],
+                "case_ids": ["case-1", "case-2"],
+                "agent_type": "endpoint",
+                "comment": "investigation",
+            },
+            proxies={},
+        )
+        assert result.outputs == response
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointExecuteCommandAction"
+        assert result.readable_output == "Command submitted"
+
+    @pytest.mark.parametrize("args", [{}, {"endpoint_ids": "agent-1"}])
+    def test_execute_command_requires_endpoint_ids_and_command(self, args):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        expected_argument = "endpoint_ids" if not args else "command"
+        with pytest.raises(DemistoException, match=expected_argument):
+            Elasticsearch_v2.es_kibana_endpoint_execute_command(args, {})
+
+
+class TestEsKibanaEndpointActionDetailsCommand:
+    """Tests for es_kibana_endpoint_action_details_command."""
+
+    def test_action_details_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {"data": {"id": "action-1", "command": "execute", "status": "completed"}}
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Action details")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_action_details_command({"space_id": "security", "action_id": "action-1"}, {})
+
+        mock_request.assert_called_once_with(
+            "GET",
+            "/api/endpoint/action/execute",
+            space_id="security",
+            json_data={"action_id": "action-1"},
+            proxies={},
+        )
+        assert result.outputs == response
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointGetActionDetails"
+        assert result.readable_output == "Action details"
+
+    def test_action_details_requires_action_id(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match="action_id"):
+            Elasticsearch_v2.es_kibana_endpoint_action_details_command({}, {})
+
+
+class TestEsKibanaEndpointGetMetadataCommand:
+    """Tests for es_kibana_endpoint_get_metadata_command."""
+
+    def test_get_metadata_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "host_status": "online",
+            "last_checkin": "2026-10-02T12:00:00Z",
+            "metadata": {"hostname": "host-1"},
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Endpoint metadata")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_get_metadata_command({"space_id": "security", "id": "agent-1"}, {})
+
+        mock_request.assert_called_once_with(
+            "GET",
+            "/api/endpoint/metadata",
+            space_id="security",
+            json_data={"agent_id": "agent-1"},
+            proxies={},
+        )
+        assert result.outputs == response
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointMetadata"
+        assert result.readable_output == "Endpoint metadata"
+
+    def test_get_metadata_requires_agent_id(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match='"id"'):
+            Elasticsearch_v2.es_kibana_endpoint_get_metadata_command({}, {})
+
+
 MOCK_EXCEPTION_ITEM = {
     "id": "item-id-1",
     "item_id": "trusted-linux-processes",

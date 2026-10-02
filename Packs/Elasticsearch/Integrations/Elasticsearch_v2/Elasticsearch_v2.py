@@ -2636,6 +2636,127 @@ def exception_list_item_to_hr(item: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+"""KIBANA SECURITY ELASTIC ENDPOINT MANAGEMENT COMMANDS"""
+
+
+def es_kibana_endpoint_execute_command(args: Dict[str, Any], proxies) -> CommandResults:
+    endpoint_ids = argToList(args.get("endpoint_ids"))
+    if not endpoint_ids:
+        raise DemistoException('The "endpoint_ids" argument is required.')
+
+    # Parameter arguments
+    command = args.get("command")
+    if not command:
+        raise DemistoException('The "command" argument is required.')
+
+    # Default to the minimum seconds timeout that the command allows
+    timeout = arg_to_number(args.get("timeout", 1))
+
+    # Body variables
+    body: Dict[str, Any] = {"endpoint_ids": endpoint_ids, "parameters": {"command": command, "timeout": timeout}}
+    for arg_name in ("alert_ids", "case_ids"):
+        if args.get(arg_name):
+            body[arg_name] = argToList(args[arg_name])
+    for arg_name in ("agent_type", "comment"):
+        if args.get(arg_name):
+            body[arg_name] = args[arg_name]
+
+    space_id = args.get("space_id")
+    response = kibana_http_request("POST", "/api/endpoint/action/execute", space_id=space_id, json_data=body, proxies=proxies)
+
+    response_data = response.get("data", {})
+    hr = {
+        "Agents": response_data.get("agents"),
+        "Agent State": response_data.get("agentState"),
+        "Agent Type": response_data.get("agentType"),
+        "Command": response_data.get("command"),
+        "Completed At": response_data.get("completedAt"),
+        "Created By": response_data.get("createdBy"),
+        "Hosts": response_data.get("hosts"),
+        "Id": response_data.get("id"),
+        "Is Complete": response_data.get("isComplete"),
+        "Is Expired": response_data.get("isExpired"),
+        "Outputs": response_data.get("outputs"),
+        "Parameters": response_data.get("parameters"),
+        "Started At": response_data.get("startedAt"),
+        "Status": response_data.get("status"),
+        "Was Cancelled": response_data.get("wasCanceled"),
+        "Was Successful": response_data.get("wasSuccessful"),
+    }
+    readable_output = tableToMarkdown("Kibana Endpoint Execute Command Action", hr, removeNull=True, headers=list(hr.keys()))
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Elasticsearch.Kibana.EndpointExecuteCommandAction",
+        outputs=response,
+        outputs_key_field="command",
+        raw_response=response,
+    )
+
+
+def es_kibana_endpoint_action_details_command(args: Dict[str, Any], proxies) -> CommandResults:
+    action_id = args.get("action_id")
+    if not action_id:
+        raise DemistoException('The "action_id" argument is required.')
+
+    space_id = args.get("space_id")
+    response = kibana_http_request(
+        "GET", "/api/endpoint/action/execute", space_id=space_id, json_data={"action_id": action_id}, proxies=proxies
+    )
+
+    response_data = response.get("data", {})
+    hr = {
+        "Agents": response_data.get("agents"),
+        "Agent State": response_data.get("agentState"),
+        "Agent Type": response_data.get("agentType"),
+        "Command": response_data.get("command"),
+        "Completed At": response_data.get("completedAt"),
+        "Created By": response_data.get("createdBy"),
+        "Hosts": response_data.get("hosts"),
+        "Id": response_data.get("id"),
+        "Is Complete": response_data.get("isComplete"),
+        "Is Expired": response_data.get("isExpired"),
+        "Outputs": response_data.get("outputs"),
+        "Parameters": response_data.get("parameters"),
+        "Started At": response_data.get("startedAt"),
+        "Status": response_data.get("status"),
+        "Was Cancelled": response_data.get("wasCanceled"),
+        "Was Successful": response_data.get("wasSuccessful"),
+    }
+    readable_output = tableToMarkdown("Kibana Endpoint Action Details", hr, removeNull=True, headers=list(hr.keys()))
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Elasticsearch.Kibana.EndpointGetActionDetails",
+        outputs=response,
+        outputs_key_field="command",
+        raw_response=response,
+    )
+
+
+def es_kibana_endpoint_get_metadata_command(args: Dict[str, Any], proxies) -> CommandResults:
+    agent_id = args.get("id")
+    if not agent_id:
+        raise DemistoException('The "id" argument is required.')
+
+    space_id = args.get("space_id")
+    response = kibana_http_request(
+        "GET", "/api/endpoint/metadata", space_id=space_id, json_data={"agent_id": agent_id}, proxies=proxies
+    )
+
+    hr = {
+        "Host Status": response.get("host_status"),
+        "Last Checkin": response.get("last_checkin"),
+        "Metadata": response.get("metadata"),
+    }
+    readable_output = tableToMarkdown("Kibana Endpoint Metadata", hr, removeNull=True, headers=list(hr.keys()))
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Elasticsearch.Kibana.EndpointMetadata",
+        outputs=response,
+        outputs_key_field="metadata",
+        raw_response=response,
+    )
+
+
 def es_kibana_endpoint_isolate_command(args: Dict[str, Any], proxies) -> CommandResults:
     endpoint_ids = argToList(args.get("endpoint_ids"))
     if not endpoint_ids:
@@ -2657,14 +2778,14 @@ def es_kibana_endpoint_isolate_command(args: Dict[str, Any], proxies) -> Command
         "Action ID": response.get("action") or response_data.get("id"),
         "Agents": response_data.get("agents"),
         "Agent State": response_data.get("agentState"),
-        "Agent type": response_data.get("agentType"),
+        "Agent Type": response_data.get("agentType"),
         "Command": response_data.get("command"),
-        "Created by": response_data.get("createdBy"),
+        "Created By": response_data.get("createdBy"),
         "Hosts": response_data.get("hosts"),
-        "Is Completed": response_data.get("isCompleted"),
+        "Is Complete": response_data.get("isComplete"),
         "Is Expired": response_data.get("isExpired"),
         "Outputs": response_data.get("outputs"),
-        "Started at": response_data.get("startedAt"),
+        "Started At": response_data.get("startedAt"),
         "Status": response_data.get("status"),
         "Was Successful": response_data.get("wasSuccessful"),
     }
@@ -2674,6 +2795,45 @@ def es_kibana_endpoint_isolate_command(args: Dict[str, Any], proxies) -> Command
         outputs_prefix="Elasticsearch.Kibana.EndpointIsolationAction",
         outputs=response,
         outputs_key_field="action",
+        raw_response=response,
+    )
+
+
+"""KIBANA ELASTIC AGENTS COMMANDS"""
+
+
+def es_kibana_endpoint_get_agents_command(args: Dict[str, Any], proxies) -> CommandResults:
+    query_arg_map = {
+        "page": "page",
+        "per_page": "perPage",
+        "kuery": "kuery",
+        "show_agentless": "showAgentless",
+        "show_inactive": "showInactive",
+        "with_metrics": "withMetrics",
+        "show_upgradeable": "showUpgradeable",
+        "get_status_summary": "getStatusSummary",
+        "sort_field": "sortField",
+        "sort_order": "sortOrder",
+        "search_after": "searchAfter",
+        "open_pit": "openPit",
+        "pit_id": "pitId",
+        "pit_keep_alive": "pitKeepAlive",
+    }
+    boolean_args = {"show_agentless", "show_inactive", "with_metrics", "show_upgradeable", "get_status_summary", "open_pit"}
+    params: Dict[str, Any] = {}
+    for arg_name, param_name in query_arg_map.items():
+        value = args.get(arg_name)
+        if value is None or value == "":
+            continue
+        params[param_name] = argToBoolean(value) if arg_name in boolean_args else value
+
+    response = kibana_http_request("GET", "/api/fleet/agents", space_id=args.get("space_id"), params=params, proxies=proxies)
+    agents = response.get("items", []) if isinstance(response, dict) else []
+    readable_output = tableToMarkdown("Kibana Fleet Agents", agents, removeNull=True)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Elasticsearch.Kibana.EndpointAgents",
+        outputs=response,
         raw_response=response,
     )
 
@@ -4314,8 +4474,16 @@ def main():  # pragma: no cover
             return_results(es_kibana_rule_alert_unmute_command(args, proxies))
         elif demisto.command() == "es-kibana-detection-alert-status-set":
             return_results(es_kibana_detection_alert_status_set_command(args, proxies))
+        elif demisto.command() == "es-kibana-endpoint-execute-command":
+            return_results(es_kibana_endpoint_execute_command(args, proxies))
+        elif demisto.command() == "es-kibana-endpoint-action-details":
+            return_results(es_kibana_endpoint_action_details_command(args, proxies))
+        elif demisto.command() == "es-kibana-endpoint-get_metadata":
+            return_results(es_kibana_endpoint_get_metadata_command(args, proxies))
         elif demisto.command() == "es-kibana-endpoint-isolate":
             return_results(es_kibana_endpoint_isolate_command(args, proxies))
+        elif demisto.command() == "es-kibana-endpoint-get-agents":
+            return_results(es_kibana_endpoint_get_agents_command(args, proxies))
         elif demisto.command() == "es-kibana-endpoint-exception-list-item-create":
             return_results(es_kibana_endpoint_exception_list_item_create_command(args, proxies))
         elif demisto.command() == "es-kibana-endpoint-exception-list-item-update":
