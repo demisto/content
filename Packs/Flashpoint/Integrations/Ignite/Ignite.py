@@ -1,6 +1,7 @@
 """Ignite Main File."""
 
 import ipaddress
+import mimetypes
 import re
 from copy import deepcopy
 from typing import Any
@@ -142,6 +143,7 @@ URL_SUFFIX = {
     "VULNERABILITY_PACKAGES": "/vulnerability-intelligence/v1/vulnerabilities/{}/packages",
     "VULNERABILITY_LIST": "/vulnerability-intelligence/v1/vulnerabilities",
     "VULNERABILITY_GET": "/vulnerability-intelligence/v1/vulnerabilities",
+    "SOURCE_MEDIA": "/sources/v1/media",
 }
 
 IGNITE_PATHS = {
@@ -352,6 +354,7 @@ MESSAGES = {
     "INVALID_EPSS_SCORE": "{} must be a float between 0 and 1.",
     "INVALID_SCORE_RANGE": "{} must be less than or equal to {}.",
     "INVALID_LIMIT_PROVIDED": "{} is an invalid value for limit. Limit must be between 1 to {}.",
+    "EMPTY_MEDIA_CONTENT": "No media content was found for the given asset_id.",
 }
 
 
@@ -411,7 +414,7 @@ class Client(BaseClient):
 
         super().__init__(base_url=self.url, headers=self.headers, verify=self.verify, proxy=self.proxy)
 
-    def http_request(self, method, url_suffix, params=None, json_data=None):
+    def http_request(self, method, url_suffix, params=None, json_data=None, resp_type="json"):
         """
         Get http response based on url and given parameters.
 
@@ -419,7 +422,9 @@ class Client(BaseClient):
         :param url_suffix: url encoded url suffix
         :param params: None
         :param json_data: None
-        :return: http response on json
+        :param resp_type: The type of the response to return. "json" to return the parsed JSON body, "response" to
+            return the raw response. Endpoints returning binary content (e.g. media files) use "response".
+        :return: http response on json, or the raw response when resp_type is "response"
         """
         demisto.debug(f"Requesting Ignite with method: {method}, url_suffix: {url_suffix} and params: {params}")
         # For reputation commands which run during an enrichment we limit the timeout and the retries
@@ -443,21 +448,30 @@ class Client(BaseClient):
 
         status_code = resp.status_code
 
-        try:
-            resp_json = resp.json()
-        except ValueError as exception:
-            raise DemistoException(
-                MESSAGES["STATUS_CODE"].format(status_code, MESSAGES["INVALID_JSON_OBJECT"].format(resp.text)), exception
-            ) from exception
+        result = resp
+        resp_json = None
+        if resp_type == "json":
+            try:
+                result = resp_json = resp.json()
+            except ValueError as exception:
+                raise DemistoException(
+                    MESSAGES["STATUS_CODE"].format(status_code, MESSAGES["INVALID_JSON_OBJECT"].format(resp.text)), exception
+                ) from exception
 
         if status_code != 200:
             if status_code == 400:
+                if resp_json is None:
+                    try:
+                        resp_json = resp.json()
+                    except ValueError:
+                        resp_json = None
+                error_detail = (
+                    str(resp_json.get("detail", resp_json.get("message", json.dumps(resp_json))))
+                    if isinstance(resp_json, dict)
+                    else resp.text
+                )
                 raise DemistoException(
-                    MESSAGES["STATUS_CODE"].format(
-                        status_code,
-                        MESSAGES["INVALID_ARGUMENT_RESPONSE"]
-                        + str(resp_json.get("detail", resp_json.get("message", json.dumps(resp_json)))),
-                    )
+                    MESSAGES["STATUS_CODE"].format(status_code, MESSAGES["INVALID_ARGUMENT_RESPONSE"] + error_detail)
                 )
             if status_code == 401:
                 raise DemistoException(MESSAGES["STATUS_CODE"].format(status_code, MESSAGES["INVALID_API_KEY"]))
@@ -470,7 +484,7 @@ class Client(BaseClient):
                 raise DemistoException(MESSAGES["STATUS_CODE"].format(status_code, error_message))
             self.client_error_handler(resp)
 
-        return resp_json
+        return result
 
     def get_indicator(self, indicator_value: str, indicator_type: str, exact_match: bool = False):
         """
@@ -556,6 +570,19 @@ class Client(BaseClient):
         :return: The vulnerability response.
         """
         return self.http_request("POST", URL_SUFFIX["VULNERABILITY_LIST"], params=query_params, json_data=payload)
+
+    def get_source_media(self, params: dict):
+        """
+        Get the source media for the provided asset ID.
+
+        The endpoint responds with a 302 redirect to a temporary URL that holds the media,
+        which is followed by the underlying request to retrieve the media content.
+
+        :param params: Query parameters for the request.
+
+        :return: The raw response holding the media content.
+        """
+        return self.http_request("GET", URL_SUFFIX["SOURCE_MEDIA"], params=params, resp_type="response")
 
 
 """ HELPER FUNCTIONS """
@@ -2666,6 +2693,47 @@ def validate_vulnerability_library_and_package_list_args(args: dict, _type: str)
     return query_params, vulnerability_id
 
 
+def validate_source_media_download_args(args: dict) -> dict:
+    """
+    Validate the arguments of the source media download command.
+
+    :param args: The command arguments.
+
+    :return: The validated query parameters.
+    """
+    asset_id = args.get("asset_id", "").strip()
+    if not asset_id:
+        raise ValueError(MESSAGES["MISSING_REQUIRED_ARGS"].format("asset_id"))
+
+    query_params: dict = {"asset_id": asset_id, "cdn": argToBoolean(args.get("cdn", "True"))}
+
+    return query_params
+
+
+def prepare_file_name_for_source_media(asset_id: str, content_type: str | None) -> str:
+    """
+    Prepare the file name for the downloaded source media.
+
+    The name is derived from the last segment of the asset ID. As that segment is usually an
+    extension-less identifier, the extension is guessed from the response's content type.
+
+    :param asset_id: The asset ID of the source media.
+    :param content_type: The value of the "Content-Type" header returned by the API.
+
+    :return: The file name for the downloaded source media.
+    """
+    file_name = asset_id.rstrip("/").split("/")[-1]
+    if file_name in ("", ".", ".."):
+        file_name = "source_media"
+
+    if "." not in file_name and content_type:
+        extension = mimetypes.guess_extension(content_type.split(";")[0].strip())
+        if extension:
+            file_name += extension
+
+    return file_name
+
+
 def validate_vendor_and_product_list_args(args: dict, _type: str) -> dict:
     """
     Validate and parse arguments for the vendor list and product list commands.
@@ -4652,6 +4720,28 @@ def vulnerability_list_command(client: Client, args: dict) -> list[CommandResult
     return command_results
 
 
+def source_media_download_command(client: Client, args: dict) -> dict | CommandResults:
+    """
+    Download the source media for the provided asset ID.
+
+    :param client: Client object.
+    :param args: The command arguments.
+
+    :return: The file result holding the downloaded media, or a message when no media content is available.
+    """
+    query_params = validate_source_media_download_args(args)
+
+    response = client.get_source_media(query_params)
+
+    content = response.content
+    if not content:
+        return CommandResults(readable_output=MESSAGES["EMPTY_MEDIA_CONTENT"])
+
+    file_name = prepare_file_name_for_source_media(query_params["asset_id"], response.headers.get("Content-Type"))
+
+    return fileResult(filename=file_name, data=content, file_type=EntryType.ENTRY_INFO_FILE)
+
+
 def cve_command(client: Client, args: dict) -> list[CommandResults]:
     """
     Get specific vulnerability using its CVE.
@@ -4775,6 +4865,7 @@ def main():
             "flashpoint-ignite-vendor-list": vendor_list_command,
             "flashpoint-ignite-product-list": product_list_command,
             "flashpoint-ignite-vulnerability-list": vulnerability_list_command,
+            "flashpoint-ignite-source-media-download": source_media_download_command,
             "cve": cve_command,
         }
 

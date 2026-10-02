@@ -1,0 +1,19 @@
+commonfields:
+  id: FlashpointCreateThreatIntelReport
+  version: -1
+name: FlashpointCreateThreatIntelReport
+script: ''
+type: python
+tags: []
+comment: Retrieves an Ignite intelligence report and creates the corresponding Executive Brief Threat Intel Report.
+enabled: true
+args:
+- name: report_id
+  description: The ID of the Ignite report from which the Threat Intel Report is to be created.
+  required: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/py3-tools:1.0.0.13176850
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
