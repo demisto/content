@@ -1,0 +1,13 @@
+{
+    "CSCFraudProtection": {
+        "code": "Ref00-6716",
+        "details": [
+            {
+                "error": "When action is monitor, fraudType must be 'Not Confirmed'",
+                "field": "fraudType"
+            }
+        ],
+        "message": "Invalid input",
+        "status": "error"
+    }
+}

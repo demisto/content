@@ -1,0 +1,7 @@
+{
+    "CSCFraudProtection":{
+         "code": "Ref00-6662",
+         "message": "The requested ticket was not found",
+         "status": "error"
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "CSCFraudProtection": {
+        "200": {
+            "properties": {
+                "data": {
+                    "title": "Data"
+                },
+                "message": {
+                    "title": "Message",
+                    "type": "string"
+                },
+                "status": {
+                    "default": "success",
+                    "title": "Status",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "message"
+            ],
+            "title": "SuccessResponseModel",
+            "type": "object"
+        }
+    }
+}

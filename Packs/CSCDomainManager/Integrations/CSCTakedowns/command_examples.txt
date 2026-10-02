@@ -1,0 +1,7 @@
+!csctakedowns-fetchthephishkitdatawithticketid ticketId=123
+!csctakedowns-fetchthescreenshotdatawithticketid ticketId=123
+!csctakedowns-gethtmlsourcecodeforaticket ticketId=123
+!csctakedowns-listofworklogsforticketid ticketId=123
+!csctakedowns-listtakedowneventswithfilters fromDate="2026-01-01" toDate="2026-03-01"
+!csctakedowns-updatetheactionwithticketid action="OPEN"
+!csctakedowns-listtakedowneventswithfilters fromDate="2026-01-01" toDate="2026-03-01" page=1 limit=101

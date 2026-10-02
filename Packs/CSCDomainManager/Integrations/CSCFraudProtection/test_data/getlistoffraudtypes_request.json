@@ -1,0 +1,54 @@
+{
+    "status": "success",
+    "message": "fetched successfully",
+    "data": [
+        {
+            "fraudTypeId": 1,
+            "fraudTypeName": "419 scam"
+        },
+        {
+            "fraudTypeId": 2,
+            "fraudTypeName": "BEC Scam"
+        },
+        {
+            "fraudTypeId": 3,
+            "fraudTypeName": "Brand Infringement"
+        },
+        {
+            "fraudTypeId": 4,
+            "fraudTypeName": "Job Scam"
+        },
+        {
+            "fraudTypeId": 12,
+            "fraudTypeName": "Mobile Malware"
+        },
+        {
+            "fraudTypeId": 9,
+            "fraudTypeName": "Not Confirmed"
+        },
+        {
+            "fraudTypeId": 5,
+            "fraudTypeName": "Pharming"
+        },
+        {
+            "fraudTypeId": 6,
+            "fraudTypeName": "Phishing"
+        },
+        {
+            "fraudTypeId": 10,
+            "fraudTypeName": "Phish Redirector"
+        },
+        {
+            "fraudTypeId": 7,
+            "fraudTypeName": "SMShing"
+        },
+        {
+            "fraudTypeId": 11,
+            "fraudTypeName": "Social Media"
+        },
+        {
+            "fraudTypeId": 8,
+            "fraudTypeName": "Vishing"
+        }
+    ]
+}

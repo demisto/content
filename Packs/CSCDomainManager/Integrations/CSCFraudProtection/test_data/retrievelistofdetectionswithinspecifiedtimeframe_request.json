@@ -1,0 +1,67 @@
+{
+    "status": "success",
+    "message": "Data Fetched Successfully",
+    "data": [
+        {
+            "eventId": 187605483,
+            "target": "http://Rahmathalerttest.com",
+            "targetBrand": "CSC Demo",
+            "detectionTime": "2026-02-17T09:04:37.387530",
+            "fraudType": "Phishing",
+            "score": 100,
+            "source": "CSC",
+            "isp": "Amazon AES",
+            "ip": null,
+            "registrar": null,
+            "status": "Disabled",
+            "screenshot": false,
+            "phishkit": false,
+            "html": false,
+            "fingerprint": null
+        },
+        {
+            "eventId": 186062230,
+            "target": "https://autoemaildemo.com",
+            "targetBrand": "CSC Demo",
+            "detectionTime": "2026-02-11T14:32:53.547202",
+            "fraudType": "Phishing",
+            "score": 100,
+            "source": "CSC",
+            "isp": "Amazon AES",
+            "ip": null,
+            "registrar": null,
+            "status": "Completed",
+            "screenshot": false,
+            "phishkit": false,
+            "html": false,
+            "fingerprint": null
+        },
+        {
+            "eventId": 185803901,
+            "target": "https://templatesfinal.com",
+            "targetBrand": "CSC Demo",
+            "detectionTime": "2026-02-10T17:47:08.231063",
+            "fraudType": "Phishing",
+            "score": 100,
+            "source": "CSC",
+            "isp": "Amazon AES",
+            "ip": null,
+            "registrar": null,
+            "status": "Inprogress",
+            "screenshot": false,
+            "phishkit": false,
+            "html": false,
+            "fingerprint": null
+        }
+    ],
+    "meta": {
+        "currentPage": 0,
+        "pageSize": 100,
+        "total": 3,
+        "hasPrevious": false,
+        "pages": 1,
+        "hasNext": false,
+        "previousPage": null,
+        "nextPage": null
+    }
+}
