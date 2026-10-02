@@ -1,0 +1,24 @@
+{
+    "id": "VMwareESXiTestListDup",
+    "version": -1,
+    "name": "VMwareESXiTestListDup",
+    "description": "VMware ESXi duplicate-id test list 1 (harness_v1).",
+    "type": "plain_text",
+    "fromVersion": "6.8.0",
+    "itemVersion": "",
+    "locked": false,
+    "nameLocked": false,
+    "packID": "VMwareESXi",
+    "system": false,
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam"
+    ],
+    "supportedFeatures": [
+        "harness_v1"
+    ]
+}
