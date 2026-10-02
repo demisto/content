@@ -1,14 +1,14 @@
 
 ## Limitations
-1) Occurring events expire after one hour in Saas-Security cache, so setting a low limit could cause events to expire if there are a large number of events in the Saas-Security cache.
-2) If the ```max_fetch``` is not dividable by 10, it will be rounded down to a number that is dividable by 10 due to SaaS Security api limits.
+1) Occurring events expire after one hour in the SaaS Security cache, so setting a low limit could cause events to expire if there are a large number of events in the SaaS Security cache.
+2) If the `max_fetch` is not divisible by 10, it will be rounded down to a number that is divisible by 10 due to SaaS Security API limits.
 3) **reset last fetch** has no effect.
 4) On initial activation this integration will pull events starting from one hour prior.
 5) Using the ```saas-security-get-events``` command may take upwards of twenty seconds in some cases.
 6) In some rare cases more than ```max_fetch``` events could be fetched.
 7) The maximum recommended max fetch is 5000 to avoid fetch timeouts.
 8) In case not providing the ```max_fetch``` argument, the default will be 1000.
-9) The maximum recommended amount of ```max_iterations``` is 50 to avoid fetch timeouts
+9) The `max_iterations` parameter is automatically raised to at least 900; each fetch cycle still stops within a safe time budget before the execution timeout.
 
 
 Creating the Client ID and Client Secret in the SaaS Security UI:

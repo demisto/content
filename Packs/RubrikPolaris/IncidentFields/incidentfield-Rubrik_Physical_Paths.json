@@ -1,0 +1,65 @@
+{
+    "id": "incident_rubrikphysicalpaths",
+    "version": -1,
+    "modified": "2026-06-30T11:59:25.498729131+05:30",
+    "name": "Rubrik Physical Paths",
+    "ownerOnly": false,
+    "description": "The physical paths of the sensitive data object.",
+    "cliName": "rubrikphysicalpaths",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Rubrik Sensitive Data Object"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "name",
+            "displayName": "Name",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 250,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "objectType",
+            "displayName": "Type",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

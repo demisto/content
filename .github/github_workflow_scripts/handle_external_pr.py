@@ -80,7 +80,7 @@ SECURITY_CONTENT_ITEMS = [
     "Dashboards",
     "Triggers",
 ]
-XSIAM_CONTENT = ["ModelingRules", "ParsingRules", "CorrelationRules", "Dashboards", "XSIAMDashboards"]
+XSIAM_CONTENT = ["ModelingRules", "ParsingRules", "CorrelationRules", "XSIAMDashboards"]
 PR_AUTHOR_PATTERN = "## Contributor\n@(.*)"
 LABELS_TO_SKIP_PR_REVIEW = {"contribution on hold"}
 

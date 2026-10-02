@@ -3654,17 +3654,24 @@ def get_client_list_command(
     raw_response = client.get_client_list(
         client_list_id, name, include_items, include_deprecated, search, type_list, include_network_list, page, page_size, limit
     )
+    # The API returns lists in "content" key when no client_list_id is provided,
+    # but returns a single list object when a client_list_id is specified.
+    # Normalize both responses to a list for the table builder below.
+    client_lists = raw_response.get("content", [raw_response]) if isinstance(raw_response, dict) else [raw_response]
     hr = tableToMarkdown(
         "Akamai WAF Client List",
-        {
-            "Name": raw_response.get("name", ""),
-            "List ID": raw_response.get("listId", ""),
-            "Type": raw_response.get("type", ""),
-            "Staging Activation Status": raw_response.get("stagingActivationStatus", ""),
-            "Production Activation Status": raw_response.get("productionActivationStatus", ""),
-            "Notes": raw_response.get("notes", ""),
-            "Tags": raw_response.get("tags", []),
-        },
+        [
+            {
+                "Name": client_list.get("name", ""),
+                "List ID": client_list.get("listId", ""),
+                "Type": client_list.get("type", ""),
+                "Staging Activation Status": client_list.get("stagingActivationStatus", ""),
+                "Production Activation Status": client_list.get("productionActivationStatus", ""),
+                "Notes": client_list.get("notes", ""),
+                "Tags": client_list.get("tags", []),
+            }
+            for client_list in client_lists
+        ],
     )
     context_entry = {f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response}
     return hr, context_entry, raw_response
@@ -7434,7 +7441,7 @@ def generic_api_call_command(
 def main():
     params = demisto.params()
     verify_ssl = not params.get("insecure", False)
-    proxy = params.get("proxy")
+    proxy = params.get("proxy", False)
     client_token = params.get("credentials_client_token", {}).get("password") or params.get("clientToken")
     access_token = params.get("credentials_access_token", {}).get("password") or params.get("accessToken")
     client_secret = params.get("credentials_client_secret", {}).get("password") or params.get("clientSecret")

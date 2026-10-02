@@ -1,0 +1,33 @@
+{
+    "id": "MM-C7FDB1092",
+    "money_mule_id": "MM-C7FDB1092",
+    "first_seen": "01-03-2022 01:02:00 PM",
+    "last_seen": "27-05-2025 08:06:48 AM",
+    "type": "Advance Fee Fraud",
+    "remarks": "MM-C7FDB1092",
+    "external_link": "https://platform.ctm360.com/cbs/online_anti_fraud/money_mules/?filters=[]&searchQuery=MM-C7FDB1092&selectedSearchField=finding_id",
+    "brand": "JAX Labs",
+    "timestamp": "2022-03-01T13:02:00",
+    "account_identifier": "123543351324124.0",
+    "status": "addressed",
+    "suspect_names": [
+        "Suspect One",
+        "Suspect Two",
+        "Suspect Three"
+    ],
+    "suspect_emails": [
+        "suspect.one@example.local",
+        "suspect.two@example.local"
+    ],
+    "suspect_phones": [
+        "(555) 111-0001",
+        "(555) 111-0002",
+        "(555) 111-0003"
+    ],
+    "transfer_amount": null,
+    "transfer_currency": null,
+    "bank_account_holder_name": null,
+    "bank_name": "JAX Labs",
+    "bank_account_country": null,
+    "bic": null
+}

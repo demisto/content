@@ -1,0 +1,5 @@
+### Events for the given IQ for TD Insight: insight-v2-001
+|Event Count|Threat Level|Threat Confidence|Detected At|Query|Tclass|Actor Name|Query Type|User|Device Name|Device IP|Tfamily|Tproperty|Policy|Action|Source|Indicator|Response|Dns View|Feed|Mac Address|Os Version|Dhcp Fingerprint|Response Region|Response Country|Device Region|Device Country|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 3 | 90 | 2026-12-01T02:55:00Z | dummy-indicator-1.com | Malware | DUMMY_ACTOR | A | dummy-user-1 | dummy-host-01 | 0.0.0.0 | DUMMY_ACTOR | dga | Default | Block | unknown | dummy-indicator-1.com | NXDOMAIN | default | AntiMalware | 00:11:22:33:44:55 | Windows 11 | MSFT 5.0 | North Holland | Netherlands | North Holland | Netherlands |
+| 1 | 1 | 40 | 2026-12-01T11:00:00Z | dummy-indicator-2.com | Phishing | DUMMY_ACTOR_2 | AAAA | dummy-user-2 | dummy-host-02 | 0.0.0.1 | DUMMY_ACTOR_2 | phishing | Default | Log | unknown | dummy-indicator-2.com | 0.0.0.2 | default | PhishFeed | 66:77:88:99:AA:BB | macOS 15 | Apple | Minnesota | United States | Minnesota | United States |

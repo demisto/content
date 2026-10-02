@@ -1,0 +1,11 @@
+{
+  "results": [
+    {
+      "action": "mark_risky",
+      "status": "failed",
+      "audit_entry_id": "",
+      "reason": "resource_not_found",
+      "message": "Recommendation not found."
+    }
+  ]
+}

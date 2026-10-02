@@ -1,0 +1,190 @@
+[
+    {
+        "name": "GS-162RTEE07",
+        "occurred": "2026-06-11T13:41:21+00:00",
+        "externalstatus": "new",
+        "externallink": "https://platform.ctm360.com/cbs/online_anti_fraud/gambling_sites/?filters=[]&searchQuery=GS-162RTEE07&selectedSearchField=finding_id",
+        "severity": 1,
+        "CustomFields": {
+            "cbs_type": "Gambling Sites",
+            "cbs_module": "gambling_sites",
+            "cbs_coa": "",
+            "cbs_updated_date": "2026-06-11T13:41:21+00:00",
+            "finding_id": "GS-162RTEE07",
+            "brand": "GIBM Giga",
+            "timestamp": 1781185291401,
+            "url": "http://gambling-site-1.example.local",
+            "submitted_url": "http://gambling-site-1.example.local",
+            "landing_url": "https://gambling-site-1.example.local",
+            "title": "Example Gambling Site One",
+            "resolving_ip": "203.0.113.10",
+            "tags": [],
+            "status_code": 200,
+            "url_status": "active",
+            "scan_status": "completed",
+            "enrichment": {
+                "dns": {
+                    "mx_record": [],
+                    "a_record": [
+                        "203.0.113.10",
+                        "203.0.113.11"
+                    ],
+                    "spf_record": null,
+                    "ns_record": [
+                        "ns1.example.local",
+                        "ns2.example.local"
+                    ]
+                }
+            },
+            "external_links": [
+                "https://gambling-site-1.example.local/assets/style-1.css",
+                "https://gambling-site-1.example.local/games/crash",
+                "https://gambling-site-1.example.local/assets/font-1.woff2",
+                "https://gambling-site-1.example.local/assets/font-2.woff2",
+                "https://gambling-site-1.example.local/images/favicon.png",
+                "https://gambling-site-1.example.local/games/fishing",
+                "https://gambling-site-1.example.local/partners/portal",
+                "https://gambling-site-1.example.local/contact/chat",
+                "https://gambling-site-1.example.local/desktop",
+                "https://gambling-site-1.example.local/games/slots",
+                "https://gambling-site-1.example.local/register",
+                "https://gambling-site-1.example.local/support/live-chat",
+                "https://gambling-site-1.example.local/games/live-casino",
+                "https://gambling-site-1.example.local/games/lottery",
+                "https://gambling-site-1.example.local/assets/font-3.woff2",
+                "https://gambling-site-1.example.local/games/cockfight",
+                "https://gambling-site-1.example.local/support/welcome",
+                "https://gambling-site-1.example.local/assets/bootstrap.min.css",
+                "https://gambling-site-1.example.local/games/sports",
+                "https://gambling-site-1.example.local/login",
+                "https://gambling-site-1.example.local/assets/icons.min.css",
+                "https://gambling-site-1.example.local/jackpot",
+                "https://gambling-site-1.example.local/games/virtual"
+            ],
+            "internal_links": []
+        }
+    },
+    {
+        "name": "GS-5169F4D92",
+        "occurred": "2026-06-11T13:38:45+00:00",
+        "externalstatus": "new",
+        "externallink": "https://platform.ctm360.com/cbs/online_anti_fraud/gambling_sites/?filters=[]&searchQuery=GS-5169F4D92&selectedSearchField=finding_id",
+        "severity": 1,
+        "CustomFields": {
+            "cbs_type": "Gambling Sites",
+            "cbs_module": "gambling_sites",
+            "cbs_coa": "",
+            "cbs_updated_date": "2026-06-11T13:38:45+00:00",
+            "finding_id": "GS-5169F4D92",
+            "brand": "Bank Sterling McQueen",
+            "timestamp": 1781185188449,
+            "url": "https://gambling-site-2.example.local",
+            "submitted_url": "https://gambling-site-2.example.local",
+            "landing_url": "https://gambling-site-2.example.local/landing",
+            "title": "Example Gambling Site Two",
+            "resolving_ip": "203.0.113.20",
+            "tags": [],
+            "status_code": 200,
+            "url_status": "active",
+            "scan_status": "completed",
+            "enrichment": {
+                "dns": {
+                    "mx_record": [],
+                    "a_record": [
+                        "203.0.113.20",
+                        "203.0.113.21"
+                    ],
+                    "spf_record": null,
+                    "ns_record": [
+                        "ns3.example.local",
+                        "ns4.example.local"
+                    ]
+                }
+            },
+            "external_links": [
+                "https://gambling-site-2.example.local/promotions/event-1",
+                "https://gambling-site-2.example.local/promotions/event-2",
+                "https://gambling-site-2.example.local/mobile",
+                "https://gambling-site-2.example.local/social/telegram",
+                "https://gambling-site-2.example.local/streaming/sports",
+                "https://gambling-site-2.example.local/support/welcome",
+                "https://gambling-site-2.example.local/support/live-chat",
+                "https://gambling-site-2.example.local/partners/affiliate",
+                "https://gambling-site-2.example.local/assets/style.css",
+                "https://gambling-site-2.example.local/assets/bootstrap-icons.css",
+                "https://gambling-site-2.example.local/promotions/cheat-sheet",
+                "https://gambling-site-2.example.local/support/licence",
+                "https://gambling-site-2.example.local/social/bot",
+                "https://gambling-site-2.example.local/assets/driver.css",
+                "https://gambling-site-2.example.local/amp/home",
+                "https://gambling-site-2.example.local/images/icons.png",
+                "https://gambling-site-2.example.local/spin",
+                "https://gambling-site-2.example.local/downloads/app.apk",
+                "https://gambling-site-2.example.local/scores",
+                "https://gambling-site-2.example.local/assets/bootstrap.min.css"
+            ],
+            "internal_links": []
+        }
+    },
+    {
+        "name": "GS-6VG22CF48",
+        "occurred": "2026-06-11T13:39:31+00:00",
+        "externalstatus": "new",
+        "externallink": "https://platform.ctm360.com/cbs/online_anti_fraud/gambling_sites/?filters=[]&searchQuery=GS-6VG22CF48&selectedSearchField=finding_id",
+        "severity": 1,
+        "CustomFields": {
+            "cbs_type": "Gambling Sites",
+            "cbs_module": "gambling_sites",
+            "cbs_coa": "",
+            "cbs_updated_date": "2026-06-11T13:39:31+00:00",
+            "finding_id": "GS-6VG22CF48",
+            "brand": "GT. Vespa Credit Malaysia Miru (CONDA)",
+            "timestamp": 1781185182623,
+            "url": "http://gambling-site-3.example.local",
+            "submitted_url": "http://gambling-site-3.example.local",
+            "landing_url": "https://gambling-site-3.example.local/landing",
+            "title": "Example Gambling Site Three",
+            "resolving_ip": "203.0.113.30",
+            "tags": [],
+            "status_code": 301,
+            "url_status": "active",
+            "scan_status": "completed",
+            "enrichment": {
+                "dns": {
+                    "mx_record": [
+                        "mail.example.local"
+                    ],
+                    "a_record": [
+                        "203.0.113.30"
+                    ],
+                    "spf_record": null,
+                    "ns_record": [
+                        "ns5.example.local",
+                        "ns6.example.local"
+                    ]
+                }
+            },
+            "external_links": [
+                "https://gambling-site-3.example.local/wp-json/wp/v2/pages/183",
+                "https://gambling-site-3.example.local/comments/feed/",
+                "https://gambling-site-3.example.local",
+                "https://cdn.example.local/amp",
+                "https://gambling-site-3.example.local/",
+                "https://images.example.local/asset-host",
+                "https://gambling-site-3.example.local/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fgambling-site-3.example.local%2F&format=xml",
+                "https://gambling-site-3.example.local/feed/",
+                "https://gambling-site-3.example.local/wp-content/themes/example/webfonts/Lato-Regular.woff2",
+                "https://gambling-site-3.example.local/xmlrpc.php?rsd",
+                "https://chat.example.local/live",
+                "https://gambling-site-3.example.local/wp-content/themes/example/images/favicon.png",
+                "https://gambling-site-3.example.local/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fgambling-site-3.example.local%2F",
+                "https://gambling-site-3.example.local/wp-json/",
+                "https://gambling-site-3.example.local/wp-content/themes/example/webfonts/fa-brands-400.eot#iefix",
+                "https://gambling-site-3.example.local/wp-content/themes/example/webfonts/digital_sans_ef_medium.woff2",
+                "https://gambling-site-3.example.local/wp-content/themes/example/webfonts/fa-regular-400.eot#iefix",
+                "https://gambling-site-3.example.local/wp-content/themes/example/webfonts/fa-solid-900.woff"
+            ],
+            "internal_links": []
+        }
+    }
+]

@@ -36,6 +36,13 @@ configuration:
   type: 13
   section: Connect
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - additionalinfo: The time range to consider for the initial data fetch.(<number> <unit>, e.g., 1 hour, 2 hours, 6 hours, 12 hours, 48 hours). Default is 12 hours. The API supports up to 48 hours. More than 48 hours will produce an error.
   defaultvalue: 12 hours
   display: First fetch time interval
@@ -1098,7 +1105,7 @@ script:
     - contextPath: FireEyeNX.Event.IncidentId
       description: The incident ID of the event on FireEye.
       type: Number
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   runonce: false
   script: '-'

@@ -1,0 +1,7 @@
+### Enabled Playbooks
+|Playbook Name|Description|Playbook Type|Original Workflow Definition Identifier|Workflow Definition Identifier|Is Debug Mode|
+|---|---|---|---|---|---|
+| IMPORT 5 - Network Containment Block - Google | Automated IP containment playbook that queries Google using CVE identifiers, extracts malicious IPs, creates entities in alerts, and blocks them via Zscaler. Supports real-time threat intelligence-based network containment. | NESTED | 00000000-0000-0000-0000-000000000001 | 00000000-0000-0000-0000-000000000001 | True |
+| Google Cloud Compute Platform Starting Playbook | Google Cloud Compute Platform Starting Playbook provides reference implementation of how Google Cloud Compute Platform alerts can be processed in Google SecOps. | REGULAR | 00000000-0000-0000-0000-000000000002 | 00000000-0000-0000-0000-000000000002 | False |
+| Set Initial Severity | An embedded workflow that can receive inputs and return an output. | NESTED | 00000000-0000-0000-0000-000000000003 | 00000000-0000-0000-0000-000000000003 | True |
+| Google - Network Containment Block | Automated IP containment playbook that queries Google using CVE identifiers, extracts malicious IPs, creates entities in alerts, and blocks them via Zscaler. Supports real-time threat intelligence-based network containment. | NESTED | 00000000-0000-0000-0000-000000000004 | 00000000-0000-0000-0000-000000000005 | False |

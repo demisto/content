@@ -29,9 +29,9 @@ EVENT_TYPES = ["message", "maillog", "audit"]
 DEFAULT_GET_EVENTS_LIMIT = 10
 DATE_FILTER_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 PING_INTERVAL = 60  # Interval between keepalive pings in seconds
-PING_TIMEOUT: float | None = None  # Disable pong-reply timeout to tolerate large/slow messages
+PING_TIMEOUT = 120  # Timeout for waiting for a pong reply to a keepalive ping in seconds
 OPEN_TIMEOUT = 10  # Timeout for opening the WebSocket connection in seconds
-CLOSE_TIMEOUT = 10  # Timeout for closing the connection in seconds
+CLOSE_TIMEOUT = 60  # Timeout for closing the connection in seconds
 MAX_MESSAGE_SIZE: int | None = None  # Disable the 1 MiB default size limit on incoming messages
 RECEIVE_TIMEOUT = 1  # Timeout for receiving events in seconds
 
@@ -424,7 +424,13 @@ def recover_after_disconnection(connection: EventConnection, events: list[dict],
     )
     if reconnect:
         demisto.info(f"[{connection.event_type}] Attempting to reconnect after disconnection.")
-        connection.reconnect()
+        try:
+            connection.reconnect()
+        except Exception as e:
+            demisto.error(
+                f"[{connection.event_type}] Failed to reconnect after disconnection. Error: {e}. {traceback.format_exc()}"
+            )
+            raise
 
 
 def test_module(host: str, cluster_id: str, api_key: str):

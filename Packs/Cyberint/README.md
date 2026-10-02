@@ -15,6 +15,15 @@ Check Point Exposure Management and XSOAR integration is here to simplify and st
 - Optimizes your security team’s performance for faster Mean Time to Acknowledge (MTTA) and Mean Time to Remediate (MTTR).
 - Tracks the status of tickets with automatic sync updates across systems for instant visibility and comprehensive performance metrics.
 
+### Out-of-the-box playbooks
+
+The pack ships with ready-to-use automation playbooks that operationalize Check Point Exposure Management threat intelligence directly into SOC workflows:
+
+- **Check Point - IOC Enrichment and Triage** - Enriches IP, domain, URL and file-hash indicators with Check Point Exposure Management threat intelligence and applies triage decision logic.
+- **Check Point - Credential Leak Validation and Response** - Validates and responds to leaked employee or customer credentials, with automated or semi-automated remediation.
+- **Check Point - Vulnerability Exploitation Monitoring** - Enriches CVEs with Check Point Exposure Management vulnerability intelligence and prioritizes them based on real-world exploitation.
+- **Check Point - Phishing Takedown** - Automates or semi-automates the takedown of high-confidence phishing websites, including takedown submission and status polling.
+
 ### Additional useful links
 
 - Link to our [blog](https://www.paloaltonetworks.com/blog/security-operations/cyberint-cortex-xsoar-extending-automated-digital-risk-protection/)

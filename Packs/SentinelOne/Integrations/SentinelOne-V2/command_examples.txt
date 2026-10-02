@@ -29,3 +29,5 @@ sentinelone-create-bulk-ioc account_ids=2123522726049615473 entry_id=33@9bd41b3f
 sentinelone-abort-endpoint-scan agent_ids=1609164191942354900
 sentinelone-update-uam-alert-verdict alert_ids=123c4ef5-6fb7-8b9e-0fff-a6c89e88ba89 analyst_verdict="True positive - Undefined"
 sentinelone-update-uam-alert-status alert_ids=123c4ef5-6fb7-8b9e-0fff-a6c89e88ba89 status=New
+sentinelone-export-full-threat-timeline threat_id=134264860000354262
+sentinelone-export-threat-events threat_id=134264860000354262

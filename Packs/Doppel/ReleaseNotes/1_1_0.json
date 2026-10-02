@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The Doppel Entity Content incident field is now associated only with the Doppel Alert Domains incident type. Social media, mobile app, ecommerce, and telco alerts now populate their dedicated per-product entity content fields (Doppel Entity Content Social Media, Doppel Entity Content Mobile Apps, Doppel Entity Content Ecommerce, Doppel Entity Content Telco) instead. Custom layouts or automations that read Doppel Entity Content on non-domain alert types must be updated to use the new per-product fields. In addition, the invalid emails and paid_adds values of the product argument in the doppel-get-alerts command were corrected to email and paid_ads; playbooks or scripts that pass the old values must be updated, noting that the old values were never accepted by the Doppel API."
+}

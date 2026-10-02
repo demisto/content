@@ -18,6 +18,8 @@ jobs:
           echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Setup Python
         uses: actions/setup-python@v5
         with:

@@ -95,7 +95,7 @@ script:
       defaultValue: 'now'
     description: Retrieves Mimecast Audit events and SIEM logs. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     name: mimecast-get-events
-  dockerimage: demisto/py3-tools:1.0.0.6308650
+  dockerimage: demisto/py3-tools:1.0.0.10120494
   isfetchevents: true
   subtype: python3
 marketplaces:

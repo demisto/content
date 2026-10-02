@@ -4,6 +4,7 @@ import demistomock as demisto
 import pytest
 from Palo_Alto_Networks_WildFire_v2 import (
     NotFoundError,
+    clean_token,
     create_dbot_score_from_url_verdict,
     create_dbot_score_from_verdict,
     create_dbot_score_from_verdicts,
@@ -18,6 +19,7 @@ from Palo_Alto_Networks_WildFire_v2 import (
     prettify_url_verdict,
     prettify_verdict,
     prettify_verdicts,
+    resolve_token,
     run_polling_command,
     test_module as _test_module,
     wildfire_file_command,
@@ -767,6 +769,107 @@ def test_get_agent(api_key_source, is_xsiam_platform, is_version_ge_8, token, ex
     assert agent == expected_agent, f"Test failed for {test_id}"
 
 
+@pytest.mark.parametrize(
+    "raw_value, expected_token, test_id",
+    [
+        ("real-api-key", "real-api-key", "real_token_returned_as_is"),
+        ("  padded-api-key  ", "padded-api-key", "surrounding_whitespace_is_stripped"),
+        (None, "", "none_is_treated_as_no_token"),
+        ("", "", "empty_string_is_treated_as_no_token"),
+        ("   ", "", "whitespace_only_is_treated_as_no_token"),
+        ("****", "", "mask_placeholder_is_treated_as_no_token"),
+        ("*", "", "single_asterisk_mask_is_treated_as_no_token"),
+        ("  ****  ", "", "padded_mask_placeholder_is_treated_as_no_token"),
+        ("abc****", "abc****", "token_merely_containing_asterisks_is_kept"),
+        ("null", "", "stringified_json_null_is_treated_as_no_token"),
+        ("NULL", "", "stringified_null_is_case_insensitive"),
+        ("  null  ", "", "padded_stringified_null_is_treated_as_no_token"),
+        ("None", "", "stringified_python_none_is_treated_as_no_token"),
+        ("<nil>", "", "go_nil_rendering_is_treated_as_no_token"),
+        ("undefined", "", "stringified_undefined_is_treated_as_no_token"),
+        ("nullkey123456789", "nullkey123456789", "token_merely_starting_with_null_is_kept"),
+        ("a" * 32, "a" * 32, "real_32_char_key_is_kept"),
+    ],
+)
+def test_clean_token(raw_value, expected_token, test_id):
+    """
+    Given:
+        - A raw secret value read from the instance configuration.
+    When:
+        - clean_token() is called.
+    Then:
+        - Blank values and asterisk-only mask placeholders normalize to an empty string,
+          while real tokens are returned stripped.
+    """
+    assert clean_token(raw_value) == expected_token, f"Test failed for {test_id}"
+
+
+@pytest.mark.parametrize(
+    "params, expected_token, test_id",
+    [
+        ({"token": "token-param-key"}, "token-param-key", "token_param_is_used"),
+        ({"credentials": {"password": "credentials-key"}}, "credentials-key", "credentials_password_is_used"),
+        (
+            {"token": "token-param-key", "credentials": {"password": "credentials-key"}},
+            "token-param-key",
+            "token_param_takes_priority_over_credentials",
+        ),
+        # The bug: a masked/blank 'token' param must not shadow a real credentials password.
+        (
+            {"token": "****", "credentials": {"password": "credentials-key"}},
+            "credentials-key",
+            "masked_token_param_falls_back_to_credentials",
+        ),
+        (
+            {"token": "", "credentials": {"password": "credentials-key"}},
+            "credentials-key",
+            "empty_token_param_falls_back_to_credentials",
+        ),
+        # The bug: a masked credentials password must resolve to empty so the TIM license is used.
+        ({"token": "", "credentials": {"password": "****"}}, "", "masked_credentials_resolve_to_empty"),
+        ({"token": "****", "credentials": {"password": "****"}}, "", "both_masked_resolve_to_empty"),
+        ({}, "", "no_params_resolve_to_empty"),
+        ({"token": None, "credentials": None}, "", "none_params_resolve_to_empty"),
+    ],
+)
+def test_resolve_token(params, expected_token, test_id):
+    """
+    Given:
+        - Instance parameters holding the token in the 'token' field, the 'credentials'
+          password field, both, or neither - possibly as a mask placeholder.
+    When:
+        - resolve_token() is called.
+    Then:
+        - The real configured token is returned, masked/blank values are ignored, and an
+          empty string is returned when no real token exists.
+    """
+    assert resolve_token(params) == expected_token, f"Test failed for {test_id}"
+
+
+def test_main_falls_back_to_license_when_token_is_masked(mocker: MockerFixture):
+    """
+    Given:
+        - An instance configured with an asterisk mask placeholder instead of a real token.
+    When:
+        - Running main().
+    Then:
+        - The mask is not used as the API key, the TIM license token is fetched instead,
+          and it is the value passed to set_http_params.
+    """
+    license_token = "X" * 32
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "params", return_value={"server": "https://test.com/", "token": "****"})
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.get_demisto_version", return_value={"platform": "xsoar"})
+    mock_get_license = mocker.patch.object(demisto, "getLicenseCustomField", return_value=license_token)
+    mock_set_http_params = mocker.patch("Palo_Alto_Networks_WildFire_v2.set_http_params")
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.test_module", return_value="ok")
+
+    main()
+
+    mock_get_license.assert_called()
+    assert mock_set_http_params.call_args[0][0] == license_token
+
+
 @pytest.mark.parametrize("platform", ["x2", "xsoar", "xsoar-hosted"])
 def test_empty_api_token_with_get_license(mocker: MockerFixture, platform: str):
     """
@@ -919,3 +1022,291 @@ def test_url_upload_uses_files_arg_for_multipart(mocker, func_name, url_dict_key
     # Defensive: ensure no hand-rolled body string snuck back in.
     assert kwargs.get("body") is None
     assert kwargs.get("headers") is None
+
+
+@pytest.mark.parametrize(
+    "api_response, expected_verdict_count",
+    [
+        pytest.param(
+            {"sha256": "abc123", "md5": "def456", "verdict": "1"},
+            1,
+            id="single_hash_dict_response",
+        ),
+        pytest.param(
+            [
+                {"sha256": "abc123", "md5": "def456", "verdict": "1"},
+                {"sha256": "xyz789", "md5": "uvw012", "verdict": "0"},
+            ],
+            2,
+            id="multiple_hashes_list_response",
+        ),
+    ],
+)
+def test_wildfire_get_verdicts_normalizes_single_hash_response(mocker, api_response, expected_verdict_count):
+    """
+    Given:
+        - The WildFire /get/verdicts API returns either a dict (single hash) or a list (multiple hashes).
+    When:
+        - wildfire_get_verdicts is called.
+    Then:
+        - verdicts_data is always returned as a list, regardless of the API response shape.
+    """
+    import Palo_Alto_Networks_WildFire_v2 as wf
+
+    mocker.patch.object(wf, "URL", "https://wildfire.example.com/publicapi")
+    mocker.patch.object(wf, "URL_DICT", {"verdicts": "/get/verdicts"})
+    mocker.patch.object(wf, "BODY_DICT", {"apikey": "test-api-key"})
+    mocker.patch.object(
+        wf,
+        "http_request",
+        return_value={"wildfire": {"get-verdict-info": api_response}},
+    )
+    mocker.patch("builtins.open", mocker.mock_open(read_data=b"hash_data"))
+    mocker.patch("shutil.rmtree")
+
+    _result, verdicts_data = wf.wildfire_get_verdicts("/tmp/fake_hash_file")
+
+    assert isinstance(verdicts_data, list)
+    assert len(verdicts_data) == expected_verdict_count
+
+
+def _make_response(status_code=200, reason="OK", content=b"", headers=None):
+    """Build a requests.Response with the given attributes for metrics tests."""
+    response = Response()
+    response.status_code = status_code
+    response.reason = reason
+    response._content = content
+    response.headers = headers or {}
+    return response
+
+
+@pytest.fixture(autouse=True)
+def reset_execution_metrics():
+    """Reset the module-level metrics state so tests do not leak counters into each other."""
+    import Palo_Alto_Networks_WildFire_v2 as wf
+    from CommonServerPython import ExecutionMetrics
+
+    wf.EXECUTION_METRICS = ExecutionMetrics()
+    wf.METRICS_REPORTED = False
+
+
+def _metric_count(metric_type):
+    """Return the APICallsCount recorded for the given metric type, or 0 if absent."""
+    import Palo_Alto_Networks_WildFire_v2 as wf
+
+    for metric in wf.EXECUTION_METRICS.get_metric_list():
+        if metric["Type"] == metric_type:
+            return metric["APICallsCount"]
+    return 0
+
+
+@pytest.mark.parametrize(
+    "resp_type, content, headers",
+    [
+        ("xml", b"<wildfire><result>ok</result></wildfire>", {}),
+        ("json", b'{"result": "ok"}', {}),
+    ],
+)
+def test_http_request_success_counts(mocker, resp_type, content, headers):
+    """
+    Given: A 200 response with a parseable body.
+    When:  Calling http_request.
+    Then:  Exactly one success metric is counted.
+    """
+    import Palo_Alto_Networks_WildFire_v2 as wf
+
+    mocker.patch("requests.request", return_value=_make_response(content=content, headers=headers))
+    wf.http_request("https://wildfire.example.com", "POST", resp_type=resp_type)
+
+    assert wf.EXECUTION_METRICS.success == 1
+    assert _metric_count("Successful") == 1
+
+
+def test_http_request_success_ok_codes(mocker):
+    """
+    Given: A response whose status code is whitelisted via ok_codes.
+    When:  Calling http_request.
+    Then:  It is counted as a success and the raw response is returned.
+    """
+    import Palo_Alto_Networks_WildFire_v2 as wf
+
+    response = _make_response(status_code=403, reason="Forbidden")
+    mocker.patch("requests.request", return_value=response)
+    result = wf.http_request("https://wildfire.example.com", "POST", ok_codes=[403])
+
+    assert result is response
+    assert wf.EXECUTION_METRICS.success == 1
+    assert wf.EXECUTION_METRICS.auth_error == 0
+
+
+def test_http_request_success_return_raw(mocker):
+    """
+    Given: A chunked 200 response with return_raw=True.
+    When:  Calling http_request.
+    Then:  Exactly one success is counted and the raw response is returned.
+    """
+    import Palo_Alto_Networks_WildFire_v2 as wf
+
+    response = _make_response(headers={"Transfer-Encoding": "chunked"})
+    mocker.patch("requests.request", return_value=response)
+    result = wf.http_request("https://wildfire.example.com", "POST", return_raw=True)
+
+    assert result is response
+    assert wf.EXECUTION_METRICS.success == 1
+
+
+@pytest.mark.parametrize(
+    "status_code, reason, content, resp_type, expected_type",
+    [
+        # Status-code classification.
+        (401, "Error", b"", None, "AuthError"),
+        (403, "Error", b"", None, "AuthError"),
+        (419, "Error", b"", None, "QuotaError"),
+        (500, "Error", b"", None, "ServiceError"),
+        (502, "Error", b"", None, "ServiceError"),
+        (513, "Error", b"", None, "ServiceError"),
+        (405, "Error", b"", None, "GeneralError"),
+        (413, "Error", b"", None, "GeneralError"),
+        (415, "Error", b"", None, "GeneralError"),
+        (420, "Error", b"", None, "GeneralError"),
+        # 499 is just below the >= 500 service-error boundary, so it stays a general error.
+        (499, "Error", b"", None, "GeneralError"),
+        # A 200 body carrying the "Forbidden. (403)" marker is an in-body auth failure.
+        (200, "OK", b"Forbidden. (403)", None, "AuthError"),
+        # A 200 with an unparseable JSON body (resp_type="json") is a general error.
+        (200, "OK", b"not-json", "json", "GeneralError"),
+    ],
+)
+def test_http_request_error_classification(mocker, status_code, reason, content, resp_type, expected_type):
+    """
+    Given: An error response (by status code or by body).
+    When:  Calling http_request.
+    Then:  Exactly the matching metric counter is incremented once (total == 1) and it raises.
+    """
+    import Palo_Alto_Networks_WildFire_v2 as wf
+
+    mocker.patch(
+        "requests.request",
+        return_value=_make_response(status_code=status_code, reason=reason, content=content),
+    )
+    kwargs = {"resp_type": resp_type} if resp_type else {}
+    with pytest.raises(Exception):
+        wf.http_request("https://wildfire.example.com", "POST", **kwargs)
+
+    assert _metric_count(expected_type) == 1
+    total = sum(m["APICallsCount"] for m in wf.EXECUTION_METRICS.get_metric_list())
+    assert total == 1
+
+
+def test_http_request_421_parseable_counts_once(mocker):
+    """
+    Given: A 421 response with a parseable XML error body.
+    When:  Calling http_request.
+    Then:  A general error is counted exactly once.
+    """
+    import Palo_Alto_Networks_WildFire_v2 as wf
+
+    mocker.patch.object(demisto, "results")
+    content = b"<error><error-message>bad args</error-message></error>"
+    mocker.patch("requests.request", return_value=_make_response(status_code=421, reason="Error", content=content))
+    with pytest.raises(Exception):
+        wf.http_request("https://wildfire.example.com", "POST")
+
+    assert _metric_count("GeneralError") == 1
+    total = sum(m["APICallsCount"] for m in wf.EXECUTION_METRICS.get_metric_list())
+    assert total == 1
+
+
+@pytest.mark.parametrize(
+    "exception_class, expected_attr",
+    [
+        ("Timeout", "timeout_error"),
+        ("SSLError", "ssl_error"),
+        ("ProxyError", "proxy_error"),
+        ("ConnectionError", "connection_error"),
+    ],
+)
+def test_http_request_transport_exceptions(mocker, exception_class, expected_attr):
+    """
+    Given: requests.request raises a transport-level exception.
+    When:  Calling http_request.
+    Then:  Only the matching counter is incremented and the exception propagates.
+    """
+    import requests
+
+    import Palo_Alto_Networks_WildFire_v2 as wf
+
+    exc = getattr(requests.exceptions, exception_class)
+    mocker.patch("requests.request", side_effect=exc("boom"))
+    with pytest.raises(exc):
+        wf.http_request("https://wildfire.example.com", "POST")
+
+    assert getattr(wf.EXECUTION_METRICS, expected_attr) == 1
+    total = sum(m["APICallsCount"] for m in wf.EXECUTION_METRICS.get_metric_list())
+    assert total == 1
+
+
+def test_http_request_not_found_counts_success(mocker):
+    """
+    Given: A response whose reason is "Not Found".
+    When:  Calling http_request.
+    Then:  It is counted as a success (the API call worked) and NotFoundError is raised.
+    """
+    import Palo_Alto_Networks_WildFire_v2 as wf
+
+    mocker.patch("requests.request", return_value=_make_response(status_code=404, reason="Not Found"))
+    with pytest.raises(NotFoundError):
+        wf.http_request("https://wildfire.example.com", "POST")
+
+    assert wf.EXECUTION_METRICS.success == 1
+    total = sum(m["APICallsCount"] for m in wf.EXECUTION_METRICS.get_metric_list())
+    assert total == 1
+
+
+@pytest.mark.parametrize(
+    "is_supported, num_calls, expected_call_count",
+    [
+        # Old server without metrics support: never reported.
+        (False, 1, 0),
+        # Supported server: reported once.
+        (True, 1, 1),
+        # Supported server, called twice: reported only once.
+        (True, 2, 1),
+    ],
+)
+def test_return_metrics_reporting(mocker, is_supported, num_calls, expected_call_count):
+    """
+    Given: A platform that either supports execution metrics or not.
+    When:  Calling return_metrics one or more times.
+    Then:  return_results is called only when supported, and at most once.
+    """
+    import Palo_Alto_Networks_WildFire_v2 as wf
+    from CommonServerPython import ExecutionMetrics
+
+    wf.EXECUTION_METRICS.success += 1
+    mocker.patch.object(ExecutionMetrics, "is_supported", return_value=is_supported)
+    return_results_mock = mocker.patch.object(wf, "return_results")
+
+    for _ in range(num_calls):
+        wf.return_metrics()
+
+    assert return_results_mock.call_count == expected_call_count
+    if expected_call_count:
+        return_results_mock.assert_called_with(wf.EXECUTION_METRICS.metrics)
+
+
+def test_rollback_success_for_pending(mocker):
+    """
+    Given: A single success was counted (a poll that turned out to be pending).
+    When:  Rolling back the success for a pending poll.
+    Then:  The success counter and the recorded metric entry both drop to zero.
+    """
+    import Palo_Alto_Networks_WildFire_v2 as wf
+
+    wf.EXECUTION_METRICS.success += 1
+    assert _metric_count("Successful") == 1
+
+    wf._rollback_success_for_pending()
+
+    assert wf.EXECUTION_METRICS.success == 0
+    assert _metric_count("Successful") == 0

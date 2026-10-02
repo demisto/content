@@ -1,0 +1,437 @@
+{
+	"detailsV2": {
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-51022074-8fea-11f1-9fbf-5e1640c2ef63",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 22,
+								"id": "51022150-8fea-11f1-9fbf-5e1640c2ef63",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceid",
+								"height": 22,
+								"id": "51022182-8fea-11f1-9fbf-5e1640c2ef63",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "title",
+								"height": 22,
+								"id": "510221a0-8fea-11f1-9fbf-5e1640c2ef63",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "spyclouddocumentid",
+								"height": 22,
+								"id": "510221b4-8fea-11f1-9fbf-5e1640c2ef63",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "spycloudpublishdate",
+								"height": 22,
+								"id": "510221d2-8fea-11f1-9fbf-5e1640c2ef63",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "spycloudrecordmodificationdate",
+								"height": 22,
+								"id": "510221e6-8fea-11f1-9fbf-5e1640c2ef63",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "SpyCloud Record Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-510221fa-8fea-11f1-9fbf-5e1640c2ef63",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "domainname",
+								"height": 22,
+								"id": "51022204-8fea-11f1-9fbf-5e1640c2ef63",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "email",
+								"height": 22,
+								"id": "51022218-8fea-11f1-9fbf-5e1640c2ef63",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "username",
+								"height": 22,
+								"id": "5102222c-8fea-11f1-9fbf-5e1640c2ef63",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceip",
+								"height": 22,
+								"id": "51022240-8fea-11f1-9fbf-5e1640c2ef63",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "spycloudpassword",
+								"height": 22,
+								"id": "51022254-8fea-11f1-9fbf-5e1640c2ef63",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "spycloudpasswordplaintext",
+								"height": 22,
+								"id": "51022268-8fea-11f1-9fbf-5e1640c2ef63",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "spycloudpasswordtype",
+								"height": 22,
+								"id": "5102227c-8fea-11f1-9fbf-5e1640c2ef63",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "SpyCloud Account/User Details",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-51022290-8fea-11f1-9fbf-5e1640c2ef63",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "spycloudtargetdomain",
+								"height": 22,
+								"id": "510222a4-8fea-11f1-9fbf-5e1640c2ef63",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "spycloudtargetsubdomain",
+								"height": 22,
+								"id": "510222b8-8fea-11f1-9fbf-5e1640c2ef63",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "detectionurl",
+								"height": 22,
+								"id": "510222cc-8fea-11f1-9fbf-5e1640c2ef63",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "spyclouduserbrowser",
+								"height": 22,
+								"id": "510222d6-8fea-11f1-9fbf-5e1640c2ef63",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "SpyCloud Application Access Details",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-510222ea-8fea-11f1-9fbf-5e1640c2ef63",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "occurred",
+								"height": 22,
+								"id": "incident-occurred-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 22,
+								"id": "incident-modified-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotduedate",
+								"height": 22,
+								"id": "incident-dueDate-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 22,
+								"id": "incident-created-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 22,
+								"id": "incident-closed-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-51022312-8fea-11f1-9fbf-5e1640c2ef63",
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Team Members",
+						"static": false,
+						"type": "team",
+						"w": 1,
+						"x": 1,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 1,
+						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Linked Incidents",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Indicators",
+						"query": "",
+						"queryType": "input",
+						"static": false,
+						"type": "indicators",
+						"w": 2,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 22,
+								"id": "incident-dbotClosed-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 22,
+								"id": "incident-closeReason-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 22,
+								"id": "incident-closeNotes-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-bb0a0f80-eff8-11ed-aa2d-65063a439066",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "comment",
+								"height": 22,
+								"id": "d1c3a060-eff8-11ed-aa2d-65063a439066",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Comments",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 6
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		]
+	},
+	"group": "incident",
+	"id": "SpyCloud Access Layout",
+	"name": "SpyCloud Access Layout",
+	"marketplaces": [
+        "xsoar"
+    ],
+    "fromVersion": "6.10.0",
+	"system": false,
+    "description": "",
+	"version": -1
+}
