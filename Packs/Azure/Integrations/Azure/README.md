@@ -3124,3 +3124,273 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+### azure-log-analytics-saved-searches-list
+
+***
+Gets the saved searches of a Log Analytics workspace. Required permission: Microsoft.OperationalInsights/workspaces/savedSearches/read.
+
+#### Base Command
+
+`azure-log-analytics-saved-searches-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| workspace_name | The name of the Log Analytics workspace. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.LogAnalytics.SavedSearches.id | String | The fully qualified resource ID for the resource. |
+| Azure.LogAnalytics.SavedSearches.name | String | The name of the resource. |
+| Azure.LogAnalytics.SavedSearches.etag | String | The ETag of the saved search. |
+| Azure.LogAnalytics.SavedSearches.type | String | The resource type. |
+| Azure.LogAnalytics.SavedSearches.properties.category | String | The category of the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.displayName | String | The display name of the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.functionAlias | String | The function alias if the query serves as a function. |
+| Azure.LogAnalytics.SavedSearches.properties.functionParameters | String | The optional function parameters if the query serves as a function. |
+| Azure.LogAnalytics.SavedSearches.properties.query | String | The query expression for the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.tags | Unknown | The tags attached to the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.version | Number | The version number of the query language. |
+| Azure.LogAnalytics.SavedSearches.systemData | Unknown | The Azure Resource Manager metadata containing createdBy and modifiedBy information. |
+
+### azure-log-analytics-saved-search-get
+
+***
+Gets a specified saved search from a Log Analytics workspace. Required permission: Microsoft.OperationalInsights/workspaces/savedSearches/read.
+
+#### Base Command
+
+`azure-log-analytics-saved-search-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| saved_search_id | The ID of the saved search. | Required |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| workspace_name | The name of the Log Analytics workspace. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.LogAnalytics.SavedSearches.id | String | The fully qualified resource ID for the resource. |
+| Azure.LogAnalytics.SavedSearches.name | String | The name of the resource. |
+| Azure.LogAnalytics.SavedSearches.etag | String | The ETag of the saved search. |
+| Azure.LogAnalytics.SavedSearches.type | String | The resource type. |
+| Azure.LogAnalytics.SavedSearches.properties.category | String | The category of the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.displayName | String | The display name of the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.functionAlias | String | The function alias if the query serves as a function. |
+| Azure.LogAnalytics.SavedSearches.properties.functionParameters | String | The optional function parameters if the query serves as a function. |
+| Azure.LogAnalytics.SavedSearches.properties.query | String | The query expression for the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.tags | Unknown | The tags attached to the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.version | Number | The version number of the query language. |
+| Azure.LogAnalytics.SavedSearches.systemData | Unknown | The Azure Resource Manager metadata containing createdBy and modifiedBy information. |
+
+### azure-log-analytics-saved-search-create-update
+
+***
+Creates or updates a saved search in a Log Analytics workspace. Required permissions: Microsoft.OperationalInsights/workspaces/savedSearches/read, Microsoft.OperationalInsights/workspaces/savedSearches/write.
+
+#### Base Command
+
+`azure-log-analytics-saved-search-create-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| saved_search_id | The ID of the saved search. | Required |
+| etag | The ETag of the saved search. This argument is required for updating an existing saved search. | Optional |
+| category | The category of the saved search. | Required |
+| display_name | The display name of the saved search. | Required |
+| function_alias | The function alias if the query serves as a function. | Optional |
+| function_parameters | The optional function parameters if the query serves as a function. The value should be in the following format: param-name1:type1 = default_value1, param-name2:type2 = default_value2. | Optional |
+| query | The query expression for the saved search. | Required |
+| tags | The tags attached to the saved search. The value should be in the following format: name=value;name=value. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| workspace_name | The name of the Log Analytics workspace. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.LogAnalytics.SavedSearches.id | String | The fully qualified resource ID for the resource. |
+| Azure.LogAnalytics.SavedSearches.name | String | The name of the resource. |
+| Azure.LogAnalytics.SavedSearches.etag | String | The ETag of the saved search. |
+| Azure.LogAnalytics.SavedSearches.type | String | The resource type. |
+| Azure.LogAnalytics.SavedSearches.properties.category | String | The category of the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.displayName | String | The display name of the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.functionAlias | String | The function alias if the query serves as a function. |
+| Azure.LogAnalytics.SavedSearches.properties.functionParameters | String | The optional function parameters if the query serves as a function. |
+| Azure.LogAnalytics.SavedSearches.properties.query | String | The query expression for the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.tags | Unknown | The tags attached to the saved search. |
+| Azure.LogAnalytics.SavedSearches.properties.version | Number | The version number of the query language. |
+| Azure.LogAnalytics.SavedSearches.systemData | Unknown | The Azure Resource Manager metadata containing createdBy and modifiedBy information. |
+
+### azure-log-analytics-saved-search-delete
+
+***
+Deletes a specified saved search in a Log Analytics workspace. Required permission: Microsoft.OperationalInsights/workspaces/savedSearches/delete.
+
+#### Base Command
+
+`azure-log-analytics-saved-search-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| saved_search_id | The ID of the saved search. | Required |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| workspace_name | The name of the Log Analytics workspace. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-log-analytics-workspaces-list
+
+***
+Gets Log Analytics workspaces in a resource group. Required permission: Microsoft.OperationalInsights/workspaces/read.
+
+#### Base Command
+
+`azure-log-analytics-workspaces-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.LogAnalytics.Workspaces.id | String | The fully qualified resource ID for the resource. |
+| Azure.LogAnalytics.Workspaces.name | String | The name of the resource. |
+| Azure.LogAnalytics.Workspaces.type | String | The resource type. |
+| Azure.LogAnalytics.Workspaces.location | String | The geo-location where the resource lives. |
+| Azure.LogAnalytics.Workspaces.etag | String | The ETag of the workspace. |
+| Azure.LogAnalytics.Workspaces.identity | Unknown | The identity of the resource. |
+| Azure.LogAnalytics.Workspaces.tags | Unknown | The resource tags. |
+| Azure.LogAnalytics.Workspaces.properties.createdDate | Date | The date and time when the workspace was created in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| Azure.LogAnalytics.Workspaces.properties.customerId | String | The ID associated with the workspace. |
+| Azure.LogAnalytics.Workspaces.properties.defaultDataCollectionRuleResourceId | String | The resource ID of the default data collection rule to use for this workspace. |
+| Azure.LogAnalytics.Workspaces.properties.failover | Unknown | The workspace failover properties. |
+| Azure.LogAnalytics.Workspaces.properties.features | Unknown | The workspace features. |
+| Azure.LogAnalytics.Workspaces.properties.forceCmkForQuery | Boolean | Whether customer managed storage is mandatory for query management. |
+| Azure.LogAnalytics.Workspaces.properties.modifiedDate | Date | The date and time when the workspace was modified in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| Azure.LogAnalytics.Workspaces.properties.privateLinkScopedResources | Unknown | The list of linked private link scope resources. |
+| Azure.LogAnalytics.Workspaces.properties.provisioningState | String | The provisioning state of the workspace. |
+| Azure.LogAnalytics.Workspaces.properties.publicNetworkAccessForIngestion | String | The network access type for accessing Log Analytics ingestion. |
+| Azure.LogAnalytics.Workspaces.properties.publicNetworkAccessForQuery | String | The network access type for accessing Log Analytics query. |
+| Azure.LogAnalytics.Workspaces.properties.replication | Unknown | Workspace replication properties. |
+| Azure.LogAnalytics.Workspaces.properties.retentionInDays | Number | The workspace data retention in days. Allowed values are per pricing plan. See pricing tiers documentation for details. |
+| Azure.LogAnalytics.Workspaces.properties.sku | Unknown | The SKU of the workspace. |
+| Azure.LogAnalytics.Workspaces.properties.workspaceCapping | Unknown | The daily volume cap for ingestion. |
+| Azure.LogAnalytics.Workspaces.systemData | Unknown | The Azure Resource Manager metadata containing createdBy and modifiedBy information. |
+
+### azure-log-analytics-table-get
+
+***
+Gets a Log Analytics workspace table (search job). Required permission: Microsoft.OperationalInsights/workspaces/tables/read.
+
+#### Base Command
+
+`azure-log-analytics-table-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| table_name | The name of the table. Example value: AuditLogs_SRCH. | Required |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| workspace_name | The name of the Log Analytics workspace. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.LogAnalytics.Tables.id | String | The fully qualified resource ID for the resource. |
+| Azure.LogAnalytics.Tables.name | String | The name of the resource. |
+| Azure.LogAnalytics.Tables.type | String | The resource type. |
+| Azure.LogAnalytics.Tables.properties.archiveRetentionInDays | Number | The table's long-term retention in days. Calculated as \(totalRetentionInDays-retentionInDays\). |
+| Azure.LogAnalytics.Tables.properties.lastPlanModifiedDate | String | The date and time when the table plan was last modified \(UTC\) in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| Azure.LogAnalytics.Tables.properties.plan | String | The instruction for the system on how to handle and charge the logs ingested into this table. |
+| Azure.LogAnalytics.Tables.properties.protectionLevel | String | The protection level of the table. Determines the default data access isolation behavior. |
+| Azure.LogAnalytics.Tables.properties.provisioningState | String | The table's current provisioning state. If set to updating, it indicates a resource lock due to an ongoing operation, forbidding any update to the table until the ongoing operation is concluded. |
+| Azure.LogAnalytics.Tables.properties.restoredLogs | Unknown | The parameters of the restore operation that created the table. |
+| Azure.LogAnalytics.Tables.properties.resultStatistics | Unknown | The search job execution statistics. |
+| Azure.LogAnalytics.Tables.properties.retentionInDays | Number | The table's analytics retention in days for Analytics tables, between 4 and 730. Setting this property to -1 defaults to the workspace retention. For Basic and Auxiliary tables, this is a read-only property. |
+| Azure.LogAnalytics.Tables.properties.retentionInDaysAsDefault | Boolean | Whether the value originates from workspace retention in days \(true\) or is customer specific \(false\). |
+| Azure.LogAnalytics.Tables.properties.schema | Unknown | The table schema. |
+| Azure.LogAnalytics.Tables.properties.searchResults | Unknown | The parameters of the search job that initiated the table. |
+| Azure.LogAnalytics.Tables.properties.totalRetentionInDays | Number | The table's total retention in days, between 4 and 4383. Setting this property to -1 defaults to retentionInDays. |
+| Azure.LogAnalytics.Tables.properties.totalRetentionInDaysAsDefault | Boolean | Whether the value originates from retention in days \(true\) or is customer specific \(false\). |
+| Azure.LogAnalytics.Tables.systemData | Unknown | The Azure Resource Manager metadata containing createdBy and modifiedBy information. |
+
+### azure-log-analytics-table-run
+
+***
+Runs a search job to fetch records from large datasets into a new search results table in the workspace, and polls until the table is provisioned. Required permissions: Microsoft.OperationalInsights/workspaces/tables/read, Microsoft.OperationalInsights/workspaces/tables/write, Microsoft.OperationalInsights/workspaces/searchJobs/write.
+
+#### Base Command
+
+`azure-log-analytics-table-run`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| table_name | The name of the table to add. Must contain the _SRCH suffix. For example, AuditLogs_SRCH. | Required |
+| limit | The maximum number of records to return in the result set. Default is 50. | Optional |
+| query | The log query written in KQL format to retrieve data. Search job queries must start with a table name. | Required |
+| start_search_time | The start of the time range to search. The value can be in minutes, days, weeks, or  ISO 8601 format (for example, 2023-10-31T00:00:00Z). Default is 1 day. | Optional |
+| end_search_time | The end of the time range to search. The value can be in minutes, days, weeks, or ISO 8601 format (for example, 2023-10-31T00:00:00Z). Default is now. | Optional |
+| timeout | The timeout in seconds until polling ends. Default is 600. | Optional |
+| interval | The interval in seconds between each poll. Default is 60. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| workspace_name | The name of the Log Analytics workspace. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.LogAnalytics.Tables.TableName | String | The table name. |
+| Azure.LogAnalytics.Tables.Query | String | The query that was used to create the table. |
+
+### azure-log-analytics-table-delete
+
+***
+Deletes a Log Analytics workspace table (search job). Required permission: Microsoft.OperationalInsights/workspaces/tables/delete.
+
+#### Base Command
+
+`azure-log-analytics-table-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| table_name | The name of the table. Must contain the _SRCH suffix. For example, AuditLogs_SRCH. | Required |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| workspace_name | The name of the Log Analytics workspace. | Required |
+
+#### Context Output
+
+There is no context output for this command.
