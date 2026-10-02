@@ -1,0 +1,57 @@
+name: Portkey - Prisma AIRS Detected Content In A Model Response - by GoCortexIO
+description: Reports responses in which Prisma AIRS detected something on the way back from the model, such as source code, database content, ungrounded output or toxic content. The prompt-side rules in this pack cannot see this - a benign prompt can still elicit a response that should not have left.
+severity: SEV_040_HIGH
+xql_query: |-
+  // PROVENANCE
+  //   Pattern:   data leaving through the model rather than entering through the prompt.
+  //   Basis:     the vendor's own verdict, on the RESPONSE side. AIRS runs as two checks per
+  //              request and the response check has its own detection vocabulary, observed as
+  //              db_security, source_code, topic_violation, toxic_content and ungrounded.
+  //   ATT&CK:    T1213
+  //   Threshold: none, for the same reason as the prompt rule.
+  //   Grouping:  per actor per workspace per detection set, so a repeated pattern is one alert
+  //              and a different KIND of leak is a new one.
+  //   Deliberately separate from the prompt-side rule. Those fire on different records and
+  //              merging them would hide a response finding behind a prompt finding for the
+  //              same actor, which is the specific case this exists to catch.
+  //   Zero is a valid resting state on a tenant whose AIRS profile scans prompts only.
+  //              Do NOT relax the filter to make it fire; confirm the response profile is
+  //              applied first.
+  datamodel dataset = portkey_llm_requests_raw
+  | filter xdm.event.outcome_reason ~= "airs_response:"
+  | alter airs_response_detections = arrayindex(regextract(to_string(xdm.event.outcome_reason), "airs_response:([a-z_|]+)"), 0)
+  | comp count() as responses,
+         count_distinct(xdm.event.id) as distinct_requests,
+         values(xdm.target.resource.name) as models,
+         min(_time) as first_seen,
+         max(_time) as last_seen
+      by xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.parent_id, xdm.event.type, airs_response_detections
+  | sort desc responses
+  | fields xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.parent_id, xdm.event.type, airs_response_detections, responses, distinct_requests, models, first_seen, last_seen
+alert_name: Portkey - Prisma AIRS detected $airs_response_detections in a model response - $xdm.source.user.username
+alert_category: User Defined
+user_defined_category: xdm.event.type
+alert_description: Prisma AIRS detected $airs_response_detections in $responses response(s) returned to $xdm.source.user.username from $models in workspace $xdm.target.resource.parent_id. The prompt may have been unremarkable; the finding is what the model sent back.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0009 - Collection:
+  - T1213 - Data from Information Repositories
+suppression_fields:
+- xdm.source.user.identifier
+- airs_response_detections
+global_rule_id: d090594c-4278-4698-bfa3-192cbec55abd
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 2 hours
+timezone: Australia/Melbourne
+crontab: '*/10 * * * *'
+suppression_enabled: true
+suppression_duration: 1 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_llm_requests_raw | filter airs_response_detections != ""
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0
