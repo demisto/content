@@ -1,5 +1,13 @@
 ## Intel471 Credentials
 
+### What's new
+
+This integration used to be a feed: it produced one indicator per leaked credential and created the
+incident as a by-product. That is now inverted — the incident is the primary artifact. Each
+credential becomes an incident, and every observable the credential carries (the login, the
+detection and credential domains, and the infected host's IP addresses and PC name) is extracted as
+its own indicator and associated with that incident.
+
 ### Credentials
 
 The integration authenticates to the Intel471 Credentials API with HTTP Basic auth:
