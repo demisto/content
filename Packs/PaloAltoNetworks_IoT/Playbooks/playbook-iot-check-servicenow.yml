@@ -2,7 +2,7 @@ id: PANW IoT ServiceNow Tickets Check
 version: -1
 name: PANW IoT ServiceNow Tickets Check
 description: This playbook should be used in a recurring Job to check the
-  ServiceNow ticket status for the Palo Alto Networks IoT (previously Zingbox) alerts or vulnerabilties.
+  ServiceNow ticket status for the Palo Alto Networks IoT (previously Zingbox) alerts or vulnerabilties and close the XSOAR incident if the ticket was closed.
 starttaskid: "0"
 tasks:
   "0":
