@@ -86,7 +86,10 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-vn-network-interfaces-list",
         "azure-vn-network-interface-get",
     ],
-    "Microsoft.Network/networkInterfaces/write": ["azure-vn-network-interface-update"],
+    "Microsoft.Network/networkInterfaces/write": [
+        "azure-vn-network-interface-update",
+        "azure-vn-network-interface-create",
+    ],
     "Microsoft.Network/publicIPAddresses/read": [
         "azure-nsg-public-ip-addresses-list",
         "azure-vm-public-ip-details-get",
@@ -261,6 +264,9 @@ PERMISSIONS_TO_COMMANDS = {
     ],
     "Microsoft.Compute/virtualMachines/start/action": ["azure-vm-instance-start", "azure-compute-vm-start"],
     "Microsoft.Compute/virtualMachines/poweroff/action": ["azure-vm-instance-power-off", "azure-compute-vm-power-off"],
+    "Microsoft.Compute/virtualMachines/write": ["azure-compute-vm-create"],
+    "Microsoft.Compute/virtualMachines/deallocate/action": ["azure-compute-vm-delete"],
+    "Microsoft.Compute/virtualMachines/delete": ["azure-compute-vm-delete"],
     "Microsoft.ContainerRegistry/registries/read": [
         "azure-acr-update",
         "azure-acr-disable-public-private-access-quick-action",
@@ -393,6 +399,16 @@ API_FUNCTION_TO_PERMISSIONS = {
     "poweroff_vm_request": ["Microsoft.Compute/virtualMachines/read", "Microsoft.Compute/virtualMachines/poweroff/action"],
     "get_vm_request": ["Microsoft.Compute/virtualMachines/read"],
     "list_vm_request": ["Microsoft.Compute/virtualMachines/read"],
+    "create_vm_request": ["Microsoft.Compute/virtualMachines/write"],
+    "delete_vm_request": [
+        "Microsoft.Compute/virtualMachines/deallocate/action",
+        "Microsoft.Compute/virtualMachines/delete",
+    ],
+    "create_network_interface_request": [
+        "Microsoft.Network/networkInterfaces/write",
+        "Microsoft.Network/virtualNetworks/subnets/join/action",
+        "Microsoft.Network/networkSecurityGroups/join/action",
+    ],
     "get_network_interface_request": ["Microsoft.Network/networkInterfaces/read"],
     "update_network_interface_request": [
         "Microsoft.Network/networkInterfaces/read",
@@ -445,6 +461,12 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Compute/virtualMachines/read",
     "Microsoft.Compute/virtualMachines/start/action",
     "Microsoft.Compute/virtualMachines/poweroff/action",
+    "Microsoft.Compute/virtualMachines/write",
+    "Microsoft.Compute/virtualMachines/deallocate/action",
+    "Microsoft.Compute/virtualMachines/delete",
+    "Microsoft.Network/networkInterfaces/write",
+    "Microsoft.Network/virtualNetworks/subnets/join/action",
+    "Microsoft.Network/networkSecurityGroups/join/action",
     "Microsoft.ContainerRegistry/registries/read",
     "Microsoft.ContainerRegistry/registries/write",
     "Microsoft.KeyVault/vaults/read",
@@ -479,6 +501,39 @@ PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
 NSG_API_VERSION = "2025-01-01"
 
+# Image options to be used in the create_vm_command
+IMAGES = {
+    "ubuntu server 14.04 lts": {"publisher": "Canonical", "offer": "UbuntuServer", "sku": "14.04-LTS", "version": "latest"},
+    "ubuntu server 16.04 lts": {"publisher": "Canonical", "offer": "UbuntuServer", "sku": "16.04-LTS", "version": "latest"},
+    "ubuntu server 18.04 lts": {"publisher": "Canonical", "offer": "UbuntuServer", "sku": "18.04-LTS", "version": "latest"},
+    "red hat enterprise linux 7.6": {"publisher": "RedHat", "offer": "RHEL", "sku": "7-RAW", "version": "latest"},
+    "centos-based 7.5": {"publisher": "OpenLogic", "offer": "CentOS", "sku": "7.5", "version": "latest"},
+    "windows server 2012 r2 datacenter": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-R2-Datacenter",
+        "version": "latest",
+    },
+    "windows server 2016 datacenter": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2016-Datacenter",
+        "version": "latest",
+    },
+    "windows 10 pro version 1803": {
+        "publisher": "MicrosoftWindowsDesktop",
+        "offer": "Windows-10",
+        "sku": "rs4-pro",
+        "version": "latest",
+    },
+    "windows 10 pro version 1809": {
+        "publisher": "MicrosoftWindowsDesktop",
+        "offer": "Windows-10",
+        "sku": "rs5-pro",
+        "version": "latest",
+    },
+}
+
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
 # get_command_and_token_scopes.
 STORAGE_BLOB_SPECIAL_COMMANDS = [
@@ -501,6 +556,8 @@ COMMANDS_TO_OUTPUTS_PREFIX = {
     "azure-compute-vm-power-off": "Azure.Compute.VirtualMachines",
     "azure-vm-instance-start": "Azure.Compute",
     "azure-compute-vm-start": "Azure.Compute.VirtualMachines",
+    "azure-compute-vm-create": "Azure.Compute.VirtualMachines",
+    "azure-vn-network-interface-create": "Azure.VirtualNetworks.NetworkInterfaces",
     "azure-cosmos-db-update": "Azure.CosmosDB",
     "azure-cosmosdb-db-account-update": "Azure.CosmosDB.DBAccounts",
     "azure-key-vault-update": "Azure.KeyVault",
@@ -2428,6 +2485,88 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
+    def create_vm_request(self, subscription_id: str, resource_group_name: str, vm_name: str, virtual_machine_data: dict):
+        """
+        Creates or updates a virtual machine in the specified resource group.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group in which to create the virtual machine.
+            vm_name (str): The name of the virtual machine to create.
+            virtual_machine_data (dict): The virtual machine object to create.
+
+        Returns:
+            The created virtual machine object.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines/create-or-update?view=rest-azure-2024-04-01
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
+            f"virtualMachines/{vm_name}"
+        )
+        try:
+            return self.http_request(
+                method="PUT",
+                full_url=full_url,
+                params={"api-version": VM_API_VERSION},
+                json_data=virtual_machine_data,
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{resource_group_name}/{vm_name}",
+                resource_type="Virtual Machines",
+                api_function_name="create_vm_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def delete_vm_request(self, subscription_id: str, resource_group_name: str, vm_name: str):
+        """
+        Deallocates and then deletes the specified virtual machine in a given resource group.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group containing the virtual machine.
+            vm_name (str): The name of the virtual machine to delete.
+
+        Returns:
+            The HTTP response object of the delete request.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines/delete?view=rest-azure-2024-04-01
+        """
+        base_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
+            f"virtualMachines/{vm_name}"
+        )
+        try:
+            demisto.debug(f"Deallocating vm {vm_name} before deletion.")
+            self.http_request(
+                method="POST",
+                full_url=f"{base_url}/deallocate",
+                params={"api-version": VM_API_VERSION},
+                resp_type="response",
+            )
+            response = self.http_request(
+                method="DELETE", full_url=base_url, params={"api-version": VM_API_VERSION}, resp_type="response"
+            )
+            if response.status_code in (200, 202, 204):  # type: ignore[union-attr]
+                return response
+            else:
+                demisto.debug(f"Failed to delete vm {vm_name}.")
+                response.raise_for_status()  # type: ignore[union-attr]
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{resource_group_name}/{vm_name}",
+                resource_type="Virtual Machines",
+                api_function_name="delete_vm_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
     def validate_provisioning_state(self, subscription_id, resource_group, vm_name):
         """
         Ensure that the provisioning state of a VM is 'Succeeded'
@@ -2558,6 +2697,49 @@ class AzureClient:
                 resource_name=f"{resource_group_name}/{interface_name}",
                 resource_type="Network Interfaces",
                 api_function_name="update_network_interface_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def create_network_interface_request(
+        self,
+        subscription_id: str,
+        resource_group_name: str,
+        interface_name: str,
+        network_interface_data: dict,
+    ):
+        """
+        Creates a network interface in the specified resource group.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group in which to create the network interface.
+            interface_name (str): The name of the network interface to create.
+            network_interface_data (dict): The network interface object to create.
+
+        Returns:
+            The created network interface object.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-interfaces/create-or-update
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/"
+            f"networkInterfaces/{interface_name}"
+        )
+        try:
+            return self.http_request(
+                method="PUT",
+                full_url=full_url,
+                params={"api-version": "2023-05-01"},
+                json_data=network_interface_data,
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{resource_group_name}/{interface_name}",
+                resource_type="Network Interfaces",
+                api_function_name="create_network_interface_request",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -4889,6 +5071,267 @@ def list_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str,
     )
 
 
+def assign_image_attributes(image: str) -> tuple[Any, Any, Any, Any]:
+    """
+    Retrieves the image properties determined by the chosen OS image.
+
+    Args:
+        image (str): The name of the base operating system image.
+
+    Returns:
+        tuple: The image properties as (sku, publisher, offer, version).
+    """
+    image_properties = IMAGES.get(image.lower())
+    if not image_properties:
+        raise DemistoException(
+            f"Invalid value '{image}' entered for the 'os_image' argument. Valid values are: {list(IMAGES.keys())}."
+        )
+    return (
+        image_properties.get("sku"),
+        image_properties.get("publisher"),
+        image_properties.get("offer"),
+        image_properties.get("version"),
+    )
+
+
+def create_vm_parameters(args: dict[str, Any], subscription_id: str, resource_group_name: str) -> dict[str, Any]:
+    """
+    Constructs the virtual machine object sent in the body of the create virtual machine request.
+
+    Args:
+        args (dict): Command arguments.
+        subscription_id (str): The ID of the Azure subscription.
+        resource_group_name (str): The name of the resource group in which to create the virtual machine.
+
+    Returns:
+        dict: The virtual machine object.
+    """
+    image = args.get("os_image")
+    sku = args.get("sku")
+    publisher = args.get("publisher")
+    version = args.get("version")
+    offer = args.get("offer")
+    vm_name = args["virtual_machine_name"]
+    nic_name = args["nic_name"]
+
+    if not image and not (sku and publisher and version and offer):
+        raise DemistoException(
+            "You must enter a value for the 'os_image' argument or the group of arguments, "
+            "'sku', 'publisher', 'version', and 'offer'."
+        )
+
+    if image:
+        sku, publisher, offer, version = assign_image_attributes(image)
+
+    full_nic_id = (
+        f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/"
+        f"networkInterfaces/{nic_name}"
+    )
+
+    return remove_empty_elements(
+        {
+            "location": args.get("virtual_machine_location"),
+            "properties": {
+                "hardwareProfile": {"vmSize": args.get("vm_size")},
+                "storageProfile": {
+                    "imageReference": {"sku": sku, "publisher": publisher, "version": version, "offer": offer},
+                    "osDisk": {
+                        "caching": "ReadWrite",
+                        "managedDisk": {"storageAccountType": "Standard_LRS"},
+                        "name": vm_name,
+                        "createOption": "FromImage",
+                    },
+                },
+                "osProfile": {
+                    "adminUsername": args.get("admin_username"),
+                    "computerName": vm_name,
+                    "adminPassword": args.get("admin_password"),
+                },
+                "networkProfile": {"networkInterfaces": [{"id": full_nic_id, "properties": {"primary": "true"}}]},
+            },
+            "name": vm_name,
+        }
+    )
+
+
+def create_nic_parameters(args: dict[str, Any], subscription_id: str, resource_group_name: str) -> dict[str, Any]:
+    """
+    Constructs the network interface object sent in the body of the create network interface request.
+
+    Args:
+        args (dict): Command arguments.
+        subscription_id (str): The ID of the Azure subscription.
+        resource_group_name (str): The name of the resource group in which to create the network interface.
+
+    Returns:
+        dict: The network interface object.
+    """
+    address_assignment_method = args.get("address_assignment_method", "Dynamic")
+    private_ip_address = args.get("private_ip_address")
+    network_security_group = args.get("network_security_group")
+
+    if address_assignment_method == "Static" and not private_ip_address:
+        raise DemistoException(
+            'You have chosen to assign a "Static" IP address value to the interface, '
+            'so you must enter a value for the "private_ip_address" argument.'
+        )
+
+    subnet_id = (
+        f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/"
+        f"virtualNetworks/{args['vnet_name']}/subnets/{args['subnet_name']}"
+    )
+    network_security_group_id = (
+        f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/"
+        f"networkSecurityGroups/{network_security_group}"
+        if network_security_group
+        else None
+    )
+
+    return remove_empty_elements(
+        {
+            "location": args.get("nic_location"),
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": args.get("ip_config_name"),
+                        "properties": {
+                            "privateIPAllocationMethod": address_assignment_method,
+                            "privateIPAddress": private_ip_address,
+                            "subnet": {"id": subnet_id},
+                        },
+                    }
+                ],
+                "networkSecurityGroup": {"id": network_security_group_id},
+            },
+        }
+    )
+
+
+def create_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Creates an Azure Virtual Machine (VM) instance with the specified OS image.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: A CommandResults object containing the created Virtual Machine details.
+    """
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
+    resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
+    vm_name = args.get("virtual_machine_name", "")
+
+    virtual_machine_data = create_vm_parameters(args, subscription_id, resource_group_name)
+    demisto.debug(f"[Azure] create_vm_request payload keys: {list(virtual_machine_data.keys())} for {vm_name=}")
+    response = client.create_vm_request(subscription_id, resource_group_name, vm_name, virtual_machine_data)
+
+    properties = response.get("properties", {})
+    os_disk = properties.get("storageProfile", {}).get("osDisk", {})
+
+    readable_vm = {
+        "Name": response.get("name", vm_name),
+        "ID": properties.get("vmId"),
+        "Size": os_disk.get("diskSizeGB"),
+        "OS": os_disk.get("osType"),
+        "ProvisioningState": properties.get("provisioningState"),
+        "Location": response.get("location"),
+        "ResourceGroup": resource_group_name,
+    }
+
+    title = f'Created Virtual Machine "{readable_vm.get("Name")}"'
+    table_headers = ["Name", "ID", "Size", "OS", "ProvisioningState", "Location", "ResourceGroup"]
+    human_readable = tableToMarkdown(title, readable_vm, headers=table_headers, removeNull=True, headerTransform=pascalToSpace)
+
+    command = demisto.command()
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Compute.VirtualMachines")
+
+    return CommandResults(
+        outputs_prefix=outputs_prefix,
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=human_readable,
+        raw_response=response,
+    )
+
+
+def delete_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Deallocates and deletes a specific Azure Virtual Machine (VM).
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: A CommandResults object indicating that the deletion has been successfully initiated.
+    """
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
+    resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
+    vm_name = args.get("virtual_machine_name", "")
+
+    client.delete_vm_request(subscription_id, resource_group_name, vm_name)
+
+    return CommandResults(readable_output=f'"{vm_name}" VM Deletion Successfully Initiated')
+
+
+def create_network_interface_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Creates an Azure Network Interface (NIC) with the specified interface parameters.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: A CommandResults object containing the created Network Interface details.
+    """
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
+    resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
+    interface_name = args.get("nic_name", "")
+
+    network_interface_data = create_nic_parameters(args, subscription_id, resource_group_name)
+    demisto.debug(
+        f"[Azure] create_network_interface_request payload keys: {list(network_interface_data.keys())} " f"for {interface_name=}"
+    )
+    response = client.create_network_interface_request(
+        subscription_id, resource_group_name, interface_name, network_interface_data
+    )
+
+    properties = response.get("properties", {})
+    ip_configurations = properties.get("ipConfigurations", [])
+
+    readable_nic = {
+        "Name": response.get("name", interface_name),
+        "ID": response.get("id"),
+        "PrivateIPAddresses": [
+            ip_configuration.get("properties", {}).get("privateIPAddress") for ip_configuration in ip_configurations
+        ],
+        "NetworkSecurityGroup": properties.get("networkSecurityGroup", {}).get("id"),
+        "ProvisioningState": properties.get("provisioningState"),
+        "Location": response.get("location"),
+        "ResourceGroup": resource_group_name,
+    }
+
+    title = f'Created Network Interface "{readable_nic.get("Name")}"'
+    table_headers = ["Name", "ID", "PrivateIPAddresses", "NetworkSecurityGroup", "ProvisioningState", "Location"]
+    human_readable = tableToMarkdown(title, readable_nic, headers=table_headers, removeNull=True, headerTransform=pascalToSpace)
+
+    command = demisto.command()
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.VirtualNetworks.NetworkInterfaces")
+
+    return CommandResults(
+        outputs_prefix=outputs_prefix,
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=human_readable,
+        raw_response=response,
+    )
+
+
 def get_network_interface_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]):
     """
     Retrieves details for a specific Azure Network Interface (NIC).
@@ -5800,8 +6243,11 @@ def main():  # pragma: no cover
             "azure-compute-vm-power-off": poweroff_vm_command,
             "azure-vm-instance-details-get": get_vm_command,
             "azure-compute-vm-list": list_vm_command,
+            "azure-compute-vm-create": create_vm_command,
+            "azure-compute-vm-delete": delete_vm_command,
             "azure-vm-network-interface-details-get": get_network_interface_command,
             "azure-vn-network-interface-update": network_interface_update_command,
+            "azure-vn-network-interface-create": create_network_interface_command,
             "azure-compute-vm-get": get_vm_command,
             "azure-vn-network-interface-get": get_network_interface_command,
             "azure-vm-public-ip-details-get": get_public_ip_details_command,
