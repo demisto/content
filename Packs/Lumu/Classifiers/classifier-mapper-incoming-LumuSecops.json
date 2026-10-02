@@ -1,0 +1,159 @@
+{
+    "description": "Maps incoming LumuSecops incidents fields.",
+    "feed": false,
+    "id": "LumuSecopsInMap",
+    "mapping": {
+        "LumuSecops": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Comment": {
+                    "simple": "comment"
+                },
+                "details": {
+                    "simple": "lumu_secops_description"
+                },
+                "lumu_secops_adversary_types": {
+                    "simple": "lumu_secops_adversary_types"
+                },
+                "lumu_secops_endpoint_targets_count": {
+                    "simple": "lumu_secops_endpoint_targets_count"
+                },
+                "lumu_secops_user_targets_count": {
+                    "simple": "lumu_secops_user_targets_count"
+                },
+                "lumu_secops_other_targets_count": {
+                    "simple": "lumu_secops_other_targets_count"
+                },
+                "lumu_secops_total_targets_count": {
+                    "simple": "lumu_secops_total_targets_count"
+                },
+                "lumu_secops_offenders_count": {
+                    "simple": "lumu_secops_offenders_count"
+                },
+                "lumu_secops_company_id": {
+                    "simple": "companyId"
+                },
+                "lumu_secops_actions_count": {
+                    "simple": "lumu_secops_actions_count"
+                },
+                "lumu_secops_last_action": {
+                    "simple": "lumu_secops_last_action"
+                },
+                "lumu_secops_last_action_time": {
+                    "simple": "lumu_secops_last_action_time"
+                },
+                "lumu_secops_last_action_user_id": {
+                    "simple": "lumu_secops_last_action_user_id"
+                },
+                "lumu_secops_last_comment": {
+                    "simple": "lumu_secops_last_comment"
+                },
+                "lumu_secops_description": {
+                    "simple": "lumu_secops_description"
+                },
+                "lumu_secops_detector_type": {
+                    "simple": "lumu_secops_detector_type"
+                },
+                "lumu_secops_event_type": {
+                    "simple": "lumu_secops_event_type"
+                },
+                "lumu_secops_incident_id": {
+                    "simple": "lumu_secops_incident_id"
+                },
+                "lumu_secops_incident_grouping_fields": {
+                    "simple": "lumu_secops_incident_grouping_fields"
+                },
+                "lumu_secops_incident_type": {
+                    "simple": "lumu_secops_incident_type"
+                },
+                "lumu_secops_source_name": {
+					"complex": {
+						"filters": [],
+						"root": "lumu_secops_source_name",
+						"transformers": []
+					}
+				},
+                "lumu_secops_status": {
+					"complex": {
+						"filters": [],
+						"root": "status",
+						"transformers": []
+					}
+				},
+                "lumu_secops_total_events": {
+					"complex": {
+						"filters": [],
+						"root": "totalEvents",
+						"transformers": []
+					}
+				},
+                "occurred": {
+					"complex": {
+						"filters": [],
+						"root": "timestamp",
+						"transformers": []
+					}
+				},
+                "statusTimestamp": {
+					"complex": {
+						"filters": [],
+						"root": "statusTimestamp",
+						"transformers": []
+					}
+				}
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Description": {
+					"complex": {
+						"filters": [],
+						"root": "description",
+						"transformers": []
+					}
+				},
+                "IncomingMirrorError": {
+                    "simple": "incomming_mirror_error"
+                },
+                "Source Status": {
+					"complex": {
+						"filters": [],
+						"root": "status",
+						"transformers": []
+					}
+				},
+                "State": {
+					"complex": {
+						"filters": [],
+						"root": "status",
+						"transformers": []
+					}
+				},
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorLastSync": {
+                    "simple": "mirror_last_sync"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
+                },
+                "severity": {
+					"complex": {
+						"filters": [],
+						"root": "severity",
+						"transformers": []
+					}
+				}
+            }
+        }
+    },
+    "name": "LumuSecopsInMap",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
