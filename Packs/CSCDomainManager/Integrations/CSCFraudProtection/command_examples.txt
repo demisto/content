@@ -1,21 +1,20 @@
-!fetchthephishkitdatawithticketid ticketId=123
-!fetchthescreenshotdatawithticketid ticketId=123
-!gethtmlsourcecodeforaticket ticketId=123
-!listofworklogsforticketid ticketId=123
-!listtakedowneventswithfilters fromDate="2026-01-01" toDate="2026-03-01"
-!updatetheactionwithticketid action="OPEN"
+!csc-fetchthephishkitdatawithticketid ticketId=123
+!csc-fetchthescreenshotdatawithticketid ticketId=123
+!csc-gethtmlsourcecodeforaticket ticketId=123
+!csc-listofworklogsforticketid ticketId=123
+!csc-listtakedowneventswithfilters fromDate="2026-01-01" toDate="2026-03-01"
+!csc-updatetheactionwithticketid action="OPEN"
 
-!getlistofbrands
-!getlistoffraudtypes
+!csc-getlistofbrands
+!csc-getlistoffraudtypes
 
-!retrievelistofdetectionswithinspecifiedtimeframe fromDate="2026-01-01" toDate="2026-03-01"
-!retrievefilteredlistofmonitoringresultswithinspecifiedtimeframe fromDate="2026-01-01" toDate="2026-03-01" brand="BrandA" fraudType="FraudTypeA"
-!retrievelistofmonitoringresultswithinspecifiedtimeframe fromDate="2026-01-01" toDate="2026-03-01"
+!csc-retrievelistofdetectionswithinspecifiedtimeframe fromDate="2026-01-01" toDate="2026-03-01"
+!csc-retrievefilteredlistofmonitoringresultswithinspecifiedtimeframe fromDate="2026-01-01" toDate="2026-03-01" brand="BrandA" fraudType="FraudTypeA"
+!csc-retrievelistofmonitoringresultswithinspecifiedtimeframe fromDate="2026-01-01" toDate="2026-03-01"
 
-!fetchthescreenshotdataforadetectionid detectionId=123
-!gethtmlsourcecodeforadetectionid detectionId=123
-!listofworklogsfordetectionid detectionId=123
-!updatetheactionfordetectionid detectionId=123 action="OPEN"
+!csc-fetchthescreenshotdataforadetectionid detectionId=123
+!csc-gethtmlsourcecodeforadetectionid detectionId=123
+!csc-listofworklogsfordetectionid detectionId=123
+!csc-updatetheactionfordetectionid detectionId=123 action="OPEN"
 
-!startorstopmonitoringforaspecificevent eventId=123 action="START"
-!listtakedowneventswithfilters fromDate="2026-01-01" toDate="2026-03-01"
+!csc-startorstopmonitoringforaspecificevent eventId=123 action="START"

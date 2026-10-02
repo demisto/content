@@ -5,11 +5,11 @@
     "meta": {
         "currentPage": 1,
         "pageSize": 101,
-        "total": 3,
+        "total": 0,
         "hasPrevious": true,
         "pages": 1,
         "hasNext": false,
-        "previousPage": 0,
+        "previousPage": null,
         "nextPage": null
     }
 }

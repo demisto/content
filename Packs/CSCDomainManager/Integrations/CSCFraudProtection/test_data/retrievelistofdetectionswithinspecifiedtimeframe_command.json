@@ -5,7 +5,7 @@
         "data": [
             {
                 "eventId": 187605483,
-                "target": "http://Rahmathalerttest.com",
+                "target": "http://lerttest.com",
                 "targetBrand": "CSC Demo",
                 "detectionTime": "2026-02-17T09:04:37.387530",
                 "fraudType": "Phishing",
@@ -22,7 +22,7 @@
             },
             {
                 "eventId": 186062230,
-                "target": "https://autoemaildemo.com",
+                "target": "https://audemo.com",
                 "targetBrand": "CSC Demo",
                 "detectionTime": "2026-02-11T14:32:53.547202",
                 "fraudType": "Phishing",
@@ -39,7 +39,7 @@
             },
             {
                 "eventId": 185803901,
-                "target": "https://templatesfinal.com",
+                "target": "https://templainal.com",
                 "targetBrand": "CSC Demo",
                 "detectionTime": "2026-02-10T17:47:08.231063",
                 "fraudType": "Phishing",

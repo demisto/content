@@ -1,7 +1,7 @@
-!fetchthephishkitdatawithticketid ticketId=123
-!fetchthescreenshotdatawithticketid ticketId=123
-!gethtmlsourcecodeforaticket ticketId=123
-!listofworklogsforticketid ticketId=123
-!listtakedowneventswithfilters fromDate="2026-01-01" toDate="2026-03-01"
-!updatetheactionwithticketid action="OPEN"
-!listtakedowneventswithfilters fromDate="2026-01-01" toDate="2026-03-01" page=1 limit=101
+!csctakedowns-fetchthephishkitdatawithticketid ticketId=123
+!csctakedowns-fetchthescreenshotdatawithticketid ticketId=123
+!csctakedowns-gethtmlsourcecodeforaticket ticketId=123
+!csctakedowns-listofworklogsforticketid ticketId=123
+!csctakedowns-listtakedowneventswithfilters fromDate="2026-01-01" toDate="2026-03-01"
+!csctakedowns-updatetheactionwithticketid action="OPEN"
+!csctakedowns-listtakedowneventswithfilters fromDate="2026-01-01" toDate="2026-03-01" page=1 limit=101

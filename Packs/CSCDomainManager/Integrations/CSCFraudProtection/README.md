@@ -3,12 +3,12 @@ This integration was integrated and tested with version xx of Anti Fraud API.
 
 ## Configure Anti Fraud API in Cortex
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Server URL | True |
-| API Key | True |
-| Trust any certificate (not secure) | False |
-| Use system proxy settings | False |
+| **Parameter**                      | **Description** | **Required** |
+|------------------------------------| --- | --- |
+| Server URL                         | The endpoint URL | True |
+| API Key                            | The API Key to use for connection | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings          |  | False |
 
 ## Access and Data Security
 
@@ -45,6 +45,36 @@ Control detection flow by event ID and action
 | --- | --- | --- |
 | CSCFraudProtection.message | String |  |
 | CSCFraudProtection.status | String |  |
+
+#### Context Example
+
+```json
+{
+    "CSCFraudProtection": {
+        "200": {
+            "properties": {
+                "data": {
+                    "title": "Data"
+                },
+                "message": {
+                    "title": "Message",
+                    "type": "string"
+                },
+                "status": {
+                    "default": "success",
+                    "title": "Status",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "message"
+            ],
+            "title": "SuccessResponseModel",
+            "type": "object"
+        }
+    }
+}
+```
 
 ### csc-fetchthephishkitdatawithticketid
 

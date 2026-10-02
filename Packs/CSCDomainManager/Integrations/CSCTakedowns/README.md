@@ -3,12 +3,12 @@ This integration was integrated and tested with version xx of CSCTakedowns.
 
 ## Configure CSCTakedowns in Cortex
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Server URL | True |
-| API Key | True |
-| Trust any certificate (not secure) | False |
-| Use system proxy settings | False |
+| **Parameter**                      | **Description** | **Required** |
+|------------------------------------| --- | --- |
+| Server URL                         | The endpoint URL | True |
+| API Key                            | The API Key to use for connection | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings          |  | False |
 
 ## Access and Data Security
 
