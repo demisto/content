@@ -1,8 +1,6 @@
 This integration fetches activities, threats, and alerts from SentinelOne.
 This integration was integrated and tested with API version 2.1 of SentinelOne.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
-
 ## Configure SentinelOne Activity and Alerts in Cortex
 
 | **Parameter** | **Description** | **Required** |

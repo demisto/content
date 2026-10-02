@@ -2,11 +2,11 @@
     "name": "Vega",
     "description": "The Vega integration allows you to ingest alerts and incidents from the Vega platform into Cortex XSOAR.",
     "support": "partner",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "created": "2026-05-21T14:22:24Z",
     "author": "Vega",
     "url": "https://vega.io/",
-    "email": "support@vega.io", 
+    "email": "support@vega.io",
     "tags": [
         "Security"
     ],
@@ -33,7 +33,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "Vega",
     "supportedModules": [
         "agentix",
         "xsiam"
