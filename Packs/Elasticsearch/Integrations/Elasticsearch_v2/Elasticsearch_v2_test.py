@@ -2802,12 +2802,13 @@ class TestEsKibanaEndpointIsolateCommand:
                 "id": "action-1",
                 "agentType": "endpoint",
                 "command": "isolate",
-                "isCompleted": False,
+                "isComplete": False,
                 "status": "pending",
                 "wasSuccessful": False,
             },
         }
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        markdown = mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Isolation submitted")
 
         result = Elasticsearch_v2.es_kibana_endpoint_isolate_command(
             {
@@ -2836,7 +2837,11 @@ class TestEsKibanaEndpointIsolateCommand:
         )
         assert result.outputs == response
         assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointIsolationAction"
-        assert "action-1" in result.readable_output
+        assert result.readable_output == "Isolation submitted"
+        hr = markdown.call_args.args[1]
+        assert hr["Action ID"] == "action-1"
+        assert hr["Is Complete"] is False
+        assert hr["Was Successful"] is False
 
     def test_missing_endpoint_ids_raises(self):
         import Elasticsearch_v2

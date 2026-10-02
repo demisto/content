@@ -843,6 +843,150 @@ Set the status of one or more detection alerts.
 >|---|---|
 >| 2 | 2 |
 
+### es-kibana-endpoint-execute-command
+
+***
+Run a shell command on one or more Elastic Defend endpoints.
+
+#### Base Command
+
+`es-kibana-endpoint-execute-command`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Kibana space ID. | Optional |
+| endpoint_ids | Endpoint IDs to run the command on. A maximum of 250 IDs can be specified. | Required |
+| agent_type | Agent type. Defaults to `endpoint`. | Optional |
+| alert_ids | Alert IDs associated with the action. A maximum of 50 IDs can be specified. | Optional |
+| case_ids | Case IDs in which to log the action. A maximum of 50 IDs can be specified. | Optional |
+| comment | Optional action comment. Maximum length is 30,000 characters. | Optional |
+| command | Shell command to run on the endpoint. | Required |
+| timeout | Maximum timeout in seconds. Minimum value is 1; defaults to 1. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.agents | String | Agent IDs targeted by the action. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.agentState | Unknown | Response action state for each agent. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.agentType | String | Agent type. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.command | String | Response action command. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.completedAt | String | Action completion time. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.createdBy | String | User who created the action. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.hosts | Unknown | Host names associated with the agents. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.id | String | Response action ID. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.isComplete | Boolean | Whether the action is complete. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.isExpired | Boolean | Whether the action is expired. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.outputs | Unknown | Outputs for each agent. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.parameters | Unknown | Action parameters. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.startedAt | Date | Action start time. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.status | String | Action status. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.wasCancelled | Boolean | Whether the action was cancelled. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.wasSuccessful | Boolean | Whether the action was successful. |
+
+#### Command Example
+
+```!es-kibana-endpoint-execute-command endpoint_ids="agent-1" command="ls -al" timeout="600"```
+
+### es-kibana-endpoint-action-details
+
+***
+Retrieve the details of a response action by its ID.
+
+#### Base Command
+
+`es-kibana-endpoint-action-details`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Kibana space ID. | Optional |
+| action_id | ID of the response action to retrieve. | Required |
+
+#### Context Output
+
+The response action is returned under `Elasticsearch.Kibana.EndpointGetActionDetails.data`, including its agents, state, type, command, timestamps, hosts, outputs, parameters, status, and completion flags.
+
+#### Command Example
+
+```!es-kibana-endpoint-action-details action_id="action-1"```
+
+### es-kibana-endpoint-get_metadata
+
+***
+Retrieve host metadata for a specific endpoint.
+
+#### Base Command
+
+`es-kibana-endpoint-get_metadata`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Kibana space ID. | Optional |
+| id | Agent ID of the endpoint. Maximum length is 256. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.EndpointGetMetadata.data.host_status | String | Endpoint host status. |
+| Elasticsearch.Kibana.EndpointGetMetadata.data.last_checkin | String | Endpoint's last check-in time. |
+| Elasticsearch.Kibana.EndpointGetMetadata.data.metadata | Unknown | Endpoint metadata. |
+
+#### Command Example
+
+```!es-kibana-endpoint-get_metadata id="agent-1"```
+
+### es-kibana-endpoint-get-agents
+
+***
+List Elastic Fleet agents, with optional KQL filtering and pagination. Requires the `fleet-agents-read` privilege.
+
+#### Base Command
+
+`es-kibana-endpoint-get-agents`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| space_id | Kibana space ID. | Optional |
+| page | Page number. | Optional |
+| per_page | Number of results per page. | Optional |
+| kuery | KQL query string to filter agents. | Optional |
+| show_agentless | Include agentless agents. | Optional |
+| show_inactive | Include inactive agents. | Optional |
+| with_metrics | Include CPU and memory metrics. | Optional |
+| show_upgradeable | Return only upgradeable agents. | Optional |
+| get_status_summary | Include a summary of agent statuses. | Optional |
+| sort_field | Field to sort results by. | Optional |
+| sort_order | Sort order, ascending or descending. | Optional |
+| search_after | JSON-encoded array of sort values for pagination. | Optional |
+| open_pit | Open a point-in-time for pagination. | Optional |
+| pit_id | Point-in-time ID for pagination. | Optional |
+| pit_keep_alive | Duration to keep the point-in-time alive, for example `1m`. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Kibana.EndpointAgents.items | Unknown | Matching Fleet agents. |
+| Elasticsearch.Kibana.EndpointAgents.nextSearchAfter | String | Search-after value for the next page. |
+| Elasticsearch.Kibana.EndpointAgents.page | Number | Current page number. |
+| Elasticsearch.Kibana.EndpointAgents.perPage | Number | Number of results per page. |
+| Elasticsearch.Kibana.EndpointAgents.pit | String | Point-in-time ID for pagination. |
+| Elasticsearch.Kibana.EndpointAgents.statusSummary | Unknown | Summary of agent statuses. |
+| Elasticsearch.Kibana.EndpointAgents.total | Number | Total number of matching agents. |
+
+#### Command Example
+
+```!es-kibana-endpoint-get-agents page="1" per_page="50" show_inactive="true" kuery="agent.name: \"host-1\""```
+
 ### es-kibana-endpoint-isolate
 
 ***
@@ -874,7 +1018,7 @@ Isolate an endpoint from the network. The endpoint remains isolated until it's r
 | Elasticsearch.Kibana.EndpointIsolationAction.data.command | String | The response action command. |
 | Elasticsearch.Kibana.EndpointIsolationAction.data.createdBy | String | The user who created the response action. |
 | Elasticsearch.Kibana.EndpointIsolationAction.data.hosts | Unknown | The host names associated with the agent IDs. |
-| Elasticsearch.Kibana.EndpointIsolationAction.data.isCompleted | Boolean | Whether the response action is complete. |
+| Elasticsearch.Kibana.EndpointIsolationAction.data.isComplete | Boolean | Whether the response action is complete. |
 | Elasticsearch.Kibana.EndpointIsolationAction.data.isExpired | Boolean | Whether the response action is expired. |
 | Elasticsearch.Kibana.EndpointIsolationAction.data.outputs | Unknown | The response action outputs for each agent ID. |
 | Elasticsearch.Kibana.EndpointIsolationAction.data.startedAt | Date | The response action start time. |
@@ -897,7 +1041,7 @@ Isolate an endpoint from the network. The endpoint remains isolated until it's r
                     "agents": ["endpoint-1", "endpoint-2"],
                     "agentType": "endpoint",
                     "command": "isolate",
-                    "isCompleted": false,
+                    "isComplete": false,
                     "status": "pending",
                     "wasSuccessful": false
                 }
@@ -911,7 +1055,7 @@ Isolate an endpoint from the network. The endpoint remains isolated until it's r
 
 >### Kibana Endpoint Isolation Action
 >
->|Action ID|Agent type|Command|Status|Is Completed|Was Successful|
+>|Action ID|Agent type|Command|Status|Is Complete|Was Successful|
 >|---|---|---|---|---|---|
 >| action-1 | endpoint | isolate | pending | false | false |
 
