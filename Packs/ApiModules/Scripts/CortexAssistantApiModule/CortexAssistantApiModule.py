@@ -12,6 +12,16 @@ from CommonServerPython import *
 
 THINKING_MESSAGE_ID_KEY = "thinking_message_id"
 
+# message_id values for internal/system step notifications that should never be
+# rendered to the user (e.g. agent selection acknowledgements, artifact creation notices).
+IGNORED_MESSAGE_IDS = frozenset(
+    {
+        "agent_selected",
+        "artifact_created",
+        "action_execute_failed",
+    }
+)
+
 # ============================================================================
 # Enums - Status, Message Types, Action IDs, and Backend Error Types
 # ============================================================================
@@ -454,6 +464,11 @@ class AssistantMessagingHandler:
 
     # Maximum number of previous messages to include as conversation context
     MAX_CONTEXT_MESSAGES = 5
+
+    # Marker that prefixes the source-chat metadata attached to the user's message before it is
+    # sent to the backend. The backend may echo this message back; such echoes are the user's own
+    # message and must not be re-sent to the platform.
+    SOURCE_CHAT_CONTEXT_MARKER = "--- Source chat context ---"
 
     # Platform name - subclasses should override this
     PLATFORM_NAME = "Unknown"
@@ -1358,15 +1373,13 @@ class AssistantMessagingHandler:
             backend_response = self.handle_backend_response(raw_response, "sendToConversation (approval)")
 
             if backend_response.success:
-                # Update the original message: replace the actions block with a decision indicator,
-                # keeping it above the feedback buttons (which are the last block).
+                # Update the original message: drop the approve/reject actions block and append a
+                # decision indicator. Approval messages have no feedback buttons, so the indicator
+                # simply goes at the end.
                 decision_indicator = AssistantMessages.DECISION_APPROVED if is_approved else AssistantMessages.DECISION_DECLINED
                 original_blocks = message.get("blocks", [])
                 updated_blocks = [block for block in original_blocks if block.get("type") != "actions"]
-                decision_block = {"type": "context", "elements": [{"type": "mrkdwn", "text": decision_indicator}]}
-                # Insert before the last block (feedback buttons) to maintain visual order
-                feedback_index = len(updated_blocks) - 1 if updated_blocks else 0
-                updated_blocks.insert(feedback_index, decision_block)
+                updated_blocks.append({"type": "context", "elements": [{"type": "mrkdwn", "text": decision_indicator}]})
 
                 try:
                     await self.update_message(channel_id, message_id, blocks=updated_blocks)
@@ -1442,7 +1455,7 @@ class AssistantMessagingHandler:
             Formatted source chat context string
         """
         return (
-            "--- Source chat context ---\n"
+            f"{self.SOURCE_CHAT_CONTEXT_MARKER}\n"
             "The following chat session metadata is automatically attached.\n"
             f"This chat was initiated from {self.PLATFORM_NAME}.\n"
             f"channel_id: {channel_id}\n"
@@ -1734,6 +1747,50 @@ class AssistantMessagingHandler:
 
         return groups
 
+    def _is_echoed_user_message(self, message: dict) -> bool:
+        """
+        Determines whether a message is the user's own message echoed back by the backend.
+
+        Before a user message is sent to the backend it may be prefixed with metadata that we add:
+        - the source-chat metadata marker (SOURCE_CHAT_CONTEXT_MARKER), and/or
+        - the previous-chat-context marker (AssistantMessages.CONTEXT_START).
+        When the backend echoes such a message back it should not be re-posted to the platform.
+
+        Args:
+            message: A single message dict.
+
+        Returns:
+            True if the message content starts with one of the metadata markers we prepend.
+        """
+        content = (message.get("content") or "").lstrip()
+        return content.startswith((self.SOURCE_CHAT_CONTEXT_MARKER, AssistantMessages.CONTEXT_START))
+
+    @staticmethod
+    def _get_feedback_message_id(messages: list[dict]) -> str:
+        """
+        Determines the message_id that should carry feedback buttons.
+
+        Feedback buttons belong on the last model-type message that has non-empty
+        content. An empty final model message only signals completion and must not
+        get its own feedback buttons. Approval (sensitive action) messages are also
+        excluded - they carry approve/reject buttons instead of feedback buttons.
+
+        Args:
+            messages: List of message dicts (already filtered of ignored messages).
+
+        Returns:
+            The message_id to attach feedback buttons to, or "" if none qualifies.
+        """
+        for msg in reversed(messages):
+            msg_type = msg.get("response_type", "")
+            msg_id = msg.get("message_id", "")
+            content = msg.get("content") or ""
+            if AssistantMessageType.is_approval_type(msg_type):
+                continue
+            if msg_id and content.strip() and AssistantMessageType.is_model_type(msg_type):
+                return msg_id
+        return ""
+
     def send_agent_response(
         self,
         channel_id: str,
@@ -1783,8 +1840,32 @@ class AssistantMessagingHandler:
             demisto.results("Agent response sent successfully.")
             return assistant_context
 
-        # Derive completed from the last message's is_final field
+        # Derive completed from the last (unfiltered) message's is_final field before dropping
+        # ignored messages, so an empty final message still marks the response as complete.
         completed = messages[-1].get("is_final", False)
+
+        # Drop messages that should never be shown to the user, while preserving the completed
+        # state derived above:
+        # - internal/system notifications identified by their message_id (IGNORED_MESSAGE_IDS).
+        # - the user's own message echoed back by the backend (its content is prefixed with the
+        #   source-chat metadata marker we attach before sending to the backend).
+        messages = [
+            msg
+            for msg in messages
+            if msg.get("message_id") not in IGNORED_MESSAGE_IDS and not self._is_echoed_user_message(msg)
+        ]
+
+        if not messages:
+            demisto.debug("All messages were ignored; nothing to send")
+            demisto.results("Agent response sent successfully.")
+            return assistant_context
+
+        # Identify the message that should carry feedback buttons: the last model-type message
+        # with non-empty content. Feedback buttons are only shown once the response is complete
+        # (the batch contains the completion signal); intermediate "thinking" model messages must
+        # not get feedback buttons. An empty final model message only signals completion, so the
+        # buttons land on the preceding meaningful response.
+        feedback_message_id = self._get_feedback_message_id(messages) if completed else ""
 
         # Validate all message types
         for msg in messages:
@@ -1865,6 +1946,9 @@ class AssistantMessagingHandler:
 
                     msg_metadata = msg.get("metadata") or {}
 
+                    # Only the designated feedback message should render feedback buttons.
+                    show_feedback = bool(msg_id) and msg_id == feedback_message_id
+
                     self._send_single_response(
                         channel_id=channel_id,
                         thread_id=thread_id,
@@ -1875,6 +1959,7 @@ class AssistantMessagingHandler:
                         user_id=user_id,
                         completed=msg_is_final,
                         metadata=msg_metadata,
+                        show_feedback=show_feedback,
                     )
 
                     # Determine status from the last message in the group
@@ -1886,6 +1971,14 @@ class AssistantMessagingHandler:
                             should_release_lock = True
                     elif AssistantMessageType.is_error_type(msg_type):
                         should_release_lock = True
+
+        # Release the lock when the response is complete. Completion is taken from the last
+        # original message's is_final flag, so an empty/ignored final message (which is never
+        # posted) still releases the lock and prevents the conversation from getting stuck in a
+        # "still responding" state. Approval requests are the exception - they keep the lock.
+        awaiting_approval = new_status == AssistantStatus.AWAITING_SENSITIVE_ACTION_APPROVAL.value
+        if completed and not awaiting_approval:
+            should_release_lock = True
 
         # Update context based on final state
         if assistant_id_key in assistant_context:
@@ -1911,6 +2004,7 @@ class AssistantMessagingHandler:
         user_id: str,
         completed: bool,
         metadata: dict | None = None,
+        show_feedback: bool = True,
     ):
         """
         Sends a single agent response message to the platform.
@@ -1925,6 +2019,7 @@ class AssistantMessagingHandler:
             user_id: Optional user ID to mention in model and error responses
             completed: Whether this is the final response
             metadata: Optional metadata dict from the message
+            show_feedback: Whether to render feedback buttons for this message
         """
         # Prepare blocks and attachments using platform-specific method
         blocks, attachments = self.prepare_message_blocks(message, message_type)
@@ -1950,9 +2045,9 @@ class AssistantMessagingHandler:
         # Handle model-specific UI elements
         if AssistantMessageType.is_model_type(message_type):
             if AssistantMessageType.is_approval_type(message_type):
+                # Sensitive action messages carry approve/reject buttons and never feedback buttons.
                 blocks.extend(self.create_approval_ui())
-
-            if message_id:
+            elif message_id and show_feedback:
                 blocks.append(self.create_feedback_ui(message_id))
 
         # Send message using platform-specific method
