@@ -1,0 +1,114 @@
+commonfields:
+  id: Imperva Incapsula Community Event Collector
+  version: -1
+sectionorder:
+- Connect
+- Collect
+name: Imperva Incapsula Community Event Collector
+display: Imperva Incapsula Community Event Collector
+category: Analytics & SIEM
+provider: Community
+description: Community-maintained, agentless event collector for Imperva Cloud WAF (Incapsula) accounts using the Imperva API log connection type. Not developed, reviewed, or supported by Imperva or Palo Alto Networks.
+configuration:
+- display: Logs URL
+  name: url
+  type: 0
+  required: true
+  section: Connect
+  additionalinfo: 'The Imperva Logs URL from SIEM Logs > Log Configuration, for example: https://logs1.incapsula.com/123456_456789/. Must end with a trailing slash.'
+- display: API ID and API Key
+  name: credentials
+  type: 9
+  required: true
+  section: Connect
+  additionalinfo: The Imperva API ID (username) and API Key (password) from your account's API settings page.
+- display: Log encryption private key (PEM)
+  name: private_key
+  type: 9
+  hiddenusername: true
+  required: false
+  section: Connect
+  additionalinfo: Only required if log encryption is enabled on the account. Paste the RSA private key in PEM format.
+- display: Log encryption public key ID
+  name: public_key_id
+  type: 0
+  required: false
+  section: Connect
+  additionalinfo: Only required if log encryption is enabled on the account. Must match the "publicKeyId" value found in encrypted log file headers.
+- display: Number of files to backfill on first run
+  name: first_fetch_files
+  type: 0
+  defaultvalue: "10"
+  required: false
+  section: Collect
+  additionalinfo: On the first fetch cycle, how many of the most recent entries in logs.index to fetch. Has no effect on subsequent cycles.
+- display: Maximum files per fetch cycle
+  name: max_files_per_fetch
+  type: 0
+  defaultvalue: "50"
+  required: false
+  section: Collect
+  advanced: true
+  additionalinfo: Upper bound on the number of log files downloaded in a single fetch cycle, to keep each cycle short-lived. Remaining files are picked up on the next cycle.
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  defaultvalue: "false"
+  required: false
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  defaultvalue: "false"
+  required: false
+  section: Connect
+  advanced: true
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  defaultvalue: "5"
+  section: Collect
+  advanced: true
+  required: false
+script:
+  script: ""
+  type: python
+  subtype: python3
+  dockerimage: demisto/crypto:1.0.0.11658507
+  isfetchevents: true
+  commands:
+  - name: imperva-incapsula-community-get-events
+    description: 'Manual command to fetch and display Imperva Incapsula events. Use for development and debugging only, as it may produce duplicate events or disrupt the fetch mechanism.'
+    arguments:
+    - name: should_push_events
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      defaultValue: "False"
+      required: true
+      description: Set this argument to True in order to send the fetched events to XSIAM, otherwise the command only displays them in the War Room.
+    - name: limit
+      description: The maximum number of log files to fetch and display. Defaults to the "Maximum files per fetch cycle" instance parameter.
+      required: false
+    outputs:
+    - contextPath: ImpervaIncapsulaCommunity.Event.file_name
+      description: The name of the log file the event was read from.
+      type: String
+    - contextPath: ImpervaIncapsulaCommunity.Event.raw
+      description: The raw, decrypted, decompressed log line.
+      type: String
+marketplaces:
+- marketplacev2
+- platform
+supportedModules:
+- xsiam
+fromversion: 6.10.0
+tests:
+- No tests
