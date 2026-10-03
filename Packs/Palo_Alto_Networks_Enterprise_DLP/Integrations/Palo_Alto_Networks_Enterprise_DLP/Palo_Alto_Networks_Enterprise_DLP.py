@@ -35,6 +35,59 @@ USE_CLIENT_CREDENTIALS = "use_client_credentials"
 END_TIME_BUFFER = 30  # seconds
 MAX_API_CALLS_PER_FETCH = 100
 
+# Incident filters. Maps each instance parameter to the v4 filter field it drives.
+# Field names are case-sensitive server-side. Insertion order fixes the order of the
+# clauses in the generated expression.
+FILTER_PARAMS = {
+    "dlp_regions": "Region",
+    "dlp_channels": "Channel",
+    "dlp_severities": "Severity",
+    "dlp_statuses": "Status",
+    "dlp_priorities": "Priority",
+    "dlp_data_profile_ids": "DataProfile",
+    "dlp_data_pattern_ids": "DataPattern",
+    "dlp_tags": "Tag",
+    "dlp_report_ids": "ReportId",
+    "dlp_url_domains": "UrlDomain",
+    "dlp_assets": "Asset",
+    "dlp_actions": "Action",
+    "dlp_policy_types": "PolicyType",
+    "dlp_sub_policy_types": "SubPolicyType",
+}
+# Fields whose column stores uppercase enum names. Status and Severity are deliberately
+# absent — Status values are mixed case and Severity values are numeric.
+UPPERCASE_FILTER_FIELDS = {"Region", "Channel"}
+# Translation from the value configured on the instance to the value the column stores.
+# Keys are lowercased; a value that is not mapped is passed through, so the stored values
+# may also be configured directly.
+FILTER_VALUE_MAPS = {
+    # Severity is stored as a numeric string, so the readable names must be translated.
+    "Severity": {"critical": "5", "high": "4", "medium": "3", "low": "2", "informational": "1"},
+    # Status casing is inconsistent server-side: only "New" is capitalized. The entries
+    # that look like no-ops are what normalize the casing, since Status cannot simply be
+    # uppercased the way the fields in UPPERCASE_FILTER_FIELDS are.
+    "Status": {
+        "new": "New",
+        "open": "open",
+        "under_investigation": "under_investigation",
+        "closed": "closed",
+    },
+    # Region tokens that earlier versions offered but that never matched a stored value.
+    # Translated on the way out so upgraded instances keep fetching.
+    "Region": {"ap": "SG", "par": "FR", "sui": "CH"},
+    # Action is stored lowercase.
+    "Action": {"allow": "allow", "alert": "alert", "block": "block"},
+    # PolicyType is not stored on the incident; it is derived, and the API rejects any value
+    # that is not one of these three display values rather than matching nothing.
+    "PolicyType": {
+        "data in motion": "Data in Motion",
+        "data at rest": "Data at Rest",
+        "peripheral control": "Peripheral Control",
+    },
+}
+# Characters that could break out of a quoted filter literal.
+UNSAFE_FILTER_VALUE = re.compile(r"['\\\x00-\x1f]")
+
 # Last run
 LAST_RUN_KEY = "last_run"
 START_TIMESTAMP_KEY = "start_timestamp"
@@ -249,7 +302,7 @@ class Client(BaseClient):
         self,
         start_time_ms: int,
         end_time_ms: int,
-        regions: str | list[str] | None = None,
+        filter_expression: str = "",
         page_size: int = V4_PAGE_SIZE,
     ) -> tuple[dict[str, Any], int]:
         """Start a v4 incident inventory query and fetch its first page.
@@ -257,7 +310,7 @@ class Client(BaseClient):
         Args:
             start_time_ms: Start time in epoch milliseconds (inclusive).
             end_time_ms: End time in epoch milliseconds (inclusive).
-            regions: DLP regions, as a list or a comma-separated string. Empty = all regions.
+            filter_expression: Server-side filter expression. Empty = no filtering.
             page_size: Rows per page.
 
         Returns:
@@ -272,9 +325,8 @@ class Client(BaseClient):
             "sort_order": "ASC",
             "page_size": page_size,
         }
-        region_filter = build_region_filter(regions)
-        if region_filter:
-            payload["filter"] = region_filter
+        if filter_expression:
+            payload["filter"] = filter_expression
 
         return self._post_dlp_api_call(full_url=self._v4_incidents_url(), payload=payload)
 
@@ -486,7 +538,7 @@ def test(client: Client, params: dict):
     now_ms = int(datetime.now(tz=UTC).timestamp() * 1000)
     one_hour_ago_ms = now_ms - 3_600_000
     report_json, status_code = client.get_incidents_first_page(
-        start_time_ms=one_hour_ago_ms, end_time_ms=now_ms, regions=params.get("dlp_regions", ""), page_size=1
+        start_time_ms=one_hour_ago_ms, end_time_ms=now_ms, filter_expression=build_incident_filter(params), page_size=1
     )
     if status_code in [200, 204]:
         return_results("ok")
@@ -495,7 +547,7 @@ def test(client: Client, params: dict):
         if "error" in report_json:
             message += f"Error message: \"{report_json.get('error')}\""
         else:
-            message += "Could not determine the error reason. Make sure the DLP Regions parameter is configured correctly."
+            message += "Could not determine the error reason. Make sure the incident filter parameters are configured correctly."
         raise DemistoException(message)
 
 
@@ -544,26 +596,66 @@ def parse_incident_details(compressed_details: str):
     return details_obj
 
 
-def build_region_filter(regions: str | list[str] | None) -> str:
+def build_filter_clause(field: str, values: str | list[str] | None) -> str:
     """
-    Build the v4 server-side filter expression for the configured regions.
+    Build a single ``<Field> in (...)`` clause of the v4 filter expression.
 
-    Region tokens are whitelisted to ``[A-Z0-9_]`` so an operator-supplied value
-    cannot alter the filter expression.
+    Values configured on the instance are translated to the values the column stores:
+    the readable names in ``FILTER_VALUE_MAPS`` are looked up, and the enum-backed fields
+    listed in ``UPPERCASE_FILTER_FIELDS`` are uppercased. A value that matches neither is
+    passed through, so a stored value may also be configured directly.
+
+    Quotes, backslashes and control characters are rejected rather than dropped. A
+    dropped value would silently widen the query — losing every token removes the
+    clause altogether, so an instance meant to watch one channel would fetch them all.
 
     Args:
-        regions: DLP regions, either as a list (the *DLP Regions* multi-select
-            parameter is handed to the integration as a list) or as a
-            comma-separated string.
+        field: Filter field name, as declared by the v4 API (case-sensitive).
+        values: Configured values, either as a list (a multi-select parameter is handed
+            to the integration as a list) or as a comma-separated string.
 
     Returns:
-        str: Filter expression, or an empty string when no valid region is configured.
+        str: Filter clause, or an empty string when nothing is configured.
+
+    Raises:
+        DemistoException: If a value contains a character that cannot be represented in
+            the filter expression.
     """
-    tokens = [str(region).strip().upper() for region in argToList(regions)]
-    tokens = [region for region in tokens if re.fullmatch(r"[A-Z0-9_]+", region)]
+    tokens = []
+    for value in argToList(values):
+        token = str(value).strip()
+        if not token:
+            continue
+        if UNSAFE_FILTER_VALUE.search(token):
+            raise DemistoException(
+                f"Invalid value {token!r} for the {field} filter: quotes, backslashes and "
+                "control characters are not supported."
+            )
+        mapped = FILTER_VALUE_MAPS.get(field, {}).get(token.lower())
+        if mapped is not None:
+            token = mapped
+        elif field in UPPERCASE_FILTER_FIELDS:
+            token = token.upper()
+        tokens.append(token)
+
     if not tokens:
         return ""
-    return "Region in ({})".format(", ".join(f"'{region}'" for region in tokens))
+    return "{} in ({})".format(field, ", ".join(f"'{token}'" for token in tokens))
+
+
+def build_incident_filter(params: dict) -> str:
+    """
+    Combine every configured filter parameter into one v4 filter expression.
+
+    Args:
+        params: Integration instance configuration parameters.
+
+    Returns:
+        str: ``AND``-joined filter expression, or an empty string when no filter is
+            configured, in which case the query covers everything the tenant can see.
+    """
+    clauses = [build_filter_clause(field, params.get(param)) for param, field in FILTER_PARAMS.items()]
+    return " AND ".join(clause for clause in clauses if clause)
 
 
 def parse_created_date(value: Any) -> datetime | None:
@@ -635,11 +727,19 @@ def create_incident(row: dict, created_at: datetime, incident_type: str = "Data 
         "fileType": None,
         "source": control_point,
         "appId": None,
-        "appName": None,
+        "appName": row.get("destination"),
         "createdAt": created_at.isoformat(),
         "region": row.get("source_region"),
         "previousNotification": {"feedback_status": row.get("feedback_status")},
-        "incidentDetails": {"headers": [{"attribute_name": "severity", "attribute_value": row.get("severity")}]},
+        "incidentDetails": {
+            "headers": [{"attribute_name": "severity", "attribute_value": row.get("severity")}],
+            # The incoming mapper reads the App incident field from incidentDetails.app_details.name,
+            # which the v1 fetch filled from the compressed details blob. "destination" is that
+            # same value: the control point reports the application it resolved, and the inventory
+            # API returns it under this name. Do not read "destination" from the incident-detail
+            # API expecting the same thing - there the key means the network destination address.
+            "app_details": {"name": row.get("destination")},
+        },
     }
 
     demisto.debug(f"Creating new incident with {incident_id=} in region={raw_incident['region']}.")
@@ -761,7 +861,7 @@ def _migrate_last_run(last_run: dict[str, Any], start_timestamp: int) -> dict[st
 
 def fetch_notifications(
     client: Client,
-    regions: str | list[str] | None,
+    filter_expression: str,
     first_fetch_timestamp: int,
     incident_type: str = "Data Loss Prevention",
     max_fetch: int = DEFAULT_MAX_FETCH,
@@ -772,7 +872,7 @@ def fetch_notifications(
 
     Args:
         client (Client): DLP API client.
-        regions (str | list[str] | None): DLP regions to fetch from, as a list or a comma-separated string.
+        filter_expression (str): Server-side filter expression narrowing the incidents fetched.
         first_fetch_timestamp (int): Timestamp to use for first fetch (unix epoch seconds).
         incident_type (str): Type of incident to create (default: "Data Loss Prevention").
         max_fetch (int): Maximum number of incidents to fetch (default: DEFAULT_MAX_FETCH).
@@ -815,7 +915,9 @@ def fetch_notifications(
 
     # A single query covers every configured region, so the watermark below is derived
     # from all of them rather than from whichever region happened to be queried last.
-    resp, status_code = client.get_incidents_first_page(start_time_ms=start_time_ms, end_time_ms=end_time_ms, regions=regions)
+    resp, status_code = client.get_incidents_first_page(
+        start_time_ms=start_time_ms, end_time_ms=end_time_ms, filter_expression=filter_expression
+    )
     rows: list[dict] = resp.get("rows") or []
     demisto.debug(f"First page: {len(rows)} rows, total_rows={resp.get('total_rows')}, status={resp.get('status')}.")
 
@@ -894,7 +996,8 @@ def fetch_incidents(client: Client, params: dict) -> tuple[dict, list[dict]]:
     Returns:
         tuple[dict, list[dict]]: Next run state and list of fetched incidents.
     """
-    regions = params.get("dlp_regions", "")
+    filter_expression = build_incident_filter(params)
+    demisto.debug(f"Fetching incidents with {filter_expression=}.")
     incident_type = params.get("incidentType", "Data Loss Prevention")
 
     first_fetch = params.get("first_fetch") or DEFAULT_FIRST_FETCH
@@ -906,7 +1009,7 @@ def fetch_incidents(client: Client, params: dict) -> tuple[dict, list[dict]]:
 
     return fetch_notifications(
         client=client,
-        regions=regions,
+        filter_expression=filter_expression,
         first_fetch_timestamp=first_fetch_timestamp,
         incident_type=incident_type,
         max_fetch=max_fetch,
