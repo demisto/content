@@ -1,0 +1,29 @@
+{
+    "name": "IsMalicious",
+    "description": "Enrich IP, domain, URL and file-hash indicators with IsMalicious reputation, evidence and data-trust context.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "IsMalicious",
+    "url": "https://ismalicious.com",
+    "email": "",
+    "created": "2026-10-03T00:00:00Z",
+    "categories": [
+        "Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence",
+        "Enrichment"
+    ],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "IsMalicious",
+        "IP reputation",
+        "domain reputation",
+        "hash reputation"
+    ],
+    "marketplaces": [
+        "xsoar"
+    ]
+}
