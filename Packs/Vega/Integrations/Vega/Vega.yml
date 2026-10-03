@@ -86,7 +86,7 @@ configuration:
       Outgoing (from Cortex XSOAR to Vega), or Incoming and Outgoing (from/to Cortex XSOAR and Vega).
       None turns mirroring off. The direction is stored on each incident when it is fetched.
       Changing this setting later does not change incidents already pulled.
-    defaultvalue: None
+    defaultvalue: Incoming
     display: Incident Mirroring Direction
     name: mirror_direction
     options:
