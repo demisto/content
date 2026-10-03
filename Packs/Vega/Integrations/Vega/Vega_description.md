@@ -26,8 +26,9 @@ You can configure the integration to fetch alerts, incidents, or both using the 
 
 ### Mirroring
 
-- **Vega to Cortex XSOAR** mirroring is always enabled for fetched Vega alerts and incidents.
-- **Cortex XSOAR to Vega** mirroring is controlled by **Enable XSOAR to Vega mirroring** in the **Autoclosure** section (enabled by default).
+- **Incident Mirroring Direction** in the **Mirroring** section chooses the direction. The default is **None**.
+- **Incoming** mirrors Vega changes into Cortex XSOAR. **Outgoing** mirrors Cortex XSOAR changes into Vega. **Incoming And Outgoing** does both.
+- The direction is stored on each incident when it is fetched. Changing the setting later does not change incidents already pulled.
 - Mirrored fields for alerts: status, severity, verdict, verdict reasoning, and comments.
 - Mirrored fields for incidents: severity, user status, verdict, verdict reasoning, and comments. Investigation status is synced from Vega and is not sent back on update.
 - Use the **Vega New Comment** field in the Comment section to add a comment from Cortex XSOAR that will be created in Vega.

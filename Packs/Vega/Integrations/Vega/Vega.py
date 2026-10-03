@@ -60,6 +60,16 @@ VALID_DETECTION_SEVERITIES = frozenset({"LOW", "MEDIUM", "HIGH", "CRITICAL"})
 
 MIRROR_ENTITY_SUFFIX_ALERT = "alert"
 MIRROR_ENTITY_SUFFIX_INCIDENT = "incident"
+MIRROR_DIRECTION_NONE = "None"
+MIRROR_DIRECTION_INCOMING = "Incoming"
+MIRROR_DIRECTION_OUTGOING = "Outgoing"
+MIRROR_DIRECTION_BOTH = "Incoming And Outgoing"
+MIRROR_DIRECTION_BY_PARAM = {
+    MIRROR_DIRECTION_NONE: None,
+    MIRROR_DIRECTION_INCOMING: "In",
+    MIRROR_DIRECTION_OUTGOING: "Out",
+    MIRROR_DIRECTION_BOTH: "Both",
+}
 VEGA_ALERT_STATUS_FIELD = "vegastatus"
 VEGA_ALERT_SEVERITY_FIELD = "vegaalertseverity"
 VEGA_INCIDENT_STATUS_FIELD = "vegaincidentstatus"
@@ -4203,10 +4213,11 @@ def _apply_mirror_metadata(raw: dict[str, Any], entity_type_suffix: str) -> None
         raw["mirror_id"] = _format_dbot_mirror_id(entity_type_suffix, str(entity_id).strip())
 
 
-def _is_xsoar_to_vega_mirroring_enabled(params: dict[str, Any] | None = None) -> bool:
-    """Return True when outgoing XSOAR to Vega mirroring is enabled."""
+def _configured_mirror_direction(params: dict[str, Any] | None = None) -> str | None:
+    """Return the XSOAR mirror direction stamped on incidents fetched with the current setting."""
     params = params or demisto.params()
-    return argToBoolean(params.get("autoclosure", True))
+    selected = str(params.get("mirror_direction") or MIRROR_DIRECTION_NONE).strip()
+    return MIRROR_DIRECTION_BY_PARAM.get(selected)
 
 
 def _get_mirroring_fields(
@@ -4233,7 +4244,9 @@ def _get_mirroring_fields(
     if instance:
         fields["mirror_instance"] = instance
 
-    fields["mirror_direction"] = "Both" if _is_xsoar_to_vega_mirroring_enabled(params) else "In"
+    direction = _configured_mirror_direction(params)
+    if direction:
+        fields["mirror_direction"] = direction
     return fields
 
 
@@ -4253,8 +4266,9 @@ def _apply_mirror_metadata_fields(
     mirror_context: dict[str, Any] | None = None,
     *,
     mirror_id: str | None = None,
+    include_direction: bool = True,
 ) -> None:
-    """Attach mirror direction and instance to an ingest or get-remote-data payload."""
+    """Attach mirror id and instance. Direction is included only when an incident is first fetched."""
     effective_mirror_id = mirror_id or payload.get("dbotMirrorId") or payload.get("mirror_id")
     if not effective_mirror_id:
         return
@@ -4264,7 +4278,7 @@ def _apply_mirror_metadata_fields(
     payload["mirror_id"] = mirror_id_text
 
     mirror_fields = _get_mirroring_fields(mirror_context=mirror_context or payload)
-    if mirror_fields.get("mirror_direction"):
+    if include_direction and mirror_fields.get("mirror_direction"):
         direction = mirror_fields["mirror_direction"]
         payload["dbotMirrorDirection"] = direction
         payload["mirror_direction"] = direction
@@ -4278,8 +4292,8 @@ def _apply_mirror_sync_metadata(
     sync_object: dict[str, Any],
     mirror_context: dict[str, Any] | None = None,
 ) -> None:
-    """Refresh top-level mirror metadata on every incoming mirror sync cycle."""
-    _apply_mirror_metadata_fields(sync_object, mirror_context=mirror_context)
+    """Refresh mirror id and instance. Leave dbotMirrorDirection as it was stamped at fetch."""
+    _apply_mirror_metadata_fields(sync_object, mirror_context=mirror_context, include_direction=False)
 
 
 def _normalize_entity_id(entity: dict, id_key: str = "id") -> str:
@@ -5670,10 +5684,6 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
         f"Command started: remote_id={remote_id}, incident_changed={parsed_args.incident_changed}, "
         f"entry_count={len(parsed_args.entries or [])}"
     )
-
-    if not _is_xsoar_to_vega_mirroring_enabled():
-        demisto.info(f"Outgoing mirroring disabled; skipping: remote_id={remote_id}")
-        return remote_id
 
     if not _mirror_bool(parsed_args.incident_changed) and not parsed_args.entries:
         demisto.info(f"No changes to mirror; skipping: remote_id={remote_id}")

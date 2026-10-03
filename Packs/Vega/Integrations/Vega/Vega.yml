@@ -81,18 +81,22 @@ configuration:
     section: Collect
     required: true
     defaultvalue: "30"
-  - display: Enable Cortex XSOAR to Vega mirroring
-    additionalinfo: >-
-      Whether to enable Cortex XSOAR to Vega mirroring. When enabled, changes made in Cortex 
-      XSOAR investigations are mirrored to Vega for status, verdict,
-      verdict reasoning, severity, and comments. Requires the Vega Outgoing Mapper on this 
-      instance.
-      When disabled, Vega to Cortex XSOAR mirroring remains enabled.
-    name: autoclosure
-    type: 8
+  - additionalinfo: >-
+      Choose the direction to mirror the incident: Incoming (from Vega to Cortex XSOAR),
+      Outgoing (from Cortex XSOAR to Vega), or Incoming and Outgoing (from/to Cortex XSOAR and Vega).
+      None turns mirroring off. The direction is stored on each incident when it is fetched.
+      Changing this setting later does not change incidents already pulled.
+    defaultvalue: None
+    display: Incident Mirroring Direction
+    name: mirror_direction
+    options:
+    - None
+    - Incoming
+    - Outgoing
+    - Incoming And Outgoing
+    type: 15
     section: Mirroring
-    required: false
-    defaultvalue: "true"
+    required: true
   - display: Outgoing fields to mirror
     additionalinfo: >-
       The investigation fields that are mirrored from Cortex XSOAR to Vega when outgoing 

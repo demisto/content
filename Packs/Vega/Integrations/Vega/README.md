@@ -15,7 +15,7 @@ This is the default integration for this content pack when configured by the Dat
 | Fetch Lookback (minutes) | The number of minutes the query window is shifted backwards on each fetch cycle to catch  alerts and incidents that were indexed late on the Vega side. Deduplication prevents re- ingestion. Valid range is 1-60. | True |
 | Vega Entities to fetch | The Vega entities to fetch as Cortex XSOAR incidents. | True |
 | Backfill Days | The number of days before today to fetch alerts and incidents on the first run. Use 0 for today only. Valid range is 0–365. | True |
-| Enable Cortex XSOAR to Vega mirroring | Whether to enable Cortex XSOAR to Vega mirroring. When enabled, changes made in Cortex  XSOAR investigations are mirrored to Vega for status, verdict, verdict reasoning, severity, and comments. Requires the Vega Outgoing Mapper on this  instance. When disabled, Vega to Cortex XSOAR mirroring remains enabled. | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming (from Vega to Cortex XSOAR), Outgoing (from Cortex XSOAR to Vega), or Incoming and Outgoing (from/to Cortex XSOAR and Vega). None turns mirroring off. The direction is stored on each incident when it is fetched. Changing this setting later does not change incidents already pulled. | True |
 | Outgoing fields to mirror | The investigation fields that are mirrored from Cortex XSOAR to Vega when outgoing  mirroring is enabled. If empty, all fields are mirrored. War Room comments are included when Comments is  selected. Any custom values entered outside the available options are ignored. | False |
 | Alert Severities to fetch | The severities by which to filter alerts. If empty, all severities are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
 | Alert Statuses to fetch | The statuses by which to filter alerts. If empty, all statuses are fetched. Any custom values entered outside the available options are ignored and will not affect  the fetch cycle. | False |
@@ -329,10 +329,15 @@ There is no context output for this command.
 
 ## Incident Mirroring
 
-You can enable incident mirroring between Cortex XSOAR incidents and Vega corresponding events (available from Cortex XSOAR version 6.0.0).
+You can enable incident mirroring between Cortex XSOAR incidents and Vega alerts or incidents (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
 
 1. Enable *Fetching incidents* in your instance configuration.
+2. In *Incident Mirroring Direction*, select the direction before incidents are fetched:
+    - Incoming - Changes in Vega are reflected in Cortex XSOAR.
+    - Outgoing - Changes in Cortex XSOAR are reflected in Vega.
+    - Incoming And Outgoing - Changes are reflected in both directions.
+    - None - Turns off incident mirroring.
 
-Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+The direction is stored on each incident as `dbotMirrorDirection` when that incident is fetched. Changing the instance setting later does not change incidents already pulled. Only incidents fetched after the change use the new direction.
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Vega.

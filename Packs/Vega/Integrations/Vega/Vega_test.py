@@ -74,8 +74,8 @@ from Vega import (
     update_alert_command,
     update_incident_command,
     _build_comment_war_room_entry,
+    _configured_mirror_direction,
     _get_mirroring_fields,
-    _is_xsoar_to_vega_mirroring_enabled,
     get_modified_remote_data_command,
     get_remote_data_command,
     update_remote_system_command,
@@ -1424,7 +1424,7 @@ def test_format_raw_entity_for_xsoar_incident():
 
 
 def test_alert_to_incident_formats_raw_json(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "false"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming"})
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
     alert = {
         "id": "alert-1",
@@ -1459,6 +1459,8 @@ def test_alert_to_incident_formats_raw_json(mocker):
         "mirror_id",
     }
     assert raw["mirror_id"] == "alert:alert-1"
+    assert raw["mirror_direction"] == "In"
+    assert xsoar_incident["dbotMirrorDirection"] == "In"
     assert xsoar_incident["dbotMirrorId"] == "alert:alert-1"
 
 
@@ -3720,8 +3722,8 @@ def test_normalize_verdict_reasoning_from_user_verdict():
     assert _extract_verdict_reasoning_from_entity(raw) is None
 
 
-def test_build_mirror_sync_object_refreshes_mirror_direction_each_cycle(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+def test_build_mirror_sync_object_does_not_rewrite_mirror_direction(mocker):
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
 
     sync_object = _build_mirror_sync_object(
@@ -3729,16 +3731,14 @@ def test_build_mirror_sync_object_refreshes_mirror_direction_each_cycle(mocker):
         MIRROR_ENTITY_SUFFIX_ALERT,
     )
 
-    assert sync_object["dbotMirrorDirection"] == "Both"
-    assert sync_object["mirror_direction"] == "Both"
+    assert "dbotMirrorDirection" not in sync_object
+    assert "mirror_direction" not in sync_object
     assert sync_object["dbotMirrorInstance"] == "Vega_instance_1"
     assert sync_object["dbotMirrorId"] == "alert:alert-1"
 
 
-def test_build_mirror_sync_object_sets_in_direction_when_outgoing_mirror_disabled(
-    mocker,
-):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "false"})
+def test_build_mirror_sync_object_keeps_direction_off_when_instance_is_incoming(mocker):
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming"})
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
 
     sync_object = _build_mirror_sync_object(
@@ -3746,8 +3746,8 @@ def test_build_mirror_sync_object_sets_in_direction_when_outgoing_mirror_disable
         MIRROR_ENTITY_SUFFIX_INCIDENT,
     )
 
-    assert sync_object["dbotMirrorDirection"] == "In"
-    assert sync_object["mirror_direction"] == "In"
+    assert "dbotMirrorDirection" not in sync_object
+    assert "mirror_direction" not in sync_object
 
 
 def test_build_mirror_sync_object_includes_alert_severity():
@@ -3879,7 +3879,7 @@ def test_get_remote_data_command_prefers_incident_detail_reasoning(mocker):
 
 
 def test_resolve_remote_entity_vega_alert_context_skips_incident_lookup(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alert_for_mirror.return_value = {
         "id": "alert-1",
@@ -3901,7 +3901,7 @@ def test_resolve_remote_entity_vega_alert_context_skips_incident_lookup(mocker):
 
 
 def test_resolve_remote_entity_falls_back_to_full_get_alerts(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alert_for_mirror.return_value = {}
     mock_client.get_alert_by_id.return_value = {
@@ -3945,11 +3945,12 @@ def test_get_mirroring_fields_uses_calling_context_fallback(mocker):
         "callingContext",
         {"context": {"IntegrationInstance": "Vega_prod"}},
     )
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
 
     fields = _get_mirroring_fields()
 
     assert fields["mirror_instance"] == "Vega_prod"
+    assert fields["mirror_direction"] == "Both"
 
 
 def test_build_effective_incident_update_args_field_change_updates_severity_only():
@@ -4060,11 +4061,26 @@ def test_update_incident_command_supports_assignee_emails(mocker):
     assert result.outputs["assignee"] == "lead@example.com"
 
 
-def test_get_mirroring_fields_autoclosure_enabled(mocker):
+@pytest.mark.parametrize(
+    ("selected", "expected"),
+    [
+        ("None", None),
+        ("Incoming", "In"),
+        ("Outgoing", "Out"),
+        ("Incoming And Outgoing", "Both"),
+        ("", None),
+        ("unexpected", None),
+    ],
+)
+def test_configured_mirror_direction(selected, expected):
+    assert _configured_mirror_direction({"mirror_direction": selected}) == expected
+
+
+def test_get_mirroring_fields_incoming_and_outgoing(mocker):
     mocker.patch.object(
         demisto,
         "params",
-        return_value={"autoclosure": "true"},
+        return_value={"mirror_direction": "Incoming And Outgoing"},
     )
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
 
@@ -4074,26 +4090,18 @@ def test_get_mirroring_fields_autoclosure_enabled(mocker):
     assert fields["mirror_instance"] == "Vega_instance_1"
 
 
-def test_get_mirroring_fields_autoclosure_disabled(mocker):
+def test_get_mirroring_fields_omits_direction_when_none(mocker):
     mocker.patch.object(
         demisto,
         "params",
-        return_value={"autoclosure": "false"},
+        return_value={"mirror_direction": "None"},
     )
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
 
     fields = _get_mirroring_fields()
 
-    assert fields["mirror_direction"] == "In"
+    assert "mirror_direction" not in fields
     assert fields["mirror_instance"] == "Vega_instance_1"
-
-
-def test_is_xsoar_to_vega_mirroring_disabled_when_autoclosure_false():
-    assert _is_xsoar_to_vega_mirroring_enabled({"autoclosure": "false"}) is False
-
-
-def test_is_xsoar_to_vega_mirroring_enabled_defaults_true():
-    assert _is_xsoar_to_vega_mirroring_enabled({}) is True
 
 
 def test_collect_outgoing_entry_comments_skips_mirror_tagged_notes():
@@ -4314,7 +4322,7 @@ def test_get_modified_remote_data_command_both_entities(mocker):
 
 def test_get_remote_data_command_alert_with_comment(mocker):
     mocker.patch("Vega.load_current_incident", return_value={"type": "Vega Alert"})
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
@@ -4362,7 +4370,7 @@ def test_get_remote_data_command_alert_with_comment(mocker):
 
 def test_get_remote_data_command_vega_alert_context_skips_incident_lookup(mocker):
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alert_for_mirror.return_value = {
         "id": "alert-1",
@@ -4404,7 +4412,7 @@ def test_get_remote_data_command_vega_alert_context_skips_incident_lookup(mocker
 def test_get_remote_data_command_uses_investigation_context_for_bare_alert_id(mocker):
     mocker.patch("Vega.load_current_incident", return_value={"type": "Vega Alert"})
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alert_for_mirror.return_value = {
@@ -4626,7 +4634,7 @@ def test_get_remote_data_command_preserves_incident_type_with_bare_id(mocker):
 
 
 def test_resolve_remote_entity_uses_prefixed_incident_id(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_incident_for_mirror.return_value = {
         "id": "inc-1",
@@ -4757,7 +4765,7 @@ def test_get_alert_for_mirror_passes_from_time_filter(mocker):
 
 
 def test_resolve_remote_entity_alert_uses_lookup_filters(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alert_for_mirror.return_value = {
         "id": "alert-1",
@@ -4793,7 +4801,7 @@ def test_mirror_field_value_reads_old_new_delta_from_custom_fields():
 
 
 def test_update_remote_system_command_updates_alert_from_old_new_delta(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alert_for_mirror.return_value = {"id": "alert-1", "status": "OPEN"}
@@ -4857,7 +4865,7 @@ def test_build_outgoing_alert_mirror_update_skips_unchanged_delta_fields():
 
 
 def test_update_remote_system_command_skips_incoming_mirror_echo_updates(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch("Vega.load_current_incident", return_value={"type": "Vega Alert"})
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
@@ -4897,7 +4905,7 @@ def test_update_remote_system_command_skips_incoming_mirror_echo_updates(mocker)
 def test_update_remote_system_command_mirrors_war_room_comment_without_field_echo(
     mocker,
 ):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch("Vega.load_current_incident", return_value={"type": "Vega Alert"})
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
@@ -5018,7 +5026,7 @@ def test_get_incident_for_mirror_passes_lookup_time_filters(mocker):
 
 
 def test_get_remote_data_command_passes_last_update_to_incident_lookup(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_incident_for_mirror.return_value = {
         "id": "inc-1",
@@ -5173,9 +5181,13 @@ def test_mirror_entity_type_from_args_uses_investigation_context(mocker):
     )
 
 
-def test_update_remote_system_command_disabled(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "false"})
+def test_update_remote_system_command_pushes_when_platform_calls_it(mocker):
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "None"})
+    mocker.patch("Vega.load_current_incident", return_value={"type": "Vega Alert"})
+    mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
+    mock_client.get_alert_for_mirror.return_value = {"id": "alert-1", "status": "OPEN"}
+    mock_client.get_incident_for_mirror.return_value = {}
 
     remote_id = update_remote_system_command(
         mock_client,
@@ -5183,16 +5195,16 @@ def test_update_remote_system_command_disabled(mocker):
             "remoteId": "alert-1",
             "incidentChanged": "true",
             "delta": {"vegastatus": "RESOLVED"},
-            "data": {"vegastatus": "RESOLVED"},
+            "data": {"type": "Vega Alert", "vegastatus": "RESOLVED"},
         },
     )
 
     assert remote_id == "alert-1"
-    mock_client.update_alerts.assert_not_called()
+    mock_client.update_alerts.assert_called_once()
 
 
 def test_update_remote_system_command_updates_alert_severity(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_alert_for_mirror.return_value = {
         "id": "alert-1",
@@ -5221,7 +5233,7 @@ def test_update_remote_system_command_updates_alert_severity(mocker):
 
 
 def test_update_remote_system_command_updates_alert(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch("Vega.load_current_incident", return_value={"type": "Vega Alert"})
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
@@ -5253,7 +5265,7 @@ def test_update_remote_system_command_updates_alert(mocker):
 
 
 def test_update_remote_system_command_pushes_new_comment(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch("Vega.load_current_incident", return_value={"type": "Vega Alert"})
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
@@ -5274,7 +5286,7 @@ def test_update_remote_system_command_pushes_new_comment(mocker):
 
 
 def test_update_remote_system_command_updates_incident_from_custom_fields_delta(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
     mock_client.get_incident_for_mirror.return_value = {
@@ -5313,9 +5325,18 @@ def test_update_remote_system_command_updates_incident_from_custom_fields_delta(
     )
 
 
-def test_alert_to_incident_sets_mirror_metadata(mocker):
+@pytest.mark.parametrize(
+    ("selected", "expected_direction"),
+    [
+        ("None", None),
+        ("Incoming", "In"),
+        ("Outgoing", "Out"),
+        ("Incoming And Outgoing", "Both"),
+    ],
+)
+def test_alert_to_incident_sets_mirror_metadata(mocker, selected, expected_direction):
     mocker.patch.object(demisto, "integrationInstance", return_value="Vega_instance_1")
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": selected})
     alert = {
         "id": "alert-1",
         "name": "Test Alert",
@@ -5323,10 +5344,17 @@ def test_alert_to_incident_sets_mirror_metadata(mocker):
         "createdAt": TIMESTAMP_T1,
     }
     xsoar_incident = alert_to_incident(alert)
+    raw = json.loads(xsoar_incident["rawJSON"])
 
     assert xsoar_incident["dbotMirrorId"] == "alert:alert-1"
-    assert xsoar_incident["dbotMirrorDirection"] == "Both"
     assert xsoar_incident["dbotMirrorInstance"] == "Vega_instance_1"
+    assert raw["mirror_instance"] == "Vega_instance_1"
+    if expected_direction is None:
+        assert "dbotMirrorDirection" not in xsoar_incident
+        assert "mirror_direction" not in raw
+    else:
+        assert xsoar_incident["dbotMirrorDirection"] == expected_direction
+        assert raw["mirror_direction"] == expected_direction
 
 
 def test_get_alert_by_id_handles_null_get_alerts_response(mocker):
@@ -5361,7 +5389,7 @@ def test_update_alerts_handles_null_graphql_data(mocker):
 
 
 def test_update_remote_system_command_surfaces_api_error_instead_of_none_type(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch("Vega.load_current_incident", return_value={"type": "Vega Alert"})
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "error")
@@ -5387,7 +5415,7 @@ def test_update_remote_system_command_surfaces_api_error_instead_of_none_type(mo
 
 
 def test_update_remote_system_command_updates_incident_from_delta_status_field(mocker):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch("Vega.load_current_incident", return_value={})
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock(spec=Client)
@@ -5419,7 +5447,7 @@ def test_update_remote_system_command_updates_incident_from_delta_status_field(m
 def test_update_remote_system_command_uses_api_fallback_without_investigation_context(
     mocker,
 ):
-    mocker.patch.object(demisto, "params", return_value={"autoclosure": "true"})
+    mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mocker.patch(
         "Vega.demisto.incident",
         side_effect=TypeError("'NoneType' object is not subscriptable"),
