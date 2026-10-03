@@ -95,13 +95,8 @@ MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
 MAX_FETCH_SPOTLIGHT_ASSETS = 5000
-# Spotlight page size for the long-running flow. Smaller pages cut the resident working set (and all
-# MAX_PENDING_TASKS_PER_SEVERITY in-flight slots with it) and shorten per-page parse/compress time,
-# which is time charged against the pagination cursor's TTL. The scheduled fetch-assets flow keeps
-# 5000: it is bound by a 12h timeout, so the extra requests cost more there than the memory saves.
-# Not a pure win on memory: each severity also holds a prefetched page (see
-# fetch_vulnerabilities_by_severity), so the peak is MAX_CONCURRENT_SEVERITIES x 2 x this value,
-# plus the pending send batches. Worth re-checking that total before tuning this number.
+# Spotlight page size for the long-running flow; the scheduled flow keeps 5000. Each severity holds
+# a prefetched page too, so peak memory is MAX_CONCURRENT_SEVERITIES x 2 x this, plus pending sends.
 SPOTLIGHT_PAGE_SIZE_LONG_RUNNING = 3000
 # Below the 5000 server-side maximum to keep payloads under XSOAR's auto-file threshold.
 MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE = 2500
@@ -123,31 +118,17 @@ LONG_RUNNING_SLEEP_CHUNK_SECONDS = 60
 # gateway blip, so the attempts are spaced out to let it clear.
 XSIAM_SEND_RETRY_BACKOFF_SECONDS = 1
 MAX_PENDING_TASKS_PER_SEVERITY = 5  # Backpressure: max concurrent pending XSIAM send tasks per severity stream
-# Asset enrichment tasks in flight at once. Nothing else bounds them: they are spawned from the
-# vulnerability stream and only awaited at the end of the cycle, so on a large tenant hundreds of
-# device payloads could otherwise pile up alongside the vulnerability pages.
+# Backpressure for asset enrichment: nothing else bounds these, and they are only awaited at the
+# end of the cycle.
 MAX_PENDING_ASSET_TASKS = 5
-# Severities fetched at once. Each live severity holds a page plus its in-flight send buffers, and
-# they share one event loop, so concurrency drives both peak memory and how long a cursor waits
-# between requests. 2 keeps the peak well under the limit without serialising the whole cycle.
+# Severities fetched at once. Drives both peak memory and how long a cursor waits between requests.
 MAX_CONCURRENT_SEVERITIES = 2
-# Fetch order, lightest severity first. This does not lower the peak - MEDIUM and HIGH still overlap,
-# at the tail instead of the start - it decides what a cut-short cycle gets through: the cheap
-# severities complete early, and HIGH is the one left unfinished rather than several at once.
+# Lightest severity first, so a cut-short cycle leaves HIGH unfinished rather than several at once.
 # Distinct from SPOTLIGHT_SEVERITIES, which stays the reference set for the seal-completeness check.
 SPOTLIGHT_SEVERITY_FETCH_ORDER = ["UNKNOWN", "NONE", "LOW", "CRITICAL", "MEDIUM", "HIGH"]
-# The Spotlight 'after' cursor expires roughly this long after the page that produced it. Not
-# documented, so an estimate: useful for sizing retries, not something to rely on.
+# Measured, not documented upstream, and deliberately unused: it is the budget the prefetch ordering
+# and the shrink ladder's backoffs are sized against. An estimate, not a contract.
 SPOTLIGHT_CURSOR_TTL_SECONDS = 120
-# Checked before each shrink-ladder sleep: if the elapsed retry time plus the next backoff exceeds
-# this, the severity is abandoned instead of trying a smaller page. Only the sleeps are gated - an
-# in-flight request is never interrupted - so in practice this reduces to "stop retrying once
-# failing requests average more than ~7.7s", which is where the third check (3R + 22 > 45) trips.
-# Faster failures never reach it: the whole ladder costs 22s of backoff. Deliberately loose rather
-# than tuned, since it cannot keep the ladder inside the cursor TTL anyway - four slow rungs plus
-# an unbounded final request can outlive the cursor regardless. The point is to stop throwing good
-# time after bad, not to guarantee the cursor survives.
-SPOTLIGHT_LADDER_BUDGET_SECONDS = 45
 SPOTLIGHT_LOOKBACK_DAYS = 100  # Default lookback; overridable per instance (bounds dataset size)
 # Period between Spotlight fetch cycle starts for a long-running instance. Not configurable, so it
 # can never be set below the time a full fetch needs (~2.3h typical, longer on large tenants).
@@ -4035,8 +4016,7 @@ class AssetsDeviceHandler:
 
             log_falcon_assets(f"AssetsDeviceHandler: Buffer full, triggering enrichment for {len(batch)} AIDs")
 
-            # Backpressure: nothing else bounds these, and they are only awaited at the end of the
-            # cycle, so without this their payloads accumulate for the whole run.
+            # Nothing else bounds these, and they are only awaited at the end of the cycle.
             while len(self.running_tasks) >= MAX_PENDING_ASSET_TASKS:
                 await asyncio.wait(self.running_tasks, return_when=asyncio.FIRST_COMPLETED)
 
@@ -4218,9 +4198,8 @@ def _loop_semaphore(name: str, value: int) -> asyncio.Semaphore:
     # cycle's loop can land on the previous one's id and the stale semaphores would be kept.
     loop = asyncio.get_running_loop()
     if loop is not _SEMAPHORE_LOOP:
-        # New cycle: every semaphore from the previous loop is unusable, so drop them together.
-        # Only reset on a loop change - clearing whenever a name is missing would discard the
-        # semaphores the current cycle is already holding.
+        # Only on a loop change: clearing whenever a name is missing would discard the semaphores
+        # the current cycle is already holding.
         _LOOP_SEMAPHORES.clear()
         _SEMAPHORE_LOOP = loop
     if name not in _LOOP_SEMAPHORES:
@@ -4301,7 +4280,7 @@ async def xsiam_api_call_async(
                     # Only logged here: a retry may still succeed, and reporting every attempt
                     # to the health module turns a recovered blip into a red instance.
                     last_error = e
-                    log_falcon_assets(f"Error sending {data_type} to XSIAM: {e.message}", "error")
+                    log_falcon_assets(f"Error sending {data_type} to XSIAM: {e.message}\n{traceback.format_exc()}", "error")
                     if attempt_num < num_of_attempts:
                         await asyncio.sleep(XSIAM_SEND_RETRY_BACKOFF_SECONDS)
 
@@ -4904,6 +4883,10 @@ async def fetch_spotlight_page_with_shrink(
     ``SPOTLIGHT_TRANSIENT_HTTP_STATUS_CODES``.
     Other errors, such as an expired cursor, propagate immediately since shrinking cannot help.
 
+    The ladder always runs to completion: a severity cannot continue without this page, so giving
+    up early only discards one that a smaller limit might still have fetched. The backoffs total
+    22s, well inside the cursor TTL.
+
     Args:
         client: ContentClient instance for API calls.
         after_token: Pagination token for the page being fetched (None for the first page).
@@ -4921,7 +4904,6 @@ async def fetch_spotlight_page_with_shrink(
     last_error: Exception | None = None
     shrink_ladder = build_spotlight_shrink_ladder(page_size)
     last_step_index = len(shrink_ladder) - 1
-    ladder_started_at = time.monotonic()
 
     for step_index, attempt_limit in enumerate(shrink_ladder):
         try:
@@ -4952,17 +4934,6 @@ async def fetch_spotlight_page_with_shrink(
                 break
 
             backoff_seconds = SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS[min(step_index, len(SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS) - 1)]
-            elapsed = time.monotonic() - ladder_started_at
-            if elapsed + backoff_seconds > SPOTLIGHT_LADDER_BUDGET_SECONDS:
-                # The 'after' cursor is almost certainly expired by now, so the remaining rungs
-                # would only delay restarting this severity with a fresh one.
-                log_falcon_assets(
-                    f"[{severity}] Giving up on this page after {elapsed:.1f}s of retries "
-                    f"(budget {SPOTLIGHT_LADDER_BUDGET_SECONDS}s); the cursor is likely expired. Last error: {e}",
-                    "error",
-                )
-                break
-
             log_falcon_assets(
                 f"[{severity}] Transient page failure ({reason}) at limit={attempt_limit} "
                 f"(same after token). Backing off {backoff_seconds}s, then retrying the same page "
@@ -5102,8 +5073,7 @@ async def fetch_vulnerabilities_by_severity(
             )
 
             if next_page_task is not None:
-                # Already in flight since the previous iteration, issued before that page's
-                # downstream work ran so the cursor was not left idle while it did.
+                # Already in flight since the previous iteration.
                 vulnerabilities, response_data = await next_page_task
                 next_page_task = None
             else:
@@ -5118,17 +5088,14 @@ async def fetch_vulnerabilities_by_severity(
 
             batch_counter += 1
 
-            # Pagination token first, before any work on the records: the server measures the
-            # cursor's TTL from the moment it returned this page, so the follow-up request has to
-            # leave before anything that can block. No token means this was the last page.
+            # The server measures the cursor's TTL from the moment it returned this page, so the
+            # next request must be issued before the downstream work below, any step of which can
+            # stall for longer than the TTL. create_task only schedules it - the first await after
+            # this point starts it - so nothing slow may be moved above here.
             new_after_token = response_data.get("meta", {}).get("pagination", {}).get("after")
             is_last_batch = not new_after_token
 
             if new_after_token:
-                # Issued ahead of the AID hand-off, send-task creation and backpressure wait below.
-                # Each of those can stall for longer than the cursor's TTL, so none of them may sit
-                # between this page arriving and the next one being asked for. Only the first await
-                # after this point actually starts the request, so nothing slow may go above it.
                 next_page_task = asyncio.create_task(
                     fetch_spotlight_page_with_shrink(
                         client=client,
@@ -5139,14 +5106,8 @@ async def fetch_vulnerabilities_by_severity(
                     )
                 )
 
-            # Everything below is downstream work on the page just received. The next request is
-            # already in flight, so a stall here costs throughput but can no longer kill the cursor.
-
-            # Extract unique AIDs from this batch (covers the withheld record too).
+            # Downstream work on the page just received; the next request is already in flight.
             extract_unique_aids(vulnerabilities, unique_aids)
-
-            # Hand AIDs to the asset handler. This awaits enrichment backpressure, which is exactly
-            # why it must run after the next page has been requested.
             await asset_handler.receive_new_aids(device_ids_from_vulns(vulnerabilities))
 
             # Withhold this severity's first record for the sealing batch. It is AID-enriched above
@@ -5296,12 +5257,12 @@ async def fetch_vulnerabilities_by_severity(
                 pass  # Expected: we just cancelled it.
             except Exception as e:  # noqa: BLE001
                 # Not fatal, the severity is already unwinding, but silence here would hide a bug.
-                log_falcon_assets(f"[{severity}] Prefetched page failed while being cancelled: {e}", "warning")
+                log_falcon_assets(
+                    f"[{severity}] Prefetched page failed while being cancelled: {e}\n{traceback.format_exc()}", "warning"
+                )
 
-        # Only non-empty when this severity is unwinding on an error: the success path above drains
-        # and clears the set. These tasks are never handed to the caller on this path, so nothing
-        # else would await them - they would keep uploading against the shared XSIAM session after
-        # the cycle tears it down, turning a stored batch into a spurious client-side failure.
+        # Error path only; the success path above already drained. Nothing else awaits these, so
+        # without this they outlive the shared XSIAM session and a stored batch reports as failed.
         if pending_tasks:
             log_falcon_assets(f"[{severity}] Draining {len(pending_tasks)} in-flight send task(s) after an error", "warning")
             await asyncio.gather(*pending_tasks, return_exceptions=True)
@@ -5481,10 +5442,9 @@ async def finalize_severity_fetch(
                 state=spotlight_state,
                 save_state_callback=save_spotlight_state,
                 data_type="assets",
-                # One chunk, so the seal either stores in full or not at all. Split across chunks,
-                # a partial failure would still store some records, and the next cycle's retry
-                # would re-send them - leaving the snapshot with duplicates and a stored count
-                # that can never equal the declared one, so it could never seal.
+                # The seal must land in one chunk, or a retry duplicates records and stored can
+                # never equal declared. That is guaranteed by its size (<= 6 records), not by this
+                # argument, which is clamped to the limit internally and only widens the threshold.
                 chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT,
             )
             await final_task
@@ -5628,9 +5588,8 @@ async def fetch_spotlight_by_severity_parallel(
             lost_records_by_severity=lost_records_by_severity,
         )
     finally:
-        # flush_remaining only runs when every severity completed, so on any other exit the
-        # enrichment tasks are still uploading. This function owns them, and its caller closes the
-        # shared XSIAM session as soon as it returns, so they have to be settled here.
+        # flush_remaining only runs when every severity completed, so on any other exit these are
+        # still uploading - and the caller closes the shared XSIAM session as soon as this returns.
         if asset_handler.running_tasks:
             log_falcon_assets(
                 f"Draining {len(asset_handler.running_tasks)} in-flight asset enrichment task(s) before teardown",

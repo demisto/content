@@ -13326,16 +13326,14 @@ class TestSpotlightFetchTuning:
         assert max(ladder) == 3000
 
     @pytest.mark.asyncio
-    async def test_ladder_stops_once_the_retry_budget_is_spent(self, mocker):
-        """Past the budget the cursor is assumed dead, so the remaining rungs are pointless: they
-        would only delay restarting this severity with a fresh cursor."""
+    async def test_ladder_walks_every_rung_before_giving_up(self, mocker):
+        """There is no way to continue a severity without this page, so stopping early only turns a
+        page a smaller limit could still have fetched into a discarded severity. Every rung runs."""
         import CrowdStrikeFalcon
         from ContentClientApiModule import ContentClientError
 
         mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
         mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new_callable=mocker.AsyncMock)
-        # Zero budget, so the very first backoff is already over it.
-        mocker.patch.object(CrowdStrikeFalcon, "SPOTLIGHT_LADDER_BUDGET_SECONDS", 0)
 
         response = mocker.MagicMock()
         response.status_code = 500
@@ -13351,7 +13349,38 @@ class TestSpotlightFetchTuning:
                 client=mocker.MagicMock(), after_token="tok", filter_query="q", severity="LOW", page_size=3000
             )
 
-        assert page.call_count == 1, "the ladder kept walking rungs after the cursor was presumed dead"
+        expected_rungs = len(CrowdStrikeFalcon.build_spotlight_shrink_ladder(3000))
+        assert page.call_count == expected_rungs, "the ladder abandoned the page before trying every smaller limit"
+
+    @pytest.mark.asyncio
+    async def test_ladder_recovers_on_a_later_rung(self, mocker):
+        """The rung that matters: a page too large to parse at 3000 can still succeed at a smaller
+        limit. Any early exit would throw away a severity this rescues."""
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+        mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new_callable=mocker.AsyncMock)
+
+        recovered = ([{"id": "vuln1"}], {"meta": {"pagination": {}}})
+        page = mocker.patch.object(
+            CrowdStrikeFalcon,
+            "fetch_spotlight_vulnerabilities_page",
+            new_callable=mocker.AsyncMock,
+            side_effect=[
+                json.JSONDecodeError("oversized", "", 0),
+                json.JSONDecodeError("oversized", "", 0),
+                recovered,
+            ],
+        )
+
+        result = await CrowdStrikeFalcon.fetch_spotlight_page_with_shrink(
+            client=mocker.MagicMock(), after_token="tok", filter_query="q", severity="LOW", page_size=3000
+        )
+
+        assert result == recovered
+        assert page.call_count == 3
+        # The same cursor is reused on every rung: a new token would skip records.
+        assert {call.kwargs["after_token"] for call in page.call_args_list} == {"tok"}
 
     @pytest.mark.asyncio
     async def test_retry_log_reports_the_limit_actually_used_next(self, mocker):
