@@ -3,6 +3,7 @@ from copy import deepcopy
 
 import demistomock as demisto
 import pytest
+import SlackEventCollector
 from CommonServerPython import DemistoException
 from requests import Session
 from SlackEventCollector import Client
@@ -1374,8 +1375,6 @@ def test_main_fetch_events_persists_next_trigger_with_position_after_send(mocker
         - setLastRun is called exactly once, AFTER send_events_to_xsiam, with the advanced position and
           nextTrigger="1" together, so the re-triggered run starts from the new position.
     """
-    import SlackEventCollector
-
     call_order: list[str] = []
     mocker.patch.object(demisto, "command", return_value="fetch-events")
     mocker.patch.object(demisto, "params", return_value=dict(FETCH_PARAMS))
@@ -1406,8 +1405,6 @@ def test_main_fetch_events_does_not_persist_when_send_fails(mocker):
         - setLastRun is never called, so neither the advanced position nor nextTrigger is stored and the
           next run re-collects the same batch (no data loss), and the error is reported.
     """
-    import SlackEventCollector
-
     mocker.patch.object(demisto, "command", return_value="fetch-events")
     mocker.patch.object(demisto, "params", return_value=dict(FETCH_PARAMS))
     mocker.patch.object(demisto, "args", return_value={})
