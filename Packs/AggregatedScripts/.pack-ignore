@@ -1,3 +1,6 @@
+[pack]
+ignore=PA124
+
 [file:DisableUser.py]
 ignore=PA124
 
