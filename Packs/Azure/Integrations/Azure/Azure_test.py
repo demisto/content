@@ -8333,3 +8333,44 @@ def test_validate_next_link_accepts_the_configured_host():
     next_link = "https://management.azure.com/subscriptions/sub1/providers/Microsoft.Network/firewallPolicies?$skipToken=abc"
 
     assert validate_next_link(next_link, "management.azure.com") == next_link
+
+
+def test_http_request_does_not_duplicate_api_version_from_full_url(mocker):
+    """
+    Given:
+        - A full_url (an Azure nextLink) that already carries an api-version in its query string.
+    When:
+        - http_request is called without an explicit api-version in params.
+    Then:
+        - The default API_VERSION is not injected, so ARM does not receive two api-version values
+          and reject the request with InvalidResourceType.
+    """
+    client = AzureClient(app_id="app", subscription_id="sub1", resource_group_name="rg1")
+    ms_http_request = mocker.patch.object(client.ms_client, "http_request")
+    full_url = (
+        "https://management.azure.com/subscriptions/sub1/resourceGroups/rg1"
+        "/providers/Microsoft.Network/firewallPolicies?api-version=2025-09-01&$skipToken=abc"
+    )
+
+    client.http_request(method="GET", full_url=full_url, params={})
+
+    assert "api-version" not in ms_http_request.call_args.kwargs["params"]
+
+
+def test_http_request_injects_default_api_version_without_full_url(mocker):
+    """
+    Given:
+        - A request with no full_url and no api-version supplied in params.
+    When:
+        - http_request is called.
+    Then:
+        - The default API_VERSION is injected, preserving the existing behavior.
+    """
+    from Azure import API_VERSION
+
+    client = AzureClient(app_id="app", subscription_id="sub1", resource_group_name="rg1")
+    ms_http_request = mocker.patch.object(client.ms_client, "http_request")
+
+    client.http_request(method="GET", url_suffix="sub1/resourceGroups", params={})
+
+    assert ms_http_request.call_args.kwargs["params"]["api-version"] == API_VERSION

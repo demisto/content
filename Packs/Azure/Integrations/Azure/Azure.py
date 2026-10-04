@@ -730,7 +730,11 @@ class AzureClient:
             params = {}
         if not self.headers:
             self.headers = {}
-        if not params.get("api-version") and "x-ms-version" not in self.headers:
+        # A paginated `full_url` (an Azure `nextLink`) already carries its own `api-version` in its query
+        # string. Injecting the default here would send the parameter twice, and ARM joins the two values
+        # into one invalid version (e.g. "2025-09-01,2022-09-01"), failing the request with InvalidResourceType.
+        url_has_api_version = bool(full_url) and "api-version" in parse_qs(urlparse(full_url or "").query)
+        if not params.get("api-version") and not url_has_api_version and "x-ms-version" not in self.headers:
             params["api-version"] = API_VERSION
 
         proxies = {"http": os.environ.get("CRTX_HTTP_PROXY"), "https": os.environ.get("CRTX_HTTP_PROXY")}
