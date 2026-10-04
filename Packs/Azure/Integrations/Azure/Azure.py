@@ -5,8 +5,10 @@ from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
 from COOCApiModule import *
 from requests.exceptions import ConnectionError, Timeout
+import copy
 import datetime as dt
 import defusedxml.ElementTree as defused_ET
+from pathlib import Path
 import urllib.parse
 from urllib.parse import parse_qs, urlparse, urlencode, urlunparse
 from datetime import UTC
@@ -18,6 +20,13 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 BLOB_SERVICE_PREFIX = "blob.core.windows.net"
+FILE_SERVICE_PREFIX = "file.core.windows.net"
+FILESHARE_GENERAL_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+FILESHARE_STORAGE_API_VERSION = "2023-11-03"
+# Azure Files data-plane requests authorized with an OAuth token must declare the request intent.
+FILESHARE_OAUTH_HEADERS = {"x-ms-file-request-intent": "backup"}
+# Microsoft.Storage resource provider (ARM control plane) API version used for share-level operations.
+FILESHARE_ARM_API_VERSION = "2026-06-01"
 
 DEFAULT_LIMIT = "50"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -385,6 +394,37 @@ API_FUNCTION_TO_PERMISSIONS = {
     "storage_container_blob_property_get_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"],
     "storage_container_blob_properties_set_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write"],
     "storage_container_block_public_access_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action"],
+    "create_share_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/write"],
+    "delete_share_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/delete"],
+    "list_shares_request": ["Microsoft.Storage/storageAccounts/fileServices/shares/read"],
+    "list_directories_and_files_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/read",
+        "Microsoft.Storage/storageAccounts/fileServices/readFileBackupSemantics/action",
+    ],
+    "create_directory_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write",
+        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
+    ],
+    "delete_directory_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete",
+        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
+    ],
+    "create_file_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write",
+        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
+    ],
+    "add_file_content_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write",
+        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
+    ],
+    "get_file_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/read",
+        "Microsoft.Storage/storageAccounts/fileServices/readFileBackupSemantics/action",
+    ],
+    "delete_file_request": [
+        "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete",
+        "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
+    ],
     "get_rule": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
     "update_webapp_auth": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
     "set_webapp_config": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
@@ -426,6 +466,14 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write",
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write",
     "Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action",
+    "Microsoft.Storage/storageAccounts/fileServices/shares/read",
+    "Microsoft.Storage/storageAccounts/fileServices/shares/write",
+    "Microsoft.Storage/storageAccounts/fileServices/shares/delete",
+    "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/read",
+    "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/write",
+    "Microsoft.Storage/storageAccounts/fileServices/fileshares/files/delete",
+    "Microsoft.Storage/storageAccounts/fileServices/readFileBackupSemantics/action",
+    "Microsoft.Storage/storageAccounts/fileServices/writeFileBackupSemantics/action",
     "Microsoft.Authorization/policyAssignments/read",
     "Microsoft.Authorization/policyAssignments/write",
     "Microsoft.DBforPostgreSQL/servers/read",
@@ -481,13 +529,22 @@ NSG_API_VERSION = "2025-01-01"
 
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
 # get_command_and_token_scopes.
-STORAGE_BLOB_SPECIAL_COMMANDS = [
+STORAGE_SPECIAL_COMMANDS = [
     "azure-storage-blob-property-get",
     "azure-storage-blob-property-set",
     "azure-storage-blob-tag-get",
     "azure-storage-blob-create",
     "azure-storage-blob-get",
     "azure-storage-blob-tag-set",
+    # File share DATA-PLANE commands (file.core.windows.net) require the storage scope/resource.
+    # The share-level commands (create/delete/list) use the Microsoft.Storage ARM control plane
+    # and therefore stay on the default management scope, so they are intentionally excluded here.
+    "azure-storage-fileshare-content-list",
+    "azure-storage-fileshare-directory-create",
+    "azure-storage-fileshare-directory-delete",
+    "azure-storage-fileshare-file-create",
+    "azure-storage-fileshare-file-get",
+    "azure-storage-fileshare-file-delete",
 ]
 
 COMMANDS_TO_OUTPUTS_PREFIX = {
@@ -746,7 +803,9 @@ class AzureClient:
             DemistoException: For permission errors and other API errors
         """
         error_msg = str(e).lower()
-        demisto.debug(f"Azure API error for {resource_type} '{resource_name}': {type(e).__name__}")
+        demisto.debug(
+            f"Azure API error for {subscription_id=} {error_msg=} {resource_type} '{resource_name}': {type(e).__name__}"
+        )
 
         if "404" in error_msg or "not found" in error_msg:
             error_details = f'{resource_type} "{resource_name}"'
@@ -757,7 +816,7 @@ class AzureClient:
             raise ValueError(f"{error_details} was not found. {str(e)}")
 
         elif ("403" in error_msg or "forbidden" in error_msg) or ("401" in error_msg or "unauthorized" in error_msg):
-            demisto.debug("Permission error, trying to find the missing permission.")
+            demisto.debug(f"Permission error, trying to find the missing permission. {e=}")
             found_permission = []
             # If we have api_function_name, use the reverse mapping for O(1) lookup
             if api_function_name in API_FUNCTION_TO_PERMISSIONS:
@@ -1345,6 +1404,350 @@ class AzureClient:
         response = self.http_request(method="PUT", full_url=full_url, params=params, resp_type="response")
 
         return response
+
+    def _fileshare_arm_url(self, subscription_id: str, resource_group_name: str, account_name: str, share_name: str = "") -> str:
+        """
+        Build the Microsoft.Storage resource provider (ARM control plane) URL for file share operations.
+
+        Args:
+            subscription_id (str): The Azure subscription ID.
+            resource_group_name (str): The resource group name.
+            account_name (str): The storage account name.
+            share_name (str): The share name. If empty, returns the shares collection URL.
+
+        Returns:
+            str: The full ARM URL for the file share resource or collection.
+        """
+        base = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Storage/storageAccounts/{account_name}/fileServices/default/shares"
+        )
+        return f"{base}/{share_name}" if share_name else base
+
+    def create_share_request(self, subscription_id: str, resource_group_name: str, account_name: str, share_name: str):
+        """
+        Create a new Azure file share via the Microsoft.Storage resource provider (ARM control plane).
+
+        Args:
+            subscription_id (str): The Azure subscription ID.
+            resource_group_name (str): The resource group name.
+            account_name (str): Storage account name.
+            share_name (str): Share name.
+
+        Returns:
+            dict: API response from Azure.
+        """
+        full_url = self._fileshare_arm_url(subscription_id, resource_group_name, account_name, share_name)
+        params = {"api-version": FILESHARE_ARM_API_VERSION}
+        data: dict = {"properties": {}}
+        try:
+            return self.http_request(method="PUT", full_url=full_url, params=params, json_data=data)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=share_name,
+                resource_type="Storage File Share",
+                api_function_name="create_share_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def delete_share_request(self, subscription_id: str, resource_group_name: str, account_name: str, share_name: str):
+        """
+        Delete a file share via the Microsoft.Storage resource provider (ARM control plane).
+
+        Args:
+            subscription_id (str): The Azure subscription ID.
+            resource_group_name (str): The resource group name.
+            account_name (str): Storage account name.
+            share_name (str): Share name.
+
+        Returns:
+            Response: API response from Azure.
+        """
+        full_url = self._fileshare_arm_url(subscription_id, resource_group_name, account_name, share_name)
+        params = {"api-version": FILESHARE_ARM_API_VERSION}
+        try:
+            return self.http_request(method="DELETE", full_url=full_url, params=params, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=share_name,
+                resource_type="Storage File Share",
+                api_function_name="delete_share_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def list_shares_request(self, subscription_id: str, resource_group_name: str, account_name: str, limit: str = None):
+        """
+        List Azure file shares via the Microsoft.Storage resource provider (ARM control plane).
+
+        Args:
+            subscription_id (str): The Azure subscription ID.
+            resource_group_name (str): The resource group name.
+            account_name (str): Storage account name.
+            limit (str): Maximum number of shares to retrieve.
+
+        Returns:
+            dict: API response from Azure.
+        """
+        full_url = self._fileshare_arm_url(subscription_id, resource_group_name, account_name)
+        params = assign_params(**{"api-version": FILESHARE_ARM_API_VERSION, "$maxpagesize": limit})
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=account_name,
+                resource_type="Storage File Shares",
+                api_function_name="list_shares_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def list_directories_and_files_request(
+        self,
+        account_name: str,
+        share_name: str,
+        directory_path: str = None,
+        prefix: str = None,
+        limit: str = None,
+        marker: str = None,
+    ):
+        """
+        List files and directories under the specified share or directory.
+
+        Args:
+            account_name (str): Storage account name.
+            share_name (str): Share name.
+            directory_path (str): The path to the directory.
+            prefix (str): Filters the results to return only entries whose name begins with the specified prefix.
+            limit (str): Number of directories and files to retrieve.
+            marker (str): Identifies the portion of the list to be returned.
+
+        Returns:
+            str: API response from Azure (XML text).
+        """
+        suffix = f"{share_name}/{directory_path}" if directory_path else f"{share_name}"
+        full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
+        params = assign_params(
+            restype="directory", comp="list", include="Timestamps", prefix=prefix, maxresults=limit, marker=marker
+        )
+        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS)
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=params, resp_type="text")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=share_name,
+                resource_type="Storage File Share Content",
+                api_function_name="list_directories_and_files_request",
+                subscription_id="",
+                resource_group_name="",
+            )
+
+    def create_directory_request(self, account_name: str, share_name: str, directory_name: str, directory_path: str = None):
+        """
+        Create a new directory under the specified share or parent directory.
+
+        Args:
+            account_name (str): Storage account name.
+            share_name (str): Share name.
+            directory_name (str): New directory name.
+            directory_path (str): The path to the parent directory.
+
+        Returns:
+            Response: API response from Azure.
+        """
+        suffix = f"{share_name}/{directory_path}/{directory_name}" if directory_path else f"{share_name}/{directory_name}"
+        full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
+        params = assign_params(restype="directory")
+        headers = {
+            "x-ms-file-permission": "inherit",
+            "x-ms-file-attributes": "None",
+            "x-ms-file-creation-time": "now",
+            "x-ms-file-last-write-time": "now",
+            **FILESHARE_OAUTH_HEADERS,
+        }
+        self.storage_container_set_headers(headers)
+        try:
+            return self.http_request(method="PUT", full_url=full_url, params=params, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=directory_name,
+                resource_type="Storage File Share Directory",
+                api_function_name="create_directory_request",
+                subscription_id="",
+                resource_group_name="",
+            )
+
+    def delete_directory_request(self, account_name: str, share_name: str, directory_name: str, directory_path: str = None):
+        """
+        Delete the specified empty directory.
+
+        Args:
+            account_name (str): Storage account name.
+            share_name (str): Share name.
+            directory_name (str): Directory name.
+            directory_path (str): The path to the parent directory.
+
+        Returns:
+            Response: API response from Azure.
+        """
+        suffix = f"{share_name}/{directory_path}/{directory_name}" if directory_path else f"{share_name}/{directory_name}"
+        full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
+        params = assign_params(restype="directory")
+        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS)
+        try:
+            return self.http_request(method="DELETE", full_url=full_url, params=params, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=directory_name,
+                resource_type="Storage File Share Directory",
+                api_function_name="delete_directory_request",
+                subscription_id="",
+                resource_group_name="",
+            )
+
+    def create_file_request(
+        self, account_name: str, share_name: str, file_name: str, content_length: int, directory_path: str = None
+    ):
+        """
+        Create a new empty file in a Share. Only initializes the file - content is added via add_file_content_request.
+
+        Args:
+            account_name (str): Storage account name.
+            share_name (str): Share name.
+            file_name (str): File name.
+            content_length (int): The size in bytes of the file to create.
+            directory_path (str): The path to the directory where the file should be created.
+
+        Returns:
+            Response: API response from Azure.
+        """
+        suffix = f"{share_name}/{directory_path}/{file_name}" if directory_path else f"{share_name}/{file_name}"
+        full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
+        headers = {
+            "x-ms-type": "file",
+            "x-ms-file-permission": "Inherit",
+            "x-ms-file-attributes": "None",
+            "x-ms-file-creation-time": "now",
+            "x-ms-file-last-write-time": "now",
+            "x-ms-content-length": str(content_length),
+            **FILESHARE_OAUTH_HEADERS,
+        }
+        self.storage_container_set_headers(headers)
+        try:
+            return self.http_request(method="PUT", full_url=full_url, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=file_name,
+                resource_type="Storage File Share File",
+                api_function_name="create_file_request",
+                subscription_id="",
+                resource_group_name="",
+            )
+
+    def add_file_content_request(
+        self, account_name: str, share_name: str, file_name: str, file_data, content_length: int, directory_path: str = None
+    ):
+        """
+        Write a range of bytes to a file (Put Range operation).
+
+        Args:
+            account_name (str): Storage account name.
+            share_name (str): Share name.
+            file_name (str): File name.
+            file_data: Open binary file object positioned at the start.
+            content_length (int): The size in bytes of the content.
+            directory_path (str): The path to the directory where the file resides.
+
+        Returns:
+            Response: API response from Azure.
+        """
+        suffix = f"{share_name}/{directory_path}/{file_name}" if directory_path else f"{share_name}/{file_name}"
+        full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
+        max_range = int(content_length) - 1
+        headers = {
+            "x-ms-write": "update",
+            "x-ms-range": f"bytes=0-{max_range}",
+            "Content-Length": str(content_length),
+            "x-ms-type": "file",
+            **FILESHARE_OAUTH_HEADERS,
+        }
+        params = {"comp": "range"}
+        self.storage_container_set_headers(headers)
+        try:
+            return self.http_request(method="PUT", full_url=full_url, params=params, data=file_data, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=file_name,
+                resource_type="Storage File Share File",
+                api_function_name="add_file_content_request",
+                subscription_id="",
+                resource_group_name="",
+            )
+
+    def get_file_request(self, account_name: str, share_name: str, file_name: str, directory_path: str = None):
+        """
+        Get a file from a Share.
+
+        Args:
+            account_name (str): Storage account name.
+            share_name (str): Share name.
+            file_name (str): File name.
+            directory_path (str): The path to the file's directory.
+
+        Returns:
+            Response: API response from Azure.
+        """
+        suffix = f"{share_name}/{directory_path}/{file_name}" if directory_path else f"{share_name}/{file_name}"
+        full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
+        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS)
+        try:
+            return self.http_request(method="GET", full_url=full_url, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=file_name,
+                resource_type="Storage File Share File",
+                api_function_name="get_file_request",
+                subscription_id="",
+                resource_group_name="",
+            )
+
+    def delete_file_request(self, account_name: str, share_name: str, file_name: str, directory_path: str = None):
+        """
+        Delete a file from a Share.
+
+        Args:
+            account_name (str): Storage account name.
+            share_name (str): Share name.
+            file_name (str): File name.
+            directory_path (str): The path to the file's directory.
+
+        Returns:
+            Response: API response from Azure.
+        """
+        suffix = f"{share_name}/{directory_path}/{file_name}" if directory_path else f"{share_name}/{file_name}"
+        full_url = f"https://{account_name}.{FILE_SERVICE_PREFIX}/{suffix}"
+        self.storage_container_set_headers(FILESHARE_OAUTH_HEADERS)
+        try:
+            return self.http_request(method="DELETE", full_url=full_url, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=file_name,
+                resource_type="Storage File Share File",
+                api_function_name="delete_file_request",
+                subscription_id="",
+                resource_group_name="",
+            )
 
     def create_policy_assignment(
         self, name: str, policy_definition_id: str, display_name: str, parameters: str, description: str, scope: str
@@ -2953,6 +3356,118 @@ def update_nic_properties(args: dict, params: dict, properties: dict):
         properties.pop("networkSecurityGroup", None)
 
 
+def fileshare_validate_characters(string: str, invalid_characters: str) -> bool:
+    """
+    Validate that a string does not contain any invalid characters.
+
+    Args:
+        string (str): String to validate.
+        invalid_characters (str): Characters that are not allowed.
+
+    Returns:
+        bool: True if the string is valid, otherwise False.
+    """
+    return all(character not in string for character in invalid_characters)
+
+
+def fileshare_handle_content_properties_information(element: object) -> dict:
+    """
+    Handle API response 'Properties' information for a file/directory element.
+
+    Args:
+        element (object): An XML element hierarchy data.
+
+    Returns:
+        dict: Transformed dictionary of the element's name and properties.
+    """
+    data = {"Name": element.findtext("Name")}  # type: ignore
+    properties: dict = {}
+    for element_property in element.findall("Properties"):  # type: ignore
+        for attribute in element_property:
+            properties[attribute.tag] = attribute.text
+    data["Properties"] = properties  # type: ignore
+    return data
+
+
+def fileshare_handle_directory_content_response(response: str) -> dict:
+    """
+    Convert an XML schema directory content response to a dictionary data structure.
+
+    Args:
+        response (str): XML schema string response.
+
+    Returns:
+        dict: Raw response with Directory, File and DirectoryId keys.
+    """
+    root = defused_ET.fromstring(response)
+
+    raw_response: dict = {"Directory": [], "File": [], "DirectoryId": root.findtext("DirectoryId")}
+
+    for path in ("Directory", "File"):
+        for element in root.iter(path):
+            data = fileshare_handle_content_properties_information(element)
+            data["FileId"] = element.findtext("FileId")
+            raw_response[path].append(data)
+
+    return raw_response
+
+
+def fileshare_create_directory_content_output(share_name: str, raw_response: dict, directory_path: str = "") -> dict:
+    """
+    Create an XSOAR context output for the list directory content command.
+
+    Args:
+        share_name (str): Share name.
+        raw_response (dict): Request raw response.
+        directory_path (str): Source directory path.
+
+    Returns:
+        dict: XSOAR command context output.
+    """
+    outputs: dict = {
+        "Name": share_name,
+        "Content": {"Path": directory_path, "DirectoryId": raw_response["DirectoryId"]},
+    }
+
+    time_headers = ["CreationTime", "LastAccessTime", "LastWriteTime", "ChangeTime"]
+
+    for path in ("Directory", "File"):
+        for element in raw_response.get(path, []):
+            for header in time_headers:
+                str_time = element["Properties"].get(header)
+                if str_time:
+                    str_time = str_time[:-2] + "Z"
+                    element["Properties"][header] = FormatIso8601(datetime.strptime(str_time, FILESHARE_GENERAL_DATE_FORMAT))
+            last_modified = element["Properties"].get("Last-Modified")
+            if last_modified:
+                element["Properties"]["Last-Modified"] = FormatIso8601(datetime.strptime(last_modified, STORAGE_DATE_FORMAT))
+            element["Property"] = element.pop("Properties")
+
+    outputs["Content"].update(raw_response)
+
+    return outputs
+
+
+def fileshare_create_content_readable_output(outputs: dict, prefix: str = "") -> str:
+    """
+    Create the readable output for the list directory content command.
+
+    Args:
+        outputs (dict): Command outputs.
+        prefix (str): Readable output prefix.
+
+    Returns:
+        str: Command readable output.
+    """
+    directories_outputs = tableToMarkdown(
+        "Directories:", outputs["Content"]["Directory"], headers=["Name", "FileId"], headerTransform=pascalToSpace
+    )
+    files_outputs = tableToMarkdown(
+        "Files:", outputs["Content"]["File"], headers=["Name", "FileId"], headerTransform=pascalToSpace
+    )
+    return prefix + "\n" + directories_outputs + "\n" + files_outputs
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -3652,6 +4167,259 @@ def storage_container_block_public_access_command(client: AzureClient, params: d
         readable_output=f"Public access to container '{container_name}' has been successfully blocked",
     )
     return command_results
+
+
+def storage_fileshare_create_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Create a new Azure file share under the specified account.
+
+    Args:
+        client (AzureClient): Azure Storage API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: a success readable output.
+    """
+    share_name = args["share_name"]
+    account_name = args.get("account_name", "")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    # Rules for naming shares:
+    # https://learn.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-shares--directories--files--and-metadata
+    share_name_regex = "^[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]$"
+    if not re.search(share_name_regex, share_name):
+        raise Exception("The specified share name is invalid.")
+
+    client.create_share_request(subscription_id, resource_group_name, account_name, share_name)
+
+    return CommandResults(readable_output=f"Share {share_name} successfully created.")
+
+
+def storage_fileshare_delete_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Delete a file share under the specified account.
+
+    Args:
+        client (AzureClient): Azure Storage API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+    """
+    share_name = args["share_name"]
+    account_name = args.get("account_name", "")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    client.delete_share_request(subscription_id, resource_group_name, account_name, share_name)
+
+    return CommandResults(readable_output=f"Share {share_name} successfully deleted.")
+
+
+def storage_fileshare_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    List Azure file shares under the specified account.
+
+    Args:
+        client (AzureClient): Azure Storage API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+    """
+    account_name = args.get("account_name", "")
+    limit = args.get("limit") or DEFAULT_LIMIT
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    response = client.list_shares_request(subscription_id, resource_group_name, account_name, limit)
+
+    shares = response.get("value", [])
+
+    readable_rows = [
+        {
+            "Name": share.get("name"),
+            "Id": share.get("id"),
+            "Type": share.get("type"),
+        }
+        for share in shares
+    ]
+
+    readable_output = tableToMarkdown(
+        f"Shares List (page size: {limit}):",
+        readable_rows,
+        headers=["Name", "Id", "Type"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Azure.Storage.FileShares",
+        outputs_key_field="name",
+        outputs=shares,
+        raw_response=response,
+    )
+
+
+def storage_fileshare_content_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    List files and directories under the specified share or directory.
+
+    Args:
+        client (AzureClient): Azure Storage API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+    """
+    account_name = args.get("account_name", "")
+    share_name = args["share_name"]
+    directory_path = args.get("directory_path", "")
+    prefix = args.get("prefix")
+    limit = args.get("limit") or DEFAULT_LIMIT
+
+    response = client.list_directories_and_files_request(account_name, share_name, directory_path, prefix, limit)
+
+    raw_response = fileshare_handle_directory_content_response(response)
+    outputs = fileshare_create_directory_content_output(share_name, copy.deepcopy(raw_response), directory_path)
+
+    readable_message = f"Directories and Files List (page size: {limit}):"
+    readable_output = fileshare_create_content_readable_output(outputs, readable_message)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Azure.Storage.FileShare",
+        outputs_key_field="Name",
+        outputs=outputs,
+        raw_response=raw_response,
+    )
+
+
+def storage_fileshare_directory_create_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Create a new directory under the specified share or parent directory.
+
+    Args:
+        client (AzureClient): Azure Storage API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+    """
+    account_name = args.get("account_name", "")
+    share_name = args["share_name"]
+    directory_name = args["directory_name"]
+    directory_path = args.get("directory_path")
+
+    if not fileshare_validate_characters(directory_name, r'"\/:|<>*?'):
+        raise Exception("The specified directory name is invalid.")
+
+    client.create_directory_request(account_name, share_name, directory_name, directory_path)
+
+    return CommandResults(readable_output=f"{directory_name} Directory successfully created in {share_name}.")
+
+
+def storage_fileshare_directory_delete_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Delete the specified empty directory.
+
+    Args:
+        client (AzureClient): Azure Storage API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+    """
+    account_name = args.get("account_name", "")
+    share_name = args["share_name"]
+    directory_name = args["directory_name"]
+    directory_path = args.get("directory_path")
+
+    client.delete_directory_request(account_name, share_name, directory_name, directory_path)
+
+    return CommandResults(readable_output=f"{directory_name} Directory successfully deleted from {share_name}.")
+
+
+def storage_fileshare_file_create_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Create a file in a Share from a War Room file Entry ID.
+
+    Args:
+        client (AzureClient): Azure Storage API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+    """
+    account_name = args.get("account_name", "")
+    share_name = args["share_name"]
+    file_entry_id = args["file_entry_id"]
+    directory_path = args.get("directory_path")
+    file_name = args.get("file_name")
+
+    xsoar_file_data = demisto.getFilePath(file_entry_id)
+    system_file_path = Path(xsoar_file_data["path"])
+    new_file_name = file_name or xsoar_file_data["name"]
+
+    content_length = system_file_path.stat().st_size
+
+    client.create_file_request(account_name, share_name, new_file_name, content_length, directory_path)
+    with system_file_path.open("rb") as file_data:
+        client.add_file_content_request(account_name, share_name, new_file_name, file_data, content_length, directory_path)
+
+    return CommandResults(readable_output=f"File successfully created in {share_name}.")
+
+
+def storage_fileshare_file_get_command(client: AzureClient, params: dict, args: dict) -> Any:
+    """
+    Get a file from a Share.
+
+    Args:
+        client (AzureClient): Azure Storage API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        fileResult: XSOAR File Result.
+    """
+    account_name = args.get("account_name", "")
+    share_name = args["share_name"]
+    file_name = args["file_name"]
+    directory_path = args.get("directory_path")
+
+    response = client.get_file_request(account_name, share_name, file_name, directory_path)
+
+    return fileResult(filename=file_name, data=response.content)
+
+
+def storage_fileshare_file_delete_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Delete a file from a Share.
+
+    Args:
+        client (AzureClient): Azure Storage API client.
+        params (dict): Integration configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+    """
+    account_name = args.get("account_name", "")
+    share_name = args["share_name"]
+    file_name = args["file_name"]
+    directory_path = args.get("directory_path")
+
+    client.delete_file_request(account_name, share_name, file_name, directory_path)
+
+    return CommandResults(readable_output=f"File {file_name} successfully deleted from {share_name}.")
 
 
 def create_policy_assignment_command(client: AzureClient, params: dict, args: dict):
@@ -5677,7 +6445,7 @@ def get_azure_client(params: dict, args: dict, command: str, azure_ad_endpoint: 
 def get_command_and_token_scopes(command: str) -> tuple[str, list[str]]:
     """Get the command and token scopes for the command. Default is DEFAULT_SCOPE and [TokenScope.DEFAULT]."""
     # There are 'azure-storage-blob' commands (such as azure-storage-blob-service-properties-get) that don't need this update.
-    if "storage-container" in command or command in STORAGE_BLOB_SPECIAL_COMMANDS:
+    if "storage-container" in command or command in STORAGE_SPECIAL_COMMANDS:
         return STORAGE_SCOPE, [TokenScope.STORAGE]
     return DEFAULT_SCOPE, [TokenScope.DEFAULT]
 
@@ -5685,7 +6453,7 @@ def get_command_and_token_scopes(command: str) -> tuple[str, list[str]]:
 def get_command_resource(command: str) -> str:
     """Get the resource for the command. Default is management_azure."""
     # There are 'azure-storage-blob' commands (such as azure-storage-blob-service-properties-get) that don't need this update.
-    if "storage-container" in command or command in STORAGE_BLOB_SPECIAL_COMMANDS:
+    if "storage-container" in command or command in STORAGE_SPECIAL_COMMANDS:
         return STORAGE_RESOURCE
     return DEFAULT_RESOURCE
 
@@ -5749,6 +6517,15 @@ def main():  # pragma: no cover
             "azure-storage-container-blob-property-set": storage_container_blob_property_set_command,
             "azure-storage-blob-property-set": storage_container_blob_property_set_command,
             "azure-storage-container-public-access-block": storage_container_block_public_access_command,
+            "azure-storage-fileshare-create": storage_fileshare_create_command,
+            "azure-storage-fileshare-delete": storage_fileshare_delete_command,
+            "azure-storage-fileshare-list": storage_fileshare_list_command,
+            "azure-storage-fileshare-content-list": storage_fileshare_content_list_command,
+            "azure-storage-fileshare-directory-create": storage_fileshare_directory_create_command,
+            "azure-storage-fileshare-directory-delete": storage_fileshare_directory_delete_command,
+            "azure-storage-fileshare-file-create": storage_fileshare_file_create_command,
+            "azure-storage-fileshare-file-get": storage_fileshare_file_get_command,
+            "azure-storage-fileshare-file-delete": storage_fileshare_file_delete_command,
             "azure-policy-assignment-create": create_policy_assignment_command,
             "azure-postgres-config-set": set_postgres_config_command,
             "azure-postgres-server-update": postgres_server_update_command,
