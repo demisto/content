@@ -1,29 +1,5 @@
 [MODEL: dataset = "docker_ai_gov_raw"]
-// Docker AI Governance audit records from the Docker SBX Policy Enforcement
-// Point (PEP), ingested via HTTP Collector (vendor=docker, product=ai_gov).
-//
-// Structure: one stable envelope plus exactly one action payload named by
-// `action_type`. Docker's reference is explicit that the payload must not be
-// inferred from `category` or `decision`, so dispatch is on action_type alone.
-//
-// Verified against live tenant data, schema_version 1.162.0. Three things
-// differ from the written reference and drive the shape of this rule:
-//
-//   1. Action payloads arrive as JSON *strings*, not nested objects, e.g.
-//      network_egress = "{\"protocol\":\"tcp\",\"destination_port\":\"80\"}".
-//      They must be read with json_extract_scalar, not the -> accessor.
-//   2. Numeric payload fields are quoted strings ("80", not 80), so they need
-//      an explicit to_integer.
-//   3. Several documented envelope fields are absent from the live stream:
-//      auth_method, oauth_client_id, roles, enforcement_mode, diagnostics,
-//      approval, policy_name, policy_version. Nothing here references them --
-//      an undeclared field silently evaluates to null and would quietly
-//      disable any detection built on it.
-//
-// Correlation keys: audit_session_id groups one governance daemon run;
-// sandbox_id groups sessions of one sandbox VM across restarts.
 alter
-    // Payload extraction. Each is null unless action_type selected it.
     net_protocol = json_extract_scalar(network_egress, "$.protocol"),
     net_dest_port = json_extract_scalar(network_egress, "$.destination_port"),
     net_exec_success = json_extract_scalar(network_egress_execution, "$.success"),
@@ -33,8 +9,6 @@ alter
     fs_mount_mode = json_extract_scalar(filesystem_mount, "$.mount_mode"),
     session_lifecycle = json_extract_scalar(session, "$.lifecycle")
 | alter
-    // Collapse 17 action types into the kind of thing that happened.
-    // Evaluation vs execution is already carried by `category`.
     activity_class = if(
         action_type in ("tool_invocation", "tool_execution"), "tool",
         action_type in ("resource_read", "resource_read_execution"), "resource",
@@ -59,9 +33,6 @@ alter
     xdm.event.description = if(
         resource_id != null, concat(to_string(action_type), ": ", to_string(resource_id)),
         to_string(action_type)),
-    // Outcome. Evaluation records carry a decision; execution records carry
-    // success on their payload. Approval states are outcomes in their own
-    // right and are not collapsed into allow/deny.
     xdm.event.outcome = if(
         decision = "AUDIT_DECISION_ALLOW", XDM_CONST.OUTCOME_SUCCESS,
         decision = "AUDIT_DECISION_APPROVAL_ALLOW", XDM_CONST.OUTCOME_SUCCESS,
@@ -87,17 +58,12 @@ alter
         action_type in ("policy_action", "policy_mutation", "policy_sync"), XDM_CONST.OPERATION_TYPE_UPDATE,
         null),
     xdm.event.duration = to_integer(net_exec_duration),
-    // Severity is derived from the governance outcome. `enforcement_mode` is
-    // absent from the live stream, so a deny cannot currently be classified as
-    // enforced or audit-only -- all denials are ranked the same.
     xdm.alert.severity = if(
         decision = "AUDIT_DECISION_APPROVAL_DENY", "HIGH",
         decision = "AUDIT_DECISION_DENY", "MEDIUM",
         decision = "AUDIT_DECISION_APPROVAL_TIMEOUT", "MEDIUM",
         action_type in ("policy_action", "policy_mutation"), "MEDIUM",
         "INFORMATIONAL"),
-    // Principal. The Docker Hub user is the actor; the agent is modelled as the
-    // acting process so agent-driven activity is distinguishable from human.
     xdm.source.user.username = username,
     xdm.source.user.identifier = user_email,
     xdm.source.user.domain = org_name,
@@ -109,7 +75,6 @@ alter
         os = "windows", XDM_CONST.OS_FAMILY_WINDOWS,
         null),
     xdm.network.session_id = audit_session_id,
-    // Network egress target.
     xdm.target.host.hostname = if(activity_class = "network", egress_host, null),
     xdm.target.port = if(activity_class = "network", to_integer(coalesce(net_dest_port, egress_port)), null),
     xdm.network.ip_protocol = if(
@@ -119,13 +84,11 @@ alter
     xdm.network.http.response_code = to_integer(net_exec_status),
     // Filesystem target. resource_id is the mount path on these records.
     xdm.target.file.path = if(activity_class = "filesystem", to_string(resource_id), null),
-    // Governed resource: MCP tool identity, server URL, mount path or host:port.
     xdm.target.resource.type = to_string(activity_class),
     xdm.target.resource.id = resource_id,
     xdm.observer.vendor = "Docker",
     xdm.observer.product = "AI Governance",
     xdm.observer.version = app_version,
-    // sbx = Docker Sandbox, mcp = MCP Enterprise Gateway, connect = cloud PEP.
     xdm.observer.type = if(
         client_name = "sbx", "Docker Sandbox",
         client_name = "mcp", "MCP Enterprise Gateway",
