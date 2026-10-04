@@ -14,7 +14,7 @@ This integration was tested with version 2 of Strata Logging Service XSOAR Conne
 1. In the War Room, run the command `!GetLicenseID` to get the `license ID`.
 2. Go to **Settings** \> **ABOUT** \> **License** to get the `Customer Name`.
 3. Go to the [HUB](https://apps.paloaltonetworks.com/apps) and log in using your Palo Alto Networks credentials.
-4. Under the `Cortex™ XSOAR` app, select the relevant instance. If you don't have an active `Cortex™ XSOAR` app, check out the Hub [Docs site](https://docs.paloaltonetworks.com/hub/hub-getting-started) to learn about app activation.
+4. Under the `Cortex™ XSOAR` app, select the relevant instance. If you don't have an active `Cortex™ XSOAR` app, check out the Hub [Docs site](https://docs.paloaltonetworks.com/hub/hub-getting-started/get-started) to learn about app activation.
 5. Once the page loads, if required, insert the `license ID` and the `Customer Name` in the required fields and complete the authentication process in order to get the **Registration ID**, **Encryption Key**, and either **Authentication Token** or **Client Secret**.
 6. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 7. Search for Palo Alto Networks Cortex v2.
