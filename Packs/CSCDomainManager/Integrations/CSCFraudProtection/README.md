@@ -51,27 +51,9 @@ Control detection flow by event ID and action
 ```json
 {
     "CSCFraudProtection": {
-        "200": {
-            "properties": {
-                "data": {
-                    "title": "Data"
-                },
-                "message": {
-                    "title": "Message",
-                    "type": "string"
-                },
-                "status": {
-                    "default": "success",
-                    "title": "Status",
-                    "type": "string"
-                }
-            },
-            "required": [
-                "message"
-            ],
-            "title": "SuccessResponseModel",
-            "type": "object"
-        }
+    "code": "Ref00-14818",
+    "message": "The requested event was not found",
+    "status": "error"
     }
 }
 ```
@@ -95,6 +77,26 @@ Fetch the phishkit data with ticketId
 
 There is no context output for this command.
 
+#### Context Example
+
+```json
+{
+    "CSCFraudProtection": {
+    "data": {
+        "phishkit": [
+            {
+                "kit": "blob",
+                "timeStamp": "2024-06-25T13:12:32"
+            }
+        ],
+        "ticketId": 35607910
+    },
+    "message": "Data Fetched Successfully",
+    "status": "success"
+    }
+}
+```
+
 ### csc-fetchthescreenshotdatawithticketid
 
 ***
@@ -113,6 +115,22 @@ Fetch the screenshot data with ticketId
 #### Context Output
 
 There is no context output for this command.
+
+#### Context Example
+
+```json
+{
+    "CSCFraudProtection": {
+        "data": {
+            "screenshot": "blob",
+            "screenshotTimeStamp": "2024-06-25 13:12:21.553812",
+            "ticketId": "123456"
+        },
+        "message": "Data Fetched Successfully",
+        "status": "success"
+    }
+}
+```
 
 ### csc-gethtmlsourcecodeforaticket
 
@@ -136,6 +154,20 @@ Get HTML Source Code for a Ticket
 | CSCFraudProtection.message | String |  |
 | CSCFraudProtection.status | String |  |
 
+
+#### Context Example
+
+```json
+{
+    "CSCFraudProtection": {
+
+    "code": "Ref00-14816",
+    "message": "Event is not found in the application for ticketId: 1234",
+    "status": "error"
+}
+}
+```
+
 ### csc-getlistofbrands
 
 ***
@@ -157,6 +189,23 @@ There are no input arguments for this command.
 | CSCFraudProtection.brandName | String |  |
 | CSCFraudProtection.isActive | Boolean |  |
 
+#### Context Example
+
+```json
+{
+    "CSCFraudProtection": {
+    "status": "success",
+    "message": "fetched successfully",
+    "data": [
+        {
+            "brandId": 4843,
+            "brandName": "CSC Demo",
+            "isActive": true
+        }]
+    }
+}
+```
+
 ### csc-getlistoffraudtypes
 
 ***
@@ -176,6 +225,27 @@ There are no input arguments for this command.
 | --- | --- | --- |
 | CSCFraudProtection.fraudTypeId | Number |  |
 | CSCFraudProtection.fraudTypeName | String |  |
+
+#### Context Example
+
+```json
+{
+    "CSCFraudProtection": {
+        "status": "success",
+        "message": "fetched successfully",
+        "data": [
+            {
+                "fraudTypeId": 1,
+                "fraudTypeName": "Advanced Fee Fraud"
+            },
+            {
+                "fraudTypeId": 2,
+                "fraudTypeName": "BEC Scam"
+            }
+        ]
+    }
+}
+```
 
 ### csc-listofworklogsforticketid
 
@@ -198,6 +268,25 @@ List of work logs for ticket id
 | --- | --- | --- |
 | CSCFraudProtection.message | String |  |
 | CSCFraudProtection.status | String |  |
+
+#### Context Example
+
+```json
+{
+    "CSCFraudProtection": {
+        "status": "success",
+        "message": "Data Fetched Successfully",
+        "data": [
+            {
+                "timeStamp": "2026-06-26 17:56:01",
+                "title": "Event status changed from Monitoring to Inprogress by External API User",
+                "type": "Internal Communication",
+                "toAddress": null
+            }
+        ]
+    }
+}
+```
 
 ### csc-listtakedownevents
 
@@ -223,6 +312,28 @@ List Takedown Events
 | --- | --- | --- |
 | CSCFraudProtection.message | String |  |
 | CSCFraudProtection.status | String |  |
+
+#### Context Example
+
+```json
+{
+    "CSCFraudProtection": {
+    "status": "success",
+    "message": "Data Fetched Successfully",
+    "data": [],
+    "meta": {
+        "currentPage": 1,
+        "pageSize": 101,
+        "total": 0,
+        "hasPrevious": true,
+        "pages": 0,
+        "hasNext": false,
+        "previousPage": 0,
+        "nextPage": null
+    }
+}
+}
+```
 
 ### csc-listtakedowneventswithfilters
 
@@ -255,6 +366,28 @@ List Takedown events with filters
 | CSCFraudProtection.message | String |  |
 | CSCFraudProtection.status | String |  |
 
+#### Context Example
+
+```json
+{
+    "CSCFraudProtection": {
+    "status": "success",
+    "message": "Data Fetched Successfully",
+    "data": [],
+    "meta": {
+        "currentPage": 1,
+        "pageSize": 101,
+        "total": 0,
+        "hasPrevious": true,
+        "pages": 0,
+        "hasNext": false,
+        "previousPage": 0,
+        "nextPage": null
+    }
+}
+}
+```
+
 ### csc-performanactiononasingletarget
 
 ***
@@ -279,6 +412,21 @@ Perform an action on a single target
 | CSCFraudProtection.message | String |  |
 | CSCFraudProtection.status | String |  |
 
+#### Context Example
+
+```json
+{
+    "CSCFraudProtection": {
+    "data": {
+        "action": "monitor",
+        "eventId": 275023938,
+        "responseCode": 201
+    },
+    "status": 201
+}
+}
+```
+
 ### csc-retrieveeventscreenshotwitheventid
 
 ***
@@ -297,6 +445,21 @@ Retrieve event screenshot with eventId
 #### Context Output
 
 There is no context output for this command.
+
+#### Context Example
+
+```json
+{
+    "CSCFraudProtection": {
+        "status": "success",
+        "message": "Data Fetched Successfully",
+        "data": {
+            "eventId": 187605483,
+            "screenshot": "iVBORw0KGgoAAAANSUhEUgAAAlUAAAFNCAYAAAApa5rZAAAAAXNSR0IArs4c6QAAAARnQU1"
+        }
+    }
+}
+```
 
 ### csc-retrievefilteredlistofmonitoringresultswithinspecifiedtimeframe
 
@@ -322,6 +485,28 @@ Retrieve filtered list of monitoring results within specified timeframe
 #### Context Output
 
 There is no context output for this command.
+
+#### Context Example
+
+```json
+{
+    "CSCFraudProtection": {
+    "status": "success",
+    "message": "Data Fetched Successfully",
+    "data": [],
+    "meta": {
+        "currentPage": 0,
+        "pageSize": 100,
+        "total": 0,
+        "hasPrevious": false,
+        "pages": 0,
+        "hasNext": false,
+        "previousPage": null,
+        "nextPage": null
+    }
+}
+}
+```
 
 ### csc-retrievelistofdetectionswithinspecifiedtimeframe
 
@@ -350,6 +535,27 @@ Retrieve list of detections within specified timeframe
 
 There is no context output for this command.
 
+#### Context Example
+
+```json
+{
+    "CSCFraudProtection": {
+    "status": "success",
+    "message": "Data Fetched Successfully",
+    "data": [],
+    "meta": {
+        "currentPage": 0,
+        "pageSize": 100,
+        "total": 0,
+        "hasPrevious": false,
+        "pages": 0,
+        "hasNext": false,
+        "previousPage": null,
+        "nextPage": null
+    }
+}
+}
+```
 ### csc-retrievelistofmonitoringresultswithinspecifiedtimeframe
 
 ***
@@ -372,6 +578,30 @@ Retrieve list of monitoring results within specified timeframe
 
 There is no context output for this command.
 
+#### Context Example
+
+```json
+{
+    "CSCFraudProtection": {
+        "data": [
+            {
+                "data": {
+                    "ip": "34.205.231.173",
+                    "isp": "Amazon AES",
+                    "records": [
+                        {
+                            "recVersion": 2,
+                            "recordType": "A",
+                            "recordValue": "0.0.0.0"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
+```
+
 ### csc-retrievephishkitwitheventid
 
 ***
@@ -390,6 +620,18 @@ Retrieve phishkit with eventId
 #### Context Output
 
 There is no context output for this command.
+
+#### Context Example
+
+```json
+{
+    "CSCFraudProtection": {
+    "code": "Ref00-14855",
+    "message": "The requested phishkit was not found",
+    "status": "error"
+}
+}
+```
 
 ### csc-startorstopmonitoringforaspecificevent
 
@@ -413,6 +655,18 @@ Start or stop monitoring for a specific event
 | CSCFraudProtection.message | String |  |
 | CSCFraudProtection.status | String |  |
 
+#### Context Example
+
+```json
+{
+    "CSCFraudProtection": {
+    "code": "Ref00-14857",
+    "message": "Event is not found in the application",
+    "status": "error"
+}
+}
+```
+
 ### csc-updatetheactionwithticketid
 
 ***
@@ -431,3 +685,18 @@ Update the action with ticketId
 #### Context Output
 
 There is no context output for this command.
+
+#### Context Example
+
+```json
+{
+    "CSCFraudProtection": {
+    "status": "200",
+    "message": "Updated Successfully",
+    "data": {
+        "ticketId": 62406,
+        "action": "OPEN"
+    }
+}
+}
+```

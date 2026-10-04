@@ -1,25 +1,7 @@
 {
     "CSCFraudProtection": {
-        "200": {
-            "properties": {
-                "data": {
-                    "title": "Data"
-                },
-                "message": {
-                    "title": "Message",
-                    "type": "string"
-                },
-                "status": {
-                    "default": "success",
-                    "title": "Status",
-                    "type": "string"
-                }
-            },
-            "required": [
-                "message"
-            ],
-            "title": "SuccessResponseModel",
-            "type": "object"
-        }
+        "code": "Ref00-14818",
+        "message": "The requested event was not found",
+        "status": "error"
     }
 }

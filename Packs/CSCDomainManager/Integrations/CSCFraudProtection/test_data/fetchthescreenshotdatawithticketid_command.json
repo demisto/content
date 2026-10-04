@@ -1,8 +1,15 @@
 {
-    "CSCFraudProtection":
-    {
-        "code": "Ref00-6658",
-        "message": "Event is not found in the application for ticketId: 123",
-        "status": "error"
+    "CSCFraudProtection": {
+        "data": {
+            "phishkit": [
+                {
+                    "kit": "blob",
+                    "timeStamp": "2024-06-25T13:12:32"
+                }
+            ],
+            "ticketId": 35607910
+        },
+        "message": "Data Fetched Successfully",
+        "status": "success"
     }
 }

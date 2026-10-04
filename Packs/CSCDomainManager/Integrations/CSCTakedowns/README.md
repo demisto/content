@@ -43,6 +43,27 @@ Fetch the phishkit data with ticketId
 
 There is no context output for this command.
 
+
+#### Context Example
+
+```json
+{
+    "CSCTakeDowns": {
+    "data": {
+        "phishkit": [
+            {
+                "kit": "blob",
+                "timeStamp": "2024-06-25T13:12:32"
+            }
+        ],
+        "ticketId": 35607910
+    },
+    "message": "Data Fetched Successfully",
+    "status": "success"
+    }
+}
+```
+
 ### csctakedowns-fetchthescreenshotdatawithticketid
 
 ***
@@ -62,6 +83,21 @@ Fetch the screenshot data with ticketId
 
 There is no context output for this command.
 
+#### Context Example
+
+```json
+{
+    "CSCTakeDowns": {
+        "data": {
+            "screenshot": "blob",
+            "screenshotTimeStamp": "2024-06-25 13:12:21.553812",
+            "ticketId": "123456"
+        },
+        "message": "Data Fetched Successfully",
+        "status": "success"
+    }
+}
+```
 ### csctakedowns-gethtmlsourcecodeforaticket
 
 ***
@@ -84,6 +120,19 @@ Get HTML Source Code for a Ticket
 | CSCTakedowns.message | String |  |
 | CSCTakedowns.status | String |  |
 
+#### Context Example
+
+```json
+{
+    "CSCTakeDowns": {
+
+    "code": "Ref00-14816",
+    "message": "Event is not found in the application for ticketId: 1234",
+    "status": "error"
+}
+}
+```
+
 ### csctakedowns-listofworklogsforticketid
 
 ***
@@ -105,6 +154,26 @@ List of work logs for ticket id
 | --- | --- | --- |
 | CSCTakedowns.message | String |  |
 | CSCTakedowns.status | String |  |
+
+
+#### Context Example
+
+```json
+{
+    "CSCTakeDowns": {
+        "status": "success",
+        "message": "Data Fetched Successfully",
+        "data": [
+            {
+                "timeStamp": "2026-06-26 17:56:01",
+                "title": "Event status changed from Monitoring to Inprogress by External API User",
+                "type": "Internal Communication",
+                "toAddress": null
+            }
+        ]
+    }
+}
+```
 
 ### csctakedowns-listtakedownevents
 
@@ -130,6 +199,28 @@ List Takedown Events
 | --- | --- | --- |
 | CSCTakedowns.message | String |  |
 | CSCTakedowns.status | String |  |
+
+#### Context Example
+
+```json
+{
+    "CSCTakeDowns": {
+    "status": "success",
+    "message": "Data Fetched Successfully",
+    "data": [],
+    "meta": {
+        "currentPage": 1,
+        "pageSize": 101,
+        "total": 0,
+        "hasPrevious": true,
+        "pages": 0,
+        "hasNext": false,
+        "previousPage": 0,
+        "nextPage": null
+    }
+}
+}
+```
 
 ### csctakedowns-listtakedowneventswithfilters
 
@@ -162,6 +253,29 @@ List Takedown events with filters
 | CSCTakedowns.message | String |  |
 | CSCTakedowns.status | String |  |
 
+
+#### Context Example
+
+```json
+{
+    "CSCTakeDowns": {
+    "status": "success",
+    "message": "Data Fetched Successfully",
+    "data": [],
+    "meta": {
+        "currentPage": 1,
+        "pageSize": 101,
+        "total": 0,
+        "hasPrevious": true,
+        "pages": 0,
+        "hasNext": false,
+        "previousPage": 0,
+        "nextPage": null
+    }
+}
+}
+```
+
 ### csctakedowns-updatetheactionwithticketid
 
 ***
@@ -180,3 +294,18 @@ Update the action with ticketId
 #### Context Output
 
 There is no context output for this command.
+
+#### Context Example
+
+```json
+{
+    "CSCTakeDowns": {
+    "status": "200",
+    "message": "Updated Successfully",
+    "data": {
+        "ticketId": 62406,
+        "action": "OPEN"
+    }
+}
+}
+```

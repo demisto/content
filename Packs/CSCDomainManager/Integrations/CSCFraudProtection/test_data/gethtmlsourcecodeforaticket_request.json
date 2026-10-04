@@ -1,5 +1,8 @@
 {
-"code": "Ref00-6662",
-"message": "The requested ticket was not found",
-"status": "error"
+    "status": "200",
+    "message": "Updated Successfully",
+    "data": {
+        "ticketId": 62406,
+        "action": "OPEN"
+    }
 }
