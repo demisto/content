@@ -1226,13 +1226,43 @@ def fetch_xsoar_config(xsoar_config_url: str) -> dict[str, Any]:
 # ---------------------------
 
 
+def _version_from_asset_filename(filename: str) -> str:
+    """Release version out of ``<pack-id>-v1.2.3.zip``. Empty when unparseable.
+
+    Empty degrades to the pre-existing presence-only behaviour rather than
+    blocking an install that may have worked.
+    """
+    m = re.search(r"-v(\d+\.\d+\.\d+)\.zip$", filename or "")
+    return m.group(1) if m else ""
+
+
 def wait_for_pack_installed(
     pack_id: str,
     using: str,
     poll_seconds: int,
     poll_interval_seconds: int,
     debug: bool,
+    expected_version: str = "",
 ) -> bool:
+    """Wait for a pack to reach ``expected_version`` on the tenant.
+
+    Presence is NOT the test. On an upgrade the pack id is already installed,
+    so ``pack_id in installed`` is true the instant we ask, whether or not the
+    new version ever landed. That made this function return True for an install
+    that did nothing, which is how a failed upgrade was reported as a success:
+    the caller treats an upload error as inconclusive and asks here for a second
+    opinion, and this said yes.
+
+    Observed on deathstar 19 Sep 2026: SocFrameworkMicrosoftDefender was pinned
+    at 1.2.16 in xsoar_config, socfw-install-pack correctly raised that the
+    tenant was still on 1.2.13, this returned True on presence alone, the error
+    was swallowed, and apply printed "Pack installed." The tenant stayed on
+    1.2.13.
+
+    With ``expected_version`` set, only that version counts as installed. Left
+    empty the old presence-only behaviour applies, for callers that genuinely
+    cannot know the version.
+    """
     deadline = time.time() + max(0, poll_seconds)
     interval = max(5, poll_interval_seconds)
 
@@ -1245,10 +1275,28 @@ def wait_for_pack_installed(
 
     while True:
         try:
-            installed = fetch_installed_marketplace_pack_ids(using)
-            if pack_id in installed:
-                log(f"Pack **{pack_id}** is now installed.", stage="packs.custom.poll", debug=debug, always=True)
-                return True
+            installed = fetch_installed_packs(using)
+            entry = installed.get(pack_id)
+            if entry is not None:
+                current = str(entry.get("version") or "")
+                if not expected_version:
+                    log(f"Pack **{pack_id}** is now installed.", stage="packs.custom.poll", debug=debug, always=True)
+                    return True
+                if current == expected_version:
+                    log(
+                        f"Pack **{pack_id}** is now installed at **{current}**.",
+                        stage="packs.custom.poll",
+                        debug=debug,
+                        always=True,
+                    )
+                    return True
+                # Present but at the wrong version. Keep polling: an install in
+                # flight looks exactly like this until it lands.
+                log(
+                    f"Pack **{pack_id}** present at **{current}**, waiting for **{expected_version}**…",
+                    stage="packs.custom.poll",
+                    debug=debug,
+                )
         except Exception as e:
             log(f" Poll check error (will retry): {e}", stage="packs.custom.poll.debug", debug=debug)
 
@@ -1313,10 +1361,21 @@ def install_custom_pack_zip(
             context_for_error=f"Failed installing {asset_filename}",
             fail_on_error=True,
         )
-    except Exception:
+    except Exception as exc:
         # The system content-bundle endpoint returns 500 on some tenants even
-        # when the bundle was accepted, so an error here is inconclusive.
-        # Confirm against the installed-pack list before reporting a failure.
+        # when the bundle was accepted, so an error here is USUALLY
+        # inconclusive and worth a second opinion from the installed-pack list.
+        #
+        # "did NOT take" is the exception. socfw-install-pack raises that only
+        # after reading the installed version back and finding it unchanged --
+        # it is a measurement, not an ambiguous transport error. Polling after
+        # it is how a failed upgrade got reported as a success, because the
+        # pack id is already present on any upgrade. Re-raise immediately.
+        if "did NOT take" in str(exc):
+            raise
+
+        demisto.debug(f"socfw-install-pack raised for {asset_filename}: {exc}\n{traceback.format_exc()}")
+
         pack_id = _guess_pack_id_from_label(asset_filename)
         if poll_seconds <= 0 or not pack_id:
             raise
@@ -1324,11 +1383,42 @@ def install_custom_pack_zip(
             f"Install of **{asset_filename}** reported an error; verifying against installed packs.",
             stage="packs.custom.verify",
         )
-        if not wait_for_pack_installed(pack_id, using, poll_seconds, poll_interval_seconds, debug):
+        # Pass the expected version so presence alone cannot satisfy the check.
+        if not wait_for_pack_installed(
+            pack_id,
+            using,
+            poll_seconds,
+            poll_interval_seconds,
+            debug,
+            expected_version=_version_from_asset_filename(asset_filename),
+        ):
             raise
 
+    # Final guard on the happy path. Everything above can return without
+    # raising while the tenant still serves the old content -- the upload
+    # command succeeding is not the same as the version changing. Read it back
+    # once more before claiming an install, so this message is never the thing
+    # that misleads an operator.
+    expected = _version_from_asset_filename(asset_filename)
+    pack_id = _guess_pack_id_from_label(asset_filename)
+    verified = ""
+    if expected and pack_id:
+        try:
+            current = str((fetch_installed_packs(using).get(pack_id) or {}).get("version") or "")
+        except Exception:
+            current = ""  # unreadable: report the install without the claim
+        if current and current != expected:
+            raise Exception(
+                f"Install of {asset_filename} did NOT take. Tenant reports "
+                f"{pack_id} at {current}, expected {expected}. The pack was not "
+                f"upgraded and the tenant is still running the older content -- "
+                f"do not treat this as installed."
+            )
+        if current == expected:
+            verified = f" at **{expected}** (verified)"
+
     emit_progress(
-        f"Pack **{asset_filename}** installed.",
+        f"Pack **{asset_filename}** installed{verified}.",
         stage="packs.custom.result",
     )
 

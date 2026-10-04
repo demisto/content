@@ -203,7 +203,7 @@ configuration:
   additionalinfo: Reliability of the source providing the intelligence data.
   section: Connect
 description: Built on the industry’s most comprehensive Internet Map, the Censys Platform delivers unmatched visibility into global internet assets, adversary infrastructure, and evolving threats.
-display: Censys v2
+display: Censys Platform
 name: CensysV2
 script:
   commands:
