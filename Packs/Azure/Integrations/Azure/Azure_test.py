@@ -7752,10 +7752,10 @@ def test_waf_policy_list_command_no_results(mocker):
 
 def test_waf_policy_create_or_update_command_success(mocker):
     """
-    Given: A policy name, location and managed rules supplied as JSON strings.
+    Given: Every argument of the command, with the JSON arguments supplied as JSON strings.
     When: waf_policy_create_or_update_command is called.
-    Then: The JSON arguments are parsed and nested into the request body at their
-          documented locations, and the created or updated policy is returned.
+    Then: Each argument reaches the request body at its documented location, the JSON
+          arguments are parsed into objects, and the created or updated policy is returned.
     """
     from Azure import waf_policy_create_or_update_command
 
@@ -7766,9 +7766,11 @@ def test_waf_policy_create_or_update_command_success(mocker):
         "subscription_id": "sub1",
         "resource_group_name": "rg1",
         "policy_name": "policy1",
+        "resource_id": WAF_POLICY["id"],
         "location": "westus2",
         "managed_rules": '{"managedRuleSets": [{"ruleSetType": "OWASP", "ruleSetVersion": "3.2"}]}',
-        "policy_settings": '{"mode": "Prevention"}',
+        "policy_settings": '{"mode": "Prevention", "state": "Enabled"}',
+        "custom_rules": '[{"name": "blockIP", "priority": 1, "ruleType": "MatchRule", "action": "Block"}]',
         "tags": '{"env": "prod"}',
     }
     result = waf_policy_create_or_update_command(mock_client, {}, args)
@@ -7777,11 +7779,21 @@ def test_waf_policy_create_or_update_command_success(mocker):
     assert result.outputs == WAF_POLICY
     assert "created or updated successfully" in result.readable_output
 
-    sent_body = mock_client.waf_policy_upsert.call_args.kwargs["data"]
-    assert sent_body["location"] == "westus2"
-    assert sent_body["tags"] == {"env": "prod"}
-    assert sent_body["properties"]["policySettings"] == {"mode": "Prevention"}
-    assert sent_body["properties"]["managedRules"]["managedRuleSets"][0]["ruleSetType"] == "OWASP"
+    mock_client.waf_policy_upsert.assert_called_once_with(
+        policy_name="policy1",
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        data={
+            "id": WAF_POLICY["id"],
+            "location": "westus2",
+            "tags": {"env": "prod"},
+            "properties": {
+                "policySettings": {"mode": "Prevention", "state": "Enabled"},
+                "customRules": [{"name": "blockIP", "priority": 1, "ruleType": "MatchRule", "action": "Block"}],
+                "managedRules": {"managedRuleSets": [{"ruleSetType": "OWASP", "ruleSetVersion": "3.2"}]},
+            },
+        },
+    )
 
 
 @pytest.mark.parametrize(
@@ -7868,6 +7880,54 @@ def test_waf_front_door_policy_list_command_no_results(mocker):
 
     assert result.readable_output == "No Front Door WAF policies were found in subscription 'sub1'."
     assert result.outputs == {"Azure.FrontDoor(true)": {"PoliciesNextToken": None}}
+
+
+def test_waf_front_door_policy_create_or_update_command_success(mocker):
+    """
+    Given: Every argument of the command, with the JSON arguments supplied as JSON strings.
+    When: waf_front_door_policy_create_or_update_command is called.
+    Then: Each argument reaches the request body at its documented location, the JSON
+          arguments are parsed into objects, and the created or updated policy is returned.
+    """
+    from Azure import waf_front_door_policy_create_or_update_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_upsert.return_value = FRONT_DOOR_POLICY
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "policy_name": "fdpolicy1",
+        "managed_rules": '{"managedRuleSets": [{"ruleSetType": "DefaultRuleSet", "ruleSetVersion": "1.0"}]}',
+        "policy_settings": '{"mode": "Prevention", "enabledState": "Enabled"}',
+        "custom_rules": '{"rules": [{"name": "blockIP", "priority": 1, "ruleType": "MatchRule", "action": "Block"}]}',
+        "location": "Global",
+        "sku": "Premium_AzureFrontDoor",
+        "tags": '{"env": "prod"}',
+        "etag": '"abc"',
+    }
+    result = waf_front_door_policy_create_or_update_command(mock_client, {}, args)
+
+    assert result.outputs_prefix == "Azure.FrontDoor.Policies"
+    assert result.outputs == FRONT_DOOR_POLICY
+    assert "created or updated successfully" in result.readable_output
+
+    mock_client.waf_front_door_policy_upsert.assert_called_once_with(
+        policy_name="fdpolicy1",
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        data={
+            "location": "Global",
+            "tags": {"env": "prod"},
+            "etag": '"abc"',
+            "sku": {"name": "Premium_AzureFrontDoor"},
+            "properties": {
+                "policySettings": {"mode": "Prevention", "enabledState": "Enabled"},
+                "customRules": {"rules": [{"name": "blockIP", "priority": 1, "ruleType": "MatchRule", "action": "Block"}]},
+                "managedRules": {"managedRuleSets": [{"ruleSetType": "DefaultRuleSet", "ruleSetVersion": "1.0"}]},
+            },
+        },
+    )
 
 
 def test_waf_front_door_policy_create_or_update_command_applies_global_defaults(mocker):
