@@ -1276,7 +1276,6 @@ def test_sql_firewall_rule_replace_command_with_entry_id(mocker, client, mock_pa
     When: sql_firewall_rule_replace_command is called with entry_id.
     Then: The request body is taken from the file and passed to the client.
     """
-    import json
     import tempfile
 
     fw_rules_content = json.dumps(
