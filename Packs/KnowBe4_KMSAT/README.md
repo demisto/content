@@ -2,13 +2,13 @@
 
 Cortex XSOAR is a comprehensive security orchestration, automation, and response (SOAR) platform that unifies case management, automation, real-time collaboration, and threat intel management to serve security teams across the incident lifecycle. Cortex XSIAM is a Service Integration and Management (SIAM) platform that combines data from endpoints, network, cloud, and identity systems, so machine learning models can process and understand how the data connects.
 
-This “KnowBe4 KSAT Event Collector” content pack contains the KSAT integration, which allows you to send your users' KnowBe4 Security Awareness Training (KSAT) and simulated phishing data directly to XSOAR and XSIAM.
+This “KnowBe4 KSAT Event Collector” content pack contains the KSAT integration, which sends your users' KnowBe4 Security Awareness Training (KSAT) and simulated phishing data directly to Cortex XSOAR and Cortex XSIAM.
 
 ## What does this pack do?
 
-This pack can help you streamline your security processes by allowing you to use KSAT user and event data in automation, playbooks, and reports. For more details, see the list below:
+This pack streamlines your security processes by using KSAT user and event data in automation, playbooks, and reports. For more details, see the list below:
 
-- Pull KSAT data into XSOAR and XSIAM.
+- Pull KSAT data into Cortex XSOAR and Cortex XSIAM.
 - Pull Risk Score history for your account, groups, and users.
 - Pull all Phishing Security Test (PST) results for your account and for specific campaigns.
 - Pull the statuses of your training campaigns.
