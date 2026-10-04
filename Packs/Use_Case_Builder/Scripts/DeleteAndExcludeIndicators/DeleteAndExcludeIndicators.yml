@@ -1,7 +1,7 @@
 args:
-- description: Enter a command separated list of indicators to delete and exclude
+- description: Comma-separated list of indicator values to delete and exclude. Values are matched literally, so a value containing a comma must be supplied as a list rather than as a single comma-separated string.
   name: indicatorValues
-- description: Reason for exclusion
+- description: Reason for exclusion.
   name: reason
 commonfields:
   id: DeleteAndExcludeIndicators

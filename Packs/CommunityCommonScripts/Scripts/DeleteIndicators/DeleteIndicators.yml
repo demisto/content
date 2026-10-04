@@ -1,7 +1,7 @@
 args:
-- description: Query for indicators to delete.
+- description: Query for indicators to delete. The query is used as-is, so make sure it is scoped to only the indicators you intend to delete.
   name: indicator_query
-- description: Comma-separated list of indicator values to delete.
+- description: Comma-separated list of indicator values to delete. Values are matched literally, so a value containing a comma must be supplied as a list rather than as a single comma-separated string.
   name: indicator_values
 - description: Comma-separated list of indicator IDs to delete.
   name: indicator_ids
