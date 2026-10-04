@@ -426,16 +426,18 @@ def is_valid_cursor(cursor: str | None) -> bool:
         [type_1=<from>-<to>, type_2=<from>-<to>, ...]:<page>:<token>
     e.g. "[attachment_protect=0-0, av=0-0, ..., url_protect=0-0]:0:null".
 
-    The cursor is considered *invalid* when every event type inside the "[...]" block
-    has an offset of "0-0", which means the cursor points to the very beginning for all
-    types (i.e. it carries no real pagination progress). Empty or undecodable cursors
-    are also considered invalid.
+    Pagination progress can live in *either* part of the cursor: a non "0-0" per-type offset
+    inside the "[...]" block, OR a non-degenerate ":<page>:<token>" suffix. A cursor such as
+    "[av=0-0, ...]:3:<real_token>" carries real progress in the suffix even though every offset
+    is "0-0", so it must be treated as valid. The only fully degenerate (invalid) cursor is one
+    that is page 0 with a null/empty token AND all "0-0" offsets, i.e. "[...]:0:null". Empty or
+    undecodable cursors are also considered invalid.
 
     Args:
         cursor (str | None): The base64-encoded SIEM cursor string.
 
     Returns:
-        bool: True if the cursor is valid (has at least one non "0-0" offset), False otherwise.
+        bool: True if the cursor carries real pagination progress (in offsets or suffix), False otherwise.
     """
     if not cursor:
         return False
@@ -446,21 +448,27 @@ def is_valid_cursor(cursor: str | None) -> bool:
         demisto.debug(f"{EventTypes.SIEM.log_prefix} Failed to base64-decode cursor. Treating it as invalid.")
         return False
 
-    # Extract the "[...]" block containing the per-type offsets
-    match = re.search(r"\[(.*?)\]", decoded)
-    if not match:
+    # Split into the per-type offsets block "[...]" and the trailing ":<page>:<token>" suffix.
+    offsets_block, sep, suffix = decoded.partition("]")
+    if not sep:
         demisto.debug(f"{EventTypes.SIEM.log_prefix} No offsets block found in decoded cursor. Treating it as invalid.")
         return False
 
-    offsets_block = match.group(1)
-    # Each entry looks like "type=<from>-<to>"; the cursor is valid if any offset is not "0-0"
+    # Each entry looks like "type=<from>-<to>"; there is offset progress if any offset is not "0-0".
     offset_values = re.findall(r"=\s*([\d]+-[\d]+)", offsets_block)
     if not offset_values:
         demisto.debug(f"{EventTypes.SIEM.log_prefix} No parsable offsets in decoded cursor. Treating it as invalid.")
         return False
+    has_offset_progress = any(offset != "0-0" for offset in offset_values)
 
-    is_valid = any(offset != "0-0" for offset in offset_values)
-    demisto.debug(f"{EventTypes.SIEM.log_prefix} Evaluated cursor validity as {is_valid=} (found {offset_values=}).")
+    # Suffix is ":<page>:<token>"; a fully degenerate cursor is page 0 with an empty/null token.
+    _, page, token = (suffix.split(":") + ["", ""])[:3]
+    has_suffix_progress = page.strip() not in {"", "0"} or token.strip().lower() not in {"", "null"}
+
+    is_valid = has_offset_progress or has_suffix_progress
+    demisto.debug(
+        f"{EventTypes.SIEM.log_prefix} Evaluated cursor validity as {is_valid=} " f"(found {offset_values=}, {page=}, {token=})."
+    )
     return is_valid
 
 

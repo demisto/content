@@ -525,12 +525,21 @@ async def test_get_siem_events_pagination(async_client: AsyncClient, mocker: Moc
             False,
             id="Decodable cursor with a block but no parsable offsets is not valid",
         ),
-        # A cursor with all event types at offset 0-0 points to the very beginning for every type and is the
-        # degenerate cursor that caused the zero-ingestion bug. We cannot know whether such a cursor - even one
-        # that carries a page/token in its ":<page>:<token>" suffix - is genuinely usable, so we deliberately
-        # treat every all 0-0 cursor as invalid. Dropping it is always safe: the fetch simply falls back to the
-        # start date instead of risking a request with an invalid cursor.
-        pytest.param(BAD_SIEM_CURSOR, False, id="All event types with 0-0 offset is not a valid cursor"),
+        # The only fully degenerate cursor is page 0 with a null token AND all 0-0 offsets ("[...]:0:null").
+        # This is the sentinel the API returns when there is nothing to page through, so it must be invalid.
+        pytest.param(BAD_SIEM_CURSOR, False, id="All 0-0 offsets with a :0:null suffix is the degenerate sentinel (invalid)"),
+        # Progress can live in the ":<page>:<token>" suffix even when every offset is 0-0. Such a cursor is
+        # genuinely usable, so discarding it would drop the remaining pages - it must be treated as valid.
+        pytest.param(
+            base64.b64encode(b"[attachment_protect=0-0, av=0-0, url_protect=0-0]:3:realtoken").decode(),
+            True,
+            id="All 0-0 offsets but a non-zero page in the suffix is valid (suffix carries progress)",
+        ),
+        pytest.param(
+            base64.b64encode(b"[attachment_protect=0-0, av=0-0, url_protect=0-0]:0:realtoken").decode(),
+            True,
+            id="All 0-0 offsets but a non-null token in the suffix is valid (suffix carries progress)",
+        ),
         pytest.param(
             base64.b64encode(b"[attachment_protect=0-0, av=0-0, url_protect=0-1]:1:token").decode(),
             True,
@@ -557,10 +566,10 @@ def test_is_valid_cursor(cursor, expected):
     When:
      - Calling is_valid_cursor.
     Then:
-     - Ensure a cursor with all event types at offset 0-0 (or undecodable/empty) is invalid.
-       We cannot reliably tell whether an all 0-0 cursor is usable, so it is treated as invalid on purpose:
-       dropping it just falls back to the start date, which is always safe.
+     - Ensure the fully degenerate sentinel ("[...all 0-0...]:0:null", or undecodable/empty) is invalid.
      - Ensure a cursor with at least one non 0-0 offset is valid.
+     - Ensure a cursor whose offsets are all 0-0 but whose ":<page>:<token>" suffix carries progress
+       (non-zero page or non-null token) is valid, so working cursors are not discarded.
      - Ensure malformed cursors (missing suffix segments) are handled without raising.
     """
     from MimecastEventCollectorV2 import is_valid_cursor
@@ -899,7 +908,9 @@ async def test_fetch_siem_events(
     from MimecastEventCollectorV2 import fetch_siem_events, convert_to_siem_filter_format
 
     mock_siem_first_fetch = datetime(2025, 1, 2, 10, 0, 0, tzinfo=UTC)
+    mock_now = datetime(2025, 1, 2, 11, 0, 0, tzinfo=UTC)
     mocker.patch("MimecastEventCollectorV2.UTC_MINUTE_AGO", mock_siem_first_fetch)
+    mocker.patch("MimecastEventCollectorV2.UTC_NOW", mock_now)
     mocker.patch("MimecastEventCollectorV2.is_within_last_24_hours", return_value=True)
     mock_get_siem_events = mocker.patch(
         "MimecastEventCollectorV2.get_siem_events",
@@ -911,6 +922,7 @@ async def test_fetch_siem_events(
     assert mock_get_siem_events.call_count == 1
     assert mock_get_siem_events.call_args.kwargs == {
         "start_date": last_run.get("start_date") or convert_to_siem_filter_format(mock_siem_first_fetch),
+        "end_date": convert_to_siem_filter_format(mock_now),
         "limit": max_fetch,
         "last_fetched_ids": last_run.get("last_fetched_ids", []),
         "next_page": None,
