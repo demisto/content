@@ -1,14 +1,10 @@
 global_rule_id: DockerAIGov_Denial_Pressure
 name: Docker AI Gov - Sustained Policy Denial Pressure
 alert_name: 'Docker AI Gov: agent repeatedly blocked by governance policy'
-description: A single governance session accumulated an unusual number of policy denials. One denial is
-  routine - an agent probing a boundary it does not know about. A sustained run of them means the agent
-  is repeatedly attempting actions the policy forbids, which is either a badly scoped task or an agent
-  being steered somewhere it should not go.
+description: Detects a Docker AI Governance session accumulating an unusual number of policy denials,
+  indicating an agent repeatedly attempting forbidden actions.
 alert_description: An agent session was denied repeatedly by Docker AI Governance policy. Review deny_reason
-  to see which predicates fired and which resources were targeted. Note that enforcement_mode is not currently
-  present in the audit stream, so a denial cannot be confirmed as enforced rather than audit-only - verify
-  the policy's enforcement setting before treating these as blocked.
+  to see which predicates fired and which resources were targeted.
 alert_category: DISCOVERY
 alert_fields:
   actor_effective_username: username
@@ -19,7 +15,7 @@ execution_mode: SCHEDULED
 crontab: '*/10 * * * *'
 search_window: 15 MINUTES
 mitre_defs:
-  MITRE Technique:
+  TA0007 - Discovery:
   - T1083 - File and Directory Discovery
   - T1518 - Software Discovery
 severity: SEV_030_MEDIUM

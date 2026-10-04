@@ -113,42 +113,33 @@ Note that `xdm.*` fields are addressable only through `datamodel`. Querying `dat
 
 ## Detections
 
-| Rule | Severity | Fires on |
-|:-----|:---------|:---------|
-| Agent Reached Cloud Metadata Endpoint | High | A governed agent connects to a cloud instance metadata service |
-| Sustained Policy Denial Pressure | Medium | A single session exceeds both a denial count and a denial-ratio threshold |
+| Rule | Severity | MITRE | Fires on |
+|:-----|:---------|:------|:---------|
+| Agent Reached Cloud Metadata Endpoint | High | T1552.005 | A governed agent connects to a cloud instance metadata service |
+| Sustained Policy Denial Pressure | Medium | T1083, T1518 | A session exceeds both a denial count and a denial-ratio threshold |
 
-**Agent Reached Cloud Metadata Endpoint.** Instance metadata services return instance identity documents and, where IMDSv1 is still permitted, temporary cloud credentials to anything that can reach them. An AI agent has no legitimate reason to query one. The rule matches the link-local metadata address common to the major cloud providers, along with the provider-specific hostnames and alternative addresses used by GCP, Azure, Alibaba Cloud and Oracle. A broad "allow all hosts" policy rule would not have blocked the connection, so the rule fires regardless of the recorded decision.
+Metadata services return instance identity documents and, under IMDSv1, temporary cloud credentials to anything that can reach them. The rule covers the link-local address shared by the major providers plus the GCP, Azure, Alibaba Cloud and Oracle variants, and fires regardless of the recorded decision because a broad allow rule would not have blocked the connection.
 
-**Sustained Policy Denial Pressure.** One denial is routine, an agent probing a boundary it does not know about. A sustained run of them within a single session means the agent is repeatedly attempting actions the policy forbids, which is either a badly scoped task or an agent being steered somewhere it should not go. The rule is gated on both an absolute count and a ratio so that low-volume sessions do not trigger it.
+Denial pressure is gated on both an absolute count and a ratio, so a single denial or a low-volume session does not trigger it.
 
 ## Data model notes
 
-Each record is one stable envelope plus exactly one action payload chosen from a `oneof`. **`action_type` names the populated payload**, so dispatch on that field alone. Docker's guidance is explicit that the payload must not be inferred from `category` or `decision`, and this pack follows it.
+Each record is one envelope plus exactly one action payload chosen from a `oneof`. **`action_type` names the populated payload**, so dispatch on that field alone rather than inferring it from `category` or `decision`.
 
-A governed action usually produces an evaluation record followed by an execution record. There is no cross-record identifier joining the pair, they share only `audit_session_id`. Execution records can also stand alone for ungoverned actions, so nothing here assumes an evaluation preceded one.
+A governed action usually produces an evaluation record followed by an execution record. No identifier joins the pair, they share only `audit_session_id`, and execution records can stand alone for ungoverned actions.
 
-Correlation keys:
-
-| Key | Groups |
-|:----|:-------|
+| Correlation key | Groups |
+|:----------------|:-------|
 | `audit_session_id` | All records from one governance daemon run |
 | `sandbox_id` | Sessions of one sandbox VM across restarts |
 
-The modeling rule derives two fields the raw schema does not carry:
-
-* `activity_class` collapses the action types into a small set of governed surfaces.
-* `deny_enforced` distinguishes a denial that actually blocked from one recorded while the policy was in audit mode. Conflating the two overstates how much policy is really enforcing.
-
-Execution outcome fields such as `success`, `duration_ms` and `error_class` share names across several payload types and are coalesced into `exec_*`, so they are queryable without branching on `action_type`.
+The modeling rule adds `activity_class`, collapsing action types into a small set of governed surfaces, and `deny_enforced`, which separates a denial that blocked from one recorded while the policy was in audit mode. Execution outcome fields that share names across payload types are coalesced into `exec_*`.
 
 ## Limitations
 
-**Coverage is a lower bound.** Docker's reference states that hosted audit emission depends on supported Sandbox versions and applicable sign-in, licensing and enforced organisation governance conditions. The absence of a record does not prove the absence of activity. Treat counts as a floor rather than a census, particularly for metrics describing active or governed users.
-
-**Records are metadata only.** No prompt content, agent output or tool parameter values are carried. `matched_parameter_keys` holds parameter names only. Detections are therefore built on governance decisions and resource identities, not on content inspection.
-
-**`deny_reason` is marked pending release** in the upstream schema. Content references it but tolerates its absence.
+* Audit emission depends on supported Sandbox versions and applicable licensing and governance conditions, so counts are a floor rather than a census.
+* Records carry metadata only, with no prompt content, agent output or tool parameter values. Detections use governance decisions and resource identities, not content inspection.
+* `deny_reason` is pending release upstream. Content references it but tolerates its absence.
 
 ## Tested against
 
