@@ -202,7 +202,7 @@ script:
       description: Mac found the ips.
       type: String
     description: Find a node ip from a mac address.
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.13495286
   isfetch: true
   runonce: false
   subtype: python3
