@@ -5843,13 +5843,13 @@ def main():  # pragma: no cover
             "azure-appservice-webapp-auth-settings-update": update_webapp_auth_command,
             "azure-mysql-flexible-server-param-set": mysql_flexible_server_param_set_command,
             "azure-postgres-flexible-server-configuration-update": postgres_flexible_server_configuration_update_command,
-            "azure-postgres-flexible-server-set-disconnection-logging-quick-action": postgres_flexible_server_configuration_update_command,
-            "azure-postgres-flexible-server-set-checkpoint-logging-quick-action": postgres_flexible_server_configuration_update_command,
-            "azure-postgres-flexible-server-set-connection-throttling-quick-action": postgres_flexible_server_configuration_update_command,
-            "azure-postgres-flexible-server-set-session-connection-logging-quick-action": postgres_flexible_server_configuration_update_command,
-            "azure-postgres-flexible-server-set-log-retention-period-quick-action": postgres_flexible_server_configuration_update_command,
-            "azure-postgres-flexible-server-set-statement-logging-quick-action": postgres_flexible_server_configuration_update_command,
-            "azure-postgres-flexible-server-set-secure-transport-quick-action": postgres_flexible_server_configuration_update_command,
+            "azure-postgres-flexible-server-set-disconnection-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-checkpoint-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-connection-throttling-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-session-connection-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-log-retention-period-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-statement-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-secure-transport-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
             "azure-monitor-log-profile-update": monitor_log_profile_update_command,
             "azure-disk-update": disk_update_command,
             "azure-compute-disk-update": disk_update_command,
