@@ -16,12 +16,14 @@ This integration was tested with version 2 of Strata Logging Service XSOAR Conne
 3. Once the page loads, if required, insert the `license ID` and the `Customer Name` in the required fields and complete the authentication process in order to get the **Registration ID**, **Encryption Key**, and either **Authentication Token** or **Client Secret**.
     * To get the `license ID`, run the command `!GetLicenseID` in the War Room.
     * To get the `Customer Name`, Go to **Settings** \> **ABOUT** \> **License**.
-4. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-5. Search for Palo Alto Networks Cortex v2.
+4. Deppending on your tenant, navigate to either of the following:
+    * Cortex Agentix: **Settings** > **Data Collection** > **Data Sources & Integrations**.
+    * Cortex XSOAR: **Settings** > **Integrations** > **Instances**.
+5. Search for Strata Logging Service.
 6. Click **Add instance** to create and configure a new integration instance.
     * **Name**: A textual name for the integration instance.
     * **Registration ID**: From the authentication process.
-       * The token retrieval URL is inferred based on the tenant's FedRAMP status unless explicitly specified in the **Registration ID** parameter in the format `REGISTRATION_ID@URL`.
+        * The token retrieval URL is inferred based on the tenant's FedRAMP status unless explicitly specified in the **Registration ID** parameter in the format `REGISTRATION_ID@URL`.
     * **Encryption Key**: From the authentication process.
     * **Authentication Token** OR **Client Secret**: From the authentication process.
     * **proxy**: Use system proxy settings.
