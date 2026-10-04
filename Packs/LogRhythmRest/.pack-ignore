@@ -4,6 +4,9 @@ ignore=RM104
 [file:LogRhythmRestV2.yml]
 ignore=IN126
 
+[file:playbook-Logrhythm_-_Search_query.yml]
+ignore=PB119
+
 
 [file:LogRhythmRest_image.png]
 ignore=IM111

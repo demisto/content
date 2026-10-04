@@ -1,0 +1,8 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "#### AWS-WAF\n- Updated the AWS-WAF integration to improve the implementation and stability.\n\n#### AWS WAF Modeling Rule\n- Updated the AWS WAF Modeling Rule modeling rule to improve the implementation and stability.\n",
+	"forceUpdate": {
+        "breakingChangesNotesLoosely": "",
+        "breakingChangesNotesTightly": "#### AWS-WAF\n- Updated the AWS-WAF integration to improve the implementation and stability.\n\n#### AWS WAF Modeling Rule\n- Updated the AWS WAF Modeling Rule modeling rule to improve the implementation and stability.\n"
+    }
+}
