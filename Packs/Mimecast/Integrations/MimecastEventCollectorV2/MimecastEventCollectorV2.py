@@ -874,9 +874,13 @@ async def fetch_siem_events(
         demisto.debug(f"{log_prefix} {start_date=} is older than 24 hours. Skipping forward to last 23 hours.")
         start_date = convert_to_siem_filter_format(UTC_NOW - timedelta(hours=23))
 
+    # DIAGNOSTIC (XSUP-75647): also send `dateRangeEndsAt=now` to rule out the API expecting an end date.
+    end_date = convert_to_siem_filter_format(UTC_NOW)
+
     siem_events, _ = await get_siem_events(
         client,
         start_date=start_date,
+        end_date=end_date,
         limit=max_fetch,
         last_fetched_ids=last_fetched_ids,
         next_page=initial_next_page,
