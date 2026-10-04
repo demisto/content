@@ -1863,8 +1863,8 @@
         },
         {
             "integrations": "McAfee ESM v2",
-            "instance_names": "v11.1.3",
-            "playbookID": "McAfee ESM v2 - Test v11.1.3",
+            "instance_names": "v11.7.1",
+            "playbookID": "McAfee ESM v2 - Test v11.7.1",
             "fromversion": "5.0.0"
         },
         {
@@ -1876,14 +1876,14 @@
         },
         {
             "integrations": "McAfee ESM v2",
-            "instance_names": "v11.1.3",
-            "playbookID": "McAfee ESM Watchlists - Test v11.1.3",
+            "instance_names": "v11.7.1",
+            "playbookID": "McAfee ESM Watchlists - Test v11.7.1",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "McAfee ESM v2",
             "instance_names": "v11.3",
-            "playbookID": "McAfee ESM Watchlists - Test v11.3",
+            "playbookID": "McAfee ESM Watchlists - Test v11.7.1",
             "fromversion": "5.0.0"
         },
         {
@@ -4356,7 +4356,7 @@
         {
             "playbookID": "McAfee ESM v2 - Test",
             "fromversion": "5.0.0",
-            "instance_names": "v11.1.3",
+            "instance_names": "v11.7.1",
             "integrations": [
                 "McAfee ESM v2"
             ]
@@ -4364,7 +4364,7 @@
         {
             "playbookID": "McAfee ESM Watchlists - Test",
             "fromversion": "5.0.0",
-            "instance_names": "v11.1.3",
+            "instance_names": "v11.7.1",
             "integrations": [
                 "McAfee ESM v2"
             ]
@@ -6055,9 +6055,9 @@
         "Majestic Million Test Playbook": "Issue 30931",
         "iDefense_v2_Test": "Issue 40126",
         "Feed iDefense Test": "Issue 34035",
-        "McAfee ESM v2 - Test v11.1.3": "Issue 43825",
+        "McAfee ESM v2 - Test v11.7.1": "Issue 43825",
         "McAfee ESM v2 (v11.3) - Test": "Jira ticket CRTX-65370",
-        "McAfee ESM Watchlists - Test v11.3": "Jira ticket CRTX-65370",
+        "McAfee ESM Watchlists - Test v11.7.1": "Jira ticket CRTX-65370",
         "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
         "Domain Enrichment - Generic v2 - Test": "Issue 40862",
         "TestIPQualityScorePlaybook": "Issue 40915",
