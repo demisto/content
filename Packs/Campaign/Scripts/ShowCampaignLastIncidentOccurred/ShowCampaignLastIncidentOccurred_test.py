@@ -38,8 +38,8 @@ def test_show_last_incident_occurred(mocker, incident_created, expected_result, 
 
     res = demisto.results.call_args[0][0]["Contents"]
     expected_result = (
-        f"<div style='text-align:center; font-size:17px; padding: 15px;'>Last Incident Occurred</br> "
-        f"<div style='font-size:{pixels}px;'> {expected_result} </div></div>"
+        f"<div style='text-align:center; font-size:17px; padding: 8px;'>Last Incident Occurred"
+        f"<div style='font-size:{pixels}px;'>{expected_result}</div></div>"
     )
 
     assert expected_result == res

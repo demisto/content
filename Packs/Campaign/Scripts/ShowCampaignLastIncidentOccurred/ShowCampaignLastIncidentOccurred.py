@@ -52,9 +52,9 @@ def main():
             CommandResults(
                 content_format="html",
                 raw_response=(
-                    "<div style='text-align:center; font-size:17px; padding: 15px;'>"
-                    "Last Incident Occurred</br> <div style='font-size:24px;'> "
-                    f"{html_readable_output} </div></div>"
+                    "<div style='text-align:center; font-size:17px; padding: 8px;'>"
+                    "Last Incident Occurred"
+                    f"<div style='font-size:24px;'>{html_readable_output}</div></div>"
                 ),
             )
         )
