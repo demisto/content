@@ -13,7 +13,8 @@ Collects CEF (Common Event Format) web security, DDoS mitigation, and traffic ac
 | **API Key** (`api_key`) | True | Password | | The API Key used to authenticate with the Imperva Log Server. |
 | **Fetch events** (`isFetchEvents`) | False | Boolean | `true` | Enable automatic background collection of Imperva CEF logs. |
 | **Events Fetch Interval** (`eventFetchInterval`) | False | Interval | `1` | Interval (in minutes) between consecutive fetch execution cycles. |
-| **Max Logs Per Fetch** (`max_logs`) | False | Number | `10` | Maximum number of log files to process per fetch execution cycle. |
+| **Max Logs Per Fetch** (`max_logs`) | False | Number | `100` | Maximum number of log files to process per fetch execution cycle (recommended: 100-250). |
+| **Max Concurrent Workers** (`max_workers`) | False | Number | `8` | Number of parallel worker threads used to download and decompress log files simultaneously (recommended: 4-16). |
 | **Starting File ID** (`starting_file_id`) | False | String | `0` | File ID from which to start ingesting logs (e.g., `0` or `304510`). Logs with IDs greater than this value will be processed. |
 | **Trust any certificate (insecure)** (`insecure`) | False | Boolean | `true` | When selected, HTTPS certificate validation is skipped. |
 | **Use system proxy settings** (`proxy`) | False | Boolean | `false` | When selected, system HTTP(S) proxy settings are used. |

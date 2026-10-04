@@ -242,12 +242,12 @@ def test_safe_send_events_to_xsiam_max_retries_fail():
 def test_fetch_events_timeout_budget_yield():
     """Test fetch_events yields remaining files when approaching timeout budget."""
     client = Client(base_url="https://logs.incapsula.com", api_id="test_id", api_key="test_key")
-    mock_index = ["12345_100.log", "12345_101.log", "12345_102.log"]
+    mock_index = ["12345_100.log", "12345_101.log", "12345_102.log", "12345_103.log", "12345_104.log", "12345_105.log"]
     sample_cef = b"CEF:0|Imperva|SIEMintegration|1|1|Normal|0|src=1.1.1.1\n"
     gzipped_content = gzip.compress(sample_cef)
 
-    # Mock time.time to simulate exceeding 50s during loop
-    time_values = [0.0, 10.0, 55.0, 60.0]
+    # Mock time.time: start=0, first chunk at 0s, second chunk at 115s (exceeds 110s safety limit)
+    time_values = [0.0, 5.0, 115.0, 120.0, 125.0, 130.0]
     with patch.object(client, "get_logs_index", return_value=mock_index), \
          patch.object(client, "get_log_file", return_value=gzipped_content), \
          patch("time.time", side_effect=time_values):
@@ -257,12 +257,13 @@ def test_fetch_events_timeout_budget_yield():
             client=client,
             last_run=last_run,
             max_logs=10,
-            starting_file_id=0
+            starting_file_id=0,
+            max_workers=2
         )
 
-        # File 100 processed, but before processing file 101, elapsed is 55 > 50 -> yields
-        assert len(events) == 1
-        assert next_run["last_file_id"] == 100
+        # First chunk (files 100, 101, 102, 103) processed, second chunk yielded due to elapsed=115s > 110s
+        assert len(events) == 4
+        assert next_run["last_file_id"] == 103
 
 
 

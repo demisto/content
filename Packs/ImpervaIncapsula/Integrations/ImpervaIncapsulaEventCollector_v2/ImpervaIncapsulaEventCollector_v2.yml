@@ -62,9 +62,16 @@ configuration:
   name: max_logs
   type: 0
   required: false
-  defaultvalue: '10'
+  defaultvalue: '100'
   section: Collect
-  additionalinfo: 'Maximum number of log files to process per fetch execution cycle (default: 10).'
+  additionalinfo: 'Maximum number of log files to process per fetch execution cycle (default: 100).'
+- display: Max Concurrent Workers
+  name: max_workers
+  type: 0
+  required: false
+  defaultvalue: '8'
+  section: Collect
+  additionalinfo: 'Number of parallel worker threads used to download and decompress log files simultaneously (default: 8, recommended: 4-16).'
 - display: Starting File ID
   name: starting_file_id
   type: 0

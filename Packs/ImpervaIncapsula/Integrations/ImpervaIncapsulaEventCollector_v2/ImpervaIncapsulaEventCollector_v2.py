@@ -5,13 +5,16 @@ logs from the Imperva Incapsula Log Server into Cortex XSIAM.
 """
 
 from base64 import b64encode
+import concurrent.futures
 import json
 import re
 import time
 import traceback
-from typing import List, Optional
+from typing import List, Optional, Tuple
 import zlib
 
+import requests
+import requests.adapters
 import urllib3
 
 # Suppress insecure HTTPS request warnings if verify is disabled
@@ -20,15 +23,24 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 """ CONSTANTS """
 INTEGRATION_NAME = "Imperva Incapsula Event Collector v2"
 LOG_PREFIX = "[Imperva Incapsula Collector v2]"
-DEFAULT_MAX_LOGS = 10
+DEFAULT_MAX_LOGS = 500
+DEFAULT_MAX_WORKERS = 8
 VENDOR = "Imperva"
 PRODUCT = "SIEMIntegration"
 
-# Safety timeout budget in seconds for background polling (Docker containers typically timeout at 60-120s)
-FETCH_TIMEOUT_SAFETY_SECONDS = 50
+# Safety timeout budget in seconds for background polling (Docker containers typically timeout at 120-180s)
+FETCH_TIMEOUT_SAFETY_SECONDS = 110
 
 # Set of CEF keys that contain structured JSON arrays or objects
 JSON_KEYS = {"cs10", "cs11", "cs12", "cs13", "cs14", "cs15"}
+
+# Set of standard metadata, network, and numeric keys that never contain unclosed user quotes or complex payloads
+SAFE_KEYS = {
+    "src", "dst", "spt", "dpt", "sip", "dip",
+    "siteid", "suid", "fileId", "start", "end", "cpt", "deviceExternalId",
+    "act", "app", "deviceFacility", "ccode", "proto", "in", "out",
+    "logfilename", "eventhash", "customer", "ver", "cefVersion", "severity"
+}
 
 # Regex to match CEF extension key boundaries across all standard and custom fields
 EXT_PATTERN = re.compile(r"(?:^|\s+)([a-zA-Z0-9_]+)=")
@@ -40,7 +52,7 @@ EXT_PATTERN = re.compile(r"(?:^|\s+)([a-zA-Z0-9_]+)=")
 class Client(BaseClient):
     """Client class to interact with Imperva Incapsula Log Server API."""
 
-    def __init__(self, base_url="", api_id="", api_key="", verify=False, proxy=False):
+    def __init__(self, base_url="", api_id="", api_key="", verify=False, proxy=False, max_workers=DEFAULT_MAX_WORKERS):
         if base_url and not base_url.endswith("/"):
             base_url += "/"
 
@@ -48,11 +60,25 @@ class Client(BaseClient):
         encoded_credentials = b64encode(credentials.encode("utf-8")).decode("utf-8")
         headers = {
             "Authorization": "Basic {}".format(encoded_credentials),
-            "Connection": "close",
+            "Connection": "keep-alive",
             "Accept-Encoding": "gzip, deflate, identity"
         }
 
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
+
+        # Configure session connection pooling for high-throughput concurrent downloads
+        try:
+            pool_size = max(32, max_workers * 2)
+            adapter = requests.adapters.HTTPAdapter(
+                pool_connections=pool_size,
+                pool_maxsize=pool_size,
+                max_retries=3
+            )
+            if hasattr(self, "_session") and self._session:
+                self._session.mount("https://", adapter)
+                self._session.mount("http://", adapter)
+        except Exception as e:
+            demisto.debug("{} Non-critical error configuring session adapter pool: {}".format(LOG_PREFIX, e))
 
     def get_logs_index(self):
         """Fetch the list of log files available on the server (logs.index) with retry backoff."""
@@ -99,53 +125,50 @@ def extract_file_id(file_name):
     return None
 
 
-def sanitize_cef_value(key: str, val: str) -> str:
-    """Sanitizes an individual CEF extension field value across all columns.
+# C-level character translation table to instantly strip single quotes, control characters, and normalize whitespace
+CLEAN_TRANS = {i: " " for i in range(32)}
+CLEAN_TRANS[127] = None
+CLEAN_TRANS[ord("'")] = None  # Instantly strip single quotes / apostrophes across all fields
+CLEAN_TRANS[ord("\r")] = " "
+CLEAN_TRANS[ord("\n")] = " "
+CLEAN_TRANS[ord("\t")] = " "
+CLEAN_TRANS_TABLE = str.maketrans(CLEAN_TRANS)
 
-    - Replaces multi-line characters (CR, LF) and whitespace control characters (tab, FF, VT)
-      with spaces to protect single-line log integrity.
-    - Removes unescaped single quotes/apostrophes (e.g., Al 'Ayyat -> Al Ayyat, 'Amran -> Amran).
-    - Strips double quotes from all standard non-JSON fields (e.g., "Xpanse-bot -> Xpanse-bot,
-      payload quotes, URL quotes) to prevent SIEM/XSIAM CEF parsers from entering an unclosed
-      string literal state.
-    - Normalizes embedded JSON structures (cs10-cs15) while ensuring balanced, valid JSON quotes.
-    - Strips trailing backslashes to prevent escaping subsequent CEF space delimiters.
-    - Removes non-printable control characters that crash SIEM parsers.
-    - Normalizes consecutive whitespace.
+
+def sanitize_cef_value(key: str, val: str) -> str:
+    """Fast-path targeted sanitization of an individual CEF extension field value.
+
+    - 100% safe fields (IDs, IPs, ports, labels) bypass complex parsing after fast C-level translation.
+    - High-risk fields (request, user-agent, payloads, JSON) undergo deep quote & JSON normalization.
     """
     if not val:
         return ""
 
-    # 1. Replace multi-line and control whitespace with spaces
-    for ch in ("\r", "\n", "\f", "\v", "\t"):
-        val = val.replace(ch, " ")
+    # 1. Fast C-level translation for control chars, CR/LF/tab, and single quotes (sub-microsecond)
+    val = val.translate(CLEAN_TRANS_TABLE)
 
-    # 2. Strip single quotes / apostrophes across all columns
-    val = val.replace("'", "")
+    # 2. Fast-path bypass for safe metadata, network, numeric, and label fields
+    if key in SAFE_KEYS or key.endswith("Label"):
+        return val.strip()
 
-    # 3. Handle double quotes and JSON structures
+    # 3. Handle double quotes and JSON structures on complex payload fields
     stripped = val.strip()
     if key in JSON_KEYS and (stripped.startswith(("[", "{")) and stripped.endswith(("]", "}"))):
-        # Normalize doubled quotes in embedded JSON
         normalized_json = stripped.replace('""', '"')
         try:
             json.loads(normalized_json)
             val = normalized_json
         except Exception:
-            # If not valid JSON, strip double quotes to prevent unclosed literal state
             val = val.replace('"', "")
     else:
-        # Strip all double quotes from non-JSON fields (e.g., "Xpanse-bot, payloads, URLs)
+        # Strip all double quotes from non-JSON fields
         val = val.replace('"', "")
 
-    # 4. Strip trailing unescaped backslashes to prevent escaping subsequent CEF space delimiters
+    # 4. Strip trailing unescaped backslashes
     val = val.rstrip("\\")
 
-    # 5. Remove non-printable control characters (keep printable chars and unicode)
-    val = "".join(c for c in val if (c.isprintable() and c != "\x7f") or c == " ")
-
-    # 6. Normalize multiple consecutive spaces (for non-JSON fields)
-    if key not in JSON_KEYS:
+    # 5. Normalize multiple consecutive spaces
+    if key not in JSON_KEYS and "  " in val:
         val = re.sub(r" +", " ", val)
 
     return val.strip()
@@ -154,8 +177,7 @@ def sanitize_cef_value(key: str, val: str) -> str:
 def sanitize_cef_event(raw_event: str, file_name: str = "") -> Optional[str]:
     """Parses, cleans, and standardizes a single CEF event across all columns and header fields.
 
-    Accurately tokenizes the 7 CEF header parts and all extension key=value pairs,
-    sanitizes every value, and outputs a clean, standards-compliant CEF string.
+    Uses high-speed vectorized string routines and avoids dictionary recreation overhead.
     """
     if not raw_event or not raw_event.strip():
         return None
@@ -167,24 +189,19 @@ def sanitize_cef_event(raw_event: str, file_name: str = "") -> Optional[str]:
         else:
             raw_event = "CEF:0|" + raw_event
 
-    # CEF Header structure: CEF:Version|Device Vendor|Device Product|Device Version|Device Event Class ID|Name|Severity|Extension
-    # Use negative lookbehind so escaped pipes \| within header fields are preserved
     parts = re.split(r"(?<!\\)\|", raw_event, maxsplit=7)
     if len(parts) < 8:
         return raw_event
 
-    # Sanitize header fields (indexes 0 to 6)
-    header_parts = []
-    for h in parts[:7]:
-        for ch in ("\r", "\n", "\f", "\v", "\t"):
-            h = h.replace(ch, " ")
-        h = "".join(c for c in h if (c.isprintable() and c != "\x7f") or c == " ")
-        header_parts.append(h.strip())
+    # Sanitize header fields (indexes 0 to 6) in C-speed
+    header_parts = [h.translate(CLEAN_TRANS_TABLE).strip() for h in parts[:7]]
     extension_str = parts[7]
 
-    # Robust tokenization of all key=value pairs in the extension
+    # Fast tokenization of extension key=value pairs
     matches = list(EXT_PATTERN.finditer(extension_str))
-    extension_kvs = {}
+    ext_pairs = []
+    has_logfilename = False
+    has_eventhash = False
 
     for i in range(len(matches)):
         k = matches[i].group(1)
@@ -193,17 +210,15 @@ def sanitize_cef_event(raw_event: str, file_name: str = "") -> Optional[str]:
         raw_val = extension_str[v_start:v_end]
         sanitized_val = sanitize_cef_value(k, raw_val)
         if sanitized_val:
-            extension_kvs[k] = sanitized_val
+            ext_pairs.append("{}={}".format(k, sanitized_val))
+            if k == "logfilename":
+                has_logfilename = True
+            elif k == "eventhash":
+                has_eventhash = True
 
-    # Reconstruct clean extension string
-    ext_pairs = []
-    for k, v in extension_kvs.items():
-        ext_pairs.append("{}={}".format(k, v))
-
-    # Ensure logfilename and eventhash are present
-    if file_name and "logfilename" not in extension_kvs:
+    if file_name and not has_logfilename:
         ext_pairs.append("logfilename={}".format(file_name))
-    if "eventhash" not in extension_kvs:
+    if not has_eventhash:
         event_hash = str(hash(raw_event))
         ext_pairs.append("eventhash={}".format(event_hash))
 
@@ -260,6 +275,19 @@ def decompress_and_parse_cef(raw_data, file_name):
     return fixed_events
 
 
+def process_single_log_file(client: Client, file_info: Tuple[int, str]) -> Tuple[int, str, List[str], Optional[str]]:
+    """Worker task: downloads, decompresses, and sanitizes CEF events for a single log file."""
+    file_id, file_name = file_info
+    try:
+        raw_content = client.get_log_file(file_name)
+        log_events = decompress_and_parse_cef(raw_content, file_name)
+        return file_id, file_name, log_events, None
+    except Exception as e:
+        err_msg = "{} ({})".format(file_name, str(e))
+        demisto.error("{} Error processing file {}: {}\n{}".format(LOG_PREFIX, file_name, e, traceback.format_exc()))
+        return file_id, file_name, [], err_msg
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -311,12 +339,16 @@ def safe_send_events_to_xsiam(events: List[str], vendor: str, product: str) -> N
             time.sleep(2 * attempt)
 
 
-def fetch_events(client, last_run, max_logs, starting_file_id):
-    """Fetches new log files incrementally and extracts CEF events for XSIAM."""
+def fetch_events(client, last_run, max_logs=DEFAULT_MAX_LOGS, starting_file_id=0, max_workers=DEFAULT_MAX_WORKERS):
+    """Fetches new log files concurrently using ThreadPoolExecutor and extracts CEF events for XSIAM."""
     start_time = time.time()
     last_file_id = int(last_run.get("last_file_id", 0))
     last_file_id = max(last_file_id, starting_file_id)
-    demisto.debug("{} Starting fetch from last_file_id={}, max_logs={}".format(LOG_PREFIX, last_file_id, max_logs))
+    demisto.info(
+        "{} Starting fetch cycle: last_file_id={}, max_logs={}, max_workers={}".format(
+            LOG_PREFIX, last_file_id, max_logs, max_workers
+        )
+    )
 
     try:
         idx = client.get_logs_index()
@@ -334,47 +366,74 @@ def fetch_events(client, last_run, max_logs, starting_file_id):
     candidate_files.sort(key=lambda x: x[0])
     total_eligible = len(candidate_files)
 
-    if len(candidate_files) > max_logs:
+    if total_eligible > max_logs:
         candidate_files = candidate_files[:max_logs]
-        demisto.debug("{} Capping batch to {} of {} eligible files.".format(LOG_PREFIX, max_logs, total_eligible))
+        demisto.info("{} Backlog detected: processing capped batch of {} / {} eligible files.".format(LOG_PREFIX, max_logs, total_eligible))
     else:
-        demisto.debug("{} Processing {} eligible files.".format(LOG_PREFIX, total_eligible))
+        demisto.info("{} Processing all {} eligible files.".format(LOG_PREFIX, total_eligible))
+
+    if not candidate_files:
+        demisto.debug("{} No new files to process. Up to date at file ID {}.".format(LOG_PREFIX, last_file_id))
+        return {"last_file_id": last_file_id, "event_count": 0}, []
 
     max_file_id = last_file_id
-    events = []
+    all_events = []
     failed_files = []
 
-    for file_id, file in candidate_files:
-        # Time budget check: prevent Docker container timeout by yielding remaining files to next cycle
+    # Process files in parallel batches using ThreadPoolExecutor (inspired by Imperva LogsDownloader.py)
+    chunk_size = max(4, max_workers * 2)
+
+    for i in range(0, len(candidate_files), chunk_size):
         elapsed = time.time() - start_time
         if elapsed > FETCH_TIMEOUT_SAFETY_SECONDS:
             demisto.info(
                 "{} Approaching execution timeout limit ({}s elapsed). "
                 "Yielding current batch with {} parsed events up to file ID {}. "
-                "Remaining files will be processed in the next polling cycle.".format(
-                    LOG_PREFIX, round(elapsed, 1), len(events), max_file_id
+                "Remaining {} files will be processed in the next polling cycle.".format(
+                    LOG_PREFIX, round(elapsed, 1), len(all_events), max_file_id, len(candidate_files) - i
                 )
             )
             break
 
-        try:
-            raw_content = client.get_log_file(file)
-            log_events = decompress_and_parse_cef(raw_content, file)
-            events.extend(log_events)
-            max_file_id = max(max_file_id, file_id)
-        except Exception as e:
-            failed_files.append("{} ({})".format(file, e))
-            demisto.error("{} Error processing file {}: {}\n{}".format(LOG_PREFIX, file, e, traceback.format_exc()))
+        chunk = candidate_files[i:i + chunk_size]
+        demisto.debug("{} Spawning {} parallel download workers for chunk [{}..{}]".format(
+            LOG_PREFIX, min(len(chunk), max_workers), chunk[0][0], chunk[-1][0]
+        ))
+
+        chunk_results = []
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_file = {executor.submit(process_single_log_file, client, item): item for item in chunk}
+            for future in concurrent.futures.as_completed(future_to_file):
+                try:
+                    res = future.result()
+                    chunk_results.append(res)
+                except Exception as e:
+                    item = future_to_file[future]
+                    failed_files.append("{} ({})".format(item[1], str(e)))
+
+        # Sort chunk results chronologically by file_id to preserve stream order
+        chunk_results.sort(key=lambda x: x[0])
+
+        for f_id, f_name, f_events, f_err in chunk_results:
+            if f_err:
+                failed_files.append(f_err)
+            else:
+                all_events.extend(f_events)
+                max_file_id = max(max_file_id, f_id)
 
     if failed_files:
         demisto.error("{} Errors encountered on {} file(s): {}".format(LOG_PREFIX, len(failed_files), ", ".join(failed_files)))
 
     next_run = {
         "last_file_id": max_file_id,
-        "event_count": len(events)
+        "event_count": len(all_events)
     }
-    demisto.debug("{} Fetch complete. Parsed {} events. Next state: {}".format(LOG_PREFIX, len(events), next_run))
-    return next_run, events
+    demisto.info(
+        "{} Fetch complete in {:.2f}s. Extracted {} events from {} files. Advanced checkpoint to {}.".format(
+            LOG_PREFIX, time.time() - start_time, len(all_events), len(candidate_files), max_file_id
+        )
+    )
+    return next_run, all_events
 
 
 def get_logs_index_command(client, args):
@@ -468,6 +527,7 @@ def main():
     proxy = params.get("proxy", False)
 
     max_logs = arg_to_number(params.get("max_logs")) or DEFAULT_MAX_LOGS
+    max_workers = arg_to_number(params.get("max_workers")) or DEFAULT_MAX_WORKERS
     starting_file_id = arg_to_number(params.get("starting_file_id")) or 0
 
     demisto.debug("{} Executing command: {}".format(LOG_PREFIX, command))
@@ -478,7 +538,8 @@ def main():
             api_id=api_id,
             api_key=api_key,
             verify=verify_certificate,
-            proxy=proxy
+            proxy=proxy,
+            max_workers=max_workers
         )
 
         if command == "test-module":
@@ -490,7 +551,8 @@ def main():
                     client=client,
                     last_run=demisto.getLastRun(),
                     max_logs=max_logs,
-                    starting_file_id=starting_file_id
+                    starting_file_id=starting_file_id,
+                    max_workers=max_workers
                 )
                 safe_send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
                 demisto.setLastRun(next_run)
