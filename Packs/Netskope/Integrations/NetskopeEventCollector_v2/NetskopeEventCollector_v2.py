@@ -693,7 +693,7 @@ async def handle_fetch_and_send_all_events(
         event_type: {**last_run.get(event_type, {}), "failures": []} for event_type in client.event_types_to_fetch
     }
     for failed_task in failures_tasks:
-        demisto.debug(f"[LastRun][{coord_id}] A type task failed, keeping its previous cursor: {failed_task}")
+        demisto.debug(f"[Fetch][{coord_id}] A type task failed, keeping its previous cursor: {failed_task}")
     for task_result in success_tasks:
         # Type check for mypy
         if isinstance(task_result, tuple):
