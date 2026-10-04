@@ -432,7 +432,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.10.0
-marketplaces:
-- xsoar
-- marketplacev2
-- platform
