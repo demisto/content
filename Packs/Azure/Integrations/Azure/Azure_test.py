@@ -8335,6 +8335,31 @@ def test_validate_next_link_accepts_the_configured_host():
     assert validate_next_link(next_link, "management.azure.com") == next_link
 
 
+def test_validate_next_link_on_a_gov_tenant():
+    """
+    Given:
+        - A Gov tenant, whose management endpoint host is management.usgovcloudapi.net.
+    When:
+        - validate_next_link is called with a Gov nextLink and with a commercial nextLink.
+    Then:
+        - The Gov link is returned unchanged and the commercial link is rejected.
+    """
+    from Azure import validate_next_link
+
+    gov_host = "management.usgovcloudapi.net"
+    gov_next_link = (
+        "https://management.usgovcloudapi.net/subscriptions/sub1" "/providers/Microsoft.Network/firewallPolicies?$skipToken=abc"
+    )
+    commercial_next_link = (
+        "https://management.azure.com/subscriptions/sub1/providers/Microsoft.Network/firewallPolicies?$skipToken=abc"
+    )
+
+    assert validate_next_link(gov_next_link, gov_host) == gov_next_link
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        validate_next_link(commercial_next_link, gov_host)
+
+
 def test_http_request_does_not_duplicate_api_version_from_full_url(mocker):
     """
     Given:

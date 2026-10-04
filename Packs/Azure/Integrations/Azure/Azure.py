@@ -2944,7 +2944,7 @@ class AzureClient:
         """
         if next_token:
             demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of firewall policies.")
-            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname)
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
             parameters: dict[str, Any] = {}
         else:
             full_url = (
@@ -3150,7 +3150,7 @@ def remove_query_param_from_url(url: str, param: str) -> str:
     return urlunparse(parsed._replace(query=new_query))
 
 
-def validate_next_link(next_link: str, expected_host: str | None) -> str:
+def validate_next_link(next_link: str, expected_host: str) -> str:
     """
     Validate that a pagination link points at the configured Azure management endpoint.
 
@@ -3159,7 +3159,7 @@ def validate_next_link(next_link: str, expected_host: str | None) -> str:
 
     Args:
         next_link (str): The pagination link provided by the user.
-        expected_host (str | None): The hostname of the configured Azure management endpoint.
+        expected_host (str): The hostname of the configured Azure management endpoint.
 
     Returns:
         str: The validated link.
