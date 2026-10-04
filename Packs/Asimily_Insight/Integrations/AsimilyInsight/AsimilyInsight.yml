@@ -25,6 +25,9 @@ configuration:
   required: false
   section: Collect
   type: 8
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: "false"
   display: Trust any certificate (not secure)
   name: insecure
@@ -103,6 +106,9 @@ configuration:
   section: Collect
   required: false
   type: 19
+  supportedModules:
+  - agentix
+  - xsiam
 - name: max_fetch
   display: Max Incidents
   defaultvalue: 200
@@ -111,6 +117,9 @@ configuration:
   section: Collect
   additionalinfo: The maximum number of incidents to fetch each time.
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - name: first_fetch
   display: First Fetch Time Interval
   hidden: true
@@ -125,6 +134,9 @@ configuration:
   section: Collect
   required: false
   type: 13
+  supportedModules:
+  - agentix
+  - xsiam
 description: Integrate Asimily Insight to ingest security anomalies, CVEs, and leverage detailed asset data for streamlined incident investigation.
 display: Asimily Insight
 name: Asimily Insight
@@ -510,7 +522,7 @@ script:
     - contextPath: AsimilyInsight.CVE.asimilydevicefamilies
       description: Asimily Device Families.
       type: unknown
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.13495286
   isfetch: true
   ismappable: false
   longRunning: false
