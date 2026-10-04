@@ -4,6 +4,12 @@ ignore=RM104
 [file:C2sec.yml]
 ignore=BA124
 
+[file:playbook-C2SEC-Domain_Scan.yml]
+ignore=PB118,RM116
+
+[file:playbook-C2SEC-Domain_Scan_README.md]
+ignore=RM108
+
 [file:C2sec_image.png]
 ignore=IM111
 
