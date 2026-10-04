@@ -278,10 +278,8 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> list[dict]:
     Returns:
         A list of the command result entries.
     """
-    demisto.debug(f"BU: Executing command: {command_name} with {args=}")
     res = demisto.executeCommand(command_name, args)
-    demisto.debug(f"BU: The response of {command_name} is {res}")
-    return res
+    return cast(list[dict], res)
 
 
 """ CLIENT CLASS """
