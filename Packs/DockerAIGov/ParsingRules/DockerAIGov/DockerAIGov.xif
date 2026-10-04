@@ -1,0 +1,17 @@
+[INGEST:vendor="docker", product="ai_gov", target_dataset="docker_ai_gov_raw", no_hit=keep]
+// Docker AI Governance audit records.
+//
+// The HTTP Collector already parses `timestamp` into a native date before
+// ingest -- it is not the RFC 3339 string the vendor reference describes, and
+// not an epoch number either. Verified against live tenant data, so no
+// string parsing or to_timestamp() conversion is needed or possible.
+//
+// Without this rule `_time` defaults to ingestion time, which ran ~30 seconds
+// behind event time in the live stream. That skew would misorder events in a
+// session timeline and shift them across correlation search windows.
+//
+// Records without a usable timestamp are kept (no_hit=keep) and fall back to
+// ingestion time. Dropping a governance denial because its clock was malformed
+// would lose exactly the record that matters most.
+filter timestamp != null
+| alter _time = timestamp;

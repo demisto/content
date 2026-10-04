@@ -1,0 +1,48 @@
+global_rule_id: DockerAIGov_Metadata_Endpoint
+name: Docker AI Gov - Agent Reached Cloud Metadata Endpoint
+alert_name: 'Docker AI Gov: agent connected to cloud instance metadata service'
+description: A governed agent connected to a cloud instance metadata endpoint - 169.254.169.254 (AWS,
+  Azure, GCP) or metadata.google.internal. These endpoints return instance identity documents and, on
+  IMDSv1, temporary IAM credentials to anything that can reach them. An AI agent has no legitimate reason
+  to query them, and they are a standard first step in cloud credential theft.
+alert_description: An AI agent reached the cloud metadata service. If the host uses IMDSv1, the agent
+  could have retrieved temporary cloud credentials without any authentication. Confirm whether the policy
+  permitted this connection - a broad "allow all hosts" rule will not have blocked it - and check whether
+  IMDSv2 is enforced on the underlying instance.
+alert_category: CREDENTIAL_ACCESS
+alert_fields:
+  actor_effective_username: username
+  actor_process_image_name: agent
+  action_remote_ip: resource_id
+dataset: docker_ai_gov_raw
+drilldown_query_timeframe: ALERT
+execution_mode: SCHEDULED
+crontab: '*/10 * * * *'
+search_window: 15 MINUTES
+mitre_defs:
+  MITRE Technique:
+  - T1552.005 - Cloud Instance Metadata API
+severity: SEV_040_HIGH
+suppression_enabled: true
+suppression_duration: 60 MINUTES
+suppression_fields: audit_session_id
+xql_query: 'dataset = docker_ai_gov_raw
+
+  | filter action_type = "network_egress"
+
+  | filter resource_id ~= "(169\.254\.169\.254|metadata\.google\.internal|metadata\.azure\.com|100\.100\.100\.200|192\.0\.0\.192|fd00:ec2::254)"
+
+  | fields _time, username, agent, hostname, resource_id, decision, policy_rule, audit_session_id, sandbox_id
+
+  | sort desc _time'
+mapping_strategy: CUSTOM
+fromversion: 8.4.0
+investigation_query_link: 'dataset = docker_ai_gov_raw
+
+  | filter action_type = "network_egress"
+
+  | filter resource_id ~= "(169\.254\.169\.254|metadata\.google\.internal|metadata\.azure\.com|100\.100\.100\.200|192\.0\.0\.192|fd00:ec2::254)"
+
+  | fields _time, username, agent, hostname, resource_id, decision, policy_rule, audit_session_id, sandbox_id
+
+  | sort desc _time'
