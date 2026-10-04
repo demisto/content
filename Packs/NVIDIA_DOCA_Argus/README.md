@@ -19,6 +19,14 @@ Data normalization capabilities:
 | [Alert](https://docs.nvidia.com/doca/sdk/doca-argus-service-guide/index.html#src-4412999970_safe-id-aWQtLkRPQ0FBcmd1c1NlcnZpY2VHdWlkZXYzLjIuMExDLVN1cHBvcnRlZEFsZXJ0cyxFdmVudHNhbmRTeXN0ZW1BY3Rpdml0eU1lc3NhZ2Vz)  | ALERT                            |
 | [System Activity](https://docs.nvidia.com/doca/sdk/doca-argus-service-guide/index.html#src-4412999970_id-.DOCAArgusServiceGuidev3.2.0LC-SystemEvents)  | SYSTEM_ACTIVITY                           |
 
+### Modeling coverage
+
+The modeling rule is aligned with **NVIDIA DOCA Argus 3.5.2**. In addition to process, network connection, and container context events, it maps the 3.5.2 event families:
+
+* **GPU** events (`gpu_identity`, `gpu_metrics`, `gpu_topology`) — GPU device identity attributes.
+* **Kernel module** events (`kernel_module_loaded`, `kernel_module_changed`, `kernel_module_unloaded`) — kernel module name and size.
+* Additional **System Activity** events (`load_mem_regions_failed`/`load_mem_regions_successful`, `invalid_SBOM_configuration_file`/`invalid_SBOM_configuration_folder`).
+
 ### Supported timestamp formats
 
 iso_8601 (*`2025-11-18T10:18:50.625005951+00:00`*)

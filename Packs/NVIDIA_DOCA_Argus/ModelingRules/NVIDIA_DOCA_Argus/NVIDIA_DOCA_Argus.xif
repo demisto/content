@@ -93,7 +93,7 @@ alter
         "invalid_sbom_configuration_file",
         "invalid_sbom_configuration_folder"
     ), XDM_CONST.OPERATION_TYPE_READ,null),
-    xdm.event.description = object_merge(activity_data, container_context),
+    xdm.event.description = to_string(object_merge(activity_data, container_context)),
     xdm.source.host.device_id = device_id,
     xdm.source.host.ipv4_addresses = ipv4_list,
     xdm.source.ipv4 = to_string(source_ip_address),
@@ -101,7 +101,7 @@ alter
     xdm.source.ipv6 = to_string(workload_network_interface_ipv6_address),
     xdm.source.host.mac_addresses = mac_list,
     xdm.source.process.executable.filename = process_name,
-    xdm.source.process.executable.path = process_execution_path,
+    xdm.source.process.executable.path = process_executable_path,
     xdm.source.process.executable.sha256 = process_hash_sha256,
     xdm.source.process.executable.md5 = process_hash_md5,
     xdm.source.process.command_line = process_command_line_arguments,
