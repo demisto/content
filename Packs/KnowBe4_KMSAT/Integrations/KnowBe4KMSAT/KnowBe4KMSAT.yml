@@ -36,8 +36,8 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: "KnowBe4 KMSAT integration allows you to pull Risk Scores, Phishing Tests, Campaigns and Enrollments."
-display: "KnowBe4KMSAT"
+description: "KnowBe4 KSAT (Security Awareness Training) integration allows you to pull Risk Scores, Phishing Tests, Campaigns and Enrollments. For subscription levels and pricing, see https://www.knowbe4.com/products/security-awareness-training/pricing."
+display: "KnowBe4 KSAT"
 name: KnowBe4_KMSAT
 script:
   commands:
