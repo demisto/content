@@ -4,7 +4,7 @@ from DeleteIndicators import build_search_query, is_unscoped_query
 # An isolated URL embeds the whole original URL, query string included, so
 # it readily carries commas and wildcard characters. This is the shape of value
 # that triggered the production incident.
-URL_WITH_BARE_WILDCARD = "https://isolate.security.com/9/11/https://test.com/a?x=1,y=2&p=,*"
+URL_WITH_BARE_WILDCARD = "https://isolate.security.com/1/2/https://test.com/a?x=1,y=2&p=,*"
 
 
 class TestValuesAreTreatedAsLiterals:
