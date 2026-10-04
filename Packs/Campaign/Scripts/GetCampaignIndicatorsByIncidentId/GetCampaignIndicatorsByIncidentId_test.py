@@ -1,6 +1,12 @@
 import demistomock as demisto
 import pytest
-from GetCampaignIndicatorsByIncidentId import associate_to_current_incident, format_results, get_indicators_from_incidents, main
+from GetCampaignIndicatorsByIncidentId import (
+    associate_to_current_incident,
+    format_results,
+    get_indicator_link_creator,
+    get_indicators_from_incidents,
+    main,
+)
 from pytest_mock import MockerFixture
 
 INCIDENT_IDS = ["1", "2", "3"]
@@ -103,9 +109,7 @@ def test_get_indicator_link_creator(mocker: MockerFixture, is_platform_res, is_s
     Then:
         - Ensure the correct link format is produced for each platform (XSUP-78154).
     """
-    import GetCampaignIndicatorsByIncidentId
+    mocker.patch("GetCampaignIndicatorsByIncidentId.is_platform", return_value=is_platform_res)
+    mocker.patch("GetCampaignIndicatorsByIncidentId.is_xsoar_saas", return_value=is_saas_res)
 
-    mocker.patch.object(GetCampaignIndicatorsByIncidentId, "is_platform", return_value=is_platform_res)
-    mocker.patch.object(GetCampaignIndicatorsByIncidentId, "is_xsoar_saas", return_value=is_saas_res)
-
-    assert GetCampaignIndicatorsByIncidentId.get_indicator_link_creator()(indicator_id) == expected_link
+    assert get_indicator_link_creator()(indicator_id) == expected_link

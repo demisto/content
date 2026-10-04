@@ -79,7 +79,7 @@ def update_incident_with_required_keys(incidents, required_keys):
             incident[key] = updated_incident.get(key)
 
 
-def convert_incident_to_hr(incident, create_incident_link: Callable[[Any], str] | None = None):
+def convert_incident_to_hr(incident, create_incident_link: Callable[[Any], str] | None = None) -> dict:
     """
     Get the value from incident dict and convert it in some cases e.g. make id linkable etc.
     Note: this script change the original incident
