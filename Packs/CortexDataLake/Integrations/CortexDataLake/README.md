@@ -11,14 +11,14 @@ This integration was tested with version 2 of Strata Logging Service XSOAR Conne
 
 ---
 
-1. In the War Room, run the command `!GetLicenseID` to get the `license ID`.
-2. Go to **Settings** \> **ABOUT** \> **License** to get the `Customer Name`.
-3. Go to the [HUB](https://apps.paloaltonetworks.com/apps) and log in using your Palo Alto Networks credentials.
-4. Under the `Cortex™ XSOAR` app, select the relevant instance. If you don't have an active `Cortex™ XSOAR` app, check out the Hub [Docs site](https://docs.paloaltonetworks.com/hub/hub-getting-started/get-started) to learn about app activation.
-5. Once the page loads, if required, insert the `license ID` and the `Customer Name` in the required fields and complete the authentication process in order to get the **Registration ID**, **Encryption Key**, and either **Authentication Token** or **Client Secret**.
-6. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-7. Search for Palo Alto Networks Cortex v2.
-8. Click **Add instance** to create and configure a new integration instance.
+1. Go to the [HUB](https://apps.paloaltonetworks.com/apps) and log in using your Palo Alto Networks credentials.
+2. Under the `Cortex XSOAR` app, select the relevant instance. If you don't have an active `Cortex XSOAR` app, check out the Hub [Docs site](https://docs.paloaltonetworks.com/hub/hub-getting-started/get-started) to learn about app activation.
+3. Once the page loads, if required, insert the `license ID` and the `Customer Name` in the required fields and complete the authentication process in order to get the **Registration ID**, **Encryption Key**, and either **Authentication Token** or **Client Secret**.
+    * To get the `license ID`, run the command `!GetLicenseID` in the War Room.
+    * To get the `Customer Name`, Go to **Settings** \> **ABOUT** \> **License**.
+4. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+5. Search for Palo Alto Networks Cortex v2.
+6. Click **Add instance** to create and configure a new integration instance.
     * **Name**: A textual name for the integration instance.
     * **Registration ID**: From the authentication process.
        * The token retrieval URL is inferred based on the tenant's FedRAMP status unless explicitly specified in the **Registration ID** parameter in the format `REGISTRATION_ID@URL`.
@@ -27,10 +27,10 @@ This integration was tested with version 2 of Strata Logging Service XSOAR Conne
     * **proxy**: Use system proxy settings.
     * **insecure**: Trust any certificate (not secure).
     * **Fetch incidents**: Whether to fetch incidents.
-    * **first_fetch_timestamp**: First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year).
+    * **First fetch time**: First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year).
     * **Severity of events to fetch (Firewall)**: Select from all, Critical, High, Medium, Low, Informational, or Unused.
     * **Subtype of events to fetch (Firewall)**: Select from all, attack, url, virus, spyware, vulnerability, file, scan, flood, packet, resource, data, url-content, wildfire, extpcap, wildfire-virus, http-hdr-insert, http-hdr, email-hdr, spyware-dns, spyware-wildfire-dns, spyware-wpc-dns, spyware-custom-dns, spyware-cloud-dns, spyware-raven, spyware-wildfire-raven, spyware-wpc-raven, wpc-virus, or sctp.
-9. Click **Test** to validate the credentials and connection.
+7. Click **Test** to validate the credentials and connection.
 
 In order for the integration to work, the following domains need to be accessible:
 
