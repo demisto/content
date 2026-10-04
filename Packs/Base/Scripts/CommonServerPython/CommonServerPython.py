@@ -187,7 +187,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, Dict, List, Any, Union, Set, cast
+    from typing import Optional, Dict, List, Any, Union, Set, Tuple, Iterator, Iterable, cast
 
     from urllib3 import disable_warnings
 
@@ -14392,10 +14392,22 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     return
 
 
-def send_assets_and_vulnerabilities_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                         add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False,
-                         client_class=None, use_streaming_send=True):
+def send_assets_and_vulnerabilities_to_xsiam(data,  # type: Union[str, list]
+                                             vendor,  # type: str
+                                             product,  # type: str
+                                             data_format=None,  # type: Optional[str]
+                                             url_key='url',  # type: str
+                                             num_of_attempts=3,  # type: int
+                                             chunk_size=XSIAM_EVENT_CHUNK_SIZE,  # type: int
+                                             should_update_health_module=True,  # type: bool
+                                             add_proxy_to_request=False,  # type: bool
+                                             snapshot_id='',  # type: str
+                                             items_count=None,  # type: Optional[str]
+                                             multiple_threads=False,  # type: bool
+                                             client_class=None,  # type: Optional[Any]
+                                             use_streaming_send=True,  # type: bool
+                                             ):
+    # type: (...) -> Optional[list]
     """
     Send fetched assets and/or vulnerabilities into the XDR data-collector private api.
 
@@ -14482,6 +14494,7 @@ def send_assets_and_vulnerabilities_to_xsiam(data, vendor, product, data_format=
 
 
 def stream_json_items(source, items_prefix='item'):
+    # type: (Any, str) -> Iterator[Any]
     """
     Stream-parse a JSON array/response one record at a time using ``ijson``, yielding a single record on
     each iteration. This keeps peak memory ~flat compared to loading the entire body with ``json.loads``,
@@ -14493,6 +14506,7 @@ def stream_json_items(source, items_prefix='item'):
     Usage example (with a streamed HTTP response)::
 
         res = client._http_request('GET', url_suffix='/assets', resp_type='response', stream=True)
+        res.raw.decode_content = True
         for asset in stream_json_items(res.raw, items_prefix='data.item'):
             process(asset)
 
@@ -14521,6 +14535,7 @@ def stream_json_items(source, items_prefix='item'):
 
 
 def stream_xml_elements(source, tags):
+    # type: (Any, Union[str, Iterable[str]]) -> Iterator[Tuple[str, Any]]
     """
     Stream-parse an XML response one element at a time using ``xml.etree.ElementTree.iterparse``, yielding
     each matching element and then clearing it (``elem.clear()``) so memory does not grow with the size of
