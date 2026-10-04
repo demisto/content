@@ -77,7 +77,7 @@ script:
     - contextPath: KMSAT.AccountInfo.current_risk_score
       description: "Account Risk Score."
       type: Number
-    description: Returns KMSAT account information.
+    description: Returns KSAT account information.
   - name: kmsat-account-risk-score-history-list
     arguments:
     - name: page
@@ -92,7 +92,7 @@ script:
     - contextPath: KMSAT.AccountRiskScoreHistory.date
       description: Account Risk Score History Date.
       type: Date
-    description: Returns KMSAT Account Risk Score History.
+    description: Returns KSAT Account Risk Score History.
   - name: kmsat-groups-list
     arguments:
     - name: page
@@ -122,7 +122,7 @@ script:
     - contextPath: KMSAT.Groups.status
       description: Groups Status.
       type: String
-    description: Returns KMSAT Group Specific Risk Score History.
+    description: Returns KSAT Group Specific Risk Score History.
   - name: kmsat-groups-risk-score-history-list
     arguments:
     - name: group_id
@@ -140,7 +140,7 @@ script:
     - contextPath: KMSAT.GroupsRiskScoreHistory.date
       description: Groups Risk score history date.
       type: Date
-    description: Returns KMSAT Group Specific Risk Score History.
+    description: Returns KSAT Group Specific Risk Score History.
   - name: kmsat-groups-members-list
     arguments:
     - name: group_id
@@ -254,7 +254,7 @@ script:
     - contextPath: KMSAT.GroupsMembers.custom_date_2
       description: Groups Member Custom Date 2.
       type: Date
-    description: Returns KMSAT Groups Members.
+    description: Returns KSAT Groups Members.
   - name: kmsat-users-risk-score-history-list
     arguments:
     - name: user_id
@@ -272,7 +272,7 @@ script:
     - contextPath: KMSAT.UsersRiskScoreHistory.date
       description: Users Risk score history date.
       type: Date
-    description: Returns KMSAT User Specific Risk Score History.
+    description: Returns KSAT User Specific Risk Score History.
   - name: kmsat-phishing-security-tests-list
     arguments:
     - name: page
@@ -855,7 +855,7 @@ script:
     - contextPath: KMSAT.UserEvents.event_type.name
       description: "Event Type Name."
       type: String
-    description: Returns all KMSAT User Events.
+    description: Returns all KSAT User Events.
   - name: kmsat-user-event-list
     arguments:
     - name: id
@@ -904,7 +904,7 @@ script:
     - contextPath: KMSAT.UserEvent.event_type.name
       description: "Event Type Name."
       type: String
-    description: Returns a KMSAT User Event.
+    description: Returns a KSAT User Event.
   - name: kmsat-user-event-types-list
     arguments:
     - name: name
@@ -922,7 +922,7 @@ script:
     - contextPath: KMSAT.UserEventTypes.description
       description: "Description of Event Type."
       type: String
-    description: Returns all KMSAT User Event Types.
+    description: Returns all KSAT User Event Types.
   - name: kmsat-user-event-create
     arguments:
     - name: target_user
