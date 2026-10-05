@@ -62,6 +62,9 @@ class FakeSoarApi:
         """Makes requests whose path matches `path_pattern` fail with `status`, `times` times (None: always)."""
         self._failures.append({"pattern": re.compile(path_pattern), "status": status, "times": times, "body": body})
 
+    def clear_failures(self) -> None:
+        self._failures.clear()
+
     def detail_calls(self, endpoint: str) -> list[str]:
         return [path for path, _ in self.calls if path.startswith(f"/{endpoint}/")]
 

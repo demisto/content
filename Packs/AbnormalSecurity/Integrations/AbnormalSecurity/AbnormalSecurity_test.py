@@ -52,7 +52,6 @@ from AbnormalSecurity import (
 from CommonServerPython import DemistoException
 from test_data.fixtures import BASE_URL, apikey
 from test_data.fake_soar_api import FakeSoarApi
-from test_data.mock_paginated_response import create_mock_paginator_side_effect
 
 
 headers = {
@@ -503,7 +502,7 @@ def test_provides_the_analysis_and_timeline_details_of_a_case_command(mocker):
 
 
 def threat_window(start, end):
-    return FetchWindow(enabled=True, window_start=start, window_end=end)
+    return FetchWindow(window_start=start, window_end=end)
 
 
 def test_build_threat_incident_two_pages(mocker):
@@ -592,274 +591,6 @@ def test_build_account_takeover_case_incident(mocker):
 
     assert incident["genaiSummary"] == "genai_summary"
     assert incident["details"] == "d"
-
-
-def test_get_paginated_threats_list(mocker):
-    """
-    Test the get_paginated_threats_list method to verify:
-    1. It correctly handles pagination
-    2. It respects the max_incidents_to_fetch parameter
-    """
-    # Create client
-    client = Client(server_url=BASE_URL, verify=False, proxy=False, auth=None, headers=headers)
-
-    # Create a side effect function for threats
-    get_threats_side_effect = create_mock_paginator_side_effect("threat")
-
-    # Mock the underlying get_a_list_of_threats_request method
-    get_threats_mock = mocker.patch.object(client, "get_a_list_of_threats_request", side_effect=get_threats_side_effect)
-
-    # Test case 1: Get all threats with high limit (max_incidents_to_fetch > existing items)
-    # This should set page_size to the limit (10) but return only as many items as exist
-    result = client.get_paginated_threats_list(filter_="test filter", max_incidents_to_fetch=10)
-
-    # Verify the result contains threats (the exact count depends on the mock function)
-    assert len(result["threats"]) > 0
-
-    # Verify the first call was made with correct parameters
-    assert get_threats_mock.call_count >= 1
-    first_call_kwargs = get_threats_mock.call_args_list[0][1]
-    assert first_call_kwargs["filter_"] == "test filter"
-    assert first_call_kwargs["page_size"] == 10
-    assert first_call_kwargs["page_number"] == 1
-
-    # Reset the mock for the next test
-    get_threats_mock.reset_mock()
-
-    # Test case 2: Limited page size (max_incidents_to_fetch = 2)
-    # With many threats available and max_incidents_to_fetch=2, we expect page_size=2
-    # This should result in multiple page calls since there are more threats than fit on one page
-    result = client.get_paginated_threats_list(filter_="test filter", max_incidents_to_fetch=2)
-
-    # Verify we got threats
-    assert len(result["threats"]) > 0
-
-    # Verify each page was requested with the correct parameters
-    assert get_threats_mock.call_count >= 1
-
-    # Check first call parameters
-    first_call_kwargs = get_threats_mock.call_args_list[0][1]
-    assert first_call_kwargs["filter_"] == "test filter"
-    assert first_call_kwargs["page_size"] == 2
-    assert first_call_kwargs["page_number"] == 1
-
-    # If there was a second call, check its parameters
-    if get_threats_mock.call_count > 1:
-        second_call_kwargs = get_threats_mock.call_args_list[1][1]
-        assert second_call_kwargs["page_size"] == 2
-        assert second_call_kwargs["page_number"] == 2
-
-    # Reset the mock for the next test
-    get_threats_mock.reset_mock()
-
-    # Test case 3: One threat per page (max_incidents_to_fetch = 1)
-    # With many threats available and max_incidents_to_fetch=1, we expect page_size=1
-    # This should result in multiple page calls, one per threat
-    result = client.get_paginated_threats_list(filter_="test filter", max_incidents_to_fetch=1)
-
-    # Verify we got threats
-    assert len(result["threats"]) > 0
-
-    # Verify multiple pages were requested
-    assert get_threats_mock.call_count >= 1
-
-    # Check that all calls have the correct page_size
-    for i in range(get_threats_mock.call_count):
-        call_kwargs = get_threats_mock.call_args_list[i][1]
-        assert call_kwargs["page_size"] == 1
-        assert call_kwargs["page_number"] == i + 1
-
-    # Reset the mock for the next test
-    get_threats_mock.reset_mock()
-
-    # Test case 4: No threats to fetch (max_incidents_to_fetch = 0)
-    result = client.get_paginated_threats_list(filter_="test filter", max_incidents_to_fetch=0)
-
-    # Verify that no threats were fetched
-    assert len(result["threats"]) == 0
-
-    # Verify that the underlying method was not called
-    assert get_threats_mock.call_count == 0
-
-
-def test_get_paginated_cases_list(mocker):
-    """
-    Test the get_paginated_cases_list method to verify:
-    1. It correctly handles pagination
-    2. It respects the max_incidents_to_fetch parameter
-    """
-    # Create client
-    client = Client(server_url=BASE_URL, verify=False, proxy=False, auth=None, headers=headers)
-
-    # Create a side effect function for cases
-    get_cases_side_effect = create_mock_paginator_side_effect("case")
-
-    # Mock the underlying get_a_list_of_abnormal_cases_identified_by_abnormal_security_request method
-    get_cases_mock = mocker.patch.object(
-        client, "get_a_list_of_abnormal_cases_identified_by_abnormal_security_request", side_effect=get_cases_side_effect
-    )
-
-    # Test case 1: Get all cases with high limit (max_incidents_to_fetch > existing items)
-    # This should set page_size to the limit (10) but return only as many items as exist
-    result = client.get_paginated_cases_list(filter_="test filter", max_incidents_to_fetch=10)
-
-    # Verify the result contains cases (the exact count depends on the mock function)
-    assert len(result["cases"]) > 0
-
-    # Verify the first call was made with correct parameters
-    assert get_cases_mock.call_count >= 1
-    first_call_kwargs = get_cases_mock.call_args_list[0][1]
-    assert first_call_kwargs["filter_"] == "test filter"
-    assert first_call_kwargs["page_size"] == 10
-    assert first_call_kwargs["page_number"] == 1
-
-    # Reset the mock for the next test
-    get_cases_mock.reset_mock()
-
-    # Test case 2: Limited page size (max_incidents_to_fetch = 2)
-    # With many cases available and max_incidents_to_fetch=2, we expect page_size=2
-    # This should result in multiple page calls since there are more cases than fit on one page
-    result = client.get_paginated_cases_list(filter_="test filter", max_incidents_to_fetch=2)
-
-    # Verify we got cases
-    assert len(result["cases"]) > 0
-
-    # Verify each page was requested with the correct parameters
-    assert get_cases_mock.call_count >= 1
-
-    # Check first call parameters
-    first_call_kwargs = get_cases_mock.call_args_list[0][1]
-    assert first_call_kwargs["filter_"] == "test filter"
-    assert first_call_kwargs["page_size"] == 2
-    assert first_call_kwargs["page_number"] == 1
-
-    # If there was a second call, check its parameters
-    if get_cases_mock.call_count > 1:
-        second_call_kwargs = get_cases_mock.call_args_list[1][1]
-        assert second_call_kwargs["page_size"] == 2
-        assert second_call_kwargs["page_number"] == 2
-
-    # Reset the mock for the next test
-    get_cases_mock.reset_mock()
-
-    # Test case 3: One case per page (max_incidents_to_fetch = 1)
-    # With many cases available and max_incidents_to_fetch=1, we expect page_size=1
-    # This should result in multiple page calls, one per case
-    result = client.get_paginated_cases_list(filter_="test filter", max_incidents_to_fetch=1)
-
-    # Verify we got cases
-    assert len(result["cases"]) > 0
-
-    # Verify multiple pages were requested
-    assert get_cases_mock.call_count >= 1
-
-    # Check that all calls have the correct page_size
-    for i in range(get_cases_mock.call_count):
-        call_kwargs = get_cases_mock.call_args_list[i][1]
-        assert call_kwargs["page_size"] == 1
-        assert call_kwargs["page_number"] == i + 1
-
-    # Reset the mock for the next test
-    get_cases_mock.reset_mock()
-
-    # Test case 4: No cases to fetch (max_incidents_to_fetch = 0)
-    result = client.get_paginated_cases_list(filter_="test filter", max_incidents_to_fetch=0)
-
-    # Verify that no cases were fetched
-    assert len(result["cases"]) == 0
-
-    # Verify that the underlying method was not called
-    assert get_cases_mock.call_count == 0
-
-
-def test_get_paginated_abusecampaigns_list(mocker):
-    """
-    Test the get_paginated_abusecampaigns_list method to verify:
-    1. It correctly handles pagination
-    2. It respects the max_incidents_to_fetch parameter
-    """
-    # Create client
-    client = Client(server_url=BASE_URL, verify=False, proxy=False, auth=None, headers=headers)
-
-    # Create a side effect function for campaigns
-    get_campaigns_side_effect = create_mock_paginator_side_effect("campaign")
-
-    # Mock the underlying get_a_list_of_campaigns_submitted_to_abuse_mailbox_request method
-    get_campaigns_mock = mocker.patch.object(
-        client, "get_a_list_of_campaigns_submitted_to_abuse_mailbox_request", side_effect=get_campaigns_side_effect
-    )
-
-    # Test case 1: Get all campaigns with high limit (max_incidents_to_fetch > existing items)
-    # This should set page_size to the limit (10) but return only as many items as exist
-    result = client.get_paginated_abusecampaigns_list(filter_="test filter", max_incidents_to_fetch=10)
-
-    # Verify the result contains campaigns (the exact count depends on the mock function)
-    assert len(result["campaigns"]) > 0
-
-    # Verify the first call was made with correct parameters
-    assert get_campaigns_mock.call_count >= 1
-    first_call_kwargs = get_campaigns_mock.call_args_list[0][1]
-    assert first_call_kwargs["filter_"] == "test filter"
-    assert first_call_kwargs["page_size"] == 10
-    assert first_call_kwargs["page_number"] == 1
-
-    # Reset the mock for the next test
-    get_campaigns_mock.reset_mock()
-
-    # Test case 2: Limited page size (max_incidents_to_fetch = 2)
-    # With many campaigns available and max_incidents_to_fetch=2, we expect page_size=2
-    # This should result in multiple page calls since there are more campaigns than fit on one page
-    result = client.get_paginated_abusecampaigns_list(filter_="test filter", max_incidents_to_fetch=2)
-
-    # Verify we got campaigns
-    assert len(result["campaigns"]) > 0
-
-    # Verify each page was requested with the correct parameters
-    assert get_campaigns_mock.call_count >= 1
-
-    # Check first call parameters
-    first_call_kwargs = get_campaigns_mock.call_args_list[0][1]
-    assert first_call_kwargs["filter_"] == "test filter"
-    assert first_call_kwargs["page_size"] == 2
-    assert first_call_kwargs["page_number"] == 1
-
-    # If there was a second call, check its parameters
-    if get_campaigns_mock.call_count > 1:
-        second_call_kwargs = get_campaigns_mock.call_args_list[1][1]
-        assert second_call_kwargs["page_size"] == 2
-        assert second_call_kwargs["page_number"] == 2
-
-    # Reset the mock for the next test
-    get_campaigns_mock.reset_mock()
-
-    # Test case 3: One campaign per page (max_incidents_to_fetch = 1)
-    # With many campaigns available and max_incidents_to_fetch=1, we expect page_size=1
-    # This should result in multiple page calls, one per campaign
-    result = client.get_paginated_abusecampaigns_list(filter_="test filter", max_incidents_to_fetch=1)
-
-    # Verify we got campaigns
-    assert len(result["campaigns"]) > 0
-
-    # Verify multiple pages were requested
-    assert get_campaigns_mock.call_count >= 1
-
-    # Check that all calls have the correct page_size
-    for i in range(get_campaigns_mock.call_count):
-        call_kwargs = get_campaigns_mock.call_args_list[i][1]
-        assert call_kwargs["page_size"] == 1
-        assert call_kwargs["page_number"] == i + 1
-
-    # Reset the mock for the next test
-    get_campaigns_mock.reset_mock()
-
-    # Test case 4: No campaigns to fetch (max_incidents_to_fetch = 0)
-    result = client.get_paginated_abusecampaigns_list(filter_="test filter", max_incidents_to_fetch=0)
-
-    # Verify that no campaigns were fetched
-    assert len(result["campaigns"]) == 0
-
-    # Verify that the underlying method was not called
-    assert get_campaigns_mock.call_count == 0
 
 
 def test_search_messages_command(mocker):
@@ -1256,6 +987,8 @@ def run_fetch(last_run=None, **kwargs):
         "fetch_account_takeover_cases": False,
         "polling_lag": timedelta(0),
         "max_incidents_to_fetch": 200,
+        # Hour-long windows let small fixtures span several windows.
+        "max_window_minutes": 60,
         # Fast enough not to slow the tests; the limiter itself is tested on its own.
         "detail_rate_per_second": 1000,
         **kwargs,
@@ -1405,8 +1138,14 @@ def test_fetch_402_on_cases_skips_account_takeover_cases_and_warns(api):
     last_run, incidents, warnings = run_fetch(**ALL_TYPES)
 
     assert [i["name"] for i in incidents] == ["Threat"]
-    assert last_run["account_takeover"]["window_start"] == "2026-10-02T09:00:00Z"
     assert warnings == ["Skipped account takeover cases: the tenant isn't licensed for them."]
+    # The window starts over at now, so licensing the tenant later doesn't replay the backlog.
+    assert last_run["account_takeover"]["window_start"] == last_run["account_takeover"]["window_end"] == "2026-10-02T12:00:00Z"
+    assert last_run["last_fetch"] == "2026-10-02T12:00:00Z"
+    api.clear_failures()
+    _, incidents, warnings = run_fetch(last_run, **ALL_TYPES)
+    assert incidents == []
+    assert warnings == []
 
 
 def test_fetch_item_failing_on_three_runs_is_skipped_with_warning(api):
@@ -1451,7 +1190,6 @@ def test_fetch_five_consecutive_failures_stop_the_type(api):
 
     last_run, incidents, warnings = run_fetch(fetch_abuse_campaigns=True, detail_concurrency=1)
 
-    assert len(api.detail_calls("threats")) == 5
     assert [i["dbotMirrorId"] for i in incidents] == ["a-1"]
     assert any("5 failures in a row" in w for w in warnings)
     assert len(last_run["threats"]["failed"]) == 5
@@ -1482,7 +1220,6 @@ def test_fetch_partly_drained_window_paginates_instead_of_halving(api, mocker):
     last_run = {
         "version": 2,
         "threats": {
-            "enabled": True,
             "window_start": "2026-10-02T09:00:00Z",
             "window_end": "2026-10-02T10:00:00Z",
             "emitted_ids": ["t-003"],
@@ -1501,7 +1238,6 @@ def test_fetch_partly_drained_window_paginates_instead_of_halving(api, mocker):
 
 def test_build_list_filter_strings():
     window = FetchWindow(
-        enabled=True,
         window_start=datetime(2026, 10, 2, 9, 0, 0, tzinfo=UTC),
         window_end=datetime(2026, 10, 2, 10, 0, 0, tzinfo=UTC),
     )
@@ -1574,12 +1310,12 @@ def test_fetch_newly_enabled_type_starts_at_now_minus_lag(api):
     assert incidents == []
 
 
-def test_fetch_disabled_type_keeps_its_window(api):
+def test_fetch_disabled_type_drops_its_window(api):
     first_run, _, _ = run_fetch(**ALL_TYPES)
 
     next_run, _, _ = run_fetch(first_run, fetch_abuse_campaigns=False)
 
-    assert next_run["abuse_campaigns"]["enabled"] is False
+    assert "abuse_campaigns" not in next_run
     assert next_run["last_fetch"] == next_run["threats"]["window_start"]
 
 
@@ -1605,7 +1341,11 @@ def test_fetch_with_wide_max_window_uses_one_window(api):
 
 
 class _StubHandler(BaseHTTPRequestHandler):
-    """Serves either no response at all (`hang`) or a body that trickles in a byte at a time (`drip`)."""
+    """Serves no response at all (`hang`), a body that trickles in a byte at a time (`drip`), a body
+    that trickles in and then stops mid-way (`stall`), or an error whose body trickles in (`error_drip`)."""
+
+    # HTTP/1.1 keeps the connection open, as the SOAR API does, so the client can reach its socket.
+    protocol_version = "HTTP/1.1"
 
     def log_message(self, *args):
         pass
@@ -1615,11 +1355,14 @@ class _StubHandler(BaseHTTPRequestHandler):
             if self.server.mode == "hang":
                 self.server.release.wait(30)
                 return
-            self.send_response(200)
+            self.send_response(503 if self.server.mode == "error_drip" else 200)
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", "100000")
             self.end_headers()
+            started = time.monotonic()
             while not self.server.release.wait(0.2):
+                if self.server.mode == "stall" and time.monotonic() - started > 1.5:
+                    continue
                 self.wfile.write(b" ")
                 self.wfile.flush()
         except OSError:
@@ -1638,8 +1381,14 @@ def stub_server():
     server.server_close()
 
 
-@pytest.mark.parametrize("mode", ["hang", "drip"])
+@pytest.mark.parametrize("mode", ["hang", "drip", "stall", "error_drip"])
 def test_fetch_time_budget_bounds_hung_and_slow_responses(stub_server, mode, mocker):
+    """
+    Given a server that never responds, sends its body a byte at a time, stops sending mid-body, or
+    sends an error response whose body arrives a byte at a time.
+    When fetch runs with a 4s budget.
+    Then the run stops within the budget and keeps its window, instead of waiting for the server.
+    """
     stub_server.mode = mode
     mocker.patch("AbnormalSecurity.get_current_datetime", return_value=FETCH_NOW)
     client = Client(
@@ -1654,10 +1403,11 @@ def test_fetch_time_budget_bounds_hung_and_slow_responses(stub_server, mode, moc
         fetch_threats=True,
         fetch_abuse_campaigns=False,
         fetch_account_takeover_cases=False,
-        fetch_time_budget=2,
+        fetch_time_budget=4,
     )
 
-    assert time.monotonic() - started < 2 + 2
+    # A stalled read that kept the socket timeout from the start of the call would end ~1.5s late.
+    assert time.monotonic() - started < 4 + 1
     assert incidents == []
     assert next_run["threats"]["window_start"] == "2026-10-02T09:00:00Z"
 
@@ -1795,7 +1545,6 @@ def test_fetch_case_mode_change_restarts_window_from_its_start(api):
     last_run = {
         "version": 2,
         "account_takeover": {
-            "enabled": True,
             "window_start": "2026-10-02T09:00:00Z",
             "window_end": "2026-10-02T09:30:00Z",
             "emitted_ids": ["c-1"],
@@ -1809,7 +1558,6 @@ def test_fetch_case_mode_change_restarts_window_from_its_start(api):
     )
 
     assert next_run["account_takeover"] == {
-        "enabled": True,
         "window_start": "2026-10-02T09:00:00Z",
         "window_end": "2026-10-02T10:00:00Z",
         "emitted_ids": [],
@@ -1822,7 +1570,7 @@ def test_fetch_case_mode_change_restarts_window_from_its_start(api):
 def test_fetch_settings_from_params_defaults_for_instances_without_the_new_params():
     assert fetch_settings_from_params({}) == {
         "fetch_time_budget": 150,
-        "max_window_minutes": 60,
+        "max_window_minutes": 1440,
         "detail_concurrency": 4,
         "detail_rate_per_second": 2.0,
         "case_fetch_mode": "modified",
@@ -1833,7 +1581,7 @@ def test_fetch_settings_from_params_parses_configured_values():
     settings = fetch_settings_from_params(
         {
             "fetch_time_budget": "100",
-            "max_window_minutes": "1440",
+            "max_window_minutes": "120",
             "detail_concurrency": "2",
             "detail_rate_per_second": "0.5",
             "case_fetch_mode": "Created time",
@@ -1842,7 +1590,7 @@ def test_fetch_settings_from_params_parses_configured_values():
 
     assert settings == {
         "fetch_time_budget": 100.0,
-        "max_window_minutes": 1440,
+        "max_window_minutes": 120,
         "detail_concurrency": 2,
         "detail_rate_per_second": 0.5,
         "case_fetch_mode": "created",

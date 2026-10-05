@@ -108,7 +108,7 @@ configuration:
   section: Collect
 - display: Maximum fetch window (in minutes)
   name: max_window_minutes
-  defaultvalue: "60"
+  defaultvalue: "1440"
   type: 0
   required: false
   advanced: true

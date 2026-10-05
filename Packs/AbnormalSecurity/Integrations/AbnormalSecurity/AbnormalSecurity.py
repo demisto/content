@@ -38,7 +38,7 @@ LAST_RUN_VERSION = 2
 # the field the window filters on, so paginating can skip an item that changes mid-pagination.
 LIST_PAGE_SIZE = 500
 DEFAULT_FETCH_TIME_BUDGET_SECONDS = 150
-DEFAULT_MAX_WINDOW_MINUTES = 60
+DEFAULT_MAX_WINDOW_MINUTES = 1440
 DEFAULT_DETAIL_CONCURRENCY = 4
 # Well under the SOAR API's limit of 300 requests a minute per customer, which other clients share.
 DEFAULT_DETAIL_RATE_PER_SECOND = 2.0
@@ -64,12 +64,8 @@ def _is_skippable_error(e: DemistoException) -> bool:
     Returns:
         True if the error can be safely skipped, False otherwise.
     """
-    status_code = None
-    if e.res is not None and hasattr(e.res, "status_code"):
-        status_code = e.res.status_code
-    if status_code is None:
-        return False
-    return 400 <= status_code < 500 and status_code not in NON_SKIPPABLE_STATUS_CODES
+    status_code = _status_code(e)
+    return status_code is not None and 400 <= status_code < 500 and status_code not in NON_SKIPPABLE_STATUS_CODES
 
 
 def _status_code(e: Exception) -> int | None:
@@ -162,9 +158,6 @@ def read_body_within_deadline(response, deadline: Deadline) -> bytes:
     could otherwise hold the run past its budget.
     """
     raw = response.raw
-    read1 = getattr(raw, "read1", None)
-    if read1 is None:
-        return response.content
     sock = getattr(getattr(raw, "connection", None), "sock", None)
     chunks: list[bytes] = []
     try:
@@ -172,7 +165,7 @@ def read_body_within_deadline(response, deadline: Deadline) -> bytes:
             remaining = deadline.request_timeout()
             if sock is not None:
                 sock.settimeout(remaining)
-            chunk = read1(BODY_READ_CHUNK_BYTES, decode_content=True)
+            chunk = raw.read1(BODY_READ_CHUNK_BYTES, decode_content=True)
             if not chunk:
                 return b"".join(chunks)
             chunks.append(chunk)
@@ -201,19 +194,36 @@ class Client(BaseClient):
         return client
 
     def _http_request(self, *args, deadline: Deadline | None = None, **kwargs):
-        """Fetch passes a `deadline`, which caps the call, including reading the body, at the time left."""
+        """Fetch passes a `deadline`, which caps the call, including reading the body, at the time left.
+
+        With a deadline, a 401 or 403 raises `AuthError` and a 429 raises `RateLimitedError`.
+        """
         if self.rate_limiter is not None:
             self.rate_limiter.acquire(deadline)
         if deadline is None:
             return super()._http_request(*args, **kwargs)
-        kwargs.update(timeout=deadline.request_timeout(), resp_type="response", stream=True)
+
+        budget = deadline
+
+        def raise_for_error(res: requests.Response):
+            res._content = read_body_within_deadline(res, budget)
+            self.client_error_handler(res)
+
+        kwargs.update(timeout=deadline.request_timeout(), resp_type="response", stream=True, error_handler=raise_for_error)
         try:
             response = super()._http_request(*args, **kwargs)
-        except (DemistoException, requests.exceptions.RequestException) as e:
-            if _status_code(e) is None and deadline.expired():
+        except DemistoException as e:
+            status = _status_code(e)
+            if status in (401, 403):
+                raise AuthError(str(e)) from e
+            if status == 429:
+                raise RateLimitedError(str(e)) from e
+            if status is None and deadline.expired():
                 raise BudgetExhaustedError from e
-            if isinstance(e, DemistoException):
-                raise
+            raise
+        except requests.exceptions.RequestException as e:
+            if deadline.expired():
+                raise BudgetExhaustedError from e
             raise DemistoException(f"Request failed: {e}", e) from e
         return json.loads(read_body_within_deadline(response, deadline))
 
@@ -319,66 +329,6 @@ class Client(BaseClient):
         response = self._http_request("get", "threats", params=params, headers=headers, deadline=deadline)
 
         return response
-
-    def get_page_number_and_max_iterations(self, max_incidents_to_fetch):
-        page_size = min(max_incidents_to_fetch, 100)
-        max_iterations = (max_incidents_to_fetch // page_size) + 1
-        return page_size, max_iterations
-
-    def get_paginated_cases_list(self, filter_="", max_incidents_to_fetch=FETCH_LIMIT):
-        cases_response: dict[str, list[dict]] = {"cases": []}
-        if max_incidents_to_fetch < 1:
-            return cases_response
-
-        page_number, current_iteration = 1, 1
-        page_size, max_iterations = self.get_page_number_and_max_iterations(max_incidents_to_fetch)
-
-        while page_number is not None:
-            response = self.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(
-                filter_=filter_, page_size=page_size, page_number=page_number
-            )
-            cases_response["cases"].extend(response.get("cases", []))
-            page_number = response.get("nextPageNumber", None)
-            current_iteration += 1
-            if current_iteration > max_iterations:
-                break
-        return cases_response
-
-    def get_paginated_threats_list(self, filter_="", max_incidents_to_fetch=FETCH_LIMIT):
-        threats_response: dict[str, list[dict]] = {"threats": []}
-        if max_incidents_to_fetch < 1:
-            return threats_response
-
-        page_number, current_iteration = 1, 1
-        page_size, max_iterations = self.get_page_number_and_max_iterations(max_incidents_to_fetch)
-
-        while page_number is not None:
-            response = self.get_a_list_of_threats_request(filter_=filter_, page_size=page_size, page_number=page_number)
-            threats_response["threats"].extend(response.get("threats", []))
-            page_number = response.get("nextPageNumber", None)
-            current_iteration += 1
-            if current_iteration > max_iterations:
-                break
-        return threats_response
-
-    def get_paginated_abusecampaigns_list(self, filter_="", max_incidents_to_fetch=FETCH_LIMIT):
-        campaigns_response: dict[str, list[dict]] = {"campaigns": []}
-        if max_incidents_to_fetch < 1:
-            return campaigns_response
-
-        page_number, current_iteration = 1, 1
-        page_size, max_iterations = self.get_page_number_and_max_iterations(max_incidents_to_fetch)
-
-        while page_number is not None:
-            response = self.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(
-                filter_=filter_, page_size=page_size, page_number=page_number
-            )
-            campaigns_response["campaigns"].extend(response.get("campaigns", []))
-            page_number = response.get("nextPageNumber", None)
-            current_iteration += 1
-            if current_iteration > max_iterations:
-                break
-        return campaigns_response
 
     def get_details_of_a_threat_request(self, threat_id, subtenant=None, page_size=None, page_number=None, deadline=None):
         """
@@ -1468,7 +1418,6 @@ class FetchWindow:
     skipped, so a run that stops early is picked up by the next run without losing anything.
     """
 
-    enabled: bool
     window_start: datetime
     window_end: datetime
     emitted_ids: list[str] = field(default_factory=list)
@@ -1478,12 +1427,11 @@ class FetchWindow:
 
     @classmethod
     def new(cls, start: datetime, upper: datetime, max_window: timedelta, mode: str | None = None) -> "FetchWindow":
-        return cls(enabled=True, window_start=start, window_end=_next_window_end(start, upper, max_window), mode=mode)
+        return cls(window_start=start, window_end=_next_window_end(start, upper, max_window), mode=mode)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "FetchWindow":
         return cls(
-            enabled=bool(data.get("enabled", True)),
             window_start=parse_timestamp(data["window_start"]),
             window_end=parse_timestamp(data["window_end"]),
             emitted_ids=list(data.get("emitted_ids") or []),
@@ -1493,7 +1441,6 @@ class FetchWindow:
 
     def to_dict(self) -> dict[str, Any]:
         data: dict[str, Any] = {
-            "enabled": self.enabled,
             "window_start": format_timestamp(self.window_start),
             "window_end": format_timestamp(self.window_end),
             "emitted_ids": self.emitted_ids,
@@ -1522,7 +1469,7 @@ class FetchWindow:
         self.failed = {}
 
     def extend_if_empty(self, upper: datetime, max_window: timedelta) -> None:
-        if self.is_empty() and self.is_untouched():
+        if self.is_empty():
             self.window_end = _next_window_end(self.window_start, upper, max_window)
 
 
@@ -1578,7 +1525,7 @@ def build_threat_incident(
     return {
         "dbotMirrorId": str(threat["threatId"]),
         "name": "Threat",
-        "occurred": received_time[:26] if len(received_time) > 26 else received_time,
+        "occurred": received_time[:26],
         "details": "Threat",
         "rawJSON": json.dumps(threat_details),
     }
@@ -1590,7 +1537,7 @@ def build_abuse_campaign_incident(client: Client, campaign: dict, window: FetchW
     return {
         "dbotMirrorId": str(campaign.get("campaignId", "")),
         "name": "Abuse Campaign",
-        "occurred": first_reported[:26] if len(first_reported) > 26 else first_reported,
+        "occurred": first_reported[:26],
         "details": "Abuse Campaign",
         "rawJSON": json.dumps(campaign_details),
     }
@@ -1688,9 +1635,8 @@ def migrate_last_run(
         mode = case_mode if spec.mode_filter_fields else None
         window = windows.get(spec.key)
         if not enabled[spec.key]:
-            if window is not None:
-                window.enabled = False
-        elif window is None or not window.enabled:
+            windows.pop(spec.key, None)
+        elif window is None:
             # A newly enabled type starts at the current time, as 2.4.9 did, instead of replaying a backlog.
             windows[spec.key] = FetchWindow.new(upper, upper, max_window, mode=mode)
         elif mode is not None and (window.mode or CASE_MODE_MODIFIED) != mode:
@@ -1702,21 +1648,34 @@ def migrate_last_run(
     return windows, offset
 
 
-def _list_page(client: Client, spec: FetchTypeSpec, window: FetchWindow, page_size: int, page_number: int, deadline: Deadline):
-    request = getattr(client, spec.list_method)
-    return request(filter_=build_list_filter(spec, window), page_size=page_size, page_number=page_number, deadline=deadline)
+@dataclass
+class FetchRun:
+    """What every incident type shares during one fetch run."""
+
+    client: Client
+    deadline: Deadline
+    upper: datetime
+    max_window: timedelta
+    concurrency: int
+    max_page_number: int
+    warnings: list[str] = field(default_factory=list)
 
 
-def list_window_snapshot(
-    client: Client, spec: FetchTypeSpec, window: FetchWindow, deadline: Deadline, page_size: int, stats: dict[str, Any]
-) -> list[dict]:
+def _list_page(run: FetchRun, spec: FetchTypeSpec, window: FetchWindow, page_number: int) -> dict:
+    request = getattr(run.client, spec.list_method)
+    return request(
+        filter_=build_list_filter(spec, window), page_size=LIST_PAGE_SIZE, page_number=page_number, deadline=run.deadline
+    )
+
+
+def list_window_snapshot(run: FetchRun, spec: FetchTypeSpec, window: FetchWindow) -> list[dict]:
     """Lists every item in the window, halving the window until it fits in one page.
 
     A window that already has emitted or failed IDs is paginated instead of halved, since halving
     it would drop the record of what the next window has already emitted.
     """
     while True:
-        response = _list_page(client, spec, window, page_size, 1, deadline)
+        response = _list_page(run, spec, window, 1)
         items = list(response.get(spec.list_key) or [])
         next_page = response.get("nextPageNumber")
         if not next_page:
@@ -1724,10 +1683,10 @@ def list_window_snapshot(
         span_seconds = int((window.window_end - window.window_start).total_seconds())
         if window.is_untouched() and span_seconds >= 2:
             window.window_end = window.window_start + timedelta(seconds=span_seconds // 2)
-            stats["halvings"] = stats.get("halvings", 0) + 1
+            demisto.debug(f"Halved the {spec.label} window to end at {format_timestamp(window.window_end)}")
             continue
         while next_page:
-            response = _list_page(client, spec, window, page_size, next_page, deadline)
+            response = _list_page(run, spec, window, next_page)
             items.extend(response.get(spec.list_key) or [])
             next_page = response.get("nextPageNumber")
         return items
@@ -1743,33 +1702,16 @@ def _is_retention_error(e: Exception) -> bool:
 
 
 def _run_stopping_error(e: Exception, deadline: Deadline) -> Exception | None:
-    """Returns the error to stop the whole run with, or None if only this item failed."""
+    """Returns the error to stop the whole run with, or None if only this item or list call failed."""
     if isinstance(e, AuthError | RateLimitedError | BudgetExhaustedError):
         return e
-    status = _status_code(e)
-    if status in (401, 403):
-        return AuthError(str(e))
-    if status == 429:
-        return RateLimitedError(str(e))
     if deadline.expired():
         return BudgetExhaustedError()
     return None
 
 
-def _raise_if_run_stopping(e: Exception, deadline: Deadline) -> None:
-    error = _run_stopping_error(e, deadline)
-    if error is not None:
-        raise error from e
-
-
 def build_incidents(
-    client: Client,
-    spec: FetchTypeSpec,
-    items: list[dict],
-    window: FetchWindow,
-    deadline: Deadline,
-    concurrency: int = 1,
-    **kwargs,
+    run: FetchRun, spec: FetchTypeSpec, items: list[dict], window: FetchWindow
 ) -> Generator[tuple[dict, dict | Exception | None], None, None]:
     """Yields `(item, incident_or_exception)` in list order, so the output doesn't depend on timing.
 
@@ -1782,23 +1724,19 @@ def build_incidents(
     def build(item: dict) -> dict | Exception | None:
         if stop.is_set():
             return None
-        if deadline.expired():
+        if run.deadline.expired():
             stop.set()
             return BudgetExhaustedError()
-        if concurrency > 1 and not hasattr(workers, "client"):
-            workers.client = client.clone()
         try:
-            return spec.builder(getattr(workers, "client", client), item, window, deadline=deadline, **kwargs)
+            if not hasattr(workers, "client"):
+                workers.client = run.client.clone()
+            return spec.builder(workers.client, item, window, deadline=run.deadline, max_page_number=run.max_page_number)
         except Exception as e:
-            if _run_stopping_error(e, deadline) is not None:
+            if _run_stopping_error(e, run.deadline) is not None:
                 stop.set()
             return e
 
-    if concurrency <= 1:
-        for item in items:
-            yield item, build(item)
-        return
-    executor = ThreadPoolExecutor(max_workers=concurrency)
+    executor = ThreadPoolExecutor(max_workers=run.concurrency)
     try:
         futures = [(item, executor.submit(build, item)) for item in items]
         for item, future in futures:
@@ -1808,20 +1746,71 @@ def build_incidents(
         executor.shutdown(wait=True, cancel_futures=True)
 
 
-def fetch_type(
-    client: Client,
-    spec: FetchTypeSpec,
-    window: FetchWindow,
-    deadline: Deadline,
-    quota: int,
-    upper: datetime,
-    max_window: timedelta,
-    warnings: list[str],
-    stats: dict[str, Any],
-    max_page_number: int = 8,
-    list_page_size: int = LIST_PAGE_SIZE,
-    concurrency: int = 1,
-) -> tuple[list[dict], str]:
+def _list_error_reason(run: FetchRun, spec: FetchTypeSpec, window: FetchWindow, e: Exception) -> str | None:
+    """Handles a failed list call. Returns why the type stops, or None if the window was skipped instead."""
+    if spec is THREATS_SPEC and _is_retention_error(e):
+        run.warnings.append(
+            f"Skipped {spec.label} from {format_timestamp(window.window_start)} to "
+            f"{format_timestamp(window.window_end)}: outside the data retention period."
+        )
+        window.advance(run.upper, run.max_window)
+        return None
+    if _status_code(e) == 402:
+        # Starting over at now each run means licensing the tenant later doesn't replay a backlog.
+        window.window_start = run.upper
+        window.restart(run.upper, run.max_window)
+        run.warnings.append(f"Skipped {spec.label}: the tenant isn't licensed for them.")
+        return "not_licensed"
+    run.warnings.append(f"Listing {spec.label} failed; will retry next run: {e}")
+    return "list_error"
+
+
+def _build_batch(run: FetchRun, spec: FetchTypeSpec, window: FetchWindow, batch: list[dict], incidents: list[dict]) -> bool:
+    """Turns `batch` into incidents and records each outcome in the window.
+
+    Returns:
+        False if the type stopped after too many failures in a row. A run-stopping error is raised
+        after the incidents other workers already completed are kept.
+    """
+    consecutive_failures = 0
+    stop_error: Exception | None = None
+    results = build_incidents(run, spec, batch, window)
+    for item, result in results:
+        item_id = str(item[spec.id_key])
+        if isinstance(result, dict):
+            incidents.append(result)
+            window.emitted_ids.append(item_id)
+            window.failed.pop(item_id, None)
+            consecutive_failures = 0
+            continue
+        if result is None:
+            continue
+        stop_error = stop_error or _run_stopping_error(result, run.deadline)
+        if stop_error is not None:
+            continue
+        if isinstance(result, DemistoException) and _is_skippable_error(result):
+            demisto.debug(f"{spec.label} item {item_id} returned a skippable error, skipping: {result}")
+            window.emitted_ids.append(item_id)
+            consecutive_failures = 0
+            continue
+        failures = window.failed.pop(item_id, 0) + 1
+        if failures >= MAX_ITEM_FAILURES:
+            run.warnings.append(f"Skipped {spec.label} item {item_id} after it failed on {failures} runs: {result}")
+            window.emitted_ids.append(item_id)
+        else:
+            demisto.debug(f"{spec.label} item {item_id} failed (attempt {failures}), will retry: {result}")
+            window.failed[item_id] = failures
+        consecutive_failures += 1
+        if consecutive_failures >= MAX_CONSECUTIVE_FAILURES:
+            results.close()
+            run.warnings.append(f"Stopped fetching {spec.label} after {consecutive_failures} failures in a row: {result}")
+            return False
+    if stop_error is not None:
+        raise stop_error
+    return True
+
+
+def fetch_type(run: FetchRun, spec: FetchTypeSpec, window: FetchWindow, quota: int) -> tuple[list[dict], str]:
     """Turns the type's items into incidents, window by window, until something stops it.
 
     Returns:
@@ -1834,81 +1823,30 @@ def fetch_type(
             if len(incidents) >= quota:
                 return incidents, "max_fetch"
             try:
-                items = list_window_snapshot(client, spec, window, deadline, list_page_size, stats)
-            except BudgetExhaustedError:
-                raise
+                items = list_window_snapshot(run, spec, window)
             except Exception as e:
-                _raise_if_run_stopping(e, deadline)
-                if spec is THREATS_SPEC and _is_retention_error(e):
-                    warnings.append(
-                        f"Skipped {spec.label} from {format_timestamp(window.window_start)} to "
-                        f"{format_timestamp(window.window_end)}: outside the data retention period."
-                    )
-                    window.advance(upper, max_window)
-                    continue
-                if _status_code(e) == 402:
-                    warnings.append(f"Skipped {spec.label}: the tenant isn't licensed for them.")
-                    return incidents, "not_licensed"
-                warnings.append(f"Listing {spec.label} failed; will retry next run: {e}")
-                return incidents, "list_error"
-
-            emitted = set(window.emitted_ids)
-            pending, seen = [], set()
-            for item in items:
-                item_id = str(item[spec.id_key])
-                if item_id not in emitted and item_id not in seen:
-                    seen.add(item_id)
-                    pending.append(item)
-
-            batch = pending[: quota - len(incidents)]
-            consecutive_failures = 0
-            stop_error: Exception | None = None
-            results = build_incidents(
-                client, spec, batch, window, deadline, concurrency=concurrency, max_page_number=max_page_number
-            )
-            for item, result in results:
-                item_id = str(item[spec.id_key])
-                if result is None:
-                    continue
-                if isinstance(result, dict):
-                    incidents.append(result)
-                    window.emitted_ids.append(item_id)
-                    window.failed.pop(item_id, None)
-                    consecutive_failures = 0
-                    continue
-                # Keep going after a run-stopping error, to keep incidents that other workers completed.
-                stop_error = stop_error or _run_stopping_error(result, deadline)
+                stop_error = _run_stopping_error(e, run.deadline)
                 if stop_error is not None:
+                    raise stop_error from e
+                reason = _list_error_reason(run, spec, window, e)
+                if reason is None:
                     continue
-                if isinstance(result, DemistoException) and _is_skippable_error(result):
-                    demisto.debug(f"{spec.label} item {item_id} returned a skippable error, skipping: {result}")
-                    window.emitted_ids.append(item_id)
-                    consecutive_failures = 0
-                    continue
-                failures = window.failed.get(item_id, 0) + 1
-                if failures >= MAX_ITEM_FAILURES:
-                    warnings.append(f"Skipped {spec.label} item {item_id} after it failed on {failures} runs: {result}")
-                    window.failed.pop(item_id, None)
-                    window.emitted_ids.append(item_id)
-                else:
-                    demisto.debug(f"{spec.label} item {item_id} failed (attempt {failures}), will retry: {result}")
-                    window.failed[item_id] = failures
-                consecutive_failures += 1
-                if consecutive_failures >= MAX_CONSECUTIVE_FAILURES:
-                    results.close()
-                    warnings.append(f"Stopped fetching {spec.label} after {consecutive_failures} failures in a row: {result}")
-                    return incidents, "errors"
-            if stop_error is not None:
-                raise stop_error
+                return incidents, reason
+
+            done = set(window.emitted_ids)
+            pending = list({str(item[spec.id_key]): item for item in items if str(item[spec.id_key]) not in done}.values())
+            batch = pending[: quota - len(incidents)]
+            if not _build_batch(run, spec, window, batch, incidents):
+                return incidents, "errors"
             if len(batch) < len(pending):
                 return incidents, "max_fetch"
             if window.failed:
                 return incidents, "item_errors"
-            window.advance(upper, max_window)
+            window.advance(run.upper, run.max_window)
     except BudgetExhaustedError:
         return incidents, "budget"
     except RateLimitedError as e:
-        warnings.append(f"Rate limited while fetching {spec.label}; will resume next run: {e}")
+        run.warnings.append(f"Rate limited while fetching {spec.label}; will resume next run: {e}")
         return incidents, "rate_limited"
     return incidents, "caught_up"
 
@@ -1990,42 +1928,29 @@ def fetch_incidents(
         rotation = offset % len(specs)
         specs = specs[rotation:] + specs[:rotation]
 
+    run = FetchRun(client, deadline, upper, max_window, detail_concurrency, max_page_number)
     incidents: list[dict] = []
-    warnings: list[str] = []
-    stats: dict[str, Any] = {}
+    summary: dict[str, Any] = {}
     for spec in specs:
         quota = max_incidents_to_fetch - len(incidents)
         if quota <= 0:
             break
-        type_incidents, reason = fetch_type(
-            client,
-            spec,
-            windows[spec.key],
-            deadline,
-            quota,
-            upper,
-            max_window,
-            warnings,
-            stats,
-            max_page_number=max_page_number,
-            list_page_size=LIST_PAGE_SIZE,
-            concurrency=detail_concurrency,
-        )
+        type_incidents, reason = fetch_type(run, spec, windows[spec.key], quota)
         incidents.extend(type_incidents)
-        stats[spec.key] = {"emitted": len(type_incidents), "stop_reason": reason}
+        summary[spec.key] = {"emitted": len(type_incidents), "stop_reason": reason}
         if reason in RUN_STOPPING_REASONS:
             break
-    demisto.debug(f"AbnormalSecurity fetch summary: {json.dumps(stats)}")
+    demisto.debug(f"AbnormalSecurity fetch summary: {json.dumps(summary)}")
 
     next_run: dict[str, Any] = {
         "version": LAST_RUN_VERSION,
         "type_order_offset": offset + 1,
         **{key: window.to_dict() for key, window in windows.items()},
     }
-    starts = [window.window_start for window in windows.values() if window.enabled]
+    starts = [window.window_start for window in windows.values()]
     # 2.4.9 only reads `last_fetch`, so writing the oldest window start lets a rollback resume without a gap.
     next_run["last_fetch"] = format_timestamp(min(starts) if starts else upper)
-    return next_run, incidents, warnings
+    return next_run, incidents, run.warnings
 
 
 def test_module(client):
