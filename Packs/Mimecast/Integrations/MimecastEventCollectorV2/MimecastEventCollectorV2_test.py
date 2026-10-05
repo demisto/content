@@ -860,8 +860,10 @@ async def test_fetch_audit_events(
             100,
             [],
             None,
-            {"start_date": "2025-01-01T01:00:00.000Z", "last_fetched_ids": ["event-2"]},
-            id="No new events (keeps last run)",
+            # No events for the queried window -> advance start_date to the query end_date (UTC_NOW, mocked to
+            # 2025-01-02T11:00:00Z) and clear last_fetched_ids so the same empty window is not re-scanned.
+            {"start_date": "2025-01-02T11:00:00.000Z", "last_fetched_ids": []},
+            id="No new events (advances start_date to end_date)",
         ),
         pytest.param(
             {},
@@ -933,16 +935,18 @@ async def test_fetch_siem_events(
 
 
 @pytest.mark.asyncio
-async def test_fetch_siem_events_no_events_persists_clamped_start_date(async_client: AsyncClient, mocker: MockerFixture):
+async def test_fetch_siem_events_no_events_advances_start_date_to_end_date(async_client: AsyncClient, mocker: MockerFixture):
     """
     Given:
-     - A last run whose start_date is older than 24 hours and an API call that returns NO events
-       (e.g. the cursor/date returned nothing).
+     - A last run with a start_date and existing last_fetched_ids, and an API call that returns NO events
+       for the queried [start_date, end_date] window.
     When:
      - Calling fetch_siem_events.
     Then:
-     - Ensure the next run still persists the clamped (now-23h) start_date so the date is not lost.
-     - Ensure the next run keeps the existing last_fetched_ids and does not persist a cursor.
+     - Ensure the next run advances start_date to the query end_date (y = UTC_NOW), so the same empty window
+       is not re-scanned on the next cycle.
+     - Ensure last_fetched_ids is cleared (there are no events at y to deduplicate against).
+     - Ensure the next run does not persist a cursor.
     """
     from MimecastEventCollectorV2 import fetch_siem_events, convert_to_siem_filter_format
 
@@ -954,10 +958,10 @@ async def test_fetch_siem_events_no_events_persists_clamped_start_date(async_cli
     last_run = {"start_date": "2025-01-01T00:00:00.000Z", "last_fetched_ids": ["event-1"], "next_page": GOOD_SIEM_CURSOR}
     next_run, events = await fetch_siem_events(async_client, last_run, 100)
 
-    expected_start_date = convert_to_siem_filter_format(mock_now - timedelta(hours=23))
+    expected_start_date = convert_to_siem_filter_format(mock_now)
     assert events == []
     assert next_run[START_DATE_KEY] == expected_start_date
-    assert next_run[LAST_FETCHED_IDS_KEY] == ["event-1"]
+    assert next_run[LAST_FETCHED_IDS_KEY] == []
     assert NEXT_PAGE_KEY not in next_run
 
 

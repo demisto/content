@@ -894,12 +894,13 @@ async def fetch_siem_events(
         next_page=initial_next_page,
     )
 
-    # Handle empty results. Even when no events are returned (e.g. the cursor/date yielded nothing), always persist
-    # the current (possibly clamped) start date and existing IDs so the last date is never lost and a stale/invalid
-    # date is not kept. The cursor is never persisted between fetch cycles.
+    # Handle empty results. When no events are returned for the queried [start_date, end_date] window, advance the
+    # persisted start date to the query end date so the same empty window is not re-scanned on the next cycle. The
+    # existing last_fetched_ids are cleared because there are no events at the new start date to deduplicate against.
+    # The cursor is never persisted between fetch cycles.
     if not siem_events:
-        siem_next_run = {START_DATE_KEY: start_date, LAST_FETCHED_IDS_KEY: last_fetched_ids}
-        demisto.debug(f"{log_prefix} No new events found. Persisting {siem_next_run=}.")
+        siem_next_run = {START_DATE_KEY: end_date, LAST_FETCHED_IDS_KEY: []}
+        demisto.debug(f"{log_prefix} No new events found. Advancing start_date to end_date. Persisting {siem_next_run=}.")
         return siem_next_run, []
 
     # Update state with newest events. The cursor is intentionally NOT persisted - only the latest event
