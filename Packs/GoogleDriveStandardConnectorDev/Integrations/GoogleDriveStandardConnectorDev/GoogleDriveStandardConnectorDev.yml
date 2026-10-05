@@ -1,7 +1,7 @@
-name: GoogleDriveStandardConnectorTest
+name: GoogleDriveStandardConnectorDev
 category: IT Services
 provider: Google
-display: Google Drive (Standard Connector) Test
+display: Google Drive (Standard Connector) Dev
 sectionorder:
 - Connect
 - Collect
@@ -3279,7 +3279,7 @@ script:
   subtype: python3
   type: python
 commonfields:
-  id: GoogleDriveStandardConnectorTest
+  id: GoogleDriveStandardConnectorDev
   version: -1
 fromversion: 8.15.0
 tests:

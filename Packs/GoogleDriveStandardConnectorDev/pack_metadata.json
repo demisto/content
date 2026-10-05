@@ -1,6 +1,6 @@
 {
-    "name": "Google Drive (Standard Connector) Test",
-    "description": "Satellite pack of Google Drive used for the Standard Connector Test deployment. Shares core logic with the Google Drive pack via the GoogleDriveApiModule.",
+    "name": "Google Drive (Standard Connector) Dev",
+    "description": "Satellite pack of Google Drive used for the Standard Connector Dev deployment. Shares core logic with the Google Drive pack via the GoogleDriveApiModule.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "serverMinVersion": "8.15.0",
