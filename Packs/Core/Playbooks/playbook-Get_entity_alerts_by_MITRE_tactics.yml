@@ -1929,3 +1929,10 @@ outputSections:
   - foundIncidents
   name: General (Outputs group)
   description: Generic group for outputs
+supportedModules:
+- agentix
+- cloud
+- cloud_posture
+- cloud_runtime_security
+- edr
+- xsiam
