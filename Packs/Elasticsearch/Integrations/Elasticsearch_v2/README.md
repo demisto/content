@@ -11,7 +11,7 @@ The permissions required to use this integration depends on which operations you
 - **!es-index** - If the Elasticsearch security features are enabled, you must have the *write* [index privilege](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-privileges.html#privileges-list-indices) for the target data stream, index, or alias.
 - **!es-kibana-* commands** - To execute Kibana commands, you must have the necessary privileges for the applicable resource. The privilege required depends on the command you are using. Kibana API endpoints are gated by feature privileges granted at one of two levels: *Read* (GET / list / view operations) and *All* (POST / PUT / PATCH / DELETE operations). For rules and cases, the privilege is scoped to the feature that owns the object — a Security-owned object requires the **Security** feature privilege, an Observability-owned object requires the **Observability** feature privilege, and a stack-owned object requires the **Management** / **Stack Rules** feature privilege.
 - **!es-kibana-endpoint-isolate / !es-kibana-endpoint-unisolate / !es-kibana-endpoint-execute-command** - These are active endpoint response actions: isolation and unisolation change endpoint connectivity, and execute-command runs a shell command on the endpoint. They require the applicable endpoint response-action privileges. Existing integration instances may not have these privileges and can receive a 403 response.
-- **!es-kibana-endpoint-get-agents** - Requires the `fleet-agents-read` privilege to list Fleet agents.
+- **!es-kibana-endpoint-get-agent** - Requires the `fleet-agents-read` privilege to retrieve a Fleet agent.
 
 ## Configure Elasticsearch v2 in Cortex
 
@@ -944,50 +944,32 @@ Retrieve host metadata for a specific endpoint.
 
 ```!es-kibana-endpoint-get_metadata id="agent-1"```
 
-### es-kibana-endpoint-get-agents
+### es-kibana-endpoint-get-agent
 
 ***
-List Elastic Fleet agents, with optional KQL filtering and pagination. Requires the `fleet-agents-read` privilege.
+Retrieve an Elastic Fleet agent by ID. Requires the `fleet-agents-read` privilege.
 
 #### Base Command
 
-`es-kibana-endpoint-get-agents`
+`es-kibana-endpoint-get-agent`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | space_id | Kibana space ID. | Optional |
-| page | Page number. | Optional |
-| per_page | Number of results per page. | Optional |
-| kuery | KQL query string to filter agents. | Optional |
-| show_agentless | Include agentless agents. | Optional |
-| show_inactive | Include inactive agents. | Optional |
+| agent_id | The ID of the agent to retrieve. | Required |
 | with_metrics | Include CPU and memory metrics. | Optional |
-| show_upgradeable | Return only upgradeable agents. | Optional |
-| get_status_summary | Include a summary of agent statuses. | Optional |
-| sort_field | Field to sort results by. | Optional |
-| sort_order | Sort order, ascending or descending. | Optional |
-| search_after | JSON-encoded array of sort values for pagination. | Optional |
-| open_pit | Open a point-in-time for pagination. | Optional |
-| pit_id | Point-in-time ID for pagination. | Optional |
-| pit_keep_alive | Duration to keep the point-in-time alive, for example `1m`. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Elasticsearch.Kibana.EndpointAgents.items | Unknown | Matching Fleet agents. |
-| Elasticsearch.Kibana.EndpointAgents.nextSearchAfter | String | Search-after value for the next page. |
-| Elasticsearch.Kibana.EndpointAgents.page | Number | Current page number. |
-| Elasticsearch.Kibana.EndpointAgents.perPage | Number | Number of results per page. |
-| Elasticsearch.Kibana.EndpointAgents.pit | String | Point-in-time ID for pagination. |
-| Elasticsearch.Kibana.EndpointAgents.statusSummary | Unknown | Summary of agent statuses. |
-| Elasticsearch.Kibana.EndpointAgents.total | Number | Total number of matching agents. |
+| Elasticsearch.Kibana.EndpointAgent.item | Unknown | The agent returned by the request. |
 
 #### Command Example
 
-```!es-kibana-endpoint-get-agents page="1" per_page="50" show_inactive="true" kuery="agent.name: \"host-1\""```
+```!es-kibana-endpoint-get-agent agent_id="agent-1" with_metrics="true"```
 
 ### es-kibana-endpoint-isolate
 

@@ -2912,18 +2912,14 @@ class TestEsKibanaEndpointUnisolateCommand:
             Elasticsearch_v2.es_kibana_endpoint_unisolate_command({}, {})
 
 
-class TestEsKibanaEndpointGetAgentsCommand:
-    """Tests for es_kibana_endpoint_get_agents_command."""
+class TestEsKibanaEndpointGetAgentCommand:
+    """Tests for es_kibana_endpoint_get_agent_command."""
 
-    def test_get_agents_passes_query_params(self, mocker):
+    def test_get_agent_passes_path_id_and_metrics_param(self, mocker):
         import Elasticsearch_v2
 
         response = {
-            "items": [{"id": "agent-1", "status": "online"}],
-            "nextSearchAfter": '["agent-1"]',
-            "page": 1,
-            "perPage": 20,
-            "total": 1,
+            "item": {"id": "agent-1", "status": "online", "local_metadata": {"host": {"hostname": "host-1"}}}
         }
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
         mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Fleet agents")
@@ -2931,60 +2927,44 @@ class TestEsKibanaEndpointGetAgentsCommand:
         result = Elasticsearch_v2.es_kibana_endpoint_get_agents_command(
             {
                 "space_id": "security",
-                "page": "1",
-                "per_page": "20",
-                "kuery": 'agent.name:"host 1"',
-                "show_agentless": "false",
-                "show_inactive": "true",
+                "agent_id": "agent-1",
                 "with_metrics": "true",
-                "show_upgradeable": "false",
-                "get_status_summary": "true",
-                "sort_field": "hostname",
-                "sort_order": "desc",
-                "search_after": '["agent-1"]',
-                "open_pit": "true",
-                "pit_id": "pit-1",
-                "pit_keep_alive": "1m",
             },
             {},
         )
 
         mock_request.assert_called_once_with(
             "GET",
-            "/api/fleet/agents",
+            "/api/fleet/agents/agent-1",
             space_id="security",
-            params={
-                "page": "1",
-                "perPage": "20",
-                "kuery": 'agent.name:"host 1"',
-                "showAgentless": False,
-                "showInactive": True,
-                "withMetrics": True,
-                "showUpgradeable": False,
-                "getStatusSummary": True,
-                "sortField": "hostname",
-                "sortOrder": "desc",
-                "searchAfter": '["agent-1"]',
-                "openPit": True,
-                "pitId": "pit-1",
-                "pitKeepAlive": "1m",
-            },
+            params={"withMetrics": True},
             proxies={},
         )
         assert result.outputs == response
         assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointAgents"
         assert result.readable_output == "Fleet agents"
 
-    def test_get_agents_without_optional_params(self, mocker):
+    def test_get_agent_without_optional_params(self, mocker):
         import Elasticsearch_v2
 
-        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"items": []})
-        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="No agents")
+        response = {"item": {"id": "agent-1", "status": "online"}}
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Fleet agent")
 
-        result = Elasticsearch_v2.es_kibana_endpoint_get_agents_command({}, {})
+        result = Elasticsearch_v2.es_kibana_endpoint_get_agents_command({"agent_id": "agent-1"}, {})
 
-        mock_request.assert_called_once_with("GET", "/api/fleet/agents", space_id=None, params={}, proxies={})
-        assert result.readable_output == "No agents"
+        mock_request.assert_called_once_with(
+            "GET", "/api/fleet/agents/agent-1", space_id=None, params={}, proxies={}
+        )
+        assert result.outputs == response
+        assert result.readable_output == "Fleet agent"
+
+    def test_get_agent_requires_agent_id(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match="agent_id"):
+            Elasticsearch_v2.es_kibana_endpoint_get_agents_command({}, {})
 
 
 class TestEsKibanaEndpointExecuteCommand:

@@ -2798,36 +2798,22 @@ def es_kibana_endpoint_unisolate_command(args: Dict[str, Any], proxies) -> Comma
 
 
 def es_kibana_endpoint_get_agent_command(args: Dict[str, Any], proxies) -> CommandResults:
-    query_arg_map = {
-        "page": "page",
-        "per_page": "perPage",
-        "kuery": "kuery",
-        "show_agentless": "showAgentless",
-        "show_inactive": "showInactive",
-        "with_metrics": "withMetrics",
-        "show_upgradeable": "showUpgradeable",
-        "get_status_summary": "getStatusSummary",
-        "sort_field": "sortField",
-        "sort_order": "sortOrder",
-        "search_after": "searchAfter",
-        "open_pit": "openPit",
-        "pit_id": "pitId",
-        "pit_keep_alive": "pitKeepAlive",
-    }
-    boolean_args = {"show_agentless", "show_inactive", "with_metrics", "show_upgradeable", "get_status_summary", "open_pit"}
-    params: Dict[str, Any] = {}
-    for arg_name, param_name in query_arg_map.items():
-        value = args.get(arg_name)
-        if value is None or value == "":
-            continue
-        params[param_name] = argToBoolean(value) if arg_name in boolean_args else value
+    agent_id = args.get("agent_id")
+    if not agent_id:
+        raise DemistoException('The "agent_id" argument is required.')
 
-    response = kibana_http_request("GET", "/api/fleet/agents", space_id=args.get("space_id"), params=params, proxies=proxies)
-    agents = response.get("items", []) if isinstance(response, dict) else []
-    readable_output = tableToMarkdown("Kibana Fleet Agents", agents, removeNull=True)
+    params: Dict[str, Any] = {}
+    if args.get("with_metrics") is not None and args.get("with_metrics") != "":
+        params["withMetrics"] = argToBoolean(args["with_metrics"])
+
+    response = kibana_http_request(
+        "GET", f"/api/fleet/agents/{agent_id}", space_id=args.get("space_id"), params=params, proxies=proxies
+    )
+    agent = response.get("item", {}) if isinstance(response, dict) else {}
+    readable_output = tableToMarkdown("Kibana Fleet Agent", agent, removeNull=True)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Elasticsearch.Kibana.EndpointAgents",
+        outputs_prefix="Elasticsearch.Kibana.EndpointAgent",
         outputs=response,
         raw_response=response,
     )

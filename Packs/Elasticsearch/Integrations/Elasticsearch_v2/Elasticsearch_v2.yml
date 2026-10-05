@@ -1729,89 +1729,23 @@ script:
       description: The metadata of the endpoint.
       type: Unknown
   - name: es-kibana-endpoint-get-agent
-    description: Retrieves Elastic Fleet agents with optional filtering and pagination. Requires the fleet-agents-read privilege.
+    description: Retrieves an Elastic Fleet agent by ID. Requires the fleet-agents-read privilege.
     arguments:
     - name: space_id
       description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
-    - name: page
-      description: Page number.
-      type: Number
-    - name: per_page
-      description: Number of results per page.
-      type: Number
-    - name: kuery
-      description: A KQL query string to filter agents.
-    - name: show_agentless
-      description: When true, include agentless agents.
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-    - name: show_inactive
-      description: When true, include inactive agents.
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
+    - name: agent_id
+      description: The ID of the agent to retrieve.
+      required: true
     - name: with_metrics
       description: When true, include CPU and memory metrics in the response.
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - name: show_upgradeable
-      description: When true, only return agents that are upgradeable.
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-    - name: get_status_summary
-      description: When true, return a summary of agent statuses.
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-    - name: sort_field
-      description: Field to sort results by.
-    - name: sort_order
-      description: Sort order, ascending or descending.
-      auto: PREDEFINED
-      predefined:
-      - asc
-      - desc
-    - name: search_after
-      description: JSON-encoded array of sort values for search_after pagination.
-    - name: open_pit
-      description: When true, open a point-in-time for pagination.
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
-    - name: pit_id
-      description: Point-in-time ID for pagination.
-    - name: pit_keep_alive
-      description: Duration to keep the point-in-time alive, for example 1m.
     outputs:
-    - contextPath: Elasticsearch.Kibana.EndpointAgents.items
-      description: Fleet agents matching the request.
+    - contextPath: Elasticsearch.Kibana.EndpointAgent.item
+      description: The agent returned by the request.
       type: Unknown
-    - contextPath: Elasticsearch.Kibana.EndpointAgents.nextSearchAfter
-      description: Search-after value for the next page.
-      type: String
-    - contextPath: Elasticsearch.Kibana.EndpointAgents.page
-      description: Current page number.
-      type: Number
-    - contextPath: Elasticsearch.Kibana.EndpointAgents.perPage
-      description: Number of results per page.
-      type: Number
-    - contextPath: Elasticsearch.Kibana.EndpointAgents.pit
-      description: Point-in-time ID for pagination.
-      type: String
-    - contextPath: Elasticsearch.Kibana.EndpointAgents.statusSummary
-      description: Summary of agent statuses.
-      type: Unknown
-    - contextPath: Elasticsearch.Kibana.EndpointAgents.total
-      description: Total number of matching agents.
       type: Number
   - name: es-kibana-endpoint-exception-list-item-create
     description: Create an Elastic Endpoint exception list item, and associate it with the Elastic Endpoint exception list.
