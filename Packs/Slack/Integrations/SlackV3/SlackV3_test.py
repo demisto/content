@@ -5,6 +5,7 @@ from datetime import datetime, UTC
 import pytest
 from pytest_mock.plugin import MockerFixture
 import slack_sdk
+import SlackV3
 from CommonServerPython import *
 from CommonServerPython import CortexMissingArgError, CortexResourceNotFoundError
 from slack_sdk.errors import SlackApiError
@@ -5973,9 +5974,6 @@ async def test_post_agent_response_sync_with_msg_blocks_too_long_single_block_fa
     Then:
         Falls back to sending a plain text message instead of losing it entirely.
     """
-    import SlackV3
-    from slack_sdk.errors import SlackApiError
-
     # First call fails with msg_blocks_too_long, second (plain-text fallback) succeeds.
     mocker.patch.object(
         SlackV3,
@@ -6012,9 +6010,6 @@ async def test_post_agent_response_splits_blocks_on_msg_blocks_too_long(mocker):
         The blocks are split into chunks of at most 50 and sent across multiple messages,
         preserving the formatted content instead of degrading to plain text.
     """
-    import SlackV3
-    from slack_sdk.errors import SlackApiError
-
     blocks = [{"type": "section", "text": {"type": "mrkdwn", "text": f"line {i}"}} for i in range(120)]
 
     # First (single-message) call fails; the three chunk sends succeed.
@@ -6062,9 +6057,6 @@ async def test_post_agent_response_splits_attachment_blocks_on_msg_blocks_too_lo
         The attachment blocks are split into multiple attachment messages that each preserve
         the original attachment styling (e.g. color).
     """
-    import SlackV3
-    from slack_sdk.errors import SlackApiError
-
     inner_blocks = [{"type": "section", "text": {"type": "mrkdwn", "text": f"step {i}"}} for i in range(80)]
     attachments = [{"color": "#D1D2D3", "blocks": inner_blocks}]
 
@@ -6109,9 +6101,6 @@ async def test_post_agent_response_falls_back_to_plain_text_when_split_chunk_sti
     Then:
         Splitting is aborted and the response is sent as plain text so it isn't lost.
     """
-    import SlackV3
-    from slack_sdk.errors import SlackApiError
-
     blocks = [{"type": "section", "text": {"type": "mrkdwn", "text": f"line {i}"}} for i in range(120)]
 
     mocker.patch.object(
