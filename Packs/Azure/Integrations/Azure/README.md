@@ -3427,6 +3427,7 @@ Creates a firewall policy. This command only creates the policy resource. To att
 | Azure.VirtualNetworks.FirewallPolicies.properties.explicitProxy | Unknown | The explicit proxy settings of the firewall policy containing the enableExplicitProxy, httpPort, httpsPort, enablePacFile, pacFilePort, and pacFile fields. |
 | Azure.VirtualNetworks.FirewallPolicies.properties.intrusionDetection | Unknown | The intrusion detection settings of the firewall policy containing the mode, profile, and configuration fields. |
 | Azure.VirtualNetworks.FirewallPolicies.properties.transportSecurity | Unknown | The TLS inspection settings of the firewall policy containing the certificateAuthority field. |
+
 ### azure-storage-table-entity-query
 
 ***
@@ -3458,3 +3459,166 @@ Queries entities in a table. Provide partition_key and row_key together to retri
 | Azure.Storage.Table.Entity.RowKey | String | The RowKey property of the entity. | 
 | Azure.Storage.Table.Entity.Timestamp | Date | The date and time the entity was last modified, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). | 
 | Azure.Storage.EntitiesNextToken | String | The continuation token to retrieve the next page of entities. Empty when there are no more results. | 
+
+### azure-storage-table-create
+
+***
+Creates a new table in a storage account. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/write.
+
+#### Base Command
+
+`azure-storage-table-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional | 
+| account_name | The storage account name. | Required | 
+| table_name | The name of the table to create. Must be alphanumeric, start with a letter, and be 3 to 63 characters long. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Storage.Table.TableName | String | The name of the created table. | 
+### azure-storage-table-delete
+
+***
+Deletes the specified table and any data it contains. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/delete.
+
+#### Base Command
+
+`azure-storage-table-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional | 
+| account_name | The storage account name. | Required | 
+| table_name | The name of the table to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### azure-storage-table-list
+
+***
+Lists tables under the specified storage account. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/read.
+
+#### Base Command
+
+`azure-storage-table-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional | 
+| account_name | The storage account name. | Required | 
+| limit | The maximum number of tables to return. Default is 50. | Optional | 
+| filter | An OData query expression used to filter the returned tables. | Optional | 
+| next_token | A continuation token returned by a previous call (Azure.Storage.Table.TablesNextToken), used to retrieve the next page of results. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Storage.Table.TableName | String | The name of the table. | 
+| Azure.Storage.TablesNextToken | String | The continuation token to retrieve the next page of tables. Empty when there are no more results. | 
+### azure-storage-table-entity-insert
+
+***
+Inserts a new entity into a table. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/entities/write.
+
+#### Base Command
+
+`azure-storage-table-entity-insert`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional | 
+| account_name | The storage account name. | Required | 
+| table_name | The name of the table to insert the entity into. | Required | 
+| partition_key | The PartitionKey property of the entity. Unique identifier for the partition within a given table. | Required | 
+| row_key | The RowKey property of the entity. Unique identifier for an entity within a given partition. | Required | 
+| entity_fields | A JSON object of the entity's fields and their values, for example {"Age": 20}. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Storage.Table.Entity.PartitionKey | String | The PartitionKey property of the entity. | 
+| Azure.Storage.Table.Entity.RowKey | String | The RowKey property of the entity. | 
+| Azure.Storage.Table.Entity.Timestamp | Date | The date and time the entity was last modified, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). | 
+### azure-storage-table-entity-update
+
+***
+Updates an existing entity in a table by merging the provided properties. Does not replace the existing entity. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/entities/write.
+
+#### Base Command
+
+`azure-storage-table-entity-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional | 
+| account_name | The storage account name. | Required | 
+| table_name | The name of the table containing the entity. | Required | 
+| partition_key | The PartitionKey property of the entity to update. | Required | 
+| row_key | The RowKey property of the entity to update. | Required | 
+| entity_fields | A JSON object of the entity's fields and their values to merge, for example {"Address": "New York"}. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### azure-storage-table-entity-replace
+
+***
+Replaces an existing entity in a table. Replaces the entire entity and can be used to remove properties. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/entities/write.
+
+#### Base Command
+
+`azure-storage-table-entity-replace`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional | 
+| account_name | The storage account name. | Required | 
+| table_name | The name of the table containing the entity. | Required | 
+| partition_key | The PartitionKey property of the entity to replace. | Required | 
+| row_key | The RowKey property of the entity to replace. | Required | 
+| entity_fields | A JSON object of the entity's fields and their values. Replaces the entire entity, for example {"Address": "New York"}. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### azure-storage-table-entity-delete
+
+***
+Deletes an existing entity in a table. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/entities/delete.
+
+#### Base Command
+
+`azure-storage-table-entity-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional | 
+| account_name | The storage account name. | Required | 
+| table_name | The name of the table containing the entity. | Required | 
+| partition_key | The PartitionKey property of the entity to delete. | Required | 
+| row_key | The RowKey property of the entity to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.

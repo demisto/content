@@ -4315,7 +4315,10 @@ def insert_entity_command(client: AzureClient, params: dict, args: dict) -> Comm
     account_name = args["account_name"]
     table_name = args["table_name"]
 
-    entity_fields = json.loads(args["entity_fields"])
+    try:
+        entity_fields = json.loads(args["entity_fields"])
+    except json.JSONDecodeError as e:
+        raise DemistoException(f'Failed to parse the "entity_fields" argument as JSON. Please verify it is valid JSON. {e}')
     kwargs = {**entity_fields, "PartitionKey": args["partition_key"], "RowKey": args["row_key"]}
     remove_nulls_from_dictionary(kwargs)
 
@@ -4362,7 +4365,10 @@ def update_entity_command(client: AzureClient, params: dict, args: dict) -> Comm
     table_name = args["table_name"]
     partition_key = args["partition_key"]
     row_key = args["row_key"]
-    entity_fields = json.loads(args["entity_fields"])
+    try:
+        entity_fields = json.loads(args["entity_fields"])
+    except json.JSONDecodeError as e:
+        raise DemistoException(f'Failed to parse the "entity_fields" argument as JSON. Please verify it is valid JSON. {e}')
 
     client.update_entity_request(account_name, table_name, partition_key, row_key, entity_fields)
 
@@ -4385,7 +4391,10 @@ def replace_entity_command(client: AzureClient, params: dict, args: dict) -> Com
     table_name = args["table_name"]
     partition_key = args["partition_key"]
     row_key = args["row_key"]
-    entity_fields = json.loads(args["entity_fields"])
+    try:
+        entity_fields = json.loads(args["entity_fields"])
+    except json.JSONDecodeError as e:
+        raise DemistoException(f'Failed to parse the "entity_fields" argument as JSON. Please verify it is valid JSON. {e}')
 
     client.replace_entity_request(account_name, table_name, partition_key, row_key, entity_fields)
 

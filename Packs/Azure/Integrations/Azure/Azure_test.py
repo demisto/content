@@ -6372,7 +6372,7 @@ def test_insert_entity_command_invalid_json(mocker, client, mock_params):
     """
     Given: An Azure client and an invalid JSON entity_fields argument.
     When: insert_entity_command is called.
-    Then: It raises a ValueError (json.loads raises JSONDecodeError, a ValueError subclass).
+    Then: It raises a DemistoException naming the entity_fields argument.
     """
     from Azure import insert_entity_command
 
@@ -6385,7 +6385,7 @@ def test_insert_entity_command_invalid_json(mocker, client, mock_params):
         "entity_fields": "not-json",
     }
 
-    with pytest.raises(ValueError):
+    with pytest.raises(DemistoException, match='Failed to parse the "entity_fields" argument as JSON'):
         insert_entity_command(client, mock_params, args)
 
 
