@@ -11036,7 +11036,7 @@ script:
         description: The URI to fetch the next page of VMs. Run the same command with the next_token argument to get the next page of VMs.
         type: String
   - name: azure-application-gateway-waf-policy-get
-    description: "Retrieves an Application Gateway Web Application Firewall (WAF) policy by name. Required Permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read."
+    description: "Retrieves an Application Gateway Web Application Firewall (WAF) policy by name. Required permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read."
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -11063,13 +11063,13 @@ script:
         description: The location of the WAF policy.
         type: String
       - contextPath: Azure.ApplicationGateway.WAFPolicies.etag
-        description: The ETag of the WAF policy, used to prevent overwriting concurrent updates.
+        description: The ETag used to prevent concurrent updates from overwriting the WAF policy.
         type: String
       - contextPath: Azure.ApplicationGateway.WAFPolicies.tags
         description: The tags of the WAF policy.
         type: Unknown
       - contextPath: Azure.ApplicationGateway.WAFPolicies.sku
-        description: The pricing tier of the WAF policy, containing the name field.
+        description: The WAF policy pricing tier containing the name field.
         type: Unknown
       - contextPath: Azure.ApplicationGateway.WAFPolicies.properties.provisioningState
         description: The provisioning state of the WAF policy.
@@ -11078,26 +11078,26 @@ script:
         description: The resource state of the WAF policy.
         type: String
       - contextPath: Azure.ApplicationGateway.WAFPolicies.properties.policySettings
-        description: The policy settings object, containing the mode, state, requestBodyCheck, maxRequestBodySizeInKb, and fileUploadLimitInMb fields.
+        description: The policy settings object containing the mode, state, requestBodyCheck, maxRequestBodySizeInKb, and fileUploadLimitInMb fields.
         type: Unknown
       - contextPath: Azure.ApplicationGateway.WAFPolicies.properties.customRules
         description: The custom rules of the policy, each containing the name, priority, ruleType, matchConditions, and action fields.
         type: Unknown
       - contextPath: Azure.ApplicationGateway.WAFPolicies.properties.managedRules
-        description: The managed rules of the policy, containing the managedRuleSets, exclusions, and exceptions fields.
+        description: The managed rules of the policy containing the managedRuleSets, exclusions, and exceptions fields.
         type: Unknown
   - name: azure-application-gateway-waf-policies-list
-    description: "Lists the Application Gateway Web Application Firewall (WAF) policies of a resource group, or of the whole subscription when no resource group is given. Required Permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read."
+    description: "Lists the Application Gateway Web Application Firewall (WAF) policies of a resource group, or of the whole subscription when no resource group is given. Required permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read."
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group to list policies from. When not provided, the policies of the entire subscription are listed.
+      description: The name of the resource group from which to list policies. If not specified, lists policies for the entire subscription.
       required: false
     - name: next_token
-      description: The URI to fetch the next page of results. Use the value of Azure.ApplicationGateway.WAFPoliciesNextToken from the previous response.
+      description: The URI used to fetch the next page of results. Set to the value of the Azure.ApplicationGateway.WAFPoliciesNextToken context output from the previous response.
       required: false
     outputs:
       - contextPath: Azure.ApplicationGateway.WAFPolicies.id
@@ -11113,13 +11113,13 @@ script:
         description: The location of the WAF policy.
         type: String
       - contextPath: Azure.ApplicationGateway.WAFPolicies.etag
-        description: The ETag of the WAF policy, used to prevent overwriting concurrent updates.
+        description: The ETag used to prevent concurrent updates from overwriting the WAF policy.
         type: String
       - contextPath: Azure.ApplicationGateway.WAFPolicies.tags
         description: The tags of the WAF policy.
         type: Unknown
       - contextPath: Azure.ApplicationGateway.WAFPolicies.sku
-        description: The pricing tier of the WAF policy, containing the name field.
+        description: The WAF policy pricing tier containing the name field.
         type: Unknown
       - contextPath: Azure.ApplicationGateway.WAFPolicies.properties.provisioningState
         description: The provisioning state of the WAF policy.
@@ -11128,19 +11128,19 @@ script:
         description: The resource state of the WAF policy.
         type: String
       - contextPath: Azure.ApplicationGateway.WAFPolicies.properties.policySettings
-        description: The policy settings object, containing the mode, state, requestBodyCheck, maxRequestBodySizeInKb, and fileUploadLimitInMb fields.
+        description: The policy settings object containing the mode, state, requestBodyCheck, maxRequestBodySizeInKb, and fileUploadLimitInMb fields.
         type: Unknown
       - contextPath: Azure.ApplicationGateway.WAFPolicies.properties.customRules
         description: The custom rules of the policy, each containing the name, priority, ruleType, matchConditions, and action fields.
         type: Unknown
       - contextPath: Azure.ApplicationGateway.WAFPolicies.properties.managedRules
-        description: The managed rules of the policy, containing the managedRuleSets, exclusions, and exceptions fields.
+        description: The managed rules of the policy containing the managedRuleSets, exclusions, and exceptions fields.
         type: Unknown
       - contextPath: Azure.ApplicationGateway.WAFPoliciesNextToken
-        description: The URI to fetch the next page of policies. Run the same command with the next_token argument to get the next page of policies.
+        description: The URI used to fetch the next page of policies. Pass this value to the next_token argument to retrieve the next page.
         type: String
   - name: azure-application-gateway-waf-policy-create-or-update
-    description: "Creates an Application Gateway Web Application Firewall (WAF) policy, or fully replaces an existing one. Warning: this is a full replacement and not a partial update. Any property that is not provided as an argument is removed from the policy or reset to its default, since the policy is not read before it is written. Required Permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/write."
+    description: "Creates an Application Gateway Web Application Firewall (WAF) policy, or fully replaces an existing one. Warning: this is a full replacement and not a partial update. Any property that is not provided as an argument is removed from the policy or reset to its default, since the policy is not read before it is written. Required permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/write."
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -11154,19 +11154,19 @@ script:
       description: The name of the WAF policy to create or update.
       required: true
     - name: location
-      description: The Azure region of the policy, for example "westus2".
+      description: The Azure region of the policy. For example "westus2".
       required: true
     - name: managed_rules
-      description: 'The managed rules of the policy, as a JSON string. For example: {"managedRuleSets": [{"ruleSetType": "OWASP", "ruleSetVersion": "3.2"}]}.'
+      description: 'The managed rules of the policy, as a JSON string. For example, {"managedRuleSets": [{"ruleSetType": "OWASP", "ruleSetVersion": "3.2"}]}.'
       required: true
     - name: policy_settings
-      description: 'The policy settings, as a JSON string. For example: {"mode": "Prevention", "state": "Enabled"}.'
+      description: 'The policy settings, as a JSON string. For example, {"mode": "Prevention", "state": "Enabled"}.'
       required: false
     - name: custom_rules
       description: 'The custom rules of the policy, as a JSON string containing a list of rule objects.'
       required: false
     - name: tags
-      description: 'The tags to assign to the policy, as a JSON string. For example: {"env": "prod"}.'
+      description: 'The tags to assign to the policy, as a JSON string. For example, {"env": "prod"}.'
       required: false
     - name: resource_id
       description: The resource ID of the policy. Used when updating an existing policy.
@@ -11185,13 +11185,13 @@ script:
         description: The location of the WAF policy.
         type: String
       - contextPath: Azure.ApplicationGateway.WAFPolicies.etag
-        description: The ETag of the WAF policy, used to prevent overwriting concurrent updates.
+        description: The ETag used to prevent concurrent updates from overwriting the WAF policy.
         type: String
       - contextPath: Azure.ApplicationGateway.WAFPolicies.tags
         description: The tags of the WAF policy.
         type: Unknown
       - contextPath: Azure.ApplicationGateway.WAFPolicies.sku
-        description: The pricing tier of the WAF policy, containing the name field.
+        description: The WAF policy pricing tier containing the name field.
         type: Unknown
       - contextPath: Azure.ApplicationGateway.WAFPolicies.properties.provisioningState
         description: The provisioning state of the WAF policy.
@@ -11200,16 +11200,16 @@ script:
         description: The resource state of the WAF policy.
         type: String
       - contextPath: Azure.ApplicationGateway.WAFPolicies.properties.policySettings
-        description: The policy settings object, containing the mode, state, requestBodyCheck, maxRequestBodySizeInKb, and fileUploadLimitInMb fields.
+        description: The policy settings object containing the mode, state, requestBodyCheck, maxRequestBodySizeInKb, and fileUploadLimitInMb fields.
         type: Unknown
       - contextPath: Azure.ApplicationGateway.WAFPolicies.properties.customRules
         description: The custom rules of the policy, each containing the name, priority, ruleType, matchConditions, and action fields.
         type: Unknown
       - contextPath: Azure.ApplicationGateway.WAFPolicies.properties.managedRules
-        description: The managed rules of the policy, containing the managedRuleSets, exclusions, and exceptions fields.
+        description: The managed rules of the policy containing the managedRuleSets, exclusions, and exceptions fields.
         type: Unknown
   - name: azure-application-gateway-waf-policy-delete
-    description: "Deletes an Application Gateway Web Application Firewall (WAF) policy. Required Permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete."
+    description: "Deletes an Application Gateway Web Application Firewall (WAF) policy. Required permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete."
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -11223,7 +11223,7 @@ script:
       description: The name of the WAF policy to delete.
       required: true
   - name: azure-front-door-policy-get
-    description: "Retrieves a Front Door Web Application Firewall (WAF) policy by name. Required Permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read."
+    description: "Retrieves a Front Door Web Application Firewall (WAF) policy by name. Required permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read."
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -11250,13 +11250,13 @@ script:
         description: The location of the Front Door WAF policy.
         type: String
       - contextPath: Azure.FrontDoor.Policies.etag
-        description: The ETag of the Front Door WAF policy, used to prevent overwriting concurrent updates.
+        description: The ETag used to prevent concurrent updates from overwriting the Front Door WAF policy.
         type: String
       - contextPath: Azure.FrontDoor.Policies.tags
         description: The tags of the Front Door WAF policy.
         type: Unknown
       - contextPath: Azure.FrontDoor.Policies.sku
-        description: The pricing tier of the Front Door WAF policy, containing the name field.
+        description: The Front Door WAF policy pricing tier containing the name field.
         type: Unknown
       - contextPath: Azure.FrontDoor.Policies.properties.provisioningState
         description: The provisioning state of the Front Door WAF policy.
@@ -11265,29 +11265,29 @@ script:
         description: The resource state of the Front Door WAF policy.
         type: String
       - contextPath: Azure.FrontDoor.Policies.properties.policySettings
-        description: The policy settings object, containing the mode, enabledState, redirectUrl, customBlockResponseStatusCode, and customBlockResponseBody fields.
+        description: The policy settings object containing the mode, enabledState, redirectUrl, customBlockResponseStatusCode, and customBlockResponseBody fields.
         type: Unknown
       - contextPath: Azure.FrontDoor.Policies.properties.customRules
-        description: The custom rules of the policy, containing the rules field.
+        description: The custom rules of the policy containing the rules field.
         type: Unknown
       - contextPath: Azure.FrontDoor.Policies.properties.managedRules
-        description: The managed rules of the policy, containing the managedRuleSets field.
+        description: The managed rules of the policy containing the managedRuleSets field.
         type: Unknown
       - contextPath: Azure.FrontDoor.Policies.properties.frontendEndpointLinks
-        description: The Front Door endpoints the policy is associated with.
+        description: The Front Door endpoints associated with the policy.
         type: Unknown
   - name: azure-front-door-policies-list
-    description: "Lists the Front Door Web Application Firewall (WAF) policies of a resource group, or of the whole subscription when no resource group is given. Required Permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read."
+    description: "Lists the Front Door Web Application Firewall (WAF) policies of a resource group, or of the whole subscription when no resource group is given. Required permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read."
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group to list policies from. When not provided, the policies of the entire subscription are listed.
+      description: The name of the resource group from which to list policies. When not provided, policies for the entire subscription are listed.
       required: false
     - name: next_token
-      description: The URI to fetch the next page of results. Use the value of Azure.FrontDoor.PoliciesNextToken from the previous response.
+      description: The URI used to fetch the next page of results. Set to the value of the Azure.FrontDoor.PoliciesNextToken context output from the previous response.
       required: false
     outputs:
       - contextPath: Azure.FrontDoor.Policies.id
@@ -11303,13 +11303,13 @@ script:
         description: The location of the Front Door WAF policy.
         type: String
       - contextPath: Azure.FrontDoor.Policies.etag
-        description: The ETag of the Front Door WAF policy, used to prevent overwriting concurrent updates.
+        description: The ETag used to prevent concurrent updates from overwriting the Front Door WAF policy.
         type: String
       - contextPath: Azure.FrontDoor.Policies.tags
         description: The tags of the Front Door WAF policy.
         type: Unknown
       - contextPath: Azure.FrontDoor.Policies.sku
-        description: The pricing tier of the Front Door WAF policy, containing the name field.
+        description: The Front Door WAF policy pricing tier containing the name field.
         type: Unknown
       - contextPath: Azure.FrontDoor.Policies.properties.provisioningState
         description: The provisioning state of the Front Door WAF policy.
@@ -11318,19 +11318,19 @@ script:
         description: The resource state of the Front Door WAF policy.
         type: String
       - contextPath: Azure.FrontDoor.Policies.properties.policySettings
-        description: The policy settings object, containing the mode, enabledState, redirectUrl, customBlockResponseStatusCode, and customBlockResponseBody fields.
+        description: The policy settings object containing the mode, enabledState, redirectUrl, customBlockResponseStatusCode, and customBlockResponseBody fields.
         type: Unknown
       - contextPath: Azure.FrontDoor.Policies.properties.customRules
-        description: The custom rules of the policy, containing the rules field.
+        description: The custom rules of the policy containing the rules field.
         type: Unknown
       - contextPath: Azure.FrontDoor.Policies.properties.managedRules
-        description: The managed rules of the policy, containing the managedRuleSets field.
+        description: The managed rules of the policy containing the managedRuleSets field.
         type: Unknown
       - contextPath: Azure.FrontDoor.PoliciesNextToken
-        description: The URI to fetch the next page of policies. Run the same command with the next_token argument to get the next page of policies.
+        description: The URI used to fetch the next page of policies. Pass this value to the next_token argument to retrieve the next page.
         type: String
   - name: azure-front-door-policy-create-or-update
-    description: "Creates a Front Door Web Application Firewall (WAF) policy, or fully replaces an existing one. Warning: this is a full replacement and not a partial update. Any property that is not provided as an argument is removed from the policy or reset to its default, since the policy is not read before it is written. Required Permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/write."
+    description: "Creates a Front Door Web Application Firewall (WAF) policy, or fully replaces an existing one. Warning: this is a full replacement and not a partial update. Any property that is not provided as an argument is removed from the policy or reset to its default, since the policy is not read before it is written. Required permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/write."
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -11344,13 +11344,13 @@ script:
       description: The name of the Front Door WAF policy to create or update.
       required: true
     - name: managed_rules
-      description: 'The managed rules of the policy, as a JSON string. For example: {"managedRuleSets": [{"ruleSetType": "DefaultRuleSet", "ruleSetVersion": "1.0"}]}.'
+      description: 'The managed rules of the policy, as a JSON string. For example, {"managedRuleSets": [{"ruleSetType": "DefaultRuleSet", "ruleSetVersion": "1.0"}]}.'
       required: true
     - name: policy_settings
-      description: 'The policy settings, as a JSON string. For example: {"mode": "Prevention", "enabledState": "Enabled"}.'
+      description: 'The policy settings, as a JSON string. For example, {"mode": "Prevention", "enabledState": "Enabled"}.'
       required: false
     - name: custom_rules
-      description: 'The custom rules of the policy, as a JSON string. For example: {"rules": []}.'
+      description: 'The custom rules of the policy, as a JSON string. For example, {"rules": []}.'
       required: false
     - name: location
       description: The Azure region of the policy. Front Door WAF policies are global resources.
@@ -11366,10 +11366,10 @@ script:
       - Premium_AzureFrontDoor
       defaultValue: Classic_AzureFrontDoor
     - name: tags
-      description: 'The tags to assign to the policy, as a JSON string. For example: {"env": "prod"}.'
+      description: 'The tags to assign to the policy, as a JSON string. For example, {"env": "prod"}.'
       required: false
     - name: etag
-      description: The ETag of the policy, used to prevent overwriting concurrent updates.
+      description: The ETag used to prevent concurrent updates from overwriting the WAF policy.
       required: false
     outputs:
       - contextPath: Azure.FrontDoor.Policies.id
@@ -11385,13 +11385,13 @@ script:
         description: The location of the Front Door WAF policy.
         type: String
       - contextPath: Azure.FrontDoor.Policies.etag
-        description: The ETag of the Front Door WAF policy, used to prevent overwriting concurrent updates.
+        description: The ETag used to prevent concurrent updates from overwriting the Front Door WAF policy.
         type: String
       - contextPath: Azure.FrontDoor.Policies.tags
         description: The tags of the Front Door WAF policy.
         type: Unknown
       - contextPath: Azure.FrontDoor.Policies.sku
-        description: The pricing tier of the Front Door WAF policy, containing the name field.
+        description: The Front Door WAF policy pricing tier containing the name field.
         type: Unknown
       - contextPath: Azure.FrontDoor.Policies.properties.provisioningState
         description: The provisioning state of the Front Door WAF policy.
@@ -11400,16 +11400,16 @@ script:
         description: The resource state of the Front Door WAF policy.
         type: String
       - contextPath: Azure.FrontDoor.Policies.properties.policySettings
-        description: The policy settings object, containing the mode, enabledState, redirectUrl, customBlockResponseStatusCode, and customBlockResponseBody fields.
+        description: The policy settings object containing the mode, enabledState, redirectUrl, customBlockResponseStatusCode, and customBlockResponseBody fields.
         type: Unknown
       - contextPath: Azure.FrontDoor.Policies.properties.customRules
-        description: The custom rules of the policy, containing the rules field.
+        description: The custom rules of the policy containing the rules field.
         type: Unknown
       - contextPath: Azure.FrontDoor.Policies.properties.managedRules
-        description: The managed rules of the policy, containing the managedRuleSets field.
+        description: The managed rules of the policy containing the managedRuleSets field.
         type: Unknown
   - name: azure-front-door-policy-delete
-    description: "Deletes a Front Door Web Application Firewall (WAF) policy. Required Permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/delete."
+    description: "Deletes a Front Door Web Application Firewall (WAF) policy. Required permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/delete."
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
