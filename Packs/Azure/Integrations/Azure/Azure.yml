@@ -4666,6 +4666,257 @@ script:
       description: The network interface card type (Standard/Basic).
       type: String
 
+  - name: azure-nsg-virtual-networks-list
+    description: "Gets virtual networks in a resource group. Required permissions: Microsoft.Network/virtualNetworks/read."
+    arguments:
+    - description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: resource_group_name
+      type: String
+      required: false
+      required:platform: true
+    - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: subscription_id
+      type: String
+      required: false
+      required:platform: true
+    outputs:
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.name
+      description: The virtual network's name.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.id
+      description: The virtual network's ID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.etag
+      description: The virtual network's ETag.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.location
+      description: The virtual network's location.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.tags
+      description: The tags associated with the virtual network.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.provisioningState
+      description: 'The provisioning state of the virtual network resource. Possible values are Succeeded, Updating, Deleting, or Failed.'
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.resourceGuid
+      description: The resource GUID property of the virtual network resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.addressSpace
+      description: The address space object of the virtual network, containing the addressPrefixes field which is a list of address blocks reserved for this virtual network in CIDR notation.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.subnets
+      description: The list of subnets in the virtual network, each containing the name, id, and properties fields.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.virtualNetworkPeerings
+      description: The list of peerings in the virtual network.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.dhcpOptions
+      description: The dhcpOptions object of the virtual network, containing the dnsServers field which is a list of DNS servers IP addresses.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.enableDdosProtection
+      description: Whether DDoS protection is enabled for all the protected resources in the virtual network.
+      type: Boolean
+
+  - name: azure-nsg-network-interface-create
+    description: "Creates a network interface in a resource group. Required permissions: Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/publicIPAddresses/join/action, Microsoft.Network/networkSecurityGroups/join/action."
+    arguments:
+    - description: The network interface name.
+      name: nic_name
+      type: String
+      required: true
+    - description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: resource_group_name
+      type: String
+      required: false
+      required:platform: true
+    - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: subscription_id
+      type: String
+      required: false
+      required:platform: true
+    - description: The virtual network name. Run the azure-nsg-virtual-networks-list command to find available virtual networks.
+      name: vnet_name
+      type: String
+      required: true
+    - description: The subnet name.
+      name: subnet_name
+      type: String
+      required: true
+    - description: The IP configuration name.
+      name: ip_config_name
+      type: String
+      required: true
+    - description: The resource location.
+      name: location
+      type: String
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - australiacentral
+      - australiacentral2
+      - australiaeast
+      - australiasoutheast
+      - brazilsouth
+      - brazilsoutheast
+      - brazilus
+      - canadacentral
+      - canadaeast
+      - centralindia
+      - centralus
+      - centraluseuap
+      - eastasia
+      - eastus
+      - eastus2
+      - eastus2euap
+      - francecentral
+      - francesouth
+      - germanynorth
+      - germanywestcentral
+      - israelcentral
+      - italynorth
+      - japaneast
+      - japanwest
+      - jioindiacentral
+      - jioindiawest
+      - koreacentral
+      - koreasouth
+      - malaysiasouth
+      - mexicocentral
+      - newzealandnorth
+      - northcentralus
+      - northeurope
+      - norwayeast
+      - norwaywest
+      - polandcentral
+      - qatarcentral
+      - southafricanorth
+      - southafricawest
+      - southcentralus
+      - southeastasia
+      - southindia
+      - spaincentral
+      - swedencentral
+      - swedensouth
+      - switzerlandnorth
+      - switzerlandwest
+      - uaecentral
+      - uaenorth
+      - uksouth
+      - ukwest
+      - westcentralus
+      - westeurope
+      - westindia
+      - westus
+      - westus2
+      - westus3
+      - australiaeastfoundational
+      - austriaeast
+      - chilecentral
+      - eastusslv
+      - indonesiacentral
+      - israelnorthwest
+      - malaysiawest
+      - southcentralus2
+      - southeastus
+      - southeastus3
+      - southwestus
+      - usgovarizona
+      - usgovtexas
+      - usgovvirginia
+    - description: The name of an existing network security group to associate with the network interface. Run the azure-vn-security-groups-list command to find existing network security groups.
+      name: nsg_name
+      type: String
+      required: false
+    - description: The private IP address to assign to the IP configuration. When not provided, the address is allocated dynamically.
+      name: private_ip
+      type: String
+      required: false
+    - description: The name of an existing public IP address to associate with the IP configuration. Run the azure-vn-public-ip-addresses-list command to find available public IP addresses.
+      name: public_ip_address_name
+      type: String
+      required: false
+    outputs:
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.name
+      description: The network interface's name.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.id
+      description: The network interface's ID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.etag
+      description: The ETag of the network interface.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.location
+      description: The location of the network interface.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.provisioningState
+      description: 'The network interface''s provisioning state. Possible values are Succeeded, Updating, Deleting, or Failed.'
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.resourceGuid
+      description: The resource GUID property of the network interface resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations
+      description: The list of IP configurations of the network interface, each containing the name, id, and properties fields.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.networkSecurityGroup
+      description: The reference to the network security group associated with the network interface, containing the id field.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.dnsSettings
+      description: The DNS settings of the network interface, containing dnsServers, appliedDnsServers, and internalDomainNameSuffix fields.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.enableAcceleratedNetworking
+      description: Whether the network interface is accelerated networking enabled.
+      type: Boolean
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.enableIPForwarding
+      description: Whether IP forwarding is enabled on the network interface.
+      type: Boolean
+    - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.nicType
+      description: The network interface card type (Standard/Basic).
+      type: String
+
+  - name: azure-nsg-subscriptions-list
+    description: "Gets all subscriptions for a tenant. Required permissions: Microsoft.Resources/subscriptions/read."
+    arguments: []
+    outputs:
+    - contextPath: Azure.ResourceManagement.Subscriptions.id
+      description: The unique identifier of the subscription.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.subscriptionId
+      description: The ID of the subscription.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.tenantId
+      description: The ID of the tenant associated with the subscription.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.displayName
+      description: The display name of the subscription.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.state
+      description: 'The current state of the subscription. Possible values are Enabled, Warned, PastDue, Disabled, or Deleted.'
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.authorizationSource
+      description: 'The authorization source of the request. Possible values are Legacy, RoleBased, Bypassed, Direct, or Management.'
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.managedByTenants
+      description: The list of tenants that have access to manage the subscription.
+      type: Unknown
+    - contextPath: Azure.ResourceManagement.Subscriptions.tags
+      description: The tags associated with the subscription.
+      type: Unknown
+    - contextPath: Azure.ResourceManagement.Subscriptions.subscriptionPolicies.locationPlacementId
+      description: The ID of the location placement policy for the subscription.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.subscriptionPolicies.quotaId
+      description: The ID of the quota policy for the subscription.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.subscriptionPolicies.spendingLimit
+      description: The spending limit policy for the subscription.
+      type: String
+
   - description: Gets public IP addresses in a resource group. The command is deprecated, please use azure-vn-public-ip-addresses-list.
     name: azure-nsg-public-ip-addresses-list
     deprecated: true

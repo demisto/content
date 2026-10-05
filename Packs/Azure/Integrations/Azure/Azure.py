@@ -86,7 +86,7 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-vn-network-interfaces-list",
         "azure-vn-network-interface-get",
     ],
-    "Microsoft.Network/networkInterfaces/write": ["azure-vn-network-interface-update"],
+    "Microsoft.Network/networkInterfaces/write": ["azure-vn-network-interface-update", "azure-nsg-network-interface-create"],
     "Microsoft.Network/publicIPAddresses/read": [
         "azure-nsg-public-ip-addresses-list",
         "azure-vm-public-ip-details-get",
@@ -328,6 +328,8 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/networkSecurityGroups/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Network/loadBalancers/backendAddressPools/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list", "azure-rm-resource-groups-list"],
+    "Microsoft.Network/virtualNetworks/read": ["azure-nsg-virtual-networks-list"],
+    "Microsoft.Resources/subscriptions/read": ["azure-nsg-subscriptions-list"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -405,6 +407,14 @@ API_FUNCTION_TO_PERMISSIONS = {
     "get_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
     "get_all_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
     "list_security_rules": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
+    "list_virtual_networks_request": ["Microsoft.Network/virtualNetworks/read"],
+    "create_network_interface_request": [
+        "Microsoft.Network/networkInterfaces/write",
+        "Microsoft.Network/virtualNetworks/subnets/join/action",
+        "Microsoft.Network/publicIPAddresses/join/action",
+        "Microsoft.Network/networkSecurityGroups/join/action",
+    ],
+    "list_subscriptions_request": ["Microsoft.Resources/subscriptions/read"],
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
@@ -413,7 +423,9 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Network/networkSecurityGroups/securityRules/write",
     "Microsoft.Network/networkSecurityGroups/securityRules/delete",
     "Microsoft.Network/networkInterfaces/read",
+    "Microsoft.Network/networkInterfaces/write",
     "Microsoft.Network/publicIPAddresses/read",
+    "Microsoft.Network/virtualNetworks/read",
     "Microsoft.Storage/storageAccounts/read",
     "Microsoft.Storage/storageAccounts/write",
     "Microsoft.Storage/storageAccounts/blobServices/read",
@@ -478,6 +490,7 @@ COSMOS_DB_API_VERSION = "2024-11-15"
 PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
 NSG_API_VERSION = "2025-01-01"
+SUBSCRIPTIONS_API_VERSION = "2022-12-01"
 
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
 # get_command_and_token_scopes.
@@ -2276,6 +2289,103 @@ class AzureClient:
                 api_function_name="list_public_ip_addresses_request",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
+            )
+
+    def list_virtual_networks_request(self, subscription_id: str, resource_group_name: str):
+        """
+        List all virtual networks in a specific resource group.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the virtual networks.
+
+        Return:
+            A dictionary containing the list of virtual networks.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/virtual-networks/list?view=rest-virtualnetwork-2024-05-01
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
+            f"providers/Microsoft.Network/virtualNetworks"
+        )
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=NEW_API_VERSION_PARAMS)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_group_name,
+                resource_type="Virtual Network",
+                api_function_name="list_virtual_networks_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def create_network_interface_request(
+        self, subscription_id: str, resource_group_name: str, nic_name: str, network_interface_data: dict
+    ):
+        """
+        Create or update a network interface.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group in which to create the network interface.
+            nic_name: The name of the network interface.
+            network_interface_data: The network interface object to create.
+
+        Return:
+            A dictionary containing the created network interface information.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-interfaces/create-or-update?view=rest-virtualnetwork-2024-05-01
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
+            f"providers/Microsoft.Network/networkInterfaces/{nic_name}"
+        )
+        try:
+            return self.http_request(
+                method="PUT",
+                full_url=full_url,
+                params=NEW_API_VERSION_PARAMS,
+                json_data=remove_empty_elements(network_interface_data),
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=nic_name,
+                resource_type="Network Interface",
+                api_function_name="create_network_interface_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def list_subscriptions_request(self):
+        """
+        List all subscriptions the authenticated identity has access to in the tenant.
+
+        Note:
+            This is a tenant-level call, therefore it cannot reuse PREFIX_URL_AZURE, which always
+            includes a subscription ID path segment. The base URL is derived from PREFIX_URL_AZURE so
+            the command keeps working after switch_to_gov_account() rebinds the global.
+
+        Return:
+            A dictionary containing the list of subscriptions.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/resources/subscriptions/list?view=rest-resources-2022-12-01
+        """
+        full_url = f"{PREFIX_URL_AZURE.rstrip('/')}"
+        try:
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": SUBSCRIPTIONS_API_VERSION})
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name="subscriptions",
+                resource_type="Subscription",
+                api_function_name="list_subscriptions_request",
+                subscription_id=None,
+                resource_group_name=None,
             )
 
     def start_vm_request(self, subscription_id: str, resource_group_name: str, vm_name: str):
@@ -4666,6 +4776,143 @@ def nsg_public_ip_addresses_list_command(client: AzureClient, params: dict[str, 
     )
 
 
+def nsg_virtual_networks_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    List all virtual networks in a resource group.
+    Args:
+        client (AzureClient): Azure Client.
+        args (Dict[str, Any]): command arguments.
+        params (Dict[str, Any]): configuration parameters.
+    Returns:
+        Command results with raw response, outputs and readable outputs.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    response = client.list_virtual_networks_request(subscription_id=subscription_id, resource_group_name=resource_group_name)
+    data_from_response = response.get("value", [])
+
+    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
+    for data in data_from_response:
+        data["etag"] = data.get("etag", "")[3:-1]
+
+    readable_output = tableToMarkdown(
+        name="Virtual Networks List",
+        t=data_from_response,
+        headers=["name", "id", "etag", "type", "location"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.VirtualNetworks.VirtualNetworks",
+        outputs_key_field="id",
+        outputs=data_from_response,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
+def nsg_network_interface_create_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Create a network interface in a resource group.
+    Args:
+        client (AzureClient): Azure Client.
+        args (Dict[str, Any]): command arguments.
+        params (Dict[str, Any]): configuration parameters.
+    Returns:
+        Command results with raw response, outputs and readable outputs.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    nic_name = args["nic_name"]
+    vnet_name = args["vnet_name"]
+    subnet_name = args["subnet_name"]
+    ip_config_name = args["ip_config_name"]
+    location = args["location"]
+    nsg_name = args.get("nsg_name")
+    public_ip_address_name = args.get("public_ip_address_name")
+
+    prefix = f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/"
+    subnet_id = f"{prefix}virtualNetworks/{vnet_name}/subnets/{subnet_name}"
+    public_ip_address_id = f"{prefix}publicIPAddresses/{public_ip_address_name}" if public_ip_address_name else None
+
+    network_interface_data = {
+        "location": location,
+        "properties": {
+            "networkSecurityGroup": {"id": f"{prefix}networkSecurityGroups/{nsg_name}"} if nsg_name else None,
+            "ipConfigurations": [
+                {
+                    "name": ip_config_name,
+                    "properties": {
+                        "subnet": {"id": subnet_id},
+                        "privateIPAddress": args.get("private_ip"),
+                        "publicIPAddress": {"id": public_ip_address_id} if public_ip_address_id else None,
+                    },
+                }
+            ],
+        },
+    }
+
+    demisto.debug(f"Creating network interface {nic_name} with {subnet_id=}, {nsg_name=}, {public_ip_address_id=}, {location=}")
+    response = client.create_network_interface_request(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        nic_name=nic_name,
+        network_interface_data=network_interface_data,
+    )
+
+    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
+    response["etag"] = response.get("etag", "")[3:-1]
+
+    readable_output = tableToMarkdown(
+        name=f"The network interface {nic_name} was created successfully",
+        t=response,
+        headers=["name", "id", "etag", "type", "location"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.VirtualNetworks.NetworkInterfaces",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
+def subscriptions_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    List all subscriptions the authenticated identity has access to in the tenant.
+    Args:
+        client (AzureClient): Azure Client.
+        args (Dict[str, Any]): command arguments.
+        params (Dict[str, Any]): configuration parameters.
+    Returns:
+        Command results with raw response, outputs and readable outputs.
+    """
+    response = client.list_subscriptions_request()
+    data_from_response = response.get("value", [])
+
+    readable_output = tableToMarkdown(
+        name="Subscriptions List",
+        t=data_from_response,
+        headers=["subscriptionId", "tenantId", "displayName", "state"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.ResourceManagement.Subscriptions",
+        outputs_key_field="id",
+        outputs=data_from_response,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
 def remove_member_from_role(client: AzureClient, args: dict) -> CommandResults:
     """Currently not supported in the integration
     Remove a member from a group by group id and user id.
@@ -5794,6 +6041,9 @@ def main():  # pragma: no cover
             "azure-vn-network-interfaces-list": nsg_network_interfaces_list_command,
             "azure-nsg-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
             "azure-vn-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
+            "azure-nsg-virtual-networks-list": nsg_virtual_networks_list_command,
+            "azure-nsg-network-interface-create": nsg_network_interface_create_command,
+            "azure-nsg-subscriptions-list": subscriptions_list_command,
             "azure-vm-instance-start": start_vm_command,
             "azure-compute-vm-start": start_vm_command,
             "azure-vm-instance-power-off": poweroff_vm_command,
