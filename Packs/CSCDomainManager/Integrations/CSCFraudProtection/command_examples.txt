@@ -4,6 +4,7 @@
 !csc-listofworklogsforticketid ticketId=123
 !csc-listtakedowneventswithfilters fromDate="2026-01-01" toDate="2026-03-01"
 !csc-updatetheactionwithticketid action="OPEN"
+!csc-listtakedownevents fromDate="2026-01-01" toDate="2026-03-01"
 
 !csc-getlistofbrands
 !csc-getlistoffraudtypes
