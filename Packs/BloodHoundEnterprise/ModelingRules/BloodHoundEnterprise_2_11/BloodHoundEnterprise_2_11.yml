@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: BloodHoundEnterprise_ModelingRule
+name: BloodHoundEnterprise Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam
