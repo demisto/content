@@ -13634,7 +13634,8 @@ script:
       predefined:
       - timestamp.asc
       - timestamp.desc
-    description: Search for behaviors by providing an FQL filter, sorting, and paging details.
+    deprecated: true
+    description: Deprecated. No available replacement. Search for behaviors by providing an FQL filter, sorting, and paging details.
     name: cs-query-behaviors
     outputs:
     - contextPath: CrowdStrike.msaQueryResponse.errors.code

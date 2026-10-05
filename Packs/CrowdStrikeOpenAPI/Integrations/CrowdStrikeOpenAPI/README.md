@@ -8164,7 +8164,7 @@ Retrieve allowlist tickets that match the provided filter criteria with scrollin
 ### cs-query-behaviors
 
 ***
-Search for behaviors by providing an FQL filter, sorting, and paging details.
+Deprecated. No available replacement. Search for behaviors by providing an FQL filter, sorting, and paging details.
 
 #### Base Command
 
@@ -9858,7 +9858,7 @@ Search for hosts in your environment by platform, hostname, IP, and other criter
 ### cs-query-devices-by-filter-scroll
 
 ***
-Search for hosts in your environment by platform, hostname, IP, and other criteria with continuous pagination capability (based on offset pointer which expires after 2 minutes with no maximum limit).
+Deprecated. Use the cs-query-devices-combined command instead. Search for hosts in your environment by platform, hostname, IP, and other criteria with continuous pagination capability (based on offset pointer which expires after 2 minutes with no maximum limit).
 
 #### Base Command
 
