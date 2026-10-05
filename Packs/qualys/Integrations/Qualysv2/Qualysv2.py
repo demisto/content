@@ -3279,7 +3279,7 @@ def close_snapshot_if_empty(
     return data, items_count
 
 
-def send_qualys_assets_and_vulnerabilities_to_xsiam(
+def publish_assets_and_vulnerabilities(
     assets: list,
     vulnerabilities: list,
     cumulative_assets_count: int,
@@ -3539,9 +3539,10 @@ def fetch_and_send_vulnerabilities_streamed(client: Client, last_run: dict[str, 
     """Fetches vulnerabilities (by last modified date) and sends them to XSIAM in bounded batches.
 
     Consumes the streamed response one record at a time and flushes every ``VULNERABILITIES_SEND_BATCH_SIZE``
-    records, so peak memory is proportional to the batch size instead of the total number of vulnerabilities.
-    The vulnerabilities dataset is a non-snapshot assets-type send (no snapshot_id / items_count), so batched
-    appends are safe and produce the same dataset as a single send.
+    records into the *same* vulnerabilities snapshot, so peak memory is proportional to the batch size instead
+    of the total number of vulnerabilities, while the externally-observable dataset is identical to a single
+    send: every non-final batch carries ``items_count=1`` (unsealed) and only the final batch declares the
+    cumulative total to seal the snapshot (one snapshot id per cycle, matching the previous single-send logic).
 
     Args:
         client (Client): Qualys client.
@@ -3552,31 +3553,41 @@ def fetch_and_send_vulnerabilities_streamed(client: Client, last_run: dict[str, 
     since_datetime = (
         last_run.get("since_datetime") or arg_to_datetime(ASSETS_FETCH_FROM, required=True).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
     )
-    demisto.debug(f"Getting vulnerabilities modified after {since_datetime} (streamed batches)")
+    snapshot_id = str(round(time.time() * 1000))
+    demisto.debug(f"Getting vulnerabilities modified after {since_datetime} (streamed batches) {snapshot_id=}")
 
     raw_response = client.get_vulnerabilities(since_datetime=since_datetime)
 
     batch: list = []
     total_sent = 0
 
-    def flush(records: list) -> None:
-        if not records:
-            return
-        send_assets_and_vulnerabilities_to_xsiam(records, vendor=VENDOR, product="vulnerabilities")
+    def flush(records: list, items_count: int) -> None:
+        """Send one batch into the vulnerabilities snapshot. ``items_count=1`` keeps the snapshot unsealed; the
+        cumulative total seals it on the final send."""
+        send_assets_and_vulnerabilities_to_xsiam(
+            records,
+            vendor=VENDOR,
+            product="vulnerabilities",
+            snapshot_id=snapshot_id,
+            items_count=str(items_count),
+            should_update_health_module=False,
+        )
 
     for vuln in iter_vulnerabilities_result(raw_response):
         batch.append(vuln)
         if len(batch) >= VULNERABILITIES_SEND_BATCH_SIZE:
-            flush(batch)
+            flush(batch, 1)  # unsealed: more vulnerabilities follow
             total_sent += len(batch)
             batch = []
             log_memory_usage(f"fetch by date - after sending vulnerabilities batch (total sent: {total_sent})")
 
-    flush(batch)
+    # Final flush seals the snapshot with the cumulative total. If the last batch is empty (rows divided evenly),
+    # close_snapshot_if_empty emits a closing signal so the snapshot still seals with the correct count.
     total_sent += len(batch)
-    batch = []
+    batch, seal_count = close_snapshot_if_empty(batch, total_sent, snapshot_id, "vulnerabilities")
+    flush(batch, seal_count)
 
-    demisto.debug(f"Finished streaming vulnerabilities to XSIAM. Total sent: {total_sent}.")
+    demisto.debug(f"Finished streaming vulnerabilities to XSIAM. Total sent: {total_sent}. {snapshot_id=}")
     return DEFAULT_LAST_ASSETS_RUN
 
 
@@ -4013,7 +4024,7 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
         new_last_run["total_vulnerabilities"] = cumulative_vulns_count
 
         demisto.debug(f"Starting to send {len(assets)} assets and {len(vulnerabilities)} vulnerabilities to XSIAM")
-        send_qualys_assets_and_vulnerabilities_to_xsiam(
+        publish_assets_and_vulnerabilities(
             assets=assets,
             vulnerabilities=vulnerabilities,
             cumulative_assets_count=cumulative_assets_count,
