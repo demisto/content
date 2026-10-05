@@ -1,7 +1,7 @@
 import copy
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterable, Iterator
 from typing import Any
 import csv
 import io
@@ -39,6 +39,10 @@ VULNERABILITIES_SEND_BATCH_SIZE = 5000
 # Stream the by-date vulnerabilities send in bounded batches. By-date only: it's a standalone non-snapshot send
 # of one huge response. Excludes by-QIDs (already batched per fetch, and sealed into one snapshot with assets).
 VULNERABILITIES_STREAMING_SEND_ENABLED = True
+ASSETS_SEND_BATCH_SIZE = 5000
+# Stream the by-date assets send in bounded batches. `truncation_limit` bounds hosts per page, but a host's
+# `DETECTION_LIST` is unbounded, so flushing fixed-size batches into the same snapshot keeps peak memory ~O(batch).
+ASSETS_STREAMING_SEND_ENABLED = True
 # Retry configuration for Qualys rate-limit (HTTP 409, Error Code 1965) responses.
 RATE_LIMIT_STATUS_CODE = 409
 RATE_LIMIT_TO_WAIT_HEADER = "X-RateLimit-ToWait-Sec"
@@ -3004,14 +3008,41 @@ def handle_host_list_detection_result(raw_response: Optional[requests.Response])
     """
     demisto.debug("Going to stream-parse the host list detection response into the hosts list")
 
+    stream_state: dict = {}
+    hosts = list(iter_host_list_detections(raw_response, stream_state))
+    response_next_url = stream_state.get("next_url", "")
+
+    demisto.debug(f"Extracted a list of {len(hosts)} hosts, and next URL - {response_next_url}")
+
+    return hosts, str(response_next_url)
+
+
+def iter_host_list_detections(raw_response: Optional[requests.Response], stream_state: dict) -> Iterator[dict]:
+    """Yields host dicts one at a time from the streamed host-list-detection response.
+
+    Generator form of `handle_host_list_detection_result` and the single source of truth for parsing this response.
+    Parsing semantics are identical, but hosts are yielded lazily instead of accumulated, so the (potentially large)
+    hosts list is never fully held in memory. In a single pass it extracts three tags:
+      - ``HOST``          -> a host record; the large, repeated element, yielded one at a time.
+      - ``WARNING``       -> the pagination block; its ``URL`` is written to ``stream_state["next_url"]``.
+      - ``SIMPLE_RETURN`` -> the error envelope; if present, its ``RESPONSE/CODE`` raises a DemistoException.
+
+    Because ``WARNING``/``SIMPLE_RETURN`` are only known once iteration completes, the next-page URL is exposed via
+    ``stream_state`` for the caller to read *after* the generator is exhausted, and an API error raises during iteration.
+
+    Args:
+        raw_response (Optional[requests.Response]): the streamed response received from the Qualys API command.
+        stream_state (dict): mutable holder; populated with ``next_url`` (str) after the stream is consumed.
+    Yields:
+        One host dict per ``HOST`` element.
+    """
+    stream_state["next_url"] = ""
+
     if raw_response is None:
-        demisto.debug("Received an empty (None) host list detection response. Returning no hosts.")
-        return [], ""
+        demisto.debug("Received an empty (None) host list detection response. Yielding no hosts.")
+        return
 
-    hosts: list = []
     simple_response: dict = {}
-    response_next_url: str = ""
-
     raw_response.raw.decode_content = True
 
     # Single low-memory pass over the streamed body. Data must be extracted from each element *during* iteration,
@@ -3020,11 +3051,11 @@ def handle_host_list_detection_result(raw_response: Optional[requests.Response])
         if local_tag == "HOST":
             # Convert this single HOST subtree to the same structure produced previously by `xml2json`.
             host_dict = element_to_dict(element)
-            hosts.append(host_dict.get("HOST", host_dict))
+            yield host_dict.get("HOST", host_dict)
         elif local_tag == "WARNING":
             # Pagination block (RESPONSE/WARNING/URL). Small subtree, parse fully and read the exact path.
             warning_dict = element_to_dict(element).get("WARNING", {})
-            response_next_url = warning_dict.get("URL", "") or response_next_url
+            stream_state["next_url"] = warning_dict.get("URL", "") or stream_state["next_url"]
         elif local_tag == "SIMPLE_RETURN":
             # Error envelope (SIMPLE_RETURN/RESPONSE/{CODE,TEXT}). Small subtree, parse fully.
             simple_return = element_to_dict(element)
@@ -3032,10 +3063,6 @@ def handle_host_list_detection_result(raw_response: Optional[requests.Response])
 
     if simple_response and simple_response.get("CODE"):
         raise DemistoException(f"\n{simple_response.get('TEXT')} \nCode: {simple_response.get('CODE')}")
-
-    demisto.debug(f"Extracted a list of {len(hosts)} hosts, and next URL - {response_next_url}")
-
-    return hosts, str(response_next_url)
 
 
 def handle_vulnerabilities_result(raw_response: Optional[requests.Response]) -> list:
@@ -3186,26 +3213,39 @@ def get_detections_from_hosts(hosts):
     :return: parsed events.
     """
     demisto.debug(f"Received {len(hosts)} hosts for extraction")
-    fetched_assets = []
+    fetched_assets = list(iter_detections_from_hosts(hosts))
+    demisto.debug(f"Extracted {len(fetched_assets)} assets from hosts")
+    return fetched_assets, False
+
+
+def iter_detections_from_hosts(hosts: Iterable[dict]) -> Iterator[dict]:
+    """Yields detection (asset) rows one at a time from a stream of hosts, without accumulating the full list.
+
+    Generator form of `get_detections_from_hosts` and the single source of truth for the host->detection fan-out:
+    one row per detection, with a deep copy of the host-without-detections per row so each row is fully independent
+    (required because downstream `truncate_asset_size`/`add_fields_to_events` mutate rows in place), plus the same
+    per-row `truncate_asset_size`. Yielding lazily keeps peak memory proportional to the consumer's batch size.
+
+    Args:
+        hosts (Iterable[dict]): an iterable (typically a generator) of host dicts.
+    Yields:
+        One detection (asset) row dict per detection.
+    """
     for host in hosts:
         detections_list = host.get("DETECTION_LIST", {}).get("DETECTION") or [{}]
 
         if not isinstance(detections_list, list):  # In case detections_list = {}
             detections_list = [detections_list]
 
-        # Build a lightweight host that excludes DETECTION_LIST *once* per host, so the (potentially large) list of
-        # detections is not deep-copied for every detection. Deep-copying the full host per detection previously copied
-        # all detections N times for a host with N detections (O(N^2) memory/CPU); this keeps it O(N).
+        # Build the host-without-detections once per host so the (potentially large) detections list is not
+        # deep-copied per detection (keeps it O(N) rather than O(N^2) for a host with N detections).
         host_without_detections = {key: value for key, value in host.items() if key != "DETECTION_LIST"}
 
         for detection in detections_list:
             new_detection = copy.deepcopy(host_without_detections)
             new_detection["DETECTION"] = detection
-            fetched_assets.append(new_detection)
             truncate_asset_size(new_detection)
-
-    demisto.debug(f"Extracted {len(fetched_assets)} assets from hosts")
-    return fetched_assets, False
+            yield new_detection
 
 
 def close_snapshot_if_empty(
@@ -3540,6 +3580,106 @@ def fetch_and_send_vulnerabilities_streamed(client: Client, last_run: dict[str, 
     return DEFAULT_LAST_ASSETS_RUN
 
 
+def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> tuple[dict[str, Any], bool]:
+    """Fetches one assets page (host list detections) and sends it to XSIAM in bounded batches.
+
+    Streams the page's hosts, fans them out to detection rows lazily, and flushes every ``ASSETS_SEND_BATCH_SIZE``
+    rows into the *same* assets snapshot, so peak memory is proportional to the batch size rather than the total
+    number of detections in the page (the per-request ``truncation_limit`` only bounds *hosts*, not detections).
+
+    Snapshot sealing follows the existing cross-page contract: every non-final send carries ``items_count=1``
+    (unsealed), and only the single final send of the final page (no next page) declares the cumulative
+    ``total_assets`` to seal the snapshot. On a read timeout / concurrency limit the page defers to the next fetch
+    with a reduced limit (``set_new_limit``) and nothing is sent, exactly like the non-streaming path.
+
+    Args:
+        client (Client): Qualys client.
+        last_run (dict): Last assets run dictionary.
+    Returns:
+        tuple[dict, bool]: (the new last run to save, set_new_limit flag).
+    """
+    since_datetime = last_run.get("since_datetime", "") or arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
+    next_page = last_run.get("next_page", "")
+    total_assets = last_run.get("total_assets", 0)
+    snapshot_id = str(last_run.get("snapshot_id", str(round(time.time() * 1000))))
+    limit = last_run.get("limit", HOST_LIMIT)
+
+    demisto.debug(f"Starting streamed assets fetch {snapshot_id=}, {since_datetime=}, {next_page=}")
+    log_memory_usage("fetch by date (streamed assets) - before pulling host list detections")
+
+    raw_response, set_new_limit = client.get_host_list_detection(since_datetime, next_page, limit)
+    if set_new_limit:
+        demisto.debug("Host list detection request needs a reduced limit; deferring to next fetch without sending.")
+        return set_assets_last_run_with_new_limit(last_run, limit), True
+
+    stream_state: dict = {}
+    batch: list = []
+    page_assets_count = 0
+
+    def flush(records: list, items_count: int) -> None:
+        """Send one batch into the assets snapshot. ``items_count=1`` keeps the snapshot unsealed; the cumulative
+        total seals it on the final send of the final page."""
+        send_assets_and_vulnerabilities_to_xsiam(
+            records,
+            vendor=VENDOR,
+            product="assets",
+            snapshot_id=snapshot_id,
+            items_count=str(items_count),
+            should_update_health_module=False,
+        )
+
+    hosts = iter_host_list_detections(raw_response, stream_state)
+    for asset in iter_detections_from_hosts(hosts):
+        batch.append(asset)
+        if len(batch) >= ASSETS_SEND_BATCH_SIZE:
+            add_fields_to_events(batch, ["DETECTION", "FIRST_FOUND_DATETIME"], "host_list_detection")
+            flush(batch, 1)  # unsealed: more rows (and possibly more pages) may follow
+            page_assets_count += len(batch)
+            batch = []
+            log_memory_usage(f"fetch by date (streamed assets) - after sending batch (page sent: {page_assets_count})")
+
+    # The next-page URL and any API error are known only after the stream is fully consumed.
+    next_run_page = get_next_page_from_url(stream_state.get("next_url", ""), "id_min")
+    is_last_page = not next_run_page
+    page_assets_count += len(batch)
+    total_assets += page_assets_count
+
+    # Flush the final (remainder) batch. On the last page this is the single sealing send (cumulative total);
+    # otherwise it stays unsealed (items_count=1). If the last page's rows divided evenly (empty remainder) but it
+    # is the last page, still send a sealing signal so the snapshot closes with the correct cumulative count.
+    if is_last_page:
+        add_fields_to_events(batch, ["DETECTION", "FIRST_FOUND_DATETIME"], "host_list_detection")
+        batch, seal_count = close_snapshot_if_empty(batch, total_assets, snapshot_id, "assets")
+        flush(batch, seal_count)
+    elif batch:
+        add_fields_to_events(batch, ["DETECTION", "FIRST_FOUND_DATETIME"], "host_list_detection")
+        flush(batch, 1)
+
+    log_memory_usage("fetch by date (streamed assets) - after sending assets to XSIAM")
+
+    # Mirror the non-streaming `fetch_assets` last run exactly: on the last page, move to the "vulnerabilities"
+    # stage while keeping `since_datetime`/`snapshot_id`; otherwise continue paging the "assets" stage.
+    stage = "assets" if next_run_page else "vulnerabilities"
+    new_last_run = {
+        "stage": stage,
+        "next_page": next_run_page,
+        "total_assets": total_assets,
+        "since_datetime": since_datetime,
+        "snapshot_id": snapshot_id,
+        "nextTrigger": "0",
+        "type": FETCH_COMMAND.get("assets"),
+    }
+
+    if is_last_page:
+        demisto.updateModuleHealth({"assetsPulled": total_assets})
+
+    demisto.debug(
+        f"Finished streamed assets page. Page sent: {page_assets_count}, cumulative: {total_assets}, "
+        f"last page: {is_last_page}."
+    )
+    return new_last_run, False
+
+
 def get_qid_for_cve(client: Client, cve: str, cloud_agent_scan_type: str | None = None) -> CommandResults:
     """
     This function retrieves the Qualys QID (Qualys ID) associated with a specified CVE.
@@ -3761,6 +3901,26 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
         # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
         # Initialize to True, could be changed to False via internal functions
         set_new_limit = True
+
+        if ASSETS_STREAMING_SEND_ENABLED:
+            # Streamed path: fetch, parse, and send one page in bounded batches (peak memory ~O(batch), not O(page)).
+            # The page is fetched and sent inside the function; the timeout guard still reduces the limit on overrun.
+            with ExecutionTimeout(FETCH_ASSETS_COMMAND_TIME_OUT):
+                new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+                demisto.debug("Finished streamed fetch for assets.")
+
+            if set_new_limit:
+                demisto.debug(
+                    f"Reducing limit for assets next run due to exceeding timeout: {FETCH_ASSETS_COMMAND_TIME_OUT}. "
+                    f"Elapsed time: {time.time() - EXECUTION_START_TIME}."
+                )
+                new_last_run = set_assets_last_run_with_new_limit(last_run, last_run.get("limit", HOST_LIMIT))
+
+            demisto.setAssetsLastRun(new_last_run)
+            log_memory_usage("fetch by date - end of fetch cycle")
+            demisto.debug(f"Finished fetch assets and vulnerabilities run (by date). Set last assets run: {new_last_run}")
+            return
+
         with ExecutionTimeout(FETCH_ASSETS_COMMAND_TIME_OUT):
             # Exits code block below if it takes longer to execute than the specified timeout
             assets, new_last_run, total_assets_to_report, snapshot_id, set_new_limit = fetch_assets(client, last_run)
@@ -3890,6 +4050,7 @@ def main():  # pragma: no cover
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
     fetch_vulnerabilities_behavior = params["fetch_vulnerabilities_behavior"]
+    demisto.debug(f"Fetch vulnerabilities behavior: {fetch_vulnerabilities_behavior}")
 
     commands_methods: dict[str, dict[str, Callable]] = {
         # *** Commands with unparsed response as output ***

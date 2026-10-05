@@ -35,6 +35,9 @@ from Qualysv2 import (
     get_activity_logs_events,
     fetch_assets,
     get_detections_from_hosts,
+    iter_detections_from_hosts,
+    iter_host_list_detections,
+    fetch_and_send_assets_streamed,
     handle_host_list_detection_result,
     handle_vulnerabilities_result,
     element_to_dict,
@@ -1982,6 +1985,7 @@ def test_fetch_assets_and_vulnerabilities_by_date_assets_stage(mocker: MockerFix
     from contextlib import nullcontext
 
     mocker.patch("Qualysv2.ExecutionTimeout", return_value=nullcontext(), create=True)
+    mocker.patch("Qualysv2.ASSETS_STREAMING_SEND_ENABLED", False)  # this test covers the non-streaming assets path
 
     last_total_assets = 100
     last_run = {"stage": "assets", "total_assets": last_total_assets, "snapshot_id": SNAPSHOT_ID}
@@ -2012,6 +2016,208 @@ def test_fetch_assets_and_vulnerabilities_by_date_assets_stage(mocker: MockerFix
     assert next_run["total_assets"] == last_total_assets + len(expected_assets)
     assert next_run["since_datetime"] == "2024-10-03"  # freezed datetime - 90 days
     assert next_run["snapshot_id"] == SNAPSHOT_ID
+
+
+def _make_host(host_id: str, num_detections: int) -> dict:
+    """Build a minimal host dict with `num_detections` detections, mirroring the Qualys host/detection shape."""
+    detections = [
+        {"QID": f"{host_id}-{i}", "FIRST_FOUND_DATETIME": f"2025-01-0{(i % 9) + 1}T00:00:00Z"} for i in range(num_detections)
+    ]
+    return {"ID": host_id, "IP": "1.1.1.1", "DETECTION_LIST": {"DETECTION": detections if detections else {}}}
+
+
+def test_iter_detections_from_hosts_matches_get_detections_from_hosts():
+    """
+    Given:
+        - A list of hosts, each with multiple detections.
+
+    When:
+        - Fanning out detections lazily via iter_detections_from_hosts vs eagerly via get_detections_from_hosts.
+
+    Assert:
+        - Both produce the exact same detection rows (same fan-out, deep copy, and truncation semantics).
+    """
+    hosts = [_make_host("h1", 3), _make_host("h2", 2)]
+
+    streamed = list(iter_detections_from_hosts([dict(h) for h in hosts]))
+    eager, _ = get_detections_from_hosts([dict(h) for h in hosts])
+
+    assert streamed == eager
+    assert len(streamed) == 5  # 3 + 2 detections
+    # Each row carries its own DETECTION and the host-without-DETECTION_LIST fields.
+    assert all("DETECTION" in row and "DETECTION_LIST" not in row for row in streamed)
+
+
+def test_iter_host_list_detections_matches_handle_host_list_detection_result(mocker: MockerFixture):
+    """
+    Given:
+        - A streamed host-list-detection response yielding two HOST elements and a next-page URL.
+
+    When:
+        - Consuming it via iter_host_list_detections (with a stream_state holder).
+
+    Assert:
+        - The yielded hosts and the captured next_url match handle_host_list_detection_result's output.
+    """
+    hosts = [{"HOST": _make_host("h1", 1)}, {"HOST": _make_host("h2", 1)}]
+    stream_elements = [("HOST", f"elem{i}") for i in range(len(hosts))] + [("WARNING", "warn")]
+
+    mocker.patch("Qualysv2.stream_xml_elements", return_value=iter(stream_elements))
+
+    def fake_element_to_dict(element):
+        if element == "warn":
+            return {"WARNING": {"URL": "https://qualys/next?id_min=42"}}
+        return hosts[int(str(element).replace("elem", ""))]
+
+    mocker.patch("Qualysv2.element_to_dict", side_effect=fake_element_to_dict)
+
+    raw_response = Mock()
+    stream_state: dict = {}
+    yielded = list(iter_host_list_detections(raw_response, stream_state))
+
+    assert yielded == [h["HOST"] for h in hosts]
+    assert stream_state["next_url"] == "https://qualys/next?id_min=42"
+
+
+@freeze_time("2025-01-01 00:00:00 UTC")
+def test_fetch_and_send_assets_streamed_last_page_seals_snapshot(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A last page (no next page) of assets streamed in multiple batches (batch size 2, 5 rows).
+
+    When:
+        - Calling fetch_and_send_assets_streamed.
+
+    Assert:
+        - All non-final batches send items_count=1 (unsealed); only the final batch seals with the cumulative total.
+        - Every send uses the same snapshot_id, product "assets", and should_update_health_module=False.
+        - The returned last run moves to the "vulnerabilities" stage, keeping since_datetime and snapshot_id.
+    """
+    last_run = {"stage": "assets", "total_assets": 10, "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
+    expected_assets = [{"ID": f"a{i}", "DETECTION": {"FIRST_FOUND_DATETIME": "2025-01-01T00:00:00Z"}} for i in range(5)]
+
+    mocker.patch.object(client, "get_host_list_detection", return_value=(Mock(), False))
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter([]))
+    mocker.patch("Qualysv2.iter_detections_from_hosts", return_value=iter(expected_assets))
+    mocker.patch("Qualysv2.get_next_page_from_url", return_value="")  # last page
+    mock_send = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+    mock_health = mocker.patch("Qualysv2.demisto.updateModuleHealth")
+    mocker.patch("Qualysv2.ASSETS_SEND_BATCH_SIZE", 2)
+
+    new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+
+    assert set_new_limit is False
+    # 5 rows, batch size 2 => 2 full batches (items_count=1) + 1 sealing batch (cumulative total).
+    assert mock_send.call_count == 3
+    sent_assets: list = []
+    for call in mock_send.call_args_list:
+        sent_assets.extend(call.args[0])
+        assert call.kwargs["product"] == "assets"
+        assert call.kwargs["snapshot_id"] == SNAPSHOT_ID
+        assert call.kwargs["should_update_health_module"] is False
+    assert sent_assets == expected_assets
+
+    cumulative_total = 10 + 5
+    assert mock_send.call_args_list[0].kwargs["items_count"] == "1"
+    assert mock_send.call_args_list[1].kwargs["items_count"] == "1"
+    assert mock_send.call_args_list[2].kwargs["items_count"] == str(cumulative_total)  # sealing send
+
+    mock_health.assert_called_once_with({"assetsPulled": cumulative_total})
+    assert new_last_run["stage"] == "vulnerabilities"
+    assert new_last_run["next_page"] == ""
+    assert new_last_run["total_assets"] == cumulative_total
+    assert new_last_run["since_datetime"] == "2024-10-03"
+    assert new_last_run["snapshot_id"] == SNAPSHOT_ID
+
+
+@freeze_time("2025-01-01 00:00:00 UTC")
+def test_fetch_and_send_assets_streamed_not_last_page_keeps_unsealed(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A non-final page (next page exists) of assets streamed in a single remainder batch.
+
+    When:
+        - Calling fetch_and_send_assets_streamed.
+
+    Assert:
+        - The batch is sent with items_count=1 (snapshot stays unsealed), module health is NOT updated,
+          and the returned last run continues the "assets" stage with the next page.
+    """
+    last_run = {"stage": "assets", "total_assets": 10, "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
+    expected_assets = [{"ID": f"a{i}", "DETECTION": {"FIRST_FOUND_DATETIME": "2025-01-01T00:00:00Z"}} for i in range(3)]
+
+    mocker.patch.object(client, "get_host_list_detection", return_value=(Mock(), False))
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter([]))
+    mocker.patch("Qualysv2.iter_detections_from_hosts", return_value=iter(expected_assets))
+    mocker.patch("Qualysv2.get_next_page_from_url", return_value="42")  # has next page
+    mock_send = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+    mock_health = mocker.patch("Qualysv2.demisto.updateModuleHealth")
+
+    new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+
+    assert set_new_limit is False
+    assert mock_send.call_count == 1
+    assert mock_send.call_args.kwargs["items_count"] == "1"  # unsealed, more pages coming
+    mock_health.assert_not_called()
+    assert new_last_run["stage"] == "assets"
+    assert new_last_run["next_page"] == "42"
+    assert new_last_run["total_assets"] == 13
+    assert new_last_run["since_datetime"] == "2024-10-03"
+    assert new_last_run["snapshot_id"] == SNAPSHOT_ID
+
+
+@freeze_time("2025-01-01 00:00:00 UTC")
+def test_fetch_and_send_assets_streamed_empty_last_page(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A final page that yields zero assets, with a nonzero cumulative total from previous pages.
+
+    When:
+        - Calling fetch_and_send_assets_streamed.
+
+    Assert:
+        - A single sealing send closes the snapshot via close_snapshot_if_empty ([{}] with total+1).
+    """
+    last_total = 500
+    last_run = {"stage": "assets", "total_assets": last_total, "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
+
+    mocker.patch.object(client, "get_host_list_detection", return_value=(Mock(), False))
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter([]))
+    mocker.patch("Qualysv2.iter_detections_from_hosts", return_value=iter([]))
+    mocker.patch("Qualysv2.get_next_page_from_url", return_value="")  # last page
+    mock_send = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+
+    new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+
+    assert set_new_limit is False
+    assert mock_send.call_count == 1
+    assert mock_send.call_args.args[0] == [{}]  # empty list replaced to trigger snapshot close
+    assert mock_send.call_args.kwargs["items_count"] == str(last_total + 1)  # +1 for the empty JSON row
+    assert new_last_run["stage"] == "vulnerabilities"
+
+
+def test_fetch_and_send_assets_streamed_set_new_limit(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A host-list-detection request that read-times out (set_new_limit=True).
+
+    When:
+        - Calling fetch_and_send_assets_streamed.
+
+    Assert:
+        - Nothing is sent to XSIAM and the last run is reduced to half the host limit for the next fetch.
+    """
+    last_run = {"stage": "assets", "total_assets": 10, "snapshot_id": SNAPSHOT_ID, "limit": HOST_LIMIT}
+
+    mocker.patch.object(client, "get_host_list_detection", return_value=(None, True))
+    mock_send = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+
+    new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+
+    assert set_new_limit is True
+    mock_send.assert_not_called()
+    assert new_last_run["limit"] == HOST_LIMIT // 2
+    assert new_last_run["nextTrigger"] == "0"
 
 
 @pytest.mark.parametrize("streaming_enabled", [False, True])
@@ -2087,6 +2293,7 @@ def test_fetch_assets_and_vulnerabilities_by_date_set_new_limit(mocker: MockerFi
     from contextlib import nullcontext
 
     mocker.patch("Qualysv2.ExecutionTimeout", return_value=nullcontext(), create=True)
+    mocker.patch("Qualysv2.ASSETS_STREAMING_SEND_ENABLED", False)  # this test covers the non-streaming assets path
 
     last_total_assets = 10
     last_run = {"stage": "assets", "total_assets": last_total_assets, "snapshot_id": SNAPSHOT_ID}
@@ -2361,6 +2568,7 @@ def test_fetch_assets_and_vulnerabilities_by_date_last_page_empty(mocker: Mocker
     from contextlib import nullcontext
 
     mocker.patch("Qualysv2.ExecutionTimeout", return_value=nullcontext(), create=True)
+    mocker.patch("Qualysv2.ASSETS_STREAMING_SEND_ENABLED", False)  # this test covers the non-streaming assets path
 
     last_total_assets = 500
     last_run = {"stage": "assets", "total_assets": last_total_assets, "snapshot_id": SNAPSHOT_ID}
