@@ -5,17 +5,15 @@
     "id": "incident_panoraysfindingfindingtext",
     "name": "Panorays Finding Text",
     "associatedTypes": [
-        "Panorays Finding"
+        "Panorays Finding",
+        "Panorays Supplier Finding"
     ],
     "associatedToAll": false,
     "type": "longText",
-    "fromVersion": "6.10.0",
-    "version": -1,
     "content": true,
-    "system": false,
     "unsearchable": true,
-    "supportedModules": [
-        "agentix",
-        "xsiam"
-    ]
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "system": false,
+    "required": false
 }
