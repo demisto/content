@@ -8792,7 +8792,4 @@ def test_storage_blob_container_list_command_surfaces_next_token(mocker):
 
     result: CommandResults = storage_blob_container_list_command(mock_client, params, args)
 
-    assert (
-        result.outputs["Azure.Storage(true)"]["BlobContainersNextToken"]
-        == "https://management.azure.com/next-containers-page"
-    )
+    assert result.outputs["Azure.Storage(true)"]["BlobContainersNextToken"] == "https://management.azure.com/next-containers-page"

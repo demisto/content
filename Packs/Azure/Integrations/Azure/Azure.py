@@ -518,6 +518,7 @@ PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
 NSG_API_VERSION = "2025-01-01"
 FIREWALL_API_VERSION = "2025-09-01"
+STORAGE_ACCOUNT_API_VERSION = "2026-06-01"
 
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
 # get_command_and_token_scopes.
@@ -948,7 +949,7 @@ class AzureClient:
         """
         if next_token:
             demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of storage accounts.")
-            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname)
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
             params: dict = {}
         else:
             full_url = (
@@ -957,7 +958,7 @@ class AzureClient:
             )
             if account_name:
                 full_url += f"/{account_name}"
-            params = {"api-version": API_VERSION}
+            params = {"api-version": STORAGE_ACCOUNT_API_VERSION}
         try:
             demisto.debug(f'Listing storage account(s) "{account_name}".')
             return self.http_request(
@@ -996,7 +997,7 @@ class AzureClient:
         next_token = args.get("next_token", "")
         if next_token:
             demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of blob containers.")
-            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname)
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
             params: dict = {}
         else:
             full_url = (
