@@ -6,7 +6,7 @@ exists only to confirm the shim wires through to the ApiModule correctly.
 
 from unittest.mock import patch  # noqa: F401
 
-import GoogleDriveStandardConnectorTest as integration_module
+import GoogleDriveStandardConnectorDev as integration_module
 
 
 def test_shim_imports_run_entry_point():
