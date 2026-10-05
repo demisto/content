@@ -41,8 +41,8 @@ class FakeSoarApi:
         self._failures: list[dict] = []
         requests_mock.get(re.compile(re.escape(base_url) + r"/(threats|abusecampaigns|cases)"), json=self._handle)
 
-    def add_threat(self, threat_id: str, remediated: str, messages: list[dict] | None = None) -> None:
-        self.items["threats"].append({"threatId": threat_id, "latestTimeRemediated": remediated, "messages": messages})
+    def add_threat(self, threat_id: str, remediated: str, message_pages: list[list[dict]] | None = None) -> None:
+        self.items["threats"].append({"threatId": threat_id, "latestTimeRemediated": remediated, "pages": message_pages})
 
     def add_campaign(self, campaign_id: str, last_reported: str) -> None:
         self.items["abusecampaigns"].append({"campaignId": campaign_id, "lastReportedTime": last_reported})
@@ -85,7 +85,7 @@ class FakeSoarApi:
         endpoint, item_id = PATH_RE.match(path).groups()
         if item_id is None:
             return self._list(endpoint, query, context)
-        return self._detail(endpoint, item_id, context)
+        return self._detail(endpoint, item_id, query, context)
 
     def _list(self, endpoint: str, query: dict, context) -> dict:
         list_key, id_key = LIST_ENDPOINTS[endpoint]
@@ -116,17 +116,21 @@ class FakeSoarApi:
         _, id_key = LIST_ENDPOINTS[endpoint]
         return {id_key: item[id_key]}
 
-    def _detail(self, endpoint: str, item_id: str, context) -> dict:
+    def _detail(self, endpoint: str, item_id: str, query: dict, context) -> dict:
         _, id_key = LIST_ENDPOINTS[endpoint]
         item = next((i for i in self.items[endpoint] if i[id_key] == item_id), None)
         if item is None:
             context.status_code = 404
             return {"message": "not found"}
         if endpoint == "threats":
-            messages = item["messages"] or [
-                {"threatId": item_id, "receivedTime": item["latestTimeRemediated"], "remediationTimestamp": item["latestTimeRemediated"]}
+            pages = item["pages"] or [
+                [{"threatId": item_id, "receivedTime": item["latestTimeRemediated"], "remediationTimestamp": item["latestTimeRemediated"]}]
             ]
-            return {"threatId": item_id, "messages": messages}
+            page_number = int(query.get("pageNumber", 1))
+            response = {"threatId": item_id, "messages": pages[page_number - 1], "pageNumber": page_number}
+            if page_number < len(pages):
+                response["nextPageNumber"] = page_number + 1
+            return response
         if endpoint == "abusecampaigns":
             return {"campaignId": item_id, "firstReported": item["lastReportedTime"]}
         details = {"caseId": item_id, "firstObserved": item["createdTime"], "genai_summary": f"summary {item_id}"}

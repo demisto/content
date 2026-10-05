@@ -1,5 +1,7 @@
+import threading
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Generator
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any
@@ -37,6 +39,9 @@ LAST_RUN_VERSION = 2
 LIST_PAGE_SIZE = 500
 DEFAULT_FETCH_TIME_BUDGET_SECONDS = 150
 DEFAULT_MAX_WINDOW_MINUTES = 60
+DEFAULT_DETAIL_CONCURRENCY = 4
+# Well under the SOAR API's limit of 300 requests a minute per customer, which other clients share.
+DEFAULT_DETAIL_RATE_PER_SECOND = 2.0
 MIN_REQUEST_SECONDS = 1.0
 MAX_ITEM_FAILURES = 3
 MAX_CONSECUTIVE_FAILURES = 5
@@ -120,6 +125,33 @@ class Deadline:
         return remaining
 
 
+class RateLimiter:
+    """Thread-safe token bucket with a burst of 1, shared by every HTTP call in a fetch run."""
+
+    def __init__(
+        self,
+        rate_per_second: float,
+        clock: Callable[[], float] = time.monotonic,
+        sleep: Callable[[float], None] = time.sleep,
+    ):
+        self._interval = 1.0 / rate_per_second
+        self._clock = clock
+        self._sleep = sleep
+        self._lock = threading.Lock()
+        self._next_slot = 0.0
+
+    def acquire(self, deadline: Deadline | None = None) -> None:
+        with self._lock:
+            now = self._clock()
+            slot = max(now, self._next_slot)
+            wait = slot - now
+            if deadline is not None and wait > deadline.remaining() - MIN_REQUEST_SECONDS:
+                raise BudgetExhaustedError
+            self._next_slot = slot + self._interval
+        if wait > 0:
+            self._sleep(wait)
+
+
 def read_body_within_deadline(response, deadline: Deadline) -> bytes:
     """Read a streamed response body, giving up when the deadline passes.
 
@@ -156,9 +188,19 @@ class Client(BaseClient):
 
     def __init__(self, server_url, verify, proxy, headers, auth):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth, timeout=2400)
+        self._init_args = (server_url, verify, proxy, headers, auth)
+        self.rate_limiter: RateLimiter | None = None
+
+    def clone(self) -> "Client":
+        """A client with its own HTTP session, for use in another thread, sharing this one's rate limiter."""
+        client = Client(*self._init_args)
+        client.rate_limiter = self.rate_limiter
+        return client
 
     def _http_request(self, *args, deadline: Deadline | None = None, **kwargs):
         """Fetch passes a `deadline`, which caps the call, including reading the body, at the time left."""
+        if self.rate_limiter is not None:
+            self.rate_limiter.acquire(deadline)
         if deadline is None:
             return super()._http_request(*args, **kwargs)
         kwargs.update(timeout=deadline.request_timeout(), resp_type="response", stream=True)
@@ -1671,26 +1713,70 @@ def _is_retention_error(e: Exception) -> bool:
     return _status_code(e) == 400 and "retention" in f"{e} {text}".lower()
 
 
-def _raise_if_run_stopping(e: Exception, deadline: Deadline) -> None:
+def _run_stopping_error(e: Exception, deadline: Deadline) -> Exception | None:
+    """Returns the error to stop the whole run with, or None if only this item failed."""
+    if isinstance(e, AuthError | RateLimitedError | BudgetExhaustedError):
+        return e
     status = _status_code(e)
     if status in (401, 403):
-        raise AuthError(str(e)) from e
+        return AuthError(str(e))
     if status == 429:
-        raise RateLimitedError(str(e)) from e
+        return RateLimitedError(str(e))
     if deadline.expired():
-        raise BudgetExhaustedError from e
+        return BudgetExhaustedError()
+    return None
 
 
-def build_incidents(client: Client, spec: FetchTypeSpec, items: list[dict], window: FetchWindow, deadline: Deadline, **kwargs):
-    """Yields `(item, incident_or_exception)` in list order, stopping when the caller stops iterating."""
-    for item in items:
+def _raise_if_run_stopping(e: Exception, deadline: Deadline) -> None:
+    error = _run_stopping_error(e, deadline)
+    if error is not None:
+        raise error from e
+
+
+def build_incidents(
+    client: Client,
+    spec: FetchTypeSpec,
+    items: list[dict],
+    window: FetchWindow,
+    deadline: Deadline,
+    concurrency: int = 1,
+    **kwargs,
+) -> Generator[tuple[dict, dict | Exception | None], None, None]:
+    """Yields `(item, incident_or_exception)` in list order, so the output doesn't depend on timing.
+
+    Items not started because an earlier one stopped the run yield None. Each worker thread gets its
+    own `Client`, since a `requests.Session` isn't thread-safe; only the caller updates the window.
+    """
+    stop = threading.Event()
+    workers = threading.local()
+
+    def build(item: dict) -> dict | Exception | None:
+        if stop.is_set():
+            return None
         if deadline.expired():
-            yield item, BudgetExhaustedError()
-            return
+            stop.set()
+            return BudgetExhaustedError()
+        if concurrency > 1 and not hasattr(workers, "client"):
+            workers.client = client.clone()
         try:
-            yield item, spec.builder(client, item, window, deadline=deadline, **kwargs)
+            return spec.builder(getattr(workers, "client", client), item, window, deadline=deadline, **kwargs)
         except Exception as e:
-            yield item, e
+            if _run_stopping_error(e, deadline) is not None:
+                stop.set()
+            return e
+
+    if concurrency <= 1:
+        for item in items:
+            yield item, build(item)
+        return
+    executor = ThreadPoolExecutor(max_workers=concurrency)
+    try:
+        futures = [(item, executor.submit(build, item)) for item in items]
+        for item, future in futures:
+            yield item, future.result()
+    finally:
+        stop.set()
+        executor.shutdown(wait=True, cancel_futures=True)
 
 
 def fetch_type(
@@ -1705,6 +1791,7 @@ def fetch_type(
     stats: dict[str, Any],
     max_page_number: int = 8,
     list_page_size: int = LIST_PAGE_SIZE,
+    concurrency: int = 1,
 ) -> tuple[list[dict], str]:
     """Turns the type's items into incidents, window by window, until something stops it.
 
@@ -1746,17 +1833,24 @@ def fetch_type(
 
             batch = pending[: quota - len(incidents)]
             consecutive_failures = 0
-            for item, result in build_incidents(client, spec, batch, window, deadline, max_page_number=max_page_number):
+            stop_error: Exception | None = None
+            results = build_incidents(
+                client, spec, batch, window, deadline, concurrency=concurrency, max_page_number=max_page_number
+            )
+            for item, result in results:
                 item_id = str(item[spec.id_key])
+                if result is None:
+                    continue
                 if isinstance(result, dict):
                     incidents.append(result)
                     window.emitted_ids.append(item_id)
                     window.failed.pop(item_id, None)
                     consecutive_failures = 0
                     continue
-                if isinstance(result, BudgetExhaustedError | RateLimitedError | AuthError):
-                    raise result
-                _raise_if_run_stopping(result, deadline)
+                # Keep going after a run-stopping error, to keep incidents that other workers completed.
+                stop_error = stop_error or _run_stopping_error(result, deadline)
+                if stop_error is not None:
+                    continue
                 if isinstance(result, DemistoException) and _is_skippable_error(result):
                     demisto.debug(f"{spec.label} item {item_id} returned a skippable error, skipping: {result}")
                     window.emitted_ids.append(item_id)
@@ -1772,8 +1866,11 @@ def fetch_type(
                     window.failed[item_id] = failures
                 consecutive_failures += 1
                 if consecutive_failures >= MAX_CONSECUTIVE_FAILURES:
+                    results.close()
                     warnings.append(f"Stopped fetching {spec.label} after {consecutive_failures} failures in a row: {result}")
                     return incidents, "errors"
+            if stop_error is not None:
+                raise stop_error
             if len(batch) < len(pending):
                 return incidents, "max_fetch"
             if window.failed:
@@ -1802,6 +1899,8 @@ def fetch_incidents(
     polling_lag: timedelta = timedelta(minutes=0),
     fetch_time_budget: float = DEFAULT_FETCH_TIME_BUDGET_SECONDS,
     max_window_minutes: int = DEFAULT_MAX_WINDOW_MINUTES,
+    detail_concurrency: int = DEFAULT_DETAIL_CONCURRENCY,
+    detail_rate_per_second: float = DEFAULT_DETAIL_RATE_PER_SECOND,
     deadline: Deadline | None = None,
 ) -> tuple[dict[str, Any], list[dict], list[str]]:
     """
@@ -1815,6 +1914,7 @@ def fetch_incidents(
         The next `last_run`, the incidents, and warnings to show in the instance's health.
     """
     deadline = deadline or Deadline(fetch_time_budget)
+    client.rate_limiter = RateLimiter(detail_rate_per_second)
     now = get_current_datetime()
     polling_lag = polling_lag or timedelta(0)
     max_window = timedelta(minutes=max_window_minutes)
@@ -1853,6 +1953,7 @@ def fetch_incidents(
             stats,
             max_page_number=max_page_number,
             list_page_size=LIST_PAGE_SIZE,
+            concurrency=detail_concurrency,
         )
         incidents.extend(type_incidents)
         stats[spec.key] = {"emitted": len(type_incidents), "stop_reason": reason}

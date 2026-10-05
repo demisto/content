@@ -40,7 +40,9 @@ from AbnormalSecurity import (
     build_list_filter,
     FetchWindow,
     Deadline,
+    RateLimiter,
     AuthError,
+    BudgetExhaustedError,
     THREATS_SPEC,
     ABUSE_CAMPAIGNS_SPEC,
     ACCOUNT_TAKEOVER_SPEC,
@@ -1253,6 +1255,8 @@ def run_fetch(last_run=None, **kwargs):
         "fetch_account_takeover_cases": False,
         "polling_lag": timedelta(0),
         "max_incidents_to_fetch": 200,
+        # Fast enough not to slow the tests; the limiter itself is tested on its own.
+        "detail_rate_per_second": 1000,
         **kwargs,
     }
     client = Client(server_url=BASE_URL, verify=False, proxy=False, auth=None, headers=headers)
@@ -1312,7 +1316,7 @@ def test_fetch_resumes_after_budget_exhausted(api):
         clock["now"] += 10
 
     api.on_call = tick
-    first_run, incidents, _ = run_fetch(deadline=Deadline(45, clock=lambda: clock["now"]))
+    first_run, incidents, _ = run_fetch(deadline=Deadline(45, clock=lambda: clock["now"]), detail_concurrency=1)
 
     assert 0 < len(incidents) < len(ids)
     assert first_run["threats"]["window_start"] == "2026-10-02T09:00:00Z"
@@ -1359,7 +1363,7 @@ def test_fetch_auth_error_commits_nothing(api, path, status):
 
 def test_fetch_404_detail_counts_as_emitted(api):
     add_threats(api, 2)
-    api.items["threats"].append({"threatId": "t-gone", "latestTimeRemediated": "2026-10-02T09:01:00Z", "messages": None})
+    api.add_threat("t-gone", "2026-10-02T09:01:00Z")
     api.fail(r"^/threats/t-gone$", 404, times=None)
 
     last_run, incidents, warnings = run_fetch()
@@ -1444,7 +1448,7 @@ def test_fetch_five_consecutive_failures_stop_the_type(api):
     api.add_campaign("a-1", "2026-10-02T09:30:00Z")
     api.fail(r"^/threats/", 503, times=None)
 
-    last_run, incidents, warnings = run_fetch(fetch_abuse_campaigns=True)
+    last_run, incidents, warnings = run_fetch(fetch_abuse_campaigns=True, detail_concurrency=1)
 
     assert len(api.detail_calls("threats")) == 5
     assert [i["dbotMirrorId"] for i in incidents] == ["a-1"]
@@ -1655,3 +1659,105 @@ def test_fetch_time_budget_bounds_hung_and_slow_responses(stub_server, mode, moc
     assert time.monotonic() - started < 2 + 2
     assert incidents == []
     assert next_run["threats"]["window_start"] == "2026-10-02T09:00:00Z"
+
+
+def test_rate_limiter_spaces_calls_with_a_burst_of_one():
+    clock = {"now": 100.0}
+    sleeps = []
+
+    def sleep(seconds):
+        sleeps.append(seconds)
+        clock["now"] += seconds
+
+    limiter = RateLimiter(2, clock=lambda: clock["now"], sleep=sleep)
+
+    for _ in range(3):
+        limiter.acquire()
+
+    assert sleeps == [0.5, 0.5]
+
+
+def test_rate_limiter_stops_when_the_wait_would_pass_the_deadline():
+    clock = {"now": 0.0}
+    limiter = RateLimiter(0.1, clock=lambda: clock["now"], sleep=lambda _: None)
+    limiter.acquire()
+
+    with pytest.raises(BudgetExhaustedError):
+        limiter.acquire(Deadline(5, clock=lambda: clock["now"]))
+
+
+def patch_threat_details(mocker, delay):
+    """Serves threat details without requests_mock, which serializes requests behind a global lock."""
+
+    def get_details(self, threat_id, deadline=None, **kwargs):
+        time.sleep(delay(threat_id))
+        remediated = "2026-10-02T09:30:00Z"
+        return {"threatId": threat_id, "messages": [{"receivedTime": remediated, "remediationTimestamp": remediated}]}
+
+    return mocker.patch.object(Client, "get_details_of_a_threat_request", autospec=True, side_effect=get_details)
+
+
+def test_fetch_detail_calls_stay_under_the_worker_cap(api, mocker):
+    add_threats(api, 12, step_minutes=4)
+    lock, in_flight = threading.Lock(), {"now": 0, "max": 0}
+
+    def delay(_threat_id):
+        with lock:
+            in_flight["now"] += 1
+            in_flight["max"] = max(in_flight["max"], in_flight["now"])
+        time.sleep(0.05)
+        with lock:
+            in_flight["now"] -= 1
+        return 0
+
+    patch_threat_details(mocker, delay)
+    _, incidents, _ = run_fetch(detail_concurrency=4, max_window_minutes=10**6)
+
+    assert len(incidents) == 12
+    assert in_flight["max"] == 4
+
+
+def test_fetch_takes_one_rate_token_per_http_call(api, mocker):
+    page = [{"receivedTime": "2026-10-02T09:10:00Z", "remediationTimestamp": "2026-10-02T09:10:00Z"}]
+    api.add_threat("t-paged", "2026-10-02T09:10:00Z", message_pages=[page, page, page])
+    acquire = mocker.spy(RateLimiter, "acquire")
+
+    _, incidents, _ = run_fetch(max_window_minutes=10**6)
+
+    assert len(json.loads(incidents[0]["rawJSON"])["messages"]) == 3
+    assert len(api.detail_calls("threats")) == 3
+    assert acquire.call_count == len(api.calls)
+
+
+def test_fetch_429_mid_batch_keeps_completed_incidents(api):
+    """
+    Given 8 threats where the third one's detail call is rate limited.
+    When fetch runs with 2 workers.
+    Then incidents completed before the 429 are kept, the run stops, the window stays, and the
+    next run emits the rest with no duplicates.
+    """
+    ids = add_threats(api, 8)
+    api.ascending = True
+    api.fail(r"^/threats/t-002$", 429)
+
+    first_run, incidents, warnings = run_fetch(detail_concurrency=2, **ALL_TYPES)
+
+    emitted = [i["dbotMirrorId"] for i in incidents]
+    assert {"t-000", "t-001"} <= set(emitted)
+    assert "t-002" not in emitted
+    assert any("Rate limited" in w for w in warnings)
+    assert first_run["threats"]["window_start"] == "2026-10-02T09:00:00Z"
+    assert api.list_calls("abusecampaigns") == []
+    _, rest, _ = fetch_until_caught_up(first_run)
+    assert sorted(emitted + rest) == ids
+
+
+def test_fetch_output_order_does_not_depend_on_worker_timing(api, mocker):
+    add_threats(api, 10, step_minutes=5)
+    # Earlier items finish last, so completion order is the reverse of list order.
+    patch_threat_details(mocker, lambda threat_id: 0.1 - int(threat_id[2:]) * 0.01)
+
+    _, concurrent, _ = run_fetch(detail_concurrency=4, max_window_minutes=10**6)
+    _, serial, _ = run_fetch(detail_concurrency=1, max_window_minutes=10**6)
+
+    assert [i["dbotMirrorId"] for i in concurrent] == [i["dbotMirrorId"] for i in serial]
