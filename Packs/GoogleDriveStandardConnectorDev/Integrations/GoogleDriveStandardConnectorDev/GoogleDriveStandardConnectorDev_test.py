@@ -29,14 +29,14 @@ def test_shim_imports_constants():
 
 def test_main_delegates_to_api_module(mocker):
     """`main()` must do nothing other than call the renamed ApiModule entry point."""
-    mock_run = mocker.patch("GoogleDriveStandardConnector.run_google_drive_integration")
+    mock_run = mocker.patch("GoogleDriveStandardConnectorDev.run_google_drive_integration")
     integration_module.main()
     mock_run.assert_called_once_with()
 
 
 def test_main_propagates_exceptions(mocker):
     """`main()` is a thin shim and must not swallow exceptions from the ApiModule."""
-    mocker.patch("GoogleDriveStandardConnector.run_google_drive_integration", side_effect=RuntimeError("boom"))
+    mocker.patch("GoogleDriveStandardConnectorDev.run_google_drive_integration", side_effect=RuntimeError("boom"))
     import pytest
 
     with pytest.raises(RuntimeError, match="boom"):
