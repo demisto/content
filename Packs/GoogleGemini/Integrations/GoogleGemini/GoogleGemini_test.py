@@ -512,12 +512,12 @@ def test_google_gemini_send_message_command_default_values(client_fixture):
     assert isinstance(result.outputs, dict)
     assert result.outputs["Model"] == client_fixture.model
 
-    # Check that instance default values were used in the API call, except temperature
-    # which defaults to 0.5 at the command level when not explicitly provided.
+    # Check that instance-level defaults are used in the API call when not explicitly provided.
     call_args = client_fixture._http_request.call_args[1]["json_data"]
-    assert call_args["generationConfig"]["maxOutputTokens"] == 1024
-    assert call_args["generationConfig"]["temperature"] == 0.5
-    assert result.outputs["MaxTokens"] == 1024
+    assert call_args["generationConfig"]["maxOutputTokens"] == client_fixture.max_tokens
+    assert call_args["generationConfig"]["temperature"] == client_fixture.temperature
+    assert result.outputs["MaxTokens"] == client_fixture.max_tokens
+    assert result.outputs["Temperature"] == client_fixture.temperature
 
 
 def test_google_gemini_send_message_command_max_tokens_override(client_fixture):

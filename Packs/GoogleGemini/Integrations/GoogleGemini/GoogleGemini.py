@@ -32,11 +32,6 @@ AUTH_TYPE_VERTEX_AI = "Vertex AI Service Account"
 VERTEX_AI_BASE_URL = "https://aiplatform.googleapis.com"
 GOOGLE_AUTH_SCOPE = "https://www.googleapis.com/auth/cloud-platform"
 
-AUTH_TYPE_AI_STUDIO = "AI Studio API Key"
-AUTH_TYPE_VERTEX_AI = "Vertex AI Service Account"
-VERTEX_AI_BASE_URL = "https://aiplatform.googleapis.com"
-GOOGLE_AUTH_SCOPE = "https://www.googleapis.com/auth/cloud-platform"
-
 
 def arg_to_float(value: Any) -> float | None:
     """Converts an argument to a float, returning None for empty/missing values.
@@ -303,7 +298,7 @@ def _truncate_to_token_budget(
     return contents, token_count, truncated
 
 
-def test_module(client: Client):
+def test_module(client: Client) -> str:
     """Tests API connectivity and authentication.
 
     Uses a simple chat message to verify that the API is reachable and the provided token is valid.
@@ -337,10 +332,11 @@ def google_gemini_send_message_command(client: Client, args: dict[str, Any]):
     save_conversation = argToBoolean(args.get("save_conversation", False))
     temperature = arg_to_float(args.get("temperature"))
     if temperature is None:
-        temperature = 0.5
+        temperature = client.temperature
     max_tokens = arg_to_number(args.get("max_tokens"))
     if max_tokens is None:
         max_tokens = client.max_tokens
+    # max_input_tokens has no instance-level configuration; None means no limit is enforced.
     max_input_tokens = arg_to_number(args.get("max_input_tokens"))
     truncate = argToBoolean(args.get("truncate", False))
 
