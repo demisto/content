@@ -32,6 +32,48 @@ def test_parse_mail_parts(mocker):
     assert body.encode("utf-8") == b"el Ni\xc3\xb1o"
 
 
+@pytest.mark.parametrize("transfer_encoding_header", ["Content-Transfer-Encoding: 8bit\n", ""])
+def test_parse_mail_parts_utf8_body_with_bytes_undefined_in_cp1252(mocker, transfer_encoding_header):
+    """
+    Given
+    - A multipart email whose text/plain part is raw UTF-8 (8bit or no Content-Transfer-Encoding)
+    - The body contains "č" (U+010D), whose UTF-8 encoding is b"\\xc4\\x8d". Byte 0x8d is undefined in cp1252.
+    When
+    - parse_mail_parts is called on the parsed message parts (as done by fetch_incidents)
+    Then
+    - Ensure no UnicodeDecodeError ('charmap' codec can't decode byte 0x8d) is raised
+    - Ensure the body is returned as the original text
+    """
+    from email.parser import Parser
+
+    mocker.patch.object(demisto, "params", return_value={"credentials_password": {"password": "password"}})
+    from MailListener_POP3 import parse_mail_parts
+
+    body_text = "Dobrý den, děkuji za zprávu. Hezký večer."
+    raw_email = (
+        "From: sender@example.com\n"
+        "To: receiver@example.com\n"
+        "Subject: test\n"
+        "Date: Tue, 29 Sep 2026 15:27:29 +0000\n"
+        "MIME-Version: 1.0\n"
+        'Content-Type: multipart/alternative; boundary="BOUNDARY"\n'
+        "\n"
+        "--BOUNDARY\n"
+        "Content-Type: text/plain; charset=utf-8\n"
+        f"{transfer_encoding_header}"
+        "\n"
+        f"{body_text}\n"
+        "--BOUNDARY--\n"
+    )
+    msg = Parser().parsestr(raw_email)
+
+    body, html, attachments = parse_mail_parts(msg._payload)
+
+    assert body.strip() == body_text
+    assert html == ""
+    assert attachments == []
+
+
 def test_base64_mail_decode(mocker):
     """
     Given
