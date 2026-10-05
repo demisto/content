@@ -22,3 +22,4 @@ dockerimage: demisto/office-utils:2.0.0.11285256
 fromversion: 5.0.0
 tests:
 - ParseWordDoc-Test
+# touched for a CI control run - no functional change

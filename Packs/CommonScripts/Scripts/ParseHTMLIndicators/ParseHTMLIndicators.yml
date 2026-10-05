@@ -41,3 +41,4 @@ runas: DBotWeakRole
 fromversion: 5.5.0
 tests:
 - ParseHTMLIndicators-Test
+# touched for a CI control run - no functional change
