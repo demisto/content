@@ -1,0 +1,21 @@
+{
+    "sessionType": "PublishBackupContentViaMount",
+    "state": "Starting",
+    "platformName": "VMware",
+    "id": "cc5de5c2-3ce4-4b67-af45-3733c3fc0a1e",
+    "name": "linbase01",
+    "jobId": "2597af5d-0645-401c-ae7c-db663c35597e",
+    "creationTime": "2024-11-15T13:01:29.905514+01:00",
+    "endTime": null,
+    "progressPercent": 0,
+    "result": {
+        "result": "None",
+        "message": "",
+        "isCanceled": false
+    },
+    "resourceId": null,
+    "resourceReference": null,
+    "parentSessionId": null,
+    "usn": 16087,
+    "platformId": "00000000-0000-0000-0000-000000000000"
+}

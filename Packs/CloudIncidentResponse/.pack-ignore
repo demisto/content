@@ -45,3 +45,9 @@ ignore=LO107
 
 [file:XCloudAdditionalAlertInformationWidget.yml]
 ignore=GR103
+
+[file:playbook-Cortex_XDR_-_Cloud_Data_Exfiltration_Response.yml]
+ignore=GR107
+
+[file:playbook-Cortex_XDR_-_XCloud_Token_Theft_Response.yml]
+ignore=GR107

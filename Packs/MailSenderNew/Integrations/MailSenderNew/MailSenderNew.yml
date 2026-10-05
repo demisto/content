@@ -53,7 +53,7 @@ configuration:
   required: false
   section: Connect
 description: Send emails implemented in Python with embedded image support.
-display: Mail Sender (New)
+display: Mail Sender
 name: Mail Sender (New)
 script:
   commands:

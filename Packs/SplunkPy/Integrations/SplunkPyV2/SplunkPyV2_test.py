@@ -1,3 +1,4 @@
+import json
 from collections import namedtuple
 from copy import deepcopy
 from unittest.mock import MagicMock, patch
@@ -1911,6 +1912,107 @@ def test_escape_backslashes_in_field_filters(spl_search, expected):
       and rex/free-text quoted strings and regex literals inside function calls are left untouched.
     """
     assert splunk.escape_backslashes_in_field_filters(spl_search) == expected
+
+
+@pytest.mark.parametrize(
+    "raw_json, expected",
+    [
+        # A lone backslash forming an invalid JSON escape (\A) is doubled so json.loads accepts it
+        (
+            '{"search":"object=\\"PREFIX\\Admin\\""}',
+            '{"search":"object=\\"PREFIX\\\\Admin\\""}',
+        ),
+        # Multiple invalid backslashes (\W in "NT SERVICE\WinCollect", \A in "\Admin")
+        (
+            '{"search":"user=\\"NT SERVICE\\WinCollect\\" object=\\"PREFIX\\Admin\\""}',
+            '{"search":"user=\\"NT SERVICE\\\\WinCollect\\" object=\\"PREFIX\\\\Admin\\""}',
+        ),
+        # Valid JSON escapes (\" and \n) must be left untouched
+        (
+            '{"search":"a=\\"b\\" \\n c=\\"d\\""}',
+            '{"search":"a=\\"b\\" \\n c=\\"d\\""}',
+        ),
+        # Already-doubled backslash (valid JSON) is left untouched (idempotent)
+        (
+            '{"search":"object=\\"a\\\\b\\""}',
+            '{"search":"object=\\"a\\\\b\\""}',
+        ),
+        # A unicode escape (\u) is a valid JSON escape and must be left untouched
+        (
+            '{"search":"snowman=\\u2603"}',
+            '{"search":"snowman=\\u2603"}',
+        ),
+        # A backslash followed by whitespace is an invalid JSON escape and is doubled
+        (
+            '{"search":"object=\\"PREFIX\\ Admin\\""}',
+            '{"search":"object=\\"PREFIX\\\\ Admin\\""}',
+        ),
+        # Lone backslashes near the end of a value (\T and \9 are invalid escapes) are doubled
+        (
+            '{"search":"object=\\"C:\\Temp\\9\\""}',
+            '{"search":"object=\\"C:\\\\Temp\\\\9\\""}',
+        ),
+    ],
+    ids=[
+        "single invalid backslash escape is doubled",
+        "multiple invalid backslash escapes are doubled",
+        "valid escapes are untouched",
+        "already-doubled backslash is idempotent",
+        "unicode escape is untouched",
+        "backslash followed by whitespace is doubled",
+        "backslash near end of value is doubled",
+    ],
+)
+def test_escape_invalid_backslashes_in_drilldown_json(raw_json, expected):
+    """
+    Scenario: Splunk places placeholder values that contain a lone backslash directly into the
+    drilldown search JSON payload (e.g. object="PREFIX\\Admin"), which is invalid
+    JSON and makes json.loads raise 'Invalid \\escape' (XSUP-75731).
+
+    Given:
+    - A drilldown JSON payload containing a lone backslash forming an invalid JSON escape.
+    - A drilldown JSON payload containing multiple invalid backslash escapes.
+    - A drilldown JSON payload containing only valid JSON escapes (\\" and \\n).
+    - A drilldown JSON payload whose backslash is already doubled (valid JSON).
+    - A drilldown JSON payload containing a valid unicode escape (\\u2603).
+
+    When:
+    - escape_invalid_backslashes_in_drilldown_json is called.
+
+    Then:
+    - Invalid backslash escapes are doubled so the payload becomes valid JSON, valid escapes are
+      left untouched, and the operation is idempotent.
+    """
+    result = splunk.escape_invalid_backslashes_in_drilldown_json(raw_json)
+    assert result == expected
+    # the sanitized payload must now be valid JSON
+    json.loads(result)
+
+
+def test_parse_drilldown_searches_handles_unescaped_backslash_in_value():
+    """
+    Scenario: End-to-end reproduction of XSUP-75731 where a drilldown search payload contains a
+    placeholder value with an unescaped backslash (object="PREFIX\\Admin").
+
+    Given:
+    - A raw drilldown_searches payload where a field="value" filter contains a lone backslash that
+      makes the payload invalid JSON.
+
+    When:
+    - Running splunk.parse_drilldown_searches.
+
+    Then:
+    - The payload is parsed successfully (no JSONDecodeError) and the resulting SPL 'search' keeps
+      the backslashes escaped (doubled) for Splunk SPL.
+    """
+    searches = [
+        '{"name":"View contributing events","search":"| search '
+        'user=\\"NT SERVICE\\WinCollect\\" object=\\"PREFIX\\Admin\\"",'
+        '"earliest_offset":"1","latest_offset":"2"}'
+    ]
+    parsed = splunk.parse_drilldown_searches(searches)
+    assert len(parsed) == 1
+    assert parsed[0]["search"] == ('| search user="NT SERVICE\\\\WinCollect" object="PREFIX\\\\Admin"')
 
 
 def test_parse_drilldown_searches_preserves_backslashes():
