@@ -4,6 +4,7 @@ commonfields:
 name: CSCFraudProtection
 display: CSCFraudProtection
 category: IT Services
+supportlevelheader: developer
 description: CSCFraudProtection is an integration that detects and remediates phishing, BEC, typo-squatting, malicious websites, and digital fraud threats through monitoring and takedown services.
 configuration:
 - name: url

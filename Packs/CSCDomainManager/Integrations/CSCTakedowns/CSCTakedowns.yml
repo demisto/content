@@ -4,6 +4,7 @@ commonfields:
 name: CSCTakedowns
 display: CSCTakedowns
 category: IT Services
+supportlevelheader: developer
 description: CSCTakedowns is an integration that enables rapid submission, management, and remediation of takedown requests for malicious domains, phishing, vishing, smishing, fraud, and brand impersonation threats.
 configuration:
 - name: url
