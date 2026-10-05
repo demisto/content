@@ -4,8 +4,12 @@
 # Bypass intentionally with: git push --no-verify
 
 # git invokes this hook as: pre-push <remote-name> <remote-url>
-case "$2" in
-	*demisto/content*|*cortex-content/content*) ;;
+# Normalize the URL so the match can be anchored to the end: without this,
+# '*demisto/content*' would also catch content-private, content-docs, etc.
+repo=${2%/}
+repo=${repo%.git}
+case "$repo" in
+	*demisto/content|*cortex-content/content) ;;
 	*) exit 0 ;;
 esac
 
