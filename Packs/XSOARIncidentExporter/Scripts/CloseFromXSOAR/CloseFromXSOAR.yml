@@ -1,0 +1,49 @@
+commonfields:
+  id: CloseFromXSOAR
+  version: -1
+name: CloseFromXSOAR
+comment: Extracts Close Reason and Close Notes from a pushed XSOAR incident alert and closes the XSIAM case if the XSOAR incident was closed.
+script: "import re\n\nCLOSE_REASON_MAP = {\n    'resolved': 'Resolved',\n    'false positive': 'False Positive',\n    'duplicate': 'Duplicate',\n    'other': 'Other',\n}\n\n\ndef extract_field(description:\
+  \ str, field_name: str) -> str:\n    pattern = rf'{re.escape(field_name)}:\\s*(.+?)(?:\\n|$)'\n    match = re.search(pattern, description)\n    return match.group(1).strip() if match else ''\n\n\ndef\
+  \ map_close_reason(xsoar_reason: str) -> str:\n    if not xsoar_reason:\n        return 'Other'\n    return CLOSE_REASON_MAP.get(xsoar_reason.lower(), 'Other')\n\n\ndef main():\n    incident = demisto.incident()\n\
+  \    custom_fields = incident.get('CustomFields', {}) or {}\n\n    description = custom_fields.get('alertdescription', '') or custom_fields.get('alert_description', '')\n    if not description:\n    \
+  \    labels = incident.get('labels', [])\n        for label in labels:\n            if label.get('type') in ('alert_description', 'alertdescription'):\n                description = label.get('value',\
+  \ '')\n                break\n    if not description:\n        description = incident.get('details', '') or ''\n\n    status = extract_field(description, 'Status')\n    close_reason = extract_field(description,\
+  \ 'Close Reason')\n    close_notes = extract_field(description, 'Close Notes')\n    xsoar_id = extract_field(description, 'XSOAR Incident ID')\n\n    if status not in ('Done', 'Archive'):\n        return_results(CommandResults(\n\
+  \            readable_output=f'XSOAR incident {xsoar_id} is not closed (Status: {status}). No action taken.',\n            outputs_prefix='XSOARClose',\n            outputs={\n                'XSOARIncidentID':\
+  \ xsoar_id,\n                'Status': status,\n                'Action': 'none',\n            },\n        ))\n        return\n\n    xsiam_reason = map_close_reason(close_reason)\n    notes = f'Closed\
+  \ in XSOAR as: {close_reason}'\n    if close_notes:\n        notes += f'\\nXSOAR Close Notes: {close_notes}'\n\n    res = demisto.executeCommand('closeInvestigation', {\n        'closeReason': xsiam_reason,\n\
+  \        'closeNotes': notes,\n    })\n    if is_error(res):\n        return_error(f'Failed to close case: {get_error(res)}')\n\n    return_results(CommandResults(\n        readable_output=(\n       \
+  \     f'### Closed XSIAM Case\\n'\n            f'- **XSOAR Incident ID:** {xsoar_id}\\n'\n            f'- **XSOAR Close Reason:** {close_reason}\\n'\n            f'- **XSIAM Close Reason:** {xsiam_reason}\\\
+  n'\n            f'- **Close Notes:** {close_notes or \"(none)\"}\\n'\n        ),\n        outputs_prefix='XSOARClose',\n        outputs={\n            'XSOARIncidentID': xsoar_id,\n            'XSOARCloseReason':\
+  \ close_reason,\n            'XSIAMCloseReason': xsiam_reason,\n            'CloseNotes': close_notes,\n            'Action': 'closed',\n        },\n    ))\n\n\nif __name__ in ('__main__', '__builtin__',\
+  \ 'builtins'):\n    main()\n"
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.14.100715
+runas: DBotWeakRole
+tags:
+- xsoar
+- xsiam
+- close
+enabled: true
+args: []
+outputs:
+- contextPath: XSOARClose.XSOARIncidentID
+  description: The XSOAR incident ID from the alert.
+  type: String
+- contextPath: XSOARClose.XSOARCloseReason
+  description: The close reason from XSOAR.
+  type: String
+- contextPath: XSOARClose.XSIAMCloseReason
+  description: The mapped XSIAM close reason.
+  type: String
+- contextPath: XSOARClose.CloseNotes
+  description: The close notes from XSOAR.
+  type: String
+- contextPath: XSOARClose.Action
+  description: Whether the case was closed or no action was taken.
+  type: String
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

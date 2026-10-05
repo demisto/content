@@ -1,0 +1,81 @@
+commonfields:
+  id: SyncXSOARCloseStatus
+  version: -1
+name: SyncXSOARCloseStatus
+comment: Queries XSIAM for open alerts sourced from XSOAR, checks each alert's description for XSOAR close status, and resolves the XSIAM alert if the XSOAR incident was closed. Designed to run as a scheduled
+  job.
+script: "import re\n\nCLOSE_REASON_MAP = {\n    'resolved': 'STATUS_030_RESOLVED_THREAT_HANDLED',\n    'false positive': 'STATUS_060_RESOLVED_FALSE_POSITIVE',\n    'duplicate': 'STATUS_050_RESOLVED_DUPLICATE',\n\
+  \    'other': 'STATUS_080_RESOLVED_OTHER',\n}\n\n\nclass XSIAMClient(BaseClient):\n\n    def __init__(self, base_url: str, api_key: str, api_key_id: str, verify: bool):\n        headers = {\n        \
+  \    'x-xdr-auth-id': api_key_id,\n            'Authorization': api_key,\n            'Content-Type': 'application/json',\n        }\n        super().__init__(base_url=base_url, verify=verify, proxy=False,\
+  \ headers=headers)\n\n    def get_alerts(self, search_from: int = 0, search_to: int = 100) -> dict:\n        body = {\n            'request_data': {\n                'filters': [\n                   \
+  \ {\n                        'field': 'alert_source',\n                        'operator': 'in',\n                        'value': ['Palo Alto Networks - XSOAR'],\n                    },\n           \
+  \         {\n                        'field': 'resolution_status',\n                        'operator': 'in',\n                        'value': ['STATUS_010_NEW', 'STATUS_020_UNDER_INVESTIGATION'],\n\
+  \                    },\n                ],\n                'search_from': search_from,\n                'search_to': search_to,\n                'sort': {\n                    'field': 'creation_time',\n\
+  \                    'keyword': 'asc',\n                },\n            }\n        }\n        return self._http_request(\n            method='POST',\n            url_suffix='/public_api/v1/alerts/get_alerts_multi_events',\n\
+  \            json_data=body,\n        )\n\n    def update_alerts(self, alert_ids: list, resolution_status: str, comment: str) -> dict:\n        body = {\n            'request_data': {\n              \
+  \  'alert_id_list': alert_ids,\n                'resolution_status': resolution_status,\n                'resolution_comment': comment,\n            }\n        }\n        return self._http_request(\n\
+  \            method='POST',\n            url_suffix='/public_api/v1/alerts/update_alerts',\n            json_data=body,\n        )\n\n\ndef extract_field(description: str, field_name: str) -> str:\n \
+  \   pattern = rf'{re.escape(field_name)}:\\s*(.+?)(?:\\n|$)'\n    match = re.search(pattern, description)\n    return match.group(1).strip() if match else ''\n\n\ndef map_close_reason(xsoar_reason: str)\
+  \ -> str:\n    if not xsoar_reason:\n        return 'STATUS_080_RESOLVED_OTHER'\n    return CLOSE_REASON_MAP.get(xsoar_reason.lower(), 'STATUS_080_RESOLVED_OTHER')\n\n\ndef main():\n    args = demisto.args()\n\
+  \    xsiam_url = args.get('xsiam_url', '').rstrip('/')\n    xsiam_api_key = args.get('xsiam_api_key', '')\n    xsiam_api_key_id = args.get('xsiam_api_key_id', '')\n    verify = not argToBoolean(args.get('insecure',\
+  \ 'true'))\n    max_alerts = arg_to_number(args.get('max_alerts')) or 100\n\n    if not xsiam_url or not xsiam_api_key or not xsiam_api_key_id:\n        return_error('xsiam_url, xsiam_api_key, and xsiam_api_key_id\
+  \ are required.')\n        return\n\n    client = XSIAMClient(base_url=xsiam_url, api_key=xsiam_api_key,\n                          api_key_id=xsiam_api_key_id, verify=verify)\n\n    response = client.get_alerts(search_from=0,\
+  \ search_to=max_alerts)\n    alerts = response.get('reply', {}).get('alerts', [])\n    total = response.get('reply', {}).get('total_count', 0)\n\n    if not alerts:\n        return_results(CommandResults(\n\
+  \            readable_output=f'No open XSOAR-sourced alerts found ({total} total).',\n        ))\n        return\n\n    to_close: dict[str, list] = {}\n    skipped = []\n\n    for alert in alerts:\n \
+  \       alert_id = alert.get('alert_id', '')\n        alert_name = alert.get('name', '')\n        description = alert.get('description', '')\n\n        if not description:\n            events = alert.get('events',\
+  \ [])\n            if events:\n                description = events[0].get('alert_description', '') if events else ''\n\n        status = extract_field(description, 'Status')\n        close_reason = extract_field(description,\
+  \ 'Close Reason')\n        close_notes = extract_field(description, 'Close Notes')\n        xsoar_id = extract_field(description, 'XSOAR Incident ID')\n\n        if status in ('Done', 'Archive'):\n  \
+  \          resolution = map_close_reason(close_reason)\n            comment = f'Closed in XSOAR as: {close_reason}'\n            if close_notes:\n                comment += f' | Notes: {close_notes}'\n\
+  \n            key = f'{resolution}||{comment}'\n            if key not in to_close:\n                to_close[key] = []\n            to_close[key].append({\n                'alert_id': alert_id,\n   \
+  \             'alert_name': alert_name,\n                'xsoar_id': xsoar_id,\n                'close_reason': close_reason,\n                'close_notes': close_notes,\n            })\n        else:\n\
+  \            skipped.append({\n                'alert_id': alert_id,\n                'alert_name': alert_name,\n                'xsoar_id': xsoar_id,\n                'status': status,\n            })\n\
+  \n    closed_summary = []\n    for key, alert_group in to_close.items():\n        resolution, comment = key.split('||', 1)\n        alert_ids = [int(a['alert_id']) for a in alert_group]\n        try:\n\
+  \            client.update_alerts(alert_ids, resolution, comment)\n            for a in alert_group:\n                a['result'] = 'Closed'\n                closed_summary.append(a)\n        except Exception\
+  \ as e:\n            for a in alert_group:\n                a['result'] = f'Failed: {str(e)}'\n                closed_summary.append(a)\n\n    output_parts = []\n    if closed_summary:\n        table\
+  \ = tableToMarkdown(\n            f'Closed {len(closed_summary)} XSIAM Alert(s)',\n            closed_summary,\n            headers=['alert_id', 'alert_name', 'xsoar_id', 'close_reason', 'close_notes',\
+  \ 'result'],\n        )\n        output_parts.append(table)\n\n    if skipped:\n        table = tableToMarkdown(\n            f'Skipped {len(skipped)} Open Alert(s)',\n            skipped,\n         \
+  \   headers=['alert_id', 'alert_name', 'xsoar_id', 'status'],\n        )\n        output_parts.append(table)\n\n    if not closed_summary and not skipped:\n        output_parts.append('No alerts processed.')\n\
+  \n    return_results(CommandResults(\n        readable_output='\\n'.join(output_parts),\n        outputs_prefix='XSOARCloseSync',\n        outputs={\n            'ClosedCount': len(closed_summary),\n\
+  \            'SkippedCount': len(skipped),\n            'ClosedAlerts': closed_summary,\n        },\n    ))\n\n\nif __name__ in ('__main__', '__builtin__', 'builtins'):\n    main()\n"
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.14.100715
+runas: DBotWeakRole
+tags:
+- xsoar
+- xsiam
+- sync
+- close
+enabled: true
+args:
+- name: xsiam_url
+  description: XSIAM API URL (e.g. https://api-{tenant}.xdr.us.paloaltonetworks.com)
+  required: true
+- name: xsiam_api_key
+  description: XSIAM API Key
+  required: true
+  secret: true
+- name: xsiam_api_key_id
+  description: XSIAM API Key ID
+  required: true
+- name: insecure
+  description: Trust any certificate
+  required: false
+  defaultValue: 'true'
+- name: max_alerts
+  description: Maximum number of alerts to process per run
+  required: false
+  defaultValue: '100'
+outputs:
+- contextPath: XSOARCloseSync.ClosedCount
+  description: Number of alerts closed.
+  type: Number
+- contextPath: XSOARCloseSync.SkippedCount
+  description: Number of open alerts skipped.
+  type: Number
+- contextPath: XSOARCloseSync.ClosedAlerts
+  description: Details of closed alerts.
+  type: Unknown
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

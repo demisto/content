@@ -1,0 +1,15 @@
+{
+    "name": "XSOAR Incident Exporter",
+    "description": "Push XSOAR 6 or XSOAR 8 incidents to Cortex XSIAM as parsed alerts via the Insert Parsed Alerts API.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "jhueby",
+    "url": "https://github.com/jhueby/Xporter",
+    "email": "",
+    "categories": ["Utilities"],
+    "tags": [],
+    "useCases": ["Incident Response"],
+    "keywords": ["export", "incidents", "migration", "xsoar", "xsiam", "xporter"],
+    "created": "2026-09-15T00:00:00Z",
+    "marketplaces": ["xsoar", "marketplacev2"]
+}

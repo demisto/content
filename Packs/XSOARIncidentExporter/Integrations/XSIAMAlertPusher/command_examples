@@ -1,0 +1,4 @@
+!xsiam-push-incidents max_incidents="5"
+!xsiam-push-incident incident_id="100"
+!xsiam-sync-new-incidents
+!xsiam-reset-sync
