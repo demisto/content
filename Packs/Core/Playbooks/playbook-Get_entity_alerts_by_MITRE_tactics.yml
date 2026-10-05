@@ -1867,7 +1867,7 @@ inputs:
   playbookInputQuery:
 - key: timeRange
   value:
-    simple: 7 days
+    simple: 6 hours
   required: true
   description: |-
     A time range to execute the hunting in.
