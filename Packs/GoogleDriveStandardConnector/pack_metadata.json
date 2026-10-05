@@ -26,5 +26,6 @@
         "data_security"
     ],
     "hidden": false,
-    "derivedSource": "connectus"
+    "managed": true,
+    "source": "connectus"
 }
