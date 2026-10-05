@@ -1,0 +1,92 @@
+{
+    "infoblox_bloxone_threat_defense_raw": {
+        "qip": {
+            "type": "string",
+            "is_array": false
+        },
+        "rip": {
+            "type": "string",
+            "is_array": false
+        },
+        "private_ip": {
+            "type": "string",
+            "is_array": false
+        },
+        "qtype": {
+            "type": "string",
+            "is_array": false
+        },
+        "rcode": {
+            "type": "string",
+            "is_array": false
+        },
+        "user_groups": {
+            "type": "string",
+            "is_array": false
+        },
+        "mac_address": {
+            "type": "string",
+            "is_array": false
+        },
+        "qname": {
+            "type": "string",
+            "is_array": false
+        },
+        "user": {
+            "type": "string",
+            "is_array": false
+        },
+        "rdata": {
+            "type": "string",
+            "is_array": false
+        },
+        "device": {
+            "type": "string",
+            "is_array": false
+        },
+        "tclass": {
+            "type": "string",
+            "is_array": false
+        },
+        "country": {
+            "type": "string",
+            "is_array": false
+        },
+        "network": {
+            "type": "string",
+            "is_array": false
+        },
+        "app_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "category": {
+            "type": "string",
+            "is_array": false
+        },
+        "severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "feed_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "feed_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "os_version": {
+            "type": "string",
+            "is_array": false
+        },
+        "policy_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "policy_action": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

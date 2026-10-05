@@ -2149,7 +2149,7 @@ Machine.StopAndQuarantine
 ### 21. microsoft-atp-list-investigations
 
 ---
-Retrieves a collection of investigations or retrieves a specific investigation by its ID.
+Deprecated. The Automated investigation and response APIs are deprecated by Microsoft. For more information, see the Microsoft 365 Message Center announcement [MC1411577](https://msmessagecenter.com/MC1411577/).
 
 ##### Required Permissions
 
@@ -2240,7 +2240,7 @@ Alert.ReadWrite.All
 ### 22. microsoft-atp-start-investigation
 
 ---
-Starts an automated investigation on a machine.
+Deprecated. The Automated investigation and response APIs are deprecated by Microsoft. For more information, see the Microsoft 365 Message Center announcement [MC1411577](https://msmessagecenter.com/MC1411577/). You can use the microsoft-atp-run-antivirus-scan command instead.
 
 ##### Required Permissions
 

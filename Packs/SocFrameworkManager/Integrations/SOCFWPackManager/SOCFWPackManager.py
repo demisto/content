@@ -8,10 +8,13 @@ invokes ``socfw-install-pack`` on this integration.
 """
 
 import os
+import re
 import shutil
 import tempfile
+import traceback
 import zipfile
 from pathlib import Path
+from urllib.parse import urlparse
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
@@ -19,6 +22,30 @@ from CommonServerPython import *  # noqa: F401,F403
 
 
 INTEGRATION_NAME = "SOCFWPackManager"
+
+# Location of the SOC Framework pack catalog. Set on the instance so a fork or
+# branch can be used without editing the pack or passing an argument on every
+# run; this value is the fallback when the instance leaves the field empty.
+DEFAULT_CATALOG_URL = "https://raw.githubusercontent.com/Palo-Cortex/secops-framework/refs/heads/main/pack_catalog.json"
+
+# Trailing release-version suffix on a release asset filename, e.g. "-v3.11.2"
+# or "-v3.11.1-pr1008". The pre-release group is restricted to recognized tag
+# forms on purpose: allowing any word there would strip a legitimate trailing
+# component, turning "soc-v3-tools" into "soc".
+PACK_VERSION_SUFFIX = re.compile(r"-v\d+(?:\.\d+)*(?:-(?:pr|rc|alpha|beta|dev)\d*)?$", re.IGNORECASE)
+
+
+def pack_dir_name(filename: str) -> str:
+    """Pack directory name for a release asset filename.
+
+    The directory name becomes the pack ID on the tenant, so the version
+    suffix has to be stripped. Keeping it installs every release as a separate
+    pack -- soc-optimization-unified-v3.11.2 alongside soc-optimization-unified
+    -- instead of upgrading the existing one in place.
+    """
+    name = filename[:-4] if filename.lower().endswith(".zip") else filename
+    return PACK_VERSION_SUFFIX.sub("", name).strip()
+
 
 # Hard cap on the size of a pack ZIP we will download or extract.
 # SOC Framework packs are small (a few MB); 500 MB leaves plenty of headroom
@@ -126,6 +153,52 @@ class ContentClient(BaseClient):
                 fh.write(chunk)
         return written
 
+    def upload_pack_zip_direct(self, zip_path: str) -> dict:
+        """Install by POSTing the release ZIP as-is. NOT the default path.
+
+        The alternative, upload_pack_as_system_content, unpacks the archive and
+        rebuilds it through demisto-sdk, which constructs a content graph.
+        Measured at 63s end-to-end for a one-rule pack on a healthy tenant --
+        nearly all of it that rebuild. Inside the integration container that is
+        what exhausts the command timeout, and the install dies part-way with
+        no useful error.
+
+        The release ZIP from soc-packs-release.yml is already the shape this
+        endpoint reads, so the rebuild produces nothing the download did not
+        already have.
+
+        skipVerify=true is required -- the ZIP is unsigned and without it the
+        endpoint returns 400 errInvalidPackSignature. skipValidation stays
+        false so the platform still validates content, which is what surfaces a
+        bad correlation rule as 101704 instead of installing nothing quietly.
+        """
+        with open(zip_path, "rb") as fh:
+            resp = self._http_request(
+                method="POST",
+                full_url=f"{self._api_base_url}/xsoar/contentpacks/installed/upload",
+                params={"skipVerify": "true", "skipValidation": "false"},
+                files={"file": (os.path.basename(zip_path), fh, "application/zip")},
+                resp_type="response",
+                timeout=600,
+                ok_codes=(200, 201),
+            )
+        return {
+            "success": True,
+            "message": f"Installed {os.path.basename(zip_path)} (direct)",
+            "status_code": resp.status_code,
+        }
+
+    def installed_pack_versions(self) -> dict:
+        """Installed pack id -> currentVersion, as the tenant reports it."""
+        resp = self._http_request(
+            method="GET",
+            full_url=f"{self._api_base_url}/xsoar/public/v1/contentpacks/metadata/installed",
+            resp_type="json",
+            timeout=120,
+        )
+        packs = resp if isinstance(resp, list) else (resp or {}).get("response", [])
+        return {p["id"]: str(p.get("currentVersion") or "") for p in packs if p.get("id")}
+
     def upload_pack_as_system_content(self, pack_path: str) -> dict:
         """Upload a pack directory as system content via demisto-sdk.
 
@@ -140,7 +213,14 @@ class ContentClient(BaseClient):
         from demisto_sdk.commands.common.logger import logging_setup
         from demisto_sdk.commands.upload.upload import upload_content_entity
 
-        logging_setup(INTEGRATION_NAME, console_threshold="CRITICAL", propagate=True)
+        # A CRITICAL console threshold suppresses the SDK's FAILED-UPLOADS
+        # report, which is the only place the real reason for a failed upload
+        # appears. Keep errors visible, and raise to DEBUG on demand.
+        logging_setup(
+            INTEGRATION_NAME,
+            console_threshold="DEBUG" if is_debug_mode() else "ERROR",
+            propagate=True,
+        )
 
         try:
             upload_content_entity(
@@ -248,7 +328,7 @@ def _prepare_pack_dir(zip_path: str, filename: str) -> str:
     Creates ``Tests/Marketplace/landingPage_sections.json`` to suppress SDK
     warnings during upload.
     """
-    pack_name = filename[:-4] if filename.endswith(".zip") else filename
+    pack_name = pack_dir_name(filename)
     packs_path = os.path.join(os.getcwd(), "Packs")
     pack_path = os.path.join(packs_path, pack_name)
     os.makedirs(pack_path, exist_ok=True)
@@ -296,6 +376,24 @@ def test_module(client: ContentClient) -> str:
     return "ok"
 
 
+def _version_from_filename(filename: str) -> str:
+    """'soc-crowdstrike-idp-v1.1.8.zip' -> '1.1.8'.
+
+    Release assets are named <pack-id>-v<version>.zip by soc-packs-release.yml,
+    so the version being installed is knowable without a catalog lookup.
+    Returns "" for anything else, which degrades to the previous
+    no-verification behaviour rather than failing a valid install.
+    """
+    m = re.search(r"-v(\d+\.\d+\.\d+)\.zip$", filename or "")
+    return m.group(1) if m else ""
+
+
+def _pack_id_from_filename(filename: str) -> str:
+    """'soc-crowdstrike-idp-v1.1.8.zip' -> 'soc-crowdstrike-idp'."""
+    m = re.match(r"^(.+?)-v\d+\.\d+\.\d+\.zip$", filename or "")
+    return m.group(1) if m else ""
+
+
 def install_pack_command(client: ContentClient, args: dict[str, Any]) -> CommandResults:
     """Download a pack ZIP from ``url`` and install it as system content.
 
@@ -319,9 +417,52 @@ def install_pack_command(client: ContentClient, args: dict[str, Any]) -> Command
     zip_path = os.path.join(tmp_dir, filename)
     try:
         client.stream_download_zip(url, zip_path)
-        pack_path = _prepare_pack_dir(zip_path, filename)
-        result = client.upload_pack_as_system_content(pack_path)
 
+        # Default is the demisto-sdk path. The direct ZIP POST was made the
+        # default and REVERTED: it registers the pack version on the tenant and
+        # installs NO CONTENT. Verified on deathstar 19 Sep 2026 with
+        # soc-optimization-unified v3.20.3 -- direct POST set the version and
+        # left all 24 scripts and lists missing; the same zip through the SDK
+        # path installed all 24. The speed difference (27s vs 63s) was the
+        # absence of the work, not an optimisation.
+        #
+        # use_sdk=false still selects the direct POST, for a caller that wants
+        # a pack record without content. It must not be the default.
+        if not argToBoolean(args.get("use_sdk", True)):
+            result = client.upload_pack_zip_direct(zip_path)
+        else:
+            pack_path = _prepare_pack_dir(zip_path, filename)
+            result = client.upload_pack_as_system_content(pack_path)
+
+        # Verify the version actually landed before reporting success.
+        #
+        # The upload call returning without raising is NOT proof the pack
+        # installed. Reproduced on a live tenant 19 Sep 2026: requesting
+        # soc-crowdstrike-idp 1.1.2 returned "installed successfully" while the
+        # tenant stayed on 1.1.8. Because the pack id is already present on any
+        # upgrade, nothing downstream notices -- the operator is told it worked,
+        # reinstalls change nothing, and the tenant keeps serving old content.
+        # That is the failure mode behind "the pack installed but my rule isn't
+        # there".
+        expected = _version_from_filename(filename)
+        pack_id = _pack_id_from_filename(filename)
+        installed = ""
+        if expected and pack_id:
+            try:
+                installed = client.installed_pack_versions().get(pack_id, "")
+            except Exception as exc:  # verification must not mask the install
+                demisto.debug(f"post-install version check failed: {exc}\n{traceback.format_exc()}")
+                installed = ""
+
+            if installed and installed != expected:
+                raise DemistoException(
+                    f"Install of {filename} did NOT take. Tenant reports "
+                    f"{pack_id} at {installed}, expected {expected}. The pack "
+                    f"was not upgraded and the tenant is still running the "
+                    f"older content -- do not treat this as installed."
+                )
+
+        verified = " (verified)" if (expected and installed == expected) else ""
         return CommandResults(
             outputs_prefix="SOCFramework.PackInstall",
             outputs_key_field="filename",
@@ -329,9 +470,11 @@ def install_pack_command(client: ContentClient, args: dict[str, Any]) -> Command
                 "filename": filename,
                 "url": url,
                 "status": "success",
+                "expected_version": expected,
+                "installed_version": installed,
                 "response": result,
             },
-            readable_output=f"Pack **{filename}** installed successfully.",
+            readable_output=f"Pack **{filename}** installed successfully{verified}.",
         )
     finally:
         try:
@@ -346,6 +489,52 @@ def install_pack_command(client: ContentClient, args: dict[str, Any]) -> Command
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
+
+
+def _is_valid_catalog_url(url: str) -> bool:
+    """Whether the value is an absolute http(s) URL with a hostname.
+
+    A relative or scheme-less value resolves against the tenant host when the
+    catalog is fetched, which surfaces as a confusing 404 from the tenant rather
+    than an obvious misconfiguration of this parameter.
+    """
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return False
+    return parsed.scheme in ("http", "https") and bool(parsed.hostname)
+
+
+def get_catalog_url_command(params: dict[str, Any]) -> CommandResults:
+    """Return the pack catalog URL configured on this instance.
+
+    The SOCFWPackManager script cannot read another integration's instance
+    parameters, so it reads the configured location through this command. That
+    keeps the catalog location set once on the instance rather than passed as an
+    argument on every run.
+
+    An unusable configured value is reported and ignored rather than returned,
+    because the caller would otherwise fetch it and fail somewhere less obvious.
+    """
+    configured = (params.get("catalog_url") or "").strip()
+    if configured and not _is_valid_catalog_url(configured):
+        demisto.error(f"Configured pack catalog URL is not an absolute http(s) URL: {configured!r}")
+        return CommandResults(
+            outputs_prefix="SOCFramework.PackManager",
+            outputs={"CatalogURL": DEFAULT_CATALOG_URL},
+            raw_response={"catalog_url": DEFAULT_CATALOG_URL},
+            readable_output=(
+                f"⚠️ The configured pack catalog URL is not an absolute http(s) URL and was ignored: `{configured}`\n\n"
+                f"Using the default instead: {DEFAULT_CATALOG_URL}"
+            ),
+        )
+    catalog_url = configured or DEFAULT_CATALOG_URL
+    return CommandResults(
+        outputs_prefix="SOCFramework.PackManager",
+        outputs={"CatalogURL": catalog_url},
+        raw_response={"catalog_url": catalog_url},
+        readable_output=f"Pack catalog URL: {catalog_url}",
+    )
 
 
 def main() -> None:
@@ -373,6 +562,8 @@ def main() -> None:
             return_results(test_module(client))
         elif command == "socfw-install-pack":
             return_results(install_pack_command(client, args))
+        elif command == "socfw-catalog-url-get":
+            return_results(get_catalog_url_command(params))
         else:
             raise NotImplementedError(f"Command not implemented: {command}")
     except Exception as exc:

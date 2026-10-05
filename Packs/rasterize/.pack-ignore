@@ -11,5 +11,5 @@ Rasterize v2 Pre-Release
 [file:playbook-Process_Email_-_Generic_for_rasterize.yml]
 ignore=GR103
 
-[file:rasterize_8_15.yml]
-ignore=BA108,BA109,BA129
+[file:rasterize.yml]
+ignore=IN124

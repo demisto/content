@@ -90,6 +90,20 @@ configuration:
   section: Collect
   required: false
   additionalinfo: Specifies the maximum number of incidents to retrieve during each fetch operation. This value determines the size of the result set fetched from the source system. Default is 100.
+- display: Custom alert filter
+  name: customAlertFilter
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  additionalinfo: 'An additional Nozomi query language filter appended to the alerts query, combined with the other fetch filters. For example: where risk >= 8. The leading "|" is optional.'
+- display: Default incident role
+  name: defaultIncidentRole
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  additionalinfo: The Cortex XSOAR role assigned to incidents created from fetched Nozomi alerts, for example Analyst_L2. Multiple roles can be specified as a comma-separated list. Leave empty to not assign a role.
 script:
   script: ''
   type: python
@@ -188,7 +202,7 @@ script:
       description: Mac found the ips.
       type: String
     description: Find a node ip from a mac address.
-  dockerimage: demisto/python3:3.12.12.6947692
+  dockerimage: demisto/python3:3.12.14.13495286
   isfetch: true
   runonce: false
   subtype: python3

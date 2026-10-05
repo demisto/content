@@ -5,19 +5,19 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: eb8234ab-5348-428e-8a7f-d940fe3c9ce3
+    taskid: f471ca64-0c1f-4aba-8115-675816ee6055
     type: start
     task:
-      id: eb8234ab-5348-428e-8a7f-d940fe3c9ce3
+      id: f471ca64-0c1f-4aba-8115-675816ee6055
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -32,13 +32,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "1":
     id: "1"
-    taskid: be32b798-afad-4311-89a1-9d7012f3ef3f
+    taskid: 528357e7-0ae9-49ea-89ed-de45df2f4725
     type: regular
     task:
-      id: be32b798-afad-4311-89a1-9d7012f3ef3f
+      id: 528357e7-0ae9-49ea-89ed-de45df2f4725
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -55,6 +54,7 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -69,13 +69,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "2":
     id: "2"
-    taskid: 6fe1645b-184d-49d7-8358-5f2136e944ab
+    taskid: 27c141d7-fa75-4359-8aee-2634dbdaaba9
     type: regular
     task:
-      id: 6fe1645b-184d-49d7-8358-5f2136e944ab
+      id: 27c141d7-fa75-4359-8aee-2634dbdaaba9
       version: -1
       name: azure-sentinel-get-incident-by-id
       script: '|||azure-sentinel-get-incident-by-id'
@@ -89,6 +88,7 @@ tasks:
       incident_id:
         simple: ${AzureSentinel.Incident.ID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -103,13 +103,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "3":
     id: "3"
-    taskid: 144438f5-1106-47e7-87ce-b6bf927c887a
+    taskid: 1d003b00-f888-41c2-8329-3fa9f99862bb
     type: condition
     task:
-      id: 144438f5-1106-47e7-87ce-b6bf927c887a
+      id: 1d003b00-f888-41c2-8329-3fa9f99862bb
       version: -1
       name: Verify Outputs
       type: condition
@@ -151,6 +150,7 @@ tasks:
           right:
             value:
               simple: Active
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -165,13 +165,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "4":
     id: "4"
-    taskid: e0a08af1-d37d-48df-8fed-8ad152edda5c
+    taskid: 45b6d4d8-9fd3-4a6c-88a1-572f19613710
     type: regular
     task:
-      id: e0a08af1-d37d-48df-8fed-8ad152edda5c
+      id: 45b6d4d8-9fd3-4a6c-88a1-572f19613710
       version: -1
       name: azure-sentinel-list-incidents
       script: '|||azure-sentinel-list-incidents'
@@ -187,6 +186,7 @@ tasks:
       top:
         simple: "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -201,13 +201,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "5":
     id: "5"
-    taskid: b0c31194-af91-4475-822d-67525e6a2163
+    taskid: 520a16f1-561c-4de9-8855-5e25df483b3e
     type: condition
     task:
-      id: b0c31194-af91-4475-822d-67525e6a2163
+      id: 520a16f1-561c-4de9-8855-5e25df483b3e
       version: -1
       name: Verify Outputs
       type: condition
@@ -252,6 +251,7 @@ tasks:
             value:
               simple: AzureSentinel.Incident.IncidentNumber
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -266,13 +266,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "6":
     id: "6"
-    taskid: 704fa016-b8b6-4794-89be-8c138cef98d6
+    taskid: 78d5c9a3-3fea-4146-89ee-01274cae780c
     type: regular
     task:
-      id: 704fa016-b8b6-4794-89be-8c138cef98d6
+      id: 78d5c9a3-3fea-4146-89ee-01274cae780c
       version: -1
       name: azure-sentinel-update-incident
       script: '|||azure-sentinel-update-incident'
@@ -288,6 +287,7 @@ tasks:
       incident_id:
         simple: ${AzureSentinel.Incident.ID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -302,13 +302,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "7":
     id: "7"
-    taskid: c32f82d1-300e-4b73-8b53-288115384338
+    taskid: 2b6c055a-a385-46db-8f75-dac6a7a362f6
     type: condition
     task:
-      id: c32f82d1-300e-4b73-8b53-288115384338
+      id: 2b6c055a-a385-46db-8f75-dac6a7a362f6
       version: -1
       name: Verify Outputs
       type: condition
@@ -345,6 +344,7 @@ tasks:
           right:
             value:
               simple: Active
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -359,13 +359,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "9":
     id: "9"
-    taskid: cd563999-f757-436b-8c10-63c05be3d25a
+    taskid: 0b3a5697-f5b9-411f-8648-651d010abae1
     type: regular
     task:
-      id: cd563999-f757-436b-8c10-63c05be3d25a
+      id: 0b3a5697-f5b9-411f-8648-651d010abae1
       version: -1
       name: azure-sentinel-list-incident-comments
       script: '|||azure-sentinel-list-incident-comments'
@@ -381,6 +380,7 @@ tasks:
       top:
         simple: "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -395,13 +395,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "10":
     id: "10"
-    taskid: fa3441e3-0a32-4e11-84f5-2991a095e7bc
+    taskid: 55dc5447-dbdb-49e0-86ec-3ad9a81d69b3
     type: condition
     task:
-      id: fa3441e3-0a32-4e11-84f5-2991a095e7bc
+      id: 55dc5447-dbdb-49e0-86ec-3ad9a81d69b3
       version: -1
       name: Verify Outputs
       type: condition
@@ -419,6 +418,7 @@ tasks:
             value:
               simple: AzureSentinel.IncidentComment
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -433,13 +433,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "11":
     id: "11"
-    taskid: 6df59365-189a-45ab-8488-468d49987636
+    taskid: 44ec71ad-b860-4793-86fc-317de7484de8
     type: regular
     task:
-      id: 6df59365-189a-45ab-8488-468d49987636
+      id: 44ec71ad-b860-4793-86fc-317de7484de8
       version: -1
       name: azure-sentinel-incident-add-comment
       script: '|||azure-sentinel-incident-add-comment'
@@ -455,6 +454,7 @@ tasks:
       message:
         simple: ${inputs.test_comment}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -469,13 +469,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "12":
     id: "12"
-    taskid: d6678bcf-9689-4788-86e5-0917afa349ba
+    taskid: 9beeb854-89af-4143-8611-707c14c12049
     type: condition
     task:
-      id: d6678bcf-9689-4788-86e5-0917afa349ba
+      id: 9beeb854-89af-4143-8611-707c14c12049
       version: -1
       name: Verify Outputs
       type: condition
@@ -507,6 +506,7 @@ tasks:
             value:
               simple: ${inputs.test_comment}
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -521,13 +521,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "15":
     id: "15"
-    taskid: 005bbdef-c3ec-4432-8146-7a5ed085307c
+    taskid: 0ff1c996-3966-4a55-8a12-696186ff7c44
     type: regular
     task:
-      id: 005bbdef-c3ec-4432-8146-7a5ed085307c
+      id: 0ff1c996-3966-4a55-8a12-696186ff7c44
       version: -1
       name: azure-sentinel-list-incident-relations
       script: '|||azure-sentinel-list-incident-relations'
@@ -545,6 +544,7 @@ tasks:
       top:
         simple: "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -559,13 +559,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "16":
     id: "16"
-    taskid: 48e0f468-1c51-446c-8947-b85210b65ce4
+    taskid: 6e509f9e-eb63-485b-8de5-fe1fc184dd33
     type: condition
     task:
-      id: 48e0f468-1c51-446c-8947-b85210b65ce4
+      id: 6e509f9e-eb63-485b-8de5-fe1fc184dd33
       version: -1
       name: Verify Outputs
       type: condition
@@ -600,6 +599,7 @@ tasks:
             value:
               simple: AzureSentinel.Incident.ID
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -614,20 +614,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "17":
     id: "17"
-    taskid: aa8c82b5-cfaf-4adc-8ff3-7cf2be3ca5ce
+    taskid: 0ed45049-fefe-4a53-86a7-0075750a9f8b
     type: title
     task:
-      id: aa8c82b5-cfaf-4adc-8ff3-7cf2be3ca5ce
+      id: 0ed45049-fefe-4a53-86a7-0075750a9f8b
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -642,13 +641,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "19":
     id: "19"
-    taskid: 50a2d44d-5c56-4627-809d-2fdf8fd1295b
+    taskid: 368766f8-b8e6-4786-818a-2f51d17c40b7
     type: regular
     task:
-      id: 50a2d44d-5c56-4627-809d-2fdf8fd1295b
+      id: 368766f8-b8e6-4786-818a-2f51d17c40b7
       version: -1
       name: Create file
       description: |
@@ -669,6 +667,7 @@ tasks:
       filename:
         simple: csv_file
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -683,13 +682,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "20":
     id: "20"
-    taskid: 620d6106-cdde-4ce5-84f3-8754e1dd9309
+    taskid: 643c47d7-4d38-4210-8165-ae474d645f2d
     type: regular
     task:
-      id: 620d6106-cdde-4ce5-84f3-8754e1dd9309
+      id: 643c47d7-4d38-4210-8165-ae474d645f2d
       version: -1
       name: azure-sentinel-watchlist-create-update
       description: Create or update a watchlists in Azure Sentinel.
@@ -710,6 +708,7 @@ tasks:
       watchlist_display_name:
         simple: ${inputs.watchlist_alias}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -724,13 +723,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "21":
     id: "21"
-    taskid: 20c2278f-2b65-49f8-89fa-8704ca33c7b7
+    taskid: 0763e660-3f3d-42d1-8fae-e20a6fac1cf9
     type: condition
     task:
-      id: 20c2278f-2b65-49f8-89fa-8704ca33c7b7
+      id: 0763e660-3f3d-42d1-8fae-e20a6fac1cf9
       version: -1
       name: Verify Outputs
       type: condition
@@ -751,6 +749,7 @@ tasks:
           right:
             value:
               simple: ${inputs.watchlist_alias}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -765,13 +764,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "22":
     id: "22"
-    taskid: 23d63f9c-6d89-422b-86f0-f798a56e4a0e
+    taskid: a9c16554-6358-4c2e-81ba-47619286ab12
     type: regular
     task:
-      id: 23d63f9c-6d89-422b-86f0-f798a56e4a0e
+      id: a9c16554-6358-4c2e-81ba-47619286ab12
       version: -1
       name: azure-sentinel-list-watchlists
       description: Gets a list of watchlists from Azure Sentinel.
@@ -786,6 +784,7 @@ tasks:
       watchlist_alias:
         simple: ${inputs.watchlist_alias}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -800,13 +799,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "23":
     id: "23"
-    taskid: 2d984851-3886-4ccd-88c1-786995a378e9
+    taskid: cb54b669-0f61-4b5f-81dc-d6e7bf42c131
     type: condition
     task:
-      id: 2d984851-3886-4ccd-88c1-786995a378e9
+      id: cb54b669-0f61-4b5f-81dc-d6e7bf42c131
       version: -1
       name: Verify Outputs
       type: condition
@@ -827,6 +825,7 @@ tasks:
           right:
             value:
               simple: ${inputs.watchlist_alias}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -841,13 +840,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "24":
     id: "24"
-    taskid: 88dd5955-ee1e-4d8a-8158-ef209cdc165d
+    taskid: 58ae5e21-a214-48e6-8057-096c18a80c01
     type: regular
     task:
-      id: 88dd5955-ee1e-4d8a-8158-ef209cdc165d
+      id: 58ae5e21-a214-48e6-8057-096c18a80c01
       version: -1
       name: azure-sentinel-create-update-watchlist-item
       description: Create or update a watchlist item.
@@ -866,6 +864,7 @@ tasks:
       watchlist_item_id:
         simple: 4fe24647-7aad-4dc8-9530-4e110ea858c1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -880,13 +879,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "26":
     id: "26"
-    taskid: 4acfe8f1-78cf-46c7-8846-4ffde00f6a85
+    taskid: 16946c13-2fde-40ab-88a3-b0a951254a32
     type: regular
     task:
-      id: 4acfe8f1-78cf-46c7-8846-4ffde00f6a85
+      id: 16946c13-2fde-40ab-88a3-b0a951254a32
       version: -1
       name: azure-sentinel-list-watchlist-items
       description: Get a single watchlist item or list of watchlist items.
@@ -901,6 +899,7 @@ tasks:
       watchlist_alias:
         simple: ${inputs.watchlist_alias}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -915,13 +914,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "27":
     id: "27"
-    taskid: e153893f-29df-4dd9-8537-40c6c9fe7ba4
+    taskid: 31456fc9-319a-4af0-8ad8-f1f24745b77a
     type: condition
     task:
-      id: e153893f-29df-4dd9-8537-40c6c9fe7ba4
+      id: 31456fc9-319a-4af0-8ad8-f1f24745b77a
       version: -1
       name: Verify Outputs
       type: condition
@@ -947,6 +945,7 @@ tasks:
             value:
               simple: AzureSentinel.WatchlistItem
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -961,13 +960,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "28":
     id: "28"
-    taskid: 6e6246ef-1442-4afb-81d2-8b5a9f98b437
+    taskid: ee23c9dc-5675-4d65-8ccc-7e43d5ac2b63
     type: regular
     task:
-      id: 6e6246ef-1442-4afb-81d2-8b5a9f98b437
+      id: ee23c9dc-5675-4d65-8ccc-7e43d5ac2b63
       version: -1
       name: azure-sentinel-delete-watchlist-item
       description: Delete a watchlist item.
@@ -984,6 +982,7 @@ tasks:
       watchlist_item_id:
         simple: ${AzureSentinel.WatchlistItem.ID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -998,13 +997,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "29":
     id: "29"
-    taskid: 34877cb6-0a6d-4e30-81e7-bf1d58b00db1
+    taskid: d2c948d0-18cd-4b2e-83c1-bb170a44b6ca
     type: regular
     task:
-      id: 34877cb6-0a6d-4e30-81e7-bf1d58b00db1
+      id: d2c948d0-18cd-4b2e-83c1-bb170a44b6ca
       version: -1
       name: azure-sentinel-delete-watchlist
       description: Delete a watchlists from Azure Sentinel.
@@ -1019,6 +1017,7 @@ tasks:
       watchlist_alias:
         simple: ${inputs.watchlist_alias}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1033,13 +1032,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "30":
     id: "30"
-    taskid: f439a5c7-7d64-4d9a-8cb7-80733f485b18
+    taskid: a3aaab83-e2b4-44dc-8acb-cbe359f98bce
     type: regular
     task:
-      id: f439a5c7-7d64-4d9a-8cb7-80733f485b18
+      id: a3aaab83-e2b4-44dc-8acb-cbe359f98bce
       version: -1
       name: azure-sentinel-list-incident-alerts
       description: Gets a list of an incident's alerts from Azure Sentinel.
@@ -1054,6 +1052,7 @@ tasks:
       incident_id:
         simple: ${AzureSentinel.Incident.ID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1068,13 +1067,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "31":
     id: "31"
-    taskid: 7278aad9-93c9-41f8-89a3-2870505f4a4e
+    taskid: f0999ea1-17ef-46dc-8066-12ef3ed87cde
     type: regular
     task:
-      id: 7278aad9-93c9-41f8-89a3-2870505f4a4e
+      id: f0999ea1-17ef-46dc-8066-12ef3ed87cde
       version: -1
       name: azure-sentinel-list-incident-entities
       description: Gets a list of an incident's entities from Azure Sentinel.
@@ -1089,6 +1087,7 @@ tasks:
       incident_id:
         simple: ${AzureSentinel.Incident.ID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1103,13 +1102,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "32":
     id: "32"
-    taskid: 989705c7-a926-48fd-8c2f-db383bbcc0ea
+    taskid: 9a99ec9f-59e1-4f91-8205-5b84bd140627
     type: condition
     task:
-      id: 989705c7-a926-48fd-8c2f-db383bbcc0ea
+      id: 9a99ec9f-59e1-4f91-8205-5b84bd140627
       version: -1
       name: Verify Outputs
       type: condition
@@ -1127,6 +1125,7 @@ tasks:
             value:
               simple: AzureSentinel.IncidentEntity
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1141,13 +1140,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "33":
     id: "33"
-    taskid: c770dec2-8317-4b44-8c50-151b919ab4d1
+    taskid: b68b9db3-3d15-4aec-842e-7ec3540cccf5
     type: condition
     task:
-      id: c770dec2-8317-4b44-8c50-151b919ab4d1
+      id: b68b9db3-3d15-4aec-842e-7ec3540cccf5
       version: -1
       name: Verify Outputs
       type: condition
@@ -1168,6 +1166,7 @@ tasks:
           right:
             value:
               simple: "1"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1182,13 +1181,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "34":
     id: "34"
-    taskid: a2aebb00-0bb3-49e1-8606-80f5b0d35bcf
+    taskid: 1307f5f3-56cc-4c26-8d7f-3e7581328823
     type: regular
     task:
-      id: a2aebb00-0bb3-49e1-8606-80f5b0d35bcf
+      id: 1307f5f3-56cc-4c26-8d7f-3e7581328823
       version: -1
       name: Delete comment
       description: Deletes a single comment from incident in Azure Sentinel.
@@ -1205,6 +1203,7 @@ tasks:
       incident_id:
         simple: ${AzureSentinel.Incident.ID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1219,13 +1218,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "35":
     id: "35"
-    taskid: 0c9e9a89-bcf8-473d-8415-45f27ae7930f
+    taskid: b55b39b5-6be3-4ef5-8732-70be1d6a3660
     type: regular
     task:
-      id: 0c9e9a89-bcf8-473d-8415-45f27ae7930f
+      id: b55b39b5-6be3-4ef5-8732-70be1d6a3660
       version: -1
       name: azure-sentinel-threat-indicator-list
       description: list_threat_indicator_command returns a list of threat indicators
@@ -1240,6 +1238,7 @@ tasks:
       limit:
         simple: "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1254,16 +1253,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "37":
     id: "37"
-    taskid: 6741c86d-8541-4d71-83c9-6937fa2bde07
+    taskid: 6f9a84a6-78ab-489b-831f-25acd8a4bf88
     type: regular
     task:
-      id: 6741c86d-8541-4d71-83c9-6937fa2bde07
+      id: 6f9a84a6-78ab-489b-831f-25acd8a4bf88
       version: -1
       name: azure-sentinel-threat-indicator-query
-      description: query_threat_indicators_command returns a list of threat indicators with specific entities
+      description: query_threat_indicators_command returns a list of threat indicators
+        with specific entities
       script: Azure Sentinel|||azure-sentinel-threat-indicator-query
       type: regular
       iscommand: true
@@ -1277,6 +1276,7 @@ tasks:
       min_confidence:
         simple: "80"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1291,13 +1291,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "38":
     id: "38"
-    taskid: 72f9e5c8-fb18-4b61-844b-a200f9ef9eea
+    taskid: 292d93b7-6176-40d4-8025-8896c63516da
     type: condition
     task:
-      id: 72f9e5c8-fb18-4b61-844b-a200f9ef9eea
+      id: 292d93b7-6176-40d4-8025-8896c63516da
       version: -1
       name: Verify Outputs
       type: condition
@@ -1330,6 +1329,7 @@ tasks:
             value:
               simple: AzureSentinel.ThreatIndicator.Type
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1344,13 +1344,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "39":
     id: "39"
-    taskid: 9620ab54-26de-4dd5-8524-a9e5ed866210
+    taskid: f2b52270-95b5-40ca-88a5-263b09fbc7e6
     type: regular
     task:
-      id: 9620ab54-26de-4dd5-8524-a9e5ed866210
+      id: f2b52270-95b5-40ca-88a5-263b09fbc7e6
       version: -1
       name: |
         azure-sentinel-threat-indicator-create
@@ -1372,6 +1371,7 @@ tasks:
       value:
         simple: test.test
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1386,13 +1386,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "40":
     id: "40"
-    taskid: 4a9ea0d0-9917-4160-8276-beda88673e69
+    taskid: 5fb5b417-d170-4570-8171-233e890dce81
     type: condition
     task:
-      id: 4a9ea0d0-9917-4160-8276-beda88673e69
+      id: 5fb5b417-d170-4570-8171-233e890dce81
       version: -1
       name: Verify Outputs
       type: condition
@@ -1413,6 +1412,7 @@ tasks:
           right:
             value:
               simple: test
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1427,13 +1427,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "42":
     id: "42"
-    taskid: 6f3e6b44-b47f-4d5a-8c13-d758ce179c57
+    taskid: cebdd8c6-2ca1-4c83-84c1-3433264a3e86
     type: regular
     task:
-      id: 6f3e6b44-b47f-4d5a-8c13-d758ce179c57
+      id: cebdd8c6-2ca1-4c83-84c1-3433264a3e86
       version: -1
       name: |
         azure-sentinel-threat-indicator-create
@@ -1455,6 +1454,7 @@ tasks:
       value:
         simple: test.test
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1469,13 +1469,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "43":
     id: "43"
-    taskid: 015995cf-7c85-4ed1-8b17-76c4cdffd84d
+    taskid: b2e5d5b2-c6a1-4be2-86ab-fe954fec1760
     type: regular
     task:
-      id: 015995cf-7c85-4ed1-8b17-76c4cdffd84d
+      id: b2e5d5b2-c6a1-4be2-86ab-fe954fec1760
       version: -1
       name: |
         azure-sentinel-threat-indicator-create
@@ -1497,6 +1496,7 @@ tasks:
       value:
         simple: test.test
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1511,13 +1511,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "44":
     id: "44"
-    taskid: bd56b497-64fa-4e42-86f7-980a6d374bb8
+    taskid: a58c81fd-19ff-40d2-8876-f1c2d3d34f19
     type: regular
     task:
-      id: bd56b497-64fa-4e42-86f7-980a6d374bb8
+      id: a58c81fd-19ff-40d2-8876-f1c2d3d34f19
       version: -1
       name: azure-sentinel-threat-indicator-tags-append
       description: Append new tags to an existing indicator
@@ -1536,6 +1535,7 @@ tasks:
       tags:
         simple: newTag
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1550,13 +1550,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "45":
     id: "45"
-    taskid: dd754425-6b65-488f-89c2-9d602295fe6c
+    taskid: 3bc8c6fc-303d-44e9-ae4c-0a2bb745df20
     type: condition
     task:
-      id: dd754425-6b65-488f-89c2-9d602295fe6c
+      id: 3bc8c6fc-303d-44e9-ae4c-0a2bb745df20
       version: -1
       name: Verify Outputs
       type: condition
@@ -1569,7 +1568,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsString
+      - - operator: containsGeneral
           left:
             value:
               simple: AzureSentinel.ThreatIndicator.Tags
@@ -1577,6 +1576,7 @@ tasks:
           right:
             value:
               simple: newTag
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1591,13 +1591,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "46":
     id: "46"
-    taskid: 1896df9c-186e-4ffa-8276-1ba2b8f0a40c
+    taskid: dd66c42e-fa17-432c-8257-53c07d025b83
     type: regular
     task:
-      id: 1896df9c-186e-4ffa-8276-1ba2b8f0a40c
+      id: dd66c42e-fa17-432c-8257-53c07d025b83
       version: -1
       name: azure-sentinel-threat-indicator-tags-replace
       description: Replace the tags of a given indicator
@@ -1616,6 +1615,7 @@ tasks:
       tags:
         simple: ReplaceTheTag
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1630,13 +1630,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "47":
     id: "47"
-    taskid: 4e898a98-aae2-47be-86f5-a96821719c9c
+    taskid: 738edde8-e4f4-4ec7-8d89-6444edc81ff2
     type: condition
     task:
-      id: 4e898a98-aae2-47be-86f5-a96821719c9c
+      id: 738edde8-e4f4-4ec7-8d89-6444edc81ff2
       version: -1
       name: Verify Outputs
       type: condition
@@ -1657,6 +1656,7 @@ tasks:
           right:
             value:
               simple: ReplaceTheTag
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1671,13 +1671,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "48":
     id: "48"
-    taskid: ec4c084d-db9a-41d4-8c11-bfde8cd931c8
+    taskid: e23d880c-d9e3-4c37-8dc8-052e5dedfedf
     type: regular
     task:
-      id: ec4c084d-db9a-41d4-8c11-bfde8cd931c8
+      id: e23d880c-d9e3-4c37-8dc8-052e5dedfedf
       version: -1
       name: azure-sentinel-threat-indicator-update
       description: Update an existing threat indicator
@@ -1702,6 +1701,7 @@ tasks:
       value:
         simple: domain.dot
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1716,13 +1716,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "49":
     id: "49"
-    taskid: cdb1a381-33ed-4ed0-80c0-d35d5c8fd394
+    taskid: 8429046a-5cfe-41e6-a03c-5220a87b0f2d
     type: condition
     task:
-      id: cdb1a381-33ed-4ed0-80c0-d35d5c8fd394
+      id: 8429046a-5cfe-41e6-a03c-5220a87b0f2d
       version: -1
       name: Verify Outputs
       type: condition
@@ -1735,7 +1734,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               simple: AzureSentinel.ThreatIndicator.Tags
@@ -1743,6 +1742,7 @@ tasks:
           right:
             value:
               simple: NewTag
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1757,13 +1757,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "50":
     id: "50"
-    taskid: 62a2852a-7a97-42ed-861a-e4ffb24482f8
+    taskid: 3766426d-682b-4c22-83c2-f90d70cff238
     type: regular
     task:
-      id: 62a2852a-7a97-42ed-861a-e4ffb24482f8
+      id: 3766426d-682b-4c22-83c2-f90d70cff238
       version: -1
       name: azure-sentinel-subscriptions-list
       description: Lists all subscriptions.
@@ -1792,10 +1791,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: afbd9875-bb4f-4d67-8cae-a34b4ff21c1b
+    taskid: c3f9ccc0-f9f5-4dad-8da7-11e3f02e46e5
     type: condition
     task:
-      id: afbd9875-bb4f-4d67-8cae-a34b4ff21c1b
+      id: c3f9ccc0-f9f5-4dad-8da7-11e3f02e46e5
       version: -1
       name: Verify Outputs
       type: condition
@@ -1834,10 +1833,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 94aff3f8-2c71-4d67-83ad-e62019a3b140
+    taskid: eb9ece53-38ef-48d0-8f74-e45816558173
     type: regular
     task:
-      id: 94aff3f8-2c71-4d67-83ad-e62019a3b140
+      id: eb9ece53-38ef-48d0-8f74-e45816558173
       version: -1
       name: azure-sentinel-resource-group-list
       description: Lists all resource groups.
@@ -1866,10 +1865,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 6cca6aa7-8eb1-42e2-8c67-080f6f2f8383
+    taskid: 673578df-1868-4fd1-8392-774753694069
     type: condition
     task:
-      id: 6cca6aa7-8eb1-42e2-8c67-080f6f2f8383
+      id: 673578df-1868-4fd1-8392-774753694069
       version: -1
       name: Verify Outputs
       type: condition
@@ -1911,7 +1910,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2760,
+        "height": 2755,
         "width": 2640,
         "x": 50,
         "y": -50
@@ -1924,19 +1923,19 @@ inputs:
     simple: DO_NOT_TOUCH-FOR_TEST_PLAYBOOK
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: watchlist_alias
   value:
     simple: TEST_PLAYBOOK_ALIAS
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: test_comment
   value:
     simple: test_comment
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
 sourceplaybookid: TestAzureSentinelPlaybook
 fromversion: 5.0.0

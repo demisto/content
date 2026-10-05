@@ -1,0 +1,76 @@
+{
+    "okta_auth0_raw": {
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "description": {
+            "type": "string",
+            "is_array": false
+        },
+        "connection": {
+            "type": "string",
+            "is_array": false
+        },
+        "connection_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "client_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "client_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "ip": {
+            "type": "string",
+            "is_array": false
+        },
+        "hostname": {
+            "type": "string",
+            "is_array": false
+        },
+        "user_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "user_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "audience": {
+            "type": "string",
+            "is_array": false
+        },
+        "details": {
+            "type": "string",
+            "is_array": false
+        },
+        "scope": {
+            "type": "string",
+            "is_array": false
+        },
+        "strategy": {
+            "type": "string",
+            "is_array": false
+        },
+        "strategy_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "log_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "isMobile": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "user_agent": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

@@ -34,16 +34,25 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 'false'
   display: Parse Raw Part of Finding Events
   name: parseFindingEventsRaw
@@ -332,6 +341,9 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 description: Run queries on Splunk and fetch Splunk ES Findings and Investigations (Splunk ES 8.2+).
 display: SplunkPy v2
 name: SplunkPy v2

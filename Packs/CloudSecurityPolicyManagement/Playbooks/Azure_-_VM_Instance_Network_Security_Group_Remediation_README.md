@@ -28,11 +28,11 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* azure-nsg-security-rule-create
-* azure-nsg-security-rule-update
-* azure-nsg-security-rules-list
-* azure-vm-network-interface-details-get
-* azure-vm-public-ip-details-get
+* azure-vn-network-interface-get
+* azure-vn-public-ip-address-get
+* azure-vn-security-rule-create
+* azure-vn-security-rule-update
+* azure-vn-security-rules-list
 * core-get-asset-details
 
 ## Playbook Inputs
