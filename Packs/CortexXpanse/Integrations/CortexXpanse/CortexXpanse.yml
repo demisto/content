@@ -985,7 +985,7 @@ script:
   - name: asm-reset-last-run
     arguments: []
     description: Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.12844876
   isFetchSamples: true
   isfetch: true
   script: ''

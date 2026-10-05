@@ -86,7 +86,7 @@ script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.12.13.10116658
+dockerimage: demisto/python3:3.12.14.12844876
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
