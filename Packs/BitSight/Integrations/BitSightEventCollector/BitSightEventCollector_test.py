@@ -402,6 +402,79 @@ class TestBitSightEventCollector:
         assert "pushed" in result.readable_output
         mock_send_events.assert_called_once()
 
+    def test_bitsight_get_events_command_explicit_window(self, mock_client, sample_findings, mocker):
+        """
+        Given: A get-events command with explicit start_date and end_date (historical window)
+
+        When: Executing the command
+
+        Then: Should query the API directly with that exact window (offset 0) and NOT use
+              the 2-day lookback / watermark path.
+        """
+        mock_get_findings = mocker.patch.object(mock_client, "get_company_findings", return_value={"results": sample_findings})
+        mock_fetch_events = mocker.patch("BitSightEventCollector.fetch_events")
+
+        result = bitsight_get_events_command(
+            client=mock_client,
+            guid="test-guid",
+            limit=100,
+            should_push=False,
+            start_date="2026-08-31",
+            end_date="2026-09-02",
+        )
+
+        assert isinstance(result, CommandResults)
+        # Must not fall through to the scheduled-fetch/watermark logic.
+        mock_fetch_events.assert_not_called()
+        # Must query the API with the exact explicit window and offset 0.
+        _, kwargs = mock_get_findings.call_args
+        assert kwargs["first_seen_gte"] == "2026-08-31"
+        assert kwargs["last_seen_lte"] == "2026-09-02"
+        assert kwargs["offset"] == 0
+
+    @freeze_time("2026-09-02 12:00:00")
+    def test_bitsight_get_events_command_start_date_only_defaults_end_to_today(self, mock_client, sample_findings, mocker):
+        """
+        Given: A get-events command with only start_date provided
+
+        When: Executing the command
+
+        Then: Should query from start_date up to today (end_date defaults to current date).
+        """
+        mock_get_findings = mocker.patch.object(mock_client, "get_company_findings", return_value={"results": sample_findings})
+
+        bitsight_get_events_command(client=mock_client, guid="test-guid", limit=100, should_push=False, start_date="2026-08-31")
+
+        _, kwargs = mock_get_findings.call_args
+        assert kwargs["first_seen_gte"] == "2026-08-31"
+        assert kwargs["last_seen_lte"] == "2026-09-02"
+
+    @freeze_time("2026-09-02 12:00:00")
+    def test_bitsight_get_events_command_free_text_dates(self, mock_client, sample_findings, mocker):
+        """
+        Given: A get-events command with free-text relative dates ("3 days ago" / "now")
+
+        When: Executing the command
+
+        Then: arg_to_datetime should parse them relative to the current time and the API
+              should be queried with the resolved YYYY-MM-DD window.
+        """
+        mock_get_findings = mocker.patch.object(mock_client, "get_company_findings", return_value={"results": sample_findings})
+
+        bitsight_get_events_command(
+            client=mock_client,
+            guid="test-guid",
+            limit=100,
+            should_push=False,
+            start_date="3 days ago",
+            end_date="now",
+        )
+
+        _, kwargs = mock_get_findings.call_args
+        assert kwargs["first_seen_gte"] == "2026-08-30"
+        assert kwargs["last_seen_lte"] == "2026-09-02"
+        assert kwargs["offset"] == 0
+
     def test_test_module_success(self, mock_client, mocker):
         """
         Given: Valid API credentials and optional GUID

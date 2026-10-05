@@ -253,24 +253,57 @@ def fetch_events(
     return events, new_last_run, missing_date_findings
 
 
-def bitsight_get_events_command(client: Client, guid: str, limit: int, should_push: bool) -> CommandResults:
+def bitsight_get_events_command(
+    client: Client,
+    guid: str,
+    limit: int,
+    should_push: bool,
+    start_date: str | None = None,
+    end_date: str | None = None,
+) -> CommandResults:
     """Command implementation for `bitsight-get-events`.
 
-    Executes a one-off retrieval of findings for the last 2 days (48 hours) and optionally
-    pushes them to XSIAM when `should_push_events=true`.
+    Executes a one-off retrieval of findings and optionally pushes them to XSIAM when
+    `should_push_events=true`. By default it looks back 2 days (48 hours). When `start_date`
+    and/or `end_date` are provided, it queries that explicit window instead - this allows
+    retrieving findings created in the past (e.g. to validate that a historical finding is
+    now returned by the API after the deterministic-sort change). See XSUP-77274.
 
     Args:
         client (Client): Initialized API client.
         guid (str): Resolved company GUID to collect findings for.
         limit (int): Max events to fetch in this invocation.
         should_push (bool): When true, pushes events to XSIAM; otherwise returns them as output only.
+        start_date (str | None): Optional window start. Accepts free text ("2 days ago", "1 week",
+            "2026-08-31") or an ISO timestamp. Defaults to 2 days ago when a window is requested.
+        end_date (str | None): Optional window end. Accepts the same free-text/ISO formats.
+            Defaults to now.
 
     Returns:
         CommandResults: CommandResults object with table output (when not pushing) or a summary message.
     """
-    events, _, missing_date_findings = fetch_events(
-        client, guid=guid, max_fetch=int(limit), last_run={}, lookback_days=GET_EVENTS_LOOKBACK_DAYS
-    )
+    if start_date or end_date:
+        # Explicit window: query the given date range directly (bypasses the watermark/lookback
+        # logic used by scheduled fetches) so an arbitrary historical window can be inspected.
+        # arg_to_datetime parses human-friendly input such as "2 days ago" or "2026-08-31".
+        start_dt = arg_to_datetime(start_date, arg_name="start_date") if start_date else None
+        end_dt = arg_to_datetime(end_date, arg_name="end_date") if end_date else None
+
+        now = datetime.now()
+        first_seen_gte = (start_dt or (now - timedelta(days=GET_EVENTS_LOOKBACK_DAYS))).strftime(BITSIGHT_DATE_FORMAT)
+        last_seen_lte = (end_dt or now).strftime(BITSIGHT_DATE_FORMAT)
+        demisto.debug(
+            f"BitSight: bitsight-get-events explicit window guid={guid} "
+            f"first_seen_gte={first_seen_gte} last_seen_lte={last_seen_lte} limit={limit}"
+        )
+        res = client.get_company_findings(
+            guid, first_seen_gte=first_seen_gte, last_seen_lte=last_seen_lte, limit=int(limit), offset=0
+        )
+        events, missing_date_findings = findings_to_events(res.get("results", []))
+    else:
+        events, _, missing_date_findings = fetch_events(
+            client, guid=guid, max_fetch=int(limit), last_run={}, lookback_days=GET_EVENTS_LOOKBACK_DAYS
+        )
 
     title = "Bitsight Findings Events (pushed)" if should_push else "Bitsight Findings Events"
     if should_push:
@@ -404,7 +437,16 @@ def main():
             return
 
         elif command == "bitsight-get-events":
-            return_results(bitsight_get_events_command(client, guid, limit, should_push))
+            return_results(
+                bitsight_get_events_command(
+                    client,
+                    guid,
+                    limit,
+                    should_push,
+                    start_date=args.get("start_date"),
+                    end_date=args.get("end_date"),
+                )
+            )
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
