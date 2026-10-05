@@ -2839,7 +2839,7 @@ class TestEsKibanaEndpointIsolateCommand:
         assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointIsolationAction"
         assert result.readable_output == "Isolation submitted"
         hr = markdown.call_args.args[1]
-        assert hr["Action ID"] == "action-1"
+        assert hr["Id"] == "action-1"
         assert hr["Is Complete"] is False
         assert hr["Was Successful"] is False
 
@@ -2849,6 +2849,67 @@ class TestEsKibanaEndpointIsolateCommand:
 
         with pytest.raises(DemistoException, match="endpoint_ids"):
             Elasticsearch_v2.es_kibana_endpoint_isolate_command({}, {})
+
+
+class TestEsKibanaEndpointUnisolateCommand:
+    """Tests for es_kibana_endpoint_unisolate_command."""
+
+    def test_unisolate_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "action": "action-2",
+            "data": {
+                "id": "action-2",
+                "agentType": "endpoint",
+                "command": "unisolate",
+                "isComplete": True,
+                "status": "completed",
+                "wasSuccessful": True,
+            },
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+        markdown = mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Unisolation submitted")
+
+        result = Elasticsearch_v2.es_kibana_endpoint_unisolate_command(
+            {
+                "space_id": "security",
+                "endpoint_ids": "endpoint-1,endpoint-2",
+                "agent_type": "endpoint",
+                "alert_ids": "alert-1,alert-2",
+                "case_ids": "case-1",
+                "comment": "Releasing endpoint",
+            },
+            {},
+        )
+
+        mock_request.assert_called_once_with(
+            "POST",
+            "/api/endpoint/action/unisolate",
+            space_id="security",
+            json_data={
+                "endpoint_ids": ["endpoint-1", "endpoint-2"],
+                "agent_type": "endpoint",
+                "alert_ids": ["alert-1", "alert-2"],
+                "case_ids": ["case-1"],
+                "comment": "Releasing endpoint",
+            },
+            proxies={},
+        )
+        assert result.outputs == response
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointUnisolationAction"
+        assert result.readable_output == "Unisolation submitted"
+        hr = markdown.call_args.args[1]
+        assert hr["Id"] == "action-2"
+        assert hr["Command"] == "unisolate"
+        assert hr["Was Successful"] is True
+
+    def test_missing_endpoint_ids_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match="endpoint_ids"):
+            Elasticsearch_v2.es_kibana_endpoint_unisolate_command({}, {})
 
 
 class TestEsKibanaEndpointGetAgentsCommand:
@@ -3001,9 +3062,8 @@ class TestEsKibanaEndpointActionDetailsCommand:
 
         mock_request.assert_called_once_with(
             "GET",
-            "/api/endpoint/action/execute",
+            "/api/endpoint/action/action-1",
             space_id="security",
-            json_data={"action_id": "action-1"},
             proxies={},
         )
         assert result.outputs == response
@@ -3036,9 +3096,8 @@ class TestEsKibanaEndpointGetMetadataCommand:
 
         mock_request.assert_called_once_with(
             "GET",
-            "/api/endpoint/metadata",
+            "/api/endpoint/metadata/agent-1",
             space_id="security",
-            json_data={"agent_id": "agent-1"},
             proxies={},
         )
         assert result.outputs == response

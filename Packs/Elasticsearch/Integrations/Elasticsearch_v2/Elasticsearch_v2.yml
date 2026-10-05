@@ -1441,7 +1441,7 @@ script:
     - name: space_id
       description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
     - name: endpoint_ids
-      description: Endpoint IDs to isolate. A maximum of 250 IDs can be specified.
+      description: List of endpoint IDs (cannot contain empty strings). Max of 250.
       required: true
       isArray: true
     - name: agent_type
@@ -1641,7 +1641,76 @@ script:
     - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.wasSuccessful
       description: Whether the response action was successful.
       type: Boolean
-  - name: es-kibana-endpoint-get_metadata
+  - name: es-kibana-endpoint-unisolate
+    description: Release an isolated endpoint, allowing it to rejoin a network.
+    arguments:
+    - name: space_id
+      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+    - name: endpoint_ids
+      description: EList of endpoint IDs (cannot contain empty strings). Max of 250.
+      required: true
+      isArray: true
+    - name: agent_type
+      description: The type of agent on which to run the isolation action.
+      defaultValue: endpoint
+      auto: PREDEFINED
+      predefined:
+      - endpoint
+      - sentinel_one
+      - crowdstrike
+      - microsoft_defender_endpoint
+    - name: alert_ids
+      description: Alert IDs associated with the action. A maximum of 50 IDs can be specified.
+      isArray: true
+    - name: case_ids
+      description: Case IDs in which to log the action. A maximum of 50 IDs can be specified.
+      isArray: true
+    - name: comment
+      description: An optional comment for the isolation action. Maximum length is 30,000 characters.
+    outputs:
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.action
+      description: The response action ID.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.agents
+      description: The agent IDs to which the response action was sent.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.agentState
+      description: The response action state for each agent ID.
+      type: Unknown
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.agentType
+      description: The agent type.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.command
+      description: The response action command.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.createdBy
+      description: The user who created the response action.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.hosts
+      description: The host names associated with the agent IDs.
+      type: Unknown
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.isComplete
+      description: Whether the response action is complete.
+      type: Boolean
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.isExpired
+      description: Whether the response action is expired.
+      type: Boolean
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.outputs
+      description: The response action outputs for each agent ID.
+      type: Unknown
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.startedAt
+      description: The response action start time.
+      type: Date
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.status
+      description: The response action status.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.wasCancelled
+      description: Whether the response action was cancelled.
+      type: Boolean
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.wasSuccessful
+      description: Whether the response action was successful.
+      type: Boolean
+  - name: es-kibana-endpoint-get-metadata
     description: Get host metadata for a specific endpoint.
     arguments:
     - name: space_id
@@ -1659,7 +1728,7 @@ script:
     - contextPath: Elasticsearch.Kibana.EndpointGetMetadata.data.metadata
       description: The metadata of the endpoint.
       type: Unknown
-  - name: es-kibana-endpoint-get-agents
+  - name: es-kibana-endpoint-get-agent
     description: Retrieves Elastic Fleet agents with optional filtering and pagination. Requires the fleet-agents-read privilege.
     arguments:
     - name: space_id

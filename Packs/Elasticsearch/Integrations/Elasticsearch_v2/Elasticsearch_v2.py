@@ -2636,6 +2636,31 @@ def exception_list_item_to_hr(item: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+"""SHARED HUMAN-READABLE HELPERS (used by endpoint management items)"""
+
+
+def endpoint_action_to_hr(response_data: Dict[str, Any]) -> Dict[str, Any]:
+    """Builds the human-readable row for a single endpoint action response."""
+    return {
+        "Agents": response_data.get("agents"),
+        "Agent State": response_data.get("agentState"),
+        "Agent Type": response_data.get("agentType"),
+        "Command": response_data.get("command"),
+        "Completed At": response_data.get("completedAt"),
+        "Created By": response_data.get("createdBy"),
+        "Hosts": response_data.get("hosts"),
+        "Id": response_data.get("id"),
+        "Is Complete": response_data.get("isComplete"),
+        "Is Expired": response_data.get("isExpired"),
+        "Outputs": response_data.get("outputs"),
+        "Parameters": response_data.get("parameters"),
+        "Started At": response_data.get("startedAt"),
+        "Status": response_data.get("status"),
+        "Was Cancelled": response_data.get("wasCanceled"),
+        "Was Successful": response_data.get("wasSuccessful"),
+    }
+
+
 """KIBANA SECURITY ELASTIC ENDPOINT MANAGEMENT COMMANDS"""
 
 
@@ -2664,31 +2689,13 @@ def es_kibana_endpoint_execute_command(args: Dict[str, Any], proxies) -> Command
     space_id = args.get("space_id")
     response = kibana_http_request("POST", "/api/endpoint/action/execute", space_id=space_id, json_data=body, proxies=proxies)
 
-    response_data = response.get("data", {})
-    hr = {
-        "Agents": response_data.get("agents"),
-        "Agent State": response_data.get("agentState"),
-        "Agent Type": response_data.get("agentType"),
-        "Command": response_data.get("command"),
-        "Completed At": response_data.get("completedAt"),
-        "Created By": response_data.get("createdBy"),
-        "Hosts": response_data.get("hosts"),
-        "Id": response_data.get("id"),
-        "Is Complete": response_data.get("isComplete"),
-        "Is Expired": response_data.get("isExpired"),
-        "Outputs": response_data.get("outputs"),
-        "Parameters": response_data.get("parameters"),
-        "Started At": response_data.get("startedAt"),
-        "Status": response_data.get("status"),
-        "Was Cancelled": response_data.get("wasCanceled"),
-        "Was Successful": response_data.get("wasSuccessful"),
-    }
+    hr = endpoint_action_to_hr(response.get("data", {}))
     readable_output = tableToMarkdown("Kibana Endpoint Execute Command Action", hr, removeNull=True, headers=list(hr.keys()))
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="Elasticsearch.Kibana.EndpointExecuteCommandAction",
         outputs=response,
-        outputs_key_field="command",
+        outputs_key_field="id",
         raw_response=response,
     )
 
@@ -2698,36 +2705,15 @@ def es_kibana_endpoint_action_details_command(args: Dict[str, Any], proxies) -> 
     if not action_id:
         raise DemistoException('The "action_id" argument is required.')
 
-    space_id = args.get("space_id")
-    response = kibana_http_request(
-        "GET", "/api/endpoint/action/execute", space_id=space_id, json_data={"action_id": action_id}, proxies=proxies
-    )
+    response = kibana_http_request("GET", f"/api/endpoint/action/{action_id}", space_id=args.get("space_id"), proxies=proxies)
 
-    response_data = response.get("data", {})
-    hr = {
-        "Agents": response_data.get("agents"),
-        "Agent State": response_data.get("agentState"),
-        "Agent Type": response_data.get("agentType"),
-        "Command": response_data.get("command"),
-        "Completed At": response_data.get("completedAt"),
-        "Created By": response_data.get("createdBy"),
-        "Hosts": response_data.get("hosts"),
-        "Id": response_data.get("id"),
-        "Is Complete": response_data.get("isComplete"),
-        "Is Expired": response_data.get("isExpired"),
-        "Outputs": response_data.get("outputs"),
-        "Parameters": response_data.get("parameters"),
-        "Started At": response_data.get("startedAt"),
-        "Status": response_data.get("status"),
-        "Was Cancelled": response_data.get("wasCanceled"),
-        "Was Successful": response_data.get("wasSuccessful"),
-    }
+    hr = endpoint_action_to_hr(response.get("data", {}))
     readable_output = tableToMarkdown("Kibana Endpoint Action Details", hr, removeNull=True, headers=list(hr.keys()))
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="Elasticsearch.Kibana.EndpointGetActionDetails",
         outputs=response,
-        outputs_key_field="command",
+        outputs_key_field="id",
         raw_response=response,
     )
 
@@ -2737,10 +2723,7 @@ def es_kibana_endpoint_get_metadata_command(args: Dict[str, Any], proxies) -> Co
     if not agent_id:
         raise DemistoException('The "id" argument is required.')
 
-    space_id = args.get("space_id")
-    response = kibana_http_request(
-        "GET", "/api/endpoint/metadata", space_id=space_id, json_data={"agent_id": agent_id}, proxies=proxies
-    )
+    response = kibana_http_request("GET", f"/api/endpoint/metadata/{agent_id}", space_id=args.get("space_id"), proxies=proxies)
 
     hr = {
         "Host Status": response.get("host_status"),
@@ -2752,7 +2735,7 @@ def es_kibana_endpoint_get_metadata_command(args: Dict[str, Any], proxies) -> Co
         readable_output=readable_output,
         outputs_prefix="Elasticsearch.Kibana.EndpointMetadata",
         outputs=response,
-        outputs_key_field="metadata",
+        outputs_key_field="agent_id",
         raw_response=response,
     )
 
@@ -2773,28 +2756,40 @@ def es_kibana_endpoint_isolate_command(args: Dict[str, Any], proxies) -> Command
     space_id = args.get("space_id")
     response = kibana_http_request("POST", "/api/endpoint/action/isolate", space_id=space_id, json_data=body, proxies=proxies)
 
-    response_data = response.get("data", {})
-    hr = {
-        "Action ID": response.get("action") or response_data.get("id"),
-        "Agents": response_data.get("agents"),
-        "Agent State": response_data.get("agentState"),
-        "Agent Type": response_data.get("agentType"),
-        "Command": response_data.get("command"),
-        "Created By": response_data.get("createdBy"),
-        "Hosts": response_data.get("hosts"),
-        "Is Complete": response_data.get("isComplete"),
-        "Is Expired": response_data.get("isExpired"),
-        "Outputs": response_data.get("outputs"),
-        "Started At": response_data.get("startedAt"),
-        "Status": response_data.get("status"),
-        "Was Successful": response_data.get("wasSuccessful"),
-    }
+    hr = endpoint_action_to_hr(response.get("data", {}))
     readable_output = tableToMarkdown("Kibana Endpoint Isolation Action", hr, removeNull=True, headers=list(hr.keys()))
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="Elasticsearch.Kibana.EndpointIsolationAction",
         outputs=response,
-        outputs_key_field="action",
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def es_kibana_endpoint_unisolate_command(args: Dict[str, Any], proxies) -> CommandResults:
+    endpoint_ids = argToList(args.get("endpoint_ids"))
+    if not endpoint_ids:
+        raise DemistoException('The "endpoint_ids" argument is required.')
+
+    body: Dict[str, Any] = {"endpoint_ids": endpoint_ids}
+    for arg_name in ("alert_ids", "case_ids"):
+        if args.get(arg_name):
+            body[arg_name] = argToList(args[arg_name])
+    for arg_name in ("agent_type", "comment"):
+        if args.get(arg_name):
+            body[arg_name] = args[arg_name]
+
+    space_id = args.get("space_id")
+    response = kibana_http_request("POST", "/api/endpoint/action/unisolate", space_id=space_id, json_data=body, proxies=proxies)
+
+    hr = endpoint_action_to_hr(response.get("data", {}))
+    readable_output = tableToMarkdown("Kibana Endpoint Unisolation Action", hr, removeNull=True, headers=list(hr.keys()))
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Elasticsearch.Kibana.EndpointUnisolationAction",
+        outputs=response,
+        outputs_key_field="id",
         raw_response=response,
     )
 
@@ -2802,7 +2797,7 @@ def es_kibana_endpoint_isolate_command(args: Dict[str, Any], proxies) -> Command
 """KIBANA ELASTIC AGENTS COMMANDS"""
 
 
-def es_kibana_endpoint_get_agents_command(args: Dict[str, Any], proxies) -> CommandResults:
+def es_kibana_endpoint_get_agent_command(args: Dict[str, Any], proxies) -> CommandResults:
     query_arg_map = {
         "page": "page",
         "per_page": "perPage",
@@ -4478,12 +4473,14 @@ def main():  # pragma: no cover
             return_results(es_kibana_endpoint_execute_command(args, proxies))
         elif demisto.command() == "es-kibana-endpoint-action-details":
             return_results(es_kibana_endpoint_action_details_command(args, proxies))
-        elif demisto.command() == "es-kibana-endpoint-get_metadata":
+        elif demisto.command() == "es-kibana-endpoint-get-metadata":
             return_results(es_kibana_endpoint_get_metadata_command(args, proxies))
         elif demisto.command() == "es-kibana-endpoint-isolate":
             return_results(es_kibana_endpoint_isolate_command(args, proxies))
-        elif demisto.command() == "es-kibana-endpoint-get-agents":
-            return_results(es_kibana_endpoint_get_agents_command(args, proxies))
+        elif demisto.command() == "es-kibana-endpoint-unisolate":
+            return_results(es_kibana_endpoint_unisolate_command(args, proxies))
+        elif demisto.command() == "es-kibana-endpoint-get-agent":
+            return_results(es_kibana_endpoint_get_agent_command(args, proxies))
         elif demisto.command() == "es-kibana-endpoint-exception-list-item-create":
             return_results(es_kibana_endpoint_exception_list_item_create_command(args, proxies))
         elif demisto.command() == "es-kibana-endpoint-exception-list-item-update":
