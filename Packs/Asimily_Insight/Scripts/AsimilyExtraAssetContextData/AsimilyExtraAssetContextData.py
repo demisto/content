@@ -43,6 +43,13 @@ ASIMILY_ASSET_CONTEXT_OUTPUT_KEY_ORDER = [
     "asimilydeviceapplications",
     "asimilydeviceurl",
     "asimilydeviceipv6address",
+    "asimilydevicenasip",
+    "asimilydevicenasport",
+    "asimilydevicelocationlastlocatedat",
+    "asimilydevicelocationaccesspoint",
+    "asimilydevicelocationcampus",
+    "asimilydevicelocationbuilding",
+    "asimilydevicelocationfloor",
 ]
 
 
