@@ -350,7 +350,7 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/firewallPolicies/join/action": ["azure-firewall-policy-attach"],
     "Microsoft.Network/azureFirewalls/read": ["azure-firewall-policy-attach", "azure-firewall-policy-detach"],
     "Microsoft.Network/azureFirewalls/write": ["azure-firewall-policy-attach", "azure-firewall-policy-detach"],
-    "Microsoft.Storage/storageAccounts/tableServices/tables/write": ["azure-storage-table-create"],
+        "Microsoft.Storage/storageAccounts/tableServices/tables/write": ["azure-storage-table-create"],
     "Microsoft.Storage/storageAccounts/tableServices/tables/delete": ["azure-storage-table-delete"],
     "Microsoft.Storage/storageAccounts/tableServices/tables/read": ["azure-storage-table-list"],
     "Microsoft.Storage/storageAccounts/tableServices/tables/entities/write": [
@@ -450,7 +450,7 @@ API_FUNCTION_TO_PERMISSIONS = {
         "Microsoft.Network/azureFirewalls/write",
         "Microsoft.Network/firewallPolicies/join/action",
     ],
-    "create_table_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/write"],
+        "create_table_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/write"],
     "delete_table_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/delete"],
     "list_tables_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/read"],
     "insert_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/write"],
