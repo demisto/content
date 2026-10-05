@@ -337,7 +337,7 @@ def google_gemini_send_message_command(client: Client, args: dict[str, Any]):
     save_conversation = argToBoolean(args.get("save_conversation", False))
     temperature = arg_to_float(args.get("temperature"))
     if temperature is None:
-        temperature = 0.5
+        temperature = client.temperature
     max_tokens = arg_to_number(args.get("max_tokens"))
     if max_tokens is None:
         max_tokens = client.max_tokens
