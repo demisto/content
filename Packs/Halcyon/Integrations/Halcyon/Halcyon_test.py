@@ -520,3 +520,211 @@ class TestLogTypeEnum:
         assert LogType.EVENTS.title == "Events"
         assert LogType.EVENTS.api_endpoint == "/v2/events"
         assert LogType.EVENTS.time_field == "occurredAt"
+
+
+class FakeHalcyonEventsApi:
+    """A stateful fake of the Halcyon ``/v2/events`` endpoint.
+
+    This reproduces the real server contract that drives the reported bugs:
+
+    * ``occurredAfter`` is an INCLUSIVE lower bound (events whose ``occurredAt``
+      equals the value are returned again) - matching the live-log observation
+      that the event sitting exactly on the watermark is re-fetched every cycle.
+    * Results are sorted ascending by ``occurredAt`` (``sortOrder=Asc``).
+    * ``page``/``pageSize`` paginate the filtered, sorted result set, and ``page``
+      is supplied fresh (starting at 1) on every fetch cycle by the integration.
+
+    It also supports injecting "late-arriving" events: rows that become queryable
+    only after a given cycle index, while still carrying an older ``occurredAt``.
+    This models source-side indexing lag (the watermark running minutes behind
+    wall-clock that we saw in production logs).
+    """
+
+    def __init__(self):
+        # Each entry: {"event": {...}, "visible_from_cycle": int}
+        self._rows: list[dict] = []
+        self.current_cycle = 0
+
+    def add_event(self, event_id: str, occurred_at: str, visible_from_cycle: int = 0) -> None:
+        self._rows.append(
+            {
+                "event": {
+                    "eventId": event_id,
+                    "occurredAt": occurred_at,
+                    "kind": "BadAuthentication",
+                },
+                "visible_from_cycle": visible_from_cycle,
+            }
+        )
+
+    def get_events(self, *args, **kwargs) -> dict:
+        """Mimics ``Client.get_events``: inclusive occurredAfter, asc sort, paged."""
+        occurred_after = kwargs.get("occurred_after")
+        page = kwargs.get("page", 1)
+        page_size = kwargs.get("page_size", 100)
+
+        visible = [
+            r["event"]
+            for r in self._rows
+            if r["visible_from_cycle"] <= self.current_cycle
+            and (occurred_after is None or r["event"]["occurredAt"] >= occurred_after)  # INCLUSIVE
+        ]
+        visible.sort(key=lambda e: (e["occurredAt"], e["eventId"]))  # ascending
+
+        start = (page - 1) * page_size
+        end = start + page_size
+        return {"data": visible[start:end]}
+
+
+def _run_fetch_cycles(mock_client, mocker, api: FakeHalcyonEventsApi, num_cycles: int, max_fetch: int):
+    """Drive ``fetch_events_for_log_type`` across cycles, threading last_run.
+
+    Returns a Counter mapping event_id -> number of times it was ingested across
+    all cycles. A correct collector yields exactly 1 per real event (no dupes,
+    no misses).
+    """
+    from collections import Counter
+    from Halcyon import fetch_events_for_log_type, LogType
+
+    mocker.patch.object(mock_client, "get_events", side_effect=api.get_events)
+
+    ingested: Counter = Counter()
+    last_run: dict = {}
+    for cycle in range(num_cycles):
+        api.current_cycle = cycle
+        events, last_run = fetch_events_for_log_type(
+            client=mock_client,
+            log_type=LogType.EVENTS,
+            last_run=last_run,
+            max_fetch=max_fetch,
+        )
+        for ev in events:
+            ingested[ev["eventId"]] += 1
+    return ingested
+
+
+class TestFetchCursorDefects:
+    """Reproduction tests for the reported duplication and missing-event defects.
+
+    These tests exercise the real ``fetch_events_for_log_type`` cursor logic
+    against a faithful fake of the Halcyon events API. They are written to FAIL
+    on the current (buggy) implementation, documenting the exact mechanism, and
+    to PASS once an overlap/lookback window + windowed dedup cache is introduced.
+    """
+
+    @freeze_time("2026-09-30T13:20:34Z")
+    def test_backlog_larger_than_cap_causes_duplicate_reingestion(self, mock_client, mocker):
+        """Backlog > max_fetch across many seconds must not re-ingest events.
+
+        Mechanism under test: each cycle restarts pagination from page 1 with an
+        INCLUSIVE ``occurredAfter`` watermark. When the backlog exceeds one capped
+        cycle, the watermark advances only to the max timestamp of the truncated
+        batch, and the narrow single-timestamp dedup (cleared on advance) cannot
+        suppress the rows re-returned on the next cycle -> duplicates.
+
+        Expected (correct behavior): every event ingested exactly once.
+        """
+        api = FakeHalcyonEventsApi()
+        # 2500 events, each at a DISTINCT second (no >1000-per-second needed),
+        # all present at enablement -> a backlog deeper than a single 1000 cap.
+        base = "2026-09-30T13:00:"
+        for i in range(2500):
+            # Spread across minutes/seconds so each has a unique occurredAt.
+            minute = i // 60
+            second = i % 60
+            occurred_at = f"2026-09-30T13:{minute:02d}:{second:02d}.000Z"
+            api.add_event(event_id=f"evt-{i}", occurred_at=occurred_at)
+
+        ingested = _run_fetch_cycles(mock_client, mocker, api, num_cycles=5, max_fetch=1000)
+
+        duplicated = {eid: n for eid, n in ingested.items() if n > 1}
+        assert not duplicated, (
+            f"{len(duplicated)} events were ingested more than once (duplication storm). "
+            f"Example: {dict(list(duplicated.items())[:3])}"
+        )
+
+    @freeze_time("2026-10-05T07:00:00Z")
+    def test_late_arriving_event_behind_watermark_is_lost(self, mock_client, mocker):
+        """A late-arriving event (older occurredAt, visible after watermark moved)
+        must still be collected.
+
+        Mechanism under test: once the watermark advances past second T, the
+        collector only ever queries ``occurredAfter >= watermark`` and never looks
+        back, so an event that becomes queryable later but carries an occurredAt
+        behind the watermark is skipped permanently.
+
+        Expected (correct behavior): the late event is ingested exactly once.
+        """
+        api = FakeHalcyonEventsApi()
+        # Cycle 0: two on-time events that advance the watermark to 07:00:05.
+        api.add_event("on-time-a", "2026-10-05T07:00:03.000Z", visible_from_cycle=0)
+        api.add_event("on-time-b", "2026-10-05T07:00:05.000Z", visible_from_cycle=0)
+        # A later, higher-timestamp event in cycle 1 pushes the watermark further.
+        api.add_event("on-time-c", "2026-10-05T07:00:09.000Z", visible_from_cycle=1)
+        # The late arrival: occurredAt is BEHIND the advanced watermark, but it
+        # only becomes queryable starting at cycle 2.
+        api.add_event("late-x", "2026-10-05T07:00:04.000Z", visible_from_cycle=2)
+
+        ingested = _run_fetch_cycles(mock_client, mocker, api, num_cycles=4, max_fetch=1000)
+
+        assert ingested.get("late-x", 0) >= 1, (
+            "Late-arriving event behind the watermark was never ingested (permanent loss). "
+            f"Ingested counts: {dict(ingested)}"
+        )
+
+    @freeze_time("2026-10-05T07:00:00Z")
+    def test_steady_state_single_event_not_duplicated(self, mock_client, mocker):
+        """Steady-state sanity check that mirrors the live quiet-period logs.
+
+        With one new event per cycle, the inclusive watermark re-returns the
+        boundary event, and the single-timestamp dedup is expected to suppress it.
+        This should already pass on the current code and documents the baseline
+        behavior the live logs show (``Deduplicated events: 2 -> 1``).
+        """
+        api = FakeHalcyonEventsApi()
+        api.add_event("steady-1", "2026-10-05T07:00:01.000Z", visible_from_cycle=0)
+        api.add_event("steady-2", "2026-10-05T07:00:02.000Z", visible_from_cycle=1)
+        api.add_event("steady-3", "2026-10-05T07:00:03.000Z", visible_from_cycle=2)
+
+        ingested = _run_fetch_cycles(mock_client, mocker, api, num_cycles=4, max_fetch=1000)
+
+        duplicated = {eid: n for eid, n in ingested.items() if n > 1}
+        assert not duplicated, f"Steady-state events were duplicated: {duplicated}"
+        assert set(ingested) == {"steady-1", "steady-2", "steady-3"}
+
+    @freeze_time("2026-09-30T13:00:00Z")
+    def test_over_cap_single_second_causes_duplication_storm(self, mock_client, mocker):
+        """THE storm condition: more than max_fetch events sharing ONE second.
+
+        When a single ``occurredAt`` second holds more rows than ``max_fetch``, the
+        capped batch cannot drain that second, so its max timestamp == the previous
+        watermark. The watermark cannot advance, the dedup set is rebuilt from only
+        the truncated slice (a fraction of the second's rows), and every subsequent
+        cycle re-queries the SAME inclusive second and re-admits the rows it did not
+        remember -> the same ~max_fetch batch is re-ingested every cycle.
+
+        This is the mechanism behind the customer's ~9,590x enablement storm. With
+        distinct-second backlogs the watermark advances cleanly (only a single
+        boundary event re-fetches), so THIS same-second clustering is the true
+        trigger - a distinction worth proving explicitly.
+
+        Expected (correct behavior): each of the 1500 events ingested exactly once
+        across all cycles, i.e. total ingests == 1500 and no id exceeds 1.
+        """
+        api = FakeHalcyonEventsApi()
+        # 1500 events ALL sharing the exact same occurredAt second, > max_fetch=1000.
+        # The second is AFTER the frozen enablement "now" (13:00:00) so the initial
+        # occurredAfter=now watermark does not filter the backlog out.
+        same_second = "2026-09-30T13:05:00.000Z"
+        for i in range(1500):
+            api.add_event(event_id=f"burst-{i}", occurred_at=same_second)
+
+        ingested = _run_fetch_cycles(mock_client, mocker, api, num_cycles=5, max_fetch=1000)
+
+        total_ingests = sum(ingested.values())
+        over_ingested = {eid: n for eid, n in ingested.items() if n > 1}
+        assert total_ingests == 1500 and not over_ingested, (
+            f"Duplication storm reproduced: {total_ingests} total ingests for 1500 real events "
+            f"across 5 cycles ({len(over_ingested)} ids re-ingested). "
+            f"A correct collector would ingest exactly 1500."
+        )
