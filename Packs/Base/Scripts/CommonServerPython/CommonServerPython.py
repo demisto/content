@@ -187,7 +187,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, Dict, List, Any, Union, Set, cast
+    from typing import Optional, Dict, List, Any, Union, Set, Tuple, Iterator, Iterable, cast
 
     from urllib3 import disable_warnings
 
@@ -10183,6 +10183,13 @@ if 'requests' in sys.modules:
             """
             cred_type = credentials.get('type')
 
+            if cred_type == 'passthrough':
+                # A passthrough profile is self-managed: the integration applies the
+                # credential itself, or none is required. Leave the request untouched.
+                demisto.debug('[UCP][CommonServerPython.py] _apply_ucp_credentials: passthrough profile; '
+                              'leaving the request untouched (the integration owns this credential).')
+                return
+
             # Bug on UCP side where they return different types for the same credential type. To be fixed in July'26 version
             if cred_type == 'oauth2_client_credentials' or cred_type == 'oauth2_authorization_code' or cred_type == 'oauth2':
                 self._apply_ucp_oauth2(credentials, ctx)
@@ -14385,10 +14392,22 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     return
 
 
-def send_assets_and_vulnerabilities_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                         add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False,
-                         client_class=None, use_streaming_send=True):
+def send_assets_and_vulnerabilities_to_xsiam(data,  # type: Union[str, list]
+                                             vendor,  # type: str
+                                             product,  # type: str
+                                             data_format=None,  # type: Optional[str]
+                                             url_key='url',  # type: str
+                                             num_of_attempts=3,  # type: int
+                                             chunk_size=XSIAM_EVENT_CHUNK_SIZE,  # type: int
+                                             should_update_health_module=True,  # type: bool
+                                             add_proxy_to_request=False,  # type: bool
+                                             snapshot_id='',  # type: str
+                                             items_count=None,  # type: Optional[str]
+                                             multiple_threads=False,  # type: bool
+                                             client_class=None,  # type: Optional[Any]
+                                             use_streaming_send=True,  # type: bool
+                                             ):
+    # type: (...) -> Optional[list]
     """
     Send fetched assets and/or vulnerabilities into the XDR data-collector private api.
 
@@ -14475,6 +14494,7 @@ def send_assets_and_vulnerabilities_to_xsiam(data, vendor, product, data_format=
 
 
 def stream_json_items(source, items_prefix='item'):
+    # type: (Any, str) -> Iterator[Any]
     """
     Stream-parse a JSON array/response one record at a time using ``ijson``, yielding a single record on
     each iteration. This keeps peak memory ~flat compared to loading the entire body with ``json.loads``,
@@ -14486,6 +14506,7 @@ def stream_json_items(source, items_prefix='item'):
     Usage example (with a streamed HTTP response)::
 
         res = client._http_request('GET', url_suffix='/assets', resp_type='response', stream=True)
+        res.raw.decode_content = True
         for asset in stream_json_items(res.raw, items_prefix='data.item'):
             process(asset)
 
@@ -14514,6 +14535,7 @@ def stream_json_items(source, items_prefix='item'):
 
 
 def stream_xml_elements(source, tags):
+    # type: (Any, Union[str, Iterable[str]]) -> Iterator[Tuple[str, Any]]
     """
     Stream-parse an XML response one element at a time using ``xml.etree.ElementTree.iterparse``, yielding
     each matching element and then clearing it (``elem.clear()``) so memory does not grow with the size of
@@ -15514,12 +15536,43 @@ def should_use_ucp_auth():
     return is_ucp_enabled() and not _UCP_AUTH_PARAMS_INJECTED and not _ucp_auth_is_passthrough()
 
 
+def get_configured_ucp_capabilities():
+    # type: () -> List[str]
+    """Return the capabilities declared by the connector's connection profiles.
+
+    :return: Capability strings in ``connectionProfiles`` order, empty when UCP
+        metadata is unavailable or carries no profiles.
+    :rtype: ``List[str]``
+    """
+    profiles = []  # type: list
+    try:
+        connector_metadata = demisto.unifiedConnectorMetadata() or {}
+        profiles = connector_metadata.get('connectionProfiles') or []
+        return [p.get('capability') for p in profiles if p.get('capability')]
+    except Exception as e:
+        demisto.error(
+            '[UCP][CommonServerPython.py] get_configured_ucp_capabilities: could not read profiles ({}).\n'
+            'connectionProfiles: {}\n{}'.format(e, profiles, traceback.format_exc()))
+        return []
+
+
 def resolve_ucp_capability(command=None):
     # type: (Optional[str]) -> str
     """Resolve the UCP capability for the current (or given) command.
 
-    Uses ``_UCP_COMMAND_CAPABILITIES`` for known commands, falling back to
-    ``_UCP_DEFAULT_CAPABILITY`` (``'automation-and-remediation'``).
+    The command is mapped through ``_UCP_COMMAND_CAPABILITIES``, falling back to
+    ``_UCP_DEFAULT_CAPABILITY`` (``'automation-and-remediation'``). The result is
+    then reconciled against the capabilities the connector actually declares: a
+    capability no connection profile provides cannot select a profile, which
+    would leave capability-scoped lookups (profile selection, passthrough
+    detection) silently empty. When the mapped capability is unavailable, the
+    automation capability is preferred if the connector declares it, otherwise
+    the first profile's capability is used -- matching the first-profile
+    fallback in ``get_ucp_method_unique_id``.
+
+    Reconciliation applies to an explicitly supplied *command* as well, since a
+    command absent from the mapping resolves to the default capability whether
+    or not the caller passed it in.
 
     Integrations can override this function if they need custom mapping logic.
 
@@ -15531,7 +15584,19 @@ def resolve_ucp_capability(command=None):
     """
     if command is None:
         command = demisto.command()
-    return _UCP_COMMAND_CAPABILITIES.get(command, _UCP_DEFAULT_CAPABILITY)
+    resolved = _UCP_COMMAND_CAPABILITIES.get(command, _UCP_DEFAULT_CAPABILITY)
+
+    available = get_configured_ucp_capabilities()
+    if not available or resolved in available:
+        return resolved
+
+    demisto.debug(
+        '[UCP][CommonServerPython.py] resolve_ucp_capability: {!r} is not declared by any connection '
+        'profile {}; reconciling.'.format(resolved, available))
+
+    if _UCP_DEFAULT_CAPABILITY in available:
+        return _UCP_DEFAULT_CAPABILITY
+    return available[0]
 
 
 # -- Profile matching building blocks --

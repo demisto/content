@@ -3239,7 +3239,7 @@ def close_snapshot_if_empty(
     return data, items_count
 
 
-def handle_assets_and_vulnerabilities_send(
+def send_qualys_assets_and_vulnerabilities_to_xsiam(
     assets: list,
     vulnerabilities: list,
     cumulative_assets_count: int,
@@ -3853,7 +3853,7 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
         new_last_run["total_vulnerabilities"] = cumulative_vulns_count
 
         demisto.debug(f"Starting to send {len(assets)} assets and {len(vulnerabilities)} vulnerabilities to XSIAM")
-        handle_assets_and_vulnerabilities_send(
+        send_qualys_assets_and_vulnerabilities_to_xsiam(
             assets=assets,
             vulnerabilities=vulnerabilities,
             cumulative_assets_count=cumulative_assets_count,
