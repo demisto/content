@@ -52,7 +52,7 @@ configuration:
   section: Connect
   type: 0
 - defaultvalue: gemini-2.5-flash
-  additionalinfo: Please choose only one model
+  additionalinfo: Please choose only one model.
   display: Default Model
   name: model
   options:
@@ -138,18 +138,18 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - defaultValue: '0.5'
-      description: Controls the degree of randomness in token selection for this call. Overrides the instance-level Temperature parameter. Lower values (closer to 0) produce more deterministic outputs, while higher values (up to 2.0) increase randomness and creativity.
+    - defaultvalue: '0.5'
+      description: The degree of randomness in token selection for this call. Overrides the instance-level Temperature parameter. Lower values (closer to 0) produce more deterministic outputs, while higher values (up to 2.0) increase randomness and creativity.
       name: temperature
       required: false
-    - description: Maximum number of tokens that can be generated for this response (1-10000). Overrides the instance-level Max tokens parameter for this call. If not specified, the instance-level value is used.
+    - description: The maximum number of tokens that can be generated for this response (1-10000). Overrides the instance-level Max tokens parameter for this call. If not specified, the instance-level value is used.
       name: max_tokens
       required: false
-    - description: Maximum number of input tokens (prompt + history combined) allowed for this request. If exceeded and truncate=false, the command returns an error reporting the actual vs. allowed token count.
+    - description: The maximum number of input tokens (prompt + history combined) allowed for this request. If exceeded and truncate=false, the command returns an error reporting the actual vs. allowed token count.
       name: max_input_tokens
       required: false
-    - defaultValue: 'false'
-      description: If true and max_input_tokens is exceeded, automatically truncates the oldest history entries first, then the prompt itself, to fit within the budget. If false (default), an error is returned instead.
+    - defaultvalue: 'false'
+      description: Whether to automatically truncate the oldest history entries first, then the prompt itself, to fit within the budget if max_input_tokens is exceeded. If false (default), an error is returned instead.
       name: truncate
       required: false
       auto: PREDEFINED
