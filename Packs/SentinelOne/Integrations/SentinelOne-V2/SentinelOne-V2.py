@@ -755,6 +755,7 @@ class Client(BaseClient):
         path_exclusion_type: str | None = None,
         sha256_value: str | None = None,
         child_process: bool | None = None,
+        interaction_level: str | None = None,
     ) -> dict:
         payload = {
             "filter": assign_params(
@@ -774,6 +775,7 @@ class Client(BaseClient):
                 pathExclusionType=path_exclusion_type,
                 sha256Value=sha256_value,
                 childProcess=child_process,
+                interactionLevel=interaction_level,
             ),
         }
         response = self._http_request(method="POST", url_suffix="unified-exclusions", json_data=payload)
@@ -3811,6 +3813,7 @@ def create_unified_exclusion_command(client: Client, args: dict) -> CommandResul
     path_exclusion_type = args.get("path_exclusion_type")
     sha256_value = args.get("sha256_value")
     child_process = argToBoolean(args.get("child_process")) if args.get("child_process") else None
+    interaction_level = args.get("interaction_level")
 
     if scope_level != "tenant" and not scope_level_id:
         raise DemistoException("scope_level_id is required for non-tenant scope levels.")
@@ -3830,6 +3833,7 @@ def create_unified_exclusion_command(client: Client, args: dict) -> CommandResul
         path_exclusion_type=path_exclusion_type,
         sha256_value=sha256_value,
         child_process=child_process,
+        interaction_level=interaction_level,
     )
 
     context_entry: dict = {}

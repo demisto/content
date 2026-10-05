@@ -534,6 +534,8 @@ script:
       name: sha256_value
     - description: Whether the exclusion applies to child processes.
       name: child_process
+    - description: 'The interaction between the exclusion and the Agent processes. Example: disable_in_process_monitor, disable_all_monitors, or identity_only.'
+      name: interaction_level
     description: Creates a new unified exclusion using a type and value (e.g. path, hash, certificate). Uses the v2.1 unified-exclusions endpoint.
     name: sentinelone-create-unified-exclusion
     outputs:
