@@ -316,7 +316,8 @@ def test_module(client: Client) -> str:
         except Exception:
             pass
         return_error(f"An unexpected error occurred during connectivity test: {err_msg}")
-        return "" # Adding pseudo-return to satisfy requirement for explicit return
+        return ""  # Adding pseudo-return to satisfy requirement for explicit return
+
 
 def google_gemini_send_message_command(client: Client, args: dict[str, Any]):
     """Command function to send a chat message to the Google Gemini API with optional conversation history.
