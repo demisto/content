@@ -2908,7 +2908,7 @@ class AzureClient:
         """
         if next_token:
             demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of WAF policies.")
-            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname)
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
             params: dict[str, Any] = {}
         elif resource_group_name:
             full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/{WAF_POLICY_PATH}"
@@ -3039,7 +3039,7 @@ class AzureClient:
         """
         if next_token:
             demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of Front Door WAF policies.")
-            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname)
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
             params: dict[str, Any] = {}
         elif resource_group_name:
             full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/{WAF_FRONT_DOOR_POLICY_PATH}"
