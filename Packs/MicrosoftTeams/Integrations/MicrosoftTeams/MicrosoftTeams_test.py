@@ -1738,7 +1738,7 @@ def test_message_send_to_chat_command(mocker, requests_mock):
     requests_mock.post(f"{GRAPH_BASE_URL}/v1.0/chats/{GROUP_CHAT_ID}/messages", json=mock_response)
     message_send_to_chat_command()
 
-    assert requests_mock.request_history[0].json() == {
+    assert requests_mock.last_request.json() == {
         "body": {"content": "Hello World", "contentType": "text"},
         "messageType": "message",
     }
@@ -1748,6 +1748,190 @@ def test_message_send_to_chat_command(mocker, requests_mock):
     mock_response.pop("@odata.context", "")
     expected_outputs = {"chatId": GROUP_CHAT_ID, "messages": mock_response}
     assert results_outputs == expected_outputs
+
+
+@pytest.mark.parametrize("content_type", ["text", "html"])
+def test_message_send_to_chat_command_without_mentions_does_not_get_members(mocker, requests_mock, content_type):
+    """A message without mention syntax keeps its existing payload and skips member lookup."""
+    from MicrosoftTeams import message_send_to_chat_command
+
+    content = "<b>Hello World</b>" if content_type == "html" else "Hello World"
+    mocker.patch.object(
+        demisto, "args", return_value={"chat": GROUP_CHAT_ID, "content": content, "content_type": content_type}
+    )
+    mocker.patch("MicrosoftTeams.get_chat_id_and_type", return_value=(GROUP_CHAT_ID, "group"))
+    mocker.patch("MicrosoftTeams.add_bot_to_chat")
+    get_chat_members = mocker.patch("MicrosoftTeams.get_chat_members")
+    mocker.patch("MicrosoftTeams.return_results")
+    requests_mock.post(
+        f"{GRAPH_BASE_URL}/v1.0/chats/{GROUP_CHAT_ID}/messages", json=test_data.get("send_message_chat")
+    )
+
+    message_send_to_chat_command()
+
+    get_chat_members.assert_not_called()
+    assert requests_mock.last_request.json() == {
+        "body": {"content": content, "contentType": content_type},
+        "messageType": "message",
+    }
+
+
+def test_message_send_to_chat_command_with_mention(mocker, requests_mock):
+    """A chat mention is resolved from chat membership and sent in Graph format."""
+    from MicrosoftTeams import message_send_to_chat_command
+
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "chat": GROUP_CHAT_ID,
+            "content": 'Review <this> & "that" with @megan bowen; and @Megan Bowen;',
+        },
+    )
+    mocker.patch("MicrosoftTeams.get_chat_id_and_type", return_value=(GROUP_CHAT_ID, "group"))
+    mocker.patch("MicrosoftTeams.add_bot_to_chat")
+    mocker.patch("MicrosoftTeams.get_chat_members", return_value=test_data.get("list_members").get("value"))
+    mocker.patch("MicrosoftTeams.return_results")
+    requests_mock.post(
+        f"{GRAPH_BASE_URL}/v1.0/chats/{GROUP_CHAT_ID}/messages", json=test_data.get("send_message_chat")
+    )
+
+    message_send_to_chat_command()
+
+    assert requests_mock.last_request.json() == {
+        "body": {
+            "content": (
+                "Review &lt;this&gt; &amp; &quot;that&quot; with <at id=\"0\">Megan Bowen</at> "
+                "and <at id=\"1\">Megan Bowen</at>"
+            ),
+            "contentType": "html",
+        },
+        "messageType": "message",
+        "mentions": [
+            {
+                "id": mention_id,
+                "mentionText": "Megan Bowen",
+                "mentioned": {
+                    "user": {
+                        "id": "48d31887-5fad-4d73-a9f5-3c356e68a038",
+                        "displayName": "Megan Bowen",
+                        "userIdentityType": "aadUser",
+                    }
+                },
+            }
+            for mention_id in range(2)
+        ],
+    }
+
+
+def test_message_send_to_chat_command_rejects_invalid_mention_before_post(mocker, requests_mock):
+    """All mentions are validated before the chat message is posted."""
+    from MicrosoftTeams import message_send_to_chat_command
+
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"chat": GROUP_CHAT_ID, "content": "Hello @Megan Bowen; and @Missing User;"},
+    )
+    mocker.patch("MicrosoftTeams.get_chat_id_and_type", return_value=(GROUP_CHAT_ID, "group"))
+    mocker.patch("MicrosoftTeams.get_chat_members", return_value=test_data.get("list_members").get("value"))
+    add_bot_to_chat = mocker.patch("MicrosoftTeams.add_bot_to_chat")
+
+    with pytest.raises(ValueError, match="Mentioned user 'Missing User' is not a member"):
+        message_send_to_chat_command()
+
+    add_bot_to_chat.assert_not_called()
+    assert not requests_mock.called
+
+
+def test_format_graph_chat_mentions_preserves_html():
+    """Existing HTML is retained while generated display-name markup is escaped."""
+    from MicrosoftTeams import format_graph_chat_mentions
+
+    members = [{"displayName": "A&B <Admin>", "userId": "user-id"}]
+    content, content_type, mentions = format_graph_chat_mentions(
+        "<b>Hello</b> @A&B <Admin>;", "html", members, "chat"
+    )
+
+    assert content == '<b>Hello</b> <at id="0">A&amp;B &lt;Admin&gt;</at>'
+    assert content_type == "html"
+    assert mentions[0]["mentionText"] == "A&B <Admin>"
+
+
+@pytest.mark.parametrize(
+    "members, expected_error",
+    [
+        ([], "Mentioned user 'Missing User' is not a member"),
+        (
+            [
+                {"displayName": "Missing User", "userId": "one"},
+                {"displayName": "missing user", "userId": "two"},
+            ],
+            "Mentioned user 'Missing User' is ambiguous",
+        ),
+        ([{"displayName": "Missing User"}], "an Entra user ID is unavailable"),
+    ],
+)
+def test_format_graph_chat_mentions_rejects_invalid_member(members, expected_error):
+    """Invalid mention identities fail before a message can be sent."""
+    from MicrosoftTeams import format_graph_chat_mentions
+
+    with pytest.raises(ValueError, match=expected_error):
+        format_graph_chat_mentions("Hello @Missing User;", "text", members, "chat")
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        '<a title="Contact @Megan Bowen;">Contact</a>',
+        '<a title="Contact > @Megan Bowen;">Contact</a>',
+        "<a title='Contact > @Megan Bowen;'>Contact</a>",
+    ],
+)
+def test_format_graph_chat_mentions_ignores_mentions_in_html_attributes(content):
+    from MicrosoftTeams import format_graph_chat_mentions
+
+    members = [{"displayName": "Megan Bowen", "userId": "user-id"}]
+
+    assert format_graph_chat_mentions(content, "html", members, "chat") == (content, "html", [])
+
+
+def test_format_graph_chat_mentions_preserves_text_line_breaks():
+    from MicrosoftTeams import format_graph_chat_mentions
+
+    members = [{"displayName": "Megan Bowen", "userId": "user-id"}]
+    content, _, _ = format_graph_chat_mentions("First line\r\nHello @Megan Bowen;\r\nLast line", "text", members, "chat")
+
+    assert content == 'First line<br>Hello <at id="0">Megan Bowen</at><br>Last line'
+
+
+@pytest.mark.parametrize("separator", ["\n", "\r\n", "\t", "(", ","])
+def test_graph_chat_mentions_match_send_notification_boundaries(separator):
+    """Like send-notification, Graph mentions must start the message or follow a literal space."""
+    from MicrosoftTeams import format_graph_chat_mentions
+
+    members = [{"displayName": "Megan Bowen", "userId": "user-id"}]
+    content = f"Hello{separator}@Megan Bowen;"
+
+    assert format_graph_chat_mentions(content, "text", members, "chat") == (content, "text", [])
+
+
+def test_format_graph_chat_mentions_ignores_email_address():
+    from MicrosoftTeams import format_graph_chat_mentions
+
+    content = "Email a@example.com; for help"
+    assert format_graph_chat_mentions(content, "text", [], "chat") == (content, "text", [])
+
+
+def test_get_chat_members_follows_pagination(requests_mock):
+    from MicrosoftTeams import get_chat_members
+
+    first_url = f"{GRAPH_BASE_URL}/v1.0/chats/{GROUP_CHAT_ID}/members"
+    next_url = f"{first_url}?$skiptoken=next"
+    requests_mock.get(first_url, json={"value": [{"userId": "one"}], "@odata.nextLink": next_url})
+    requests_mock.get(next_url, json={"value": [{"userId": "two"}]})
+
+    assert get_chat_members(GROUP_CHAT_ID) == [{"userId": "one"}, {"userId": "two"}]
 
 
 def test_chat_member_list_command(mocker, requests_mock):
