@@ -15,7 +15,7 @@
     "useCases": [
         "Network Security"
     ],
-    "keywords": [],
+    "keywords": ["AWS"],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

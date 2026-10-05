@@ -648,3 +648,81 @@ def test_delete_rule_group_command(mocker):
     delete_rule_group_mock = mocker.patch.object(client, "delete_rule_group")
     delete_rule_group_command(client=client, args=delete_rule_group_args)
     delete_rule_group_mock.assert_called_with(Name="name", Id="id", Scope="REGIONAL", LockToken="lockToken")
+
+
+def build_credentials_param(password: str) -> dict:
+    """Builds a type-9 credentials parameter as sent by the platform."""
+    return {
+        "credential": "",
+        "credentials": {
+            "cacheVersn": 0,
+            "id": "",
+            "locked": False,
+            "modified": "0001-01-01T00:00:00Z",
+            "name": "",
+            "password": "",
+            "sizeInBytes": 0,
+            "sshkey": "",
+            "sshkeyPass": "",
+            "user": "",
+            "vaultInstanceId": "",
+            "version": 0,
+            "workgroup": "",
+        },
+        "identifier": "",
+        "password": password,
+        "passwordChanged": False,
+    }
+
+
+@pytest.mark.parametrize(
+    "access_key_password, secret_key_password",
+    [
+        pytest.param("", "", id="empty credentials"),
+        pytest.param("test_access_key", "test_secret_key", id="populated credentials"),
+    ],
+)
+def test_main_credentials_params_retrieval(mocker, access_key_password, secret_key_password):
+    """
+    Given:
+        - Integration params where access_key and secret_key are credentials objects,
+          either left empty or populated with a password.
+    When:
+        - Running main() with the test-module command.
+    Then:
+        - The access key and secret key passed to validate_params and AWSClient are the
+          password strings, and never the raw credentials dict.
+    """
+    import AWSWAF
+
+    # Given
+    params = {
+        "defaultRegion": "us-east-1",
+        "roleArn": "arn:aws:iam::123456789012:role/test",
+        "roleSessionName": "test_session",
+        "access_key": build_credentials_param(access_key_password),
+        "secret_key": build_credentials_param(secret_key_password),
+    }
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    validate_params_mock = mocker.patch.object(AWSWAF, "validate_params")
+    aws_client_mock = mocker.patch.object(AWSWAF, "AWSClient")
+    mocker.patch.object(AWSWAF, "connection_test", return_value="ok")
+    return_results_mock = mocker.patch.object(AWSWAF, "return_results")
+    return_error_mock = mocker.patch.object(AWSWAF, "return_error")
+
+    # When
+    AWSWAF.main()
+
+    # Then
+    return_error_mock.assert_not_called()
+    return_results_mock.assert_any_call("ok")
+    validate_params_mock.assert_called_once_with(
+        "us-east-1", "arn:aws:iam::123456789012:role/test", "test_session", access_key_password, secret_key_password
+    )
+    client_kwargs = aws_client_mock.call_args.kwargs
+    assert client_kwargs["aws_access_key_id"] == access_key_password
+    assert client_kwargs["aws_secret_access_key"] == secret_key_password
+    assert not isinstance(client_kwargs["aws_access_key_id"], dict)
+    assert not isinstance(client_kwargs["aws_secret_access_key"], dict)
