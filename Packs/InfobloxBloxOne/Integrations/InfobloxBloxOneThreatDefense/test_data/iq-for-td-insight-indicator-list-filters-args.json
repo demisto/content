@@ -1,0 +1,9 @@
+{
+    "insight_id": "insight-v2-001",
+    "indicators": " dummy-indicator-1.com , dummy-indicator-2.com,,",
+    "threat_level": "3",
+    "statuses": " Blocked , ,Not Blocked, Blocked",
+    "users": " dummy-user-1 , ,dummy-user-2",
+    "detected_at": "2026-12-01T00:00:00Z",
+    "limit": "50"
+}

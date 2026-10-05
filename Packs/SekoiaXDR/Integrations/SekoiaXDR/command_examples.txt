@@ -17,3 +17,7 @@
 !sekoia-xdr-get-comments id=d444aa87-1408-49d0-9946-86bbc8d740f3
 !sekoia-xdr-get-user user_uuid=b57d2513-7037-4fe3-b1f7-9126e52dcc32
 !sekoia-xdr-http-request method=GET url_sufix=/sic/alerts/
+!sekoia-xdr-execute-query query_definition="{\"ql_query\": \"events | limit 5\"}"
+!sekoia-xdr-get-query-run query_run_uuid=42a01e26-d61e-4a29-a92f-3fab2c07741c
+!sekoia-xdr-download-query-result query_run_uuid=42a01e26-d61e-4a29-a92f-3fab2c07741c result_format=csv
+!sekoia-xdr-run-query query_definition="{\"ql_query\": \"events | limit 5\"}" result_format=csv
