@@ -15,6 +15,7 @@ INCIDENTS_WITH_PARTIAL_OCCURRED = [
     {"id": "2", "occurred": ""},
     {"id": "3", "occurred": "0001-01-01T00:00:00Z"},
     {"id": "4", "occurred": "not-a-date"},
+    {"id": "5", "occurred": 1627398575},
 ]
 INCIDENTS_WITH_MIXED_TZ_AWARENESS = [
     {"id": "1", "occurred": "2021-07-27T15:09:35.269187268Z"},
@@ -34,6 +35,7 @@ EXPECTED_HTML = (
         pytest.param(ONE_INCIDENT, "July 28, 2021", id="single incident"),
         pytest.param(INCIDENTS_WITH_PARTIAL_OCCURRED, "July 27, 2021", id="only some incidents have a valid occurred"),
         pytest.param(INCIDENTS_WITH_MIXED_TZ_AWARENESS, "July 30, 2021", id="mixed timezone awareness"),
+        pytest.param(ONE_INCIDENT[0], "July 28, 2021", id="a single incident given as a dict and not as a list"),
         pytest.param([], "No last incident occurred found.", id="no campaign incidents"),
         pytest.param(None, "No last incident occurred found.", id="no campaign context"),
         pytest.param(INCIDENTS_WITHOUT_OCCURRED, "No last incident occurred found.", id="incidents without occurred"),

@@ -1,4 +1,5 @@
-from datetime import UTC
+import traceback
+from datetime import timezone
 
 import dateutil.parser
 import demistomock as demisto  # noqa: F401
@@ -8,14 +9,14 @@ from CommonServerPython import *  # noqa: F401
 ZERO_TIME_YEAR = 1
 
 
-def get_campaign_incidents() -> list | None:
+def get_campaign_incidents() -> list:
     """
     Gets all the campaign incidents from the context.
 
     Returns:
-        List of all the campaign incidents, None if no incidents were found.
+        List of all the campaign incidents, an empty list if no incidents were found.
     """
-    return demisto.get(demisto.context(), "EmailCampaign.incidents")
+    return argToList(demisto.get(demisto.context(), "EmailCampaign.incidents"))
 
 
 def get_occurred_dates(incidents: list) -> list:
@@ -42,8 +43,11 @@ def get_occurred_dates(incidents: list) -> list:
 
         try:
             parsed_occurred = dateutil.parser.parse(occurred)
-        except (ValueError, OverflowError) as err:
-            demisto.debug(f"Skipping incident {incident.get('id')} - could not parse occurred value {occurred}: {err}")
+        except (ValueError, OverflowError, TypeError) as err:
+            demisto.debug(
+                f"Skipping incident {incident.get('id')} - could not parse occurred value {occurred}: {err}\n"
+                f"{traceback.format_exc()}"
+            )
             continue
 
         if parsed_occurred.year <= ZERO_TIME_YEAR:
@@ -52,7 +56,7 @@ def get_occurred_dates(incidents: list) -> list:
 
         if parsed_occurred.tzinfo is None:
             # Assume UTC for naive values, otherwise comparing them with aware values raises a TypeError.
-            parsed_occurred = parsed_occurred.replace(tzinfo=UTC)
+            parsed_occurred = parsed_occurred.replace(tzinfo=timezone.utc)  # noqa: UP017
 
         occurred_dates.append(parsed_occurred)
 
@@ -75,7 +79,7 @@ def get_last_incident_occurred(occurred_dates: list) -> str:
 def main():
     try:
         incidents = get_campaign_incidents()
-        occurred_dates = get_occurred_dates(incidents) if incidents else []
+        occurred_dates = get_occurred_dates(incidents)
 
         if occurred_dates:
             html_readable_output = get_last_incident_occurred(occurred_dates)
@@ -95,7 +99,8 @@ def main():
         )
 
     except Exception as err:
-        return_error(str(err))
+        demisto.error(traceback.format_exc())
+        return_error(f"Failed to execute ShowCampaignLastIncidentOccurred. Error: {err}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

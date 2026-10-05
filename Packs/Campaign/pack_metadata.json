@@ -16,7 +16,12 @@
     "useCases": [
         "Phishing"
     ],
-    "keywords": [],
+    "keywords": [
+        "Cortex XSOAR",
+        "Phishing",
+        "Campaign",
+        "Email"
+    ],
     "dependencies": {
         "Phishing": {
             "mandatory": true,
