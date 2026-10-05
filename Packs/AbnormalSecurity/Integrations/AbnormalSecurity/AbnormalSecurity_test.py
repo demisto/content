@@ -43,6 +43,7 @@ from AbnormalSecurity import (
     RateLimiter,
     AuthError,
     BudgetExhaustedError,
+    fetch_settings_from_params,
     THREATS_SPEC,
     ABUSE_CAMPAIGNS_SPEC,
     ACCOUNT_TAKEOVER_SPEC,
@@ -1761,3 +1762,106 @@ def test_fetch_output_order_does_not_depend_on_worker_timing(api, mocker):
     _, serial, _ = run_fetch(detail_concurrency=1, max_window_minutes=10**6)
 
     assert [i["dbotMirrorId"] for i in concurrent] == [i["dbotMirrorId"] for i in serial]
+
+
+@pytest.mark.parametrize("mode, expected_incidents", [("created", 1), ("modified", 4)])
+def test_fetch_case_mode_controls_duplicate_incidents_for_modified_cases(api, mocker, mode, expected_incidents):
+    """
+    Given one Account Takeover case that is modified 3 times after it's first fetched.
+    When fetch runs after each modification.
+    Then created-time mode creates one incident, and last-modified mode creates a new one every time.
+    """
+    clock = {"now": FETCH_NOW}
+    mocker.patch("AbnormalSecurity.get_current_datetime", side_effect=lambda: clock["now"])
+    api.add_case("c-1", "2026-10-02T09:10:00Z")
+    options = {"fetch_threats": False, "fetch_account_takeover_cases": True, "case_fetch_mode": mode}
+
+    last_run, incidents, _ = run_fetch(**options)
+    emitted = [i["dbotMirrorId"] for i in incidents]
+    for minutes in (10, 20, 30):
+        api.items["cases"][0]["lastModifiedTime"] = (FETCH_NOW + timedelta(minutes=minutes)).strftime(ISO_8601_FORMAT)
+        clock["now"] = FETCH_NOW + timedelta(minutes=minutes + 5)
+        last_run, incidents, _ = run_fetch(last_run, **options)
+        emitted += [i["dbotMirrorId"] for i in incidents]
+
+    assert emitted == ["c-1"] * expected_incidents
+    assert last_run["account_takeover"]["mode"] == mode
+    field_name = "createdTime" if mode == "created" else "lastModifiedTime"
+    assert all(q["filter"].startswith(f"{field_name} gte") for q in api.list_calls("cases"))
+
+
+def test_fetch_case_mode_change_restarts_window_from_its_start(api):
+    api.add_case("c-1", "2026-10-02T09:10:00Z")
+    last_run = {
+        "version": 2,
+        "account_takeover": {
+            "enabled": True,
+            "window_start": "2026-10-02T09:00:00Z",
+            "window_end": "2026-10-02T09:30:00Z",
+            "emitted_ids": ["c-1"],
+            "failed": {"c-2": 1},
+            "mode": "modified",
+        },
+    }
+
+    next_run, incidents, _ = run_fetch(
+        last_run, fetch_threats=False, fetch_account_takeover_cases=True, case_fetch_mode="created", max_incidents_to_fetch=0
+    )
+
+    assert next_run["account_takeover"] == {
+        "enabled": True,
+        "window_start": "2026-10-02T09:00:00Z",
+        "window_end": "2026-10-02T10:00:00Z",
+        "emitted_ids": [],
+        "failed": {},
+        "mode": "created",
+    }
+    assert incidents == []
+
+
+def test_fetch_settings_from_params_defaults_for_instances_without_the_new_params():
+    assert fetch_settings_from_params({}) == {
+        "fetch_time_budget": 150,
+        "max_window_minutes": 60,
+        "detail_concurrency": 4,
+        "detail_rate_per_second": 2.0,
+        "case_fetch_mode": "modified",
+    }
+
+
+def test_fetch_settings_from_params_parses_configured_values():
+    settings = fetch_settings_from_params(
+        {
+            "fetch_time_budget": "100",
+            "max_window_minutes": "1440",
+            "detail_concurrency": "2",
+            "detail_rate_per_second": "0.5",
+            "case_fetch_mode": "Created time",
+        }
+    )
+
+    assert settings == {
+        "fetch_time_budget": 100.0,
+        "max_window_minutes": 1440,
+        "detail_concurrency": 2,
+        "detail_rate_per_second": 0.5,
+        "case_fetch_mode": "created",
+    }
+
+
+@pytest.mark.parametrize("params", [{"detail_concurrency": "0"}, {"detail_rate_per_second": "-1"}, {"case_fetch_mode": "x"}])
+def test_fetch_settings_from_params_rejects_invalid_values(params):
+    with pytest.raises(DemistoException):
+        fetch_settings_from_params(params)
+
+
+def test_fetch_upgrade_from_v1_keeps_last_modified_case_mode(api):
+    next_run, _, _ = run_fetch(
+        {"last_fetch": "2026-10-02T11:00:00Z"},
+        fetch_account_takeover_cases=True,
+        **{k: v for k, v in fetch_settings_from_params({}).items() if k != "detail_rate_per_second"},
+    )
+
+    assert next_run["account_takeover"]["mode"] == "modified"
+    assert next_run["account_takeover"]["window_start"] == "2026-10-02T12:00:00Z"
+    assert "mode" not in next_run["threats"]

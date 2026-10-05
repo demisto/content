@@ -42,6 +42,9 @@ DEFAULT_MAX_WINDOW_MINUTES = 60
 DEFAULT_DETAIL_CONCURRENCY = 4
 # Well under the SOAR API's limit of 300 requests a minute per customer, which other clients share.
 DEFAULT_DETAIL_RATE_PER_SECOND = 2.0
+CASE_MODE_CREATED = "created"
+CASE_MODE_MODIFIED = "modified"
+CASE_FETCH_MODES = {"Last modified time": CASE_MODE_MODIFIED, "Created time": CASE_MODE_CREATED}
 MIN_REQUEST_SECONDS = 1.0
 MAX_ITEM_FAILURES = 3
 MAX_CONSECUTIVE_FAILURES = 5
@@ -1470,10 +1473,12 @@ class FetchWindow:
     window_end: datetime
     emitted_ids: list[str] = field(default_factory=list)
     failed: dict[str, int] = field(default_factory=dict)
+    # Which timestamp the Account Takeover case window filters on; None for the other types.
+    mode: str | None = None
 
     @classmethod
-    def new(cls, start: datetime, upper: datetime, max_window: timedelta) -> "FetchWindow":
-        return cls(enabled=True, window_start=start, window_end=_next_window_end(start, upper, max_window))
+    def new(cls, start: datetime, upper: datetime, max_window: timedelta, mode: str | None = None) -> "FetchWindow":
+        return cls(enabled=True, window_start=start, window_end=_next_window_end(start, upper, max_window), mode=mode)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "FetchWindow":
@@ -1483,16 +1488,20 @@ class FetchWindow:
             window_end=parse_timestamp(data["window_end"]),
             emitted_ids=list(data.get("emitted_ids") or []),
             failed=dict(data.get("failed") or {}),
+            mode=data.get("mode"),
         )
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        data: dict[str, Any] = {
             "enabled": self.enabled,
             "window_start": format_timestamp(self.window_start),
             "window_end": format_timestamp(self.window_end),
             "emitted_ids": self.emitted_ids,
             "failed": self.failed,
         }
+        if self.mode is not None:
+            data["mode"] = self.mode
+        return data
 
     def is_empty(self) -> bool:
         return self.window_end <= self.window_start
@@ -1502,6 +1511,12 @@ class FetchWindow:
 
     def advance(self, upper: datetime, max_window: timedelta) -> None:
         self.window_start = self.window_end
+        self.window_end = _next_window_end(self.window_start, upper, max_window)
+        self.emitted_ids = []
+        self.failed = {}
+
+    def restart(self, upper: datetime, max_window: timedelta) -> None:
+        """Re-lists the window from its current start, e.g. after it starts filtering on another field."""
         self.window_end = _next_window_end(self.window_start, upper, max_window)
         self.emitted_ids = []
         self.failed = {}
@@ -1528,6 +1543,8 @@ class FetchTypeSpec:
     end_inclusive: bool
     list_method: str
     builder: Callable[..., dict]
+    # Filter field by `FetchWindow.mode`, for types whose window can filter on more than one field.
+    mode_filter_fields: dict[str, str] | None = None
 
 
 def build_threat_incident(
@@ -1620,17 +1637,23 @@ ACCOUNT_TAKEOVER_SPEC = FetchTypeSpec(
     end_inclusive=True,
     list_method="get_a_list_of_abnormal_cases_identified_by_abnormal_security_request",
     builder=build_account_takeover_case_incident,
+    # Filtering on lastModifiedTime re-creates a case as a new incident every time it's modified,
+    # resolved or reopened; createdTime emits each case once.
+    mode_filter_fields={CASE_MODE_CREATED: "createdTime", CASE_MODE_MODIFIED: "lastModifiedTime"},
 )
 FETCH_TYPE_SPECS = (THREATS_SPEC, ABUSE_CAMPAIGNS_SPEC, ACCOUNT_TAKEOVER_SPEC)
 
 
 def build_list_filter(spec: FetchTypeSpec, window: FetchWindow) -> str:
+    field_name = spec.filter_field
+    if spec.mode_filter_fields and window.mode:
+        field_name = spec.mode_filter_fields[window.mode]
     start = format_timestamp(window.window_start)
     if spec.end_inclusive:
         end = (window.window_end - timedelta(microseconds=1)).strftime(TIME_FORMAT_WITHMS)
     else:
         end = format_timestamp(window.window_end)
-    return f"{spec.filter_field} gte {start} and {spec.filter_field} lte {end}"
+    return f"{field_name} gte {start} and {field_name} lte {end}"
 
 
 def migrate_last_run(
@@ -1640,6 +1663,7 @@ def migrate_last_run(
     polling_lag: timedelta,
     max_window: timedelta,
     enabled: dict[str, bool],
+    case_mode: str = CASE_MODE_MODIFIED,
 ) -> tuple[dict[str, FetchWindow], int]:
     """Loads the per-type windows from `last_run`, upgrading the 2.4.9 `{"last_fetch": ...}` format.
 
@@ -1661,14 +1685,19 @@ def migrate_last_run(
         windows = {spec.key: FetchWindow.new(start, upper, max_window) for spec in FETCH_TYPE_SPECS if enabled[spec.key]}
 
     for spec in FETCH_TYPE_SPECS:
+        mode = case_mode if spec.mode_filter_fields else None
         window = windows.get(spec.key)
         if not enabled[spec.key]:
             if window is not None:
                 window.enabled = False
         elif window is None or not window.enabled:
             # A newly enabled type starts at the current time, as 2.4.9 did, instead of replaying a backlog.
-            windows[spec.key] = FetchWindow.new(upper, upper, max_window)
+            windows[spec.key] = FetchWindow.new(upper, upper, max_window, mode=mode)
+        elif mode is not None and (window.mode or CASE_MODE_MODIFIED) != mode:
+            window.mode = mode
+            window.restart(upper, max_window)
         else:
+            window.mode = mode
             window.extend_if_empty(upper, max_window)
     return windows, offset
 
@@ -1887,6 +1916,32 @@ def fetch_type(
 RUN_STOPPING_REASONS = {"budget", "rate_limited"}
 
 
+def fetch_settings_from_params(params: dict[str, Any]) -> dict[str, Any]:
+    """Reads the advanced fetch params. XSOAR doesn't add yml defaults to instances created before
+    the params existed, so an unset param falls back to the code default, which matches the yml
+    default."""
+
+    def positive(name: str, default: float, cast: Callable[[Any], float]) -> Any:
+        value = params.get(name)
+        if value in (None, ""):
+            return default
+        number = cast(value)
+        if number <= 0:
+            raise DemistoException(f"{name} must be greater than 0, got {value}")
+        return number
+
+    case_fetch_mode = params.get("case_fetch_mode") or "Last modified time"
+    if case_fetch_mode not in CASE_FETCH_MODES:
+        raise DemistoException(f"Unknown case fetch mode: {case_fetch_mode}")
+    return {
+        "fetch_time_budget": positive("fetch_time_budget", DEFAULT_FETCH_TIME_BUDGET_SECONDS, float),
+        "max_window_minutes": positive("max_window_minutes", DEFAULT_MAX_WINDOW_MINUTES, int),
+        "detail_concurrency": positive("detail_concurrency", DEFAULT_DETAIL_CONCURRENCY, int),
+        "detail_rate_per_second": positive("detail_rate_per_second", DEFAULT_DETAIL_RATE_PER_SECOND, float),
+        "case_fetch_mode": CASE_FETCH_MODES[case_fetch_mode],
+    }
+
+
 def fetch_incidents(
     client: Client,
     last_run: dict[str, Any],
@@ -1901,6 +1956,7 @@ def fetch_incidents(
     max_window_minutes: int = DEFAULT_MAX_WINDOW_MINUTES,
     detail_concurrency: int = DEFAULT_DETAIL_CONCURRENCY,
     detail_rate_per_second: float = DEFAULT_DETAIL_RATE_PER_SECOND,
+    case_fetch_mode: str = CASE_MODE_MODIFIED,
     deadline: Deadline | None = None,
 ) -> tuple[dict[str, Any], list[dict], list[str]]:
     """
@@ -1927,7 +1983,7 @@ def fetch_incidents(
     first_fetch = arg_to_datetime(first_fetch_time) or now
     if first_fetch.tzinfo is None:
         first_fetch = first_fetch.replace(tzinfo=timezone.utc)
-    windows, offset = migrate_last_run(last_run, first_fetch, now, polling_lag, max_window, enabled)
+    windows, offset = migrate_last_run(last_run, first_fetch, now, polling_lag, max_window, enabled, case_fetch_mode)
 
     specs = [spec for spec in FETCH_TYPE_SPECS if enabled[spec.key]]
     if specs:
@@ -2071,6 +2127,7 @@ def main():  # pragma: nocover
                 fetch_account_takeover_cases=fetch_account_takeover_cases,
                 max_page_number=max_page_number,
                 polling_lag=polling_lag_delta,
+                **fetch_settings_from_params(params),
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
