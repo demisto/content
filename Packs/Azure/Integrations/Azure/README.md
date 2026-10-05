@@ -3427,3 +3427,34 @@ Creates a firewall policy. This command only creates the policy resource. To att
 | Azure.VirtualNetworks.FirewallPolicies.properties.explicitProxy | Unknown | The explicit proxy settings of the firewall policy containing the enableExplicitProxy, httpPort, httpsPort, enablePacFile, pacFilePort, and pacFile fields. |
 | Azure.VirtualNetworks.FirewallPolicies.properties.intrusionDetection | Unknown | The intrusion detection settings of the firewall policy containing the mode, profile, and configuration fields. |
 | Azure.VirtualNetworks.FirewallPolicies.properties.transportSecurity | Unknown | The TLS inspection settings of the firewall policy containing the certificateAuthority field. |
+### azure-storage-table-entity-query
+
+***
+Queries entities in a table. Provide partition_key and row_key together to retrieve a single entity, or omit them to query multiple entities. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/entities/read.
+
+#### Base Command
+
+`azure-storage-table-entity-query`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional | 
+| account_name | The storage account name. | Required | 
+| table_name | The name of the table to query. | Required | 
+| partition_key | The PartitionKey property of a specific entity to retrieve. Must be provided together with row_key. | Optional | 
+| row_key | The RowKey property of a specific entity to retrieve. Must be provided together with partition_key. | Optional | 
+| filter | An OData query expression used to filter the returned entities. | Optional | 
+| select | A comma-separated list of entity properties to return. | Optional | 
+| limit | The maximum number of entities to return. Default is 50. | Optional | 
+| next_token | A continuation token returned by a previous call (Azure.Storage.EntitiesNextToken), used to retrieve the next page of results. Ignored when partition_key and row_key are provided. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Storage.Table.Entity.PartitionKey | String | The PartitionKey property of the entity. | 
+| Azure.Storage.Table.Entity.RowKey | String | The RowKey property of the entity. | 
+| Azure.Storage.Table.Entity.Timestamp | Date | The date and time the entity was last modified, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). | 
+| Azure.Storage.EntitiesNextToken | String | The continuation token to retrieve the next page of entities. Empty when there are no more results. | 

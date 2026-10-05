@@ -1566,6 +1566,8 @@ class AzureClient:
         query_filter: str = None,
         select: str = None,
         limit: str = None,
+        next_partition_key: str = None,
+        next_row_key: str = None,
     ) -> requests.Response:
         """
         Query entities in a table.
@@ -1578,6 +1580,8 @@ class AzureClient:
             query_filter (str): Query expression.
             select (str): Entity properties to return.
             limit (str): Retrieve top n entities.
+            next_partition_key (str): The NextPartitionKey continuation token for retrieving the next page of results.
+            next_row_key (str): The NextRowKey continuation token for retrieving the next page of results.
 
         Returns:
             Response: API response from Azure.
@@ -1587,7 +1591,15 @@ class AzureClient:
         else:
             resource = f"{table_name}()"
         full_url = f"https://{account_name}.{TABLE_SERVICE_PREFIX}/{resource}"
-        params = remove_empty_elements({"$filter": query_filter, "$select": select, "$top": limit})
+        params = remove_empty_elements(
+            {
+                "$filter": query_filter,
+                "$select": select,
+                "$top": limit,
+                "NextPartitionKey": next_partition_key,
+                "NextRowKey": next_row_key,
+            }
+        )
         self.storage_container_set_headers({"Accept": "application/json;odata=nometadata"})
         try:
             return self.http_request(method="GET", full_url=full_url, params=params, resp_type="response")  # type: ignore[return-value]
@@ -4397,20 +4409,35 @@ def query_entity_command(client: AzureClient, params: dict, args: dict) -> Comma
     partition_key = args.get("partition_key")
     row_key = args.get("row_key")
     query_filter = args.get("filter")
-    select = args.get("select")
+    select = argToList(args.get("select"))
     limit = None if partition_key else (arg_to_number(args.get("limit")) or int(DEFAULT_LIMIT))
     validate_limit(limit, max_limit=TABLE_MAX_PAGE_SIZE)
 
     if (partition_key and not row_key) or (row_key and not partition_key):
         raise ValueError("Please provide both 'partition_key' and 'row_key' arguments, or none of them.")
 
+    # The Table data-plane paginates entity queries via a compound continuation token returned across two
+    # response headers (NextPartitionKey + NextRowKey). We expose it to the user as a single tab-joined
+    # token and split it back into the two query params on the next call. A tab is a control character that
+    # Azure disallows in both PartitionKey and RowKey, so it is a safe delimiter for a clean round-trip.
+    next_partition_key, _, next_row_key = args.get("next_token", "").partition("\t")
+
     demisto.debug(
         f"[Azure] querying entities in {table_name=} for {account_name=} with "
-        f"partition_key={bool(partition_key)} {query_filter=} {select=} {limit=}"
+        f"partition_key={bool(partition_key)} {query_filter=} {select=} {limit=} next_token={bool(next_partition_key)}"
     )
-    raw_response = client.query_entity_request(
-        account_name, table_name, partition_key, row_key, query_filter, select, str(limit) if limit else None
-    ).json()
+    response = client.query_entity_request(
+        account_name,
+        table_name,
+        partition_key,
+        row_key,
+        query_filter,
+        ",".join(select) if select else None,
+        str(limit) if limit else None,
+        next_partition_key or None,
+        next_row_key or None,
+    )
+    raw_response = response.json()
 
     entities = [raw_response] if partition_key else raw_response.get("value", [])
 
@@ -4431,11 +4458,22 @@ def query_entity_command(client: AzureClient, params: dict, args: dict) -> Comma
         removeNull=True,
     )
 
+    # Recombine the two continuation headers into a single tab-joined token for the next page
+    # (empty when there are no more results). Only relevant for multi-entity queries.
+    next_page_partition_key = response.headers.get("x-ms-continuation-NextPartitionKey")
+    next_page_row_key = response.headers.get("x-ms-continuation-NextRowKey")
+    entities_next_token = f"{next_page_partition_key}\t{next_page_row_key}" if next_page_partition_key else None
+
+    outputs: dict[str, Any] = {
+        "Azure.Storage.Table.Entity(val.PartitionKey && val.PartitionKey == obj.PartitionKey "
+        "&& val.RowKey && val.RowKey == obj.RowKey)": entities,
+    }
+    if not partition_key:
+        outputs["Azure.Storage(true)"] = {"EntitiesNextToken": entities_next_token}
+
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Azure.Storage.Table.Entity",
-        outputs_key_field=["PartitionKey", "RowKey"],
-        outputs=entities,
+        outputs=outputs,
         raw_response=raw_response,
     )
 

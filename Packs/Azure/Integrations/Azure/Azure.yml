@@ -1564,7 +1564,7 @@ script:
       description: The RowKey property of the entity.
       type: String
     - contextPath: Azure.Storage.Table.Entity.Timestamp
-      description: The timestamp of the entity.
+      description: The date and time the entity was last modified, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: azure-storage-table-entity-update
     description: "Updates an existing entity in a table by merging the provided properties. Does not replace the existing entity. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/entities/write."
@@ -1635,10 +1635,13 @@ script:
     - name: select
       description: A comma-separated list of entity properties to return.
       required: false
+      isArray: true
     - name: limit
       description: The maximum number of entities to return.
       required: false
       defaultValue: '50'
+    - name: next_token
+      description: A continuation token returned by a previous call (Azure.Storage.EntitiesNextToken), used to retrieve the next page of results. Ignored when partition_key and row_key are provided.
     outputs:
     - contextPath: Azure.Storage.Table.Entity.PartitionKey
       description: The PartitionKey property of the entity.
@@ -1647,8 +1650,11 @@ script:
       description: The RowKey property of the entity.
       type: String
     - contextPath: Azure.Storage.Table.Entity.Timestamp
-      description: The timestamp of the entity.
+      description: The date and time the entity was last modified, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
+    - contextPath: Azure.Storage.EntitiesNextToken
+      description: The continuation token to retrieve the next page of entities. Empty when there are no more results.
+      type: String
   - name: azure-storage-table-entity-delete
     description: "Deletes an existing entity in a table. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/entities/delete."
     arguments:

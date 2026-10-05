@@ -6298,7 +6298,7 @@ def test_list_tables_command(mocker, client, mock_params):
     """
     from Azure import list_tables_command
 
-    mocker.patch("Azure.validate_limit")
+    mocker.patch("Azure.validate_limit", create=True)
     mock_response = util_load_json("test_data/table_list_response.json")
     mock_http = mocker.Mock()
     mock_http.json.return_value = mock_response
@@ -6325,7 +6325,7 @@ def test_list_tables_command_empty(mocker, client, mock_params):
     """
     from Azure import list_tables_command
 
-    mocker.patch("Azure.validate_limit")
+    mocker.patch("Azure.validate_limit", create=True)
     mock_http = mocker.Mock()
     mock_http.json.return_value = {"value": []}
     mock_http.headers = {}
@@ -6447,15 +6447,21 @@ def test_replace_entity_command(mocker, client, mock_params):
     assert result.readable_output == "Entity in mocktable table successfully replaced."
 
 
+ENTITY_OUTPUTS_KEY = (
+    "Azure.Storage.Table.Entity(val.PartitionKey && val.PartitionKey == obj.PartitionKey "
+    "&& val.RowKey && val.RowKey == obj.RowKey)"
+)
+
+
 def test_query_entity_command(mocker, client, mock_params):
     """
-    Given: An Azure client whose query_entity_request returns a single entity.
-    When: query_entity_command is called with valid snake_case args.
-    Then: It returns CommandResults with the Azure.Storage.Table.Entity prefix and the queried entity.
+    Given: An Azure client whose query_entity_request returns a single entity for a multi-entity query.
+    When: query_entity_command is called with valid snake_case args (no partition_key).
+    Then: It returns CommandResults whose outputs hold the entities list and an empty continuation token.
     """
     from Azure import query_entity_command
 
-    mocker.patch("Azure.validate_limit")
+    mocker.patch("Azure.validate_limit", create=True)
     mock_response = util_load_json("test_data/table_query_entity_response.json")
     mock_http = mocker.Mock()
     mock_http.json.return_value = mock_response
@@ -6467,11 +6473,86 @@ def test_query_entity_command(mocker, client, mock_params):
     result = query_entity_command(client, mock_params, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.Storage.Table.Entity"
-    assert len(result.outputs) == 1
-    assert result.outputs[0].get("PartitionKey") == "mock-partition"
-    assert result.outputs[0].get("RowKey") == "mock-row"
-    assert result.outputs[0].get("Address") == "New York"
+    entities = result.outputs[ENTITY_OUTPUTS_KEY]
+    assert len(entities) == 1
+    assert entities[0].get("PartitionKey") == "mock-partition"
+    assert entities[0].get("RowKey") == "mock-row"
+    assert entities[0].get("Address") == "New York"
+    assert result.outputs["Azure.Storage(true)"]["EntitiesNextToken"] is None
+
+
+def test_query_entity_command_single_entity(mocker, client, mock_params):
+    """
+    Given: An Azure client whose query_entity_request returns a single entity for a point query.
+    When: query_entity_command is called with both partition_key and row_key.
+    Then: It returns the single entity and does not emit a continuation token.
+    """
+    from Azure import query_entity_command
+
+    mocker.patch("Azure.validate_limit", create=True)
+    # A point query (PartitionKey + RowKey) returns a single flat entity object, not a {"value": [...]} list.
+    mock_response = {
+        "PartitionKey": "mock-partition",
+        "RowKey": "mock-row",
+        "Timestamp": "2021-08-16T15:03:57.5229430Z",
+        "Address": "New York",
+    }
+    mock_http = mocker.Mock()
+    mock_http.json.return_value = mock_response
+    mock_http.headers = {}
+    mocker.patch.object(client, "query_entity_request", return_value=mock_http)
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "table_name": "mocktable",
+        "partition_key": "mock-partition",
+        "row_key": "mock-row",
+    }
+
+    result = query_entity_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    entities = result.outputs[ENTITY_OUTPUTS_KEY]
+    assert len(entities) == 1
+    assert entities[0].get("Address") == "New York"
+    assert "Azure.Storage(true)" not in result.outputs
+
+
+def test_query_entity_command_pagination(mocker, client, mock_params):
+    """
+    Given: A client returning continuation headers, and an inbound tab-joined next_token.
+    When: query_entity_command is called for a multi-entity query.
+    Then: The inbound token is split into the two query params, and the response headers are
+          recombined into a single tab-joined EntitiesNextToken in the context output.
+    """
+    from Azure import query_entity_command
+
+    mocker.patch("Azure.validate_limit", create=True)
+    mock_response = util_load_json("test_data/table_query_entity_response.json")
+    mock_http = mocker.Mock()
+    mock_http.json.return_value = mock_response
+    mock_http.headers = {
+        "x-ms-continuation-NextPartitionKey": "next-pk",
+        "x-ms-continuation-NextRowKey": "next-rk",
+    }
+    query_mock = mocker.patch.object(client, "query_entity_request", return_value=mock_http)
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "table_name": "mocktable",
+        "next_token": "prev-pk\tprev-rk",
+    }
+
+    result = query_entity_command(client, mock_params, args)
+
+    # Inbound token split into the two continuation query params (positional args 8 and 9).
+    call_args = query_mock.call_args[0]
+    assert call_args[7] == "prev-pk"
+    assert call_args[8] == "prev-rk"
+    # Outbound headers recombined into a single tab-joined token.
+    assert result.outputs["Azure.Storage(true)"]["EntitiesNextToken"] == "next-pk\tnext-rk"
 
 
 def test_query_entity_command_partial_keys(mocker, client, mock_params):
@@ -6482,7 +6563,7 @@ def test_query_entity_command_partial_keys(mocker, client, mock_params):
     """
     from Azure import query_entity_command
 
-    mocker.patch("Azure.validate_limit")
+    mocker.patch("Azure.validate_limit", create=True)
     args = {
         "subscription_id": "mock_subscription_id",
         "account_name": "mockaccount",
@@ -6505,7 +6586,7 @@ def test_query_entity_command_empty(mocker, client, mock_params):
     """
     from Azure import query_entity_command
 
-    mocker.patch("Azure.validate_limit")
+    mocker.patch("Azure.validate_limit", create=True)
     mock_http = mocker.Mock()
     mock_http.json.return_value = {"value": []}
     mock_http.headers = {}
