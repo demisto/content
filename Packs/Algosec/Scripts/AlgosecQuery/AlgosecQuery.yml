@@ -30,6 +30,6 @@ dependson:
   must:
   - algosec-query
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.12.13.10116658
+dockerimage: demisto/python3:3.12.14.13053055
 tests:
 - No tests (auto formatted)
