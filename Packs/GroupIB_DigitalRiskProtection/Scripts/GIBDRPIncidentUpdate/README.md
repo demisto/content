@@ -1,13 +1,14 @@
-This script prevents duplication of existing incidents, and closes an incident once the work on its violation is over.
+Updates the existing incident of a Group-IB DRP violation in place instead of creating a duplicate, and closes it once the work on the violation is over.
 
 Run as the action of the `GIB DRP Rule All Types` pre-processing rule, it takes the incoming Group-IB
 DRP violation and, for every incident that already carries the same **GIB DRP ID**:
 
-* copies the violation's current fields onto it with a single `setIncident` call,
+* copies the violation's current fields onto it with a single `setIncident` call;
 * closes it as *Resolved* when the violation's status is `resolved` (taken down; older API versions report
   it as `solved`) or `legal` (handed to legal), and as *False Positive* when DRP found it false
-  (`false_status`) or the customer rejected it (approve state `rejected`) - DRP does nothing more with
-  either, so nothing later would close the incident; approving does not close, the take-down is still ahead, and
+  (`false_status`) or the customer rejected it (approve state `rejected`). DRP does nothing more with
+  either, so nothing later would close the incident. Approving does not close the incident: the
+  take-down is still ahead;
 * expires the indicator created from the violation URI with that close, when **GIB DRP Expire Indicator On
   Close** is set on the incoming or the existing incident.
 
@@ -18,9 +19,9 @@ The incoming incident is then dropped, so an updated violation never becomes a s
 kept only when no existing incident matched, or when every update failed, so a new violation state is
 never silently lost.
 
-The search deliberately covers **closed** incidents too, and never writes `status` or `severity` back:
-a violation whose incident was already closed is updated in place instead of coming back as a new
-incident, a closed incident is not reopened by the update, and the severity set by the instance that
+The search deliberately covers **closed** incidents too, and never writes `status` or `severity` back.
+A violation whose incident was already closed is updated in place instead of coming back as a new
+incident, and a closed incident is not reopened by the update. The severity set by the instance that
 created the incident - or raised by an analyst since - survives an update that arrives through another
 instance.
 
@@ -54,7 +55,7 @@ For more information, see the section about permissions here: [https://docs-cort
 | --- | --- |
 | Script Type | python3 |
 | Tags | preProcessing |
-| Cortex XSOAR Version | 6.0.0 |
+| Cortex XSOAR Version | 6.10.0 |
 
 ## Inputs
 

@@ -1,5 +1,6 @@
 comment: |-
-  Layout-button automation: approves or rejects a Group-IB DRP violation.
+  Approves or rejects a Group-IB DRP violation. Runs behind the Approve Violation and Reject Violation
+  layout buttons and the approve and reject tasks of the postprocessing playbook.
 
   The decision is sent through the instance that fetched the incident (its sourceInstance), or through
   the only active instance; the "using" argument overrides both.
@@ -30,13 +31,13 @@ args:
   description: Whether to approve or reject the violation.
 - name: id
   required: false
-  description: Group-IB DRP violation ID. Defaults to the incident's GIB DRP ID field.
+  description: The Group-IB DRP violation ID. Defaults to the incident's GIB DRP ID field.
 - name: using
   required: false
-  description: Name of the Group-IB Digital Risk Protection integration instance to use. Defaults to the instance that fetched the incident, or to the only active instance.
+  description: The name of the Group-IB Digital Risk Protection integration instance to use. Defaults to the instance that fetched the incident, or to the only active instance.
 outputs:
 - contextPath: GIBDRP.ViolationResolution.id
-  description: Group-IB DRP violation ID that was resolved.
+  description: The Group-IB DRP violation ID that was resolved.
   type: String
 - contextPath: GIBDRP.ViolationResolution.status
   description: The status the violation was set to.

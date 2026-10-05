@@ -4,10 +4,10 @@ The **Group-IB Digital Risk Protection - Violation Incident Postprocessing** pla
 new incident whose **GIB DRP Indicator Wanted** field is set, which the fetch sets for the violation
 types selected in **Create indicators from Violations** on the instance.
 
-The indicator is created with `createNewIndicator`, linked to the incident (`relatedIncidents`),
-with **Group-IB Digital Risk Protection** as its source, the violation's first detection and current
-status date as first and last seen, the violation title as description, and the violation type and
-brand as tags. The verdict follows the violation type: Counterfeit, Scam, Malware and Phishing are
+The script creates the indicator with `createNewIndicator` and links it to the incident
+(`relatedIncidents`). It sets **Group-IB Digital Risk Protection** as its source, the violation's
+first detection and current status date as first and last seen, the violation title as description,
+and the violation type and brand as tags. The verdict follows the violation type: Counterfeit, Scam, Malware and Phishing are
 *Malicious*; Partner policy compliance, Piracy and Trademark are *Suspicious*; No violation is
 *Benign*. An unknown type is *Suspicious*.
 
@@ -44,3 +44,29 @@ the instance's **Expire the indicator when the violation is closed**.
 | GIBDRP.ViolationIndicator.value | String | The indicator value \(the URI normalized to an http or https URL, a domain or an IP\). |
 | GIBDRP.ViolationIndicator.type | String | The indicator type \(URL, Domain or IP\). |
 | GIBDRP.ViolationIndicator.verdict | String | The verdict the indicator was created with \(Malicious, Suspicious or Benign\). |
+
+## Script Examples
+
+### Example command
+
+```!GIBDRPCreateViolationIndicator value=//acme-login.example/verify```
+
+### Context Example
+
+```json
+{
+    "GIBDRP": {
+        "ViolationIndicator": {
+            "created": true,
+            "type": "URL",
+            "uri": "//acme-login.example/verify",
+            "value": "https://acme-login.example/verify",
+            "verdict": "Malicious"
+        }
+    }
+}
+```
+
+### Human Readable Output
+
+>Created the **URL** indicator `https://acme-login.example/verify` (Malicious) from the violation and linked it to this incident.

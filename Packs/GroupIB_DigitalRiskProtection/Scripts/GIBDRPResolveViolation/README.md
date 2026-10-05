@@ -4,7 +4,7 @@ This sits behind the **Approve Violation** and **Reject Violation** buttons on t
 **GIB DRP Violation** layout, and behind the approve/reject tasks of the
 **Group-IB Digital Risk Protection - Violation Incident Postprocessing** playbook.
 
-The decision goes to the instance that fetched the incident. Without `using` Cortex XSOAR runs
+The decision goes to the instance that fetched the incident. Without `using`, Cortex XSOAR runs
 `gibdrp-change-violation-status` on every enabled instance of the integration, and with several
 instances (one per brand, section or severity) the instances that do not own the violation answer with
 an error and the button fails. The `using` argument wins; then the incident's `sourceInstance`, when
@@ -44,16 +44,43 @@ A violation can only be changed while its `status` is `detected` and its `approv
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | status | Whether to approve or reject the violation. Possible values are: approve, reject. | Required |
-| id | Group-IB DRP violation ID. Defaults to the incident's GIB DRP ID field. | Optional |
-| using | Name of the Group-IB Digital Risk Protection integration instance to use. Defaults to the instance that fetched the incident, or to the only active instance. | Optional |
+| id | The Group-IB DRP violation ID. Defaults to the incident's GIB DRP ID field. | Optional |
+| using | The name of the Group-IB Digital Risk Protection integration instance to use. Defaults to the instance that fetched the incident, or to the only active instance. | Optional |
 
 ## Outputs
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GIBDRP.ViolationResolution.id | String | Group-IB DRP violation ID that was resolved. |
+| GIBDRP.ViolationResolution.id | String | The Group-IB DRP violation ID that was resolved. |
 | GIBDRP.ViolationResolution.status | String | The status the violation was set to. |
 | GIBDRP.ViolationResolution.approveState | String | The approve state the violation moved to \(approved or rejected\). |
 | GIBDRP.ViolationResolution.incidentUpdated | Boolean | Whether the new approve state was recorded on the incident. |
 | GIBDRP.ViolationResolution.incidentClosed | Boolean | Whether the incident was closed with the decision \(always on reject, on approve as configured on the instance\). |
 | GIBDRP.ViolationResolution.indicatorExpired | Boolean | Whether the indicator created from the violation was expired with the rejection. |
+
+## Script Examples
+
+### Example command
+
+```!GIBDRPResolveViolation status=approve```
+
+### Context Example
+
+```json
+{
+    "GIBDRP": {
+        "ViolationResolution": {
+            "approveState": "approved",
+            "id": "exampleViolationId",
+            "incidentClosed": false,
+            "incidentUpdated": true,
+            "indicatorExpired": false,
+            "status": "approve"
+        }
+    }
+}
+```
+
+### Human Readable Output
+
+>Group-IB DRP violation **exampleViolationId** was set to **approve**. The incident stays open until Group-IB DRP resolves the violation; its approve state is now **approved**.

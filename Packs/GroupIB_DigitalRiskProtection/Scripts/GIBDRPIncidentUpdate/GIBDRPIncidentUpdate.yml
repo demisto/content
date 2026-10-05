@@ -1,8 +1,9 @@
 comment: |-
-  Pre-processing rule script for Group-IB DRP violations: updates the existing incident of the violation
-  in place instead of creating a duplicate, and closes it once the work on the violation is over - as
-  Resolved when DRP resolved it or handed it to legal, as False Positive when DRP found it false or the
-  customer rejected it. Expires the indicator created from the violation when the incident asks for it.
+  Updates the existing incident of a Group-IB DRP violation in place instead of creating a duplicate,
+  and closes it once the work on the violation is over - as Resolved when DRP resolved it or handed it
+  to legal, as False Positive when DRP found it false or the customer rejected it. Expires the indicator
+  created from the violation when the incident asks for it. Runs as the script of the GIB DRP Rule All
+  Types pre-processing rule.
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
   For more information, see the section about permissions here:

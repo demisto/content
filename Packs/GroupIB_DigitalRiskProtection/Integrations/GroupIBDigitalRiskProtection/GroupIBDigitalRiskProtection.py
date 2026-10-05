@@ -1793,7 +1793,7 @@ def main():
         proxy = argToBoolean(params.get("proxy", False))
         verify_certificate = not argToBoolean(params.get("insecure", False))
         first_fetch = params.get("first_fetch", "3 days").strip()
-        max_requests = int(params.get("max_fetch", 1))
+        max_requests = arg_to_number(params.get("max_fetch"), arg_name="max_fetch") or 1
         violation_subtypes = ViolationSubtypeFilter.from_param(params.get("violationSubtypes"))
         indicator_subtypes = ViolationSubtypeFilter.from_param(params.get("createIndicatorsForSubtypes"))
         violation_section = params.get("violationSection")

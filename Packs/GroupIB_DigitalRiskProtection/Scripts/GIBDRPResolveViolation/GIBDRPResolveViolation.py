@@ -51,10 +51,10 @@ def violation_id(args: dict[str, Any], incident: dict[str, Any]) -> str:
     if explicit:
         return explicit
     fields = incident.get("CustomFields") or {}
-    found = fields.get("gibdrpid") or incident.get("gibdrpid")
+    found = str(fields.get("gibdrpid") or incident.get("gibdrpid") or "").strip()
     if not found:
         raise DemistoException("No Group-IB DRP violation id: pass `id`, or run this on an incident that has GIB DRP ID set.")
-    return str(found)
+    return found
 
 
 def resolve_instance(args: dict[str, Any], incident: dict[str, Any]) -> str | None:

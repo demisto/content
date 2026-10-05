@@ -59,12 +59,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-# `EntryType.ERROR` resolves to 4 in the production XSOAR runtime. The
-# local `CommonServerPython` stub used by `pytest-in-docker` does not
-# expose `EntryType`, so we depend on the numeric literal here. Keep
-# this in sync with `EntryType.ERROR` in CommonServerPython.
-_ENTRY_TYPE_ERROR: int = 4
-
 # `IncidentStatus.DONE` in the production runtime: the `status` value
 # `getIncidents` reports for an incident that is already closed.
 _INCIDENT_STATUS_CLOSED: int = 2
@@ -140,7 +134,7 @@ def _raw_json(incident: dict[str, Any]) -> dict[str, Any]:
     if isinstance(raw, str) and raw:
         try:
             parsed = json.loads(raw)
-        except Exception:
+        except json.JSONDecodeError:
             return {}
         if isinstance(parsed, dict):
             return parsed
@@ -293,7 +287,7 @@ def iter_existing_incidents(
             "getIncidents",
             {"query": query, "sort": "created.desc", "size": page_size, "page": page},
         )
-        if not res or (isinstance(res[0], dict) and res[0].get("Type") == _ENTRY_TYPE_ERROR):
+        if not res or is_error(res):
             demisto.debug(f"[GIB-DRP-dedup] getIncidents error or empty on page={page}: {res!r}")
             return
 
@@ -318,8 +312,8 @@ def iter_existing_incidents(
 def _set_incident(incident_id: str, fields: dict[str, Any]) -> bool:
     """Invoke `setIncident` for one duplicate; return True on success."""
     res = demisto.executeCommand("setIncident", {"id": incident_id, **fields})
-    if isinstance(res, list) and res and isinstance(res[0], dict) and res[0].get("Type") == _ENTRY_TYPE_ERROR:
-        demisto.debug(f"[GIB-DRP-dedup] setIncident failed for {incident_id}: {res[0].get('Contents')!r}")
+    if is_error(res):
+        demisto.debug(f"[GIB-DRP-dedup] setIncident failed for {incident_id}: {res!r}")
         return False
     return True
 
@@ -343,8 +337,8 @@ def _close_incident(incident_id: str, close_reason: str, violation_status: str |
             ),
         },
     )
-    if isinstance(res, list) and res and isinstance(res[0], dict) and res[0].get("Type") == _ENTRY_TYPE_ERROR:
-        demisto.debug(f"[GIB-DRP-dedup] closeInvestigation failed for {incident_id}: {res[0].get('Contents')!r}")
+    if is_error(res):
+        demisto.debug(f"[GIB-DRP-dedup] closeInvestigation failed for {incident_id}: {res!r}")
         return False
     return True
 
@@ -380,8 +374,8 @@ def _expire_indicator(uri: str) -> bool:
     # Cortex XSOAR 8 reads the builtin's list from `indicatorsValues` ("Provide indicator(s) value(s)"
     # otherwise); `value` is the name older builtin documentation uses, so both are passed.
     res = demisto.executeCommand("expireIndicators", {"indicatorsValues": value, "value": value})
-    if isinstance(res, list) and res and isinstance(res[0], dict) and res[0].get("Type") == _ENTRY_TYPE_ERROR:
-        demisto.info(f"[GIB-DRP-dedup] expireIndicators failed for {value!r}: {res[0].get('Contents')!r}")
+    if is_error(res):
+        demisto.info(f"[GIB-DRP-dedup] expireIndicators failed for {value!r}: {res!r}")
         return False
     return True
 
@@ -390,7 +384,7 @@ def main() -> None:
     try:
         incident = demisto.incident() or {}
         if not isinstance(incident, dict):
-            raise Exception("Incoming incident is missing from the pre-processing context.")
+            raise DemistoException("Incoming incident is missing from the pre-processing context.")
 
         gibdrpid = get_gibdrpid(incident)
         violation_status = get_violation_status(incident)
