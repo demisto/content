@@ -10848,8 +10848,9 @@ script:
     quickaction: true
     prettyname: Enable SSL on Postgres Server
     deprecated: true
-  - name: azure-vn-firewall-policy-rule-collection-groups-create
-    description: "Create a network rule collection, holding a single network rule, in an Azure Firewall or in a firewall policy. Exactly one of the arguments 'firewall_name' or 'policy' must be provided. Required permissions for a firewall: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write. Required permissions for a policy: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+  - name: azure-firewall-rule-collection-groups-create
+    description: "Create a network rule collection, holding a single network rule, in an Azure Firewall. Required Permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write."
+    polling: true
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -10862,11 +10863,9 @@ script:
       required: false
       required:platform: true
     - name: firewall_name
-      description: The name of the Azure Firewall in which to create the network rule collection. Exactly one of this argument or the 'policy' argument must be provided.
+      description: The name of the Azure Firewall in which to create the network rule collection.
       type: String
-    - name: policy
-      description: The name of the firewall policy in which to create the network rule collection. Exactly one of this argument or the 'firewall_name' argument must be provided.
-      type: String
+      required: true
     - name: collection_name
       description: The name of the network rule collection to create.
       type: String
@@ -10876,7 +10875,7 @@ script:
       type: Number
       required: true
     - name: action
-      description: The action type of the network rule collection.
+      description: The action type of the network rule collection. Can be Allow or Deny.
       auto: PREDEFINED
       predefined:
         - Allow
@@ -10891,7 +10890,7 @@ script:
       description: The description of the created network rule.
       type: String
     - name: protocols
-      description: A comma-separated list of protocols for the created network rule.
+      description: The comma-separated list of protocols for the created network rule. Possible values are TCP, UDP, ICMP, or Any.
       auto: PREDEFINED
       predefined:
         - TCP
@@ -10901,7 +10900,7 @@ script:
       isArray: true
       required: true
     - name: source_type
-      description: The source type of the created network rule.
+      description: The source type of the created network rule. Can be ip_address or ip_group.
       auto: PREDEFINED
       predefined:
         - ip_address
@@ -10909,13 +10908,13 @@ script:
       type: String
       required: true
     - name: source_ips
-      description: A comma-separated list of source IP addresses for the created network rule. Must be provided when the 'source_type' argument is 'ip_address'.
+      description: The comma-separated list of source IP addresses for the created network rule. Must be provided when the 'source_type' argument is 'ip_address'.
       isArray: true
     - name: source_ip_group_ids
-      description: A comma-separated list of source IP group IDs for the created network rule. Must be provided when the 'source_type' argument is 'ip_group'.
+      description: The comma-separated list of source IP group IDs for the created network rule. Must be provided when the 'source_type' argument is 'ip_group'.
       isArray: true
     - name: destination_type
-      description: The destination type of the created network rule.
+      description: The destination type of the created network rule. Possible values are ip_address, ip_group, service_tag, or fqdn.
       auto: PREDEFINED
       predefined:
         - ip_address
@@ -10925,13 +10924,28 @@ script:
       type: String
       required: true
     - name: destinations
-      description: A comma-separated list of destinations for the created network rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs, and FQDN addresses.
+      description: The comma-separated list of destinations for the created network rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs, and FQDN addresses.
       isArray: true
       required: true
     - name: destination_ports
-      description: A comma-separated list of destination ports for the created network rule.
+      description: The comma-separated list of destination ports for the created network rule.
       isArray: true
       required: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The timeout, in seconds, until polling ends. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: The internal flag used to track the polling state. Do not set manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: The setting to hide the polling message and print only the final status at the end.
+      hidden: true
     outputs:
     - contextPath: Azure.Firewall.Firewalls.name
       description: The name of the Azure Firewall.
@@ -10954,6 +10968,105 @@ script:
     - contextPath: Azure.Firewall.Firewalls.properties.networkRuleCollections
       description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
       type: Unknown
+  - name: azure-vn-firewall-policy-rule-collection-groups-create
+    description: "Create a rule collection group, holding a network rule collection with a single network rule, in a firewall policy. Required Permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: policy_name
+      description: The name of the firewall policy in which to create the rule collection group.
+      type: String
+      required: true
+    - name: collection_name
+      description: The name of the network rule collection to create.
+      type: String
+      required: true
+    - name: collection_priority
+      description: The priority of the network rule collection. The minimum value is 100 and the maximum value is 65000.
+      type: Number
+      required: true
+    - name: action
+      description: The action type of the network rule collection. Can be Allow or Deny.
+      auto: PREDEFINED
+      predefined:
+        - Allow
+        - Deny
+      type: String
+      required: true
+    - name: rule_name
+      description: The name of the network rule to create in the collection.
+      type: String
+      required: true
+    - name: description
+      description: The description of the created network rule.
+      type: String
+    - name: protocols
+      description: The comma-separated list of protocols for the created network rule. Possible values are TCP, UDP, ICMP, or Any.
+      auto: PREDEFINED
+      predefined:
+        - TCP
+        - UDP
+        - ICMP
+        - Any
+      isArray: true
+      required: true
+    - name: source_type
+      description: The source type of the created network rule. Can be ip_address or ip_group.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+      type: String
+      required: true
+    - name: source_ips
+      description: The comma-separated list of source IP addresses for the created network rule. Must be provided when the 'source_type' argument is 'ip_address'.
+      isArray: true
+    - name: source_ip_group_ids
+      description: The comma-separated list of source IP group IDs for the created network rule. Must be provided when the 'source_type' argument is 'ip_group'.
+      isArray: true
+    - name: destination_type
+      description: The destination type of the created network rule. Possible values are ip_address, ip_group, service_tag, or fqdn.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+        - service_tag
+        - fqdn
+      type: String
+      required: true
+    - name: destinations
+      description: The comma-separated list of destinations for the created network rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs, and FQDN addresses.
+      isArray: true
+      required: true
+    - name: destination_ports
+      description: The comma-separated list of destination ports for the created network rule.
+      isArray: true
+      required: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The timeout, in seconds, until polling ends. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: The internal flag used to track the polling state. Do not set manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: The setting to hide the polling message and print only the final status at the end.
+      hidden: true
+    outputs:
     - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name
       description: The name of the firewall policy rule collection group.
       type: String
@@ -10975,8 +11088,9 @@ script:
     - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections
       description: The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection.
       type: Unknown
-  - name: azure-vn-firewall-policy-rule-collection-groups-update
-    description: "Update the priority or the action of a network rule collection in an Azure Firewall or in a firewall policy. Exactly one of the arguments 'firewall_name' or 'policy' must be provided. Required permissions for a firewall: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write. Required permissions for a policy: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+  - name: azure-firewall-rule-collection-groups-update
+    description: "Update the priority or the action of a network rule collection in an Azure Firewall. Required Permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write."
+    polling: true
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -10989,11 +11103,9 @@ script:
       required: false
       required:platform: true
     - name: firewall_name
-      description: The name of the Azure Firewall that contains the network rule collection. Exactly one of this argument or the 'policy' argument must be provided.
+      description: The name of the Azure Firewall that contains the network rule collection.
       type: String
-    - name: policy
-      description: The name of the firewall policy that contains the network rule collection. Exactly one of this argument or the 'firewall_name' argument must be provided.
-      type: String
+      required: true
     - name: collection_name
       description: The name of the network rule collection to update.
       type: String
@@ -11002,12 +11114,27 @@ script:
       description: The new priority of the network rule collection. The minimum value is 100 and the maximum value is 65000. At least one of the arguments 'priority' or 'action' must be provided.
       type: Number
     - name: action
-      description: The new action type of the network rule collection. At least one of the arguments 'priority' or 'action' must be provided.
+      description: The new action type of the network rule collection. Can be Allow or Deny. At least one of the arguments 'priority' or 'action' must be provided.
       auto: PREDEFINED
       predefined:
         - Allow
         - Deny
       type: String
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The timeout, in seconds, until polling ends. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: The internal flag used to track the polling state. Do not set manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: The setting to hide the polling message and print only the final status at the end.
+      hidden: true
     outputs:
     - contextPath: Azure.Firewall.Firewalls.name
       description: The name of the Azure Firewall.
@@ -11030,6 +11157,54 @@ script:
     - contextPath: Azure.Firewall.Firewalls.properties.networkRuleCollections
       description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
       type: Unknown
+  - name: azure-vn-firewall-policy-rule-collection-groups-update
+    description: "Update the priority or the action of a network rule collection in a firewall policy rule collection group. Required Permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: policy_name
+      description: The name of the firewall policy that contains the rule collection group.
+      type: String
+      required: true
+    - name: collection_name
+      description: The name of the network rule collection to update.
+      type: String
+      required: true
+    - name: priority
+      description: The new priority of the network rule collection. The minimum value is 100 and the maximum value is 65000. At least one of the arguments 'priority' or 'action' must be provided.
+      type: Number
+    - name: action
+      description: The new action type of the network rule collection. Can be Allow or Deny. At least one of the arguments 'priority' or 'action' must be provided.
+      auto: PREDEFINED
+      predefined:
+        - Allow
+        - Deny
+      type: String
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The timeout, in seconds, until polling ends. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: The internal flag used to track the polling state. Do not set manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: The setting to hide the polling message and print only the final status at the end.
+      hidden: true
+    outputs:
     - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name
       description: The name of the firewall policy rule collection group.
       type: String
@@ -11051,8 +11226,9 @@ script:
     - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections
       description: The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection.
       type: Unknown
-  - name: azure-vn-firewall-policy-rule-collection-groups-delete
-    description: "Delete a network rule collection from an Azure Firewall or from a firewall policy. Exactly one of the arguments 'firewall_name' or 'policy' must be provided. Required permissions for a firewall: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write. Required permission for a policy: Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete."
+  - name: azure-firewall-rule-collection-groups-delete
+    description: "Delete a network rule collection from an Azure Firewall. Required Permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write."
+    polling: true
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -11065,15 +11241,28 @@ script:
       required: false
       required:platform: true
     - name: firewall_name
-      description: The name of the Azure Firewall that contains the network rule collection. Exactly one of this argument or the 'policy' argument must be provided.
+      description: The name of the Azure Firewall that contains the network rule collection.
       type: String
-    - name: policy
-      description: The name of the firewall policy that contains the network rule collection. Exactly one of this argument or the 'firewall_name' argument must be provided.
-      type: String
+      required: true
     - name: collection_name
       description: The name of the network rule collection to delete.
       type: String
       required: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The timeout, in seconds, until polling ends. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: The internal flag used to track the polling state. Do not set manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: The setting to hide the polling message and print only the final status at the end.
+      hidden: true
     outputs:
     - contextPath: Azure.Firewall.Firewalls.name
       description: The name of the Azure Firewall.
@@ -11096,8 +11285,46 @@ script:
     - contextPath: Azure.Firewall.Firewalls.properties.networkRuleCollections
       description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
       type: Unknown
+  - name: azure-vn-firewall-policy-rule-collection-groups-delete
+    description: "Delete a rule collection group from a firewall policy. Required Permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: policy_name
+      description: The name of the firewall policy that contains the rule collection group.
+      type: String
+      required: true
+    - name: collection_name
+      description: The name of the rule collection group to delete.
+      type: String
+      required: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The timeout, in seconds, until polling ends. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: The internal flag used to track the polling state. Do not set manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: The setting to hide the polling message and print only the final status at the end.
+      hidden: true
   - name: azure-firewall-network-rule-create
-    description: "Create a network rule in an existing network rule collection of an Azure Firewall or of a firewall policy. Exactly one of the arguments 'firewall_name' or 'policy' must be provided. Required permissions for a firewall: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write. Required permissions for a policy: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+    description: "Create a network rule in an existing network rule collection of an Azure Firewall. Required Permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write."
+    polling: true
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -11110,11 +11337,9 @@ script:
       required: false
       required:platform: true
     - name: firewall_name
-      description: The name of the Azure Firewall that contains the network rule collection. Exactly one of this argument or the 'policy' argument must be provided.
+      description: The name of the Azure Firewall that contains the network rule collection.
       type: String
-    - name: policy
-      description: The name of the firewall policy that contains the network rule collection. Exactly one of this argument or the 'firewall_name' argument must be provided.
-      type: String
+      required: true
     - name: collection_name
       description: The name of the network rule collection in which to create the network rule.
       type: String
@@ -11127,7 +11352,7 @@ script:
       description: The description of the created network rule.
       type: String
     - name: protocols
-      description: A comma-separated list of protocols for the created network rule.
+      description: The comma-separated list of protocols for the created network rule. Possible values are TCP, UDP, ICMP, or Any.
       auto: PREDEFINED
       predefined:
         - TCP
@@ -11137,7 +11362,7 @@ script:
       isArray: true
       required: true
     - name: source_type
-      description: The source type of the created network rule.
+      description: The source type of the created network rule. Can be ip_address or ip_group.
       auto: PREDEFINED
       predefined:
         - ip_address
@@ -11145,13 +11370,13 @@ script:
       type: String
       required: true
     - name: source_ips
-      description: A comma-separated list of source IP addresses for the created network rule. Must be provided when the 'source_type' argument is 'ip_address'.
+      description: The comma-separated list of source IP addresses for the created network rule. Must be provided when the 'source_type' argument is 'ip_address'.
       isArray: true
     - name: source_ip_group_ids
-      description: A comma-separated list of source IP group IDs for the created network rule. Must be provided when the 'source_type' argument is 'ip_group'.
+      description: The comma-separated list of source IP group IDs for the created network rule. Must be provided when the 'source_type' argument is 'ip_group'.
       isArray: true
     - name: destination_type
-      description: The destination type of the created network rule.
+      description: The destination type of the created network rule. Possible values are ip_address, ip_group, service_tag, or fqdn.
       auto: PREDEFINED
       predefined:
         - ip_address
@@ -11161,13 +11386,28 @@ script:
       type: String
       required: true
     - name: destinations
-      description: A comma-separated list of destinations for the created network rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs, and FQDN addresses.
+      description: The comma-separated list of destinations for the created network rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs, and FQDN addresses.
       isArray: true
       required: true
     - name: destination_ports
-      description: A comma-separated list of destination ports for the created network rule.
+      description: The comma-separated list of destination ports for the created network rule.
       isArray: true
       required: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The timeout, in seconds, until polling ends. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: The internal flag used to track the polling state. Do not set manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: The setting to hide the polling message and print only the final status at the end.
+      hidden: true
     outputs:
     - contextPath: Azure.Firewall.Firewalls.name
       description: The name of the Azure Firewall.
@@ -11190,6 +11430,93 @@ script:
     - contextPath: Azure.Firewall.Firewalls.properties.networkRuleCollections
       description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
       type: Unknown
+  - name: azure-vn-firewall-policy-network-rule-create
+    description: "Create a network rule in an existing network rule collection of a firewall policy rule collection group. Required Permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: policy_name
+      description: The name of the firewall policy that contains the rule collection group.
+      type: String
+      required: true
+    - name: collection_name
+      description: The name of the network rule collection in which to create the network rule.
+      type: String
+      required: true
+    - name: rule_name
+      description: The name of the network rule to create.
+      type: String
+      required: true
+    - name: description
+      description: The description of the created network rule.
+      type: String
+    - name: protocols
+      description: The comma-separated list of protocols for the created network rule. Possible values are TCP, UDP, ICMP, or Any.
+      auto: PREDEFINED
+      predefined:
+        - TCP
+        - UDP
+        - ICMP
+        - Any
+      isArray: true
+      required: true
+    - name: source_type
+      description: The source type of the created network rule. Can be ip_address or ip_group.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+      type: String
+      required: true
+    - name: source_ips
+      description: The comma-separated list of source IP addresses for the created network rule. Must be provided when the 'source_type' argument is 'ip_address'.
+      isArray: true
+    - name: source_ip_group_ids
+      description: The comma-separated list of source IP group IDs for the created network rule. Must be provided when the 'source_type' argument is 'ip_group'.
+      isArray: true
+    - name: destination_type
+      description: The destination type of the created network rule. Possible values are ip_address, ip_group, service_tag, or fqdn.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+        - service_tag
+        - fqdn
+      type: String
+      required: true
+    - name: destinations
+      description: The comma-separated list of destinations for the created network rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs, and FQDN addresses.
+      isArray: true
+      required: true
+    - name: destination_ports
+      description: The comma-separated list of destination ports for the created network rule.
+      isArray: true
+      required: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The timeout, in seconds, until polling ends. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: The internal flag used to track the polling state. Do not set manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: The setting to hide the polling message and print only the final status at the end.
+      hidden: true
+    outputs:
     - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name
       description: The name of the firewall policy rule collection group.
       type: String
@@ -11212,7 +11539,8 @@ script:
       description: The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection.
       type: Unknown
   - name: azure-firewall-network-rule-update
-    description: "Update a network rule in a network rule collection of an Azure Firewall or of a firewall policy. Only the provided properties are replaced, the rest of the rule configuration is kept as is. Exactly one of the arguments 'firewall_name' or 'policy' must be provided. Required permissions for a firewall: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write. Required permissions for a policy: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+    description: "Update a network rule in a network rule collection of an Azure Firewall. Only the provided properties are replaced, the rest of the rule configuration is kept as is. Required Permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write."
+    polling: true
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -11225,11 +11553,9 @@ script:
       required: false
       required:platform: true
     - name: firewall_name
-      description: The name of the Azure Firewall that contains the network rule collection. Exactly one of this argument or the 'policy' argument must be provided.
+      description: The name of the Azure Firewall that contains the network rule collection.
       type: String
-    - name: policy
-      description: The name of the firewall policy that contains the network rule collection. Exactly one of this argument or the 'firewall_name' argument must be provided.
-      type: String
+      required: true
     - name: collection_name
       description: The name of the network rule collection that contains the network rule.
       type: String
@@ -11242,7 +11568,7 @@ script:
       description: The new description of the network rule.
       type: String
     - name: protocols
-      description: A comma-separated list of protocols that replaces the protocols of the network rule.
+      description: The comma-separated list of protocols that replaces the protocols of the network rule. Possible values are TCP, UDP, ICMP, or Any.
       auto: PREDEFINED
       predefined:
         - TCP
@@ -11251,20 +11577,20 @@ script:
         - Any
       isArray: true
     - name: source_type
-      description: The new source type of the network rule. When provided, the matching source argument must be provided as well.
+      description: The new source type of the network rule. Can be ip_address or ip_group. When provided, the matching source argument must be provided as well.
       auto: PREDEFINED
       predefined:
         - ip_address
         - ip_group
       type: String
     - name: source_ips
-      description: A comma-separated list of source IP addresses that replaces the sources of the network rule. Must be provided when the 'source_type' argument is 'ip_address'.
+      description: The comma-separated list of source IP addresses that replaces the sources of the network rule. Must be provided when the 'source_type' argument is 'ip_address'.
       isArray: true
     - name: source_ip_group_ids
-      description: A comma-separated list of source IP group IDs that replaces the sources of the network rule. Must be provided when the 'source_type' argument is 'ip_group'.
+      description: The comma-separated list of source IP group IDs that replaces the sources of the network rule. Must be provided when the 'source_type' argument is 'ip_group'.
       isArray: true
     - name: destination_type
-      description: The new destination type of the network rule. Must be provided when the 'destinations' argument is provided.
+      description: The new destination type of the network rule. Possible values are ip_address, ip_group, service_tag, or fqdn. Must be provided when the 'destinations' argument is provided.
       auto: PREDEFINED
       predefined:
         - ip_address
@@ -11273,11 +11599,26 @@ script:
         - fqdn
       type: String
     - name: destinations
-      description: A comma-separated list of destinations that replaces the destinations of the network rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs, and FQDN addresses.
+      description: The comma-separated list of destinations that replaces the destinations of the network rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs, and FQDN addresses.
       isArray: true
     - name: destination_ports
-      description: A comma-separated list of destination ports that replaces the destination ports of the network rule.
+      description: The comma-separated list of destination ports that replaces the destination ports of the network rule.
       isArray: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The timeout, in seconds, until polling ends. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: The internal flag used to track the polling state. Do not set manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: The setting to hide the polling message and print only the final status at the end.
+      hidden: true
     outputs:
     - contextPath: Azure.Firewall.Firewalls.name
       description: The name of the Azure Firewall.
@@ -11300,6 +11641,88 @@ script:
     - contextPath: Azure.Firewall.Firewalls.properties.networkRuleCollections
       description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
       type: Unknown
+  - name: azure-vn-firewall-policy-network-rule-update
+    description: "Update a network rule in a network rule collection of a firewall policy rule collection group. Only the provided properties are replaced, the rest of the rule configuration is kept as is. Required Permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: policy_name
+      description: The name of the firewall policy that contains the rule collection group.
+      type: String
+      required: true
+    - name: collection_name
+      description: The name of the network rule collection that contains the network rule.
+      type: String
+      required: true
+    - name: rule_name
+      description: The name of the network rule to update.
+      type: String
+      required: true
+    - name: description
+      description: The new description of the network rule.
+      type: String
+    - name: protocols
+      description: The comma-separated list of protocols that replaces the protocols of the network rule. Possible values are TCP, UDP, ICMP, or Any.
+      auto: PREDEFINED
+      predefined:
+        - TCP
+        - UDP
+        - ICMP
+        - Any
+      isArray: true
+    - name: source_type
+      description: The new source type of the network rule. Can be ip_address or ip_group. When provided, the matching source argument must be provided as well.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+      type: String
+    - name: source_ips
+      description: The comma-separated list of source IP addresses that replaces the sources of the network rule. Must be provided when the 'source_type' argument is 'ip_address'.
+      isArray: true
+    - name: source_ip_group_ids
+      description: The comma-separated list of source IP group IDs that replaces the sources of the network rule. Must be provided when the 'source_type' argument is 'ip_group'.
+      isArray: true
+    - name: destination_type
+      description: The new destination type of the network rule. Possible values are ip_address, ip_group, service_tag, or fqdn. Must be provided when the 'destinations' argument is provided.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+        - service_tag
+        - fqdn
+      type: String
+    - name: destinations
+      description: The comma-separated list of destinations that replaces the destinations of the network rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs, and FQDN addresses.
+      isArray: true
+    - name: destination_ports
+      description: The comma-separated list of destination ports that replaces the destination ports of the network rule.
+      isArray: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The timeout, in seconds, until polling ends. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: The internal flag used to track the polling state. Do not set manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: The setting to hide the polling message and print only the final status at the end.
+      hidden: true
+    outputs:
     - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name
       description: The name of the firewall policy rule collection group.
       type: String
@@ -11322,7 +11745,8 @@ script:
       description: The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection.
       type: Unknown
   - name: azure-firewall-network-rule-delete
-    description: "Delete network rules from a network rule collection of an Azure Firewall or of a firewall policy. Exactly one of the arguments 'firewall_name' or 'policy' must be provided. Required permissions for a firewall: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write. Required permissions for a policy: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+    description: "Delete network rules from a network rule collection of an Azure Firewall. Required Permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write."
+    polling: true
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -11335,19 +11759,32 @@ script:
       required: false
       required:platform: true
     - name: firewall_name
-      description: The name of the Azure Firewall that contains the network rule collection. Exactly one of this argument or the 'policy' argument must be provided.
+      description: The name of the Azure Firewall that contains the network rule collection.
       type: String
-    - name: policy
-      description: The name of the firewall policy that contains the network rule collection. Exactly one of this argument or the 'firewall_name' argument must be provided.
-      type: String
+      required: true
     - name: collection_name
       description: The name of the network rule collection that contains the network rules.
       type: String
       required: true
     - name: rule_names
-      description: A comma-separated list of network rule names to delete from the collection.
+      description: The comma-separated list of network rule names to delete from the collection.
       isArray: true
       required: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The timeout, in seconds, until polling ends. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: The internal flag used to track the polling state. Do not set manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: The setting to hide the polling message and print only the final status at the end.
+      hidden: true
     outputs:
     - contextPath: Azure.Firewall.Firewalls.name
       description: The name of the Azure Firewall.
@@ -11370,6 +11807,48 @@ script:
     - contextPath: Azure.Firewall.Firewalls.properties.networkRuleCollections
       description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
       type: Unknown
+  - name: azure-vn-firewall-policy-network-rule-delete
+    description: "Delete network rules from a network rule collection of a firewall policy rule collection group. Required Permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: policy_name
+      description: The name of the firewall policy that contains the rule collection group.
+      type: String
+      required: true
+    - name: collection_name
+      description: The name of the network rule collection that contains the network rules.
+      type: String
+      required: true
+    - name: rule_names
+      description: The comma-separated list of network rule names to delete from the collection.
+      isArray: true
+      required: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The timeout, in seconds, until polling ends. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: The internal flag used to track the polling state. Do not set manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: The setting to hide the polling message and print only the final status at the end.
+      hidden: true
+    outputs:
     - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name
       description: The name of the firewall policy rule collection group.
       type: String
