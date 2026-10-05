@@ -4526,8 +4526,12 @@ def _append_modified_remote_entity_id(
 
 
 def _resolve_mirror_entity_lookup_filters() -> dict[str, str]:
-    """Build a wide ``from`` filter for direct mirror entity ID lookups during get-remote-data."""
-    return {"from_time": parse_backfill_days(demisto.params().get("backfill_days"))}
+    """Build the ``from`` filter for a mirror lookup of one known Vega UUID.
+
+    Uses the same start time as fetch-by-ID so an incident or alert created before the
+    backfill window can still be loaded during incoming and outgoing mirroring.
+    """
+    return {"from_time": INCIDENT_ID_LOOKUP_FROM_TIME}
 
 
 def _resolve_mirror_incident_lookup_filters(last_update: str | None) -> dict[str, str]:

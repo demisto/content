@@ -5025,6 +5025,10 @@ def test_get_incident_for_mirror_passes_lookup_time_filters(mocker):
     }
 
 
+def test_resolve_mirror_entity_lookup_filters_matches_id_fetch_window():
+    assert _resolve_mirror_entity_lookup_filters() == {"from_time": INCIDENT_ID_LOOKUP_FROM_TIME}
+
+
 def test_get_remote_data_command_passes_last_update_to_incident_lookup(mocker):
     mocker.patch.object(demisto, "params", return_value={"mirror_direction": "Incoming And Outgoing"})
     mock_client = mocker.Mock(spec=Client)

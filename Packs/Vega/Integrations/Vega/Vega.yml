@@ -50,7 +50,7 @@ configuration:
     section: Collect
     required: true
     additionalinfo: >-
-      The Maximum number of Vega alerts and incidents to fetch per cycle, combined.
+      The maximum number of Vega alerts and incidents to fetch per cycle, combined.
       Valid range is 1-50. Invalid values default to 50 during fetch.
   - display: Fetch Lookback (minutes)
     name: lookback_minutes
@@ -60,8 +60,8 @@ configuration:
     defaultvalue: "5"
     additionalinfo: >-
       The number of minutes the query window is shifted backwards on each fetch cycle to catch 
-      alerts and incidents that were indexed late on the Vega side. Deduplication prevents re-
-      ingestion. Valid range is 1-60.
+      alerts and incidents that were indexed late on the Vega side. Deduplication prevents 
+      re-ingestion. Valid range is 1-60.
   - display: Vega Entities to fetch
     additionalinfo: The Vega entities to fetch as Cortex XSOAR incidents.
     name: vega_entities
@@ -163,9 +163,6 @@ configuration:
     defaultvalue: MALICIOUS,SUSPICIOUS,BENIGN,INCONCLUSIVE,NA
   - display: Has related incidents
     additionalinfo: >-
-      The filter for alerts based on whether they have related incidents. Select Yes to fetch alerts with related incidents,
-      No to fetch alerts without related incidents, or both to fetch all alerts.
-      At least one option must be selected.
       Filter alerts by whether they have related incidents. Select Yes to fetch alerts with related incidents,
       No to fetch alerts without related incidents, or both to fetch all alerts.
       At least one option must be selected.
@@ -179,8 +176,6 @@ configuration:
     defaultvalue: "Yes,No"
   - display: Incident Severities to fetch
     additionalinfo: >-
-      The severities by which to filter incidents. If empty, all severities are fetched.
-      Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
       Filter incidents by severity. If empty, all severities are fetched.
       Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
     name: incident_severities
@@ -224,8 +219,6 @@ configuration:
     defaultvalue: NEW,INVESTIGATING,COMPLETED,FAILED
   - display: Incident Verdicts to fetch
     additionalinfo: >-
-      The verdicts by which to filter incidents. If empty, all verdicts are fetched.
-      Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
       Filter incidents by verdict. If empty, all verdicts are fetched.
       Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
     name: incident_verdicts
@@ -241,10 +234,7 @@ configuration:
     defaultvalue: MALICIOUS,SUSPICIOUS,BENIGN,INCONCLUSIVE,NA
   - display: Include alert metadata on incidents
     additionalinfo: >-
-      Store the full metadata of every alert related to a fetched Vega incident.
-      Full alert metadata can make incidents large and slow to open. Leave this unchecked
-      unless you need the complete alert record on the incident. Use vega-get-alert-metadata
-      to load alert metadata in the War Room on demand.
+      Stores full related-alert metadata on each incident. This can make incidents large.
     name: include_incident_alert_metadata
     type: 8
     section: Collect
