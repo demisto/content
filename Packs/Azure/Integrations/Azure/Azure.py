@@ -2080,7 +2080,7 @@ class AzureClient:
         full_url = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.ContainerService/managedClusters"
         if next_token:
             demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of AKS managed clusters.")
-            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname)
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
             params = {}
         demisto.debug("Listing AKS managed clusters.")
         try:
@@ -4665,7 +4665,7 @@ def aks_clusters_list_command(client: AzureClient, params: dict[str, Any], args:
 
     outputs = {
         "Azure.AKS.ManagedCluster(val.id && val.id == obj.id)": clusters,
-        "Azure.AKS(true)": {"ManagedClusterNextToken": response.get("nextLink") or None},
+        "Azure.AKS(true)": {"ManagedClusterNextToken": response.get("nextLink")},
     }
     return CommandResults(
         outputs=outputs,
