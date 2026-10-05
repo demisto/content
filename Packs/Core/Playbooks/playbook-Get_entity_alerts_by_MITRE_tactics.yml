@@ -1901,9 +1901,13 @@ tests:
 - Test Playbook - Impossible Traveler - Enrichment
 - Test Playbook - IOC Alert
 - Test Playbook - Identity Analytics - Alert Handling
+marketplaces:
+- marketplacev2
+- platform
 fromversion: 6.8.0
 contentitemexportablefields:
   contentitemfields: {}
+system: true
 inputSections:
 - inputs:
   - HuntReconnaissanceTechniques
