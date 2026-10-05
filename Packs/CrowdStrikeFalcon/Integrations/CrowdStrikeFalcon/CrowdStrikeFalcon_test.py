@@ -13283,14 +13283,16 @@ class TestSpotlightFetchTuning:
             completed_severities=[],
         )
 
-        assert started == CrowdStrikeFalcon.SPOTLIGHT_SEVERITY_FETCH_ORDER
+        # Pinned literally: asserting against the constant would pass for any ordering, including
+        # the heaviest-first one this test exists to rule out.
+        assert started == ["UNKNOWN", "NONE", "LOW", "CRITICAL", "MEDIUM", "HIGH"]
         assert set(started) == set(CrowdStrikeFalcon.SPOTLIGHT_SEVERITIES), "the fetch order must cover every severity"
 
     def test_completed_severities_are_not_refetched(self, mocker):
-        """The resume path filters against the new order constant, not the old declaration list."""
+        """The resume path skips what is already done and keeps the rest in fetch order."""
         import CrowdStrikeFalcon
 
-        remaining = [s for s in CrowdStrikeFalcon.SPOTLIGHT_SEVERITY_FETCH_ORDER if s not in ["LOW", "NONE"]]
+        remaining = [s for s in CrowdStrikeFalcon.SPOTLIGHT_SEVERITIES if s not in ["LOW", "NONE"]]
 
         assert "LOW" not in remaining
         assert "NONE" not in remaining

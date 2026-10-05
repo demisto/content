@@ -106,6 +106,8 @@ SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER = [MAX_FETCH_SPOTLIGHT_ASSETS, 2500, 1000, 500
 # Delay before each shrink-ladder retry. Observed truncation offsets (~0.9 MB to ~23 MB) point at a
 # transient upstream fault, not a size limit, so retries are spaced out to let it clear.
 # One entry per retry, i.e. len(SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER) - 1.
+# Sized against a measured cursor lifetime of roughly 120s (an estimate, not an upstream contract):
+# the whole ladder spends ~22s, well inside that budget.
 SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS = [2, 5, 15]
 # Statuses worth re-requesting at a smaller page size. Mirrors RetryPolicy.retryable_status_codes in
 # ContentClientApiModule; anything else (expired cursor 404, 401, 400) cannot be helped by shrinking.
@@ -123,12 +125,6 @@ MAX_PENDING_TASKS_PER_SEVERITY = 5  # Backpressure: max concurrent pending XSIAM
 MAX_PENDING_ASSET_TASKS = 5
 # Severities fetched at once. Drives both peak memory and how long a cursor waits between requests.
 MAX_CONCURRENT_SEVERITIES = 2
-# Lightest severity first, so a cut-short cycle leaves HIGH unfinished rather than several at once.
-# Distinct from SPOTLIGHT_SEVERITIES, which stays the reference set for the seal-completeness check.
-SPOTLIGHT_SEVERITY_FETCH_ORDER = ["UNKNOWN", "NONE", "LOW", "CRITICAL", "MEDIUM", "HIGH"]
-# Measured, not documented upstream, and deliberately unused: it is the budget the prefetch ordering
-# and the shrink ladder's backoffs are sized against. An estimate, not a contract.
-SPOTLIGHT_CURSOR_TTL_SECONDS = 120
 SPOTLIGHT_LOOKBACK_DAYS = 100  # Default lookback; overridable per instance (bounds dataset size)
 # Period between Spotlight fetch cycle starts for a long-running instance. Not configurable, so it
 # can never be set below the time a full fetch needs (~2.3h typical, longer on large tenants).
@@ -142,8 +138,10 @@ LONG_RUNNING_FAILURE_RETRY_MAX_MINUTES = 60
 RECON_API_LIMIT = 100
 MAX_FETCH_RECON = 100
 
-# Spotlight vulnerability severity levels for parallel fetching
-SPOTLIGHT_SEVERITIES = ["CRITICAL", "HIGH", "MEDIUM", "LOW", "NONE", "UNKNOWN"]
+# Spotlight vulnerability severity levels. Doubles as the fetch order and as the reference set for
+# the seal-completeness check, which compares sets and so does not care about order.
+# Ordered lightest first, so a cut-short cycle leaves HIGH unfinished rather than several at once.
+SPOTLIGHT_SEVERITIES = ["UNKNOWN", "NONE", "LOW", "CRITICAL", "MEDIUM", "HIGH"]
 
 BYTE_CREDS = f"{CLIENT_ID}:{SECRET}".encode()
 
@@ -4263,6 +4261,11 @@ async def xsiam_api_call_async(
         session = await get_xsiam_session()
         async with session.post(urljoin(xsiam_url, "/logs/v1/xsiam"), data=zipped_data, headers=headers) as response:
             try:
+                if response.status >= 400:
+                    # Read before raise_for_status: it releases the connection and the body is lost.
+                    # Suppressed because a diagnostic must never replace the error it is diagnosing.
+                    with contextlib.suppress(Exception):
+                        log_falcon_assets(f"XSIAM {response.status} response body: {(await response.text())[:500]}", "error")
                 response.raise_for_status()
                 status_code = response.status
 
@@ -4989,6 +4992,9 @@ async def fetch_vulnerabilities_by_severity(
     unique_aids: set = set()
     pending_tasks: set[asyncio.Task] = set()
     after_token: str | None = None
+    # When the cursor currently in use was handed to us. Lets an expiry log state the token's real
+    # age instead of inferring it from gaps between log lines, which is only a lower bound.
+    token_received_at: float | None = None
     batch_counter = 0
     last_saved_batch_number = 0
     page_size = get_spotlight_page_size()
@@ -5093,6 +5099,7 @@ async def fetch_vulnerabilities_by_severity(
             # stall for longer than the TTL. create_task only schedules it - the first await after
             # this point starts it - so nothing slow may be moved above here.
             new_after_token = response_data.get("meta", {}).get("pagination", {}).get("after")
+            token_received_at = time.monotonic()
             is_last_batch = not new_after_token
 
             if new_after_token:
@@ -5235,8 +5242,13 @@ async def fetch_vulnerabilities_by_severity(
 
         # Check if this is an expired cursor error
         if "Search context expired" in error_str or ('"code": 404' in error_str and "after" in error_str):
+            # Upper bound on how long the cursor was alive: measured in-process from the moment the
+            # server handed it over to the moment it was rejected, so it includes the request itself.
+            # A small value means the context was reclaimed server-side rather than timing out.
+            token_age = f"{time.monotonic() - token_received_at:.1f}s" if token_received_at else "n/a (first page)"
             log_falcon_assets(
-                f"[{severity}] Pagination cursor expired. This should not happen with continuous fetching. "
+                f"[{severity}] Pagination cursor rejected at batch {batch_counter + 1}, "
+                f"{token_age} after the server issued it (receipt to rejection, upper bound). "
                 f"Progress ({total_fetched} vulnerabilities) will be lost.",
                 "error",
             )
@@ -5515,9 +5527,10 @@ async def fetch_spotlight_by_severity_parallel(
     log_falcon_assets(f"All severities: {SPOTLIGHT_SEVERITIES}", "info")
     log_falcon_assets(f"Previously completed severities: {completed_severities}", "info")
 
-    # Filter out already completed severities. Smallest first, so the two heaviest are never in
-    # flight together at cycle start and the largest tends to run alone at the tail.
-    severities_to_fetch = [s for s in SPOTLIGHT_SEVERITY_FETCH_ORDER if s not in completed_severities]
+    # Filter out already completed severities. SPOTLIGHT_SEVERITIES is ordered smallest first, so
+    # the two heaviest are never in flight together at cycle start and the largest tends to run
+    # alone at the tail.
+    severities_to_fetch = [s for s in SPOTLIGHT_SEVERITIES if s not in completed_severities]
 
     # Track completed severities in this cycle (start with previously completed)
     current_completed_severities = completed_severities.copy()
