@@ -25,6 +25,9 @@
             "display_name": "Core - Investigation and Response"
         }
     },
+    "excludedDependencies": [
+        "PAN-OS"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
