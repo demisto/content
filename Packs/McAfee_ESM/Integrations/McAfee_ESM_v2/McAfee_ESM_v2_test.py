@@ -657,3 +657,101 @@ def test_expired_cached_session_triggers_login(mocker):
     assert http_request.call_args.args[1] == "login"
     assert client._headers["Cookie"] == "JWTToken=fresh-jwt"
     assert client._headers["X-Xsrf-Token"] == "fresh-xsrf"
+
+
+class LoginResponse:
+    """A successful ESM login response."""
+
+    status_code = 200
+    text = ""
+    headers = {"Xsrf-Token": "fresh-xsrf"}
+
+    class cookies:  # noqa: N801
+        @staticmethod
+        def get(_name):
+            return "fresh-jwt"
+
+
+class ApiResponse:
+    """An ESM response to a command request."""
+
+    def __init__(self, status_code: int, content: bytes):
+        self.status_code = status_code
+        self.content = content
+        self.ok = status_code < 300
+
+    def json(self):
+        return json.loads(self.content)
+
+
+def build_add_watchlist_client(mocker):
+    """Builds a logged-in client and returns it with the patched _http_request for the next call."""
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch.object(McAfeeESMClient, "_http_request", return_value=LoginResponse())
+    client = McAfeeESMClient(
+        {
+            "url": "https://example.com",
+            "insecure": True,
+            "credentials": {"identifier": "NGCP", "password": "NGCP"},
+            "version": "11.6.11",
+        }
+    )
+    http_request = mocker.patch.object(McAfeeESMClient, "_http_request", return_value=ApiResponse(200, b'{"value": 54}'))
+    return client, http_request
+
+
+@pytest.mark.filterwarnings(
+    "ignore::urllib3.exceptions.InsecureRequestWarning", "ignore::pytest.PytestUnraisableExceptionWarning"
+)
+def test_add_watchlist_sends_values(mocker):
+    """
+    Given:
+    - A request to create a watchlist.
+
+    When:
+    - The create-watchlist request body is built.
+
+    Then:
+    - "values" is sent. ESM 11.7.1 rejects a body without it, with the opaque
+      "Error processing request, see server logs for more details (null)". Verified on the
+      appliance: adding "values" as the only change to the failing body creates the watchlist.
+    """
+    client, http_request = build_add_watchlist_client(mocker)
+    client.args = {"name": "test_watchlist", "type": "IPAddress"}
+    client.add_watchlist()
+
+    assert json.loads(http_request.call_args.kwargs["data"]) == {
+        "watchlist": {
+            "name": "test_watchlist",
+            "type": {"name": "IPAddress", "id": 0},
+            "customType": {"name": "IPAddress", "id": 0},
+            "dynamic": False,
+            "enabled": True,
+            "values": [],
+        }
+    }
+
+
+@pytest.mark.filterwarnings(
+    "ignore::urllib3.exceptions.InsecureRequestWarning", "ignore::pytest.PytestUnraisableExceptionWarning"
+)
+def test_add_watchlist_sends_real_booleans(mocker):
+    """
+    Given:
+    - A request to create a watchlist.
+
+    When:
+    - The create-watchlist request body is built.
+
+    Then:
+    - "dynamic" and "enabled" are JSON booleans, not the strings "False"/"True". As strings both
+      values are truthy, so a string "False" could enable a dynamic watchlist.
+    """
+    client, http_request = build_add_watchlist_client(mocker)
+    client.args = {"name": "test_watchlist", "type": "IPAddress"}
+    client.add_watchlist()
+
+    watchlist = json.loads(http_request.call_args.kwargs["data"])["watchlist"]
+    assert watchlist["dynamic"] is False
+    assert watchlist["enabled"] is True

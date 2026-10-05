@@ -799,9 +799,10 @@ class McAfeeESMClient(BaseClient):
             "watchlist": {
                 "name": watchlist_name,
                 "type": {"name": watchlist_type, "id": 0},
-                "customType": {"name": "", "id": 0},
-                "dynamic": "False",
-                "enabled": "True",
+                "customType": {"name": watchlist_type, "id": 0},
+                "dynamic": False,
+                "enabled": True,
+                "values": [],
             }
         }
         watchlist_id = self.__request(command, data=data)
