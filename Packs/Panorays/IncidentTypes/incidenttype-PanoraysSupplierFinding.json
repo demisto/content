@@ -7,6 +7,9 @@
     "hours": 0,
     "days": 0,
     "weeks": 0,
+    "hoursR": 1,
+    "daysR": 1,
+    "weeksR": 1,
     "autorun": false,
     "system": false,
     "readonly": false,
@@ -18,5 +21,9 @@
         "fieldCliNameToExtractSettings": {}
     },
     "fromVersion": "6.10.0",
-    "layout": "Panorays Supplier Finding"
+    "layout": "Panorays Supplier Finding",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

@@ -14,5 +14,9 @@
     "content": true,
     "system": false,
     "unsearchable": true,
-    "required": false
+    "required": false,
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }
