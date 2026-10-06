@@ -73,8 +73,8 @@ Describe "SearchAuditLogCommand Tests" {
             $result = SearchAuditLogCommand $mockedClient $command_arguments
 
             $result[0] | Should -Be "Audit log from $(Get-Date) to $(Get-Date) is empty"
-            $result[1] | Should -BeNull
-            $result[2] | Should -BeNull
+            $result[1] | Should -BeNullOrEmpty
+            $result[2] | Should -BeNullOrEmpty
         }
     }
 

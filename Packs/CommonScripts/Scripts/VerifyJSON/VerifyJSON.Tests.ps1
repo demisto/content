@@ -10,7 +10,7 @@ Describe 'VerifJSON' {
         It 'Check Valid Json passes' {
             $demisto.ContextArgs = @{json = '{"test": "this"}' }
             Main
-            Assert-MockCalled -CommandName ReturnOutputs -Times 1
+            Should -Invoke -CommandName ReturnOutputs -Times 1
         }
     }
 
@@ -21,7 +21,7 @@ Describe 'VerifJSON' {
         It 'Check InValid Json fails' {
             $demisto.ContextArgs = @{json = '{"test": this"}' }
             Main
-            Assert-MockCalled -CommandName ReturnError -Times 1 -ParameterFilter {$Message.Contains("Cannot parse the JSON")}
+            Should -Invoke -CommandName ReturnError -Times 1 -ParameterFilter {$Message.Contains("Cannot parse the JSON")}
         }
     }
 
@@ -67,7 +67,7 @@ Describe 'VerifJSON' {
 '@
             $demisto.ContextArgs = @{json = '{"name": "Ashley", "age": "25"}'; schema = $schema}
             Main
-            Assert-MockCalled -CommandName ReturnError -Times 1 -ParameterFilter {$Message.Contains("not valid with the schema")}
+            Should -Invoke -CommandName ReturnError -Times 1 -ParameterFilter {$Message.Contains("not valid with the schema")}
         }
     }
 }
