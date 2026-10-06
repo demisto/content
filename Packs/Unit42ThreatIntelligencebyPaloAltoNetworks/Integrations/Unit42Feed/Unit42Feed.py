@@ -1071,9 +1071,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
 
     cycle_start_time = last_run.get("cycle_start_time") or current_time.strftime(DATE_FORMAT)
 
-    demisto.debug(
-        f"UNIT42FEED: Starting fetch with {TOTAL_INDICATOR_LIMIT=}, {THREAT_OBJECTS_LIMIT=}, {feed_types=}"
-    )
+    demisto.debug(f"UNIT42FEED: Starting fetch with {TOTAL_INDICATOR_LIMIT=}, {THREAT_OBJECTS_LIMIT=}, {feed_types=}")
     demisto.debug(f"UNIT42FEED: {indicator_types=}, {start_time=}, {cycle_in_progress=}")
 
     # Incoming per-feed resume tokens from an interrupted fetch.
