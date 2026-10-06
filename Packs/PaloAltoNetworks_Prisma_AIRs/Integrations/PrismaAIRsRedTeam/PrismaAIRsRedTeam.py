@@ -57,7 +57,7 @@ def redteam_targets_list_command(client: Client, args: dict[str, Any]) -> Comman
     """List all Red Team targets.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -105,7 +105,7 @@ def redteam_targets_list_command(client: Client, args: dict[str, Any]) -> Comman
         targets.append(target_info)
 
     readable_output = tableToMarkdown(
-        "Prisma AIRs Red Team Targets",
+        "Prisma AIRS Red Team Targets",
         targets,
         headers=["uuid", "name", "target_type", "status", "active", "validated", "created_at"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -124,7 +124,7 @@ def redteam_targets_create_command(client: Client, args: dict[str, Any]) -> Comm
     """Create a new Red Team target.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -211,7 +211,7 @@ def redteam_targets_get_command(client: Client, args: dict[str, Any]) -> Command
     """Get Red Team target details by UUID.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -283,7 +283,7 @@ def redteam_targets_update_command(client: Client, args: dict[str, Any]) -> Comm
     """Update an existing Red Team target.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -386,7 +386,7 @@ def redteam_targets_delete_command(client: Client, args: dict[str, Any]) -> Comm
     """Delete a Red Team target.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -430,7 +430,7 @@ def redteam_instances_create_command(client: Client, args: dict[str, Any]) -> Co
     """Create a new Red Team tenant instance.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -513,7 +513,7 @@ def redteam_instances_get_command(client: Client, args: dict[str, Any]) -> Comma
     """Get a Red Team tenant instance by tenant ID.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -566,7 +566,7 @@ def redteam_instances_update_command(client: Client, args: dict[str, Any]) -> Co
     """Update an existing Red Team tenant instance.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -647,7 +647,7 @@ def redteam_instances_delete_command(client: Client, args: dict[str, Any]) -> Co
     """Delete a Red Team tenant instance.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -697,7 +697,7 @@ def _resolve_device_instance(client: Client, tenant_id: str, args: dict[str, Any
     the tenant_id in the common case.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         tenant_id: The tenant ID of the parent instance.
         args: Command arguments from XSOAR.
 
@@ -789,7 +789,7 @@ def redteam_devices_create_command(client: Client, args: dict[str, Any]) -> Comm
     """Create one or more devices on a Red Team tenant instance.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -822,7 +822,7 @@ def redteam_devices_update_command(client: Client, args: dict[str, Any]) -> Comm
     """Update one or more devices on a Red Team tenant instance.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -855,7 +855,7 @@ def redteam_devices_delete_command(client: Client, args: dict[str, Any]) -> Comm
     """Delete one or more devices from a Red Team tenant instance.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -968,7 +968,7 @@ def _assert_channel_online(client: Client, channel_uuid: str) -> None:
     broker-online check.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         channel_uuid: Network broker channel UUID.
 
     Raises:
@@ -993,7 +993,7 @@ def redteam_adapters_list_command(client: Client, args: dict[str, Any]) -> Comma
     """List Red Team custom target adapters.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1017,7 +1017,7 @@ def redteam_adapters_list_command(client: Client, args: dict[str, Any]) -> Comma
     adapters = [_parse_adapter(adapter) for adapter in response.get("data", [])]
 
     readable_output = tableToMarkdown(
-        "Prisma AIRs Red Team Adapters",
+        "Prisma AIRS Red Team Adapters",
         adapters,
         headers=["uuid", "name", "status", "target_count", "created_at", "updated_at"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -1037,7 +1037,7 @@ def redteam_adapters_get_command(client: Client, args: dict[str, Any]) -> Comman
     """Get a single Red Team custom target adapter by UUID.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1073,7 +1073,7 @@ def redteam_adapters_create_command(client: Client, args: dict[str, Any]) -> Com
     """Create a new Red Team custom target adapter.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1144,7 +1144,7 @@ def redteam_adapters_update_command(client: Client, args: dict[str, Any]) -> Com
     can change one field without wiping the rest.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1238,7 +1238,7 @@ def redteam_adapters_delete_command(client: Client, args: dict[str, Any]) -> Com
     """Delete a Red Team custom target adapter.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1280,7 +1280,7 @@ def redteam_adapters_validate_command(client: Client, args: dict[str, Any]) -> C
     returns the execution outcome (validated + stdout/stderr/traceback), not an adapter record.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1344,7 +1344,7 @@ def redteam_targets_probe_command(client: Client, args: dict[str, Any]) -> Comma
     """Probe a Red Team target to validate connectivity and profiling.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1434,7 +1434,7 @@ def redteam_targets_profile_command(client: Client, args: dict[str, Any]) -> Com
     """Get Red Team target profile (background, context, profiling status).
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1501,7 +1501,7 @@ def redteam_targets_update_profile_command(client: Client, args: dict[str, Any])
     """Update Red Team target profile (background and additional context).
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1586,7 +1586,7 @@ def redteam_targets_metadata_command(client: Client, args: dict[str, Any]) -> Co
     fields are available when creating or updating targets.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1635,7 +1635,7 @@ def redteam_targets_validate_auth_command(client: Client, args: dict[str, Any]) 
     creating a target.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1705,7 +1705,7 @@ def redteam_targets_templates_command(client: Client, args: dict[str, Any]) -> C
     target provider type.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1744,11 +1744,11 @@ def redteam_targets_templates_command(client: Client, args: dict[str, Any]) -> C
 def redteam_targets_error_logs_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List target-profile (profiling) error logs for a Red Team target.
 
-    Returns the profiling failures recorded while Prisma AIRs was probing/profiling the
+    Returns the profiling failures recorded while Prisma AIRS was probing/profiling the
     target (e.g. connection, probe, or authentication errors), newest first.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1827,7 +1827,7 @@ def redteam_scan_error_logs_command(client: Client, args: dict[str, Any]) -> Com
     logs (which cover profiling), these are scoped to a single scan job.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1905,7 +1905,7 @@ def redteam_dashboard_scan_statistics_command(client: Client, args: dict[str, An
     and risk rating. Optional filters narrow the window (date_range) or a single target (target_id).
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1976,7 +1976,7 @@ def redteam_dashboard_score_trend_command(client: Client, args: dict[str, Any]) 
     given target.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2032,7 +2032,7 @@ def redteam_metering_quota_command(client: Client, args: dict[str, Any]) -> Comm
     custom). Called as a POST with no body, mirroring the SDK.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR (unused).
 
     Returns:
@@ -2087,7 +2087,7 @@ def redteam_dashboard_overview_command(client: Client, args: dict[str, Any]) -> 
     Returns the total target count and, when available, a breakdown of targets by type.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR (unused).
 
     Returns:
@@ -2138,7 +2138,7 @@ def redteam_scan_create_command(client: Client, args: dict[str, Any]) -> Command
     Use prisma-airs-redteam-scan-get to check status, or implement polling in a playbook.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2290,7 +2290,7 @@ def redteam_scans_list_command(client: Client, args: dict[str, Any]) -> CommandR
     """List all Red Team scans.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2336,7 +2336,7 @@ def redteam_scans_list_command(client: Client, args: dict[str, Any]) -> CommandR
         scans.append(scan_info)
 
     readable_output = tableToMarkdown(
-        "Prisma AIRs Red Team Scans",
+        "Prisma AIRS Red Team Scans",
         scans,
         headers=["uuid", "job_type", "status", "target_name", "progress", "created_at"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -2355,7 +2355,7 @@ def redteam_scan_get_command(client: Client, args: dict[str, Any]) -> CommandRes
     """Get Red Team scan status and details.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2433,7 +2433,7 @@ def redteam_scan_abort_command(client: Client, args: dict[str, Any]) -> CommandR
     """Abort a running Red Team scan.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2473,7 +2473,7 @@ def redteam_categories_list_command(client: Client, args: dict[str, Any]) -> Com
     """List Red Team attack categories.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2559,7 +2559,7 @@ def redteam_network_channels_list_command(client: Client, args: dict[str, Any]) 
     """List Red Team network broker channels.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2592,7 +2592,7 @@ def redteam_network_channels_list_command(client: Client, args: dict[str, Any]) 
     channels = [_parse_network_channel(channel) for channel in response.get("data", [])]
 
     readable_output = tableToMarkdown(
-        "Prisma AIRs Red Team Network Channels",
+        "Prisma AIRS Red Team Network Channels",
         channels,
         headers=["uuid", "name", "status", "description", "last_online_at", "created_at"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -2611,7 +2611,7 @@ def redteam_network_channels_create_command(client: Client, args: dict[str, Any]
     """Create a new Red Team network broker channel.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2654,7 +2654,7 @@ def redteam_network_channels_stats_command(client: Client, args: dict[str, Any])
     """Get Red Team network broker channel statistics and deployment info.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2675,7 +2675,7 @@ def redteam_network_channels_stats_command(client: Client, args: dict[str, Any])
     }
 
     readable_output = tableToMarkdown(
-        "Prisma AIRs Red Team Network Channel Stats",
+        "Prisma AIRS Red Team Network Channel Stats",
         [stats_info],
         headers=[
             "network_channels_server_domain",
@@ -2701,7 +2701,7 @@ def redteam_network_channels_get_command(client: Client, args: dict[str, Any]) -
     """Get a single Red Team network broker channel by UUID.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2719,7 +2719,7 @@ def redteam_network_channels_get_command(client: Client, args: dict[str, Any]) -
     channel_info = _parse_network_channel(response)
 
     readable_output = tableToMarkdown(
-        "Prisma AIRs Red Team Network Channel",
+        "Prisma AIRS Red Team Network Channel",
         [channel_info],
         headers=["uuid", "name", "status", "description", "last_online_at", "created_at", "updated_at"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -2738,7 +2738,7 @@ def redteam_network_channels_update_command(client: Client, args: dict[str, Any]
     """Update a Red Team network broker channel's name and/or description.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2793,7 +2793,7 @@ def redteam_languages_list_command(client: Client, args: dict[str, Any]) -> Comm
     management plane (identical response shape, possibly a different subset).
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2822,7 +2822,7 @@ def redteam_languages_list_command(client: Client, args: dict[str, Any]) -> Comm
 
     supported = ", ".join(str(job_type) for job_type in supported_job_types)
     title = (
-        f"Prisma AIRs Red Team Supported Languages "
+        f"Prisma AIRS Red Team Supported Languages "
         f"(multilingual_enabled: {languages_info['multilingual_enabled']}; job types: {supported or 'N/A'})"
     )
     readable_output = tableToMarkdown(
@@ -2845,7 +2845,7 @@ def redteam_report_get_command(client: Client, args: dict[str, Any]) -> CommandR
     """Get Red Team scan report.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2984,7 +2984,7 @@ def redteam_report_attacks_list_command(client: Client, args: dict[str, Any]) ->
     """List attacks for a Red Team static scan report.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3036,7 +3036,7 @@ def redteam_report_attacks_list_command(client: Client, args: dict[str, Any]) ->
         )
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs Red Team Attacks - Job {job_id}",
+        f"Prisma AIRS Red Team Attacks - Job {job_id}",
         attacks,
         headers=["uuid", "category_display_name", "sub_category_display_name", "severity", "status", "threat"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3056,7 +3056,7 @@ def redteam_report_attack_get_command(client: Client, args: dict[str, Any]) -> C
     """Get attack details for a Red Team static scan report.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3096,7 +3096,7 @@ def redteam_report_attack_get_command(client: Client, args: dict[str, Any]) -> C
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs Red Team Attack - {attack_id}",
+        f"Prisma AIRS Red Team Attack - {attack_id}",
         [attack],
         headers=["uuid", "category_display_name", "sub_category_display_name", "severity", "status", "threat", "goal"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3127,7 +3127,7 @@ def redteam_report_attack_multi_turn_get_command(client: Client, args: dict[str,
     """Get multi-turn attack details for a Red Team static scan report.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3167,7 +3167,7 @@ def redteam_report_attack_multi_turn_get_command(client: Client, args: dict[str,
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs Red Team Multi-Turn Attack - {attack_id}",
+        f"Prisma AIRS Red Team Multi-Turn Attack - {attack_id}",
         [attack],
         headers=["uuid", "category_display_name", "sub_category_display_name", "severity", "status", "threat", "goal"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3205,7 +3205,7 @@ def redteam_report_remediation_get_command(client: Client, args: dict[str, Any])
     """Get remediation recommendations for a Red Team scan report.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3234,7 +3234,7 @@ def redteam_report_remediation_get_command(client: Client, args: dict[str, Any])
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs Red Team Remediations - Job {job_id}",
+        f"Prisma AIRS Red Team Remediations - Job {job_id}",
         remediations,
         headers=["remediation", "priority_level", "effectiveness_level", "ease_of_implementation_level"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3254,7 +3254,7 @@ def redteam_report_runtime_policy_get_command(client: Client, args: dict[str, An
     """Get the runtime security profile config derived from a Red Team scan report.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3283,7 +3283,7 @@ def redteam_report_runtime_policy_get_command(client: Client, args: dict[str, An
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs Red Team Runtime Security Profile - Job {job_id}",
+        f"Prisma AIRS Red Team Runtime Security Profile - Job {job_id}",
         runtime_security_profile,
         headers=["policy_id", "display_name"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3303,7 +3303,7 @@ def redteam_report_goals_list_command(client: Client, args: dict[str, Any]) -> C
     """List goals for a Red Team dynamic scan report.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3351,7 +3351,7 @@ def redteam_report_goals_list_command(client: Client, args: dict[str, Any]) -> C
         )
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs Red Team Goals - Job {job_id}",
+        f"Prisma AIRS Red Team Goals - Job {job_id}",
         goals,
         headers=["uuid", "goal", "goal_type", "custom_goal", "threat"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3371,7 +3371,7 @@ def redteam_report_goal_streams_list_command(client: Client, args: dict[str, Any
     """List streams for a goal in a Red Team dynamic scan report.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3419,7 +3419,7 @@ def redteam_report_goal_streams_list_command(client: Client, args: dict[str, Any
         )
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs Red Team Goal Streams - Goal {goal_id}",
+        f"Prisma AIRS Red Team Goal Streams - Goal {goal_id}",
         streams,
         headers=["uuid", "goal_id", "target_id", "stream_type", "threat", "marked_safe"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3439,7 +3439,7 @@ def redteam_report_stream_get_command(client: Client, args: dict[str, Any]) -> C
     """Get stream details for a Red Team dynamic scan report.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3472,7 +3472,7 @@ def redteam_report_stream_get_command(client: Client, args: dict[str, Any]) -> C
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs Red Team Stream - {stream_id}",
+        f"Prisma AIRS Red Team Stream - {stream_id}",
         [stream],
         headers=["uuid", "job_id", "goal_id", "target_id", "stream_type", "threat", "marked_safe"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3542,7 +3542,7 @@ def redteam_report_download_command(client: Client, args: dict[str, Any]) -> dic
     the file, then returns it as a War Room attachment.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3583,7 +3583,7 @@ def redteam_report_generate_partial_command(client: Client, args: dict[str, Any]
     Returns the updated job information reflecting the unlocked report.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3647,7 +3647,7 @@ def redteam_eula_status_command(client: Client, args: dict[str, Any]) -> Command
     """Get Red Team EULA acceptance status.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3690,7 +3690,7 @@ def redteam_eula_content_command(client: Client, args: dict[str, Any]) -> Comman
     """Get Red Team EULA content (full text).
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3734,7 +3734,7 @@ def redteam_eula_accept_command(client: Client, args: dict[str, Any]) -> Command
     """Accept the Red Team EULA.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3791,7 +3791,7 @@ def redteam_prompts_create_command(client: Client, args: dict[str, Any]) -> Comm
     """Create a new prompt in a prompt set.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - prompt_set_uuid (required): UUID of the prompt set
               - prompt (required): The prompt text
@@ -3880,7 +3880,7 @@ def redteam_prompts_list_command(client: Client, args: dict[str, Any]) -> Comman
     """List prompts in a prompt set.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - prompt_set_uuid (required): UUID of the prompt set
               - limit (optional): Max records to return
@@ -3982,7 +3982,7 @@ def redteam_prompts_get_command(client: Client, args: dict[str, Any]) -> Command
     """Get a specific prompt by UUID.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - prompt_set_uuid (required): UUID of the prompt set
               - prompt_uuid (required): UUID of the prompt
@@ -4063,7 +4063,7 @@ def redteam_prompts_update_command(client: Client, args: dict[str, Any]) -> Comm
     """Update an existing prompt.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - prompt_set_uuid (required): UUID of the prompt set
               - prompt_uuid (required): UUID of the prompt to update
@@ -4160,7 +4160,7 @@ def redteam_prompts_delete_command(client: Client, args: dict[str, Any]) -> Comm
     """Delete a prompt from a prompt set.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - prompt_set_uuid (required): UUID of the prompt set
               - prompt_uuid (required): UUID of the prompt to delete
@@ -4221,7 +4221,7 @@ def redteam_prompt_sets_create_command(client: Client, args: dict[str, Any]) -> 
     """Create a new Red Team prompt set for custom attack scenarios.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - name (required): Name of the prompt set
               - description (optional): Description of the prompt set
@@ -4311,7 +4311,7 @@ def redteam_prompt_sets_list_command(client: Client, args: dict[str, Any]) -> Co
     """List Red Team prompt sets for custom attack scenarios.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - limit (optional): Max records to return
               - skip (optional): Number of records to skip
@@ -4414,7 +4414,7 @@ def redteam_prompt_sets_get_command(client: Client, args: dict[str, Any]) -> Com
     """Get details of a specific Red Team prompt set.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - uuid (required): UUID of the prompt set
 
@@ -4497,7 +4497,7 @@ def redteam_prompt_sets_update_command(client: Client, args: dict[str, Any]) -> 
     """Update an existing Red Team prompt set.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - uuid (required): UUID of the prompt set to update
               - name (optional): Updated name
@@ -4602,7 +4602,7 @@ def redteam_prompt_sets_archive_command(client: Client, args: dict[str, Any]) ->
     """Archive or unarchive a Red Team prompt set.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - uuid (required): UUID of the prompt set
               - archive (required): Archive status (true or false)
@@ -4694,7 +4694,7 @@ def redteam_registry_credentials_get_command(client: Client, args: dict[str, Any
     """Get or create Red Team registry credentials for pulling scanner images.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR (no arguments required).
 
     Returns:
@@ -4728,7 +4728,7 @@ def redteam_registry_credentials_get_command(client: Client, args: dict[str, Any
         removeNull=True,
     )
     readable_output += (
-        "\n\n**Note:** These credentials are used to pull Red Team scanner container images from the Prisma AIRs registry."
+        "\n\n**Note:** These credentials are used to pull Red Team scanner container images from the Prisma AIRS registry."
     )
 
     return CommandResults(
@@ -4745,7 +4745,7 @@ def redteam_prompt_sets_download_command(client: Client, args: dict[str, Any]) -
     """Download CSV template for a prompt set.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -4788,7 +4788,7 @@ def redteam_prompt_sets_upload_command(client: Client, args: dict[str, Any]) -> 
     """Upload CSV file with prompts to a prompt set.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -4901,7 +4901,7 @@ def redteam_prompt_sets_reference_command(client: Client, args: dict[str, Any]) 
     """Resolve a prompt set reference (data-plane consumption view).
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - uuid (required): UUID of the prompt set.
 
@@ -4944,7 +4944,7 @@ def redteam_prompt_sets_version_info_command(client: Client, args: dict[str, Any
     """Get version information for a prompt set.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - uuid (required): UUID of the prompt set.
               - version (optional): A specific version ID to query.
@@ -5022,7 +5022,7 @@ def redteam_prompt_sets_active_list_command(client: Client, args: dict[str, Any]
     """List active prompt sets (data-plane consumption view).
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -5064,7 +5064,7 @@ def redteam_properties_list_command(client: Client, args: dict[str, Any]) -> Com
     filter custom attack prompts. Read-only.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -5102,7 +5102,7 @@ def redteam_properties_values_command(client: Client, args: dict[str, Any]) -> C
     {name, values} entries.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -5171,7 +5171,7 @@ def redteam_properties_create_command(client: Client, args: dict[str, Any]) -> C
     """Create a new custom-attack property name.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -5217,7 +5217,7 @@ def redteam_properties_add_value_command(client: Client, args: dict[str, Any]) -
     """Add an allowed value to an existing custom-attack property name.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -5290,7 +5290,7 @@ def redteam_sentiment_get_command(client: Client, args: dict[str, Any]) -> Comma
     """Get the sentiment (up/down-vote) recorded for a Red Team scan report.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -5328,7 +5328,7 @@ def redteam_sentiment_update_command(client: Client, args: dict[str, Any]) -> Co
     """Update the sentiment (up/down-vote) for a Red Team scan report.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -5454,7 +5454,7 @@ def redteam_custom_attack_report_get_command(client: Client, args: dict[str, Any
     """Get the custom-attack report summary for a scan job.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - job_id (required): The job UUID of the custom-attack scan.
 
@@ -5508,7 +5508,7 @@ def redteam_custom_attack_report_prompt_sets_command(client: Client, args: dict[
     """Get the prompt-set breakdown for a custom-attack scan report.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - job_id (required): The job UUID of the custom-attack scan.
 
@@ -5561,7 +5561,7 @@ def redteam_custom_attack_report_prompts_command(client: Client, args: dict[str,
     """List prompts for a specific prompt set within a custom-attack scan report.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - job_id (required): The job UUID of the custom-attack scan.
               - prompt_set_id (required): The prompt-set UUID.
@@ -5617,7 +5617,7 @@ def redteam_custom_attack_report_prompt_get_command(client: Client, args: dict[s
     """Get details for a single prompt within a custom-attack scan report.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - job_id (required): The job UUID of the custom-attack scan.
               - prompt_id (required): The prompt UUID.
@@ -5664,7 +5664,7 @@ def redteam_custom_attacks_list_command(client: Client, args: dict[str, Any]) ->
     """List custom attacks for a scan job.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - job_id (required): The job UUID of the custom-attack scan.
               - threat (optional): Filter to threat attacks only.
@@ -5727,7 +5727,7 @@ def redteam_custom_attack_outputs_command(client: Client, args: dict[str, Any]) 
     """List the target outputs for a single custom attack.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - job_id (required): The job UUID of the custom-attack scan.
               - attack_id (required): The custom-attack UUID.
@@ -5789,7 +5789,7 @@ def redteam_custom_attack_property_stats_command(client: Client, args: dict[str,
     """Get per-property attack-success statistics for a custom-attack scan.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
               - job_id (required): The job UUID of the custom-attack scan.
 
@@ -5847,7 +5847,7 @@ def redteam_custom_attack_property_stats_command(client: Client, args: dict[str,
 
 
 def main() -> None:
-    """Main function for Prisma AIRs AI Red Teaming integration."""
+    """Main function for Prisma AIRS AI Red Teaming integration."""
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()

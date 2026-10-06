@@ -1,0 +1,28 @@
+{
+   "saviynt_eic_raw":{
+      "event_hash": {
+         "type":"string",
+         "is_array":false
+      },
+      "IP_Address": {
+         "type":"string",
+         "is_array":false
+      },
+      "Accessed_By": {
+         "type":"string",
+         "is_array":false
+      },
+      "Object_Type": {
+         "type":"string",
+         "is_array":false
+      },
+      "Action_Taken": {
+         "type":"string",
+         "is_array":false
+      },
+      "Message": {
+         "type":"string",
+         "is_array":false
+      }
+   }
+}

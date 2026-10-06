@@ -6,6 +6,8 @@ from OrcaEventCollector import (
     Client,
     DEFAULT_PAGE_SIZE,
     TEST_MODULE_LIMIT,
+    MAX_RETRIES,
+    RETRY_STATUS_CODES,
     get_alerts,
     add_time_key_to_alerts,
     add_entry_status_to_alerts,
@@ -104,7 +106,13 @@ def test_client_get_alerts_request_payload(mocker, start_index):
         ],
     }
 
-    mock_http_request.assert_called_once_with(method="POST", url_suffix="/serving-layer/query", json_data=expected_payload)
+    mock_http_request.assert_called_once_with(
+        method="POST",
+        url_suffix="/serving-layer/query",
+        json_data=expected_payload,
+        retries=MAX_RETRIES,
+        status_list_to_retry=RETRY_STATUS_CODES,
+    )
 
 
 # --- HELPER FUNCTION TESTS ---
@@ -937,3 +945,28 @@ def test_main_get_events_command(mocker):
 
     # 3. Verify last_run was NOT touched by the manual get-events command.
     mock_set_last_run.assert_not_called()
+
+
+# --- RATE-LIMIT (HTTP 429) RESILIENCE TESTS ---
+
+
+def test_get_alerts_request_wires_429_retry(mocker):
+    """
+    Given:
+        - A Serving Layer page request.
+    When:
+        - get_alerts_request calls _http_request.
+    Then:
+        - _http_request is asked to retry (retries=MAX_RETRIES) on HTTP 429
+          (status_list_to_retry contains 429), so a rate-limited page does not abort the fetch.
+    """
+    mock_http = mocker.patch.object(Client, "_http_request", return_value={"data": []})
+    mocker.patch.object(demisto, "debug")
+    client = Client(server_url="https://test.com/api", headers={})
+
+    client.get_alerts_request(page_size=100, start_index=0, last_fetch="2023-01-01T00:00:00Z", end_time="2023-01-04T00:00:00Z")
+
+    _, kwargs = mock_http.call_args
+    assert kwargs.get("retries") == MAX_RETRIES
+    assert 429 in (kwargs.get("status_list_to_retry") or [])
+    assert RETRY_STATUS_CODES == [429]
