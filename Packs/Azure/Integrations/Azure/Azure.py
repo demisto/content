@@ -4471,7 +4471,7 @@ def query_entity_command(client: AzureClient, params: dict, args: dict) -> Comma
     # (empty when there are no more results). Only relevant for multi-entity queries.
     next_page_partition_key = response.headers.get("x-ms-continuation-NextPartitionKey")
     next_page_row_key = response.headers.get("x-ms-continuation-NextRowKey")
-    entities_next_token = f"{next_page_partition_key}\t{next_page_row_key}" if next_page_partition_key else None
+    entities_next_token = f"{next_page_partition_key}\t{next_page_row_key or ''}" if next_page_partition_key else None
 
     outputs: dict[str, Any] = {
         "Azure.Storage.Table.Entity(val.PartitionKey && val.PartitionKey == obj.PartitionKey "
