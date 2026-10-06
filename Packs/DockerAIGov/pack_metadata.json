@@ -1,6 +1,6 @@
 {
     "name": "Docker AI Governance",
-    "description": "Monitor AI agents governed by Docker's policy enforcement point. Normalises audit records to XDM and detects credential access and policy denial.",
+    "description": "Monitor AI agents governed by Docker's policy enforcement point.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Nadav Kanon",
