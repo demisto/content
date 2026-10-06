@@ -23,6 +23,11 @@ configuration:
   hiddenusername: true
   type: 9
   section: Connect
+- display: Fetch Events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
 - additionalinfo: The time range to consider for the initial data fetch. (<number> <unit>, e.g., 2 days, 2 months, 2 years). Default is 1 day.
   defaultvalue: 1 day
   display: First fetch time interval
@@ -50,8 +55,8 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: KnowBe4_KMSAT allows you to push and pull your external data to and from the KnowBe4 console.
-display: 'KnowBe4 KMSAT Event Collector'
+description: KnowBe4 KSAT allows you to push and pull your external data to and from the KnowBe4 console. For subscription levels and pricing, see https://www.knowbe4.com/products/security-awareness-training/pricing.
+display: 'KnowBe4 KSAT Event Collector'
 name: KnowBe4 KMSAT Event Collector
 supportlevelheader: xsoar
 script:
@@ -122,7 +127,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.14.13495286
   isfetchevents: true
 fromversion: 6.8.0
 tests:
@@ -130,3 +135,5 @@ tests:
 marketplaces:
 - marketplacev2
 - platform
+supportedModules:
+- xsiam

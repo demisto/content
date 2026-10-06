@@ -1,0 +1,11 @@
+{
+  "action": "block",
+  "created_at": "2025-04-23T17:22:24.023Z",
+  "creator_fullname": "John Doe",
+  "description": "This policy blocks high-risk extensions",
+  "enabled": true,
+  "group_ids": [1, 2, 3],
+  "id": 1,
+  "name": "My Policy",
+  "updated_at": "2025-04-23T17:22:24.023Z"
+}

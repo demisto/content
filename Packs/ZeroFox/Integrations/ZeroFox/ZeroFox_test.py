@@ -1,3 +1,4 @@
+import io
 import json
 from urllib.parse import urlencode, urljoin
 
@@ -1068,6 +1069,7 @@ def test_submit_threat_command(requests_mock, mocker):
     alert_type = "email"
     violation = "phishing"
     entity_id = "123"
+    request_takedown = True
     alert_id = "123"
     submit_response = load_json("test_data/alerts/submit_threat.json")
     alert_response = load_json("test_data/alerts/opened_alert.json")
@@ -1080,6 +1082,7 @@ def test_submit_threat_command(requests_mock, mocker):
         "alert_type": alert_type,
         "violation": violation,
         "entity_id": entity_id,
+        "request_takedown": request_takedown,
     }
 
     results = submit_threat_command(client, args)
@@ -1321,7 +1324,7 @@ def test_send_alert_attachment_command(requests_mock, mocker):
     requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
     client = build_zf_client()
     spy_send_attachment = mocker.spy(client, "send_alert_attachment")
-    mocker.patch("builtins.open", mocker.mock_open(read_data="data"))
+    mocker.patch("builtins.open", return_value=io.BytesIO(b"data"))
     mocker.patch.object(
         demisto,
         "getFilePath",

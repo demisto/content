@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Intel 471 Watcher Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "intel471url",
+    "closeForm": false,
+    "content": true,
+    "description": "URL of the source object in Intel 471's Portal",
+    "editForm": true,
+    "fromVersion": "6.10.0",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_intel471url",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Intel 471 URL",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": true,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "url",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1
+}

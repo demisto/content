@@ -1,6 +1,9 @@
 fromversion: 8.2.0
+toversion: 8.14.0
 id: ironscales_modeling_rule
 name: IRONSCALES Modeling Rule
 rules: ''
 schema: ''
 tags: ironscales
+supportedModules:
+- xsiam

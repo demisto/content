@@ -8,6 +8,7 @@ from urllib.parse import urlencode
 import demistomock as demisto
 import pytest
 import requests
+import os
 
 import ServiceNowv2
 
@@ -68,6 +69,7 @@ from ServiceNowv2 import (
     split_notes,
     update_record_command,
     update_remote_system_command,
+    update_remote_system_with_entries,
     update_ticket_command,
     upload_file_command,
 )
@@ -502,6 +504,34 @@ def test_get_timezone_offset():
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("mmm-dd-yyyy"))
     assert offset == timedelta(minutes=-300)
 
+    full_response = {"sys_created_on": {"display_value": "07-Dec-2022 00:38:52", "value": "2022-12-06 19:38:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("dd-MMM-yyyy"))
+    assert offset == timedelta(minutes=-300)
+
+    full_response = {"sys_created_on": {"display_value": "07-Dec-2022 00:38:52 AM", "value": "2022-12-06 19:38:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("dd-MMM-yyyy"))
+    assert offset == timedelta(minutes=-300)
+
+    full_response = {"sys_created_on": {"display_value": "12-Mar-2026 11:40:52", "value": "2026-03-12 06:10:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("dd-MMM-yyyy"))
+    assert offset == timedelta(minutes=-330)
+
+    full_response = {"sys_created_on": {"display_value": "08/19/26 15:38:52", "value": "2026-08-19 13:38:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("MM/dd/yy"))
+    assert offset == timedelta(minutes=-120)
+
+    full_response = {"sys_created_on": {"display_value": "19/08/26 15:38:52", "value": "2026-08-19 13:38:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("dd/MM/yy"))
+    assert offset == timedelta(minutes=-120)
+
+    full_response = {"sys_created_on": {"display_value": "2022/12/07 05:38:52", "value": "2022-12-07 13:38:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("yyyy/MM/dd"))
+    assert offset == timedelta(minutes=480)
+
+    full_response = {"sys_created_on": {"display_value": "2022.12.07 05:38:52", "value": "2022-12-07 13:38:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("yyyy.MM.dd"))
+    assert offset == timedelta(minutes=480)
+
 
 def test_get_ticket_notes_command_success(mocker):
     """
@@ -645,7 +675,9 @@ def test_get_ticket_notes_command_use_display_value_no_comments(mocker):
                 {
                     "Type": 1,
                     "Category": None,
+                    "HumanReadable": "Type: comments\nCreated By: Test User\nCreated On: 2022-11-21 20:45:37\nFirst comment",
                     "Contents": "Type: comments\nCreated By: Test User\nCreated On: 2022-11-21 20:45:37\nFirst comment",
+                    "created": "2022-11-21 20:45:37",
                     "ContentsFormat": None,
                     "Tags": ["CommentFromServiceNow"],
                     "Note": True,
@@ -666,6 +698,129 @@ def test_get_entries_for_notes_with_comment(notes, params, expected):
         - Should return a list of entry contexts
     """
     assert get_entries_for_notes(notes, params) == expected
+
+
+@pytest.mark.parametrize(
+    "notes, params, expected",
+    [
+        (
+            [
+                {
+                    "value": "[code]<p>test</p>[/code]",
+                    "sys_created_by": "Test User",
+                    "sys_created_on": "2022-11-21 20:45:37",
+                    "element": "comments",
+                }
+            ],
+            {"comment_tag_from_servicenow": "CommentFromServiceNow", "comment_format": "html"},
+            [
+                {
+                    "Type": 1,
+                    "Category": None,
+                    "Contents": "Type: comments<br>Created By: Test User<br>Created On: 2022-11-21 20:45:37<br><p>test</p>",
+                    "created": "2022-11-21 20:45:37",
+                    "ContentsFormat": "html",
+                    "Tags": ["CommentFromServiceNow"],
+                    "Note": True,
+                    "EntryContext": {"comments_and_work_notes": "[code]<p>test</p>[/code]"},
+                }
+            ],
+        )
+    ],
+)
+def test_get_entries_for_notes_with_comment_and_format(notes, params, expected):
+    """
+    Given
+        - A list of notes
+        - Params containing comment tag
+    When
+        - Calling get_entries_for_notes
+    Then
+        - Should return a list of entry contexts
+    """
+    assert get_entries_for_notes(notes, params) == expected
+
+
+@pytest.mark.parametrize(
+    "notes, params, expected_format, expected_value",
+    [
+        # comment_format="source" (explicit) -> use the note's own format, value unchanged.
+        (
+            [
+                {
+                    "value": "[code]<p>test</p>[/code]",
+                    "sys_created_by": "Test User",
+                    "sys_created_on": "2022-11-21 20:45:37",
+                    "element": "comments",
+                    "format": "html",
+                }
+            ],
+            {"comment_tag_from_servicenow": "CommentFromServiceNow", "comment_format": "source"},
+            "html",
+            "[code]<p>test</p>[/code]",
+        ),
+        # comment_format="text" -> force the format, no [code] stripping.
+        (
+            [
+                {
+                    "value": "[code]<p>test</p>[/code]",
+                    "sys_created_by": "Test User",
+                    "sys_created_on": "2022-11-21 20:45:37",
+                    "element": "comments",
+                }
+            ],
+            {"comment_tag_from_servicenow": "CommentFromServiceNow", "comment_format": "text"},
+            "text",
+            "[code]<p>test</p>[/code]",
+        ),
+        # comment_format="html" but no [code] wrapper -> value left intact.
+        (
+            [
+                {
+                    "value": "<p>plain</p>",
+                    "sys_created_by": "Test User",
+                    "sys_created_on": "2022-11-21 20:45:37",
+                    "element": "comments",
+                }
+            ],
+            {"comment_tag_from_servicenow": "CommentFromServiceNow", "comment_format": "html"},
+            "html",
+            "<p>plain</p>",
+        ),
+        # No comment_format -> defaults to "source", uses the note's own format.
+        (
+            [
+                {
+                    "value": "Plain comment",
+                    "sys_created_by": "Test User",
+                    "sys_created_on": "2022-11-21 20:45:37",
+                    "element": "comments",
+                    "format": "text",
+                }
+            ],
+            {"comment_tag_from_servicenow": "CommentFromServiceNow"},
+            "text",
+            "Plain comment",
+        ),
+    ],
+)
+def test_get_entries_for_notes_comment_format_variations(notes, params, expected_format, expected_value):
+    """
+    Given
+        - A list of notes and a comment_format param (source / text / html-without-code / absent)
+    When
+        - Calling get_entries_for_notes
+    Then
+        - The entry ContentsFormat and value reflect the comment_format handling:
+          'source' (or absent) uses the note's own format, non-html formats are passed through without
+          stripping, and 'html' only strips a [code]...[/code] wrapper when present.
+    """
+    result = get_entries_for_notes(notes, params)
+    assert len(result) == 1
+    assert result[0]["ContentsFormat"] == expected_format
+    assert result[0]["EntryContext"]["comments_and_work_notes"] == notes[0]["value"]
+    # "html" entries only carry "Contents" (no "HumanReadable"); other formats carry both.
+    assert result[0]["Contents"].endswith(expected_value)
 
 
 @pytest.mark.parametrize(
@@ -2527,6 +2682,45 @@ def test_get_modified_remote_data(requests_mock, mocker, api_response):
     )
 
 
+def test_get_modified_remote_data_unparseable_last_update(requests_mock, mocker):
+    """
+    Given:
+        - lastUpdate is "0" (uninitialized dbotMirrorLastSync sent by XSOAR)
+
+    When:
+        - Running get-modified-remote-data
+
+    Then:
+        - The command does not raise an error and falls back to epoch time (1970-01-01 00:00:00)
+    """
+    mocker.patch.object(demisto, "debug")
+    url = "https://test.service-now.com/api/now/v2/"
+    client = Client(
+        url,
+        "sc_server_url",
+        "cr_server_url",
+        "username",
+        "password",
+        "verify",
+        "fetch_time",
+        "sysparm_query",
+        "sysparm_limit",
+        "timestamp_field",
+        "ticket_type",
+        "get_attachments",
+        "incident_name",
+    )
+    params = {
+        "sysparm_limit": "100",
+        "sysparm_offset": "0",
+        "sysparm_query": "sys_updated_on>1970-01-01 00:00:00",
+        "sysparm_fields": "sys_id",
+    }
+    requests_mock.request("GET", f"{url}table/ticket_type?{urlencode(params)}", json={"result": []})
+    result = get_modified_remote_data_command(client, {"lastUpdate": "0"})
+    assert result.modified_incident_ids == []
+
+
 @pytest.mark.parametrize(
     "sys_created_on, expected",
     [
@@ -3705,6 +3899,58 @@ def test_get_remote_data_with_new_attachment(mock_is_new_incident: MagicMock, mo
         assert len(result) == 2
         assert result[1]["File"] == "evidence.txt"
         assert result[1]["Tags"] == [mock_params["file_tag_from_service_now"]]
+        # mark_attachments_as_note is not set -> the attachment entry must not be marked as a note.
+        assert "Note" not in result[1]
+
+
+@patch("ServiceNowv2.is_new_incident", return_value=False)
+def test_get_remote_data_with_new_attachment_attachment_is_note(
+    mock_is_new_incident: MagicMock, mock_client: MagicMock, mock_params
+) -> None:
+    """
+    Tests that new file attachments are fetched and formatted correctly.
+
+    Args:
+        mock_is_new_incident: Mock of is_new_incident function.
+        mock_client: The mocked ServiceNow client.
+        mock_params: The mocked integration parameters.
+    """
+    # Arrange
+    ticket_id = "INC12345"
+    last_update_ts = int((datetime.now() - timedelta(days=1)).timestamp())
+    ticket_updated_on = datetime.now()
+
+    args = {"id": ticket_id, "lastUpdate": str(last_update_ts)}
+
+    ticket_data = {
+        "result": [
+            {
+                "sys_id": ticket_id,
+                "sys_updated_on": ticket_updated_on.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+        ]
+    }
+
+    new_mock_params = mock_params | {"mark_attachments_as_note": True}
+
+    attachment_entry = {"File": "evidence.txt", "FileID": "mock_file_id", "Tags": [mock_params["file_tag_from_service_now"]]}
+
+    mock_client.get.return_value = ticket_data
+    mock_client.get_ticket_attachment_entries.return_value = [attachment_entry]
+    mock_client.query.return_value = {"result": []}  # No new comments
+
+    with patch("ServiceNowv2.demisto") as mock_demisto:
+        mock_demisto.params.return_value = {"isFetch": True}
+
+        # Act
+        result = get_remote_data_command(mock_client, args, new_mock_params)
+
+        # Assert
+        assert isinstance(result, list)
+        assert len(result) == 2
+        assert result[1]["File"] == "evidence.txt"
+        assert result[1]["Note"] is True
+        assert result[1]["Tags"] == [mock_params["file_tag_from_service_now"]]
 
 
 @patch("ServiceNowv2.is_new_incident", return_value=False)
@@ -4190,3 +4436,180 @@ class TestCredentialFlowEndToEnd:
         assert requests_mock.called
         auth = requests_mock.request_history[0].headers.get("Authorization", "")
         assert "Basic" in auth
+
+
+class TestCreateItemOrderFixes:
+    """Tests for the two bugs fixed in XSUP-65101:
+    1. servicecatalog order_now endpoint must use v1 even when instance is configured with v2.
+    2. sysparm_no_validation support via the no_validation argument.
+    """
+
+    BASE_CLIENT_ARGS = (
+        "https://test.service-now.com/api/now/v2/",  # server_url (v2 configured)
+        "https://test.service-now.com/api/sn_sc/v2/",  # sc_server_url (v2 configured)
+        "https://test.service-now.com/api/sn_chg_rest/v2/",  # cr_server_url
+        "username",
+        "password",
+        False,  # verify
+        "7 days",
+        "",
+        10,
+        "opened_at",
+        "incident",
+        False,
+        "incident",
+    )
+
+    def _make_client(self) -> Client:
+        return Client(*self.BASE_CLIENT_ARGS, display_date_format="yyyy-MM-dd")
+
+    def test_construct_url_order_now_downgrades_v2_to_v1(self):
+        """
+        Given
+        - A Client configured with API version v2 (sc_server_url contains /v2/)
+        When
+        - _construct_url is called with sc_api=True and a path ending in /order_now
+        Then
+        - The resulting URL must use /v1/ instead of /v2/ (ServiceNow does not support v2 for order_now)
+        """
+        client = self._make_client()
+        url = client._construct_url(
+            custom_api="",
+            sc_api=True,
+            cr_api=False,
+            path="servicecatalog/items/abc123/order_now",
+            get_attachments=False,
+        )
+        assert "/v2/" not in url, "order_now URL must not contain /v2/"
+        assert "/v1/" in url, "order_now URL must be downgraded to /v1/"
+
+    def test_construct_url_order_now_no_downgrade_when_sc_api_false(self):
+        """
+        Given
+        - A Client configured with API version v2
+        When
+        - _construct_url is called with sc_api=False and a path ending in /order_now
+        Then
+        - The resulting URL must still contain /v2/ (the downgrade is exclusive to sc_api calls)
+        """
+        client = self._make_client()
+        url = client._construct_url(
+            custom_api="",
+            sc_api=False,
+            cr_api=False,
+            path="some/items/abc123/order_now",
+            get_attachments=False,
+        )
+        assert "/v2/" in url, "Non-sc_api order_now URL must NOT be downgraded to /v1/"
+        assert "/v1/" not in url, "Non-sc_api order_now URL must not contain /v1/"
+
+    def test_create_item_order_no_validation_false_by_default(self, mocker):
+        """
+        Given
+        - create_item_order is called without the no_validation argument
+        When
+        - The method builds the request body
+        Then
+        - sysparm_no_validation must NOT be present in the body (preserves existing behaviour)
+        """
+        client = self._make_client()
+        mock_send = mocker.patch.object(
+            client, "send_request", return_value={"result": {"sys_id": "12", "request_number": "REQ001"}}
+        )
+
+        client.create_item_order("item_id", "1", {})
+
+        call_kwargs = mock_send.call_args
+        body = call_kwargs[1].get("body") or call_kwargs[0][2]
+        assert "sysparm_no_validation" not in body
+
+    def test_create_item_order_no_validation_true_adds_flag(self, mocker):
+        """
+        Given
+        - create_item_order is called with no_validation=True
+        When
+        - The method builds the request body
+        Then
+        - sysparm_no_validation=True must be present in the body
+        """
+        client = self._make_client()
+        mock_send = mocker.patch.object(
+            client, "send_request", return_value={"result": {"sys_id": "12", "request_number": "REQ001"}}
+        )
+
+        client.create_item_order("item_id", "1", {}, no_validation=True)
+
+        call_kwargs = mock_send.call_args
+        body = call_kwargs[1].get("body") or call_kwargs[0][2]
+        assert body.get("sysparm_no_validation") == "true"
+
+
+def test_upload_file_command_uses_basename(mocker):
+    """
+    Given:
+        - A file entry with a name containing directory path components and no explicit file_name arg.
+    When:
+        - Calling upload_file_command.
+    Then:
+        - Verify that only the basename of the file name is used.
+    """
+
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "/tmp/testfile", "name": "/tmp/evil/../../../etc/passwd"},
+    )
+
+    mock_client = MagicMock()
+    mock_client.get_table_name.return_value = "incident"
+    mock_client.upload_file.return_value = {
+        "result": {
+            "file_name": "passwd",
+            "download_link": "https://test.com/download",
+            "sys_id": "abc123",
+        }
+    }
+
+    # No file_name arg provided, so it should use basename from getFilePath
+    args = {"id": "sys_id", "file_id": "entry_id", "ticket_type": "incident"}
+    upload_file_command(mock_client, args)
+
+    # Verify upload_file was called with the sanitized basename
+    call_args = mock_client.upload_file.call_args[0]
+    file_name_used = call_args[2]
+    assert file_name_used == "passwd"
+    assert os.path.basename(file_name_used) == file_name_used
+
+
+def test_update_remote_system_with_entries_uses_basename(mocker):
+    """
+    Given:
+        - A file entry with a name containing directory path components.
+    When:
+        - Calling update_remote_system_with_entries.
+    Then:
+        - Verify that only the basename of the file name is used when uploading.
+    """
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "/tmp/testfile", "name": "/tmp/evil/../../../etc/passwd"},
+    )
+    mocker.patch.object(demisto, "debug")
+
+    mock_client = MagicMock()
+
+    entries = [{"id": "entry_id", "type": 3, "tags": []}]
+    params = {
+        "file_tag_from_service_now": "FileFromServiceNow",
+        "file_tag": "file",
+    }
+    update_remote_system_with_entries(mock_client, entries, params, "ticket_id", "incident")
+
+    call_args = mock_client.upload_file.call_args[0]
+    # The filename is basename (no path traversal) + "_mirrored_from_xsoar" suffix
+    file_name_used = call_args[2]
+    assert "passwd" in file_name_used
+    assert "/" not in file_name_used
+    assert ".." not in file_name_used
+    assert os.path.basename(file_name_used) == file_name_used

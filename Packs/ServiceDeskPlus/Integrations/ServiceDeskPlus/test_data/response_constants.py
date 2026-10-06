@@ -577,3 +577,56 @@ RESPONSE_FETCH_INCIDENTS = {
         },
     ],
 }
+
+RESPONSE_GET_NOTES_LIST = {
+    "notes": [
+        {
+            "id": "1",
+            "request": {"id": "123"},
+            "description": "Note 1",
+            "created_time": {"display_value": "2023-01-01 10:00:00"}
+        },
+        {
+            "id": "2",
+            "request": {"id": "123"},
+            "description": "Note 2",
+            "created_time": {"display_value": "2023-01-02 10:00:00"}
+        }
+    ]
+}
+
+RESPONSE_GET_NOTE = {
+    "request_note": {
+        "id": "1",
+        "request": {"id": "123"},
+        "description": "Note 1",
+        "created_time": {"display_value": "2023-01-01 10:00:00"}
+    }
+}
+
+RESPONSE_ADD_NOTE = {
+    "request_note": {
+        "id": "3",
+        "request": {"id": "123"},
+        "description": "New Note",
+        "created_time": {"display_value": "2023-01-03 10:00:00"}
+    }
+}
+
+RESPONSE_DELETE_NOTE = {
+    "request_note": {
+        "id": "1",
+        "request": {"id": "123"},
+        "description": "Note 1",
+        "created_time": {"display_value": "2023-01-01 10:00:00"}
+    }
+}
+
+RESPONSE_UPDATE_NOTE = {
+    "request_note": {
+        "id": "1",
+        "request": {"id": "123"},
+        "description": "Updated Note 1",
+        "created_time": {"display_value": "2023-01-01 10:00:00"}
+    }
+}

@@ -1,0 +1,104 @@
+{
+  "duo_duo_raw": {
+    "access_device": {
+      "type": "string",
+      "is_array": false
+    },
+    "application": {
+      "type": "string",
+      "is_array": false
+    },
+    "eventtype": {
+      "type": "string",
+      "is_array": false
+    },
+    "factor": {
+      "type": "string",
+      "is_array": false
+    },
+    "action": {
+      "type": "string",
+      "is_array": false
+    },
+    "description": {
+      "type": "string",
+      "is_array": false
+    },
+    "object": {
+      "type": "string",
+      "is_array": false
+    },
+    "username": {
+      "type": "string",
+      "is_array": false
+    },
+    "context": {
+      "type": "string",
+      "is_array": false
+    },
+    "phone": {
+      "type": "string",
+      "is_array": false
+    },
+    "type": {
+      "type": "string",
+      "is_array": false
+    },
+    "host": {
+      "type": "string",
+      "is_array": false
+    },
+    "reason": {
+      "type": "string",
+      "is_array": false
+    },
+    "result": {
+      "type": "string",
+      "is_array": false
+    },
+    "integration": {
+      "type": "string",
+      "is_array": false
+    },
+    "user": {
+      "type": "string",
+      "is_array": false
+    },
+    "auth_device": {
+      "type": "string",
+      "is_array": false
+    },
+    "telephony_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "email": {
+      "type": "string",
+      "is_array": false
+    },
+    "_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "event_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "ood_software": {
+      "type": "string",
+      "is_array": false
+    },
+    "txid": {
+      "type": "string",
+      "is_array": false
+    },
+    "adaptive_trust_assessments": {
+      "type": "string",
+      "is_array": false
+    },
+    "alias": {
+      "type": "string",
+      "is_array": false
+    }                                        
+  }
+}

@@ -1,3 +1,4 @@
+import time
 import uuid
 from enum import Enum
 from urllib.parse import urlparse
@@ -21,9 +22,14 @@ from exchangelib import (
 from exchangelib.credentials import BaseCredentials, OAuth2AuthorizationCodeCredentials
 from exchangelib.errors import (
     AutoDiscoverFailed,
+    ErrorInternalServerTransientError,
     ErrorInvalidIdMalformed,
+    ErrorIrresolvableConflict,
     ErrorItemNotFound,
     ErrorNameResolutionNoResults,
+    ErrorServerBusy,
+    MalformedResponseError,
+    RateLimitError,
     ResponseMessageError,
 )
 from exchangelib.folders.base import BaseFolder
@@ -57,6 +63,14 @@ SUPPORTED_ON_PREM_BUILDS = {
     "2016": EXCHANGE_2016,
     "2019": EXCHANGE_2019,
 }
+
+MARK_AS_READ_RETRY_DELAY = 0.1
+TRANSIENT_SERVER_ERRORS = (
+    RateLimitError,
+    ErrorServerBusy,
+    ErrorInternalServerTransientError,
+    MalformedResponseError,
+)
 
 """ Context Keys """
 ATTACHMENT_ID = "attachmentId"
@@ -692,9 +706,12 @@ class EWSClient:
             try:
                 demisto.debug(f"resolving {part=} {path_parts=}")
                 folder = folder // part
+            except TRANSIENT_SERVER_ERRORS:
+                demisto.debug(f"Transient error while resolving {part=} of {path_parts=}, propagating.\n{traceback.format_exc()}")
+                raise
             except Exception as e:
                 demisto.debug(f"got error {e}")
-                raise ValueError(f"No such folder {path_parts}")
+                raise ValueError(f"No such folder {path_parts}") from e
         return folder
 
     def send_email(self, message: Message):
@@ -948,6 +965,27 @@ def switch_hr_headers(obj, hr_header_changes: dict):
     return obj_copy
 
 
+def escape_hr_item_ids(items: Union[list[dict], dict]) -> Union[list[dict], dict]:
+    """Escape ``+`` in the ``itemId`` field of *items* for human-readable markdown output.
+
+    ``+`` characters in Exchange item IDs can be interpreted as italic / underline
+    formatting by markdown renderers.  This function replaces ``+`` with ``\\+``
+    in the ``itemId`` value so the ID is displayed literally.
+
+    Note: This mutates the dicts in-place and should only be called on HR copies,
+    not on the original context data.
+    """
+
+    def _escape_single(item: dict) -> dict:
+        if isinstance(item, dict) and isinstance(item.get(ITEM_ID), str):
+            item[ITEM_ID] = item[ITEM_ID].replace("+", "\\+")
+        return item
+
+    if isinstance(items, list):
+        return [_escape_single(i) for i in items]
+    return _escape_single(items)
+
+
 def get_entry_for_object(
     title: str, context_key: str, obj, headers: Optional[list] = None, hr_header_changes: dict = {}, filter_null_values=True
 ) -> CommandResults:
@@ -972,6 +1010,8 @@ def get_entry_for_object(
         if filter_null_values:
             obj = [filter_dict_null(k) for k in obj]
         hr_obj = [switch_hr_headers(k, hr_header_changes) for k in obj]
+
+    hr_obj = escape_hr_item_ids(hr_obj)
 
     if headers and isinstance(obj, dict):
         headers = list(set(headers).intersection(set(obj.keys())))
@@ -1372,13 +1412,38 @@ def mark_item_as_read(client: EWSClient, args: dict) -> CommandResults:
     operation = args.get("operation", "read")
     target_mailbox = args.get("target_mailbox")
     marked_items = []
+    skipped_items = []
     item_ids = argToList(item_ids)
+
     items = client.get_items_from_mailbox(target_mailbox, item_ids)
     items = [x for x in items if isinstance(x, Message)]
+    demisto.debug(f"mark_item_as_read: resolved {len(items)} message(s) out of {len(item_ids)} requested id(s).")
 
     for item in items:
-        item.is_read = operation == "read"
-        item.save()
+        is_read = operation == "read"
+        item.is_read = is_read
+        demisto.debug(f"mark_item_as_read: saving {item.id=} | {item.changekey=}")
+
+        try:
+            item.save()
+        except ErrorIrresolvableConflict as e:
+            demisto.error(
+                f"mark_item_as_read: change key conflict for {item.id=} | {item.changekey=}: {e}. "
+                f"Refreshing the item and retrying in {MARK_AS_READ_RETRY_DELAY} seconds.\n{traceback.format_exc()}"
+            )
+            time.sleep(MARK_AS_READ_RETRY_DELAY)  # pylint: disable=sleep-exists
+            try:
+                item.refresh()
+                item.is_read = is_read
+                item.save()
+                demisto.debug(f"mark_item_as_read: retry succeeded for {item.id=}")
+            except ErrorIrresolvableConflict as retry_error:
+                demisto.error(
+                    f"mark_item_as_read: skipping {item.id=}, still conflicting after retry: {retry_error}\n"
+                    f"{traceback.format_exc()}"
+                )
+                skipped_items.append(item.id)
+                continue
 
         marked_items.append(
             {
@@ -1387,6 +1452,10 @@ def mark_item_as_read(client: EWSClient, args: dict) -> CommandResults:
                 ACTION: f"marked-as-{operation}",
             }
         )
+
+    demisto.debug(
+        f"mark_item_as_read: marked {len(marked_items)} item(s) as {operation}, " f"skipped {len(skipped_items)}: {skipped_items}"
+    )
 
     return get_entry_for_object(
         f"Marked items ({operation} marked operation)",

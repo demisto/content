@@ -841,6 +841,241 @@ class TestXDRHandler:
             assert result.Brand == Brands.CORTEX_CORE_IR
 
 
+class TestXDRHandlerBuiltinPath:
+    """Tests for the Cortex platform Builtin path of the XDRHandler.
+
+    On the platform the Core-IR brand runs the Builtin `quarantineFile` command and
+    reports its brand as "Builtin". The quarantine confirmation is produced by the
+    Builtin command itself (asked for via the hidden `verify_quarantine` arg) and
+    surfaced under the `Core.QuarantineFiles.status` context path, so no identity is
+    forwarded from caller-supplied args into any RBAC-enforced status command.
+
+    The Builtin path additionally requires a minimum platform version; these tests
+    satisfy that gate by default via the autouse fixture below.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _mock_builtin_version(self, mocker):
+        """Satisfy the minimum-version gate on `use_builtin` for the Builtin-path tests.
+
+        The version-gate behavior itself is covered by
+        test_constructor_keeps_legacy_command_for_old_version_on_platform.
+        """
+        mocker.patch("QuarantineFile.is_demisto_version_ge", return_value=True)
+
+    def test_constructor_uses_builtin_command_for_core_on_platform(self, mocker):
+        """
+        Given: The Core-IR brand while running on the Cortex platform.
+        When:  The XDRHandler is constructed.
+        Then:  use_builtin is True and the Builtin quarantine command is selected.
+        """
+        mocker.patch("QuarantineFile.is_platform", return_value=True)
+        args = {"endpoint_id": "id1", "file_hash": SHA_256_HASH, "file_path": "/path"}
+        handler = XDRHandler(Brands.CORTEX_CORE_IR, _get_orchestrator(args))
+
+        assert handler.use_builtin is True
+        assert handler.quarantine_command == XDRHandler.BUILTIN_QUARANTINE_COMMAND
+
+    def test_constructor_keeps_legacy_command_for_xdr_on_platform(self, mocker):
+        """
+        Given: The XDR-IR brand while running on the Cortex platform.
+        When:  The XDRHandler is constructed.
+        Then:  use_builtin is False (Builtin path is Core-only) and the legacy command is used.
+        """
+        mocker.patch("QuarantineFile.is_platform", return_value=True)
+        args = {"endpoint_id": "id1", "file_hash": SHA_256_HASH, "file_path": "/path"}
+        handler = XDRHandler(Brands.CORTEX_XDR_IR, _get_orchestrator(args))
+
+        assert handler.use_builtin is False
+        assert handler.quarantine_command == "xdr-file-quarantine"
+
+    def test_constructor_keeps_legacy_command_for_old_version_on_platform(self, mocker):
+        """
+        Given: The Core-IR brand on the platform, but the platform version is below the
+               minimum required for the Builtin quarantineFile command.
+        When:  The XDRHandler is constructed.
+        Then:  use_builtin is False and the legacy Core command is used (version gate).
+        """
+        mocker.patch("QuarantineFile.is_platform", return_value=True)
+        # Override the autouse version mock: simulate an older platform version.
+        mocker.patch("QuarantineFile.is_demisto_version_ge", return_value=False)
+        args = {"endpoint_id": "id1", "file_hash": SHA_256_HASH, "file_path": "/path"}
+        handler = XDRHandler(Brands.CORTEX_CORE_IR, _get_orchestrator(args))
+
+        assert handler.use_builtin is False
+        assert handler.quarantine_command == "core-quarantine-files"
+
+    def test_display_brand_is_builtin_on_platform(self, mocker):
+        """
+        Given: The Core-IR brand running on the platform (Builtin path).
+        When:  display_brand is read.
+        Then:  It returns "Builtin".
+        """
+        mocker.patch("QuarantineFile.is_platform", return_value=True)
+        args = {"endpoint_id": "id1", "file_hash": SHA_256_HASH, "file_path": "/path"}
+        handler = XDRHandler(Brands.CORTEX_CORE_IR, _get_orchestrator(args))
+
+        assert handler.display_brand == "Cortex Builtin"
+
+    def test_display_brand_is_real_brand_off_platform(self):
+        """
+        Given: The Core-IR brand running off-platform (legacy path).
+        When:  display_brand is read.
+        Then:  It returns the real brand name.
+        """
+        args = {"endpoint_id": "id1", "file_hash": SHA_256_HASH, "file_path": "/path"}
+        handler = XDRHandler(Brands.CORTEX_CORE_IR, _get_orchestrator(args))
+
+        assert handler.use_builtin is False
+        assert handler.display_brand == Brands.CORTEX_CORE_IR
+
+    def test_initiate_quarantine_uses_endpoint_ids_plural_on_platform(self, mocker):
+        """
+        Given: The Core-IR brand on the platform (Builtin path).
+        When:  initiate_quarantine is called.
+        Then:  The Builtin `quarantineFile` command is called with the plural `endpoint_ids` arg.
+        """
+        mocker.patch("QuarantineFile.is_platform", return_value=True)
+        args = {"endpoint_id": ["id1", "id2"], "file_hash": SHA_256_HASH, "file_path": "/path"}
+        handler = XDRHandler(Brands.CORTEX_CORE_IR, _get_orchestrator(args))
+
+        mock_command_instance = mocker.Mock()
+        mock_command_instance.execute.return_value = (
+            [{"Metadata": {"pollingCommand": "quarantineFile", "pollingArgs": {"action_id": "123"}}}],
+            [],
+        )
+        mock_command_class = mocker.patch("QuarantineFile.Command", return_value=mock_command_instance)
+
+        handler.initiate_quarantine(args)
+
+        called_kwargs = mock_command_class.call_args.kwargs
+        assert called_kwargs["name"] == XDRHandler.BUILTIN_QUARANTINE_COMMAND
+        assert called_kwargs["args"]["endpoint_ids"] == ["id1", "id2"]
+        assert "endpoint_id_list" not in called_kwargs["args"]
+
+    def test_initiate_quarantine_requests_verification_on_platform(self, mocker):
+        """
+        Given: The Core-IR brand on the platform (Builtin path).
+        When:  initiate_quarantine is called.
+        Then:  The Builtin `quarantineFile` command is asked to self-verify via the hidden
+               `verify_quarantine=true` arg (so the RBAC-gated status call runs inside the
+               command's own trusted poll context, not from caller-supplied identity args).
+        """
+        mocker.patch("QuarantineFile.is_platform", return_value=True)
+        args = {"endpoint_id": ["id1"], "file_hash": SHA_256_HASH, "file_path": "/path"}
+        handler = XDRHandler(Brands.CORTEX_CORE_IR, _get_orchestrator(args))
+
+        mock_command_instance = mocker.Mock()
+        mock_command_instance.execute.return_value = (
+            [{"Metadata": {"pollingCommand": "quarantineFile", "pollingArgs": {"action_id": "123"}}}],
+            [],
+        )
+        mock_command_class = mocker.patch("QuarantineFile.Command", return_value=mock_command_instance)
+
+        handler.initiate_quarantine(args)
+
+        called_kwargs = mock_command_class.call_args.kwargs
+        assert called_kwargs["name"] == XDRHandler.BUILTIN_QUARANTINE_COMMAND
+        assert called_kwargs["args"]["verify_quarantine"] == "true"
+
+    def test_finalize_uses_builtin_confirmation_context_on_platform(self, mocker):
+        """
+        Given: The Core-IR brand on the platform, a successful action, and a Builtin
+               quarantine confirmation surfaced under `Core.QuarantineFiles.status`.
+        When:  finalize processes the results.
+        Then:  The confirmation is read from context (no legacy status command is executed)
+               and the endpoint is reported SUCCESS.
+        """
+        mocker.patch("QuarantineFile.is_platform", return_value=True)
+        args = {"file_hash": SHA_256_HASH, "file_path": "/path/test.txt"}
+        handler = XDRHandler(Brands.CORTEX_CORE_IR, _get_orchestrator(args))
+
+        # get_entry_context_object_containing_key is called twice in finalize:
+        # first for the action-status list, then for the QuarantineFiles confirmation.
+        mocker.patch(
+            "QuarantineFile.Command.get_entry_context_object_containing_key",
+            side_effect=[
+                [{"ActionID": 123, "EndpointID": "ep1", "Status": "COMPLETED_SUCCESSFULLY"}],
+                [{"status": True, "endpointId": "ep1", "filePath": "/path/test.txt"}],
+            ],
+        )
+        legacy_status = mocker.patch.object(handler, "_execute_quarantine_status_command")
+
+        final_results = handler.finalize([])
+
+        legacy_status.assert_not_called()
+        assert len(final_results) == 1
+        assert final_results[0].Status == QuarantineResult.Statuses.SUCCESS
+        assert final_results[0].EndpointID == "ep1"
+
+    def test_finalize_reports_failed_when_builtin_confirmation_is_false(self, mocker):
+        """
+        Given: The Core-IR brand on the platform, a successful action, but the Builtin
+               confirmation reports the file is NOT quarantined (e.g. already quarantined).
+        When:  finalize processes the results.
+        Then:  The endpoint is reported FAILED (guards action-status false positives).
+        """
+        mocker.patch("QuarantineFile.is_platform", return_value=True)
+        args = {"file_hash": SHA_256_HASH, "file_path": "/path/test.txt"}
+        handler = XDRHandler(Brands.CORTEX_CORE_IR, _get_orchestrator(args))
+
+        mocker.patch(
+            "QuarantineFile.Command.get_entry_context_object_containing_key",
+            side_effect=[
+                [{"ActionID": 123, "EndpointID": "ep1", "Status": "COMPLETED_SUCCESSFULLY"}],
+                [{"status": False, "endpointId": "ep1", "filePath": "/path/test.txt"}],
+            ],
+        )
+
+        final_results = handler.finalize([])
+
+        assert len(final_results) == 1
+        assert final_results[0].Status == QuarantineResult.Statuses.FAILED
+
+    def test_status_command_does_not_forward_identity_off_platform(self, mocker):
+        """
+        Given: The Core-IR brand off-platform (legacy path).
+        When:  _execute_quarantine_status_command is called.
+        Then:  The legacy status command is used with only file coordinates - no identity args.
+        """
+        args = {"endpoint_id": "ep1", "file_hash": SHA_256_HASH, "file_path": "/path"}
+        handler = XDRHandler(Brands.CORTEX_CORE_IR, _get_orchestrator(args))
+
+        mock_command_instance = mocker.Mock()
+        mock_command_instance.execute.return_value = ([], [])
+        mock_command_class = mocker.patch("QuarantineFile.Command", return_value=mock_command_instance)
+        mocker.patch("QuarantineFile.Command.get_entry_contexts", return_value=[])
+
+        handler._execute_quarantine_status_command("ep1", SHA_256_HASH, "/path")
+
+        called_kwargs = mock_command_class.call_args.kwargs
+        assert called_kwargs["name"] == "core-get-quarantine-status"
+        assert called_kwargs["args"] == {"endpoint_id": "ep1", "file_hash": SHA_256_HASH, "file_path": "/path"}
+        assert "user_id" not in called_kwargs["args"]
+
+    def test_finalize_reports_builtin_brand_on_platform(self, mocker):
+        """
+        Given: The Core-IR brand on the platform with a successful action.
+        When:  finalize processes the results.
+        Then:  The resulting Brand column reads "Builtin".
+        """
+        mocker.patch("QuarantineFile.is_platform", return_value=True)
+        args = {"file_hash": "hash123", "file_path": "/path/test.txt"}
+        handler = XDRHandler(Brands.CORTEX_CORE_IR, _get_orchestrator(args))
+
+        mocker.patch(
+            "QuarantineFile.Command.get_entry_context_object_containing_key",
+            return_value=[{"ActionID": 123, "EndpointID": "ep1", "Status": "COMPLETED_SUCCESSFULLY"}],
+        )
+        mocker.patch.object(handler, "_execute_quarantine_status_command", return_value={"status": True})
+
+        final_results = handler.finalize([])
+
+        assert len(final_results) == 1
+        assert final_results[0].Status == QuarantineResult.Statuses.SUCCESS
+        assert final_results[0].Brand == "Cortex Builtin"
+
+
 class TestMDEHandler:
     def test_constructor_sets_correct_properties(self):
         """
@@ -1561,6 +1796,7 @@ class TestQuarantineOrchestrator:
             assert result.response.outputs[0]["Message"] == "File quarantined"
             assert result.response.outputs[0]["Brand"] == Brands.CORTEX_CORE_IR
 
+            # finalize receives the final polling response.
             mock_handler_instance.finalize.assert_called_once_with(polling_response)
             assert len(orchestrator.completed_results) == 1
             assert orchestrator.completed_results[0].EndpointID == "ep1"

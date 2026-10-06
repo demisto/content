@@ -1,9 +1,9 @@
 fromversion: 8.3.0
+toversion: 8.14.0
 id: Workday_Workday_ModelingRule
 name: Workday Modeling Rule
 rules: ''
 schema: ''
 tags: workday
 supportedModules:
-- agentix
 - xsiam

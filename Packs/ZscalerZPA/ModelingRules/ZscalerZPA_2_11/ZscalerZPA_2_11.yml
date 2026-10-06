@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: ZscalerZPA_ModelingRule
+name: Zscaler Private Access Modeling Rule
+rules: ''
+schema: ''
+tags: Zscaler Private Access
+supportedModules:
+- xsiam

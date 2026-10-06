@@ -1,0 +1,28 @@
+{
+    "description": "Maps Cortex XSOAR incident fields to AWS Security Hub V2 finding fields for outgoing mirroring.",
+    "feed": false,
+    "id": "AWS Security Hub v2 - Outgoing Mapper",
+    "mapping": {
+        "AWS Security Hub v2 Finding": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "comment": {
+                    "simple": "comment"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "severityid": {
+                    "simple": "severityid"
+                },
+                "statusid": {
+                    "simple": "statusid"
+                }
+            }
+        }
+    },
+    "name": "AWS Security Hub v2 - Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

@@ -1,0 +1,73 @@
+{
+    "ChokePoints": [
+        {
+            "name": "CORPORATE.XM\\john",
+            "severity": "critical",
+            "severityScore": 100
+        },
+        {
+            "name": "Corporate.xm Everyone",
+            "severity": "critical",
+            "severityScore": 100
+        },
+        {
+            "name": "CORPORATE.XM\\EnforceSmartCardUsage",
+            "severity": "critical",
+            "severityScore": 100
+        }
+    ],
+    "CompromisingExposures": [
+        {
+            "chokePoints": 33,
+            "complexity": "Low",
+            "criticalAssets": 67,
+            "criticalAssetsAtRisk": 50,
+            "entities": 34,
+            "name": "PrintNightmare - Windows Print Spooler (CVE-2021-34527)",
+            "severity": "high",
+            "totalAssets": 135
+        },
+        {
+            "chokePoints": 5,
+            "complexity": "Low",
+            "criticalAssets": 38,
+            "criticalAssetsAtRisk": 28,
+            "entities": 5,
+            "name": "DejaBlue",
+            "severity": "high",
+            "totalAssets": 135
+        },
+        {
+            "chokePoints": 2,
+            "complexity": "Low",
+            "criticalAssets": 38,
+            "criticalAssetsAtRisk": 28,
+            "entities": 2,
+            "name": "NoPac (CVE-2021-42278, CVE-2021-42287)",
+            "severity": "high",
+            "totalAssets": 135
+        }
+    ],
+    "CriticalAssets": [
+        {
+            "name": "SecuredZoneDC",
+            "severity": "critical",
+            "severityScore": 97
+        },
+        {
+            "name": "CorporateDC",
+            "severity": "critical",
+            "severityScore": 93
+        },
+        {
+            "name": "apache-research",
+            "severity": "critical",
+            "severityScore": 93
+        }
+    ],
+    "SecurityScore": {
+        "grade": "B",
+        "score": 87,
+        "trend": 1
+    }
+}

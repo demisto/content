@@ -1,0 +1,18 @@
+{
+    "data": [
+        {
+            "id": "audit-001",
+            "created_at": "2024-01-01T00:00:00Z",
+            "type": "policies",
+            "action": "policy_updated",
+            "user": "admin@example.com"
+        },
+        {
+            "id": "audit-002",
+            "created_at": "2024-01-01T00:01:00Z",
+            "type": "settings",
+            "action": "setting_changed",
+            "user": "admin@example.com"
+        }
+    ]
+}

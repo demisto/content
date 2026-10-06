@@ -93,6 +93,120 @@
                             "SEARCH_VALUE": "CORTEX_CLI_SCANNER"
                         }
                     ]
+                },
+                {
+                    "OR": [
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "SshServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "RdpServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "InsecureOpenSSH"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "KubernetesControlPlaneComponent"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "LDAPServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "NetBiosNameServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "NfsRpcBindServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "OpenSSH"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "RpcBindServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "SmbServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "SSHTerrapinAttack"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "SnmpServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "TelnetServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "UnencryptedFtpServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "MysqlServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "MongoServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "PostgresServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "ElasticsearchServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "TftpServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "Libssh"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "InsecureBitviseSSHServer"
+                        },
+                        {
+                            "SEARCH_FIELD": "matching_service_rule_id",
+                            "SEARCH_TYPE": "NCONTAINS",
+                            "SEARCH_VALUE": "InsecureSFTPGo"
+                        }
+                    ]
                 }
             ]
         }

@@ -1,0 +1,35 @@
+{
+    "id": "incident_sentineloneuamalertstatus",
+    "version": -1,
+    "name": "SentinelOne UAM Alert Status",
+    "ownerOnly": false,
+    "cliName": "sentineloneuamalertstatus",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "New",
+        "In progress",
+        "Resolved"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "SentinelOne Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

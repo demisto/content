@@ -31,6 +31,16 @@ configuration:
   required: false
   section: Connect
   advanced: true
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  defaultvalue: '1'
+  type: 19
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
 - name: threshold_ip
   display: Score threshold for IP reputation command
   defaultvalue: '65'
@@ -87,6 +97,22 @@ configuration:
   hidden:
     - marketplacev2
     - platform
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  required: false
+  defaultvalue: '1'
+  advanced: true
+  section: Collect
+  hidden:
+    - marketplacev2
+    - platform
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13
@@ -95,6 +121,9 @@ configuration:
   hidden:
     - marketplacev2
     - platform
+  supportedModules:
+  - agentix
+  - xsiam
 - name: max_incidents_fetch
   display: Maximum number of incidents per fetch
   defaultvalue: '10'
@@ -104,6 +133,9 @@ configuration:
   hidden:
     - marketplacev2
     - platform
+  supportedModules:
+  - agentix
+  - xsiam
   # Fetch Events
   # Not supported in Cortex XSOAR
 - name: isFetchEvents
@@ -113,6 +145,8 @@ configuration:
   section: Collect
   hidden:
     - xsoar
+  supportedModules:
+  - xsiam
 - name: max_events_fetch
   display: Maximum number of events per fetch
   defaultvalue: '1000'
@@ -121,6 +155,8 @@ configuration:
   section: Collect
   hidden:
     - xsoar
+  supportedModules:
+  - xsiam
   # Fetch Assets (and Vulnerabilities)
   # Not supported in Cortex XSOAR
 - display: Fetch assets and vulnerabilities
@@ -130,6 +166,21 @@ configuration:
   section: Collect
   hidden:
     - xsoar
+  supportedModules:
+  - xsiam
+  - exposure_management
+- display: Assets and vulnerabilities fetch interval
+  name: assetsFetchInterval
+  type: 19
+  required: false
+  defaultvalue: '1440'
+  advanced: true
+  section: Collect
+  hidden:
+    - xsoar
+  supportedModules:
+  - xsiam
+  - exposure_management
 description: Use the Hello World v2 integration to learn how to build and configure Cortex integrations.
 display: Hello World v2
 name: HelloWorldV2
@@ -413,7 +464,7 @@ script:
     - description: Maximum number of vulnerabilities to retrieve.
       name: limit
       defaultValue: "10"
-  dockerimage: demisto/fastapi:0.125.0.7194517
+  dockerimage: demisto/fastapi:0.125.0.12689358
   # Fetch Incidents
   isfetch: true
   isfetch:marketplacev2: false  # Depending on the integration, you may optionally disable "fetch-incidents" on Cortex XSIAM (legacy and platform)

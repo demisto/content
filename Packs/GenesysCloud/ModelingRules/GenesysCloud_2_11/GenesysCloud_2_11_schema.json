@@ -1,0 +1,52 @@
+{
+    "genesys_cloud_raw": {
+      "context": {
+        "type": "string",
+        "is_array": false
+      },
+      "remoteIp": {
+        "type": "string",
+        "is_array": false
+      },
+      "serviceName": {
+        "type": "string",
+        "is_array": false
+      },
+      "id": {
+        "type": "string",
+        "is_array": false
+      },
+      "action": {
+        "type": "string",
+        "is_array": false
+      },
+      "status": {
+        "type": "string",
+        "is_array": false
+      },
+      "message": {
+        "type": "string",
+        "is_array": false
+      },
+      "user": {
+        "type": "string",
+        "is_array": false
+      },
+      "level": {
+        "type": "string",
+        "is_array": false
+      },
+      "entity": {
+        "type": "string",
+        "is_array": false
+      },
+      "entityType": {
+        "type": "string",
+        "is_array": false
+      },
+      "propertyChanges": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

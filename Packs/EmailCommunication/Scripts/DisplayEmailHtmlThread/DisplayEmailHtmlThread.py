@@ -1,8 +1,79 @@
+import html as html_module
 import re
 
 import demistomock as demisto  # noqa: F401
 from bs4 import BeautifulSoup
 from CommonServerPython import *  # noqa: F401
+
+ALLOWED_EMAIL_TAGS = {
+    "p",
+    "br",
+    "div",
+    "span",
+    "b",
+    "i",
+    "u",
+    "a",
+    "img",
+    "table",
+    "tr",
+    "td",
+    "th",
+    "thead",
+    "tbody",
+    "ul",
+    "ol",
+    "li",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "pre",
+    "code",
+    "blockquote",
+    "strong",
+    "em",
+    "hr",
+    "font",
+    "center",
+    "small",
+    "big",
+    "sub",
+    "sup",
+    "dl",
+    "dt",
+    "dd",
+    "caption",
+}
+
+ALLOWED_EMAIL_ATTRIBUTES: dict[str, set[str]] = {
+    "*": {"style", "class", "id", "dir", "align", "width", "height", "bgcolor", "valign"},
+    "a": {"href", "target"},
+    "img": {"src", "alt", "title"},
+    "td": {"colspan", "rowspan"},
+    "th": {"colspan", "rowspan", "scope"},
+    "font": {"color", "face", "size"},
+    "table": {"border", "cellpadding", "cellspacing"},
+}
+
+
+def sanitize_html_body(html_body: str) -> str:
+    """Sanitize email body HTML using an allowlist of tags and attributes.
+
+    When nh3 is available, strips disallowed tags and attributes while preserving safe ones.
+    When nh3 is not available, returns the HTML as-is since full escaping
+    would break legitimate formatting in an HTML rendering context.
+    """
+    try:
+        import nh3
+
+        return nh3.clean(html_body, tags=ALLOWED_EMAIL_TAGS, attributes=ALLOWED_EMAIL_ATTRIBUTES)  # pylint: disable=no-member
+    except ImportError:
+        demisto.debug("nh3 is not available; HTML sanitization skipped")
+        return html_body
+
 
 no_entries_message = """<!DOCTYPE html>
 <html>
@@ -27,14 +98,22 @@ def set_email_reply(email_from, email_to, email_cc, email_subject, html_body, em
         str. Email reply.
     """
 
+    safe_from = html_module.escape(email_from or "")
+    safe_to = html_module.escape(email_to or "")
+    safe_cc = html_module.escape(email_cc or "")
+    safe_subject = html_module.escape(email_subject or "")
+    safe_time = html_module.escape(email_time or "")
+    safe_attachments = html_module.escape(attachment_names or "")
+
     single_reply = (
-        f"<html><body><b>From:</b> {email_from}<br><b>To:</b> {email_to}<br><b>CC:</b> {email_cc}<br>"
-        f"<b>Subject:</b> {email_subject}<br><b>Email Time:</b> {email_time}<br>"
-        f"<b>Attachments:</b> {attachment_names}</body></html>"
+        f"<html><body><b>From:</b> {safe_from}<br><b>To:</b> {safe_to}<br><b>CC:</b> {safe_cc}<br>"
+        f"<b>Subject:</b> {safe_subject}<br><b>Email Time:</b> {safe_time}<br>"
+        f"<b>Attachments:</b> {safe_attachments}</body></html>"
     )
 
     single_reply += (
-        f'\n{html_body}\n<hr style="width:98%;text-align:center;height:3px;border-width:0;background-color:#cccccc">\n\n'
+        f'\n{sanitize_html_body(html_body or "")}\n'
+        f'<hr style="width:98%;text-align:center;height:3px;border-width:0;background-color:#cccccc">\n\n'
     )
 
     return single_reply

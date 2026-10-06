@@ -13,7 +13,10 @@
             "pattern": "[domain-name:value = 'windows-updates.com']",
             "type": "Domain",
             "valid_from": "2018-04-23T17:01:01.248Z",
-            "value": "windows-updates.com"
+            "value": "windows-updates.com",
+            "tags": [
+                "malicious-activity"
+            ]
         },
         "fields": {
             "stixid": "indicator--545928d9-bfe8-4320-bb98-751f38139892",
@@ -69,7 +72,8 @@
                 "Android",
                 "iOS"
             ],
-            "x_mitre_version": "1.0"
+            "x_mitre_version": "1.0",
+            "tags": []
         },
         "fields": {
             "stixid": "attack-pattern--4e6620ac-c30c-4f6d-918e-fa20cae7c1ce",
@@ -166,7 +170,8 @@
             ],
             "x_mitre_version": "1.0",
             "x_panw_parent_technique": "Obfuscated Files or Information",
-            "x_panw_parent_technique_subtechnique": "Obfuscated Files or Information: Software Packing"
+            "x_panw_parent_technique_subtechnique": "Obfuscated Files or Information: Software Packing",
+            "tags": []
         },
         "fields": {
             "stixid": "attack-pattern--deb98323-e13f-4b0c-8d94-175379069062",
@@ -218,7 +223,10 @@
             ],
             "modified": "2019-10-10T20:25:46.596Z",
             "name": "Freenki",
-            "type": "malware"
+            "type": "malware",
+            "tags": [
+                "backdoor"
+            ]
         },
         "fields": {
             "stixid": "malware--481d22d7-6dd8-4e37-a543-dd21cc1707c4",
@@ -261,7 +269,10 @@
                 "indicator--545928d9-bfe8-4320-bb98-751f38139892"
             ],
             "published": "2020-07-30T16:55:21.569Z",
-            "type": "report"
+            "type": "report",
+            "tags": [
+                "intrusion-set"
+            ]
         },
         "fields": {
             "stixid": "report--708d589b-8d99-48fd-bbb6-2d47648f807f",
@@ -297,7 +308,32 @@
                 }
             ]
         },
-        "relationships": [{"name": "related-to", "reverseName": "related-to", "type": "IndicatorToIndicator", "entityA": "Sofacy", "entityAFamily": "Indicator", "entityAType": "Report", "entityB": "Freenki", "entityBFamily": "Indicator", "entityBType": "Malware", "fields": {}}, {"name": "related-to", "reverseName": "related-to", "type": "IndicatorToIndicator", "entityA": "Sofacy", "entityAFamily": "Indicator", "entityAType": "Report", "entityB": "windows-updates.com", "entityBFamily": "Indicator", "entityBType": "Domain", "fields": {}}]
+        "relationships": [
+            {
+                "name": "related-to",
+                "reverseName": "related-to",
+                "type": "IndicatorToIndicator",
+                "entityA": "Sofacy",
+                "entityAFamily": "Indicator",
+                "entityAType": "Report",
+                "entityB": "Freenki",
+                "entityBFamily": "Indicator",
+                "entityBType": "Malware",
+                "fields": {}
+            },
+            {
+                "name": "related-to",
+                "reverseName": "related-to",
+                "type": "IndicatorToIndicator",
+                "entityA": "Sofacy",
+                "entityAFamily": "Indicator",
+                "entityAType": "Report",
+                "entityB": "windows-updates.com",
+                "entityBFamily": "Indicator",
+                "entityBType": "Domain",
+                "fields": {}
+            }
+        ]
     },
     {
         "type": "Report",
@@ -316,7 +352,8 @@
                 "relationship--017ee879-0b86-4263-8cbf-28675652245d"
             ],
             "published": "2022-08-04T18:25:46.215Z",
-            "type": "report"
+            "type": "report",
+            "tags": []
         },
         "fields": {
             "stixid": "report--959e0017-c770-4387-b9d8-fb310ae0f251",
@@ -378,7 +415,10 @@
             "modified": "2022-08-10T18:45:13.212Z",
             "name": "ATOM Campaign Report 1",
             "published": "2022-08-09T13:38:47.616Z",
-            "type": "report"
+            "type": "report",
+            "tags": [
+                "campaign"
+            ]
         },
         "fields": {
             "stixid": "report--1bfc07f1-a5fe-4587-815f-5fa4399b54e5",
@@ -406,7 +446,10 @@
             "modified": "2022-08-10T18:45:13.212Z",
             "name": "ATOM Campaign Report 2",
             "published": "2022-08-09T13:38:47.616Z",
-            "type": "report"
+            "type": "report",
+            "tags": [
+                "campaign"
+            ]
         },
         "fields": {
             "stixid": "report--e536bd26-47e6-4ccb-a680-639fa11467f3",
@@ -434,7 +477,10 @@
             "modified": "2022-08-10T18:45:13.212Z",
             "name": "ATOM Campaign Report 3",
             "published": "2022-08-09T13:38:47.616Z",
-            "type": "report"
+            "type": "report",
+            "tags": [
+                "campaign"
+            ]
         },
         "fields": {
             "stixid": "report--e536bd26-47e6-4ccb-a680-639fa11468g4",
@@ -468,13 +514,14 @@
             "x_panw_coa_bp_rationale_statement": "Antivirus signatures produce low false positives. By blocking any detected malware through the specified decoders, the threat of malware propagation through the firewall is greatly reduced. It is recommended to mitigate malware found in pop3 and imap through a dedicated antivirus gateway. Due to the nature of the pop3 and imap protocols, the firewall is not able to block only a single email message containing malware. Instead, the entire session would be terminated, potentially affecting benign email messages.",
             "x_panw_coa_bp_recommendation_number": "6.1",
             "x_panw_coa_bp_references": [
-                "\u201cThreat Prevention Deployment Tech Note\u201d - https://live.paloaltonetworks.com/docs/DOC-3094:\u201cPAN-OS Administrator's Guide 9.0 (English) - Security Profiles\u201d - https://docs.paloaltonetworks.com/pan-os/9-0/pan-os-admin/policy/security-profiles.html"
+                "“Threat Prevention Deployment Tech Note” - https://live.paloaltonetworks.com/docs/DOC-3094:“PAN-OS Administrator's Guide 9.0 (English) - Security Profiles” - https://docs.paloaltonetworks.com/pan-os/9-0/pan-os-admin/policy/security-profiles.html"
             ],
             "x_panw_coa_bp_remediation_procedure": "Navigate to `Objects > Security Profiles > Antivirus.`\n\nSet antivirus profiles to have all decoders set to `block` for both `Action` and `Wildfire Action`. If `imap` and `pop3` are required in the organization, set the `imap` and `pop3` decoders to `alert` for both `Action` and `Wildfire Action`.",
             "x_panw_coa_bp_scoring_status": "full",
             "x_panw_coa_bp_section_number": "6",
             "x_panw_coa_bp_status": "published",
-            "x_panw_coa_bp_title": "Ensure that antivirus profiles are set to block on all decoders except 'imap' and 'pop3'"
+            "x_panw_coa_bp_title": "Ensure that antivirus profiles are set to block on all decoders except 'imap' and 'pop3'",
+            "tags": []
         },
         "fields": {
             "stixid": "course-of-action--645c6c45-116e-4265-98d2-e30f56325bc6",
@@ -498,7 +545,8 @@
             "last_seen": "2018-07-16T00:00:00.000Z",
             "modified": "2018-08-03T21:03:51.484Z",
             "name": "IQY Attachment E-mails",
-            "type": "campaign"
+            "type": "campaign",
+            "tags": []
         },
         "fields": {
             "stixid": "campaign--6320584e-3ef0-4a72-aaf8-0a49fa1d477c",
@@ -519,7 +567,8 @@
             "id": "intrusion-set--8e11eaa4-1964-4b73-85c1-fcfa29159f9b",
             "modified": "2018-08-03T20:30:50.665Z",
             "name": "OilRig",
-            "type": "intrusion-set"
+            "type": "intrusion-set",
+            "tags": []
         },
         "fields": {
             "stixid": "intrusion-set--8e11eaa4-1964-4b73-85c1-fcfa29159f9b",
@@ -549,7 +598,8 @@
             "tool_types": [
                 "remote-access"
             ],
-            "name": "VNC"
+            "name": "VNC",
+            "tags": []
         },
         "fields": {
             "stixid": "tool--8e2e2d2b-17d4-4cbf-938f-98ee46b3cd3f",
@@ -594,7 +644,8 @@
             ],
             "sophistication": "advanced",
             "resource_level": "team",
-            "primary_motivation": "organizational-gain"
+            "primary_motivation": "organizational-gain",
+            "tags": []
         },
         "fields": {
             "stixid": "threat-actor--8e2e2d2b-17d4-4cbf-938f-98ee46b3cd3f",
@@ -635,7 +686,8 @@
             "name": "Poison Ivy C2",
             "infrastructure_types": [
                 "command-and-control"
-            ]
+            ],
+            "tags": []
         },
         "fields": {
             "stixid": "infrastructure--38c47d93-d984-4fd9-b87b-d69d0841628d",

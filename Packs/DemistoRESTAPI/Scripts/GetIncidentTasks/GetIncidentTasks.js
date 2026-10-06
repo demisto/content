@@ -91,10 +91,18 @@ function getStates(states) {
 var name = args.name
 var tag = args.tag
 var inc_id = args.inc_id
+var using = args.using
 var states = getStates(argToList(args.states))
 
-var res = executeCommand('core-api-get', {
-    uri: `/investigation/${inc_id}/workplan`});
+var executeArgs = {
+    uri: `/investigation/${inc_id}/workplan`
+};
+
+if (using) {
+    executeArgs.using = using;
+}
+
+var res = executeCommand('core-api-get', executeArgs);
 
 
 if (!isValidRes(res))

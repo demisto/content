@@ -1,0 +1,29 @@
+{
+  "uid": "rule-uid-1234",
+  "name": "Block malicious",
+  "type": "access-rule",
+  "rule-number": 3,
+  "layer": "Network",
+  "enabled": true,
+  "action": {
+    "uid": "drop-uid",
+    "name": "Drop",
+    "type": "RulebaseAction"
+  },
+  "source": [
+    {"uid": "host-a-uid", "name": "Host_A", "type": "host"},
+    {"uid": "host-b-uid", "name": "Host_B", "type": "host"}
+  ],
+  "destination": [
+    {"uid": "any-uid", "name": "Any", "type": "CpmiAnyObject"}
+  ],
+  "service": [
+    {"uid": "http-uid", "name": "http", "type": "service-tcp"},
+    {"uid": "https-uid", "name": "https", "type": "service-tcp"}
+  ],
+  "comments": "malicious traffic",
+  "meta-info": {
+    "creator": "admin",
+    "last-modifier": "admin"
+  }
+}

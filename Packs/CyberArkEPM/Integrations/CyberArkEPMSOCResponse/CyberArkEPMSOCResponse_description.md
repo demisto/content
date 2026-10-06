@@ -1,14 +1,13 @@
-Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
-
 ## CyberArk EPM
 
 ### Authentication
-To authenticate to EPM, provide the following:
+To authenticate to EPM with OAuth2, provide the following:
 
-- url: `https://<EPM_server>` (for example: https://login.epm.cyberark.com/login)
-- username
-- password
-- [application ID](https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID)
+- tenant_url: The tenant URL for EPM region (e.g., https://api-na.epm.cyberark.cloud)
+- token_url: The CyberArk Identity FQDN for OAuth2 authentication (e.g., https://abc1234.id.cyberark.cloud)
+- web_app_id: The Application ID of the OAuth2 Server web app configured in Identity Administration.
+- client_id: Service username (configured as OAuth confidential client).
+- client_secret: Service user password for OAuth2 authentication.
 
 ### Endpoint Information
 

@@ -1,0 +1,562 @@
+{
+    "rescan_initiate": {
+        "ioc_value": "0.0.0.1",
+        "port": 443,
+        "status": "initiated",
+        "scan_id": "00000000-0000-0000-0000-000000000001",
+        "is_completed": false
+    },
+    "rescan_initiate_no_scan_id": {
+        "ioc_value": "0.0.0.1",
+        "port": 443,
+        "status": "failed",
+        "scan_id": "",
+        "is_completed": true
+    },
+    "scan_status_in_progress": {
+        "ioc_value": "0.0.0.1",
+        "port": 443,
+        "status": "in_progress",
+        "scan_id": "00000000-0000-0000-0000-000000000001",
+        "is_completed": false
+    },
+    "scan_status_failed": {
+        "ioc_value": "0.0.0.1",
+        "port": 443,
+        "status": "failed",
+        "scan_id": "00000000-0000-0000-0000-000000000001",
+        "is_completed": true
+    },
+    "scan_status_completed_service": {
+        "ioc_value": "0.0.0.1",
+        "port": 443,
+        "status": "completed",
+        "scan_id": "00000000-0000-0000-0000-000000000001",
+        "is_completed": true,
+        "enrichment_data": {
+            "ip": "0.0.0.1",
+            "labels": [
+                {
+                    "source": "censys",
+                    "value": "CLOUD_PROVIDER"
+                },
+                {
+                    "source": "censys",
+                    "value": "WEB_SERVER"
+                }
+            ],
+            "location": {
+                "continent": "Asia",
+                "country": "South Korea",
+                "country_code": "KR",
+                "city": "Seoul",
+                "postal_code": "03141",
+                "timezone": "Asia/Seoul",
+                "province": "Seoul",
+                "coordinates": {
+                    "latitude": 37.566,
+                    "longitude": 126.9784
+                }
+            },
+            "autonomous_system": {
+                "asn": 12345,
+                "description": "EXAMPLE-AS-AP Example.Co.LTD",
+                "bgp_prefix": "0.0.0.1/24",
+                "name": "EXAMPLE-AS-AP Example.Co.LTD",
+                "country_code": "KR"
+            },
+            "whois": {
+                "network": {
+                    "handle": "HK-EXAMPLE-20190703",
+                    "name": "EXAMPLE LIMITED",
+                    "cidrs": [
+                        "0.0.0.1/24"
+                    ],
+                    "created": "2024-11-26T00:00:00Z",
+                    "updated": "2025-08-18T00:00:00Z"
+                },
+                "organization": {
+                    "handle": "ORG-XL117-RIPE",
+                    "name": "EXAMPLE LIMITED",
+                    "address": "RM 29-33,5/F,EXAMPLE COMMERCIAL CENTRE,87-105 EXAMPLE ROAD\\n000000\\nEXAMPLE CITY\\nEXAMPLE COUNTRY",
+                    "abuse_contacts": [
+                        {
+                            "handle": "EXAMPLE-RIPE",
+                            "name": "EXAMPLE-ROLE",
+                            "email": "noc@example.com"
+                        }
+                    ],
+                    "admin_contacts": [
+                        {
+                            "handle": "EXAMPLE-RIPE",
+                            "name": "EXAMPLE-ROLE",
+                            "email": "noc@example.com"
+                        }
+                    ]
+                }
+            },
+            "services": [
+                {
+                    "port": 22,
+                    "protocol": "SSH",
+                    "transport_protocol": "tcp",
+                    "software": [
+                        {
+                            "source": "censys",
+                            "confidence": 0.9,
+                            "evidence": [
+                                {
+                                    "data_path": "protocol",
+                                    "found_value": "SSH",
+                                    "literal_match": "SSH"
+                                }
+                            ],
+                            "type": [
+                                "REMOTE_ACCESS"
+                            ],
+                            "part": "a"
+                        }
+                    ],
+                    "labels": [
+                        {
+                            "source": "censys",
+                            "confidence": 0.9,
+                            "evidence": [
+                                {
+                                    "data_path": "protocol",
+                                    "found_value": "SSH",
+                                    "literal_match": "SSH"
+                                }
+                            ],
+                            "value": "REMOTE_ACCESS"
+                        }
+                    ],
+                    "threats": [
+                        {
+                            "name": "BRUTE_FORCE_ATTACK",
+                            "source": "censys"
+                        }
+                    ],
+                    "vulns": [
+                        {
+                            "id": "CVE-2023-12345",
+                            "cvss": 7.5,
+                            "severity": "HIGH"
+                        },
+                        {
+                            "id": "CVE-2023-67890",
+                            "cvss": 5.3,
+                            "severity": "MEDIUM"
+                        }
+                    ],
+                    "ip": "0.0.0.1",
+                    "scan_time": "2026-02-02T00:46:23Z",
+                    "banner": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u3",
+                    "banner_hash_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+                    "banner_hex": "5353482d322e302d4f70656e5353485f392e3270312044656269616e2d322b64656231327533",
+                    "ja4tscan": {
+                        "scan_time": "2026-02-01T17:09:57Z",
+                        "fingerprint": "65160_2-4-8-1-3_1460_7_1-2-4-8-16"
+                    },
+                    "ssh": {
+                        "endpoint_id": {
+                            "raw": "SSH-2.0-OpenSSH_9.2p1 Debian-2+deb12u3",
+                            "protocol_version": "2.0",
+                            "software_version": "OpenSSH_9.2p1",
+                            "comment": "Debian-2+deb12u3"
+                        },
+                        "kex_init_message": {
+                            "kex_algorithms": [
+                                "example@openssh.com",
+                                "curve25519-sha256",
+                                "example@libssh.org",
+                                "ecdh-sha2-nistp256",
+                                "ecdh-sha2-nistp384",
+                                "ecdh-sha2-nistp521",
+                                "diffie-hellman-group-exchange-sha256",
+                                "diffie-hellman-group16-sha512",
+                                "diffie-hellman-group18-sha512",
+                                "diffie-hellman-group14-sha256",
+                                "example@openssh.com"
+                            ],
+                            "host_key_algorithms": [
+                                "rsa-sha2-512",
+                                "rsa-sha2-256",
+                                "ecdsa-sha2-nistp256",
+                                "ssh-ed25519"
+                            ],
+                            "client_to_server_ciphers": [
+                                "example@openssh.com",
+                                "aes128-ctr",
+                                "aes192-ctr",
+                                "aes256-ctr",
+                                "example@openssh.com",
+                                "example@openssh.com"
+                            ],
+                            "server_to_client_ciphers": [
+                                "example@openssh.com",
+                                "aes128-ctr",
+                                "aes192-ctr",
+                                "aes256-ctr",
+                                "example@openssh.com",
+                                "example@openssh.com"
+                            ],
+                            "client_to_server_macs": [
+                                "example@openssh.com",
+                                "example@openssh.com",
+                                "example@openssh.com",
+                                "example@openssh.com",
+                                "example@openssh.com",
+                                "example@openssh.com",
+                                "example@openssh.com",
+                                "hmac-sha2-256",
+                                "hmac-sha2-512",
+                                "hmac-sha1"
+                            ],
+                            "server_to_client_macs": [
+                                "example@openssh.com",
+                                "example@openssh.com",
+                                "example@openssh.com",
+                                "example@openssh.com",
+                                "example@openssh.com",
+                                "example@openssh.com",
+                                "example@openssh.com",
+                                "hmac-sha2-256",
+                                "hmac-sha2-512",
+                                "hmac-sha1"
+                            ],
+                            "client_to_server_compression": [
+                                "none",
+                                "example@openssh.com"
+                            ],
+                            "server_to_client_compression": [
+                                "none",
+                                "example@openssh.com"
+                            ]
+                        },
+                        "algorithm_selection": {
+                            "kex_algorithm": "example@libssh.org",
+                            "host_key_algorithm": "ecdsa-sha2-nistp256",
+                            "client_to_server_cipher": "example@openssh.com",
+                            "server_to_client_cipher": "example@openssh.com",
+                            "client_to_server_mac": "example@openssh.com",
+                            "server_to_client_mac": "example@openssh.com",
+                            "client_to_server_compression": "none",
+                            "server_to_client_compression": "none"
+                        },
+                        "server_host_key": {
+                            "ecdsa_public_key": {
+                                "b": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                                "curve": "P256",
+                                "gx": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                                "gy": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                                "length": 256,
+                                "n": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                                "p": "/////wAAAAEAAAAAAAAAAAAAAAD///////////////8=",
+                                "x": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+                                "y": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+                            }
+                        },
+                        "hassh_fingerprint": "00000000000000000000000000000000"
+                    }
+                }
+            ],
+            "service_count": 3,
+            "dns": {
+                "names": [
+                    "example.com",
+                    "www.example.com"
+                ],
+                "forward_dns": {
+                    "names": [
+                        "example.com",
+                        "www.example.com",
+                        "mail.example.com"
+                    ]
+                },
+                "reverse_dns": {
+                    "names": [
+                        "host.example.com"
+                    ],
+                    "resolve_time": "2026-01-30T18:11:14Z"
+                }
+            }
+        }
+    },
+    "scan_status_completed_web_property": {
+        "ioc_value": "example.com",
+        "port": 443,
+        "status": "completed",
+        "scan_id": "00000000-0000-0000-0000-000000000001",
+        "is_completed": true,
+        "enrichment_data": {
+            "hostname": "example.com",
+            "port": 443,
+            "cert": {
+                "fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                "fingerprint_sha1": "0000000000000000000000000000000000000001",
+                "fingerprint_md5": "00000000000000000000000000000001",
+                "tbs_fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                "tbs_no_ct_fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                "spki_fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                "parent_spki_fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                "parsed": {
+                    "version": 3,
+                    "serial_number": "421141808822754871174302685478563463580102",
+                    "issuer_dn": "C=US, O=Let's Encrypt, CN=R11",
+                    "issuer": {
+                        "common_name": [
+                            "R11"
+                        ],
+                        "country": [
+                            "US"
+                        ],
+                        "organization": [
+                            "Let's Encrypt"
+                        ]
+                    },
+                    "subject_dn": "CN=example.com",
+                    "subject": {
+                        "common_name": [
+                            "example.com"
+                        ]
+                    },
+                    "subject_key_info": {
+                        "key_algorithm": {
+                            "name": "RSA",
+                            "oid": "1.2.840.113549.1.1.1"
+                        },
+                        "rsa": {
+                            "exponent": 65537,
+                            "modulus": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+                            "length": 2048
+                        },
+                        "fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001"
+                    },
+                    "validity_period": {
+                        "not_before": "2025-01-03T04:11:45Z",
+                        "not_after": "2025-04-03T04:11:44Z",
+                        "length_seconds": 7776000
+                    },
+                    "signature": {
+                        "signature_algorithm": {
+                            "name": "SHA256-RSA",
+                            "oid": "1.2.840.113549.1.1.11"
+                        },
+                        "value": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001"
+                    },
+                    "extensions": {
+                        "key_usage": {
+                            "digital_signature": true,
+                            "key_encipherment": true,
+                            "value": 5
+                        },
+                        "subject_alt_name": {
+                            "dns_names": [
+                                "example.com"
+                            ]
+                        },
+                        "authority_key_id": "0000000000000000000000000000000000000001",
+                        "subject_key_id": "0000000000000000000000000000000000000001",
+                        "extended_key_usage": {
+                            "server_auth": true,
+                            "client_auth": true
+                        },
+                        "certificate_policies": [
+                            {
+                                "id": "0.0.0.1.2.1"
+                            }
+                        ],
+                        "authority_info_access": {
+                            "ocsp_urls": [
+                                "http://example-ocsp.lencr.org"
+                            ],
+                            "issuer_urls": [
+                                "http://example-issuer.lencr.org/"
+                            ]
+                        },
+                        "signed_certificate_timestamps": [
+                            {
+                                "log_id": "0000000000000000000000000000000000000000000000000000000000000001",
+                                "timestamp": "2025-01-03T05:10:16Z",
+                                "signature": {
+                                    "hash_algorithm": "SHA256",
+                                    "signature_algorithm": "ECDSA",
+                                    "signature": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001"
+                                }
+                            },
+                            {
+                                "log_id": "0000000000000000000000000000000000000000000000000000000000000001",
+                                "timestamp": "2025-01-03T05:10:16Z",
+                                "signature": {
+                                    "hash_algorithm": "SHA256",
+                                    "signature_algorithm": "ECDSA",
+                                    "signature": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001"
+                                }
+                            }
+                        ]
+                    },
+                    "serial_number_hex": "0000000000000000000000000000000000000001",
+                    "ja4x": "0000000000000000000000000000000001"
+                },
+                "names": [
+                    "example.com"
+                ],
+                "revocation": {
+                    "ocsp": {
+                        "reason": "unspecified"
+                    }
+                },
+                "ever_seen_in_scan": true,
+                "added_at": "2025-01-03T05:14:00Z",
+                "modified_at": "2025-04-04T01:06:45Z",
+                "validated_at": "2025-04-04T01:06:44Z",
+                "parse_status": "success",
+                "zlint": {
+                    "version": 3,
+                    "timestamp": "2025-01-03T05:14:00Z",
+                    "notices_present": true,
+                    "failed_lints": [
+                        "n_subject_common_name_included"
+                    ]
+                },
+                "spki_subject_fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                "parent_spki_subject_fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001"
+            },
+            "labels": [
+                {
+                    "source": "censys",
+                    "value": "WEB_SERVER"
+                },
+                {
+                    "source": "censys",
+                    "value": "HTTPS"
+                }
+            ],
+            "threats": [
+                {
+                    "name": "OUTDATED_SOFTWARE",
+                    "source": "censys"
+                }
+            ],
+            "vulns": [
+                {
+                    "id": "CVE-2024-11111",
+                    "cvss": 6.5,
+                    "severity": "MEDIUM"
+                }
+            ],
+            "software": [
+                {
+                    "source": "recog",
+                    "confidence": 0.25,
+                    "evidence": [
+                        {
+                            "data_path": "http.headers.server"
+                        }
+                    ],
+                    "part": "a",
+                    "vendor": "f5",
+                    "product": "nginx",
+                    "version": "1.18.0",
+                    "cpe": "cpe:2.3:a:f5:nginx:*:*:*:*:*:*:*:*"
+                }
+            ],
+            "tls": {
+                "version_selected": "tlsv1_3",
+                "cipher_selected": "TLS_AES_256_GCM_SHA384",
+                "fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                "ja3s": "00000000000000000000000000000001",
+                "presented_chain": [
+                    {
+                        "fingerprint_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                        "subject_dn": "C=US, O=Let's Encrypt, CN=R11",
+                        "issuer_dn": "C=US, O=Internet Security Research Group, CN=ISRG Root X1"
+                    }
+                ],
+                "ja4s": "t130200_1302_0000000000001",
+                "versions": [
+                    {
+                        "version": "tlsv1_2",
+                        "ja3s": "00000000000000000000000000000001",
+                        "ja4s": "t120200_cca8_0000000000001"
+                    },
+                    {
+                        "version": "tlsv1_1",
+                        "ja3s": "00000000000000000000000000000001",
+                        "ja4s": "t110200_c013_0000000000001"
+                    }
+                ]
+            },
+            "scan_time": "2026-03-10T07:52:06Z",
+            "endpoints": [
+                {
+                    "hostname": "example.com",
+                    "port": 443,
+                    "path": "/",
+                    "endpoint_type": "HTTP",
+                    "transport_protocol": "tcp",
+                    "scan_time": "2026-03-10T07:52:06Z",
+                    "banner": "HTTP/1.1 403 Forbidden\r\nServer: nginx\r\nDate:  <REDACTED>\r\nContent-Type: text/html\r\nContent-Length: 146\r\nConnection: keep-alive\r\n",
+                    "banner_hash_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                    "http": {
+                        "uri": "https://example.com/",
+                        "protocol": "HTTP/1.1",
+                        "status_code": 403,
+                        "status_reason": "Forbidden",
+                        "headers": {
+                            "Connection": {
+                                "headers": [
+                                    "keep-alive"
+                                ]
+                            },
+                            "Content-Length": {
+                                "headers": [
+                                    "146"
+                                ]
+                            },
+                            "Content-Type": {
+                                "headers": [
+                                    "text/html"
+                                ]
+                            },
+                            "Date": {
+                                "headers": [
+                                    "<REDACTED>"
+                                ]
+                            },
+                            "Server": {
+                                "headers": [
+                                    "nginx"
+                                ]
+                            }
+                        },
+                        "html_tags": [
+                            "<title>403 Forbidden</title>"
+                        ],
+                        "body_size": 146,
+                        "body": "<html>\r\n<head><title>403 Forbidden</title></head>\r\n<body>\r\n<center><h1>403 Forbidden</h1></center>\r\n<hr><center>nginx</center>\r\n</body>\r\n</html>\r\n",
+                        "html_title": "403 Forbidden",
+                        "body_hash_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+                        "body_hash_sha1": "0000000000000000000000000000000000000001",
+                        "supported_versions": [
+                            "HTTP/1.1",
+                            "HTTP/2"
+                        ]
+                    },
+                    "ip": "0.0.0.1"
+                }
+            ],
+            "jarm": {
+                "ip": "0.0.0.1",
+                "port": 443,
+                "transport_protocol": "tcp",
+                "is_success": true,
+                "fingerprint": "0000000000000000000000000000000000000000000000000000000000000001",
+                "cipher_and_version_fingerprint": "0000000000000000000000000000000001",
+                "tls_extensions_sha256": "0000000000000000000000000000000001",
+                "scan_time": "2026-03-03T05:15:49Z"
+            }
+        }
+    }
+}

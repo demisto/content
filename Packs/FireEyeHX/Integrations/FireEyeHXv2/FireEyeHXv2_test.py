@@ -176,7 +176,7 @@ def test_list_host_set_policy_command(mocker, demisto_args, call_count, call_arg
 
 
 UPSERT_COMMAND_DATA_CASES_DELETE_POLICY = [
-    ({"hostSetId": 11, "policyId": "test"}, Exception("404"), "polisy ID - test or Host Set ID - 11 Not Found"),
+    ({"hostSetId": 11, "policyId": "test"}, Exception("404"), "policy ID - test or Host Set ID - 11 Not Found"),
     ({"hostSetId": 11, "policyId": "test"}, "test", "Success"),
 ]
 
@@ -378,7 +378,7 @@ def test_host_containment(mocker, demisto_args, call_count, return_mocker, expec
     client = Client(base_url="base_url", verify=False, proxy=True, auth=("userName", "password"))
 
     get_agentId = mocker.patch("FireEyeHXv2.get_agent_id_by_host_name", return_value="")
-    mocker.patch.object(client, "host_containmet_request", return_value=None)
+    mocker.patch.object(client, "host_containment_request", return_value=None)
     mocker.patch.object(client, "approve_containment_request", side_effect=return_mocker)
     mocker.patch.object(client, "get_hosts_by_agentId_request", return_value={"data": {}})
     result = host_containment_command(client, demisto_args)
@@ -946,6 +946,190 @@ def test_get_data_acquisition_command(mocker, demisto_args, state, call_count):
     assert get_data_call.call_count == call_count["get_data"]
 
 
+"""TRIAGES"""
+GET_HOSTS_ACQS_COMMAND_BAD_CASES = [
+    (
+        # No arguments given
+        {},
+        "Please provide either agentId or hostName",
+    )
+]
+
+
+@pytest.mark.parametrize("demisto_args, expected_results", GET_HOSTS_ACQS_COMMAND_BAD_CASES)
+def test_list_host_acquisitions_failed(demisto_args, expected_results):
+    from FireEyeHXv2 import list_host_acquisitions
+
+    client = ""
+
+    with pytest.raises(Exception) as e:
+        list_host_acquisitions(client, demisto_args)
+    assert str(e.value) == expected_results
+
+
+GET_TRIAGE_COMMAND_BAD_DATA = [
+    (
+        # No arguments given
+        {},
+        "Acquisition Id is required",
+    )
+]
+
+
+@pytest.mark.parametrize("demisto_args, expected_results", GET_TRIAGE_COMMAND_BAD_DATA)
+def test_get_triage_acquisition_information_failed(demisto_args, expected_results):
+    from FireEyeHXv2 import get_triage_acquisition_information
+
+    client = ""
+
+    with pytest.raises(Exception) as e:
+        get_triage_acquisition_information(client, demisto_args)
+    assert str(e.value) == expected_results
+
+
+DELETE_TRIAGE_BAD_DATA_CASES = [
+    (
+        # No arguments given
+        {},
+        "Acquisition Id is required",
+    )
+]
+
+
+@pytest.mark.parametrize("demisto_args, expected_results", DELETE_TRIAGE_BAD_DATA_CASES)
+def test_delete_triage_acquisition_command_failed(demisto_args, expected_results):
+    from FireEyeHXv2 import delete_triage_acquisition_command
+
+    client = ""
+
+    with pytest.raises(Exception) as e:
+        delete_triage_acquisition_command(client, demisto_args)
+    assert str(e.value) == expected_results
+
+
+GET_TRIAGE_PACKAGE_BAD_CASES = [
+    (
+        # No arguments given
+        {},
+        "Acquisition Id is required",
+    )
+]
+
+
+@pytest.mark.parametrize("demisto_args, expected_results", GET_TRIAGE_PACKAGE_BAD_CASES)
+def test_get_triage_acquisition_package_failed(demisto_args, expected_results):
+    from FireEyeHXv2 import get_triage_acquisition_package
+
+    client = ""
+
+    with pytest.raises(Exception) as e:
+        get_triage_acquisition_package(client, demisto_args)
+    assert str(e.value) == expected_results
+
+
+START_TRIAGE_ACQUISITION_COMMAND_CASES = [
+    ({"hostName": "test"}, 1, {"readable": "Triage Acquisition ID: 12345 on Instance:"}),
+    ({"agentId": "test"}, 0, {"readable": "Triage Acquisition ID: 12345 on Instance:"}),
+]
+
+
+@pytest.mark.parametrize("demisto_args, call_count, results", START_TRIAGE_ACQUISITION_COMMAND_CASES)
+def test_initiate_triage_acquisition_command(mocker, demisto_args, call_count, results):
+    from FireEyeHXv2 import Client, initiate_triage_acquisition_command
+
+    mocker.patch.object(Client, "get_token_request", return_value="test")
+    client = Client(base_url="base_url", verify=False, proxy=True, auth=("userName", "password"))
+
+    get_agentId = mocker.patch("FireEyeHXv2.get_agent_id_by_host_name", return_value="")
+    mocker.patch.object(client, "triage_acquisition_request", return_value={"host": {}, "_id": "12345"})
+    result = initiate_triage_acquisition_command(client, demisto_args)
+    assert get_agentId.call_count == call_count
+    assert result.readable_output.startswith(results["readable"])
+    assert result.to_context()["Contents"]["_id"] == "12345"
+
+
+UPSERT_COMMAND_TRIAGE_GET_ACQUISITION = [
+    ({"acquisitionId": "test"}, "COMPLETE", {"get_data": 1}),
+    ({"acquisitionId": "test"}, "NEW", {"get_data": 0}),
+]
+
+
+@pytest.mark.parametrize("demisto_args, state, call_count", UPSERT_COMMAND_TRIAGE_GET_ACQUISITION)
+def test_get_triage_acquisition_package_command(mocker, demisto_args, state, call_count):
+    from FireEyeHXv2 import Client, get_triage_acquisition_package
+
+    mocker.patch.object(Client, "get_token_request", return_value="test")
+    client = Client(base_url="base_url", verify=False, proxy=True, auth=("userName", "password"))
+
+    mocker.patch.object(client, "triage_acquisition_information_request", return_value={"host": {"_id": "test"}, "state": state})
+    mocker.patch.object(client, "get_hosts_by_agentId_request", return_value={"data": {}})
+    get_data_call = mocker.patch.object(client, "triage_acquisition_package_request", return_value="test")
+    mocker.patch("FireEyeHXv2.fileResult", return_value="test")
+    get_triage_acquisition_package(client, demisto_args)
+    assert get_data_call.call_count == call_count["get_data"]
+
+
+UPSERT_COMMAND_TRIAGE_DEL_ACQUISITION = [
+    ({"acquisitionId": "test"}, {"del_triage_call": 1}, {"readable": "Triage acquisition test deleted successfully"})
+]
+
+
+@pytest.mark.parametrize("demisto_args, call_count, results", UPSERT_COMMAND_TRIAGE_DEL_ACQUISITION)
+def test_delete_triage_acquisition_command_successful(mocker, demisto_args, call_count, results):
+    from FireEyeHXv2 import Client, delete_triage_acquisition_command
+
+    mocker.patch.object(Client, "get_token_request", return_value="test")
+    client = Client(base_url="base_url", verify=False, proxy=True, auth=("userName", "password"))
+    del_triage_call = mocker.patch.object(client, "delete_triage_acquisition_request")
+
+    result = delete_triage_acquisition_command(client, demisto_args)
+    assert del_triage_call.call_count == call_count["del_triage_call"]
+    assert result.readable_output == results["readable"]
+
+
+UPSERT_COMMAND_TRIAGE_INFO = [
+    ({"acquisitionId": "test"}, {"triage_info_call": 1, "host_info_call": 1}, {"readable": "### FireEye HX Triage"})
+]
+
+
+@pytest.mark.parametrize("demisto_args, call_count, results", UPSERT_COMMAND_TRIAGE_INFO)
+def test_get_triage_acquisition_information_success(mocker, demisto_args, call_count, results):
+    from FireEyeHXv2 import Client, get_triage_acquisition_information
+
+    mocker.patch.object(Client, "get_token_request", return_value="test")
+    client = Client(base_url="base_url", verify=False, proxy=True, auth=("userName", "password"))
+    triage_info_call = mocker.patch.object(
+        client, "triage_acquisition_information_request", return_value={"host": {"_id": "testID"}}
+    )
+    host_info_call = mocker.patch.object(client, "get_hosts_by_agentId_request", return_value={"data": {"hostname": "testHost"}})
+
+    result = get_triage_acquisition_information(client, demisto_args)
+    assert triage_info_call.call_count == call_count["triage_info_call"]
+    assert host_info_call.call_count == call_count["host_info_call"]
+    assert result.readable_output.startswith(results["readable"])
+    assert result.to_context()["Contents"]["host"]["hostname"] == "testHost"
+
+
+UPSERT_COMMAND_HOST_ACQS = [
+    ({"hostName": "testHost"}, {"host_info_call": 1}, {"readable": "### FireEye HX Acquisitions"}),
+    ({"agentId": "test"}, {"host_info_call": 0}, {"readable": "### FireEye HX Acquisitions"}),
+]
+
+
+@pytest.mark.parametrize("demisto_args, call_count, results", UPSERT_COMMAND_HOST_ACQS)
+def test_list_host_acquisitions_success(mocker, demisto_args, call_count, results):
+    from FireEyeHXv2 import Client, list_host_acquisitions
+
+    mocker.patch.object(Client, "get_token_request", return_value="test")
+    client = Client(base_url="base_url", verify=False, proxy=True, auth=("userName", "password"))
+    host_info_call = mocker.patch.object(client, "get_hosts_request", return_value={"data": {"entries": [{"_id": "test"}]}})
+    mocker.patch.object(client, "host_acquisition_information_request", return_value={})
+
+    result = list_host_acquisitions(client, demisto_args)
+    assert host_info_call.call_count == call_count["host_info_call"]
+    assert result.readable_output.startswith(results["readable"])
+
+
 """ALERTS"""
 
 
@@ -1374,7 +1558,7 @@ def test_create_dynamic_host_set_command(mocker):
             {"host_set_name": "host_set_name", "query": "query", "query_key": "query_key"},
             "Cannot use free text query with other query operators, Please use one.",
         ),
-        ({"host_set_name": "host_set_name"}, "Please provide a free text query, or add all of the query operators toghether."),
+        ({"host_set_name": "host_set_name"}, "Please provide a free text query, or add all of the query operators together."),
     ],
 )
 def test_create_dynamic_host_set_command_failed(args, expected_results):
@@ -1465,7 +1649,7 @@ def test_update_dynamic_host_set_command(mocker):
             {"host_set_name": "host_set_name", "query": "query", "query_key": "query_key"},
             "Cannot use free text query with other query operators, Please use one.",
         ),
-        ({"host_set_name": "host_set_name"}, "Please provide a free text query, or add all of the query operators toghether."),
+        ({"host_set_name": "host_set_name"}, "Please provide a free text query, or add all of the query operators together."),
     ],
 )
 def test_update_dynamic_host_set_command_failed(args, expected_results):
@@ -1551,7 +1735,7 @@ def test_create_static_host_request_body(mocker):
 def test_informative_error_in_get_token(mocker):
     """
     Given:
-        - 401 error occured in get_token
+        - 401 error occurred in get_token
 
     When:
         - init the client and the get token was called

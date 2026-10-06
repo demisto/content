@@ -28,11 +28,11 @@ For additional example playbooks please contact support@analyst1.com.
 * When you wish to have more information on a given indicator
 * When you want to look up batch indicator values en mass
 * When you want to get indicator metadata from 100s of sources in one call
-* When you want to get indicator cached enrichment, like VirusTotal, without rehitting other APIs
+* When you want to get indicator cached enrichment, like VirusTotal, without re-hitting other APIs
 * When you use both Cortex XSOAR and Analyst1 and wish to have easy linking between the two
 * When you want to submit any form of created or discovered intelligence back to Analyst1
 * When you want to get the current Analyst1 created defensive outputs of Indicators and Signatures
-* When you want to get iterate diffs of Indicator and Singature sets for proactive defensive configurations
+* When you want to get iterate diffs of Indicator and Signature sets for proactive defensive configurations
 
 ## Configure Analyst1 on Cortex XSOAR
 
@@ -88,13 +88,15 @@ After you successfully execute a command, a DBot message appears in the War Room
 9. url
 10. analyst1-evidence-submit
 11. analyst1-evidence-status
-12. analyst1-batch-check
-13. analyst1-batch-check-post
-14. analyst1-indicator-by-id
-15. analyst1-get-sensor-config
-16. analyst1-get-sensor-taskings
-17. analyst1-get-sensor-diff
-18. analyst1-get-sensors
+12. analyst1-evidence-search
+13. analyst1-evidence-file-fetch
+14. analyst1-batch-check
+15. analyst1-batch-check-post
+16. analyst1-indicator-by-id
+17. analyst1-get-sensor-config
+18. analyst1-get-sensor-taskings
+19. analyst1-get-sensor-diff
+20. analyst1-get-sensors
 
 ### 1. domain
 
@@ -959,7 +961,94 @@ Check on the status of the analyst1-evidence-submit action by using its output U
 >|---|---|
 >| 1608592 | true |
 
-### 12. analyst1-batch-check
+### 12. analyst1-evidence-search
+
+***
+Search for evidence in Analyst1 using filters and search terms.
+
+#### Base Command
+
+`analyst1-evidence-search`
+
+#### Input
+
+| __Argument Name__ | Description | __Required__ |
+| --- | --- | --- |
+| search_term | Free text search term (e.g., "black basta", "malware campaign"). | Optional |
+| page | Results page number (1-indexed). Default is 1. | Optional |
+| page_size | Number of results per page (1-100). Default is 50. | Optional |
+| evidence_type | Filter by evidence type. Possible values are: pcap, image, pdf, txt, web, incident_04, stix, caseType, spreadsheet, doc, ppt, xml, other. | Optional |
+| tlp | Filter by TLP color. Possible values are: UNDETERMINED, CLEAR, GREEN, AMBER, AMBER+STRICT, RED. | Optional |
+| actor_id | Filter by actor ID. | Optional |
+| source_id | Filter by source ID. | Optional |
+| analyzed_state | Filter by analyzed state. Possible values are: r, b, g. | Optional |
+| analyzed_date_from | Filter by analyzed date from (ISO-8601 format, e.g., 2024-01-01). | Optional |
+| analyzed_date_to | Filter by analyzed date to (ISO-8601 format, e.g., 2024-12-31). | Optional |
+| sort_by | Field to sort results by. Possible values are: id, analyzed, indicatorsStatus, title, tlp, type, exploitStage, attackPattern, activityDate, reportedDate, assignedTo. Default is id. | Optional |
+| desc_sort | Sort results in descending order. Possible values are: true, false. Default is true. | Optional |
+
+#### Context Output
+
+| __Path__ | __Type__ | __Description__ |
+| --- | --- | --- |
+| Analyst1.Evidence.id | Number | Evidence unique ID. |
+| Analyst1.Evidence.title | String | Evidence title. |
+| Analyst1.Evidence.type | String | Evidence type (e.g., pdf, pcap, web). |
+| Analyst1.Evidence.tlp | String | Traffic Light Protocol (TLP) designation. |
+| Analyst1.Evidence.analyzed | Boolean | Whether the evidence has been analyzed. |
+| Analyst1.Evidence.indicatorsStatus | String | Status of indicators extracted from evidence. |
+| Analyst1.Evidence.activityDate | Date | Activity date associated with evidence. |
+| Analyst1.Evidence.reportedDate | Date | Date evidence was reported. |
+| Analyst1.Evidence.assignedTo | String | User assigned to the evidence. |
+
+#### Command example
+
+```!analyst1-evidence-search search_term="malware" page_size=10```
+
+#### Human Readable Output
+
+>### Analyst1 Evidence Search Results
+>
+>|id|title|type|tlp|analyzed|
+>|---|---|---|---|---|
+>| 12345 | Malware Sample Analysis | pdf | AMBER | true |
+
+### 13. analyst1-evidence-file-fetch
+
+***
+Download an evidence file from Analyst1 by its ID.
+
+#### Base Command
+
+`analyst1-evidence-file-fetch`
+
+#### Input
+
+| __Argument Name__ | Description | __Required__ |
+| --- | --- | --- |
+| evidence_id | The Evidence ID to download. | Required |
+
+#### Context Output
+
+| __Path__ | __Type__ | __Description__ |
+| --- | --- | --- |
+| File.Name | String | The name of the downloaded file. |
+| File.Size | Number | The size of the file in bytes. |
+| File.EntryID | String | The XSOAR entry ID of the downloaded file. |
+
+#### Command example
+
+```!analyst1-evidence-file-fetch evidence_id=12345```
+
+#### Human Readable Output
+
+>### Evidence File Downloaded
+>
+>|Name|Size|EntryID|
+>|---|---|---|
+>| evidence_12345.pdf | 102400 | 1234@5678 |
+
+### 14. analyst1-batch-check
 
 ***
 Queries the Analyst1 REST API for indicator enrichment data based on a CSV input of multiple indicator values.
@@ -1031,7 +1120,7 @@ Queries the Analyst1 REST API for indicator enrichment data based on a CSV input
 >|  | false | key: INDICATOR<br/>title: Indicator | 438290 | {'id': 772, 'title': 'AceHash', 'akas': ['AceHash']},<br/>{'id': 875, 'title': '007Keylogger', 'akas': ['007', '007Keylogger']} | 1.2.3.4 | 1.2.3.4 |  | key: ip<br/>title: IPv4 |
 >| {'id': -4, 'title': 'Multiple Actors Extracted', 'akas': ['Multiple Actors Extracted']} | false | key: INDICATOR<br/>title: Indicator | 2043650 |  | abc.com | abc.com |  | key: domain<br/>title: Domain |
 
-### 13. analyst1-batch-check-post
+### 15. analyst1-batch-check-post
 
 ***
 Similar to analyst1-batch-check, however the inputs can be more complex. The 'values' input is an option for a pre-formatted newline separated file. This allows for more complex Indicators or larger Indicator sets to be searched. The 'valeus_array' allows for preformed array inputs or array-like inputs to be sumitted. Output is the same.
@@ -1055,7 +1144,7 @@ Similar to analyst1-batch-check, however the inputs can be more complex. The 'va
 | Analyst1.ID | unknown | Matched ID values. May not all be Indicators. Could reflect Indicator, Asset, Ignore List, or System records. |
 | Analyst1.matchedValue | unknown | The matched terms from Indicators, Assets, Ignore List, or System CIDR entries. |
 
-### 14. analyst1-indicator-by-id
+### 16. analyst1-indicator-by-id
 
 ***
 Gets the full JSON for an Analyst1 Indicator given the internal Analyst1 Indicator ID. Use this when full Indicator context is required for additional processing. This always includes all sources, enrichments, and every piece of information available in the Analyst1 platform, including integrated system's original enrichment JSON or results.
@@ -1379,7 +1468,7 @@ Gets the full JSON for an Analyst1 Indicator given the internal Analyst1 Indicat
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| false | {'date': '2012-05-08', 'classification': 'U'},<br/>{'date': '2012-05-16', 'classification': 'U'},<br/>{'date': '2012-08-30', 'classification': 'U'},<br/>{'date': '2012-09-05', 'classification': 'U'},<br/>{'date': '2012-09-26', 'classification': 'U'},<br/>{'date': '2012-12-07', 'classification': 'U'},<br/>{'date': '2013-01-17', 'classification': 'U'},<br/>{'date': '2013-03-01', 'classification': 'U'},<br/>{'date': '2013-03-14', 'classification': 'U'},<br/>{'date': '2013-03-27', 'classification': 'U'},<br/>{'date': '2013-04-01', 'classification': 'U'},<br/>{'date': '2013-06-18', 'classification': 'U'},<br/>{'date': '2014-03-05', 'classification': 'U'},<br/>{'date': '2014-05-07', 'classification': 'U'} | {'name': 'APT41', 'id': 30, 'classification': 'U'},<br/>{'name': 'Conimes', 'id': 121, 'classification': 'U'} |  | value: false<br/>classification: U | value: high<br/>classification: U |  | name: unknown<br/>classification: U | {'type': 'ipResolution', 'name': 'IP Resolution (DNS Resolution)', 'value': 'redacted_ip_address', 'numeric': None, 'classification': 'unclass'},<br/>{'type': 'reverseIp', 'name': 'Reverse IP Lookup (VirusTotal)', 'value': '13 resolutions to this domain', 'numeric': 13.0, 'classification': 'unclass'},<br/>{'type': 'ipResolution', 'name': 'IP Resolution (DomainTools)', 'value': 'redacted_ip_address', 'numeric': None, 'classification': 'unclass'},<br/>{'type': 'ipResolution', 'name': 'IP Resolution (VirusTotal)', 'value': 'redacted_ip_address', 'numeric': None, 'classification': 'unclass'} | { "date": "2020-04-28", "format": "json", "result": "{ \"status\": \"redacted to protect content provider's actual JSON output that in a live call would be provided\" }" "type": "VIRUS_TOTAL" },<br/>{ "date": "2020-12-15", "format": "colonDelimited", "result": "redacted to protected content provider's actual raw text result", "type": "WHOIS_IP_REGISTRATION" } | enrichmentResults,hitStats,sources | name: Stage 7 - Actions on Objectives<br/>id: 6<br/>classification: U | 0 |  |  |  |  |  | 0 | 983 |  |  |  |  |  |  | {'rel': 'self', 'href': 'https:<span>//</span>analyst1instance.domain/api/1_0/indicator/983'},<br/>{'rel': 'evidence', 'href': 'https:<span>//</span>analyst1instance.domain/api/1_0/indicator/983/evidence'},<br/>{'rel': 'stix', 'href': 'https:<span>//</span>analyst1instance.domain/api/1_0/indicator/983/stix'} |  |  |  | {'value': 443, 'classification': 'U'},<br/>{'value': 80, 'classification': 'U'} | 21 | {'date': '2012-05-10', 'classification': 'U'},<br/>{'date': '2013-04-01', 'classification': 'U'},<br/>{'date': '2013-06-19', 'classification': 'U'},<br/>{'date': '2013-09-16', 'classification': 'U'},<br/>{'date': '2014-05-19', 'classification': 'U'},<br/>{'date': '2014-08-14', 'classification': 'U'},<br/>{'date': '2018-09-19', 'classification': 'U'},<br/>{'date': '2019-10-17', 'classification': 'U'},<br/>{'date': '2021-07-01', 'classification': 'U'} |  | {'type': 'reference', 'enabled': False, 'title': 'Internal', 'url': None, 'category': 'INTERNAL', 'id': 0},<br/>{'type': 'rss', 'enabled': False, 'title': 'Threat Connect', 'url': 'https:<span>//</span>feeds.feedburner.com/threatconnect-blogs', 'category': 'FREE', 'id': 78},<br/>{'type': 'api', 'enabled': True, 'title': 'CrowdStrike Premium Paid', 'url': 'https:<span>//</span>api.crowdstrike.com', 'category': 'PAID', 'id': 134} | rc |  |  | {'name': 'Unknown', 'id': -2, 'classification': 'U'},<br/>{'name': 'Manufacturing Industry', 'id': 100017, 'classification': 'U'},<br/>{'name': 'Energy Industry', 'id': 100021, 'classification': 'U'},<br/>{'name': 'Technology Industry', 'id': 100026, 'classification': 'U'} | true | undetermined |  | amber |  | undetermined | resolved | domain | name: conimes.com<br/>classification: U | true |
 
-### 15. analyst1-get-sensor-config
+### 17. analyst1-get-sensor-config
 
 ***
 Queries the Analyst1 REST API for the current sensor config given a valid Sensor ID. This config file is meant to be directly provided to a device (IDS, IPS, Firewall, SNORT...) for configuration replacements.
@@ -1435,7 +1524,7 @@ Queries the Analyst1 REST API for the current sensor config given a valid Sensor
 >|---|---|
 >| alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"ET TROJAN Win32/0xtaRAT CnC Activity M5 (POST)"; flow:established,to_server; content:"POST"; http_method; content:".php?GUID="; http_uri; pcre:"/\.php\?GUID=[a-zA-Z0-9-]{36}$/U"; content:"//"; http_raw_uri; depth:2; content:"name=\|22\|file\|22 3b 20\|filename=\|22\|_screenshot_"; http_client_body; fast_pattern:15,20; content:!"Referer\|3a 20\|"; http_header; reference:md5,a1a39e458977aa512b7ff2ba1995b18d; reference:url,research.checkpoint.com/2023/operation-silent-watch-desktop-surveillance-in-azerbaijan-and-armenia; classtype:trojan-activity; sid:2046186; rev:1; metadata:attack_target Client_Endpoint, created_at 2023_06_09, deployment Perimeter, deployment SSLDecrypt, former_category MALWARE, performance_impact Low, signature_severity Critical, updated_at 2023_06_09;)<br/>alert tcp $EXTERNAL_NET any -> $HTTP_SERVERS $HTTP_PORTS (msg:"ET WEB_SPECIFIC_APPS Joomla! SQL Injection Attempt -- categories.php text SELECT"; flow:established,to_server; content:"/plugins/search/categories.php?"; nocase; http_uri; content:"text="; nocase; http_uri; content:"SELECT"; nocase; http_uri; pcre:"/SELECT.+FROM/Ui"; reference:cve,2007-0373; reference:url,www.securityfocus.com/bid/22122; reference:url,doc.emergingthreats.net/2005438; classtype:web-application-attack; sid:2005438; rev:6; metadata:affected_product Web_Server_Applications, attack_target Web_Server, created_at 2010_07_30, cve CVE_2007_0373, deployment Datacenter, former_category WEB_SPECIFIC_APPS, signature_severity Major, tag SQL_Injection, updated_at 2020_09_11;)<br/> | Contents: <br/>ContentsFormat: text<br/>Type: 3<br/>File: sensor7689Config.txt<br/>FileID: 8cca47a1-aef6-46c4-a372-8653f82abed0 |
 
-### 16. analyst1-get-sensor-taskings
+### 18. analyst1-get-sensor-taskings
 
 ***
 Queries the Analyst1 REST API for the current sensor taskings given a valid Sensor ID. This can be used to start subscription to an Sensor ID. The result gives the version (which can later be used to invoke 'diff') and all current taskings. Note: This operation may trigger XSOAR to "oversize" the task built on this automation. If so, you may need to turn off quiet mode explicitly. The analyst1-get-sensor-config can alternatively be used to get a simple text file of current indicators or signatures.
@@ -1461,7 +1550,7 @@ Queries the Analyst1 REST API for the current sensor taskings given a valid Sens
 | Analyst1.SensorTaskings.Indicators | unknown | Current array of Indicators tasked |
 | Analyst1.SensorTaskings.Rules | unknown | Current array of Signatures tasked |
 
-### 17. analyst1-get-sensor-diff
+### 19. analyst1-get-sensor-diff
 
 ***
 Gets the 'difference' from the last known Analyst1 Sensor version against the current. Returns all differences on the Sensor since the 'version' provided and includes the current version in the reply. Current version should be preserved to be used on next scheduled invocation.
@@ -1562,7 +1651,7 @@ Gets the 'difference' from the last known Analyst1 Sensor version against the cu
 
 >__No entries.__
 
-### 18. analyst1-get-sensors
+### 20. analyst1-get-sensors
 
 ***
 Queries the Analyst1 REST API to retrieve a list of registered sensors.

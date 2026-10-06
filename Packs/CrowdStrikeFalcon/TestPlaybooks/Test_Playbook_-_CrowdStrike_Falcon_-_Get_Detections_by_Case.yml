@@ -1,0 +1,357 @@
+id: CrowdStrike_Falcon_-_Get_Detections_by_Case
+name: CrowdStrike_Falcon_-_Get_Detections_by_Case
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position":{"x":50,"y":200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: cs-falcon-search-detection
+      description: ''
+      script: CrowdstrikeFalcon|||cs-falcon-search-detection
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Detection.Behavior.FileName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Detection.Behavior.Scenario
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Detection.Behavior.MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Detection.Behavior.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Detection.Behavior.IOCType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Detection.Behavior.IOCValue
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Detection.Behavior.CommandLine
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Detection.Behavior.UserName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Detection.Behavior.SensorID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Detection.Behavior.ParentProcessID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Detection.Behavior.ProcessID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Detection.Behavior.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Detection.System
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Detection.CustomerID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Detection.MachineDomain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Detection.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Detection.ProcessStartTime
+            iscontext: true
+    view: '{"position":{"x":50,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: cs-falcon-list-case-summaries
+      description: ''
+      script: CrowdstrikeFalcon|||cs-falcon-list-case-summaries
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '5'
+    type: condition
+    task:
+      id: '5'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Case.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Case.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Case.created_timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Case.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Case.version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Case.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Case.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Case.assigned_to
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Case.tags
+            iscontext: true
+    view: '{"position":{"x":50,"y":1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: cs-falcon-get-evidence-for-case
+      description: ''
+      script: CrowdstrikeFalcon|||cs-falcon-get-evidence-for-case
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '7'
+    type: condition
+    task:
+      id: '7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.CaseEvidence.alerts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.CaseEvidence.events
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.CaseEvidence.leads
+            iscontext: true
+    view: '{"position":{"x":50,"y":1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: '8'
+    taskid: '8'
+    type: title
+    task:
+      id: '8'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+inputs: []
+outputs: []

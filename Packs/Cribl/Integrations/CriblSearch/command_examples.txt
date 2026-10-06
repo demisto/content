@@ -1,0 +1,9 @@
+!cribl-search-dataset-list limit=3
+!cribl-saved-search-list limit=3
+!cribl-search-job-list limit=3
+!cribl-search-job-create query="dataset=\"cribl_search_sample\" | summarize cnt=count() by srcaddr"
+!cribl-search-query query="dataset=\"cribl_search_sample\" | project method, source, status, url | take 5" earliest="-24h" latest="now" limit=3
+!cribl-search-status job_id="1777207943198.pb0ZZ0"
+!cribl-search-result job_id="1777207943198.pb0ZZ0" limit=5
+!cribl-search-job-update job_id="1777446985069.KSZQ5h" is_private=true
+!cribl-search-job-delete job_id="1777446985069.KSZQ5h"

@@ -1,0 +1,11 @@
+{
+    "result": {
+        "currentPage": 0,
+        "nextPage": null,
+        "totalRecords": 0,
+        "incidents": []
+    },
+    "success": true,
+    "message": "",
+    "errorCode": ""
+}

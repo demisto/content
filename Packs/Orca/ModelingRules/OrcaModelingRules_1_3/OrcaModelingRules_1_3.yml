@@ -1,9 +1,9 @@
 fromversion: 6.10.0
+toversion: 8.14.0
 id: orca_modeling_rules
 name: Orca Modeling Rules
 rules: ''
 schema: ''
 tags: Orca
 supportedModules:
-- agentix
 - xsiam

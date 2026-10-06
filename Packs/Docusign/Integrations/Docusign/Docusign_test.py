@@ -1,4 +1,5 @@
 from unittest.mock import MagicMock
+import pytest
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401,F403
 
@@ -10,6 +11,23 @@ from Docusign import (
     get_user_data,
     fetch_audit_user_data,
     UserDataClient,
+    AuthClient,
+    get_events_command,
+    fetch_events,
+    get_scopes_per_type,
+    get_env_from_server_url,
+    is_access_token_expired,
+    is_required_scopes_set,
+    remove_duplicate_users,
+    generate_consent_url,
+    validate_configuration_params,
+    test_module,
+    reset_access_token,
+    initiate_auth_client,
+    CUSTOMER_EVENTS_SCOPE,
+    USER_DATA_SCOPE,
+    CUSTOMER_EVENTS_TYPE,
+    USER_DATA_TYPE,
 )
 
 
@@ -378,7 +396,7 @@ class TestGetUserData:
 
         # Initial state - first fetch
         initial_last_run = {}
-        result_last_run, users = fetch_audit_user_data(initial_last_run, mock_auth_client, test_mode=True)
+        result_last_run, users = fetch_audit_user_data(initial_last_run, mock_auth_client, limit=limit, test_mode=True)
 
         assert len(users) == limit
         assert result_last_run["continuing_fetch_info"].get("url") == "next_url_2"
@@ -398,7 +416,7 @@ class TestGetUserData:
         # --- SECOND CALL TO fetch_audit_user_data: Process excess users from previous fetch before fetching new page ---
 
         # Second fetch using last_run from first fetch
-        result_last_run_2, users_2 = fetch_audit_user_data(result_last_run, mock_auth_client, test_mode=True)
+        result_last_run_2, users_2 = fetch_audit_user_data(result_last_run, mock_auth_client, limit=limit, test_mode=True)
 
         assert len(users_2) == limit
 
@@ -417,7 +435,7 @@ class TestGetUserData:
         assert excess_info["url"] == "next_url_3"
 
         # Third fetch using last_run from second fetch
-        result_last_run_3, users_3 = fetch_audit_user_data(result_last_run_2, mock_auth_client, test_mode=True)
+        result_last_run_3, users_3 = fetch_audit_user_data(result_last_run_2, mock_auth_client, limit=limit, test_mode=True)
 
         # Should return exactly 6 users
         assert len(users_3) == 6
@@ -433,3 +451,519 @@ class TestGetUserData:
         assert result_last_run_3["excess_users_info"] is None
         # Should remove continuing_fetch_info from last run (next page is none, next fetch will start a new fetch window)
         assert result_last_run_3["continuing_fetch_info"] is None
+
+
+class TestGetEventsCommand:
+    def test_get_events_command_customer_events(self, mocker):
+        """
+        Given:
+            - event_type is 'Customer events' and limit is 2
+        When:
+            - get_events_command is called
+        Then:
+            - It should call fetch_customer_events and return the events as CommandResults
+        """
+        mock_events = [
+            {
+                "timestamp": "2024-06-30T07:08:06.3038365Z",
+                "eventId": "event-1",
+                "source_log_type": "customerevent",
+                "_time": "2024-06-30T07:08:06Z",
+            },
+            {
+                "timestamp": "2024-06-30T06:44:26.8948106Z",
+                "eventId": "event-2",
+                "source_log_type": "customerevent",
+                "_time": "2024-06-30T06:44:26Z",
+            },
+        ]
+
+        mocker.patch.object(demisto, "args", return_value={"event_type": CUSTOMER_EVENTS_TYPE, "limit": "2"})
+        mocker.patch.object(demisto, "params", return_value={"url": DEFAULT_SERVER_DEV_URL})
+        mocker.patch.object(demisto, "debug")
+
+        mock_fetch = mocker.patch("Docusign.fetch_customer_events", return_value=({}, mock_events))
+
+        mock_auth_client = mocker.MagicMock()
+        mock_auth_client.access_token = "test_token"
+
+        result = get_events_command(mock_auth_client)
+
+        assert "fetched 2" in result.readable_output
+        assert result.raw_response == mock_events
+        mock_fetch.assert_called_once_with(last_run={}, access_token="test_token", limit=2)
+
+    def test_get_events_command_audit_users(self, mocker):
+        """
+        Given:
+            - event_type is 'Audit Users' and limit is 3
+        When:
+            - get_events_command is called
+        Then:
+            - It should call fetch_audit_user_data and return the events as CommandResults
+        """
+        mock_users = [
+            {"id": "user-1", "user_name": "alice"},
+            {"id": "user-2", "user_name": "bob"},
+            {"id": "user-3", "user_name": "charlie"},
+        ]
+
+        mocker.patch.object(demisto, "args", return_value={"event_type": USER_DATA_TYPE, "limit": "3"})
+        mocker.patch.object(demisto, "params", return_value={"url": DEFAULT_SERVER_DEV_URL})
+        mocker.patch.object(demisto, "debug")
+
+        mock_fetch = mocker.patch("Docusign.fetch_audit_user_data", return_value=({}, mock_users))
+
+        mock_auth_client = mocker.MagicMock()
+        mock_auth_client.access_token = "test_token"
+
+        result = get_events_command(mock_auth_client)
+
+        assert "fetched 3" in result.readable_output
+        assert result.raw_response == mock_users
+        mock_fetch.assert_called_once_with(last_run={}, auth_client=mock_auth_client, limit=3, test_mode=True)
+
+    def test_get_events_command_unknown_event_type(self, mocker):
+        """
+        Given:
+            - event_type is an unknown value
+        When:
+            - get_events_command is called
+        Then:
+            - It should raise a DemistoException
+        """
+        mocker.patch.object(demisto, "args", return_value={"event_type": "InvalidType", "limit": "10"})
+        mocker.patch.object(demisto, "params", return_value={})
+        mocker.patch.object(demisto, "debug")
+
+        mock_auth_client = mocker.MagicMock()
+
+        import pytest
+
+        with pytest.raises(DemistoException, match="Unknown event type"):
+            get_events_command(mock_auth_client)
+
+
+class TestScopes:
+    """Regression tests for XSUP-70500: the JWT Grant requires the 'impersonation' scope
+    for every fetch type, otherwise DocuSign returns 400 {"error": "consent_required"}.
+    """
+
+    def test_baseline_jwt_scopes_in_all_scope_sets(self):
+        """
+        Given:
+            - The scope lists used to build the consent URL and the JWT.
+        When:
+            - Inspecting each fetch type's scopes.
+        Then:
+            - The DocuSign JWT Grant baseline scopes 'signature' and 'impersonation'
+              must be present in both, since all flows use the JWT Bearer grant.
+        """
+        for scope_set in (CUSTOMER_EVENTS_SCOPE, USER_DATA_SCOPE):
+            assert "signature" in scope_set
+            assert "impersonation" in scope_set
+
+    def test_get_scopes_per_type_audit_users_includes_impersonation(self):
+        """
+        Given:
+            - Only the 'Audit Users' fetch type is selected.
+        When:
+            - get_scopes_per_type resolves the required scopes.
+        Then:
+            - The resolved scopes include 'impersonation' (the XSUP-70500 regression).
+        """
+        scopes = get_scopes_per_type(USER_DATA_TYPE)
+        assert "impersonation" in scopes
+        assert "organization_read" in scopes
+        assert "user_read" in scopes
+        assert "signature" in scopes
+
+    def test_get_scopes_per_type_customer_events(self):
+        scopes = get_scopes_per_type(CUSTOMER_EVENTS_TYPE)
+        assert "impersonation" in scopes
+        assert "signature" in scopes
+
+    def test_get_scopes_per_type_both_types(self):
+        scopes = get_scopes_per_type(f"{CUSTOMER_EVENTS_TYPE},{USER_DATA_TYPE}")
+        for expected in ("signature", "impersonation", "organization_read", "user_read"):
+            assert expected in scopes
+
+    def test_get_scopes_per_type_none_selected(self):
+        assert get_scopes_per_type("") == []
+
+
+class TestEnvFromServerUrl:
+    def test_dev_host(self):
+        assert get_env_from_server_url("https://account-d.docusign.com") == "dev"
+
+    def test_prod_host(self):
+        assert get_env_from_server_url("https://account.docusign.com") == "prod"
+
+    def test_unknown_host_defaults_to_prod(self):
+        assert get_env_from_server_url("https://example.com") == "prod"
+
+
+class TestTokenScopeHelpers:
+    def test_is_access_token_expired_true(self, mocker):
+        mocker.patch.object(demisto, "debug")
+        assert is_access_token_expired("2000-01-01T00:00:00Z") is True
+
+    def test_is_access_token_expired_false(self, mocker):
+        mocker.patch.object(demisto, "debug")
+        assert is_access_token_expired("2999-01-01T00:00:00Z") is False
+
+    def test_is_required_scopes_set_true(self):
+        assert is_required_scopes_set(["a", "b"], ["a", "b", "c"]) is True
+
+    def test_is_required_scopes_set_false(self):
+        assert is_required_scopes_set(["a", "z"], ["a", "b", "c"]) is False
+
+
+class TestRemoveDuplicateUsers:
+    def test_removes_matching_id_and_time(self):
+        users = [
+            {"id": "1", "_time": "t1"},
+            {"id": "2", "_time": "t1"},
+            {"id": "3", "_time": "t2"},
+        ]
+        result = remove_duplicate_users(users, ids_to_remove=["1"], time_to_remove="t1")
+        assert {u["id"] for u in result} == {"2", "3"}
+
+    def test_keeps_when_time_differs(self):
+        users = [{"id": "1", "_time": "t2"}]
+        result = remove_duplicate_users(users, ids_to_remove=["1"], time_to_remove="t1")
+        assert result == users
+
+    def test_empty_inputs_returns_original(self):
+        users = [{"id": "1", "_time": "t1"}]
+        assert remove_duplicate_users(users, ids_to_remove=[], time_to_remove="t1") == users
+        assert remove_duplicate_users([], ids_to_remove=["1"], time_to_remove="t1") == []
+
+
+class TestAuthClientValidatePrivateKey:
+    def _client(self, mocker):
+        mocker.patch.object(AuthClient, "get_access_token", return_value="tok")
+        mocker.patch.object(demisto, "debug")
+        return AuthClient(
+            server_url="https://account-d.docusign.com",
+            integration_key="key",
+            user_id="user",
+            private_key_pem="-----BEGIN RSA PRIVATE KEY-----\nAAAA BBBB CCCC\n-----END RSA PRIVATE KEY-----",
+        )
+
+    def test_validate_private_key_normalizes(self, mocker):
+        client = self._client(mocker)
+        assert client.private_key_pem.startswith("-----BEGIN RSA PRIVATE KEY-----\n")
+        assert client.private_key_pem.endswith("\n-----END RSA PRIVATE KEY-----")
+        assert "AAAABBBBCCCC" in client.private_key_pem.replace("\n", "")
+
+    def test_validate_private_key_bad_prefix(self, mocker):
+        mocker.patch.object(AuthClient, "get_access_token", return_value="tok")
+        mocker.patch.object(demisto, "debug")
+        with pytest.raises(DemistoException, match="must start with"):
+            AuthClient(
+                server_url="https://account-d.docusign.com",
+                integration_key="key",
+                user_id="user",
+                private_key_pem="not a key",
+            )
+
+
+class TestAuthClientToken:
+    def _make_client(self, mocker):
+        mocker.patch.object(AuthClient, "get_access_token", return_value="tok")
+        mocker.patch.object(demisto, "debug")
+        mocker.patch.object(demisto, "error")
+        return AuthClient(
+            server_url="https://account-d.docusign.com",
+            integration_key="key",
+            user_id="user",
+            private_key_pem="-----BEGIN RSA PRIVATE KEY-----\nAAAA\n-----END RSA PRIVATE KEY-----",
+        )
+
+    def test_exchange_jwt_success(self, mocker):
+        client = self._make_client(mocker)
+        mocker.patch.object(
+            client,
+            "_http_request",
+            return_value={"access_token": "abc", "expires_in": 3600, "scope": "signature impersonation"},
+        )
+        access_token, expired_at, scope = client.exchange_jwt_to_access_token("jwt")
+        assert access_token == "abc"
+        assert scope == "signature impersonation"
+        assert expired_at
+
+    def test_exchange_jwt_missing_token_raises(self, mocker):
+        client = self._make_client(mocker)
+        mocker.patch.object(client, "_http_request", return_value={"scope": "signature"})
+        with pytest.raises(DemistoException, match="Token exchange failed"):
+            client.exchange_jwt_to_access_token("jwt")
+
+    def test_exchange_jwt_consent_required_propagates(self, mocker):
+        """consent_required from DocuSign must propagate (XSUP-70500 symptom)."""
+        client = self._make_client(mocker)
+        mocker.patch.object(
+            client,
+            "_http_request",
+            side_effect=DemistoException('Error in API call [400] - Bad Request {"error": "consent_required"}'),
+        )
+        with pytest.raises(DemistoException, match="consent_required"):
+            client.exchange_jwt_to_access_token("jwt")
+
+    def test_get_user_info(self, mocker):
+        client = self._make_client(mocker)
+        mocker.patch.object(client, "_http_request", return_value={"accounts": [{"account_id": "a1"}]})
+        assert client.get_user_info("tok")["accounts"][0]["account_id"] == "a1"
+
+    def test_get_base_uri_from_context(self, mocker):
+        client = self._make_client(mocker)
+        mocker.patch("Docusign.get_integration_context", return_value={"base_uri": "https://cached"})
+        assert client.get_base_uri("tok", "a1") == "https://cached"
+
+    def test_get_base_uri_fetches_and_caches(self, mocker):
+        client = self._make_client(mocker)
+        mocker.patch("Docusign.get_integration_context", return_value={})
+        set_ctx = mocker.patch("Docusign.set_integration_context")
+        mocker.patch.object(
+            client,
+            "get_user_info",
+            return_value={"accounts": [{"account_id": "a1", "base_uri": "https://fetched"}]},
+        )
+        assert client.get_base_uri("tok", "a1") == "https://fetched"
+        set_ctx.assert_called_once()
+
+    def test_get_base_uri_account_not_found(self, mocker):
+        client = self._make_client(mocker)
+        mocker.patch("Docusign.get_integration_context", return_value={})
+        mocker.patch.object(client, "get_user_info", return_value={"accounts": [{"account_id": "other"}]})
+        with pytest.raises(DemistoException, match="missing configuration account id"):
+            client.get_base_uri("tok", "a1")
+
+
+class TestGenerateConsentUrl:
+    def test_includes_impersonation_for_audit_users(self, mocker):
+        """XSUP-70500: the consent URL for Audit Users must request the 'impersonation' scope."""
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "event_types": USER_DATA_TYPE,
+                "url": "https://account-d.docusign.com",
+                "integration_key": "key",
+                "redirect_url": "https://localhost",
+            },
+        )
+        mocker.patch.object(demisto, "debug")
+        mocker.patch("Docusign.get_integration_context", return_value={})
+        mocker.patch("Docusign.set_integration_context")
+
+        result = generate_consent_url()
+        assert "impersonation" in result.readable_output
+        assert "signature" in result.readable_output
+
+    def test_all_scopes_already_consented(self, mocker):
+        mocker.patch.object(demisto, "params", return_value={"event_types": USER_DATA_TYPE})
+        mocker.patch.object(demisto, "debug")
+        mocker.patch("Docusign.get_integration_context", return_value={"consent_scopes": list(USER_DATA_SCOPE)})
+
+        result = generate_consent_url()
+        assert "already set" in result.readable_output
+
+    def test_no_event_types_selected_raises(self, mocker):
+        mocker.patch.object(demisto, "params", return_value={"event_types": ""})
+        mocker.patch.object(demisto, "debug")
+        with pytest.raises(DemistoException, match="select Event Types"):
+            generate_consent_url()
+
+    def test_missing_auth_params_raises(self, mocker):
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"event_types": USER_DATA_TYPE, "url": "", "integration_key": "", "redirect_url": ""},
+        )
+        mocker.patch.object(demisto, "debug")
+        mocker.patch("Docusign.get_integration_context", return_value={})
+        with pytest.raises(DemistoException, match="Server URL, Integration Key and Redirect URL"):
+            generate_consent_url()
+
+
+class TestValidateConfigurationParams:
+    def test_ok(self, mocker):
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "u",
+                "redirect_url": "r",
+                "integration_key": "k",
+                "user_id": "uid",
+                "credentials": {"password": "pem"},
+                "event_types": CUSTOMER_EVENTS_TYPE,
+            },
+        )
+        assert validate_configuration_params() == "ok"
+
+    def test_missing_auth(self, mocker):
+        mocker.patch.object(demisto, "params", return_value={"url": "", "event_types": ""})
+        assert "authentication flow" in validate_configuration_params()
+
+    def test_missing_audit_user_params(self, mocker):
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": "u",
+                "redirect_url": "r",
+                "integration_key": "k",
+                "user_id": "uid",
+                "credentials": {"password": "pem"},
+                "event_types": USER_DATA_TYPE,
+            },
+        )
+        assert "Account ID and Organization ID" in validate_configuration_params()
+
+
+class TestModuleAndReset:
+    def test_test_module_validation_fails(self, mocker):
+        mocker.patch("Docusign.validate_configuration_params", return_value="some error")
+        assert test_module() == "some error"
+
+    def test_test_module_success(self, mocker):
+        mocker.patch("Docusign.validate_configuration_params", return_value="ok")
+        mock_client = mocker.MagicMock()
+        mock_client.access_token = "tok"
+        mocker.patch("Docusign.initiate_auth_client", return_value=mock_client)
+        mocker.patch.object(demisto, "debug")
+        assert test_module() == "Test completed successfully."
+        mock_client.get_user_info.assert_called_once_with("tok")
+
+    def test_reset_access_token(self, mocker):
+        mocker.patch(
+            "Docusign.get_integration_context",
+            return_value={"access_token": "x", "expired_at": "y", "access_token_scopes": ["s"], "base_uri": "keep"},
+        )
+        set_ctx = mocker.patch("Docusign.set_integration_context")
+        result = reset_access_token()
+        assert "deleted successfully" in result.readable_output
+        saved = set_ctx.call_args[0][0]
+        assert "access_token" not in saved
+        assert saved.get("base_uri") == "keep"
+
+
+class TestInitiateAuthClient:
+    def test_missing_required_params_raises(self, mocker):
+        mocker.patch.object(demisto, "params", return_value={"url": "u"})
+        mocker.patch.object(demisto, "debug")
+        with pytest.raises(DemistoException, match="Integration Key, User ID"):
+            initiate_auth_client()
+
+
+class TestFetchEvents:
+    """Covers the fetch-events command entry point (fetch_events) across all branches."""
+
+    def _auth_client(self, mocker):
+        client = mocker.MagicMock()
+        client.access_token = "tok"
+        return client
+
+    def test_only_customer_events(self, mocker):
+        """
+        Given:
+            - event_types includes only Customer events.
+        When:
+            - fetch_events runs.
+        Then:
+            - Only fetch_customer_events is called; audit users is NOT called; events returned.
+        """
+        mocker.patch.object(demisto, "params", return_value={"event_types": CUSTOMER_EVENTS_TYPE})
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch.object(demisto, "debug")
+        mocker.patch.object(demisto, "info")
+
+        customer_events = [{"eventId": "c1"}]
+        mock_customer = mocker.patch("Docusign.fetch_customer_events", return_value=({"cursor": "next"}, customer_events))
+        mock_audit = mocker.patch("Docusign.fetch_audit_user_data")
+
+        last_run, events = fetch_events(self._auth_client(mocker))
+
+        assert events == customer_events
+        mock_customer.assert_called_once()
+        mock_audit.assert_not_called()
+        assert last_run[CUSTOMER_EVENTS_TYPE] == {"cursor": "next"}
+
+    def test_only_audit_users(self, mocker):
+        """
+        Given:
+            - event_types includes only Audit Users.
+        When:
+            - fetch_events runs.
+        Then:
+            - Only fetch_audit_user_data is called; customer events is NOT called.
+        """
+        mocker.patch.object(demisto, "params", return_value={"event_types": USER_DATA_TYPE})
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch.object(demisto, "debug")
+        mocker.patch.object(demisto, "info")
+
+        user_events = [{"id": "u1"}]
+        mock_customer = mocker.patch("Docusign.fetch_customer_events")
+        mock_audit = mocker.patch("Docusign.fetch_audit_user_data", return_value=({"latest_modifiedDate": "t"}, user_events))
+
+        last_run, events = fetch_events(self._auth_client(mocker))
+
+        assert events == user_events
+        mock_audit.assert_called_once()
+        mock_customer.assert_not_called()
+        assert last_run[USER_DATA_TYPE] == {"latest_modifiedDate": "t"}
+
+    def test_both_event_types(self, mocker):
+        """
+        Given:
+            - event_types includes both Customer events and Audit Users.
+        When:
+            - fetch_events runs.
+        Then:
+            - Both fetchers are called and their events are merged.
+        """
+        mocker.patch.object(demisto, "params", return_value={"event_types": f"{CUSTOMER_EVENTS_TYPE},{USER_DATA_TYPE}"})
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch.object(demisto, "debug")
+        mocker.patch.object(demisto, "info")
+
+        mock_customer = mocker.patch("Docusign.fetch_customer_events", return_value=({}, [{"eventId": "c1"}]))
+        mock_audit = mocker.patch("Docusign.fetch_audit_user_data", return_value=({}, [{"id": "u1"}]))
+
+        last_run, events = fetch_events(self._auth_client(mocker))
+
+        assert {"eventId": "c1"} in events
+        assert {"id": "u1"} in events
+        assert len(events) == 2
+        mock_customer.assert_called_once()
+        mock_audit.assert_called_once()
+        assert CUSTOMER_EVENTS_TYPE in last_run
+        assert USER_DATA_TYPE in last_run
+
+    def test_empty_last_run_initialization(self, mocker):
+        """
+        Given:
+            - demisto.getLastRun returns an empty object and both event types are selected.
+        When:
+            - fetch_events runs.
+        Then:
+            - It initializes a fresh last_run with both type keys and passes empty per-type state.
+        """
+        mocker.patch.object(demisto, "params", return_value={"event_types": f"{CUSTOMER_EVENTS_TYPE},{USER_DATA_TYPE}"})
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch.object(demisto, "debug")
+        mocker.patch.object(demisto, "info")
+
+        mock_customer = mocker.patch("Docusign.fetch_customer_events", return_value=({}, []))
+        mock_audit = mocker.patch("Docusign.fetch_audit_user_data", return_value=({}, []))
+
+        last_run, events = fetch_events(self._auth_client(mocker))
+
+        # Per-type state passed to each fetcher should start empty.
+        assert mock_customer.call_args[0][0] == {}
+        assert mock_audit.call_args[0][0] == {}
+        assert events == []
+        assert set(last_run.keys()) == {CUSTOMER_EVENTS_TYPE, USER_DATA_TYPE}

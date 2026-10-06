@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 import logging
 import psutil
 import base64
+import fcntl
 import os
 import pychrome
 import random
@@ -25,6 +26,7 @@ from PyPDF2 import PdfReader
 from functools import lru_cache
 from urllib.parse import urlparse
 import ipaddress
+import gc
 # region constants and configurations
 
 pypdf_logger = logging.getLogger("PyPDF2")
@@ -53,6 +55,32 @@ CHROME_OPTIONS = [
     "--ignore-certificate-errors",
     "--disable-dev-shm-usage",
     f'--user-agent="{USER_AGENT}"',
+    "--enable-low-end-device-mode",  # Forces Chrome to clear memory cache of inactive tabs more frequently
+    "--renderer-process-limit=3",  # Limit renderer processes to reduce overhead
+    "--disable-background-networking",  # Prevent background processes
+    "--disable-default-apps",  # Disables installation of default apps
+    "--disable-component-extensions-with-background-pages",  # Disable background extensions
+    "--disable-component-update",  # Disable component updates
+    "--disable-breakpad",  # Disable crash reporting to save memory
+    "--disable-domain-reliability",  # Disables Domain Reliability Monitoring
+    "--disable-gaia-services",  # Disables GAIA services such as enrollment and OAuth session restore
+    "--no-first-run",  # Skip first run tasks
+    "--mute-audio",  # Disable audio processing
+    "--disable-notifications",  # Disables the Web Notification and the Push APIs
+    "--disable-speech-api",  # Disables the Web Speech API
+]
+
+LIGHTWEIGHT_CHROME_OPTIONS = [
+    '--js-flags="--max-old-space-size=256 --max-semi-space-size=2"',
+    "--single-process",
+    "--disable-software-rasterizer",  # Pairs with --disable-gpu, removes the SwiftShader fallback
+    "--disable-extensions",  # No extensions are ever needed
+    "--disable-plugins",  # No plugins are ever needed
+    "--disable-sync",  # No account sync
+    "--disable-translate",  # No translation service
+    "--disk-cache-size=1",  # Effectively disable the on-disk (tmpfs-backed) HTTP cache
+    "--media-cache-size=1",  # Effectively disable the media cache
+    "--disable-features=Translate,BackForwardCache,AcceptCHFrame,MediaRouter,OptimizationHints",
 ]
 
 WITH_ERRORS = demisto.params().get("with_error", True)
@@ -100,6 +128,43 @@ except Exception as e:
     demisto.info(f"Exception trying to parse MAX_CHROME_TABS_COUNT, {e}")
     MAX_CHROME_TABS_COUNT = 10
 
+# Memory pressure tolerance: if available memory drops below this value while a page is loading,
+# wait_for_page_load_with_memory_guard will abort the wait and take a screenshot of whatever has
+# rendered so far, preventing an OOM kill.
+#
+# The tolerance is expressed as a *percentage* of the container's total memory limit so it scales
+# automatically when the memory limit changes (e.g. 65% of a 1 GiB limit is ~650 MiB; raising the
+# limit to 2 GiB automatically makes the tolerance ~1300 MiB with no code change).
+#
+# Full-screen captures use a larger viewport and therefore allocate more memory, so they use a
+# higher tolerance (default 70%) - the guard aborts earlier to leave more headroom for the bigger
+# screenshot.
+try:
+    MEMORY_PRESSURE_TOLERANCE_PERCENT = float(os.getenv("MEMORY_PRESSURE_TOLERANCE_PERCENT", "65"))
+except Exception as e:
+    demisto.info(f"Exception trying to parse MEMORY_PRESSURE_TOLERANCE_PERCENT, {e}")
+    MEMORY_PRESSURE_TOLERANCE_PERCENT = 65.0
+
+try:
+    MEMORY_PRESSURE_TOLERANCE_PERCENT_FULL_SCREEN = float(os.getenv("MEMORY_PRESSURE_TOLERANCE_PERCENT_FULL_SCREEN", "70"))
+except Exception as e:
+    demisto.info(f"Exception trying to parse MEMORY_PRESSURE_TOLERANCE_PERCENT_FULL_SCREEN, {e}")
+    MEMORY_PRESSURE_TOLERANCE_PERCENT_FULL_SCREEN = 70.0
+
+try:
+    MEMORY_PRESSURE_TOLERANCE_FALLBACK_MB = int(os.getenv("MEMORY_PRESSURE_TOLERANCE_MB", "650"))
+except Exception as e:
+    demisto.info(f"Exception trying to parse MEMORY_PRESSURE_TOLERANCE_MB, {e}")
+    MEMORY_PRESSURE_TOLERANCE_FALLBACK_MB = 650
+
+IS_LIGHTWEIGHT = argToBoolean(demisto.params().get("lightweight", False))
+if IS_LIGHTWEIGHT:  # In lightweight mode, we only allow one Chrome instance and one tab per instance
+    MAX_CHROMES_COUNT = 1
+    MAX_CHROME_TABS_COUNT = 1
+    MAX_RASTERIZATIONS_COUNT = 1
+    # Apply the extra memory-saving launch flags only in lightweight mode.
+    CHROME_OPTIONS = CHROME_OPTIONS + LIGHTWEIGHT_CHROME_OPTIONS
+
 # Polling for rasterization commands to complete
 DEFAULT_POLLING_INTERVAL = 0.1
 
@@ -113,6 +178,13 @@ LOCAL_CHROME_HOST = "127.0.0.1"
 
 CHROME_LOG_FILE_PATH = "/var/chrome_headless.log"
 CHROME_INSTANCES_FILE_PATH = "/var/chrome_instances.json"
+# Cross-process mutex: serialises concurrent rasterize-email / rasterize-html
+# executions so they do not race over the single Chrome instance in lightweight
+# mode.  The lock is held for the entire perform_rasterize call (chrome_manager
+# → rasterize → terminate_chrome).  A blocking flock with a generous timeout is
+# used so that a crashed holder (OOM-killed container) never deadlocks waiters —
+# the OS releases the lock automatically when the file descriptor is closed.
+RASTERIZE_LOCK_FILE_PATH = "/var/rasterize.lock"
 
 
 class RasterizeType(Enum):
@@ -123,6 +195,394 @@ class RasterizeType(Enum):
 
 
 # endregion
+
+##### Memory Pressure Monitoring #####
+
+
+def get_container_working_set_bytes() -> int:
+    """
+    Calculates the container's memory working set in bytes.
+    Matches the Kubernetes/cAdvisor formula: working_set = memory.current - inactive_file.
+
+    Returns:
+        int: Working set memory in bytes, or 0 if the cgroup v2 files cannot be read.
+    """
+    try:
+        with open("/sys/fs/cgroup/memory.current") as f:
+            mem_current = int(f.read().strip())
+
+        inactive_file = 0
+        with open("/sys/fs/cgroup/memory.stat") as f:
+            for line in f:
+                if line.startswith("inactive_file "):
+                    inactive_file = int(line.split()[1])
+                    break
+
+        return max(0, mem_current - inactive_file)
+
+    except (FileNotFoundError, ValueError, PermissionError) as e:
+        demisto.debug(f"get_container_working_set_bytes: Could not read cgroup v2 memory stats: {e}")
+        return 0
+
+
+def get_container_total_memory_bytes() -> int:
+    """
+    Returns the container's total (hard) memory limit in bytes, read from cgroup v2 memory.max.
+
+    Returns:
+        int: Total memory limit in bytes.
+             Returns -1 when no hard memory limit is set on the cgroup ("max").
+             Returns 0 when the cgroup v2 files cannot be read.
+    """
+    try:
+        with open("/sys/fs/cgroup/memory.max") as f:
+            max_val = f.read().strip()
+
+        if max_val == "max":
+            # No hard limit is set on this cgroup
+            return -1
+
+        return int(max_val)
+
+    except (FileNotFoundError, ValueError, PermissionError) as e:
+        demisto.debug(f"get_container_total_memory_bytes: Could not read cgroup v2 memory.max: {e}")
+        return 0
+
+
+def get_container_available_memory_bytes() -> int:
+    """
+    Returns the available memory in bytes (memory.max - working_set).
+
+    Returns:
+        int: Available memory in bytes.
+             Returns -1 when no hard memory limit is set on the cgroup ("max").
+             Returns 0 when the cgroup v2 files cannot be read.
+    """
+    mem_max = get_container_total_memory_bytes()
+
+    # Propagate the special "no hard limit" (-1) and "unreadable" (0) signals unchanged.
+    if mem_max <= 0:
+        return mem_max
+
+    working_set = get_container_working_set_bytes()
+    available = max(0, mem_max - working_set)
+    demisto.debug(
+        f"get_container_available_memory_bytes: mem_max={mem_max / (1024 * 1024):.1f} MiB, "
+        f"working_set={working_set / (1024 * 1024):.1f} MiB, "
+        f"available={available / (1024 * 1024):.1f} MiB",
+    )
+    return available
+
+
+def compute_memory_pressure_tolerance_bytes(percent: float, fallback_mb: int = 650) -> int:
+    """
+    Computes the memory-pressure tolerance (the available-memory floor) as a percentage of the
+    container's total memory limit, so it auto-scales when the memory limit changes.
+
+    For example, with percent=65 and a 1 GiB limit the tolerance is ~650 MiB; if the limit is
+    raised to 2 GiB the tolerance automatically becomes ~1300 MiB without any code change.
+
+    When the container has no hard memory limit, or the limit cannot be read, the function falls
+    back to a fixed value (fallback_mb).
+
+    Args:
+        percent: Percentage (0-100) of the total memory limit to use as the tolerance floor.
+        fallback_mb: Fixed tolerance in MiB to use when the total memory limit is unavailable.
+
+    Returns:
+        int: The tolerance in bytes.
+    """
+    total_memory = get_container_total_memory_bytes()
+    if total_memory > 0:
+        tolerance = int(total_memory * (percent / 100.0))
+        demisto.debug(
+            f"compute_memory_pressure_tolerance_bytes: total={total_memory / (1024 * 1024):.1f} MiB, "
+            f"percent={percent}%, tolerance={tolerance / (1024 * 1024):.1f} MiB",
+        )
+        return tolerance
+
+    # No hard limit set ("max") or the value could not be read - use the fixed fallback.
+    demisto.debug(
+        f"compute_memory_pressure_tolerance_bytes: no readable memory limit "
+        f"({total_memory=}), falling back to {fallback_mb} MiB",
+    )
+    return fallback_mb * 1024 * 1024
+
+
+# Available-memory floor in bytes, computed from the container's total memory limit so it scales
+# automatically with the configured memory size (see the comment near the constant definitions).
+MEMORY_PRESSURE_TOLERANCE_BYTES = compute_memory_pressure_tolerance_bytes(
+    percent=MEMORY_PRESSURE_TOLERANCE_PERCENT,
+    fallback_mb=MEMORY_PRESSURE_TOLERANCE_FALLBACK_MB,
+)
+
+
+def set_memory_pressure_tolerance_for_capture(full_screen: bool) -> int:
+    """
+    Recomputes and stores the module-level MEMORY_PRESSURE_TOLERANCE_BYTES for the current command,
+    using a higher percentage for full-screen captures (which allocate more memory).
+
+    Each command handler calls this once after reading its full_screen argument, so the memory guard
+    (which reads the module-level MEMORY_PRESSURE_TOLERANCE_BYTES) uses the right floor without having
+    to drill the flag through navigate_to_path / wait_for_page_load_with_memory_guard.
+
+    Args:
+        full_screen: Whether the upcoming capture is full-screen.
+
+    Returns:
+        int: The newly computed tolerance in bytes.
+    """
+    global MEMORY_PRESSURE_TOLERANCE_BYTES
+    percent = MEMORY_PRESSURE_TOLERANCE_PERCENT_FULL_SCREEN if full_screen else MEMORY_PRESSURE_TOLERANCE_PERCENT
+    MEMORY_PRESSURE_TOLERANCE_BYTES = compute_memory_pressure_tolerance_bytes(
+        percent=percent,
+        fallback_mb=MEMORY_PRESSURE_TOLERANCE_FALLBACK_MB,
+    )
+    demisto.debug(
+        f"set_memory_pressure_tolerance_for_capture: {full_screen=}, using {percent}% -> "
+        f"{MEMORY_PRESSURE_TOLERANCE_BYTES / (1024 * 1024):.1f} MiB",
+    )
+    return MEMORY_PRESSURE_TOLERANCE_BYTES
+
+
+##### CDP management #####
+
+
+def _safe_call_cdp_with_args(
+    tab: Optional[pychrome.Tab],
+    method_path: str,
+    tab_id: str,
+    path: str,
+    **kwargs: Any,
+) -> None:
+    """
+    Safely invokes a Chrome DevTools Protocol method on *tab* with optional keyword
+    arguments, swallowing and logging any pychrome exception. Used so transient errors
+    (tab already stopping/disconnected) never propagate out of the page-load wait or
+    freeze sequence. Some CDP methods require parameters (e.g.
+    Network.emulateNetworkConditions, Fetch.enable) which are forwarded via **kwargs;
+    methods that take no arguments can be invoked by omitting kwargs entirely.
+
+    Args:
+        tab: The pychrome tab (may be None — call is a no-op in that case).
+        method_path: Dotted CDP method, e.g. "Network.emulateNetworkConditions" or "Page.stopLoading".
+        tab_id: Tab identifier for logging.
+        path: URL/path being loaded, for logging.
+        **kwargs: Keyword arguments forwarded to the CDP method.
+    """
+    if tab is None:
+        return
+    try:
+        target: Any = tab
+        for part in method_path.split("."):
+            target = getattr(target, part)
+        target(**kwargs)
+        demisto.debug(
+            f"wait_for_page_load_with_memory_guard: {method_path}({kwargs}) called, {tab_id=}, {path=}",
+        )
+    except Exception as ex:
+        demisto.debug(
+            f"wait_for_page_load_with_memory_guard: {method_path}({kwargs}) failed "
+            f"(tab may already be stopping/disconnected): {ex}, {tab_id=}, {path=}",
+        )
+
+
+##### Safe page loading management #####
+
+
+def _freeze_tab_for_screenshot(tab: Optional[pychrome.Tab], tab_id: str, path: str) -> None:
+    """
+    Halts all further memory growth in *tab* while keeping it screenshot-able.
+
+    Unlike a single ``Page.stopLoading`` call (which only cancels the current navigation's
+    in-flight network requests), this sequence:
+
+    1. Takes the renderer offline (`Network.emulateNetworkConditions` + `Fetch.enable`)
+       so JS-initiated XHR/fetch/img requests fail instantly and stop allocating.
+    2. Cancels current in-flight requests (`Page.stopLoading`).
+    3. Halts the JS event loop (`Emulation.setScriptExecutionDisabled` and
+       `Page.setWebLifecycleState("frozen")`), so requestAnimationFrame, setInterval,
+       IntersectionObserver lazy-loaders, and SPA hydration stop allocating.
+    4. Runs GC / memory purge hints — now effective because nothing is allocating
+       on top of them.
+
+    After this returns the tab is still alive and ``Page.captureScreenshot`` will return
+    the last painted frame (the compositor surface survives a frozen tab). The caller is
+    expected to capture promptly and then close the tab.
+
+    Each CDP call is wrapped in a safe helper because some methods are not implemented in
+    every Chrome build (e.g. `Page.setWebLifecycleState` requires headless-shell with the
+    appropriate flag), so we tolerate per-call failures.
+
+    Args:
+        tab: The pychrome tab to freeze (may be None — call is a no-op in that case).
+        tab_id: Tab identifier for logging.
+        path: URL/path being loaded, for logging.
+    """
+    if tab is None:
+        return
+
+    demisto.debug(f"_freeze_tab_for_screenshot: starting freeze sequence, {tab_id=}, {path=}")
+
+    # 1a. Make sure the Network domain is enabled before issuing emulateNetworkConditions.
+    _safe_call_cdp_with_args(tab=tab, method_path="Network.enable", tab_id=tab_id, path=path)
+
+    # 1b. Cut the network at the renderer: every new request fails immediately.
+    _safe_call_cdp_with_args(
+        tab=tab,
+        method_path="Network.emulateNetworkConditions",
+        tab_id=tab_id,
+        path=path,
+        offline=True,
+        latency=0,
+        downloadThroughput=0,
+        uploadThroughput=0,
+    )
+
+    # 1c. Belt-and-braces: disable any existing Fetch interception first so that
+    #     pending requestIds are cleanly invalidated before we re-enable with a
+    #     catch-all pattern.
+    _safe_call_cdp_with_args(tab=tab, method_path="Fetch.disable", tab_id=tab_id, path=path)
+    _safe_call_cdp_with_args(
+        tab=tab,
+        method_path="Fetch.enable",
+        tab_id=tab_id,
+        path=path,
+        patterns=[{"urlPattern": "*"}],
+    )
+
+    # 2. Cancel the current navigation's in-flight fetches.
+    _safe_call_cdp_with_args(tab=tab, method_path="Page.stopLoading", tab_id=tab_id, path=path)
+
+    # 3a. Halt the JS event loop so rAF / setInterval / observers stop allocating.
+    _safe_call_cdp_with_args(
+        tab=tab,
+        method_path="Emulation.setScriptExecutionDisabled",
+        tab_id=tab_id,
+        path=path,
+        value=True,
+    )
+
+    # 3b. Signal the page-lifecycle layer that we are frozen (best-effort; not all
+    #     Chrome builds support this CDP method).
+    _safe_call_cdp_with_args(
+        tab=tab,
+        method_path="Page.setWebLifecycleState",
+        tab_id=tab_id,
+        path=path,
+        state="frozen",
+    )
+
+    # 4. With nothing allocating on top of them, the GC hints can actually shrink
+    #    the V8 heap and release renderer-side caches.
+    _safe_call_cdp_with_args(tab=tab, method_path="HeapProfiler.collectGarbage", tab_id=tab_id, path=path)
+    _safe_call_cdp_with_args(tab=tab, method_path="Memory.forciblyPurgeJavaScriptMemory", tab_id=tab_id, path=path)
+
+    # 5. Drop the browser-level network cache populated by this tab.
+    _safe_call_cdp_with_args(tab=tab, method_path="Network.clearBrowserCache", tab_id=tab_id, path=path)
+
+    demisto.debug(
+        f"_freeze_tab_for_screenshot: freeze sequence complete, "
+        f"available={get_container_available_memory_bytes() / (1024 * 1024):.1f} MiB, "
+        f"{tab_id=}, {path=}",
+    )
+
+
+def wait_for_page_load_with_memory_guard(
+    tab_ready_event: Event,
+    navigation_timeout: int,
+    tolerance_bytes: Optional[int] = None,
+    poll_interval: float = 0.1,
+    tab_id: str = "",
+    path: str = "",
+    tab: Optional[pychrome.Tab] = None,
+    freeze_on_load: bool = True,
+) -> bool:
+    """
+    Waits for *tab_ready_event* to be set, but aborts the wait early if available container
+    memory drops below *tolerance_bytes*.
+
+    When memory pressure is detected the tab is **frozen** (network cut + JS halted +
+    GC purge — see :func:`_freeze_tab_for_screenshot`) and the event is set so the caller
+    can immediately capture a partial screenshot of whatever rendered so far. Freezing
+    halts further allocation without destroying the compositor surface, so the screenshot
+    still succeeds and the OOM is avoided.
+
+    Args:
+        tab_ready_event: The threading.Event that signals page load completion.
+        navigation_timeout: Maximum seconds to wait (same as the normal page-load timeout).
+        tolerance_bytes: Available-memory floor in bytes. When None (the default), the
+            current module-level MEMORY_PRESSURE_TOLERANCE_BYTES is used, which is recomputed per command via
+            set_memory_pressure_tolerance_for_capture (a higher percentage is used for
+            full-screen captures).
+        poll_interval: How often (seconds) to sample memory while waiting. Default: 0.5 s.
+        tab_id: Tab identifier for logging.
+        path: URL/path being loaded, for logging.
+        tab: Optional pychrome.Tab used to stop loading and reclaim memory on early exit.
+        freeze_on_load: Whether to freeze the tab once the page has finished loading normally.
+            Defaults to True, which is correct for screenshot/PDF captures: they only need the
+            last painted frame, which survives a freeze, so freezing early caps memory growth.
+            Callers that must keep executing JavaScript in the page afterwards (currently only
+            text extraction, which runs ``Runtime.evaluate`` - see
+            :func:`extract_content_from_tab`) MUST pass False, because the freeze disables script
+            execution and purges the V8 heap, destroying the JS execution context. This flag does
+            not affect the memory-pressure freeze below: under real memory pressure the tab is
+            frozen regardless, since avoiding the OOM takes precedence over the extraction.
+
+    Returns:
+        bool: True if the event was set normally (page finished loading or timed out),
+              False if the wait was aborted early due to memory pressure.
+    """
+    if tolerance_bytes is None:
+        tolerance_bytes = MEMORY_PRESSURE_TOLERANCE_BYTES
+
+    deadline = time.monotonic() + navigation_timeout  # pylint: disable=E9003
+
+    # If there is no cgroup memory limit, the memory-pressure check is not applicable.
+    # Fall back to a single blocking wait instead of busy-polling every poll_interval.
+    if get_container_available_memory_bytes() == -1:
+        demisto.debug(
+            f"wait_for_page_load_with_memory_guard: no cgroup memory limit detected; "
+            f"falling back to plain wait, {tab_id=}, {path=}",
+        )
+        tab_ready_event.wait(timeout=navigation_timeout)
+        return True
+
+    while True:
+        # Check if the page has finished loading.
+        if tab_ready_event.wait(timeout=poll_interval):
+            if freeze_on_load:
+                _freeze_tab_for_screenshot(tab, tab_id, path)
+            else:
+                # The caller still needs a live JavaScript execution context (text extraction).
+                # Freezing here disables script execution and purges the V8 heap, which makes the
+                # subsequent Runtime.evaluate fail with "Cannot find default execution context".
+                demisto.debug(
+                    f"wait_for_page_load_with_memory_guard: skipping post-load freeze, {tab_id=}, {path=}",
+                )
+            demisto.debug(
+                f"wait_for_page_load_with_memory_guard: normal completion, "
+                f"available={get_container_available_memory_bytes() / (1024 * 1024):.1f} MiB, "
+                f"{tab_id=}, {path=}",
+            )
+            return True
+
+        # Check for timeout.
+        if time.monotonic() >= deadline:  # pylint: disable=E9003
+            # Stop the still-loading tab so it cannot keep consuming memory after we return.
+            _safe_call_cdp_with_args(tab=tab, method_path="Page.stopLoading", tab_id=tab_id, path=path)
+            demisto.debug(
+                f"wait_for_page_load_with_memory_guard: navigation_timeout reached ({navigation_timeout}s), {tab_id=}, {path=}",
+            )
+            return True  # Caller handles the timeout warning as before.
+
+        # Sample available memory.
+        available = get_container_available_memory_bytes()
+        if available <= tolerance_bytes:
+            _freeze_tab_for_screenshot(tab, tab_id, path)
+            tab_ready_event.set()
+            return False  # False signals that we aborted early due to memory pressure.
+
 
 # region utility classes
 
@@ -176,6 +636,17 @@ class TabLifecycleManager:
         except Exception as ex:
             demisto.info(f"TabLifecycleManager, __enter__, {self.chrome_port=}, failed to enable a new tab due to {ex}")
             raise ex
+
+        if BLOCKED_URLS:
+            try:
+                patterns = [{"urlPattern": f"*{pat}*", "requestStage": "Request"} for pat in BLOCKED_URLS]
+                self.tab.Fetch.enable(patterns=patterns)
+            except Exception as ex:
+                demisto.info(
+                    f"TabLifecycleManager, __enter__, {self.chrome_port=}, failed to enable Fetch interception due to {ex}"
+                )
+                raise ex
+
         return self.tab
 
     def __exit__(self, exc_type, exc_val, exc_tb):  # noqa: F841
@@ -316,11 +787,20 @@ class PychromeEventHandler:
         This method will try to reload the current page up to DEFAULT_RETRIES_COUNT times
         if it encounters a Chrome error page. It sets the tab_ready_event when successful.
         """
+        # Cap the total retry budget so that all retry attempts together cannot
+        # exceed the engine's dispatch timeout.  Each attempt gets an equal share
+        # of the budget, with a minimum of 5 seconds per attempt.
+        max_retry_budget_seconds = min(self.navigation_timeout, 120) if self.navigation_timeout > 0 else 120
+        per_retry_sleep = max(max_retry_budget_seconds / DEFAULT_RETRIES_COUNT, 5)
+        demisto.debug(
+            f"retry_loading: {max_retry_budget_seconds=}s budget, {per_retry_sleep=:.1f}s per attempt, "
+            f"{self.tab.id=}, {self.path=}"
+        )
         for retry_count in range(1, DEFAULT_RETRIES_COUNT + 1):
             demisto.debug(f"Retrying loading URL {self.path}, {self.tab.id}. Attempt {retry_count}/{DEFAULT_RETRIES_COUNT}")
             try:
                 if self.navigation_timeout > 0:
-                    self.tab.Page.navigate(url=self.path, _timeout=self.navigation_timeout)
+                    self.tab.Page.navigate(url=self.path, _timeout=min(self.navigation_timeout, per_retry_sleep))
                 else:
                     self.tab.Page.navigate(url=self.path)
             except Exception as e:
@@ -328,7 +808,7 @@ class PychromeEventHandler:
                     f"Error during navigation to {self.tab.id=}, {self.path=} attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {e}"
                 )
 
-            safe_sleep(DEFAULT_PAGE_LOAD_TIME / DEFAULT_RETRIES_COUNT + 1)
+            safe_sleep(per_retry_sleep)
 
             try:
                 frame_url = self.get_frame_tree_url()
@@ -377,19 +857,35 @@ class PychromeEventHandler:
             demisto.info(
                 f"The following URL is blocked. Consider updating the 'List of domains to block' parameter:{request_url}"
             )
-            self.tab.Fetch.enable()
-            demisto.debug(f"Fetch events enabled. {self.tab.id=}, {self.path=}")
 
     def handle_request_paused(self, **kwargs):
         request_id = kwargs.get("requestId")
-        request_url = kwargs.get("request", {}).get("url")
+        request_url = kwargs.get("request", {}).get("url") or ""
 
         # abort the request if the url inside blocked_urls param and its redirect request
-        if any(value in request_url for value in BLOCKED_URLS) and not self.request_id:
-            self.tab.Fetch.failRequest(requestId=request_id, errorReason="Aborted")
-            demisto.debug(f"Request paused: {request_url=} , {request_id=}, {self.tab.id=}, {self.path=}")
-            self.tab.Fetch.disable()
-            demisto.debug(f"Fetch events disabled. {self.tab.id=}, {self.path=}")
+        if any(value in request_url for value in BLOCKED_URLS):
+            try:
+                self.tab.Fetch.failRequest(requestId=request_id, errorReason="Aborted")
+                demisto.debug(f"Request aborted: {request_url=} , {request_id=}, {self.tab.id=}, {self.path=}")
+            except Exception as ex:
+                # The interception ID may have been invalidated by a concurrent Fetch.disable/enable
+                # (e.g. from _freeze_tab_for_screenshot).  This is benign — the request is already gone.
+                demisto.debug(
+                    f"handle_request_paused: Fetch.failRequest failed (stale interception ID): "
+                    f"{ex}, {request_id=}, {request_url=}, {self.tab.id=}, {self.path=}"
+                )
+        else:
+            # Safety check in case the fetch enable patterns paused requests that shouldn't be blocked
+            try:
+                demisto.debug(f"Request continued: {request_url=} , {request_id=}, {self.tab.id=}, {self.path=}")
+                self.tab.Fetch.continueRequest(requestId=request_id)
+            except Exception as ex:
+                # The interception ID may have been invalidated by a concurrent Fetch.disable/enable
+                # (e.g. from _freeze_tab_for_screenshot).  This is benign — the request is already gone.
+                demisto.debug(
+                    f"handle_request_paused: Fetch.continueRequest failed (stale interception ID): "
+                    f"{ex}, {request_id=}, {request_url=}, {self.tab.id=}, {self.path=}"
+                )
 
 
 # endregion
@@ -689,7 +1185,6 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
             # Use list_tab to ping the browser and make sure it's available
             tabs_count = len(browser.list_tab())
             demisto.debug(f"get_chrome_browser, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
-            # if tabs_count < MAX_CHROME_TABS_COUNT:
             demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs")
             return browser
         except requests.exceptions.ConnectionError as exp:
@@ -876,6 +1371,12 @@ def terminate_chrome(chrome_port: str = "", killall: bool = False) -> None:  # p
     """
     process_in_list = get_chrome_processes(chrome_port)
 
+    if not process_in_list:
+        demisto.debug(f"terminate_chrome: no Chrome processes found for {chrome_port=}, nothing to kill.")
+        terminate_port_chrome_instances_file(chrome_port=chrome_port)
+        demisto.debug("terminate_chrome, Finish")
+        return
+
     if killall:
         # fetch the pids of the processes
         pids = [int(process.split()[0]) for process in process_in_list]
@@ -989,8 +1490,48 @@ def chrome_manager_one_port() -> tuple[pychrome.Browser | None, str | None]:
     return generate_new_chrome_instance(instance_id, chrome_options)
 
 
+##### Chrome Instance Management #####
+
+
+def find_existing_chrome_port() -> str | None:
+    """
+    Finds the port of an already-running Chrome process.
+
+    Used as a fallback when generate_chrome_port() returns None (all ports occupied),
+    which can happen after an OOM kill clears the chrome_instances file while Chrome
+    is still running. In lightweight mode MAX_CHROMES_COUNT=1, so there is at most
+    one port to check.
+
+    Returns:
+        str | None: The port string of the first occupied Chrome port, or None if none found.
+    """
+    first_chrome_port = FIRST_CHROME_PORT
+    ports_list = list(range(first_chrome_port, first_chrome_port + MAX_CHROMES_COUNT))
+    for chrome_port in ports_list:
+        if len(get_chrome_processes(chrome_port)) > 0:
+            demisto.debug(f"find_existing_chrome_port: found existing Chrome on port {chrome_port}")
+            return str(chrome_port)
+    return None
+
+
 def generate_new_chrome_instance(instance_id: str, chrome_options: str) -> tuple[Any | None, str | None]:
     chrome_port = generate_chrome_port()
+    if chrome_port is None:
+        # Try to reconnect to the already-running Chrome instead of failing.
+        chrome_port = find_existing_chrome_port()
+        if chrome_port is None:
+            demisto.error("generate_new_chrome_instance: no available or existing Chrome port found.")
+            return None, None
+        demisto.info(f"generate_new_chrome_instance: reconnecting to existing Chrome on port {chrome_port}")
+        browser = get_chrome_browser(chrome_port)
+        if browser:
+            new_chrome_instance = {
+                chrome_port: {INSTANCE_ID: instance_id, CHROME_INSTANCE_OPTIONS: chrome_options, RASTERIZATION_COUNT: 0}
+            }
+            add_new_chrome_instance(new_chrome_instance_content=new_chrome_instance)
+            return browser, chrome_port
+        demisto.error(f"generate_new_chrome_instance: could not connect to existing Chrome on port {chrome_port}")
+        return None, None
     return start_chrome_headless(chrome_port, instance_id, chrome_options)
 
 
@@ -1033,7 +1574,25 @@ def setup_tab_event(
     return tab_event_handler, tab_ready_event
 
 
-def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_timeout) -> PychromeEventHandler:  # pragma: no cover
+def navigate_to_path(
+    browser, tab: pychrome.Tab, path, wait_time, navigation_timeout, freeze_on_load: bool = True
+) -> PychromeEventHandler:  # pragma: no cover
+    """Navigates *tab* to *path* and waits for the page to finish loading.
+
+    Args:
+        browser: The Chrome browser instance.
+        tab: The Chrome tab to navigate.
+        path: The URL or file path to navigate to.
+        wait_time: Time in seconds to sleep after the page has loaded.
+        navigation_timeout: Maximum time in seconds to wait for the page to load.
+        freeze_on_load: Forwarded to :func:`wait_for_page_load_with_memory_guard` in lightweight
+            mode. Pass False when the caller needs to run JavaScript in the page afterwards
+            (text extraction); see that function's docstring for the full rationale. Ignored in
+            non-lightweight mode, which never freezes the tab.
+
+    Returns:
+        PychromeEventHandler: The event handler bound to this navigation.
+    """
     tab_event_handler, tab_ready_event = setup_tab_event(browser, tab, path, navigation_timeout)
 
     try:
@@ -1051,11 +1610,31 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
 
         demisto.debug(f"Waiting for tab_ready_event on {tab.id=}, {path=}")
 
-        if not tab_ready_event.wait(navigation_timeout):
-            return_warning(
-                f"Warning: Rasterize failed to navigate to the specified path due to a timeout of {navigation_timeout} seconds,"
-                f" some content might be missing .\n{path=}"
+        if IS_LIGHTWEIGHT:
+            page_loaded_normally = wait_for_page_load_with_memory_guard(
+                tab_ready_event=tab_ready_event,
+                navigation_timeout=navigation_timeout,
+                tab_id=tab.id,
+                path=path,
+                tab=tab,
+                freeze_on_load=freeze_on_load,
             )
+            if not page_loaded_normally:
+                return_warning(
+                    f"Warning: Rasterize aborted page-load wait due to memory pressure. "
+                    f"A partial screenshot will be captured for {path}"
+                )
+            elif not tab_ready_event.is_set():
+                return_warning(
+                    f"Warning: Rasterize failed to navigate to the specified path due to a timeout "
+                    f"of {navigation_timeout} seconds, some content might be missing .\n{path=}"
+                )
+        else:
+            if not tab_ready_event.wait(navigation_timeout):
+                return_warning(
+                    f"Warning: Rasterize failed to navigate to the specified path due to a timeout "
+                    f"of {navigation_timeout} seconds, some content might be missing .\n{path=}"
+                )
 
         demisto.debug(f"After waiting for tab_ready_event on {tab.id=}, {path=}")
 
@@ -1170,7 +1749,9 @@ def screenshot_image(
     try:
         if full_screen:
             viewport = css_content_size
-            viewport["scale"] = 1
+            viewport["scale"] = (
+                1 if not IS_LIGHTWEIGHT else 0.75
+            )  # In lightweight mode, use a smaller scale to reduce memory usage.
             screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True, _timeout=SCREENSHOT_TIMEOUT)[
                 "data"
             ]
@@ -1192,8 +1773,12 @@ def screenshot_image(
     demisto.debug(f"heapUsage after screenshot {heapUsage=} on {tab.id=}, {path=}")
 
     captured_image = base64.b64decode(screenshot_data)
+    # Release the (potentially large) base64 string immediately so we do not hold the encoded and
+    # decoded copies of the image in memory at the same time.
+    del screenshot_data
+    gc.collect()
     if not captured_image:
-        demisto.info(f"Empty snapshot, {screenshot_data=}, {tab.id=}, {path=}")
+        demisto.info(f"Empty snapshot, {tab.id=}, {path=}")
     else:
         demisto.info(f"Captured snapshot, {len(captured_image)=}, {tab.id=}, {path=}")
 
@@ -1211,12 +1796,20 @@ def screenshot_image(
 
         img_byte_arr = BytesIO()
         image_with_url.save(img_byte_arr, format="PNG")
-        img_byte_arr = img_byte_arr.getvalue()
-        demisto.debug(f"Size of image with URL: {len(img_byte_arr)} bytes, {tab.id=}, {path=}")
+        ret_value = img_byte_arr.getvalue()
+        demisto.debug(f"Size of image with URL: {len(ret_value)} bytes, {tab.id=}, {path=}")
 
-        ret_value = img_byte_arr
+        # Release the intermediate PIL images and buffers; otherwise the source bitmap, the new
+        # canvas and the re-encoded buffer (three full-size copies) stay alive until function exit.
+        captured_image_object.close()
+        image_with_url.close()
+        img_byte_arr.close()
+        del captured_image_object, image_with_url, img_byte_arr, captured_image
+        gc.collect()
     else:
         ret_value = captured_image
+        del captured_image
+        gc.collect()
 
     # Page source, if needed
     response_body = ""
@@ -1293,7 +1886,11 @@ def extract_text_content(
     Raises:
         DemistoException: If the URL is a mailto or private network URL.
     """
-    tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
+    # freeze_on_load=False: text extraction is the only rasterize type that runs JavaScript in the
+    # page (Runtime.evaluate, in extract_content_from_tab). The lightweight memory guard's post-load
+    # freeze disables script execution and purges the V8 heap, which would destroy the execution
+    # context before we get to use it, failing with "Cannot find default execution context".
+    tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout, freeze_on_load=False)
 
     if tab_event_handler.is_mailto or tab_event_handler.is_private_network_url:
         error_msg = f'Cannot rasterize "mailto:" or private network URLs. URL: {tab_event_handler.document_url}'
@@ -1415,7 +2012,7 @@ def extract_hostname(url: str) -> str:
         return ""
 
 
-@lru_cache(maxsize=1024)
+@lru_cache(maxsize=128 if IS_LIGHTWEIGHT else 1024)
 def is_private_network(url: str) -> bool:
     """
     Check if a URL's hostname belongs to a private network.
@@ -1522,136 +2119,194 @@ def perform_rasterize(
         return None
 
     # until https://issues.chromium.org/issues/379034728 is fixed, we can only use one chrome port
+    # Acquire a cross-process lock before touching Chrome so that concurrent
+    # rasterize-email / rasterize-html executions (which all share the single
+    # Chrome instance in lightweight mode) do not race: one execution must not
+    # call terminate_chrome while another is still navigating.
+    # The lock is released automatically when the file descriptor is closed at
+    # the end of this function (or if the process is killed — the OS releases it).
+    _rasterize_lock_fd: Optional[int] = None
+    try:
+        _rasterize_lock_fd = os.open(RASTERIZE_LOCK_FILE_PATH, os.O_CREAT | os.O_RDWR)
+        # LOCK_EX | LOCK_NB: non-blocking first; if busy, fall back to blocking
+        # with a timeout implemented via repeated short sleeps so we can log progress.
+        _lock_acquired = False
+        _lock_wait_start = time.monotonic()  # pylint: disable=E9003
+        _lock_timeout = max(navigation_timeout * 2, 120)  # generous: 2× the page-load timeout
+        while not _lock_acquired:
+            try:
+                fcntl.flock(_rasterize_lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                _lock_acquired = True
+            except BlockingIOError:
+                elapsed = time.monotonic() - _lock_wait_start  # pylint: disable=E9003
+                if elapsed >= _lock_timeout:
+                    demisto.error(
+                        f"perform_rasterize: could not acquire rasterize lock after {elapsed:.0f}s, "
+                        f"proceeding without lock. {path=}"
+                    )
+                    break
+                if int(elapsed) % 30 == 0:
+                    demisto.debug(f"perform_rasterize: waiting for rasterize lock ({elapsed:.0f}s elapsed). {path=}")
+                time.sleep(1)  # pylint: disable=E9003
+    except Exception as lock_ex:
+        demisto.debug(
+            f"perform_rasterize: could not open/acquire rasterize lock file: {lock_ex}. {path=}\n"
+            f"Trace:{traceback.format_exc()}"
+        )
+        # Close the descriptor before dropping the reference, otherwise the fd leaks
+        # for the remainder of the process lifetime.
+        if _rasterize_lock_fd is not None:
+            try:
+                os.close(_rasterize_lock_fd)
+            except OSError as close_ex:
+                demisto.debug(f"perform_rasterize: error closing rasterize lock fd: {close_ex}. {path=}")
+        _rasterize_lock_fd = None
+
     browser, chrome_port = chrome_manager_one_port()
 
-    if browser:
-        support_multithreading()
-        with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
-            rasterization_threads = []
-            rasterization_results = []
-            for current_path in paths:
-                if not current_path.startswith("http") and not current_path.startswith("file:///"):
-                    protocol = "http" + "s" * IS_HTTPS
-                    current_path = f"{protocol}://{current_path}"
+    try:
+        if browser:
+            support_multithreading()
+            with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
+                rasterization_threads = []
+                rasterization_results = []
+                for current_path in paths:
+                    if not current_path.startswith("http") and not current_path.startswith("file:///"):
+                        protocol = "http" + "s" * IS_HTTPS
+                        current_path = f"{protocol}://{current_path}"
 
-                # Start a new thread in group of max_tabs
-                rasterization_threads.append(
-                    (
-                        executor.submit(
-                            rasterize_thread,
-                            browser=browser,
-                            chrome_port=chrome_port,
-                            path=current_path,
-                            rasterize_type=rasterize_type,
-                            wait_time=wait_time,
-                            offline_mode=offline_mode,
-                            navigation_timeout=navigation_timeout,
-                            include_url=include_url,
-                            full_screen=full_screen,
-                            width=width,
-                            height=height,
-                        ),
-                        current_path,
-                    )
-                )
-            # Wait for all tasks to complete
-            executor.shutdown(wait=True)
-            demisto.info(
-                f"perform_rasterize Finished {len(rasterization_threads)} rasterize operations,"
-                f"active tabs len: {len(browser.list_tab())}, {path=}"
-            )
-
-            chrome_instances_file_content: dict = read_json_file()  # CR fix name
-
-            rasterization_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZATION_COUNT, 0) + len(
-                rasterization_threads
-            )
-
-            demisto.debug(
-                f"perform_rasterize checking if the chrome in port:{chrome_port} should be deleted:"
-                f"{rasterization_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}, {path=}"
-            )
-            if not chrome_port:
-                demisto.debug(f"perform_rasterize: the chrome port was not found, {path=}")
-            elif rasterization_count >= MAX_RASTERIZATIONS_COUNT:
-                demisto.info(f"perform_rasterize: terminating Chrome after {rasterization_count=} rasterization, {path=}")
-                terminate_chrome(chrome_port=chrome_port)
-            else:
-                increase_counter_chrome_instances_file(chrome_port=chrome_port)
-
-            # Get the results
-            for current_thread, path in rasterization_threads:
-                try:
-                    ret_value, response_body = current_thread.result()
-                    if ret_value:
-                        rasterization_results.append((ret_value, response_body))
-                    else:
-                        return_results(
-                            CommandResults(
-                                readable_output=str(response_body),
-                                entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING),
-                            )
+                    # Start a new thread in group of max_tabs
+                    rasterization_threads.append(
+                        (
+                            executor.submit(
+                                rasterize_thread,
+                                browser=browser,
+                                chrome_port=chrome_port,
+                                path=current_path,
+                                rasterize_type=rasterize_type,
+                                wait_time=wait_time,
+                                offline_mode=offline_mode,
+                                navigation_timeout=navigation_timeout,
+                                include_url=include_url,
+                                full_screen=full_screen,
+                                width=width,
+                                height=height,
+                            ),
+                            current_path,
                         )
-                except Exception as ex:
-                    error_msg = f"Failed to rasterize the path {path}, exception: {str(ex)}"
-                    demisto.debug(error_msg)
-                    return_err_or_warn(error_msg)
-            return rasterization_results
+                    )
+                # Wait for all tasks to complete
+                executor.shutdown(wait=True)
+                demisto.info(
+                    f"perform_rasterize Finished {len(rasterization_threads)} rasterize operations,"
+                    f"active tabs len: {len(browser.list_tab())}, {path=}"
+                )
 
-    else:
-        chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
-        chrome_options_dict = {
-            options[CHROME_INSTANCE_OPTIONS]: {"chrome_port": port} for port, options in chrome_instances_contents.items()
-        }
-        chrome_options = demisto.params().get("chrome_options", "None")
-        chrome_port = chrome_options_dict.get(chrome_options, {}).get("chrome_port", "")
+                chrome_instances_file_content: dict = read_json_file()  # CR fix name
 
-        # Get all Chrome headless processes for diagnostic purposes
-        # Using get_chrome_processes("") to match any port (equivalent to grep port=)
-        chrome_processes = get_chrome_processes("")
-        ps_aux_output = "\n".join(chrome_processes) if chrome_processes else "No Chrome processes found"
-        try:
-            with open(CHROME_LOG_FILE_PATH) as f:
-                chrome_headless_content = f.read().strip()
-        except (FileNotFoundError, PermissionError, OSError):
-            chrome_headless_content = f"Could not read {CHROME_LOG_FILE_PATH}"
+                rasterization_count = chrome_instances_file_content.get(chrome_port, {}).get(RASTERIZATION_COUNT, 0) + len(
+                    rasterization_threads
+                )
 
-        try:
-            df_output = subprocess.check_output(["df", "-h"], stderr=subprocess.STDOUT, text=True).strip()
-        except subprocess.CalledProcessError:
-            df_output = "Could not get disk usage information"
+                demisto.debug(
+                    f"perform_rasterize checking if the chrome in port:{chrome_port} should be deleted:"
+                    f"{rasterization_count=}, {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}, {path=}"
+                )
+                if not chrome_port:
+                    demisto.debug(f"perform_rasterize: the chrome port was not found, {path=}")
+                elif IS_LIGHTWEIGHT or rasterization_count >= MAX_RASTERIZATIONS_COUNT:
+                    # In lightweight mode we always terminate Chrome at the end of the command so no Chrome
+                    # process (and its renderer RSS) survives into the next playbook iteration / command run.
+                    demisto.info(f"perform_rasterize: terminating Chrome after {rasterization_count=} rasterization, {path=}")
+                    terminate_chrome(chrome_port=chrome_port)
+                else:
+                    increase_counter_chrome_instances_file(chrome_port=chrome_port)
 
-        try:
-            free_output = "\n".join(subprocess.check_output(["free", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
-        except subprocess.CalledProcessError:
-            free_output = "Could not get memory information"
+                # Get the results
+                for current_thread, path in rasterization_threads:
+                    try:
+                        ret_value, response_body = current_thread.result()
+                        if ret_value:
+                            rasterization_results.append((ret_value, response_body))
+                        else:
+                            return_results(
+                                CommandResults(
+                                    readable_output=str(response_body),
+                                    entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING),
+                                )
+                            )
+                    except Exception as ex:
+                        error_msg = f"Failed to rasterize the path {path}, exception: {str(ex)}"
+                        demisto.debug(error_msg)
+                        return_err_or_warn(error_msg)
+                return rasterization_results
 
-        try:
-            chromedriver = subprocess.check_output(
-                ["chromedriver", "--version"], stderr=subprocess.STDOUT, text=True
-            ).splitlines()
-        except subprocess.CalledProcessError:
-            chromedriver = ["chromedriver not found or not executable"]
+        else:
+            chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
 
-        try:
-            chrome_version = subprocess.check_output(
-                ["google-chrome", "--version"], stderr=subprocess.STDOUT, text=True
-            ).splitlines()
-        except subprocess.CalledProcessError:
-            chrome_version = ["google-chrome not found or not executable"]
+            # Get all Chrome headless processes for diagnostic purposes
+            # Using get_chrome_processes("") to match any port (equivalent to grep port=)
+            chrome_processes = get_chrome_processes("")
+            ps_aux_output = "\n".join(chrome_processes) if chrome_processes else "No Chrome processes found"
+            try:
+                with open(CHROME_LOG_FILE_PATH) as f:
+                    chrome_headless_content = f.read().strip()
+            except (FileNotFoundError, PermissionError, OSError):
+                chrome_headless_content = f"Could not read {CHROME_LOG_FILE_PATH}"
 
-        demisto.debug(f"{chrome_instances_contents=}")
-        demisto.debug(f"ps aux command result:\n{ps_aux_output}")
-        demisto.debug(f"chrome_headless.log:\n{chrome_headless_content}")
-        demisto.debug(f"df command result:\n{df_output}")
-        demisto.debug(f"free command result:\n{free_output}")
-        demisto.debug(f"chrome driver: {chromedriver}")
-        demisto.debug(f"chrome version: {chrome_version}")
+            try:
+                df_output = subprocess.check_output(["df", "-h"], stderr=subprocess.STDOUT, text=True).strip()
+            except subprocess.CalledProcessError:
+                df_output = "Could not get disk usage information"
 
-        message = "Could not use local Chrome for rasterize command"
-        demisto.error(message)
-        return_error(message)
-        return None
+            try:
+                free_output = "\n".join(subprocess.check_output(["free", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
+            except subprocess.CalledProcessError:
+                free_output = "Could not get memory information"
+
+            try:
+                chromedriver = subprocess.check_output(
+                    ["chromedriver", "--version"], stderr=subprocess.STDOUT, text=True
+                ).splitlines()
+            except subprocess.CalledProcessError:
+                chromedriver = ["chromedriver not found or not executable"]
+
+            try:
+                chrome_version = subprocess.check_output(
+                    ["google-chrome", "--version"], stderr=subprocess.STDOUT, text=True
+                ).splitlines()
+            except subprocess.CalledProcessError:
+                chrome_version = ["google-chrome not found or not executable"]
+
+            demisto.debug(f"{chrome_instances_contents=}")
+            demisto.debug(f"ps aux command result:\n{ps_aux_output}")
+            demisto.debug(f"chrome_headless.log:\n{chrome_headless_content}")
+            demisto.debug(f"df command result:\n{df_output}")
+            demisto.debug(f"free command result:\n{free_output}")
+            demisto.debug(f"chrome driver: {chromedriver}")
+            demisto.debug(f"chrome version: {chrome_version}")
+
+            message = "Could not use local Chrome for rasterize command"
+            demisto.error(message)
+            return_error(message)
+            return None
+    finally:
+        # Release the cross-process lock so the next queued execution can proceed.
+        if _rasterize_lock_fd is not None:
+            try:
+                fcntl.flock(_rasterize_lock_fd, fcntl.LOCK_UN)
+                demisto.debug(f"perform_rasterize: released rasterize lock. {path=}")
+            except Exception as unlock_ex:
+                demisto.debug(
+                    f"perform_rasterize: error releasing rasterize lock: {unlock_ex}. {path=}\n" f"Trace:{traceback.format_exc()}"
+                )
+            finally:
+                # Always close the descriptor, even if the explicit unlock failed —
+                # closing the fd releases the flock anyway and prevents an fd leak.
+                try:
+                    os.close(_rasterize_lock_fd)
+                except OSError as close_ex:
+                    demisto.debug(f"perform_rasterize: error closing rasterize lock fd: {close_ex}. {path=}")
 
 
 def return_err_or_warn(msg):  # pragma: no cover
@@ -1664,6 +2319,7 @@ def rasterize_image_command():
     entry_id = args.get("EntryID")
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get("full_screen", False))
+    set_memory_pressure_tolerance_for_capture(full_screen)
 
     file_name = args.get("file_name", entry_id)
 
@@ -1688,6 +2344,7 @@ def rasterize_email_command():  # pragma: no cover
     html_body = demisto.args().get("htmlBody")
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get("full_screen", False))
+    set_memory_pressure_tolerance_for_capture(full_screen)
 
     offline = demisto.args().get("offline", "false") == "true"
 
@@ -1789,6 +2446,7 @@ def rasterize_html_command():
     entry_id = args.get("EntryID")
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get("full_screen", False))
+    set_memory_pressure_tolerance_for_capture(full_screen)
 
     rasterize_type = args.get("type", "png").lower()
     file_name = args.get("file_name", "email")
@@ -1855,6 +2513,7 @@ def rasterize_command():  # pragma: no cover
     urls = process_urls(urls)
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get("full_screen", False))
+    set_memory_pressure_tolerance_for_capture(full_screen)
     rasterize_type = RasterizeType(demisto.args().get("type", "png").lower())
     wait_time = int(demisto.args().get("wait_time", 0))
     navigation_timeout = int(demisto.args().get("max_page_load_time", DEFAULT_PAGE_LOAD_TIME))
@@ -1971,7 +2630,13 @@ def rasterize_extract_command():  # pragma: no cover
         if isinstance(extracted_content, str) and extracted_content.startswith("Extraction Error:"):
             results.append(
                 CommandResults(
-                    readable_output=f"Error extracting content from {url!r}:\n{extracted_content}",
+                    readable_output=(
+                        f"Error extracting content from {url!r}:\n{extracted_content}\n"
+                        "The page did not render within the page-load timeout. It may be slow to load, "
+                        "or protected by anti-bot/bot-detection (for example Cloudflare, or the Chrome Web Store). "
+                        "If this URL is expected to be slow, retry once with a higher 'max_page_load_time'; "
+                        "otherwise the page is likely blocked and a different source/action should be used for it."
+                    ),
                     entry_type=EntryType.ERROR,
                 )
             )

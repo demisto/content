@@ -15,9 +15,13 @@ To use a self-configured Azure application, you need to add a [new Azure App Reg
 
 ## Required Permissions
 
-1. user_impersonation
-2. offline_access
-3. user.read
+The following API permissions are required in Azure:
+
+| API | Permission |
+|---|---|
+| Azure Service Management | user_impersonation |
+| Microsoft Graph | offline_access |
+| Microsoft Graph | User.Read |
 
 ## Authentication Using the  Authorization Code Flow (recommended)
 

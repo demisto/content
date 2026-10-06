@@ -1,0 +1,37 @@
+{
+    "GoogleSecOps.AlertCustomFieldValue(val.customFieldId == obj.customFieldId)": [
+        {
+            "customFieldId": "1",
+            "displayName": "Ticket Priority",
+            "scope": "ALERT",
+            "values": [
+                "High"
+            ],
+            "valuesSearchText": "High"
+        },
+        {
+            "customFieldId": "2",
+            "displayName": "Escalation Required",
+            "scope": "ALERT",
+            "values": [
+                "Yes"
+            ],
+            "valuesSearchText": "Yes"
+        },
+        {
+            "customFieldId": "3",
+            "displayName": "Affected Systems",
+            "scope": "ALERT",
+            "values": [
+                "Web Server",
+                "Database"
+            ],
+            "valuesSearchText": "Web Server Database"
+        }
+    ],
+    "GoogleSecOps.PageToken(val.command == obj.command)": {
+        "command": "gcb-case-alert-customfield-list",
+        "nextPageToken": "test-next-page-token",
+        "totalSize": 10
+    }
+}
