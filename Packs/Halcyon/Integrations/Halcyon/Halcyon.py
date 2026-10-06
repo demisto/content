@@ -408,6 +408,41 @@ def get_log_types_from_titles(event_types_to_fetch: list[str]) -> list[LogType]:
     return [lt for lt in LogType if lt.title in event_types_to_fetch]
 
 
+def normalize_timestamp(time_value: str | None) -> str | None:
+    """Normalize a Halcyon timestamp to a single canonical, comparable string.
+
+    The Halcyon API returns timestamps with inconsistent precision - some include
+    fractional seconds (``2026-10-05T07:03:37.022Z``) and some do not
+    (``2026-10-05T07:03:39Z``). The deduplication logic compares timestamps as
+    strings, so this inconsistency can make the "same second" check fail and cause
+    duplicate ingestion. This function always returns the canonical ``DATE_FORMAT``
+    (6-digit fractional seconds, UTC "Z") in EVERY branch, so comparisons - and the
+    value we send back to the API as ``occurredAfter`` - are consistent.
+
+    Args:
+        time_value: The raw timestamp string from the API (may be None).
+
+    Returns:
+        A canonical ISO8601 string (``%Y-%m-%dT%H:%M:%S.%fZ``), or None if input
+        is falsy.
+    """
+    if not time_value:
+        return None
+    # Known shapes: with fractional seconds first, then without.
+    for fmt in (DATE_FORMAT, "%Y-%m-%dT%H:%M:%SZ"):
+        try:
+            return datetime.strptime(time_value, fmt).strftime(DATE_FORMAT)
+        except ValueError:
+            continue
+    # Any other shape (timezone offsets, etc.) - parse defensively, always
+    # returning the canonical format so we never emit a differently-shaped string.
+    parsed = dateparser.parse(time_value, settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": False})
+    if parsed:
+        return parsed.strftime(DATE_FORMAT)
+    demisto.debug(f"Could not normalize timestamp {time_value!r}; leaving as-is.")
+    return time_value
+
+
 def enrich_events(events: list[dict], log_type: LogType) -> list[dict]:
     """Enriches a list of events with the '_time' and 'source_log_type' fields.
 
@@ -493,7 +528,9 @@ def deduplicate_events(
 
     for event in events:
         event_id = get_event_id(event, log_type)
-        time_value = event.get(log_type.time_field)
+        # Normalize so "same second" comparisons are reliable regardless of the
+        # fractional-second precision the API returned for this event.
+        time_value = normalize_timestamp(event.get(log_type.time_field))
 
         if not event_id:
             events_without_id += 1
@@ -502,9 +539,11 @@ def deduplicate_events(
                 last_timestamp = time_value
             continue
 
-        # If this event has the same timestamp as the previous run's last timestamp,
-        # check if we've already processed it
-        if previous_timestamp and time_value == previous_timestamp and event_id in previous_run_ids:
+        # If this event was already processed in a previous run, skip it. Membership
+        # in previous_run_ids is checked directly (not gated on an exact timestamp
+        # match) so boundary events re-returned by the inclusive occurredAfter query
+        # are suppressed even across cycles where the watermark did not advance.
+        if event_id in previous_run_ids:
             # Already processed this event, skip it
             continue
 
@@ -551,7 +590,10 @@ def get_max_timestamp_from_events(events: list[dict], log_type: LogType) -> str 
     """
     max_timestamp: str | None = None
     for event in events:
-        time_value = event.get(log_type.time_field)
+        # Normalize so comparisons are reliable regardless of fractional-second
+        # precision, and so the returned watermark matches the normalized form used
+        # elsewhere in the fetch cycle.
+        time_value = normalize_timestamp(event.get(log_type.time_field))
         if time_value and (max_timestamp is None or time_value > max_timestamp):
             max_timestamp = time_value
     return max_timestamp
@@ -645,21 +687,32 @@ def fetch_events_for_log_type(
     # Enrich events
     enriched_events = enrich_events(unique_events, log_type)
 
-    # Update last run - use the deduplication timestamp if available,
-    # otherwise fall back to the raw max timestamp to ensure progress
-    if last_timestamp:
-        last_run[last_fetch_key] = last_timestamp
-        last_run[previous_ids_key] = list(new_ids)
-    elif raw_max_timestamp:
-        # All events were deduplicated but we still need to advance the timestamp
-        # to prevent fetching the same events again
-        demisto.debug(
-            f"All {len(all_events)} {log_type.type_string} events were deduplicated. "
-            f"Advancing timestamp from {last_fetch_time} to {raw_max_timestamp}"
-        )
-        last_run[last_fetch_key] = raw_max_timestamp
-        # Clear previous IDs since we're moving to a new timestamp
-        last_run[previous_ids_key] = []
+    # Normalize the previous watermark so we can compare it to the new one
+    # (which deduplicate_events / get_max_timestamp_from_events already normalize).
+    normalized_previous = normalize_timestamp(last_fetch_time)
+    new_watermark = last_timestamp or normalize_timestamp(raw_max_timestamp)
+
+    # Update last run. The dedup "memory" (previous_ids) must NOT be dropped while
+    # the watermark stays on the same second, otherwise boundary events re-returned
+    # by the inclusive occurredAfter query would be re-ingested as duplicates. We
+    # therefore MERGE the previous boundary IDs with the new ones whenever the
+    # watermark does not advance, and only reset the memory once we move to a
+    # strictly newer second.
+    if new_watermark:
+        if new_watermark == normalized_previous:
+            # Watermark did not advance - keep suppressing everything we have seen
+            # at this second by merging old and new boundary IDs.
+            merged_ids = set(previous_run_ids) | set(new_ids)
+            last_run[previous_ids_key] = list(merged_ids)
+            demisto.debug(
+                f"{log_type.type_string} watermark unchanged at {new_watermark}; "
+                f"retaining {len(merged_ids)} dedup IDs across cycles."
+            )
+        else:
+            # Watermark advanced to a strictly newer second - the dedup memory only
+            # needs the IDs sharing the new last timestamp.
+            last_run[previous_ids_key] = list(new_ids)
+        last_run[last_fetch_key] = new_watermark
     elif not last_run.get(last_fetch_key):
         # If no events and no previous fetch time, set current time
         last_run[last_fetch_key] = datetime.now(timezone.utc).strftime(API_DATE_FORMAT)
