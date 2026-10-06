@@ -9407,6 +9407,9 @@ class TestSpotlightSeverityBasedFetch:
         mock_handler = mock_handler_cls.return_value
         mock_handler.flush_remaining = mocker.AsyncMock()
         mock_handler.processed_aids = {"aid1", "aid2", "aid3", "aid4", "aid5", "aid6"}
+        # A real empty set, not the auto-created attribute: a MagicMock is truthy, which would
+        # send the teardown drain down a path this test has nothing in flight for.
+        mock_handler.running_tasks = set()
 
         # Mock background task waiter
         mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
@@ -9505,6 +9508,7 @@ class TestSpotlightSeverityBasedFetch:
         mock_handler = mock_handler_cls.return_value
         mock_handler.flush_remaining = mocker.AsyncMock()
         mock_handler.processed_aids = set()
+        mock_handler.running_tasks = set()
 
         mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
 
@@ -9580,6 +9584,7 @@ class TestSpotlightSeverityBasedFetch:
         mock_handler = mock_handler_cls.return_value
         mock_handler.flush_remaining = mocker.AsyncMock()
         mock_handler.processed_aids = set()
+        mock_handler.running_tasks = set()
 
         mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
 
@@ -10070,7 +10075,7 @@ class TestSpotlightSeverityBasedFetch:
 
         # Disable stdout capture since this test intentionally triggers a shrink warning log.
         with capfd.disabled():
-            vulns, response_data = await fetch_spotlight_page_with_shrink(
+            vulns, response_data, _received_at = await fetch_spotlight_page_with_shrink(
                 client=mock_client,
                 after_token="tok_same",
                 filter_query="filter",
@@ -10150,7 +10155,7 @@ class TestSpotlightSeverityBasedFetch:
         sleep_mock = mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new=mocker.AsyncMock())
 
         with capfd.disabled():
-            vulns, _ = await fetch_spotlight_page_with_shrink(
+            vulns, _, _received_at = await fetch_spotlight_page_with_shrink(
                 client=mock_client,
                 after_token="tok_same",
                 filter_query="filter",
@@ -10196,7 +10201,7 @@ class TestSpotlightSeverityBasedFetch:
         mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new=mocker.AsyncMock())
 
         with capfd.disabled():
-            vulns, _ = await fetch_spotlight_page_with_shrink(
+            vulns, _, _received_at = await fetch_spotlight_page_with_shrink(
                 client=mock_client,
                 after_token="tok_same",
                 filter_query="filter",
@@ -10321,7 +10326,7 @@ class TestSpotlightSeverityBasedFetch:
         mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new=mocker.AsyncMock())
 
         with capfd.disabled():
-            vulns, _ = await fetch_spotlight_page_with_shrink(
+            vulns, _, _received_at = await fetch_spotlight_page_with_shrink(
                 client=mock_client,
                 after_token="tok_same",
                 filter_query="filter",
@@ -13183,8 +13188,8 @@ class TestModuleTestConnectionErrors:
 
 
 class TestSpotlightFetchTuning:
-    """Covers the XSUP-76845 / XSUP-76789 changes: the cursor died because each page spent too long
-    off the wire, and memory sat near the container limit. These assert the dials that bound both."""
+    """The cursor died because each page spent too long off the wire, and memory sat near the
+    container limit. These assert the dials that bound both."""
 
     @pytest.mark.asyncio
     async def test_severities_are_fetched_two_at_a_time(self, mocker):
@@ -13204,7 +13209,9 @@ class TestSpotlightFetchTuning:
             return 0, set(), set(), []
 
         mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
-        mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
+        # running_tasks must be a real empty set: a MagicMock attribute is truthy and would send
+        # the teardown drain down a path this test has nothing in flight for.
+        mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler").return_value.running_tasks = set()
         mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
         mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
         mocker.patch("CrowdStrikeFalcon.finalize_severity_fetch", new_callable=mocker.AsyncMock, return_value=True)
@@ -13237,7 +13244,7 @@ class TestSpotlightFetchTuning:
             return 0, set(), set(), []
 
         mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
-        mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
+        mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler").return_value.running_tasks = set()
         mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
         mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
         mocker.patch("CrowdStrikeFalcon.finalize_severity_fetch", new_callable=mocker.AsyncMock, return_value=True)
@@ -13347,11 +13354,13 @@ class TestSpotlightFetchTuning:
             ],
         )
 
-        result = await CrowdStrikeFalcon.fetch_spotlight_page_with_shrink(
+        vulns, response_data, received_at = await CrowdStrikeFalcon.fetch_spotlight_page_with_shrink(
             client=mocker.MagicMock(), after_token="tok", filter_query="q", severity="LOW", page_size=3000
         )
 
-        assert result == recovered
+        assert (vulns, response_data) == recovered
+        # The arrival stamp is what the cursor-age log measures from, so it must be a real reading.
+        assert isinstance(received_at, float)
         assert page.call_count == 3
         # The same cursor is reused on every rung: a new token would skip records.
         assert {call.kwargs["after_token"] for call in page.call_args_list} == {"tok"}
@@ -13599,6 +13608,13 @@ class TestSpotlightFetchTuning:
         mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
 
         finished = False
+        send_finished = False
+        running_tasks: set = set()
+
+        async def slow_send():
+            nonlocal send_finished
+            await asyncio.sleep(0.2)
+            send_finished = True
 
         async def slow_enrich():
             nonlocal finished
@@ -13607,13 +13623,23 @@ class TestSpotlightFetchTuning:
             # would pass with or without the drain.
             await asyncio.sleep(0.2)
             finished = True
+            # Two-stage, like the real enrich_and_ingest_batch: the send task only joins
+            # running_tasks after the enrichment await. A drain that gathers a single snapshot
+            # never sees this one, so the upload would race the closing XSIAM session.
+            send_task = asyncio.create_task(slow_send())
+            running_tasks.add(send_task)
+            send_task.add_done_callback(running_tasks.discard)
 
         enrichment_task = asyncio.create_task(slow_enrich())
+        running_tasks.add(enrichment_task)
 
         handler = mocker.MagicMock()
-        handler.running_tasks = {enrichment_task}
+        handler.running_tasks = running_tasks
         handler.flush_remaining = mocker.AsyncMock()
         handler.processed_aids = set()
+        # Bind the real drain so this exercises the production loop rather than a mock that
+        # would "succeed" no matter how the drain is implemented.
+        handler.drain = CrowdStrikeFalcon.AssetsDeviceHandler.drain.__get__(handler)
         mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler", return_value=handler)
 
         # Every severity dies, so none is marked complete, the snapshot cannot seal and
@@ -13635,3 +13661,4 @@ class TestSpotlightFetchTuning:
         handler.flush_remaining.assert_not_awaited()
         assert enrichment_task.done(), "an enrichment task outlived the cycle that owns it"
         assert finished, "the enrichment upload was abandoned rather than drained"
+        assert send_finished, "the send task spawned during the drain was left running"

@@ -95,8 +95,7 @@ MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
 MAX_FETCH_SPOTLIGHT_ASSETS = 5000
-# Spotlight page size for the long-running flow; the scheduled flow keeps 5000. Each severity holds
-# a prefetched page too, so peak memory is MAX_CONCURRENT_SEVERITIES x 2 x this, plus pending sends.
+# Each severity also holds a prefetched page, so peak memory is MAX_CONCURRENT_SEVERITIES x 2 x this.
 SPOTLIGHT_PAGE_SIZE_LONG_RUNNING = 3000
 # Below the 5000 server-side maximum to keep payloads under XSOAR's auto-file threshold.
 MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE = 2500
@@ -4016,7 +4015,13 @@ class AssetsDeviceHandler:
 
             # Nothing else bounds these, and they are only awaited at the end of the cycle.
             while len(self.running_tasks) >= MAX_PENDING_ASSET_TASKS:
-                await asyncio.wait(self.running_tasks, return_when=asyncio.FIRST_COMPLETED)
+                done, _ = await asyncio.wait(self.running_tasks, return_when=asyncio.FIRST_COMPLETED)
+                # enrich_and_ingest_batch already logged any failure before re-raising, but the
+                # done-callback drops our last reference to the task. Retrieving the exception here
+                # keeps the GC from logging a bare "Task exception was never retrieved" as well.
+                for finished in done:
+                    if not finished.cancelled():
+                        finished.exception()
 
             # Create async enrichment task
             task = asyncio.create_task(self.enrich_and_ingest_batch(batch))
@@ -4141,18 +4146,24 @@ class AssetsDeviceHandler:
             self.pending_buffer.clear()
 
         # Wait for all enrichment and send tasks to complete
+        await self.drain()
+        log_falcon_assets("AssetsDeviceHandler: All enrichment/send tasks completed successfully", "info")
+
+    async def drain(self) -> None:
+        """Await every in-flight task, including ones spawned while we were already waiting.
+
+        A single gather() over a snapshot is not enough: enrich_and_ingest_batch only registers
+        its send task after awaiting the enrichment request, so any enrichment still running when
+        the snapshot is taken adds a send task that the snapshot never covers. Looping until the
+        set is empty is what guarantees nothing is left uploading when the caller closes the
+        shared XSIAM session.
+        """
         while self.running_tasks:
-            log_falcon_assets("AssetsDeviceHandler: Starting flush of remaining assets.", "info")
-            # Create a snapshot of the current tasks
+            # Snapshot, await, then remove: tasks added during the await stay for the next pass.
             current_batch = list(self.running_tasks)
-            if not current_batch:
-                break
-            count = len(current_batch)
-            log_falcon_assets(f"AssetsDeviceHandler: Waiting for {count} background tasks to complete...", "info")
-            # Wait for this specific batch.
+            log_falcon_assets(f"AssetsDeviceHandler: Waiting for {len(current_batch)} background tasks to complete...", "info")
             await asyncio.gather(*current_batch, return_exceptions=True)
             self.running_tasks.difference_update(current_batch)
-        log_falcon_assets("AssetsDeviceHandler: All enrichment/send tasks completed successfully", "info")
 
     @staticmethod
     def _filter_asset_fields(assets: list[Dict]) -> list[Dict]:
@@ -4224,9 +4235,11 @@ async def get_xsiam_session() -> aiohttp.ClientSession:
 async def close_xsiam_session() -> None:
     """Close the shared session at the end of a cycle; the next one opens a fresh session."""
     global _XSIAM_SESSION
-    if _XSIAM_SESSION is not None and not _XSIAM_SESSION.closed:
-        await _XSIAM_SESSION.close()
-    _XSIAM_SESSION = None
+    # Detach first so the reset happens even if close() raises. Leaving the global bound to a
+    # session on a dead event loop would make get_xsiam_session hand it back on every later cycle.
+    session, _XSIAM_SESSION = _XSIAM_SESSION, None
+    if session is not None and not session.closed:
+        await session.close()
 
 
 async def xsiam_api_call_async(
@@ -4799,8 +4812,15 @@ def get_spotlight_page_size() -> int:
 
 
 def get_spotlight_lookback_days() -> int:
-    """Lookback window in days, from the instance configuration."""
-    return arg_to_number(demisto.params().get("spotlight_lookback_days")) or SPOTLIGHT_LOOKBACK_DAYS
+    """Lookback window in days, from the instance configuration.
+
+    Falls back to the default for anything that is not a positive number: a zero or negative
+    window would build a filter that matches nothing and silently fetch an empty snapshot.
+    """
+    configured = arg_to_number(demisto.params().get("spotlight_lookback_days"))
+    if not configured or configured <= 0:
+        return SPOTLIGHT_LOOKBACK_DAYS
+    return configured
 
 
 def build_spotlight_shrink_ladder(page_size: int) -> list[int]:
@@ -4876,7 +4896,7 @@ async def fetch_spotlight_page_with_shrink(
     filter_query: str,
     severity: str,
     page_size: int = MAX_FETCH_SPOTLIGHT_ASSETS,
-) -> tuple[list, dict]:
+) -> tuple[list, dict, float]:
     """Fetch a single Spotlight page, retrying transient failures on the same page.
 
     Retries the SAME ``after_token`` down the ``SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER``
@@ -4897,7 +4917,10 @@ async def fetch_spotlight_page_with_shrink(
         severity: Severity label, used only for logging.
 
     Returns:
-        Tuple of (vulnerabilities_list, response_data) for the successfully fetched page.
+        Tuple of (vulnerabilities_list, response_data, received_at) for the successfully fetched
+        page. ``received_at`` is a ``time.monotonic()`` reading taken the instant the response
+        came back, so the cursor age it feeds is measured from arrival rather than from whenever
+        the caller got around to consuming the prefetched page.
 
     Raises:
         json.JSONDecodeError: If every page size in the ladder is still truncated.
@@ -4910,16 +4933,17 @@ async def fetch_spotlight_page_with_shrink(
 
     for step_index, attempt_limit in enumerate(shrink_ladder):
         try:
-            page = await fetch_spotlight_vulnerabilities_page(
+            vulnerabilities, response_data = await fetch_spotlight_vulnerabilities_page(
                 client=client, after_token=after_token, filter_query=filter_query, limit=attempt_limit
             )
+            received_at = time.monotonic()
             if step_index:
                 # Only reachable when an earlier step failed, so this is a genuine recovery.
                 log_falcon_assets(
                     f"[{severity}] Page recovered at limit={attempt_limit} after {step_index} failed attempt(s).",
                     "info",
                 )
-            return page
+            return vulnerabilities, response_data, received_at
         except (json.JSONDecodeError, ContentClientError) as e:
             if isinstance(e, json.JSONDecodeError):
                 reason = "oversized-page JSON truncation"
@@ -5080,10 +5104,10 @@ async def fetch_vulnerabilities_by_severity(
 
             if next_page_task is not None:
                 # Already in flight since the previous iteration.
-                vulnerabilities, response_data = await next_page_task
+                vulnerabilities, response_data, token_received_at = await next_page_task
                 next_page_task = None
             else:
-                vulnerabilities, response_data = await fetch_spotlight_page_with_shrink(
+                vulnerabilities, response_data, token_received_at = await fetch_spotlight_page_with_shrink(
                     client=client,
                     after_token=after_token,
                     filter_query=filter_query,
@@ -5098,8 +5122,9 @@ async def fetch_vulnerabilities_by_severity(
             # next request must be issued before the downstream work below, any step of which can
             # stall for longer than the TTL. create_task only schedules it - the first await after
             # this point starts it - so nothing slow may be moved above here.
+            # token_received_at comes from the fetch itself, not from here: with prefetching, this
+            # line can run well after the page landed, which would under-report the cursor's age.
             new_after_token = response_data.get("meta", {}).get("pagination", {}).get("after")
-            token_received_at = time.monotonic()
             is_last_batch = not new_after_token
 
             if new_after_token:
@@ -5244,11 +5269,13 @@ async def fetch_vulnerabilities_by_severity(
         if "Search context expired" in error_str or ('"code": 404' in error_str and "after" in error_str):
             # Upper bound on how long the cursor was alive: measured in-process from the moment the
             # server handed it over to the moment it was rejected, so it includes the request itself.
-            # A small value means the context was reclaimed server-side rather than timing out.
+            # Measured from the moment the page carrying this cursor arrived, so it covers the
+            # whole time we held it. A small value means the context was reclaimed server-side
+            # rather than aging out.
             token_age = f"{time.monotonic() - token_received_at:.1f}s" if token_received_at else "n/a (first page)"
             log_falcon_assets(
                 f"[{severity}] Pagination cursor rejected at batch {batch_counter + 1}, "
-                f"{token_age} after the server issued it (receipt to rejection, upper bound). "
+                f"{token_age} after the page carrying it arrived. "
                 f"Progress ({total_fetched} vulnerabilities) will be lost.",
                 "error",
             )
@@ -5604,7 +5631,7 @@ async def fetch_spotlight_by_severity_parallel(
                 f"Draining {len(asset_handler.running_tasks)} in-flight asset enrichment task(s) before teardown",
                 "info",
             )
-            await asyncio.gather(*asset_handler.running_tasks, return_exceptions=True)
+            await asset_handler.drain()
 
     return total_vulnerabilities, all_unique_aids
 
