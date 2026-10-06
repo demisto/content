@@ -1,4 +1,5 @@
 import json
+import traceback
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -211,7 +212,17 @@ def main():  # pragma: no cover
                 # cannot use test module due to the lack of ability to set refresh token to integration context
                 raise Exception("Please use !msgraph-mail-test instead")
         if command == "msgraph-mail-test":
-            client.test_connection()
+            try:
+                client.test_connection()
+            except Exception as e:
+                demisto.error(traceback.format_exc())
+                error_message = str(e)
+                if auth_code:
+                    error_message = (
+                        "Note: Make sure you created the authorization code with the same Microsoft user "
+                        f"you configured the integration instance with.\n\n{error_message}"
+                    )
+                raise DemistoException(error_message) from e
             return_results(CommandResults(readable_output="```✅ Success!```"))
         if command == "msgraph-mail-auth-reset":
             return_results(reset_auth())

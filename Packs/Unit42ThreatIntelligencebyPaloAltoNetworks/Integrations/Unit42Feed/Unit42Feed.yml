@@ -189,7 +189,7 @@ script:
       name: limit
     description: Gets threat objects from the feed.
     name: unit42-get-threat-objects
-  dockerimage: demisto/python3:3.12.14.12343672
+  dockerimage: demisto/python3:3.12.14.13053055
   feed: true
   runonce: false
   script: '-'
