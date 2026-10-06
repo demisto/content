@@ -1,0 +1,29 @@
+{
+    "id": "indicator_domaintoolsfeedipzerolistdomains",
+    "version": -1,
+    "name": "DomainToolsFeed IP Zerolist Domains",
+    "description": "Number of zero-listed domains seen on the IP (e.g., from CDNs or shared infrastructure).",
+    "ownerOnly": false,
+    "cliName": "domaintoolsfeedipzerolistdomains",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedTypes": [
+        "DomainToolsFeed IP"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
