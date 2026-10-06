@@ -8,11 +8,10 @@
     "email": "",
     "created": "2026-10-03T00:00:00Z",
     "categories": [
-        "Threat Intelligence"
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Threat Intelligence",
-        "Enrichment"
+        "Threat Intelligence"
     ],
     "useCases": [
         "Threat Intelligence Management"
