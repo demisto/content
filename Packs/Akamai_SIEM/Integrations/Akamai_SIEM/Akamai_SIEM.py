@@ -52,8 +52,88 @@ DEFAULT_EVENTS_FETCH_LIMIT = 60000  # Default total events per fetch
 SEND_EVENTS_TO_XSIAM_CHUNK_SIZE = 9 * (10**6)  # 9 MB
 AKAMAI_MAX_LOOKBACK_MINUTES = 715  # 11h55m: max recovery window (12h) minus a 5-minute safety buffer.
 
+# ==========================================================================================
+# SIMULATION / DEBUG MODE (XSUP-76982 count-discrepancy investigation)
+# ------------------------------------------------------------------------------------------
+# When enabled (via the "Simulate Akamai API (debug)" integration parameter), the integration
+# does NOT call the real Akamai API. Instead, execute_get_events_request() returns a synthetic
+# raw response with a deterministic number of events. The rest of the real flow (splitting,
+# offset decoding, paging, counting, sending, and updateModuleHealth) runs completely unchanged.
+# This lets us reproduce and audit exactly what "eventsPulled" the integration reports vs. what
+# it actually sends, without depending on live Akamai traffic.
+# ==========================================================================================
+SIM_LOG_PREFIX = "[SIMULATION]"
+DEFAULT_SIM_EVENTS_PER_PAGE = 5000
+# These module-level flags are set from integration params at the start of main().
+SIMULATE_AKAMAI_API = False
+SIM_EVENTS_PER_PAGE = DEFAULT_SIM_EVENTS_PER_PAGE
+
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+
+def build_mock_akamai_response(num_events: int, offset: str | None, prefix_msg: str = "") -> str:
+    """Build a synthetic Akamai SIEM raw response for simulation mode.
+
+    Mirrors the real Akamai multi-JSON response wire format:
+      * ``num_events`` lines, each a single security-event JSON object, followed by
+      * one final line holding the ResponseContext object with the next ``offset``,
+      * a trailing newline (the real API ends the payload with a newline).
+
+    The next offset is deterministically derived from the previous one so that successive
+    simulated pages advance (no offset reuse), exactly like the real cursor mechanism.
+
+    Args:
+        num_events (int): How many synthetic event lines to include.
+        offset (str | None): The offset received in the request (used to derive the next one).
+        prefix_msg (str): Optional log prefix.
+
+    Returns:
+        str: A newline-delimited raw response string identical in shape to Akamai's.
+    """
+    base = 0
+    if offset:
+        try:
+            base = int(str(offset).split(";")[0], 16)
+        except Exception:
+            base = abs(hash(offset)) % (16**5)
+    next_offset = f"{(base + max(num_events, 1)) & 0xFFFFF:05x};SIMULATED-{(base + num_events)}"
+
+    demisto.debug(
+        f"{SIM_LOG_PREFIX} {prefix_msg}Building mock response: {num_events=}, received {offset=}, {next_offset=}."
+    )
+
+    lines: list[str] = []
+    now_epoch = int(datetime.now().timestamp())
+    for i in range(num_events):
+        event = {
+            "type": "akamai_siem",
+            "format": "json",
+            "version": "1.0",
+            "attackData": {
+                "configId": "SIMULATED",
+                "policyId": "sim_policy",
+                "clientIP": "203.0.113.10",
+                "ruleActions": "YWxlcnQ%3d",
+            },
+            "httpMessage": {
+                "requestId": f"sim-{next_offset}-{i}",
+                "start": str(now_epoch),
+                "method": "GET",
+                "host": "simulated.example.com",
+                "path": f"/sim/{i}",
+            },
+            "geo": {"country": "US"},
+        }
+        lines.append(json.dumps(event))
+
+    lines.append(json.dumps({"total": num_events, "offset": next_offset}))
+    raw = "\n".join(lines) + "\n"
+    demisto.info(
+        f"{SIM_LOG_PREFIX} {prefix_msg}Mock response built with {num_events} event line(s) "
+        f"+ 1 offset-context line (raw length={len(raw)} chars)."
+    )
+    return raw
 
 
 class Client(BaseClient):
@@ -114,10 +194,23 @@ class Client(BaseClient):
     def execute_get_events_request(self, params: dict[str, int | str], config_ids: str, prefix_msg: str = ""):
         demisto.debug(f"[Get Events] {prefix_msg}Init session and sending request to Akamai.")
         url_suffix = f"/{config_ids}"
+        offset_in_params = params.get("offset")
         if "offset" in params:
             url_suffix = f"{url_suffix}?offset={params['offset']}"
             del params["offset"]
-        raw_response: str = self._http_request(
+        # --- SIMULATION MODE: bypass the real Akamai API and return a synthetic response. ---
+        if SIMULATE_AKAMAI_API:
+            requested_limit = int(params.get("limit") or SIM_EVENTS_PER_PAGE)
+            num_events = min(SIM_EVENTS_PER_PAGE, requested_limit)
+            demisto.info(
+                f"{SIM_LOG_PREFIX} {prefix_msg}Simulation ENABLED - NOT calling Akamai. "
+                f"Requested {url_suffix=}, {params=}. Returning {num_events} simulated events "
+                f"(SIM_EVENTS_PER_PAGE={SIM_EVENTS_PER_PAGE}, requested_limit={requested_limit})."
+            )
+            raw_response = build_mock_akamai_response(num_events, offset_in_params, prefix_msg=prefix_msg)
+            demisto.debug(f"[Get Events] {prefix_msg}Finished building simulated response, processing response.")
+            return raw_response
+        raw_response = self._http_request(
             method="GET",
             url_suffix=url_suffix,
             params=params,
@@ -1283,6 +1376,17 @@ def send_events_to_xsiam_akamai(
 def main():
     params = demisto.params()
 
+    # --- SIMULATION / DEBUG MODE wiring (XSUP-76982). Controlled via integration params. ---
+    global SIMULATE_AKAMAI_API, SIM_EVENTS_PER_PAGE
+    SIMULATE_AKAMAI_API = argToBoolean(params.get("simulate_akamai_api", False))
+    SIM_EVENTS_PER_PAGE = arg_to_number(params.get("sim_events_per_page")) or DEFAULT_SIM_EVENTS_PER_PAGE
+    if SIMULATE_AKAMAI_API:
+        demisto.info(
+            f"{SIM_LOG_PREFIX} Simulation mode is ENABLED. The integration will NOT call the real Akamai API. "
+            f"Each simulated Akamai page will return {SIM_EVENTS_PER_PAGE} events. "
+            f"command={demisto.command()}."
+        )
+
     # Validate that configIds is not empty
     config_ids = params.get("configIds")
     if not config_ids:
@@ -1367,10 +1471,14 @@ def main():
             ):
                 if events:
                     page_counter += 1
+                    data_size = len(events)
+                    demisto.info(
+                        f"[COUNT-AUDIT] Page {page_counter}: received {data_size} events from this page; "
+                        f"cumulative total_events_count so far = {total_events_count}; new offset={offset}."
+                    )
                     post_latest_event_time(
                         latest_event=events[-1], base_msg=f"Sending {len(events)} events to xsiam using streaming send."
                     )
-                    data_size = len(events)
                     should_fail = False
                     try:
                         send_events_to_xsiam(
@@ -1390,6 +1498,10 @@ def main():
                             "Encountered an error while sending events to xsiam, will attempt to send all events again."
                         )
                     demisto.debug("Finished executing streaming send_events_to_xsiam.")
+                    demisto.info(
+                        f"[COUNT-AUDIT] Page {page_counter}: SENT {data_size} events to xsiam. "
+                        f"cumulative sent this interval = {total_events_count}."
+                    )
                     demisto.debug(
                         f"[Send Events] Done sending {data_size} events to xsiam. "
                         f"Sent {total_events_count} events to xsiam in total during this interval."
@@ -1401,6 +1513,11 @@ def main():
             )
             if not should_fail:
                 set_integration_context({"offset": offset})
+            demisto.info(
+                f"[COUNT-AUDIT] Reporting to module health: eventsPulled={total_events_count or 0} "
+                f"(pages this interval={page_counter}, {auto_trigger_next_run=}, fetch_limit={limit}, "
+                f"simulation={SIMULATE_AKAMAI_API}). This is the SINGLE per-interval value the platform should sum."
+            )
             demisto.updateModuleHealth({"eventsPulled": (total_events_count or 0)})
             next_run = {}
             if auto_trigger_next_run or total_events_count >= limit:
