@@ -41,8 +41,6 @@ alter
         null)
 // A blocked egress attempt emits twice: activity_id 5 (DNS) then 1 (TCP).
 | alter
-    xdm.observer.vendor = "NVIDIA",
-    xdm.observer.product = "OpenShell",
     xdm.observer.version = tmp_product_version,
     xdm.observer.type = tmp_product_name,
     xdm.event.id = tmp_event_uid,
