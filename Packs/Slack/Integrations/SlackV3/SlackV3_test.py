@@ -5963,8 +5963,7 @@ async def test_post_agent_response_sync_with_invalid_attachments_fallback(mocker
     assert second_call[0][1] == "This is the fallback message"
 
 
-@pytest.mark.asyncio
-async def test_post_agent_response_sync_with_msg_blocks_too_long_single_block_fallback(mocker):
+def test_post_agent_response_sync_with_msg_blocks_too_long_single_block_fallback(mocker):
     """
     Given:
         A single block that triggers msg_blocks_too_long and therefore cannot be usefully
