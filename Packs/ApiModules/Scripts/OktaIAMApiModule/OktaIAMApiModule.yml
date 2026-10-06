@@ -1,0 +1,19 @@
+commonfields:
+  id: OktaIAMApiModule
+  version: -1
+name: OktaIAMApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: Common Okta IAM code that will be appended into the Okta IAM integrations when it's deployed.
+system: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/python3:3.12.14.13053055
+fromversion: 6.0.0
+tests:
+- No tests
