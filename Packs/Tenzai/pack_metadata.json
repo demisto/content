@@ -2,7 +2,7 @@
     "name": "Tenzai",
     "description": "Validate Cortex ASM-discovered exposures with Tenzai's agentic penetration testing.",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "created": "2026-09-02T00:00:00Z",
     "author": "Tenzai",
     "url": "https://www.tenzai.com",
