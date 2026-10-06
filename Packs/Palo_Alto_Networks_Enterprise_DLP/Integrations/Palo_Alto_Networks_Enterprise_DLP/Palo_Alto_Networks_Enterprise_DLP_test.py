@@ -5,7 +5,7 @@ from pathlib import Path
 import demistomock as demisto
 import pytest
 import yaml
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, IncidentSeverity
 from freezegun import freeze_time
 from Palo_Alto_Networks_Enterprise_DLP import (
     DEFAULT_BASE_URL as DLP_URL,
@@ -32,6 +32,7 @@ from Palo_Alto_Networks_Enterprise_DLP import (
     END_TIME_BUFFER,
     FILTER_PARAMS,
     FILTER_VALUE_MAPS,
+    to_xsoar_severity,
 )
 
 
@@ -860,7 +861,8 @@ V4_ROW = {
     # The application the control point resolved - the App-ID on NGFW rows. This is the
     # value the v1 fetch exposed as app_details.name; see the appName assertion below.
     "destination": "openai-chatgpt",
-    "severity": "HIGH",
+    # The inventory API returns severity as a numeric string, 1 (Informational) to 5 (Critical).
+    "severity": "4",
     "feedback_status": "PENDING_RESPONSE",
     "data_profile_id": 11995149,
     "data_profiles": [
@@ -913,7 +915,8 @@ def test_create_incident(incident_type_input, expected_type):
         "region": V4_ROW["source_region"],
         "previousNotification": {"feedback_status": V4_ROW["feedback_status"]},
         "incidentDetails": {
-            "headers": [{"attribute_name": "severity", "attribute_value": V4_ROW["severity"]}],
+            # DLP High ("4") is translated to the XSOAR scale, since the mapper copies it unchanged.
+            "headers": [{"attribute_name": "severity", "attribute_value": IncidentSeverity.HIGH}],
             "app_details": {"name": V4_ROW["destination"]},
         },
     }
@@ -957,6 +960,34 @@ def test_create_incident_normalizes_channel_and_tolerates_missing_fields():
     assert raw["previousNotification"] == {"feedback_status": None}
     assert raw["appName"] is None
     assert raw["incidentDetails"]["app_details"] == {"name": None}
+
+
+@pytest.mark.parametrize(
+    "dlp_severity, expected_severity",
+    [
+        pytest.param("5", IncidentSeverity.CRITICAL, id="critical"),
+        pytest.param("4", IncidentSeverity.HIGH, id="high"),
+        pytest.param("3", IncidentSeverity.MEDIUM, id="medium"),
+        pytest.param("2", IncidentSeverity.LOW, id="low"),
+        pytest.param("1", IncidentSeverity.INFO, id="informational"),
+        pytest.param(4, IncidentSeverity.HIGH, id="integer"),
+        pytest.param("High", IncidentSeverity.HIGH, id="readable_name"),
+        pytest.param("INFORMATIONAL", IncidentSeverity.INFO, id="uppercase_name"),
+        pytest.param("9", IncidentSeverity.UNKNOWN, id="out_of_range"),
+        pytest.param(None, IncidentSeverity.UNKNOWN, id="missing"),
+    ],
+)
+def test_to_xsoar_severity(dlp_severity, expected_severity):
+    """
+    Given:
+        - A DLP severity, as the stored number (1-5) or its readable name.
+    When:
+        - Calling to_xsoar_severity.
+    Then:
+        - Ensure it is translated to the XSOAR scale (0.5-4), so the incoming mapper, which copies
+          the value unchanged, does not raise every incident one level and push Critical out of range.
+    """
+    assert to_xsoar_severity(dlp_severity) == expected_severity
 
 
 @pytest.mark.parametrize(
