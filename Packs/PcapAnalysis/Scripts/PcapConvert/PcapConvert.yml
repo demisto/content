@@ -18,7 +18,7 @@ args:
   - abort
   - ignore
   - keep
-comment: Convert packet data to the standard pcap. Currently it only supports CDL(NGFW) pcap from which to convert.
+comment: Convert packet data to the standard pcap. Currently it only supports CDL(NGFW) pcap from which to convert and the output is the standard pcap.
 commonfields:
   id: PcapConvert
   version: -1

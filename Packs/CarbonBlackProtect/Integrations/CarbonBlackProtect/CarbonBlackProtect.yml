@@ -81,7 +81,7 @@ configuration:
   supportedModules:
   - agentix
   - xsiam
-description: VMware Carbon Black App Control (formerly known as Carbon Black Enterprise Protection) is a next-generation endpoint threat prevention solution to deliver a portfolio of protection policies, real-time visibility across environments, and comprehensive compliance rule sets in a single platform. This integration only supports Carbon Black on-premise APIs.
+description: VMware Carbon Black App Control (formerly known as Carbon Black Enterprise Protection) is a next-generation endpoint threat prevention solution to deliver a portfolio of protection policies, real-time visibility across environments, and comprehensive compliance rule sets in a single platform. This integration only supports Carbon Black on-premise APIs and not the cloud version.
 display: VMware Carbon Black App Control v2
 name: CarbonBlackProtectionV2
 script:
@@ -1547,7 +1547,7 @@ script:
     - contextPath: CBP.UserDelete.Name
       description: The name of the user account.
     description: Sends request to delete user account.
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.13053055
   subtype: python3
   isfetch: true
   script: ''

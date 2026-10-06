@@ -1,0 +1,8 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "#### GitLab v2\n- Updated the GitLabv2 integration to improve the implementation and stability.\n\n#### Playbooks\n##### Gitlab - Guest user permission change\n- Updated the Gitlab - Guest user permission change playbook to improve the implementation and stability.",
+	"forceUpdate": {
+        "breakingChangesNotesLoosely": "##### Gitlab - Guest user permission change\n- Updated the Gitlab - Guest user permission change playbook to improve the implementation and stability.",
+        "breakingChangesNotesTightly": "#### GitLab v2\n- Updated the GitLabv2 integration to improve the implementation and stability.\n"
+    }
+}

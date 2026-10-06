@@ -6,38 +6,45 @@ display: C2sec irisk
 fromversion: 5.0.0
 category: Data Enrichment & Threat Intelligence
 provider: C2Sec
-description: Understand Your Cyber Exposure as Easy as a Google Search.
+description: Understand Your Cyber Exposure as Easy as a Google Search and Get Actionable Insights.
+sectionorder:
+- Connect
 configuration:
 - display: API URL (e.g. https://api.c2sec.com/api)
   name: endpointURL
   defaultvalue: ""
   type: 0
   required: true
+  section: Connect
 - display: API Key
   name: apikey
   defaultvalue: ""
   type: 4
   hidden: true
   required: false
+  section: Connect
 - name: apikey_creds
   type: 9
   displaypassword: API Key
   hiddenusername: true
   required: false
+  section: Connect
 - display: Default domain name
   name: domainName
   type: 0
   required: true
   defaultvalue: ''
+  section: Connect
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
-
   required: false
+  section: Connect
 script:
   script: '-'
   type: python
@@ -200,6 +207,6 @@ script:
       type: string
     description: Query Data for specific component for companies in the portfolio
   runonce: false
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.13053055
 tests:
 - No tests (auto formatted)
