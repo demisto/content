@@ -2,7 +2,7 @@
     "name": "Palo Alto Networks - Prisma AIRS AI Security",
     "description": "Integrate with Palo Alto Networks Prisma AIRS for AI security: runtime scanning, red teaming, AI supply chain security, and DLP configuration.",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Eric Partington",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",
