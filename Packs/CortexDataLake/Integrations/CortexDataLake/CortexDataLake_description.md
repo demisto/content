@@ -11,26 +11,28 @@ This integration was tested with version 2 of Strata Logging Service XSOAR Conne
 
 ---
 
-1. In the War Room, run the command `!GetLicenseID` to get the `license ID`.
-2. Go to __Settings__ > __ABOUT__ > __License__ to get the `Customer Name`.
-3. Go to the [HUB](https://apps.paloaltonetworks.com/apps) and log in using your Palo Alto Networks credentials.
-4. Under the `Cortex™ XSOAR` app, select the relevant instance. If you don't have an active `Cortex™ XSOAR` app, check out the Hub [Docs site](https://docs.paloaltonetworks.com/hub/hub-getting-started) to learn about app activation.
-5. Once the page loads, if required, insert the `license ID` and the `Customer Name` in the required fields and complete the authentication process in order to get the __Registration ID__, __Encryption Key__, and either __Authentication Token__ or __Client Secret__.
-6. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-7. Search for Palo Alto Networks Cortex v2.
-8. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: A textual name for the integration instance.
-    * __Registration ID__: From the authentication process.
-       * The token retrieval URL is inferred based on the tenant's FedRAMP status unless explicitly specified in the __Registration ID__ parameter in the format `REGISTRATION_ID@URL`.
-    * __Encryption Key__: From the authentication process.
-    * __Authentication Token__ OR __Client Secret__: From the authentication process.
-    * __proxy__: Use system proxy settings.
-    * __insecure__: Trust any certificate (not secure).
-    * __Fetch incidents__: Whether to fetch incidents.
-    * __first_fetch_timestamp__: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year).
-    * __Severity of events to fetch (Firewall)__: Select from all, Critical, High, Medium, Low, Informational, or Unused.
-    * __Subtype of events to fetch (Firewall)__: Select from all, attack, url, virus, spyware, vulnerability, file, scan, flood, packet, resource, data, url-content, wildfire, extpcap, wildfire-virus, http-hdr-insert, http-hdr, email-hdr, spyware-dns, spyware-wildfire-dns, spyware-wpc-dns, spyware-custom-dns, spyware-cloud-dns, spyware-raven, spyware-wildfire-raven, spyware-wpc-raven, wpc-virus, or sctp.
-9. Click __Test__ to validate the credentials and connection.
+1. Go to the [HUB](https://apps.paloaltonetworks.com/apps) and log in using your Palo Alto Networks credentials.
+2. Under the `Cortex XSOAR` app, select the relevant instance. If you don't have an active `Cortex XSOAR` app, check out the Hub [Docs site](https://docs.paloaltonetworks.com/hub/hub-getting-started/get-started) to learn about app activation.
+3. Once the page loads, if required, insert the `license ID` and the `Customer Name` in the required fields and complete the authentication process in order to get the **Registration ID**, **Encryption Key**, and either **Authentication Token** or **Client Secret**.
+    * To get the `license ID`, run the command `!GetLicenseID` in the War Room.
+    * To get the `Customer Name`, Go to **Settings** \> **ABOUT** \> **License**.
+4. Deppending on your tenant, navigate to either of the following:
+    * Cortex Agentix: **Settings** > **Data Collection** > **Data Sources & Integrations**.
+    * Cortex XSOAR: **Settings** > **Integrations** > **Instances**.
+5. Search for Strata Logging Service.
+6. Click **Add instance** to create and configure a new integration instance.
+    * **Name**: A textual name for the integration instance.
+    * **Registration ID**: From the authentication process.
+        * The token retrieval URL is inferred based on the tenant's FedRAMP status unless explicitly specified in the **Registration ID** parameter in the format `REGISTRATION_ID@URL`.
+    * **Encryption Key**: From the authentication process.
+    * **Authentication Token** OR **Client Secret**: From the authentication process.
+    * **proxy**: Use system proxy settings.
+    * **insecure**: Trust any certificate (not secure).
+    * **Fetch incidents**: Whether to fetch incidents.
+    * **First fetch time**: First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year).
+    * **Severity of events to fetch (Firewall)**: Select from all, Critical, High, Medium, Low, Informational, or Unused.
+    * **Subtype of events to fetch (Firewall)**: Select from all, attack, url, virus, spyware, vulnerability, file, scan, flood, packet, resource, data, url-content, wildfire, extpcap, wildfire-virus, http-hdr-insert, http-hdr, email-hdr, spyware-dns, spyware-wildfire-dns, spyware-wpc-dns, spyware-custom-dns, spyware-cloud-dns, spyware-raven, spyware-wildfire-raven, spyware-wpc-raven, wpc-virus, or sctp.
+7. Click **Test** to validate the credentials and connection.
 
 ## CDL Server - API Calls Caching Mechanism
 
