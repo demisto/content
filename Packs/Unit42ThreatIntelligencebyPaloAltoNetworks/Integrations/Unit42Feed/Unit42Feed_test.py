@@ -21,6 +21,7 @@ from Unit42Feed import (
     STATUS_CODES_TO_RETRY,
     THREAT_OBJECTS_TYPE,
     THREAT_OBJECTS_LIMIT,
+    TOTAL_INDICATOR_LIMIT,
 )
 from CommonServerPython import *
 
@@ -1486,7 +1487,6 @@ def test_fetch_indicators_threat_objects_first_then_single_combined_indicator_qu
 
     configured_types = ["File", "URL", "Domain", "IP"]
     params = {
-        "limit": "10",
         "feed_types": ["Indicators", "Threat Objects"],
         "indicator_types": configured_types,
         "feedTags": [],
@@ -1836,7 +1836,7 @@ def test_fetch_indicator_type_empty_page_clears_token(client, mocker):
 def test_fetch_indicators_stores_pending_when_limit_hit(client, mocker):
     """
     Given:
-        - An API with more indicators available than the configured total limit
+        - An API with more indicators available than TOTAL_INDICATOR_LIMIT (patched to 50)
     When:
         - Calling fetch_indicators
     Then:
@@ -1848,6 +1848,7 @@ def test_fetch_indicators_stores_pending_when_limit_hit(client, mocker):
     from Unit42Feed import fetch_indicators
 
     mock_demisto_params(mocker)
+    mocker.patch("Unit42Feed.TOTAL_INDICATOR_LIMIT", 50)
 
     mock_response = {
         "data": [{"indicator_value": f"1.2.3.{i}", "indicator_type": "ip", "verdict": "malicious"} for i in range(100)],
@@ -1857,7 +1858,7 @@ def test_fetch_indicators_stores_pending_when_limit_hit(client, mocker):
     mocker.patch("Unit42Feed.demisto.createIndicators")
     mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"last_successful_run": "2023-06-01T12:00:00Z"})
 
-    params = {"limit": "50", "feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
+    params = {"feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
 
     current_time = datetime(2023, 6, 2, 12, 0, 0)
     total_fetched, next_run = fetch_indicators(client, params, current_time)
@@ -1904,7 +1905,6 @@ def test_fetch_indicators_resumes_pending(client, mocker):
     )
 
     params = {
-        "limit": "50",
         "feed_types": ["Indicators", "Threat Objects"],
         "indicator_types": ["IP", "Domain"],
         "feedTags": [],
@@ -1957,7 +1957,7 @@ def test_fetch_indicators_pending_without_start_time(client, mocker):
 def test_fetch_indicators_stores_pending_threat_objects(client, mocker):
     """
     Given:
-        - Threat objects with more pages available than the configured limit allows
+        - Threat objects with more pages available than THREAT_OBJECTS_LIMIT (patched to 50) allows
     When:
         - Calling fetch_indicators
     Then:
@@ -1975,7 +1975,9 @@ def test_fetch_indicators_stores_pending_threat_objects(client, mocker):
     mocker.patch("Unit42Feed.demisto.createIndicators")
     mocker.patch("Unit42Feed.demisto.getLastRun", return_value={})
 
-    params = {"limit": "50", "feed_types": ["Threat Objects"], "indicator_types": [], "feedTags": [], "tlp_color": None}
+    mocker.patch("Unit42Feed.THREAT_OBJECTS_LIMIT", 50)
+
+    params = {"feed_types": ["Threat Objects"], "indicator_types": [], "feedTags": [], "tlp_color": None}
 
     current_time = datetime(2023, 6, 2, 12, 0, 0)
     _, next_run = fetch_indicators(client, params, current_time)
@@ -1986,13 +1988,13 @@ def test_fetch_indicators_stores_pending_threat_objects(client, mocker):
 def test_fetch_indicators_threat_objects_and_indicators_use_separate_budgets(client, mocker):
     """
     Given:
-        - A fresh run (threat objects due) with both feeds enabled and a limit of "20000".
+        - A fresh run (threat objects due) with both feeds enabled.
         - Threat objects still have pages remaining (pending token); indicators complete.
     When:
         - Calling fetch_indicators.
     Then:
         - Threat objects are fetched with their own THREAT_OBJECTS_LIMIT budget.
-        - Indicators are fetched with the full 20000 limit, unreduced by the threat objects count.
+        - Indicators are fetched with the full TOTAL_INDICATOR_LIMIT budget, unreduced by the threat objects count.
         - Both feeds run the same cycle; total_fetched combines both and only a pending
           "threat_objects" token remains.
     """
@@ -2006,7 +2008,6 @@ def test_fetch_indicators_threat_objects_and_indicators_use_separate_budgets(cli
     mocker.patch("Unit42Feed.demisto.getLastRun", return_value={})
 
     params = {
-        "limit": "20000",
         "feed_types": ["Threat Objects", "Indicators"],
         "indicator_types": ["IP"],
         "feedTags": [],
@@ -2019,7 +2020,7 @@ def test_fetch_indicators_threat_objects_and_indicators_use_separate_budgets(cli
     mock_fetch_threat_objects.assert_called_once()
     assert mock_fetch_threat_objects.call_args[1]["limit"] == THREAT_OBJECTS_LIMIT
     mock_fetch_indicator_type.assert_called_once()
-    assert mock_fetch_indicator_type.call_args[1]["limit"] == 20000
+    assert mock_fetch_indicator_type.call_args[1]["limit"] == TOTAL_INDICATOR_LIMIT
 
     assert total_fetched == 2501
     assert next_run["page_tokens"] == {"threat_objects": "to_page2"}
@@ -2050,7 +2051,9 @@ def test_fetch_indicators_initializes_cycle_start_time_on_first_pending_run(clie
     mocker.patch("Unit42Feed.demisto.createIndicators")
     mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"last_successful_run": "2023-06-01T12:00:00Z"})
 
-    params = {"limit": "50", "feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
+    mocker.patch("Unit42Feed.TOTAL_INDICATOR_LIMIT", 50)
+
+    params = {"feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
 
     current_time = datetime(2023, 6, 2, 12, 0, 0)
     _, next_run = fetch_indicators(client, params, current_time)
@@ -2084,7 +2087,9 @@ def test_fetch_indicators_carries_cycle_start_time_across_multiple_resumed_runs(
     mocker.patch("Unit42Feed.demisto.createIndicators")
     mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"last_successful_run": "2023-06-01T12:00:00Z"})
 
-    params = {"limit": "50", "feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
+    mocker.patch("Unit42Feed.TOTAL_INDICATOR_LIMIT", 50)
+
+    params = {"feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
 
     # The run that initiates the pending cycle
     current_time = datetime(2023, 6, 2, 12, 0, 0)
@@ -2135,7 +2140,7 @@ def test_fetch_indicators_stores_original_cycle_start_time_when_pending_exhauste
         },
     )
 
-    params = {"limit": "50", "feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
+    params = {"feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
 
     # Deliberately distinct from the cycle start time, so the two cannot be confused
     current_time = datetime(2023, 6, 3, 18, 0, 0)
@@ -2168,7 +2173,9 @@ def test_fetch_indicators_upgrade_path_last_run_without_cycle_start_time(client,
     mocker.patch("Unit42Feed.demisto.createIndicators")
     mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"last_successful_run": "2023-06-01T12:00:00Z"})
 
-    params = {"limit": "50", "feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
+    mocker.patch("Unit42Feed.TOTAL_INDICATOR_LIMIT", 50)
+
+    params = {"feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
 
     current_time = datetime(2023, 6, 2, 12, 0, 0)
     _, next_run = fetch_indicators(client, params, current_time)
@@ -2202,7 +2209,7 @@ def test_fetch_indicators_upgrade_path_no_pending_units(client, mocker):
     mocker.patch("Unit42Feed.demisto.createIndicators")
     mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"last_successful_run": "2023-06-01T12:00:00Z"})
 
-    params = {"limit": "50", "feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
+    params = {"feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
 
     current_time = datetime(2023, 6, 2, 12, 0, 0)
     _, next_run = fetch_indicators(client, params, current_time)
@@ -2235,7 +2242,6 @@ def test_fetch_indicators_normal_run_stores_current_time_as_last_successful_run(
     mocker.patch("Unit42Feed.demisto.getLastRun", return_value={})
 
     params = {
-        "limit": "50",
         "feed_types": ["Indicators"],
         "indicator_types": ["IP", "Domain"],
         "feedTags": [],
@@ -2253,7 +2259,7 @@ def test_fetch_indicators_normal_run_stores_current_time_as_last_successful_run(
 def test_fetch_indicators_resume_across_runs_skips_no_indicators(client, mocker):
     """
     Given:
-        - A single indicator type (IP) with limit=50 and a feed of three pages, each larger
+        - A single indicator type (IP) with TOTAL_INDICATOR_LIMIT patched to 50 and a feed of three pages, each larger
           than the limit: page A (100 items, next_page_token="tokenB"),
           page B (100 items, next_page_token="tokenC"), page C (40 items, next_page_token=None).
         - Every indicator across all three pages has a unique value (240 unique values total).
@@ -2272,6 +2278,7 @@ def test_fetch_indicators_resume_across_runs_skips_no_indicators(client, mocker)
     from Unit42Feed import fetch_indicators
 
     mock_demisto_params(mocker)
+    mocker.patch("Unit42Feed.TOTAL_INDICATOR_LIMIT", 50)
 
     # Build three pages of IP indicators with globally unique values.
     def make_page(start: int, count: int, next_token: str | None) -> dict:
@@ -2300,7 +2307,7 @@ def test_fetch_indicators_resume_across_runs_skips_no_indicators(client, mocker)
 
     mocker.patch("Unit42Feed.demisto.createIndicators", side_effect=capture_created)
 
-    params = {"limit": "50", "feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
+    params = {"feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
     current_time = datetime(2023, 6, 2, 12, 0, 0)
 
     # --- Run 1: fresh cycle, page A overshoots limit -> resume from "tokenB" ---
@@ -2580,8 +2587,9 @@ def test_fetch_indicators_threat_objects_incomplete_does_not_reset_window(client
     mocker.patch("Unit42Feed.demisto.createIndicators")
     mocker.patch("Unit42Feed.demisto.getLastRun", return_value={})
 
+    mocker.patch("Unit42Feed.THREAT_OBJECTS_LIMIT", 50)
+
     params = {
-        "limit": "50",
         "feed_types": [THREAT_OBJECTS_TYPE],
         "indicator_types": [],
         "feedTags": [],
