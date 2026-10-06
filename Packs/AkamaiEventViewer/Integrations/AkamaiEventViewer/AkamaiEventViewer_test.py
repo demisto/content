@@ -13,6 +13,7 @@ from AkamaiEventViewer import (
     fetch_events_command,
     format_time,
     get_events_command,
+    get_edgegrid_secrets,
     get_next_cursor,
     parse_limit,
     resolve_event_type_ids,
@@ -71,6 +72,56 @@ def test_build_client_base_url_and_account_switch_key(requests_mock):
     assert request.headers["Accept"] == "application/json"
     assert query(request)["accountSwitchKey"] == "1-ABC"
     assert query(request)["limit"] == "50"
+
+
+def test_get_edgegrid_secrets_legacy_params(mocker):
+    """
+    Given: Not running under ConnectUs.
+    When: Resolving the EdgeGrid secrets.
+    Then: They are read from the legacy type-9 params, and missing params resolve to None.
+    """
+    mocker.patch("AkamaiEventViewer.is_ucp_enabled", return_value=False)
+    assert get_edgegrid_secrets(PARAMS) == ("client-token", "access-token", "client-secret")
+    assert get_edgegrid_secrets({"clienttoken_creds": None}) == (None, None, None)
+
+
+def test_get_edgegrid_secrets_ucp_passthrough_envelope(mocker):
+    """
+    Given: Running under ConnectUs with a passthrough profile.
+    When: Resolving the EdgeGrid secrets.
+    Then: They are read from the envelope's passthrough.parameters by auth.parameter name, ignoring legacy params.
+    """
+    mocker.patch("AkamaiEventViewer.is_ucp_enabled", return_value=True)
+    mocker.patch(
+        "AkamaiEventViewer.get_ucp_credentials",
+        return_value={
+            "type": "passthrough",
+            "passthrough": {"parameters": {"client_token": "ct", "access_token": "at", "client_secret": "cs"}},
+        },
+    )
+    assert get_edgegrid_secrets({"host": HOST}) == ("ct", "at", "cs")
+
+
+def test_build_client_under_ucp_signs_requests(mocker, requests_mock):
+    """
+    Given: Running under ConnectUs, with no legacy credential params.
+    When: Building the client and calling the events endpoint.
+    Then: The request is EdgeGrid-signed using the UCP secrets.
+    """
+    mocker.patch("AkamaiEventViewer.is_ucp_enabled", return_value=True)
+    mocker.patch(
+        "AkamaiEventViewer.get_ucp_credentials",
+        return_value={
+            "type": "passthrough",
+            "passthrough": {"parameters": {"client_token": "ct", "access_token": "at", "client_secret": "cs"}},
+        },
+    )
+    requests_mock.get(EVENTS_URL, json=make_page([]))
+    build_client({"host": HOST}).get_events("2026-07-14T11:37:00", "2026-07-14T11:38:00")
+    authorization = requests_mock.last_request.headers["Authorization"]
+    assert authorization.startswith("EG1-HMAC-SHA256")
+    assert "client_token=ct" in authorization
+    assert "access_token=at" in authorization
 
 
 def test_get_next_cursor():

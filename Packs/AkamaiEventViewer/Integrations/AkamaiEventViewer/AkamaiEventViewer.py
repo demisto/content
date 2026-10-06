@@ -240,16 +240,33 @@ def parse_limit(value: Any, default: int, name: str) -> int:
 """ MAIN FUNCTION """
 
 
+def get_edgegrid_secrets(params: dict) -> tuple[str | None, str | None, str | None]:
+    """Return (client_token, access_token, client_secret).
+
+    Under ConnectUs the connection profile is `passthrough` (EdgeGrid needs three secrets at once), so the
+    BaseClient dispatcher leaves the request untouched and the integration signs it itself. The secrets arrive
+    in the UCP envelope `{"type": "passthrough", "passthrough": {"parameters": {...}}}`, keyed by the
+    profile's `auth.parameter` values. Otherwise they come from the legacy type-9 params.
+    """
+    if is_ucp_enabled():
+        creds = get_ucp_credentials() or {}
+        values = creds.get(creds.get("type") or "") or creds
+        values = values.get("parameters") or values
+        return values.get("client_token"), values.get("access_token"), values.get("client_secret")
+    return (
+        (params.get("clienttoken_creds") or {}).get("password"),
+        (params.get("accesstoken_creds") or {}).get("password"),
+        (params.get("clientsecret_creds") or {}).get("password"),
+    )
+
+
 def build_client(params: dict) -> Client:
+    client_token, access_token, client_secret = get_edgegrid_secrets(params)
     return Client(
-        base_url=urljoin(params.get("host", ""), API_BASE_PATH),
+        base_url=urljoin(params.get("host") or "", API_BASE_PATH),
         verify=not params.get("insecure", False),
         proxy=params.get("proxy", False),
-        auth=EdgeGridAuth(
-            client_token=params.get("clienttoken_creds", {}).get("password"),
-            access_token=params.get("accesstoken_creds", {}).get("password"),
-            client_secret=params.get("clientsecret_creds", {}).get("password"),
-        ),
+        auth=EdgeGridAuth(client_token=client_token, access_token=access_token, client_secret=client_secret),
         account_switch_key=params.get("account_switch_key") or None,
     )
 
