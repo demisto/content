@@ -9887,7 +9887,7 @@ Deprecated. Use the cs-query-devices-combined command instead. Search for hosts 
 ### cs-query-devices-combined
 
 ***
-Search for hosts in your environment by platform, hostname, IP, and other criteria and return full device details in a single call using the devices/combined/devices/v1 endpoint.
+Searches for hosts in your environment by platform, hostname, IP, and other criteria and returns full device details in a single call.
 
 #### Base Command
 
@@ -9897,84 +9897,84 @@ Search for hosts in your environment by platform, hostname, IP, and other criter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| offset | The offset to start retrieving records from. | Optional |
-| limit | The maximum records to return. [1-5000]. | Optional |
-| sort | The property to sort by (e.g. status.desc or hostname.asc). | Optional |
-| filter_ | The filter expression that should be used to limit the results. | Optional |
+| offset | The offset from which to start retrieving records. | Optional |
+| limit | The maximum number of records to return. You use any value between 1 and 10000. Default value is 100. | Optional |
+| sort | The property to sort by (for example, status.desc or hostname.asc). | Optional |
+| filter | The filter expression used to limit the results. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.errors.code | Number |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.errors.id | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.errors.message | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.agent_load_flags | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.agent_local_time | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.agent_version | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.bios_manufacturer | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.bios_version | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.build_number | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.cid | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.config_id_base | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.config_id_build | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.config_id_platform | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.cpu_signature | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.detection_suppression_status | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.device_id | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.email | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.external_ip | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.first_login_timestamp | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.first_seen | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.group_hash | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.host_hidden_status | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.hostname | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.instance_id | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.last_login_timestamp | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.last_seen | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.local_ip | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.mac_address | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.machine_domain | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.major_version | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.minor_version | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.modified_timestamp | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.os_version | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.platform_id | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.platform_name | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_host_ip4 | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_host_ip6 | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_hostname | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_id | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_ip4 | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_ip6 | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_name | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_namespace | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_service_account_name | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pointer_size | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.applied | Boolean |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.applied_date | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.assigned_date | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.policy_id | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.policy_type | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.rule_set_id | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.settings_hash | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.uninstall_protection | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.product_type | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.product_type_desc | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.provision_status | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.reduced_functionality_mode | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.release_group | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.serial_number | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.service_pack_major | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.service_pack_minor | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.service_provider | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.service_provider_account_id | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.site_name | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.slow_changing_modified_timestamp | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.status | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.system_manufacturer | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.system_product_name | String |  |
-| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.zone_group | String |  |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.errors.code | Number | The error code returned by the API. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.errors.id | String | The identifier of the error returned by the API. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.errors.message | String | The human-readable message describing the error. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.agent_load_flags | String | The agent load flags configured on the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.agent_local_time | String | The local date and time reported by the agent in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.agent_version | String | The version of the CrowdStrike agent installed on the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.bios_manufacturer | String | The manufacturer of the device BIOS. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.bios_version | String | The version of the device BIOS. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.build_number | String | The operating system build number of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.cid | String | The customer ID \(CID\) associated with the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.config_id_base | String | The base configuration identifier of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.config_id_build | String | The build configuration identifier of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.config_id_platform | String | The platform configuration identifier of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.cpu_signature | String | The CPU signature of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.detection_suppression_status | String | The detection suppression status of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.device_id | String | The unique identifier of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.email | String | The email address associated with the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.external_ip | String | The external IP address of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.first_login_timestamp | String | The date and time of the first login recorded on the device in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.first_seen | String | The date and time when the device was first seen in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.group_hash | String | The hash of the host groups to which the device belongs. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.host_hidden_status | String | The hidden status of the host. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.hostname | String | The hostname of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.instance_id | String | The cloud instance identifier of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.last_login_timestamp | String | The date and time of the last login recorded on the device in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.last_seen | String | The date and time when the device was last seen in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.local_ip | String | The local IP address of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.mac_address | String | The MAC address of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.machine_domain | String | The domain to which the device is joined. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.major_version | String | The major version of the device operating system. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.minor_version | String | The minor version of the device operating system. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.modified_timestamp | String | The date and time when the device record was last modified in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.os_version | String | The operating system version of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.platform_id | String | The platform identifier of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.platform_name | String | The platform name of the device \(for example, Windows, Mac, Linux\). |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_host_ip4 | String | The IPv4 address of the pod host. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_host_ip6 | String | The IPv6 address of the pod host. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_hostname | String | The hostname of the pod. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_id | String | The identifier of the pod. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_ip4 | String | The IPv4 address of the pod. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_ip6 | String | The IPv6 address of the pod. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_name | String | The name of the pod. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_namespace | String | The namespace of the pod. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_service_account_name | String | The service account name associated with the pod. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pointer_size | String | The pointer size of the device architecture. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.applied | Boolean | Whether the policy is currently applied to the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.applied_date | String | The date and time when the policy was applied to the device in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.assigned_date | String | The date and time when the policy was assigned to the device in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.policy_id | String | The identifier of the policy. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.policy_type | String | The type of the policy. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.rule_set_id | String | The identifier of the rule set associated with the policy. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.settings_hash | String | The hash of the policy settings. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.uninstall_protection | String | The uninstall protection status defined by the policy. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.product_type | String | The product type identifier of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.product_type_desc | String | The product type description of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.provision_status | String | The provisioning status of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.reduced_functionality_mode | String | The reduced functionality mode status of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.release_group | String | The release group to which the device belongs. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.serial_number | String | The serial number of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.service_pack_major | String | The major service pack version of the device operating system. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.service_pack_minor | String | The minor service pack version of the device operating system. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.service_provider | String | The service provider of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.service_provider_account_id | String | The service provider account identifier of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.site_name | String | The name of the site to which the device belongs. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.slow_changing_modified_timestamp | String | The date and time when slow-changing device attributes were last modified in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.status | String | The current status of the device. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.system_manufacturer | String | The manufacturer of the device system. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.system_product_name | String | The product name of the device system. |
+| CrowdStrike.domainDeviceDetailsResponseSwagger.resources.zone_group | String | The cloud zone group of the device. |
 
 ### cs-query-escalations-filter
 

@@ -17599,15 +17599,15 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: The offset to start retrieving records from.
+    - description: The offset from which to start retrieving records.
       name: offset
-    - description: The maximum records to return. You use any value between 1 and 10000. Default value is 100.
+    - description: The maximum number of records to return. You use any value between 1 and 10000. Default value is 100.
       name: limit
-    - description: The property to sort by (e.g. status.desc or hostname.asc).
+    - description: The property to sort by (for example, status.desc or hostname.asc).
       name: sort
-    - description: The filter expression that should be used to limit the results.
+    - description: The filter expression used to limit the results.
       name: filter
-    description: Search for hosts in your environment by platform, hostname, IP, and other criteria and return full device details in a single call.
+    description: Searches for hosts in your environment by platform, hostname, IP, and other criteria and returns full device details in a single call.
     name: cs-query-devices-combined
     outputs:
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.errors.code
@@ -17623,7 +17623,7 @@ script:
       description: The agent load flags configured on the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.agent_local_time
-      description: The local time reported by the agent in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The local date and time reported by the agent in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.agent_version
       description: The version of the CrowdStrike agent installed on the device.
@@ -17665,13 +17665,13 @@ script:
       description: The external IP address of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.first_login_timestamp
-      description: The timestamp of the first login recorded on the device in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time of the first login recorded on the device in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.first_seen
-      description: The timestamp when the device was first seen in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time when the device was first seen in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.group_hash
-      description: The hash of the host groups the device belongs to.
+      description: The hash of the host groups to which the device belongs.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.host_hidden_status
       description: The hidden status of the host.
@@ -17683,10 +17683,10 @@ script:
       description: The cloud instance identifier of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.last_login_timestamp
-      description: The timestamp of the last login recorded on the device in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time of the last login recorded on the device in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.last_seen
-      description: The timestamp when the device was last seen in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time when the device was last seen in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.local_ip
       description: The local IP address of the device.
@@ -17695,7 +17695,7 @@ script:
       description: The MAC address of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.machine_domain
-      description: The domain the device is joined to.
+      description: The domain to which the device is joined.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.major_version
       description: The major version of the device operating system.
@@ -17704,7 +17704,7 @@ script:
       description: The minor version of the device operating system.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.modified_timestamp
-      description: The timestamp when the device record was last modified in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time when the device record was last modified in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.os_version
       description: The operating system version of the device.
@@ -17713,7 +17713,7 @@ script:
       description: The platform identifier of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.platform_name
-      description: The platform name of the device (e.g., Windows, Mac, Linux).
+      description: The platform name of the device (for example, Windows, Mac, Linux).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.pod_host_ip4
       description: The IPv4 address of the pod host.
@@ -17749,10 +17749,10 @@ script:
       description: Whether the policy is currently applied to the device.
       type: Boolean
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.applied_date
-      description: The date the policy was applied to the device in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time when the policy was applied to the device in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.assigned_date
-      description: The date the policy was assigned to the device in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time when the policy was assigned to the device in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.policies.policy_id
       description: The identifier of the policy.
@@ -17782,7 +17782,7 @@ script:
       description: The reduced functionality mode status of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.release_group
-      description: The release group the device belongs to.
+      description: The release group to which the device belongs.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.serial_number
       description: The serial number of the device.
@@ -17800,10 +17800,10 @@ script:
       description: The service provider account identifier of the device.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.site_name
-      description: The name of the site the device belongs to.
+      description: The name of the site to which the device belongs.
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.slow_changing_modified_timestamp
-      description: The timestamp when slow-changing device attributes were last modified in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time when slow-changing device attributes were last modified in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
       type: String
     - contextPath: CrowdStrike.domainDeviceDetailsResponseSwagger.resources.status
       description: The current status of the device.
