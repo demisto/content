@@ -4,6 +4,8 @@ import demistomock as demisto
 import pytest
 import urllib3
 from CheckDockerImageAvailable import docker_auth, docker_min_layer, main, parse_www_auth
+from pytest_mock import MockerFixture
+from requests_mock import Mocker as RequestsMocker
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -107,7 +109,7 @@ def test_invalid_docker_image(mocker):
 OCI_MANIFEST_TYPE = "application/vnd.oci.image.manifest.v1+json"
 
 
-def test_main_oci_manifest_image_ok(mocker, requests_mock):
+def test_main_oci_manifest_image_ok(mocker: MockerFixture, requests_mock: RequestsMocker):
     """
     Given: an xsoar-registry image stored with an OCI image manifest. The registry only serves it to clients that
         accept that media type, otherwise it returns 404 MANIFEST_UNKNOWN (XSUP-76350).
