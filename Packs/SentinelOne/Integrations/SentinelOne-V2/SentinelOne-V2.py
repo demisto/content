@@ -3754,7 +3754,7 @@ def get_unified_exclusions_command(client: Client, args: dict) -> CommandResults
         include_children=include_children,
         include_parents=include_parents,
         tenant=tenant,
-        limit=limit,
+        limit=limit or 10,
         cursor=cursor,
     )
 
