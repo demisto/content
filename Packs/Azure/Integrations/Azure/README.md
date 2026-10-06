@@ -3040,6 +3040,222 @@ Sets properties for the blob service in a specific account storage. Required per
 | Azure.Storage.BlobServices.sku.name | String | The SKU name. |
 | Azure.Storage.BlobServices.sku.tier | String | The SKU tier. |
 
+### azure-vn-firewall-policy-rule-collection-groups-create
+
+***
+Create a rule collection group, holding a network rule collection with a single network rule, in a firewall policy. Required Permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write.
+
+#### Base Command
+
+`azure-vn-firewall-policy-rule-collection-groups-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the firewall policy in which to create the rule collection group. | Required |
+| collection_name | The name of the network rule collection to create. | Required |
+| collection_priority | The priority of the network rule collection. The minimum value is 100 and the maximum value is 65000. | Required |
+| action | The action type of the network rule collection. Can be Allow or Deny. Possible values are: Allow, Deny. | Required |
+| rule_name | The name of the network rule to create in the collection. | Required |
+| description | The description of the created network rule. | Optional |
+| protocols | The comma-separated list of protocols for the created network rule. Possible values are TCP, UDP, ICMP, or Any. Possible values are: TCP, UDP, ICMP, Any. | Required |
+| source_type | The source type of the created network rule. Can be ip_address or ip_group. Possible values are: ip_address, ip_group. | Required |
+| source_ips | The comma-separated list of source IP addresses for the created network rule. Must be provided when the 'source_type' argument is 'ip_address'. | Optional |
+| source_ip_group_ids | The comma-separated list of source IP group IDs for the created network rule. Must be provided when the 'source_type' argument is 'ip_group'. | Optional |
+| destination_type | The destination type of the created network rule. Possible values are ip_address, ip_group, service_tag, or fqdn. Possible values are: ip_address, ip_group, service_tag, fqdn. | Required |
+| destinations | The comma-separated list of destinations for the created network rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs, and FQDN addresses. | Required |
+| destination_ports | The comma-separated list of destination ports for the created network rule. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The timeout, in seconds, until polling ends. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
+
+### azure-vn-firewall-policy-rule-collection-groups-update
+
+***
+Update the priority or the action of a network rule collection in a firewall policy rule collection group. Required Permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write.
+
+#### Base Command
+
+`azure-vn-firewall-policy-rule-collection-groups-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the firewall policy that contains the rule collection group. | Required |
+| collection_name | The name of the network rule collection to update. | Required |
+| priority | The new priority of the network rule collection. The minimum value is 100 and the maximum value is 65000. At least one of the arguments 'priority' or 'action' must be provided. | Optional |
+| action | The new action type of the network rule collection. Can be Allow or Deny. At least one of the arguments 'priority' or 'action' must be provided. Possible values are: Allow, Deny. | Optional |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The timeout, in seconds, until polling ends. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
+
+### azure-vn-firewall-policy-rule-collection-groups-delete
+
+***
+Delete a rule collection group from a firewall policy. Required Permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete.
+
+#### Base Command
+
+`azure-vn-firewall-policy-rule-collection-groups-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the firewall policy that contains the rule collection group. | Required |
+| collection_name | The name of the rule collection group to delete. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The timeout, in seconds, until polling ends. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-firewall-network-rule-create
+
+***
+Create a network rule in an existing network rule collection of an Azure Firewall. Required Permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write.
+
+#### Base Command
+
+`azure-firewall-network-rule-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| firewall_name | The name of the Azure Firewall that contains the network rule collection. | Required |
+| collection_name | The name of the network rule collection in which to create the network rule. | Required |
+| rule_name | The name of the network rule to create. | Required |
+| description | The description of the created network rule. | Optional |
+| protocols | The comma-separated list of protocols for the created network rule. Possible values are TCP, UDP, ICMP, or Any. Possible values are: TCP, UDP, ICMP, Any. | Required |
+| source_type | The source type of the created network rule. Can be ip_address or ip_group. Possible values are: ip_address, ip_group. | Required |
+| source_ips | The comma-separated list of source IP addresses for the created network rule. Must be provided when the 'source_type' argument is 'ip_address'. | Optional |
+| source_ip_group_ids | The comma-separated list of source IP group IDs for the created network rule. Must be provided when the 'source_type' argument is 'ip_group'. | Optional |
+| destination_type | The destination type of the created network rule. Possible values are ip_address, ip_group, service_tag, or fqdn. Possible values are: ip_address, ip_group, service_tag, fqdn. | Required |
+| destinations | The comma-separated list of destinations for the created network rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs, and FQDN addresses. | Required |
+| destination_ports | The comma-separated list of destination ports for the created network rule. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The timeout, in seconds, until polling ends. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Firewall.Firewalls.name | String | The name of the Azure Firewall. |
+| Azure.Firewall.Firewalls.id | String | The ID of the Azure Firewall. |
+| Azure.Firewall.Firewalls.type | String | The type of the Azure Firewall resource. |
+| Azure.Firewall.Firewalls.location | String | The location of the Azure Firewall. |
+| Azure.Firewall.Firewalls.etag | String | The ETag of the Azure Firewall, used to prevent overwriting concurrent updates. |
+| Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the Azure Firewall. |
+| Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection. |
+
+### azure-firewall-network-rule-update
+
+***
+Update a network rule in a network rule collection of an Azure Firewall. Only the provided properties are replaced, the rest of the rule configuration is kept as is. Required Permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write.
+
+#### Base Command
+
+`azure-firewall-network-rule-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| firewall_name | The name of the Azure Firewall that contains the network rule collection. | Required |
+| collection_name | The name of the network rule collection that contains the network rule. | Required |
+| rule_name | The name of the network rule to update. | Required |
+| description | The new description of the network rule. | Optional |
+| protocols | The comma-separated list of protocols that replaces the protocols of the network rule. Possible values are TCP, UDP, ICMP, or Any. Possible values are: TCP, UDP, ICMP, Any. | Optional |
+| source_type | The new source type of the network rule. Can be ip_address or ip_group. When provided, the matching source argument must be provided as well. Possible values are: ip_address, ip_group. | Optional |
+| source_ips | The comma-separated list of source IP addresses that replaces the sources of the network rule. Must be provided when the 'source_type' argument is 'ip_address'. | Optional |
+| source_ip_group_ids | The comma-separated list of source IP group IDs that replaces the sources of the network rule. Must be provided when the 'source_type' argument is 'ip_group'. | Optional |
+| destination_type | The new destination type of the network rule. Possible values are ip_address, ip_group, service_tag, or fqdn. Must be provided when the 'destinations' argument is provided. Possible values are: ip_address, ip_group, service_tag, fqdn. | Optional |
+| destinations | The comma-separated list of destinations that replaces the destinations of the network rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs, and FQDN addresses. | Optional |
+| destination_ports | The comma-separated list of destination ports that replaces the destination ports of the network rule. | Optional |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The timeout, in seconds, until polling ends. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Firewall.Firewalls.name | String | The name of the Azure Firewall. |
+| Azure.Firewall.Firewalls.id | String | The ID of the Azure Firewall. |
+| Azure.Firewall.Firewalls.type | String | The type of the Azure Firewall resource. |
+| Azure.Firewall.Firewalls.location | String | The location of the Azure Firewall. |
+| Azure.Firewall.Firewalls.etag | String | The ETag of the Azure Firewall, used to prevent overwriting concurrent updates. |
+| Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the Azure Firewall. |
+| Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection. |
+
+### azure-firewall-network-rule-delete
+
+***
+Delete network rules from a network rule collection of an Azure Firewall. Required Permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write.
+
+#### Base Command
+
+`azure-firewall-network-rule-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| firewall_name | The name of the Azure Firewall that contains the network rule collection. | Required |
+| collection_name | The name of the network rule collection that contains the network rules. | Required |
+| rule_names | The comma-separated list of network rule names to delete from the collection. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The timeout, in seconds, until polling ends. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Firewall.Firewalls.name | String | The name of the Azure Firewall. |
+| Azure.Firewall.Firewalls.id | String | The ID of the Azure Firewall. |
+| Azure.Firewall.Firewalls.type | String | The type of the Azure Firewall resource. |
+| Azure.Firewall.Firewalls.location | String | The location of the Azure Firewall. |
+| Azure.Firewall.Firewalls.etag | String | The ETag of the Azure Firewall, used to prevent overwriting concurrent updates. |
+| Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the Azure Firewall. |
+| Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection. |
+
 ### azure-auth-test
 
 ***
@@ -3427,3 +3643,227 @@ Creates a firewall policy. This command only creates the policy resource. To att
 | Azure.VirtualNetworks.FirewallPolicies.properties.explicitProxy | Unknown | The explicit proxy settings of the firewall policy containing the enableExplicitProxy, httpPort, httpsPort, enablePacFile, pacFilePort, and pacFile fields. |
 | Azure.VirtualNetworks.FirewallPolicies.properties.intrusionDetection | Unknown | The intrusion detection settings of the firewall policy containing the mode, profile, and configuration fields. |
 | Azure.VirtualNetworks.FirewallPolicies.properties.transportSecurity | Unknown | The TLS inspection settings of the firewall policy containing the certificateAuthority field. |
+
+### azure-firewall-rule-collection-groups-create
+
+***
+Create a network rule collection, holding a single network rule, in an Azure Firewall. Required Permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write.
+
+#### Base Command
+
+`azure-firewall-rule-collection-groups-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| firewall_name | The name of the Azure Firewall in which to create the network rule collection. | Required |
+| collection_name | The name of the network rule collection to create. | Required |
+| collection_priority | The priority of the network rule collection. The minimum value is 100 and the maximum value is 65000. | Required |
+| action | The action type of the network rule collection. Can be Allow or Deny. Possible values are: Allow, Deny. | Required |
+| rule_name | The name of the network rule to create in the collection. | Required |
+| description | The description of the created network rule. | Optional |
+| protocols | The comma-separated list of protocols for the created network rule. Possible values are TCP, UDP, ICMP, or Any. Possible values are: TCP, UDP, ICMP, Any. | Required |
+| source_type | The source type of the created network rule. Can be ip_address or ip_group. Possible values are: ip_address, ip_group. | Required |
+| source_ips | The comma-separated list of source IP addresses for the created network rule. Must be provided when the 'source_type' argument is 'ip_address'. | Optional |
+| source_ip_group_ids | The comma-separated list of source IP group IDs for the created network rule. Must be provided when the 'source_type' argument is 'ip_group'. | Optional |
+| destination_type | The destination type of the created network rule. Possible values are ip_address, ip_group, service_tag, or fqdn. Possible values are: ip_address, ip_group, service_tag, fqdn. | Required |
+| destinations | The comma-separated list of destinations for the created network rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs, and FQDN addresses. | Required |
+| destination_ports | The comma-separated list of destination ports for the created network rule. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The timeout, in seconds, until polling ends. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Firewall.Firewalls.name | String | The name of the Azure Firewall. |
+| Azure.Firewall.Firewalls.id | String | The ID of the Azure Firewall. |
+| Azure.Firewall.Firewalls.type | String | The type of the Azure Firewall resource. |
+| Azure.Firewall.Firewalls.location | String | The location of the Azure Firewall. |
+| Azure.Firewall.Firewalls.etag | String | The ETag of the Azure Firewall, used to prevent overwriting concurrent updates. |
+| Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the Azure Firewall. |
+| Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection. |
+
+### azure-firewall-rule-collection-groups-update
+
+***
+Update the priority or the action of a network rule collection in an Azure Firewall. Required Permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write.
+
+#### Base Command
+
+`azure-firewall-rule-collection-groups-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| firewall_name | The name of the Azure Firewall that contains the network rule collection. | Required |
+| collection_name | The name of the network rule collection to update. | Required |
+| priority | The new priority of the network rule collection. The minimum value is 100 and the maximum value is 65000. At least one of the arguments 'priority' or 'action' must be provided. | Optional |
+| action | The new action type of the network rule collection. Can be Allow or Deny. At least one of the arguments 'priority' or 'action' must be provided. Possible values are: Allow, Deny. | Optional |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The timeout, in seconds, until polling ends. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Firewall.Firewalls.name | String | The name of the Azure Firewall. |
+| Azure.Firewall.Firewalls.id | String | The ID of the Azure Firewall. |
+| Azure.Firewall.Firewalls.type | String | The type of the Azure Firewall resource. |
+| Azure.Firewall.Firewalls.location | String | The location of the Azure Firewall. |
+| Azure.Firewall.Firewalls.etag | String | The ETag of the Azure Firewall, used to prevent overwriting concurrent updates. |
+| Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the Azure Firewall. |
+| Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection. |
+
+### azure-firewall-rule-collection-groups-delete
+
+***
+Delete a network rule collection from an Azure Firewall. Required Permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write.
+
+#### Base Command
+
+`azure-firewall-rule-collection-groups-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| firewall_name | The name of the Azure Firewall that contains the network rule collection. | Required |
+| collection_name | The name of the network rule collection to delete. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The timeout, in seconds, until polling ends. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Firewall.Firewalls.name | String | The name of the Azure Firewall. |
+| Azure.Firewall.Firewalls.id | String | The ID of the Azure Firewall. |
+| Azure.Firewall.Firewalls.type | String | The type of the Azure Firewall resource. |
+| Azure.Firewall.Firewalls.location | String | The location of the Azure Firewall. |
+| Azure.Firewall.Firewalls.etag | String | The ETag of the Azure Firewall, used to prevent overwriting concurrent updates. |
+| Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the Azure Firewall. |
+| Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection. |
+
+### azure-vn-firewall-policy-network-rule-create
+
+***
+Create a network rule in an existing network rule collection of a firewall policy rule collection group. Required Permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write.
+
+#### Base Command
+
+`azure-vn-firewall-policy-network-rule-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the firewall policy that contains the rule collection group. | Required |
+| collection_name | The name of the network rule collection in which to create the network rule. | Required |
+| rule_name | The name of the network rule to create. | Required |
+| description | The description of the created network rule. | Optional |
+| protocols | The comma-separated list of protocols for the created network rule. Possible values are TCP, UDP, ICMP, or Any. Possible values are: TCP, UDP, ICMP, Any. | Required |
+| source_type | The source type of the created network rule. Can be ip_address or ip_group. Possible values are: ip_address, ip_group. | Required |
+| source_ips | The comma-separated list of source IP addresses for the created network rule. Must be provided when the 'source_type' argument is 'ip_address'. | Optional |
+| source_ip_group_ids | The comma-separated list of source IP group IDs for the created network rule. Must be provided when the 'source_type' argument is 'ip_group'. | Optional |
+| destination_type | The destination type of the created network rule. Possible values are ip_address, ip_group, service_tag, or fqdn. Possible values are: ip_address, ip_group, service_tag, fqdn. | Required |
+| destinations | The comma-separated list of destinations for the created network rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs, and FQDN addresses. | Required |
+| destination_ports | The comma-separated list of destination ports for the created network rule. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The timeout, in seconds, until polling ends. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
+
+### azure-vn-firewall-policy-network-rule-update
+
+***
+Update a network rule in a network rule collection of a firewall policy rule collection group. Only the provided properties are replaced, the rest of the rule configuration is kept as is. Required Permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write.
+
+#### Base Command
+
+`azure-vn-firewall-policy-network-rule-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the firewall policy that contains the rule collection group. | Required |
+| collection_name | The name of the network rule collection that contains the network rule. | Required |
+| rule_name | The name of the network rule to update. | Required |
+| description | The new description of the network rule. | Optional |
+| protocols | The comma-separated list of protocols that replaces the protocols of the network rule. Possible values are TCP, UDP, ICMP, or Any. Possible values are: TCP, UDP, ICMP, Any. | Optional |
+| source_type | The new source type of the network rule. Can be ip_address or ip_group. When provided, the matching source argument must be provided as well. Possible values are: ip_address, ip_group. | Optional |
+| source_ips | The comma-separated list of source IP addresses that replaces the sources of the network rule. Must be provided when the 'source_type' argument is 'ip_address'. | Optional |
+| source_ip_group_ids | The comma-separated list of source IP group IDs that replaces the sources of the network rule. Must be provided when the 'source_type' argument is 'ip_group'. | Optional |
+| destination_type | The new destination type of the network rule. Possible values are ip_address, ip_group, service_tag, or fqdn. Must be provided when the 'destinations' argument is provided. Possible values are: ip_address, ip_group, service_tag, fqdn. | Optional |
+| destinations | The comma-separated list of destinations that replaces the destinations of the network rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs, and FQDN addresses. | Optional |
+| destination_ports | The comma-separated list of destination ports that replaces the destination ports of the network rule. | Optional |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The timeout, in seconds, until polling ends. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
+
+### azure-vn-firewall-policy-network-rule-delete
+
+***
+Delete network rules from a network rule collection of a firewall policy rule collection group. Required Permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write.
+
+#### Base Command
+
+`azure-vn-firewall-policy-network-rule-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the firewall policy that contains the rule collection group. | Required |
+| collection_name | The name of the network rule collection that contains the network rules. | Required |
+| rule_names | The comma-separated list of network rule names to delete from the collection. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The timeout, in seconds, until polling ends. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name | String | The name of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id | String | The ID of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type | String | The type of the firewall policy rule collection group resource. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag | String | The ETag of the firewall policy rule collection group, used to prevent overwriting concurrent updates. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority | Number | The priority of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState | String | The provisioning state of the firewall policy rule collection group. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection. |
