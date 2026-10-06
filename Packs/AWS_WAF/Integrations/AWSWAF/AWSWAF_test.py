@@ -1,6 +1,7 @@
 import json
 
 import pytest
+import AWSWAF
 from AWSWAF import BYTE_MATCH_STATEMENT, OPERATOR_TO_STATEMENT_OPERATOR, REGEX_MATCH_STATEMENT
 from CommonServerPython import *
 
@@ -693,7 +694,6 @@ def test_main_credentials_params_retrieval(mocker, access_key_password, secret_k
         - The access key and secret key passed to validate_params and AWSClient are the
           password strings, and never the raw credentials dict.
     """
-    import AWSWAF
 
     # Given
     params = {
