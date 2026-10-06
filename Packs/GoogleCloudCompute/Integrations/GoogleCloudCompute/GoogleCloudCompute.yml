@@ -8424,7 +8424,7 @@ script:
     - contextPath: GoogleCloudCompute.Instances.kind
       description: '] Type of the resource. Always compute#instance for instances.'
       type: string
-  dockerimage: demisto/googleapi-python3:1.0.0.4114363
+  dockerimage: demisto/googleapi-python3:1.0.0.12776751
   script: ''
   subtype: python3
   type: python
