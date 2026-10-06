@@ -491,7 +491,7 @@ def format_md_to_slack_message(message: str, message_type: str) -> tuple[list, l
         AssistantMessageType(message_type)
     except ValueError:
         error_msg = (
-            f"Invalid message_type: '{message_type}'. " f"Must be one of: {', '.join([t.value for t in AssistantMessageType])}"
+            f"Invalid message_type: '{message_type}'. Must be one of: {', '.join([t.value for t in AssistantMessageType])}"
         )
         demisto.error(error_msg)
         raise ValueError(error_msg)

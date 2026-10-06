@@ -122,7 +122,7 @@ _CODE_TO_DEBUG_MESSAGE: dict[BackendErrorCode, str] = {
 class BackendResponse:
     """
     Represents a response from a backend operation.
-    
+
     Attributes:
         success: Whether the operation succeeded
         error_type: Type of error if failed (None if successful)
@@ -289,7 +289,7 @@ class AssistantMessages:
 
     # Bot display name (used when replacing bot mentions in messages sent to backend)
     BOT_DISPLAY_NAME = "Cortex Agentic Assistant"
-    
+
     # Bot name format for agent responses (used in Slack username field)
     # {0} will be replaced with agent name (e.g., "Security Analyst")
     AGENT_BOT_NAME_FORMAT = "Cortex {0} Agent"
@@ -313,9 +313,7 @@ class AssistantMessages:
     AWAITING_AGENT_SELECTION = "Select an agent from the dropdown above."
     AWAITING_APPROVAL_RESPONSE = "Approve or reject the sensitive action above."
 
-    ONLY_LOCKED_USER_CAN_RESPOND = (
-        "This thread is currently locked to {locked_user_tag}. To chat, please start a new thread."
-    )
+    ONLY_LOCKED_USER_CAN_RESPOND = "This thread is currently locked to {locked_user_tag}. To chat, please start a new thread."
 
     # Messages for when backend is processing
     ALREADY_PROCESSING = "Still working on your previous request. Please wait."
@@ -329,8 +327,7 @@ class AssistantMessages:
 
     # Configuration errors
     LLM_NOT_ENABLED = (
-        f"❌ {BOT_DISPLAY_NAME} is not available. "
-        "The LLM feature must be enabled in your Cortex platform by your administrator."
+        f"❌ {BOT_DISPLAY_NAME} is not available. The LLM feature must be enabled in your Cortex platform by your administrator."
     )
 
     # Permission errors
@@ -713,7 +710,6 @@ class AssistantMessagingHandler:
         """
         raise NotImplementedError("Subclass must implement post_agent_response_sync()")
 
-
     def update_context(self, context_updates: dict):
         """
         Update the integration context.
@@ -747,11 +743,11 @@ class AssistantMessagingHandler:
         """
         Handles backend response and returns structured result.
         Uses error_code from backend to determine error type.
-        
+
         Args:
             response: The response from backend
             operation: The operation name (for logging)
-            
+
         Returns:
             BackendResponse with success status and error details
         """
@@ -759,7 +755,7 @@ class AssistantMessagingHandler:
             if response.get("success") or response.get("agents"):
                 demisto.debug(f"Backend {operation} succeeded")
                 return BackendResponse(success=True)
-            
+
             raw_error_code = response.get("error_code")
             error_msg = str(response.get("error", ""))
 
@@ -995,17 +991,15 @@ class AssistantMessagingHandler:
             )
         elif backend_response.error_type == BackendErrorType.CONVERSATION_NOT_FOUND:
             # Backend says no active session (conversation not found)
-            no_session_msg = AssistantMessages.RESET_SESSION_NO_ACTIVE_SESSION.format(
-                bot_tag=self.format_user_mention(bot_id)
-            )
-            await self.send_message_async(
-                channel_id, no_session_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
-            )
+            no_session_msg = AssistantMessages.RESET_SESSION_NO_ACTIVE_SESSION.format(bot_tag=self.format_user_mention(bot_id))
+            await self.send_message_async(channel_id, no_session_msg, thread_id=thread_id, ephemeral=True, user_id=user_id)
         else:
-            error_msg = backend_response.error_type.user_message if backend_response.error_type else AssistantMessages.RESET_SESSION_FAILED
-            await self.send_message_async(
-                channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
+            error_msg = (
+                backend_response.error_type.user_message
+                if backend_response.error_type
+                else AssistantMessages.RESET_SESSION_FAILED
             )
+            await self.send_message_async(channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id)
 
         return True, assistant
 
@@ -1047,11 +1041,11 @@ class AssistantMessagingHandler:
         if backend_response.success:
             feedback_msg = AssistantMessages.FEEDBACK_THANK_YOU
         else:
-            feedback_msg = backend_response.error_type.user_message if backend_response.error_type else AssistantMessages.FEEDBACK_FAILED
+            feedback_msg = (
+                backend_response.error_type.user_message if backend_response.error_type else AssistantMessages.FEEDBACK_FAILED
+            )
 
-        await self.send_message_async(
-            channel_id, feedback_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
-        )
+        await self.send_message_async(channel_id, feedback_msg, thread_id=thread_id, ephemeral=True, user_id=user_id)
 
     async def _handle_action_feedback(
         self,
@@ -1097,11 +1091,11 @@ class AssistantMessagingHandler:
             if backend_response.success:
                 feedback_msg = AssistantMessages.FEEDBACK_THANK_YOU
             else:
-                feedback_msg = backend_response.error_type.user_message if backend_response.error_type else AssistantMessages.FEEDBACK_FAILED
+                feedback_msg = (
+                    backend_response.error_type.user_message if backend_response.error_type else AssistantMessages.FEEDBACK_FAILED
+                )
 
-            await self.send_message_async(
-                channel_id, feedback_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
-            )
+            await self.send_message_async(channel_id, feedback_msg, thread_id=thread_id, ephemeral=True, user_id=user_id)
         else:
             # Negative feedback - open modal
             if trigger_id:
@@ -1260,9 +1254,7 @@ class AssistantMessagingHandler:
                     info_msg = AssistantMessages.WAITING_FOR_COMPLETION
                 else:
                     info_msg = AssistantMessages.ALREADY_PROCESSING
-                await self.send_message_async(
-                    channel_id, info_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
-                )
+                await self.send_message_async(channel_id, info_msg, thread_id=thread_id, ephemeral=True, user_id=user_id)
                 return
 
             # Correct user selected an agent
@@ -1290,9 +1282,7 @@ class AssistantMessagingHandler:
                 # Send help hint as ephemeral message to the user
                 if bot_id:
                     help_hint = AssistantMessages.HELP_HINT.format(bot_tag=self.format_user_mention(bot_id))
-                    await self.send_message_async(
-                        channel_id, help_hint, thread_id=thread_id, user_id=user_id
-                    )
+                    await self.send_message_async(channel_id, help_hint, thread_id=thread_id, user_id=user_id)
 
                 # Send thinking indicator
                 thinking_response = await self.send_message_async(
@@ -1318,10 +1308,8 @@ class AssistantMessagingHandler:
                     error_msg = AssistantMessages.AGENT_SELECTION_FAILED
                     if backend_response.error_code:
                         error_msg = f"{error_msg} (Error code: {backend_response.error_code})"
-                
-                await self.send_message_async(
-                    channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
-                )
+
+                await self.send_message_async(channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id)
                 # Keep the conversation in AWAITING_AGENT_SELECTION status so user can try again
         else:
             # Wrong user trying to select
@@ -1533,7 +1521,9 @@ class AssistantMessagingHandler:
             return assistant
 
         # Check for "!reset" command
-        is_reset, assistant = await self.handle_reset_session(text, user_id, channel_id, thread_id, assistant, assistant_id_key, bot_id, user_email)
+        is_reset, assistant = await self.handle_reset_session(
+            text, user_id, channel_id, thread_id, assistant, assistant_id_key, bot_id, user_email
+        )
         if is_reset:
             return assistant
 
@@ -1652,7 +1642,9 @@ class AssistantMessagingHandler:
 
         elif backend_response.success:
             # Send thinking indicator
-            thinking_response = await self.send_message_async(channel_id, AssistantMessages.THINKING_INDICATOR, thread_id=thread_id)
+            thinking_response = await self.send_message_async(
+                channel_id, AssistantMessages.THINKING_INDICATOR, thread_id=thread_id
+            )
             thinking_ts = thinking_response.get("ts") if thinking_response else None
 
             # Lock the conversation with initial status
@@ -1669,14 +1661,14 @@ class AssistantMessagingHandler:
             # Store thinking message ID if sent successfully
             if thinking_ts:
                 assistant[assistant_id_key][THINKING_MESSAGE_ID_KEY] = thinking_ts
-            
+
             demisto.debug(f"Locked conversation {assistant_id_key}, awaiting backend response")
 
         else:
             # Handle errors - determine message and whether it should be ephemeral
             error_msg = None
             is_ephemeral = False
-            
+
             if backend_response.error_type == BackendErrorType.USER_NOT_FOUND:
                 # Public message with user tag
                 user_mention = self.format_user_mention(user_id)
@@ -1697,11 +1689,9 @@ class AssistantMessagingHandler:
                 error_msg = AssistantMessages.SYSTEM_ERROR
                 if backend_response.error_code:
                     error_msg = f"{error_msg} (Error code: {backend_response.error_code})"
-            
+
             # Send error message
-            await self.send_message_async(
-                channel_id, error_msg, thread_id=thread_id, ephemeral=is_ephemeral, user_id=user_id
-            )
+            await self.send_message_async(channel_id, error_msg, thread_id=thread_id, ephemeral=is_ephemeral, user_id=user_id)
 
         return assistant
 
@@ -1850,9 +1840,7 @@ class AssistantMessagingHandler:
         # - the user's own message echoed back by the backend (its content is prefixed with the
         #   source-chat metadata marker we attach before sending to the backend).
         messages = [
-            msg
-            for msg in messages
-            if msg.get("message_id") not in IGNORED_MESSAGE_IDS and not self._is_echoed_user_message(msg)
+            msg for msg in messages if msg.get("message_id") not in IGNORED_MESSAGE_IDS and not self._is_echoed_user_message(msg)
         ]
 
         if not messages:
@@ -1912,9 +1900,7 @@ class AssistantMessagingHandler:
             if AssistantMessageType.is_step_type(message_type):
                 # Step-type group: merge contents using platform-specific dividers
                 step_contents = [
-                    self._unescape_content(msg.get("content", ""))
-                    for msg in group
-                    if msg.get("content", "").strip()
+                    self._unescape_content(msg.get("content", "")) for msg in group if msg.get("content", "").strip()
                 ]
                 if not step_contents:
                     demisto.debug("Skipping step group with all empty contents")
@@ -1922,7 +1908,11 @@ class AssistantMessagingHandler:
                 blocks, attachments = self.prepare_merged_step_blocks(step_contents)
 
                 self.post_agent_response(
-                    channel_id, thread_id, blocks, attachments, agent_name,
+                    channel_id,
+                    thread_id,
+                    blocks,
+                    attachments,
+                    agent_name,
                     fallback_text=" | ".join(step_contents),
                 )
                 new_status = AssistantStatus.RESPONDING_WITH_PLAN.value
@@ -2035,7 +2025,9 @@ class AssistantMessagingHandler:
             blocks.insert(0, user_mention_block)
 
         # Add script availability notice when script_data is present in metadata
-        demisto.debug(f"_send_single_response: has_metadata={bool(metadata)}, has_script_data={bool(metadata and metadata.get('script_data'))}")
+        demisto.debug(
+            f"_send_single_response: has_metadata={bool(metadata)}, has_script_data={bool(metadata and metadata.get('script_data'))}"
+        )
         if metadata and metadata.get("script_data"):
             demisto.debug("Adding script availability notice block")
             script_notice = self.create_script_notice_ui()
@@ -2051,6 +2043,4 @@ class AssistantMessagingHandler:
                 blocks.append(self.create_feedback_ui(message_id))
 
         # Send message using platform-specific method
-        self.post_agent_response(
-            channel_id, thread_id, blocks, attachments, agent_name, fallback_text=message
-        )
+        self.post_agent_response(channel_id, thread_id, blocks, attachments, agent_name, fallback_text=message)
