@@ -1898,9 +1898,7 @@ outputs:
   description: Alerts found.
   type: unknown
 tests:
-- Test Playbook - Impossible Traveler - Enrichment
-- Test Playbook - IOC Alert
-- Test Playbook - Identity Analytics - Alert Handling
+- No tests
 marketplaces:
 - marketplacev2
 - platform
