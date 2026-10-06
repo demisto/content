@@ -2835,7 +2835,8 @@ class TestEsKibanaEndpointIsolateCommand:
             },
             proxies={},
         )
-        assert result.outputs == response
+        expected_output = response["data"]
+        assert result.outputs == expected_output
         assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointIsolationAction"
         assert result.readable_output == "Isolation submitted"
         hr = markdown.call_args.args[1]
@@ -2896,7 +2897,8 @@ class TestEsKibanaEndpointUnisolateCommand:
             },
             proxies={},
         )
-        assert result.outputs == response
+        expected_output = response["data"]
+        assert result.outputs == expected_output
         assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointUnisolationAction"
         assert result.readable_output == "Unisolation submitted"
         hr = markdown.call_args.args[1]
@@ -2912,8 +2914,8 @@ class TestEsKibanaEndpointUnisolateCommand:
             Elasticsearch_v2.es_kibana_endpoint_unisolate_command({}, {})
 
 
-class TestEsKibanaEndpointGetAgentCommand:
-    """Tests for es_kibana_endpoint_get_agent_command."""
+class TestEsKibanaEndpointAgentGetCommand:
+    """Tests for es_kibana_endpoint_agent_get_command."""
 
     def test_get_agent_passes_path_id_and_metrics_param(self, mocker):
         import Elasticsearch_v2
@@ -2922,7 +2924,7 @@ class TestEsKibanaEndpointGetAgentCommand:
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
         mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Fleet agents")
 
-        result = Elasticsearch_v2.es_kibana_endpoint_get_agent_command(
+        result = Elasticsearch_v2.es_kibana_endpoint_agent_get_command(
             {
                 "space_id": "security",
                 "agent_id": "agent-1",
@@ -2939,7 +2941,7 @@ class TestEsKibanaEndpointGetAgentCommand:
             proxies={},
         )
         assert result.outputs == response
-        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointAgents"
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointAgentGet"
         assert result.readable_output == "Fleet agents"
 
     def test_get_agent_without_optional_params(self, mocker):
@@ -2949,7 +2951,7 @@ class TestEsKibanaEndpointGetAgentCommand:
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
         mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Fleet agent")
 
-        result = Elasticsearch_v2.es_kibana_endpoint_get_agent_command({"agent_id": "agent-1"}, {})
+        result = Elasticsearch_v2.es_kibana_endpoint_agent_get_command({"agent_id": "agent-1"}, {})
 
         mock_request.assert_called_once_with("GET", "/api/fleet/agents/agent-1", space_id=None, params={}, proxies={})
         assert result.outputs == response
@@ -2960,7 +2962,7 @@ class TestEsKibanaEndpointGetAgentCommand:
         from CommonServerPython import DemistoException
 
         with pytest.raises(DemistoException, match="agent_id"):
-            Elasticsearch_v2.es_kibana_endpoint_get_agent_command({}, {})
+            Elasticsearch_v2.es_kibana_endpoint_agent_get_command({}, {})
 
 
 class TestEsKibanaEndpointExecuteCommand:
@@ -3010,7 +3012,8 @@ class TestEsKibanaEndpointExecuteCommand:
             },
             proxies={},
         )
-        assert result.outputs == response
+        expected_output = response["data"]
+        assert result.outputs == expected_output
         assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointExecuteCommandAction"
         assert result.readable_output == "Command submitted"
 
@@ -3042,7 +3045,8 @@ class TestEsKibanaEndpointActionDetailsCommand:
             space_id="security",
             proxies={},
         )
-        assert result.outputs == response
+        expected_output = response["data"]
+        assert result.outputs == expected_output
         assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointGetActionDetails"
         assert result.readable_output == "Action details"
 
@@ -3054,8 +3058,8 @@ class TestEsKibanaEndpointActionDetailsCommand:
             Elasticsearch_v2.es_kibana_endpoint_action_details_command({}, {})
 
 
-class TestEsKibanaEndpointGetMetadataCommand:
-    """Tests for es_kibana_endpoint_get_metadata_command."""
+class TestEsKibanaEndpointMetadataGetCommand:
+    """Tests for es_kibana_endpoint_metadata_get_command."""
 
     def test_get_metadata_success(self, mocker):
         import Elasticsearch_v2
@@ -3068,7 +3072,7 @@ class TestEsKibanaEndpointGetMetadataCommand:
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
         mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Endpoint metadata")
 
-        result = Elasticsearch_v2.es_kibana_endpoint_get_metadata_command({"space_id": "security", "id": "agent-1"}, {})
+        result = Elasticsearch_v2.es_kibana_endpoint_metadata_get_command({"space_id": "security", "id": "agent-1"}, {})
 
         mock_request.assert_called_once_with(
             "GET",
@@ -3077,7 +3081,7 @@ class TestEsKibanaEndpointGetMetadataCommand:
             proxies={},
         )
         assert result.outputs == {**response, "agent_id": "agent-1"}
-        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointMetadata"
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointMetadataGet"
         assert result.readable_output == "Endpoint metadata"
 
     def test_get_metadata_requires_agent_id(self):
@@ -3085,7 +3089,7 @@ class TestEsKibanaEndpointGetMetadataCommand:
         from CommonServerPython import DemistoException
 
         with pytest.raises(DemistoException, match='"id"'):
-            Elasticsearch_v2.es_kibana_endpoint_get_metadata_command({}, {})
+            Elasticsearch_v2.es_kibana_endpoint_metadata_get_command({}, {})
 
 
 MOCK_EXCEPTION_ITEM = {
