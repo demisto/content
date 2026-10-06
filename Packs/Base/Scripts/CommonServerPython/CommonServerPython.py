@@ -2810,8 +2810,8 @@ def file_result_existing_file(filename, saveFilename=None):
     """
     temp = demisto.uniqueFile()
     os.rename(filename, demisto.investigation()['id'] + '_' + temp)
-    return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'],
-            'File': saveFilename if saveFilename else filename, 'FileID': temp}
+    return [{'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'],
+             'File': saveFilename if saveFilename else filename, 'FileID': temp}]
 
 
 def flattenRow(rowDict):
