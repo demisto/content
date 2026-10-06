@@ -110,6 +110,116 @@ def test_alert_search_command_with_next_token(mocker, prisma_cloud_v2_client):
     )
 
 
+def test_alert_search_request_limit_is_capped(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - A limit that is higher than the maximum the Prisma Cloud alert search API accepts
+    When:
+        - Calling alert_search_request
+    Then:
+        - The limit sent to the API is capped to ALERT_SEARCH_MAX_LIMIT, so the API does not fail with
+          400 - Bad Request [{"i18nKey":"invalid_alert_search_limit"}]
+    """
+    from PrismaCloudV2 import ALERT_SEARCH_MAX_LIMIT
+
+    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request")
+    time_range = {"type": "relative", "value": {"amount": 3, "unit": "week"}}
+    prisma_cloud_v2_client.alert_search_request(time_range=time_range, filters=[], limit=ALERT_SEARCH_MAX_LIMIT + 1)
+
+    assert http_request.call_args.kwargs["json_data"]["limit"] == ALERT_SEARCH_MAX_LIMIT
+
+
+def test_alert_search_request_limit_under_max_is_not_changed(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - A limit that is lower than the maximum the Prisma Cloud alert search API accepts
+    When:
+        - Calling alert_search_request
+    Then:
+        - The limit sent to the API is unchanged
+    """
+    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request")
+    time_range = {"type": "relative", "value": {"amount": 3, "unit": "week"}}
+    prisma_cloud_v2_client.alert_search_request(time_range=time_range, filters=[], limit=50)
+
+    assert http_request.call_args.kwargs["json_data"]["limit"] == 50
+
+
+def test_alert_search_command_paginates_above_api_max_limit(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - A "limit" argument that is higher than the maximum a single alert search API request accepts
+    When:
+        - prisma-cloud-alert-search command is executed
+    Then:
+        - The command paginates using the "nextPageToken" and returns the full amount of alerts requested,
+          while no single request exceeds ALERT_SEARCH_MAX_LIMIT
+    """
+    from PrismaCloudV2 import ALERT_SEARCH_MAX_LIMIT, alert_search_command
+
+    limit = ALERT_SEARCH_MAX_LIMIT + 500
+    first_page = {
+        "items": [{"id": f"alert-{index}"} for index in range(ALERT_SEARCH_MAX_LIMIT)],
+        "nextPageToken": "TOKEN",
+        "totalRows": limit,
+    }
+    second_page = {
+        "items": [{"id": f"alert-{ALERT_SEARCH_MAX_LIMIT + index}"} for index in range(500)],
+        "nextPageToken": "TOKEN2",
+        "totalRows": limit,
+    }
+    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request", side_effect=[first_page, second_page])
+
+    command_results = alert_search_command(prisma_cloud_v2_client, {"limit": str(limit)})
+
+    assert http_request.call_count == 2
+    assert [call.kwargs["json_data"]["limit"] for call in http_request.call_args_list] == [ALERT_SEARCH_MAX_LIMIT, 500]
+    assert http_request.call_args_list[1].kwargs["json_data"]["pageToken"] == "TOKEN"
+    assert len(command_results.raw_response) == limit
+    assert command_results.outputs["PrismaCloud.AlertPageToken(val.nextPageToken)"] == {"nextPageToken": "TOKEN2"}
+
+
+def test_alert_search_command_stops_when_no_more_results(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - A "limit" argument higher than the number of alerts that actually exist
+    When:
+        - prisma-cloud-alert-search command is executed
+    Then:
+        - The command stops paginating once a page returns no items, and returns only the existing alerts
+    """
+    from PrismaCloudV2 import ALERT_SEARCH_MAX_LIMIT, alert_search_command
+
+    first_page = {"items": [{"id": f"alert-{index}"} for index in range(ALERT_SEARCH_MAX_LIMIT)], "nextPageToken": "TOKEN"}
+    # there is a 'nextPageToken' value even if we already got all the results
+    second_page = {"items": [], "nextPageToken": "TOKEN2"}
+    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request", side_effect=[first_page, second_page])
+
+    command_results = alert_search_command(prisma_cloud_v2_client, {"limit": str(ALERT_SEARCH_MAX_LIMIT * 3)})
+
+    assert http_request.call_count == 2
+    assert len(command_results.raw_response) == ALERT_SEARCH_MAX_LIMIT
+
+
+def test_alert_search_command_does_not_paginate_under_api_max_limit(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - A "limit" argument lower than the maximum a single alert search API request accepts
+    When:
+        - prisma-cloud-alert-search command is executed
+    Then:
+        - Only a single API request is made
+    """
+    from PrismaCloudV2 import alert_search_command
+
+    response = {"items": [{"id": "alert-1"}], "nextPageToken": "TOKEN", "totalRows": 1}
+    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request", return_value=response)
+
+    alert_search_command(prisma_cloud_v2_client, {"limit": "1"})
+
+    assert http_request.call_count == 1
+
+
 def test_alert_get_details_command(mocker, prisma_cloud_v2_client):
     """
     Given:
