@@ -9439,7 +9439,7 @@ class TestSpotlightSeverityBasedFetch:
         mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
 
         # Execute - no previously completed severities
-        total_vulns, unique_aids, sealed = await fetch_spotlight_by_severity_parallel(
+        total_vulns, unique_aids = await fetch_spotlight_by_severity_parallel(
             client=mock_client,
             context_store=mock_context_store,
             spotlight_state=mock_state,
@@ -9448,7 +9448,6 @@ class TestSpotlightSeverityBasedFetch:
         )
 
         # Verify
-        assert sealed
         assert total_vulns == 50  # 10+20+15+5+0+0
         assert unique_aids == {"aid1", "aid2", "aid3", "aid4", "aid5", "aid6"}
 
@@ -9601,7 +9600,7 @@ class TestSpotlightSeverityBasedFetch:
         # Execute - should not raise exception
         # Disable stdout capture since this test intentionally triggers error logging
         with capfd.disabled():
-            total_vulns, unique_aids, sealed = await fetch_spotlight_by_severity_parallel(
+            total_vulns, unique_aids = await fetch_spotlight_by_severity_parallel(
                 client=mock_client,
                 context_store=mocker.Mock(),
                 spotlight_state=mock_state,
@@ -9610,7 +9609,6 @@ class TestSpotlightSeverityBasedFetch:
             )
 
         # Verify - only successful severities counted
-        assert not sealed
         assert total_vulns == 18  # 10+5+3 (HIGH excluded)
         assert unique_aids == {"aid1", "aid2", "aid3"}
 
@@ -12068,7 +12066,7 @@ class TestSpotlightFetchReportsHealth:
     """
 
     @staticmethod
-    def _run_fetch(mocker, parallel_side_effect=None, parallel_return=(0, set(), True)):
+    def _run_fetch(mocker, parallel_side_effect=None, parallel_return=(0, set())):
         """Run fetch_spotlight_assets with everything below the severity fan-out stubbed out.
 
         Returns the updateModuleHealth mock.
@@ -12104,7 +12102,7 @@ class TestSpotlightFetchReportsHealth:
         """The health write must be a non-error one, which is what actually clears the red status."""
         import CrowdStrikeFalcon
 
-        mock_health = self._run_fetch(mocker, parallel_return=(1234, {"aid-1", "aid-2"}, True))
+        mock_health = self._run_fetch(mocker, parallel_return=(1234, {"aid-1", "aid-2"}))
 
         await CrowdStrikeFalcon.fetch_spotlight_assets()
 
@@ -12117,7 +12115,7 @@ class TestSpotlightFetchReportsHealth:
         """Mirrors the CNAPP path's ``{"assetsPulled": n}`` so the UI shows a count, not just green."""
         import CrowdStrikeFalcon
 
-        mock_health = self._run_fetch(mocker, parallel_return=(1234, {"aid-1", "aid-2"}, True))
+        mock_health = self._run_fetch(mocker, parallel_return=(1234, {"aid-1", "aid-2"}))
 
         await CrowdStrikeFalcon.fetch_spotlight_assets()
 
@@ -12134,32 +12132,6 @@ class TestSpotlightFetchReportsHealth:
             await CrowdStrikeFalcon.fetch_spotlight_assets()
 
         assert mock_health.call_count == 0, "a failed fetch cleared the error status"
-
-    @pytest.mark.asyncio
-    async def test_unsealed_cycle_does_not_report_success(self, mocker):
-        """A cycle that fetched records but left severities outstanding produced no queryable
-        snapshot, so reporting it as healthy hides the very failure the tickets are about."""
-        import CrowdStrikeFalcon
-
-        mock_health = self._run_fetch(mocker, parallel_return=(1234, {"aid-1"}, False))
-
-        with pytest.raises(DemistoException):
-            await CrowdStrikeFalcon.fetch_spotlight_assets()
-
-        assert mock_health.call_count == 0, "an unsealed cycle was reported as a healthy fetch"
-
-    @pytest.mark.asyncio
-    async def test_unsealed_cycle_keeps_the_resume_state(self, mocker):
-        """The completed severities must survive, or the next cycle re-fetches everything."""
-        import CrowdStrikeFalcon
-
-        self._run_fetch(mocker, parallel_return=(1234, {"aid-1"}, False))
-        mock_update_state = mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
-
-        with pytest.raises(DemistoException):
-            await CrowdStrikeFalcon.fetch_spotlight_assets()
-
-        assert mock_update_state.call_count == 0, "the unsealed cycle wiped the state needed to resume"
 
 
 class TestLongRunningSpotlightExecution:
@@ -13652,7 +13624,7 @@ class TestSpotlightFetchTuning:
             side_effect=ContentClientError("severity died"),
         )
 
-        _total, _aids, sealed = await CrowdStrikeFalcon.fetch_spotlight_by_severity_parallel(
+        _total, _aids = await CrowdStrikeFalcon.fetch_spotlight_by_severity_parallel(
             client=mocker.MagicMock(),
             context_store=mocker.MagicMock(),
             spotlight_state=mocker.MagicMock(),
@@ -13660,7 +13632,6 @@ class TestSpotlightFetchTuning:
             completed_severities=[],
         )
 
-        assert sealed is False, "the snapshot should not seal with severities outstanding"
         handler.flush_remaining.assert_not_awaited()
         assert enrichment_task.done(), "an enrichment task outlived the cycle that owns it"
         assert finished, "the enrichment upload was abandoned rather than drained"

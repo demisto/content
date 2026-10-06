@@ -5373,12 +5373,11 @@ async def finalize_severity_fetch(
     snapshot_id: str,
     withheld_records: list[dict] | None = None,
     lost_records_by_severity: dict[str, int] | None = None,
-) -> bool:
+) -> None:
     """Finalize the severity fetch by waiting for background tasks and sealing snapshot if complete.
 
     Returns:
-        True when the snapshot was sealed (or was legitimately empty), False when severities are
-        still outstanding and the snapshot is therefore not queryable yet.
+        None
 
     Args:
         all_pending_tasks: Set of background tasks to wait for
@@ -5481,7 +5480,6 @@ async def finalize_severity_fetch(
 
         # State will be cleared by fetch_spotlight_assets() after this function returns
         log_falcon_assets("All severities completed successfully.", "info")
-        return True
     else:
         log_falcon_assets(
             f"Not all severities completed yet. Snapshot NOT sealed. Completed: {current_completed_severities}, "
@@ -5493,7 +5491,6 @@ async def finalize_severity_fetch(
             f"Total unique hosts: {len(all_unique_aids)}. Will retry incomplete severities in next fetch.",
             "info",
         )
-        return False
 
 
 async def fetch_spotlight_by_severity_parallel(
@@ -5503,7 +5500,7 @@ async def fetch_spotlight_by_severity_parallel(
     snapshot_id: str,
     completed_severities: list[str],
     prior_withheld_records: list[dict] | None = None,
-) -> tuple[int, set, bool]:
+) -> tuple[int, set]:
     """Orchestrate parallel vulnerability fetching across all severity levels.
 
     Runs 6 parallel queries (one per severity) to avoid cursor expiration issues.
@@ -5520,8 +5517,7 @@ async def fetch_spotlight_by_severity_parallel(
             previous cycles, carried forward so the seal includes them.
 
     Returns:
-        Tuple of (total_vulnerabilities, unique_aids, sealed). ``sealed`` is False when severities
-        are still outstanding, meaning the snapshot is not queryable yet.
+        Tuple of (total_vulnerabilities, unique_aids)
     """
     log_falcon_assets("Starting parallel vulnerability fetch by severity", "info")
     log_falcon_assets(f"All severities: {SPOTLIGHT_SEVERITIES}", "info")
@@ -5588,7 +5584,7 @@ async def fetch_spotlight_by_severity_parallel(
             prior_withheld_records=prior_withheld_records,
         )
 
-        sealed = await finalize_severity_fetch(
+        await finalize_severity_fetch(
             all_pending_tasks=all_pending_tasks,
             current_completed_severities=current_completed_severities,
             total_vulnerabilities=total_vulnerabilities,
@@ -5610,7 +5606,7 @@ async def fetch_spotlight_by_severity_parallel(
             )
             await asyncio.gather(*asset_handler.running_tasks, return_exceptions=True)
 
-    return total_vulnerabilities, all_unique_aids, sealed
+    return total_vulnerabilities, all_unique_aids
 
 
 async def fetch_spotlight_assets():
@@ -5652,7 +5648,7 @@ async def fetch_spotlight_assets():
 
     try:
         # Fetch vulnerabilities in parallel by severity
-        total_vulnerabilities, all_unique_aids, sealed = await fetch_spotlight_by_severity_parallel(
+        total_vulnerabilities, all_unique_aids = await fetch_spotlight_by_severity_parallel(
             client=client,
             context_store=context_store,
             spotlight_state=spotlight_state,
@@ -5660,14 +5656,6 @@ async def fetch_spotlight_assets():
             completed_severities=completed_severities,
             prior_withheld_records=prior_withheld_records,
         )
-
-        if not sealed:
-            # Severities are still outstanding, so the snapshot is not queryable. The state is kept
-            # as-is on purpose, so the next cycle resumes with the completed severities intact.
-            raise DemistoException(
-                f"Spotlight snapshot {snapshot_id} did not seal: not all severities completed. "
-                f"The next cycle resumes the outstanding ones. See the preceding log lines for which."
-            )
 
         # Reset state after successful fetch (completed_severities already cleared in parallel function if all done).
         # Also clear the persisted withheld_records so they do not leak into the next snapshot.
