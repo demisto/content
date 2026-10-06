@@ -1071,13 +1071,8 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
 
     cycle_start_time = last_run.get("cycle_start_time") or current_time.strftime(DATE_FORMAT)
 
-    # Parse the indicators fetch limit.
-    indicators_limit = arg_to_number(params.get("limit"))  # noqa: ucp-param-default
-    if indicators_limit is None or indicators_limit <= 0:
-        indicators_limit = TOTAL_INDICATOR_LIMIT
-
     demisto.debug(
-        f"UNIT42FEED: Starting fetch with {indicators_limit=}, threat_objects_limit={THREAT_OBJECTS_LIMIT}, {feed_types=}"
+        f"UNIT42FEED: Starting fetch with {TOTAL_INDICATOR_LIMIT=}, {THREAT_OBJECTS_LIMIT=}, {feed_types=}"
     )
     demisto.debug(f"UNIT42FEED: {indicator_types=}, {start_time=}, {cycle_in_progress=}")
 
@@ -1146,11 +1141,11 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
     # On a resumed run only if indicators still had a pending token.
     should_fetch_indicators = _should_fetch_indicators(INDICATORS_TYPE in feed_types, cycle_in_progress, indicators_token)
     if should_fetch_indicators:
-        demisto.debug(f"UNIT42FEED: Fetching indicators (limit={indicators_limit}, page_token={indicators_token})")
+        demisto.debug(f"UNIT42FEED: Fetching indicators (limit={TOTAL_INDICATOR_LIMIT}, page_token={indicators_token})")
         indicators_fetched, next_page_token = fetch_indicator_type(
             client=client,
             indicator_types=indicator_types,
-            limit=indicators_limit,
+            limit=TOTAL_INDICATOR_LIMIT,
             start_time=start_time,
             feed_tags=feed_tags,
             tlp_color=tlp_color,
@@ -1158,7 +1153,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
         )
         if next_page_token:
             page_tokens["indicators"] = next_page_token
-        demisto.debug(f"UNIT42FEED: Fetched {indicators_fetched} indicators (limit {indicators_limit}).")
+        demisto.debug(f"UNIT42FEED: Fetched {indicators_fetched} indicators (limit {TOTAL_INDICATOR_LIMIT}).")
 
     if page_tokens:
         next_run = {"start_time": start_time, "cycle_start_time": cycle_start_time, "page_tokens": page_tokens}
