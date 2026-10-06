@@ -5,7 +5,7 @@ alter
     tmp_product_version = json_extract_scalar(metadata, "$.product.version"),
     tmp_event_uid = json_extract_scalar(metadata, "$.uid"),
     tmp_device_hostname = json_extract_scalar(device, "$.hostname"),
-    tmp_device_type = json_extract_scalar(device, "$.type"),
+    tmp_device_uid = json_extract_scalar(device, "$.uid"),
     tmp_os_name = json_extract_scalar(device, "$.os.name"),
     tmp_gateway_name = json_extract_scalar(device, "$.name"),
     tmp_sandbox_id = json_extract_scalar(container, "$.uid"),
@@ -70,7 +70,8 @@ alter
     xdm.source.process.pid = to_integer(coalesce(tmp_actor_process_pid, tmp_target_process_pid)),
     xdm.source.process.command_line = coalesce(tmp_actor_process_cmd, tmp_target_process_cmd),
     xdm.network.rule = tmp_rule_name,
-    xdm.observer.unique_identifier = coalesce(tmp_gateway_name, tmp_device_type),
+    xdm.observer.name = tmp_gateway_name,
+    xdm.observer.unique_identifier = coalesce(tmp_device_uid, tmp_gateway_name),
     xdm.event.outcome = if(
         action_id = 2 or disposition_id = 2, XDM_CONST.OUTCOME_FAILED,
         action_id = 1 or disposition_id = 1, XDM_CONST.OUTCOME_SUCCESS,
