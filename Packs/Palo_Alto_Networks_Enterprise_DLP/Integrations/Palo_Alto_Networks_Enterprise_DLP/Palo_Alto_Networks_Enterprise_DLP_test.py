@@ -1315,6 +1315,101 @@ def test_fetch_notifications_stops_at_max_fetch(requests_mock, mocker):
     assert len(requests_mock.request_history) == 1
 
 
+@pytest.mark.parametrize(
+    "first_page, next_page_response, expected_error",
+    [
+        pytest.param(
+            {"query_token": "tok-1", "total_rows": 2000},
+            {"json": {"error": "internal error"}, "status_code": 500},
+            "status code 500",
+            id="next_page_fails",
+        ),
+        pytest.param(
+            {"total_rows": 2000},
+            None,
+            "No query token",
+            id="token_missing_with_rows_left",
+        ),
+        pytest.param(
+            {"query_token": "tok-1", "total_rows": 2000},
+            {"json": {"rows": [], "status": "READY"}},
+            "empty page",
+            id="empty_page_before_total_rows",
+        ),
+    ],
+)
+@freeze_time("2022-04-01 20:25:00 UTC")
+def test_fetch_notifications_raises_on_incomplete_pagination(
+    requests_mock, mocker, first_page, next_page_response, expected_error
+):
+    """
+    Given:
+        - A first page holding only already-seen incidents, and a result set that reports more rows.
+    When:
+        - Calling fetch_notifications and paging stops before every row was read.
+    Then:
+        - Ensure it raises rather than returning an empty result set, so the watermark is not
+          advanced past the rows that were never read.
+    """
+    seen_row = {**V4_ROW, "incident_id": "seen-1"}
+    requests_mock.post(V4_INCIDENTS_URL, json={"rows": [seen_row], "status": "READY", **first_page})
+    if next_page_response:
+        requests_mock.get(V4_INCIDENTS_URL, **next_page_response)
+
+    _mock_fetch_env(mocker, {START_TIMESTAMP_KEY: 1648844000, LAST_IDS_TIMESTAMPS_KEY: {"seen-1": 1648844000}})
+
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+    with pytest.raises(DemistoException, match=expected_error):
+        fetch_notifications(client, "Region in ('US')", first_fetch_timestamp=1648844000)
+
+
+@freeze_time("2022-04-01 20:25:00 UTC")
+def test_fetch_notifications_returns_collected_incidents_when_next_page_fails(requests_mock, mocker):
+    """
+    Given:
+        - A first page with a new incident, and a next page that fails.
+    When:
+        - Calling fetch_notifications.
+    Then:
+        - Ensure the collected incident is returned and the watermark moves only to its created_date,
+          so the unread rows after it are re-queried on the next fetch.
+    """
+    requests_mock.post(V4_INCIDENTS_URL, json={"rows": [V4_ROW], "status": "READY", "query_token": "tok-1", "total_rows": 2000})
+    requests_mock.get(V4_INCIDENTS_URL, json={"error": "internal error"}, status_code=500)
+
+    _mock_fetch_env(mocker, {START_TIMESTAMP_KEY: 1648844000})
+
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+    next_run, incidents = fetch_notifications(client, "Region in ('US')", first_fetch_timestamp=1648844000)
+
+    assert len(incidents) == 1
+    assert next_run[START_TIMESTAMP_KEY] == 1648844510
+
+
+@freeze_time("2022-04-01 20:25:00 UTC")
+def test_fetch_notifications_short_page_without_token_is_complete(requests_mock, mocker):
+    """
+    Given:
+        - A single short page of already-seen incidents with no query token and no total_rows.
+    When:
+        - Calling fetch_notifications.
+    Then:
+        - Ensure the result set is treated as fully read and the watermark advances to end_timestamp,
+          rather than raising on a window that has no more rows.
+    """
+    seen_row = {**V4_ROW, "incident_id": "seen-1"}
+    requests_mock.post(V4_INCIDENTS_URL, json={"rows": [seen_row], "status": "READY", "total_rows": None})
+
+    _mock_fetch_env(mocker, {START_TIMESTAMP_KEY: 1648844000, LAST_IDS_TIMESTAMPS_KEY: {"seen-1": 1648844000}})
+
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+    next_run, incidents = fetch_notifications(client, "Region in ('US')", first_fetch_timestamp=1648844000)
+
+    assert incidents == []
+    assert next_run[START_TIMESTAMP_KEY] > 1648844510
+    assert len(requests_mock.request_history) == 1
+
+
 @freeze_time("2022-04-01 20:25:00 UTC")
 def test_fetch_incidents_builds_filter_from_params(requests_mock, mocker):
     """

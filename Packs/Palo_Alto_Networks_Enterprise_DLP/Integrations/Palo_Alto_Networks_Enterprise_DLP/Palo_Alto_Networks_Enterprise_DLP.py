@@ -943,6 +943,9 @@ def fetch_notifications(
 
     query_token = resp.get("query_token") or ""
     total_rows = resp.get("total_rows") or 0
+    # Set when paging stops before the result set was fully read, so the unread part of the
+    # window is not mistaken for an empty one.
+    incomplete_reason = ""
 
     offset = 0
     while rows:
@@ -964,15 +967,37 @@ def fetch_notifications(
             new_incidents.append(create_incident(row, created_at, incident_type))
             fetched_incident_ids_committed_timestamps[incident_id] = int(created_at.timestamp())
 
-        if len(new_incidents) >= max_fetch or not query_token or (total_rows and offset >= total_rows):
+        if len(new_incidents) >= max_fetch or (total_rows and offset >= total_rows):
             break
 
-        resp, _ = client.get_incidents_next_page(query_token, offset)
+        if not query_token:
+            # Without total_rows, a full page is the only sign that more rows may follow.
+            if total_rows or len(rows) >= V4_PAGE_SIZE:
+                incomplete_reason = f"No query token was returned after reading {offset} of {total_rows or 'unknown'} rows."
+            break
+
+        resp, status_code = client.get_incidents_next_page(query_token, offset)
+        if status_code not in (200, 201, 204):
+            error_message = resp.get("error") or "Could not determine the error reason."
+            incomplete_reason = f"Failed to fetch the page at {offset=}, got status code {status_code}. {error_message}"
+            break
+
         rows = resp.get("rows") or []
         demisto.debug(f"Fetched {len(rows)} rows at {offset=}.")
+        if not rows and total_rows and offset < total_rows:
+            incomplete_reason = f"Got an empty page after reading {offset} of {total_rows} rows."
 
     demisto.debug(f"Finished fetching. Got {len(new_incidents)} new incidents.")
     demisto.debug(f"Fetched incidents: {[inc.get('name') for inc in new_incidents]}.")
+
+    # Same contract as the first-page check above: an unread window must not advance the watermark.
+    # Incidents already collected are still returned, since the next run resumes from the latest of them.
+    if incomplete_reason and not new_incidents:
+        raise DemistoException(
+            f"{incomplete_reason} The last run was left unchanged, so this time window is re-queried on the next fetch."
+        )
+    if incomplete_reason:
+        demisto.info(f"{incomplete_reason} Returning the {len(new_incidents)} incidents collected so far.")
 
     next_run = compute_next_run(
         fetched_incident_ids_committed_timestamps,
