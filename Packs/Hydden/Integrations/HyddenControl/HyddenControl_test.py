@@ -1,14 +1,3 @@
-from HyddenControl import (
-    Client,
-    DemistoException,
-    _get_account_id,
-    hydden_blast_radius_command,
-    hydden_deprovision_account_command,
-    _as_blast_radius_string,
-    _resolve_account_uuid,
-    _uuids_from_lookup,
-    test_module as run_test_module,
-)
 import sys
 from types import ModuleType
 from unittest.mock import MagicMock
@@ -62,11 +51,25 @@ def _install_cortex_test_stubs() -> None:
 
 _install_cortex_test_stubs()
 
+from HyddenControl import (  # noqa: E402
+    Client,
+    DemistoException,
+    _get_account_id,
+    hydden_blast_radius_command,
+    hydden_deprovision_account_command,
+    _as_blast_radius_string,
+    _resolve_account_uuid,
+    _uuids_from_lookup,
+    test_module as run_test_module,
+)
+
 
 ACCOUNT_ID = "00000000-0000-0000-0000-000000000000"
 OTHER_UUID = "11111111-1111-1111-1111-111111111111"
 IDENTIFIER = "jdoe@example.com"
 TOKEN = "issued-bearer-token"
+ACCEPTED_BATCH = {"batch": {"id": "batch-1", "kind": "deprovision", "status": "pending"}, "steps": []}
+ACCEPTED_OUTPUTS = {"deprovisioned": True, "deprovision_batch_id": "batch-1", "deprovision_status": "pending"}
 
 
 def _client_with_mocked_transport(return_value=None):
@@ -231,8 +234,7 @@ def test_deprovision_account_posts_account_actions_path_with_bearer_token() -> N
             "content-type": "application/json",
             "Authorization": f"Bearer {TOKEN}",
         },
-        params={"ref": ACCOUNT_ID},
-        resp_type="text",
+        json_data={"account": ACCOUNT_ID},
     )
 
 
@@ -240,14 +242,14 @@ def test_hydden_deprovision_account_command() -> None:
     client = MagicMock()
     client.get_bearer_token.return_value = TOKEN
     client.lookup_accounts.return_value = [ACCOUNT_ID]
-    client.deprovision_account.return_value = ""
+    client.deprovision_account.return_value = ACCEPTED_BATCH
 
     result = hydden_deprovision_account_command(client, {"account_id": ACCOUNT_ID})
 
     client.get_bearer_token.assert_called_once_with()
     client.lookup_accounts.assert_called_once_with(ACCOUNT_ID, TOKEN)
     client.deprovision_account.assert_called_once_with(ACCOUNT_ID, TOKEN)
-    assert result.outputs == {"deprovisioned": True}
+    assert result.outputs == ACCEPTED_OUTPUTS
 
 
 def test_get_account_id_rejects_empty_value() -> None:
@@ -356,8 +358,23 @@ def test_uuids_from_lookup_ignores_id_and_ref_fields() -> None:
     assert _uuids_from_lookup([{"id": ACCOUNT_ID, "ref": ACCOUNT_ID}]) == []
 
 
-def test_uuids_from_lookup_ignores_accounts_wrapper() -> None:
-    assert _uuids_from_lookup({"accounts": [{"uuid": ACCOUNT_ID}]}) == []
+def test_uuids_from_lookup_unwraps_the_accounts_envelope() -> None:
+    assert _uuids_from_lookup({"accounts": [{"uuid": ACCOUNT_ID}]}) == [ACCOUNT_ID]
+
+
+def test_uuids_from_lookup_reads_an_empty_envelope_as_no_matches() -> None:
+    assert _uuids_from_lookup({"accounts": []}) == []
+
+
+def test_hydden_blast_radius_command_accepts_the_live_lookup_envelope() -> None:
+    client = MagicMock()
+    client.get_bearer_token.return_value = TOKEN
+    client.lookup_accounts.return_value = {"accounts": [{"uuid": ACCOUNT_ID}]}
+    client.get_blast_radius.return_value = {**LIVE_RESPONSE, "score": 73}
+
+    hydden_blast_radius_command(client, {"account_id": IDENTIFIER})
+
+    client.get_blast_radius.assert_called_once_with(ACCOUNT_ID, TOKEN, "account")
 
 
 def test_hydden_blast_radius_command_resolves_email_to_a_unique_uuid() -> None:
@@ -385,17 +402,32 @@ def test_hydden_blast_radius_command_reports_no_matches() -> None:
     client.get_blast_radius.assert_not_called()
 
 
+def test_hydden_deprovision_account_command_reports_accepted_not_done() -> None:
+    # Control answers 202 with an async batch: the readable output must not
+    # claim the account is already deprovisioned.
+    client = MagicMock()
+    client.get_bearer_token.return_value = TOKEN
+    client.lookup_accounts.return_value = [ACCOUNT_ID]
+    client.deprovision_account.return_value = ACCEPTED_BATCH
+
+    result = hydden_deprovision_account_command(client, {"account_id": IDENTIFIER})
+
+    assert "accepted" in result.readable_output
+    assert "batch-1" in result.readable_output
+    assert "deprovisioned successfully" not in result.readable_output
+
+
 def test_hydden_deprovision_account_command_resolves_email_to_a_unique_uuid() -> None:
     client = MagicMock()
     client.get_bearer_token.return_value = TOKEN
     client.lookup_accounts.return_value = [ACCOUNT_ID]
-    client.deprovision_account.return_value = ""
+    client.deprovision_account.return_value = ACCEPTED_BATCH
 
     result = hydden_deprovision_account_command(client, {"account_id": IDENTIFIER})
 
     client.lookup_accounts.assert_called_once_with(IDENTIFIER, TOKEN)
     client.deprovision_account.assert_called_once_with(ACCOUNT_ID, TOKEN)
-    assert result.outputs == {"deprovisioned": True}
+    assert result.outputs == ACCEPTED_OUTPUTS
     assert IDENTIFIER in result.readable_output
     assert ACCOUNT_ID in result.readable_output
 

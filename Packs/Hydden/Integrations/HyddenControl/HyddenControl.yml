@@ -87,7 +87,7 @@ script:
       description: The time when the score was computed, for example 2024-01-15T12:34:56Z.
       type: Date
   - name: hydden-deprovision-account
-    description: Look up the Cortex account name or email via GET /accounts/lookup?value= (exact match). If that returns exactly one Hydden UUID, deprovision it with POST /account-actions/deprovision?ref=.
+    description: Look up the Cortex account name or email via GET /accounts/lookup?value= (exact match). If that returns exactly one Hydden UUID, deprovision it with POST /account-actions/deprovision (JSON body account=UUID). Control accepts the request asynchronously; the outputs report the accepted batch.
     execution: true
     arguments:
     - name: account_id
@@ -95,8 +95,14 @@ script:
       description: The Cortex user or account name or email to deprovision. Resolved to a Hydden UUID via GET /accounts/lookup?value= (exact match) before deprovision is called.
     outputs:
     - contextPath: Hydden.Identity.deprovisioned
-      description: The deprovisioning success status.
+      description: True when Hydden accepted the deprovision request. Deprovisioning runs asynchronously; see deprovision_status.
       type: Boolean
+    - contextPath: Hydden.Identity.deprovision_batch_id
+      description: The Hydden batch ID of the accepted deprovision request.
+      type: String
+    - contextPath: Hydden.Identity.deprovision_status
+      description: The batch status when the request was accepted.
+      type: String
   dockerimage: demisto/fastapi:0.125.0.11206988
   runonce: false
   script: '-'

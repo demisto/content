@@ -79,7 +79,7 @@ Return the subject's blast radius from Hydden Control. Calls `GET /accounts/look
 ### hydden-deprovision-account
 
 ***
-Deprovision an account across the fabric, including disabling the account and removing group and role memberships. Calls `GET /accounts/lookup?value=ACCOUNT_ID` first. Lookup is an exact username or email match, not a substring. If that returns exactly one Hydden UUID, calls `POST /account-actions/deprovision?ref=UUID`. Otherwise the command fails with no matches or more than one match. This command is potentially harmful.
+Deprovision an account across the fabric, including disabling the account and removing group and role memberships. Calls `GET /accounts/lookup?value=ACCOUNT_ID` first. Lookup is an exact username or email match, not a substring. If that returns exactly one Hydden UUID, calls `POST /account-actions/deprovision` with JSON body `{"account": "UUID"}`. Hydden accepts the request asynchronously and returns a batch. Otherwise the command fails with no matches or more than one match. This command is potentially harmful.
 
 #### Base Command
 
@@ -95,7 +95,9 @@ Deprovision an account across the fabric, including disabling the account and re
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Hydden.Identity.deprovisioned | Boolean | Whether deprovisioning succeeded. |
+| Hydden.Identity.deprovisioned | Boolean | True when Hydden accepted the deprovision request. Deprovisioning runs asynchronously. |
+| Hydden.Identity.deprovision_batch_id | String | The Hydden batch ID of the accepted request. |
+| Hydden.Identity.deprovision_status | String | The batch status when the request was accepted. |
 
 #### Command example
 
@@ -115,4 +117,4 @@ Deprovision an account across the fabric, including disabling the account and re
 
 #### Human Readable Output
 
-> Account jdoe@example.com (4f9e7d35-7a64-4e9d-9c8a-51b7d2e6f304) was deprovisioned successfully.
+> Deprovision of account jdoe@example.com (4f9e7d35-7a64-4e9d-9c8a-51b7d2e6f304) was accepted as batch 7c1e0b52-3d9a-4f6e-8a21-5b0c9d4e6f13 (status: pending).

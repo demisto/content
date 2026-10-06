@@ -127,13 +127,12 @@ class Client(ContentClient):  # noqa: F405
             params={"ref": account_id, "type": subject_type},
         )
 
-    def deprovision_account(self, account_id: str, token: str) -> str:
+    def deprovision_account(self, account_id: str, token: str) -> Any:
         return self._http_request(
             method="POST",
             url_suffix="account-actions/deprovision",
             headers=self._bearer_headers(token),
-            params={"ref": account_id},
-            resp_type="text",
+            json_data={"account": account_id},
         )
 
 
@@ -169,15 +168,15 @@ def _uuids_from_item(item: Any) -> list[str]:
 def _uuids_from_lookup(response: Any) -> list[str]:
     """Unique Hydden UUIDs from GET /accounts/lookup, in first-seen order.
 
-    Documented payload is a JSON array. Each row is a Hydden UUID string or an
-    object with a uuid field. Lookup is an exact username or email match on
+    The payload is {"accounts": [{"uuid": "..."}]}; a miss is
+    {"accounts": []}. A bare array is also accepted. Each row is a Hydden UUID
+    string or an object with a uuid field. Lookup is an exact username or email match on
     value, not a substring. That UUID is not the Cortex identifier; it is the
     ref for blast-radius and deprovision.
     """
-    if isinstance(response, list):
-        items = response
-    else:
-        items = []
+    if isinstance(response, dict):
+        response = response.get("accounts")
+    items = response if isinstance(response, list) else []
 
     seen: list[str] = []
     seen_keys: set[str] = set()
@@ -225,11 +224,19 @@ def hydden_deprovision_account_command(client: Client, args: dict[str, Any]) -> 
     token = client.get_bearer_token()
     account_id = _resolve_account_uuid(client, token, identifier)
     raw = client.deprovision_account(account_id, token)
+    # Control answers 202 with an asynchronous batch: accepted, not finished.
+    batch = raw.get("batch") if isinstance(raw, dict) else None
+    batch = batch if isinstance(batch, dict) else {}
+    batch_id = batch.get("id")
+    status = batch.get("status")
 
     return CommandResults(
-        readable_output=f"Account {identifier} ({account_id}) was deprovisioned successfully.",
+        readable_output=(
+            f"Deprovision of account {identifier} ({account_id}) was accepted "
+            f"as batch {batch_id} (status: {status})."
+        ),
         outputs_prefix="Hydden.Identity",
-        outputs={"deprovisioned": True},
+        outputs={"deprovisioned": True, "deprovision_batch_id": batch_id, "deprovision_status": status},
         raw_response=raw,
     )
 

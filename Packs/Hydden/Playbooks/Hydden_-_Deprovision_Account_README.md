@@ -9,10 +9,10 @@ Requires a **Hydden Control** integration instance.
 ## What it does
 
 1. Reads the account name or email from `${alert.username}`.
-2. Coerces that value to a single identifier with Unique and atIndex, then stages it under `Hydden.Input.AccountId`.
-3. Waits for an analyst to confirm on the *Confirm deprovision* task unless **RequireApproval** is explicitly `False`. **Yes** continues to deprovision. **No** ends at *Deprovision skipped* without calling Hydden.
+2. De-duplicates that value with Unique, then stages it under `Hydden.Input.AccountId`. An alert carrying more than one distinct name fails at step 4 rather than deprovisioning whichever came first.
+3. Waits for an analyst to confirm on the *Confirm deprovision* task (the account is in `Hydden.Input.AccountId`) unless **RequireApproval** is explicitly `False`. **Yes** continues to deprovision. **No** ends at *Deprovision skipped* without calling Hydden.
 4. Calls `hydden-deprovision-account` with the identifier as `account_id`. The command looks up a Hydden UUID via `GET /accounts/lookup?value=` (exact username or email match, not a substring). If that returns exactly one UUID, it calls `POST /account-actions/deprovision`. No matches or more than one match fails the task.
-5. Writes `Hydden.Identity.deprovisioned` (`true` on success). If Hydden returns an error, the playbook fails.
+5. Writes `Hydden.Identity.deprovisioned` (`true` when Hydden accepts the request), `Hydden.Identity.deprovision_batch_id` and `Hydden.Identity.deprovision_status`. Deprovisioning runs asynchronously. If Hydden returns an error, the playbook fails.
 
 This command is potentially harmful. Point an automation rule at this playbook only for issues you intend to deprovision. Leave **RequireApproval** at `True` unless the automation is already gated elsewhere. Empty or unexpected values still require confirmation.
 

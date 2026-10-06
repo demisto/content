@@ -76,11 +76,6 @@ tasks:
           root: inputs.AccountId
           transformers:
           - operator: uniq
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -150,7 +145,7 @@ tasks:
       id: c1111111-d222-4e33-8f44-a55555555504
       version: -1
       name: Confirm deprovision
-      description: Analyst must confirm before Hydden deprovisions the account.
+      description: Analyst must confirm before Hydden deprovisions the account. The account to be deprovisioned is in context key Hydden.Input.AccountId.
       type: condition
       iscommand: false
       brand: ""
@@ -183,7 +178,7 @@ tasks:
       id: c1111111-d222-4e33-8f44-a55555555503
       version: -1
       name: Deprovision account in Hydden
-      description: Call hydden-deprovision-account with the Cortex name or email from the alert. The command looks up a unique Hydden UUID via GET /accounts/lookup, then POST /account-actions/deprovision. Sets Hydden.Identity.deprovisioned to true on success.
+      description: Call hydden-deprovision-account with the Cortex name or email from the alert. The command looks up a unique Hydden UUID via GET /accounts/lookup, then POST /account-actions/deprovision. Sets Hydden.Identity.deprovisioned to true when Hydden accepts the request; deprovisioning then runs asynchronously.
       script: 'Hydden Control|||hydden-deprovision-account'
       type: regular
       iscommand: true
@@ -195,11 +190,6 @@ tasks:
           accessor: AccountId
           transformers:
           - operator: uniq
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
     separatecontext: false
     continueonerrortype: ""
     view: |-
