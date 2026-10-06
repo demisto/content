@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Support for McAfee/Trellix ESM versions earlier than 11.6.0 has been removed, as those versions reached Trellix end-of-life. The Version parameter now takes the version number of the ESM instance; existing instances configured with an earlier version (for example 10.2 or 11.3) fail with an explicit error until the parameter is set to 11.6.0 or later. Instances running ESM 11.6.11 or later now authenticate with AES-encrypted credentials automatically."
+}
