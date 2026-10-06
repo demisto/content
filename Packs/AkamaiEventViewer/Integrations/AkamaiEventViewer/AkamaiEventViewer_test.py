@@ -1,22 +1,23 @@
 import json
-from datetime import datetime, UTC
+from datetime import datetime, timedelta, timezone, UTC
 from urllib.parse import parse_qs, urlparse
 
 import pytest
 from CommonServerPython import DemistoException
 
-import AkamaiEventViewer
 from AkamaiEventViewer import (
     Client,
     build_client,
     collect_events,
     fetch_events,
     fetch_events_command,
+    format_time,
     get_events_command,
     get_next_cursor,
     parse_limit,
     resolve_event_type_ids,
 )
+from AkamaiEventViewer import test_module as run_test_module  # aliased so pytest does not collect it as a test
 
 HOST = "https://akaa-test.luna.akamaiapis.net"
 EVENTS_URL = f"{HOST}/event-viewer-api/v1/events"
@@ -91,7 +92,7 @@ def test_test_module_success(client, requests_mock):
     """
     requests_mock.get(EVENTS_URL, json=make_page([]))
     types_mock = requests_mock.get(EVENT_TYPES_URL, json=load_json("event_types.json"))
-    assert AkamaiEventViewer.test_module(client, ["all"], "500") == "ok"
+    assert run_test_module(client, ["all"], "500") == "ok"
     assert not types_mock.called
 
 
@@ -103,7 +104,7 @@ def test_test_module_failure(client, requests_mock):
     """
     requests_mock.get(EVENTS_URL, status_code=401, json={"title": "Unauthorized"})
     with pytest.raises(DemistoException):
-        AkamaiEventViewer.test_module(client, [], "500")
+        run_test_module(client, [], "500")
 
 
 def test_test_module_invalid_max_events(client):
@@ -113,7 +114,24 @@ def test_test_module_invalid_max_events(client):
     Then: A clear error is raised.
     """
     with pytest.raises(DemistoException, match="between 1 and 500"):
-        AkamaiEventViewer.test_module(client, [], "501")
+        run_test_module(client, [], "501")
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        (datetime(2026, 7, 14, 11, 38, 0, tzinfo=UTC), "2026-07-14T11:38:00"),
+        (datetime(2026, 7, 14, 14, 38, 0, tzinfo=timezone(timedelta(hours=3))), "2026-07-14T11:38:00"),
+        (datetime(2026, 7, 14, 11, 38, 0), "2026-07-14T11:38:00"),
+    ],
+)
+def test_format_time_converts_to_utc(value, expected):
+    """
+    Given: A UTC datetime, a +03:00 datetime, and a naive datetime.
+    When: Formatting for the API.
+    Then: Aware datetimes are converted to UTC before the timezone is dropped; naive ones are taken as UTC.
+    """
+    assert format_time(value) == expected
 
 
 @pytest.mark.parametrize("value, expected", [(None, 500), ("20", 20), ("500", 500)])
@@ -144,10 +162,11 @@ class TestResolveEventTypeIds:
         assert resolve_event_type_ids(client, [], {}) == ([], {})
         assert resolve_event_type_ids(client, ["All"], {}) == ([], {})
 
-    def test_unknown_name_raises(self, client, requests_mock):
+    def test_unknown_name_raises_and_lists_accepted_values(self, client, requests_mock):
         requests_mock.get(EVENT_TYPES_URL, json=load_json("event_types.json"))
-        with pytest.raises(DemistoException, match="Unknown event type name"):
+        with pytest.raises(DemistoException, match="Unknown event type name") as error:
             resolve_event_type_ids(client, ["Nope"], {})
+        assert "Accepted values: API Definition, All Logins." in str(error.value)
 
     def test_more_than_ten_raises(self, client):
         with pytest.raises(DemistoException, match="At most 10"):
@@ -237,6 +256,19 @@ class TestFetchEvents:
         assert window["skip_ids"] == ["dup"]
         assert window["boundary_ids"] == ["new", "dup"]
 
+    def test_events_without_event_time_are_not_boundary_events(self, client, requests_mock):
+        """
+        Given: An event with no eventTime and one inside the last second of the window.
+        When: Fetching events.
+        Then: Only the dated event is recorded as a boundary event; the undated one is still sent.
+        """
+        page = make_page(["edge"], event_time="2026-07-14T11:37:59.500Z")
+        page["events"].append({"eventId": "undated", "eventTime": None})
+        requests_mock.get(EVENTS_URL, json=page)
+        events, next_run = fetch_events(client, {}, [], 500, NOW)
+        assert [e["eventId"] for e in events] == ["edge", "undated"]
+        assert next_run["windows"]["all"]["boundary_ids"] == ["edge"]
+
     def test_resumes_unfinished_window(self, client, requests_mock):
         """
         Given: A window left open with a cursor because the budget ran out.
@@ -286,9 +318,9 @@ def test_fetch_events_command(client, requests_mock, mocker):
     """
     requests_mock.get(EVENT_TYPES_URL, json=load_json("event_types.json"))
     requests_mock.get(EVENTS_URL, json=load_json("events.json") | {"links": []})
-    mocker.patch.object(AkamaiEventViewer.demisto, "getLastRun", return_value={})
-    set_last_run = mocker.patch.object(AkamaiEventViewer.demisto, "setLastRun")
-    send = mocker.patch.object(AkamaiEventViewer, "send_events_to_xsiam")
+    mocker.patch("AkamaiEventViewer.demisto.getLastRun", return_value={})
+    set_last_run = mocker.patch("AkamaiEventViewer.demisto.setLastRun")
+    send = mocker.patch("AkamaiEventViewer.send_events_to_xsiam")
     fetch_events_command(client, ["All Logins"], 500)
     events = send.call_args[0][0]
     assert send.call_args[1] == {"vendor": "akamai", "product": "event_viewer"}
@@ -300,7 +332,7 @@ def test_fetch_events_command(client, requests_mock, mocker):
 
 def test_get_events_command_no_push(client, requests_mock, mocker):
     requests_mock.get(EVENTS_URL, json=load_json("events.json") | {"links": []})
-    send = mocker.patch.object(AkamaiEventViewer, "send_events_to_xsiam")
+    send = mocker.patch("AkamaiEventViewer.send_events_to_xsiam")
     result = get_events_command(
         client, {"limit": "10", "start_time": "2026-07-14T10:00:00Z", "end_time": "2026-07-14T11:00:00Z"}, []
     )
@@ -313,7 +345,32 @@ def test_get_events_command_no_push(client, requests_mock, mocker):
 
 def test_get_events_command_with_push(client, requests_mock, mocker):
     requests_mock.get(EVENTS_URL, json=load_json("events.json") | {"links": []})
-    send = mocker.patch.object(AkamaiEventViewer, "send_events_to_xsiam")
+    send = mocker.patch("AkamaiEventViewer.send_events_to_xsiam")
     get_events_command(client, {"should_push_events": "true"}, [])
     assert send.call_args[1] == {"vendor": "akamai", "product": "event_viewer"}
     assert all("_time" in event for event in send.call_args[0][0])
+
+
+def test_get_events_command_event_type_argument_overrides_param(client, requests_mock):
+    """
+    Given: The instance is configured for all event types, and the command passes event_type="All Logins".
+    When: Running akamai-event-viewer-get-events.
+    Then: The argument wins, and the request is filtered to eventTypeId 16.
+    """
+    requests_mock.get(EVENT_TYPES_URL, json=load_json("event_types.json"))
+    requests_mock.get(EVENTS_URL, json=make_page(["a"]))
+    get_events_command(client, {"event_type": "All Logins"}, ["all"])
+    assert query(requests_mock.last_request)["eventTypeId"] == "16"
+
+
+def test_get_events_command_converts_start_time_to_utc(client, requests_mock):
+    """
+    Given: A start_time with a +03:00 offset.
+    When: Running akamai-event-viewer-get-events.
+    Then: The API receives the equivalent UTC time.
+    """
+    requests_mock.get(EVENTS_URL, json=make_page([]))
+    get_events_command(client, {"start_time": "2026-07-14T13:00:00+03:00", "end_time": "2026-07-14T14:00:00+03:00"}, [])
+    request = query(requests_mock.last_request)
+    assert request["start"] == "2026-07-14T10:00:00"
+    assert request["end"] == "2026-07-14T11:00:00"

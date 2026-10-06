@@ -4,7 +4,7 @@
       "eventId": "b5ac4d16-8223-4cbd-86f3-f42f52a8f6ff",
       "eventTime": "2017-07-27T12:13:37.15Z",
       "impersonator": true,
-      "username": "jperez",
+      "username": "user1",
       "eventData": [],
       "eventType": {
         "eventTypeId": "16",
@@ -20,7 +20,7 @@
       "eventId": "5409ed6f-d532-4832-b2be-961a21380416",
       "eventTime": "2017-07-27T12:13:10.426Z",
       "impersonator": false,
-      "username": "szhang",
+      "username": "user2",
       "eventType": {
         "eventTypeId": "50",
         "eventTypeName": "Alert Activity",
@@ -33,7 +33,7 @@
       "eventData": [
         {
           "key": "Email To",
-          "value": "aaa@akamai.com"
+          "value": "user@example.com"
         },
         {
           "key": "Start Time",

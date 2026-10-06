@@ -20,6 +20,7 @@ MAX_EVENTS_PER_FETCH = PAGE_SIZE * MAX_CALLS_PER_FETCH
 DEFAULT_GET_EVENTS_LIMIT = 50
 FIRST_FETCH_LOOKBACK = timedelta(minutes=1)
 ALL_EVENT_TYPES = "all"
+LOG_PREFIX = "[AkamaiEventViewer]"
 
 """ CLIENT CLASS """
 
@@ -46,6 +47,9 @@ class Client(BaseClient):
 
 
 def format_time(value: datetime) -> str:
+    """Format as the API's timezone-less UTC string. Aware datetimes are converted to UTC; naive ones are assumed UTC."""
+    if value.tzinfo is not None:
+        value = value.astimezone(UTC)
     return value.strftime(API_DATE_FORMAT)
 
 
@@ -78,10 +82,12 @@ def resolve_event_type_ids(client: Client, names: list[str], cache: dict[str, st
     if all(name in cache for name in lowered):
         return [cache[name] for name in lowered], {name: cache[name] for name in lowered}
 
-    available = {str(item.get("eventTypeName", "")).lower(): str(item.get("eventTypeId")) for item in client.get_event_types()}
+    event_types = client.get_event_types()
+    available = {str(item.get("eventTypeName", "")).lower(): str(item.get("eventTypeId")) for item in event_types}
     unknown = [name for name in lowered if name not in available]
     if unknown:
-        raise DemistoException(f"Unknown event type name(s): {', '.join(unknown)}.")
+        accepted = ", ".join(sorted(str(item.get("eventTypeName")) for item in event_types))
+        raise DemistoException(f"Unknown event type name(s): {', '.join(unknown)}. Accepted values: {accepted}.")
     new_cache = {name: available[name] for name in lowered}
     return list(new_cache.values()), new_cache
 
@@ -137,7 +143,9 @@ def fetch_event_type(
         client, event_type_id, window["window_start"], window["window_end"], limit, max_calls, window["before_event_id"]
     )
     threshold = boundary_start(window["window_end"])
-    new_boundary_ids = [event.get("eventId") for event in raw_events if str(event.get("eventTime", ""))[:19] >= threshold]
+    new_boundary_ids = [
+        event.get("eventId") for event in raw_events if event.get("eventTime") and event["eventTime"][:19] >= threshold
+    ]
     skip_ids = set(window["skip_ids"])
     events = [event for event in raw_events if event.get("eventId") not in skip_ids]
     return events, window | {"before_event_id": cursor, "boundary_ids": window["boundary_ids"] + new_boundary_ids}
@@ -167,27 +175,32 @@ def fetch_events(
     for key in keys:
         event_type_id = None if key == ALL_EVENT_TYPES else key
         type_events, windows[key] = fetch_event_type(client, event_type_id, previous_windows.get(key, {}), now, limit, max_calls)
-        demisto.debug(f"Event type {key}: fetched {len(type_events)} events, window state {windows[key]}")
+        demisto.debug(f"{LOG_PREFIX} Event type {key}: fetched {len(type_events)} events, window state {windows[key]}")
         events.extend(type_events)
     return events, last_run | {"windows": windows}
 
 
 def fetch_events_command(client: Client, event_type_names: list[str], max_events: int) -> None:
     last_run: dict = demisto.getLastRun() or {}
+    demisto.debug(f"{LOG_PREFIX} Starting fetch-events with last run: {last_run}")
     cached_ids: dict[str, str] = last_run.get("event_type_ids") or {}
     event_type_ids, cache = resolve_event_type_ids(client, event_type_names, cached_ids)
     events, next_run = fetch_events(client, last_run, event_type_ids, max_events, datetime.now(UTC))
     add_time_to_events(events)
+    demisto.debug(f"{LOG_PREFIX} Sending {len(events)} events to XSIAM.")
     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-    demisto.setLastRun(next_run | {"event_type_ids": cache})
+    next_run |= {"event_type_ids": cache}
+    demisto.setLastRun(next_run)
+    demisto.debug(f"{LOG_PREFIX} Finished fetch-events. Next run: {next_run}")
 
 
 def get_events_command(client: Client, args: dict, event_type_names: list[str]) -> CommandResults:
+    """The event_type argument overrides the Event Type Names instance parameter."""
     limit = parse_limit(args.get("limit"), DEFAULT_GET_EVENTS_LIMIT, "limit")
     now = datetime.now(UTC)
     start = arg_to_datetime(args.get("start_time")) or now - FIRST_FETCH_LOOKBACK
     end = arg_to_datetime(args.get("end_time")) or now
-    event_type_ids, _ = resolve_event_type_ids(client, event_type_names, {})
+    event_type_ids, _ = resolve_event_type_ids(client, argToList(args.get("event_type")) or event_type_names, {})
     keys: list[str | None] = list(event_type_ids) or [None]
     per_type_limit = max(1, limit // len(keys))
     events: list[dict] = []
@@ -244,7 +257,7 @@ def build_client(params: dict) -> Client:
 def main() -> None:  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
-    demisto.debug(f"Command being called is {command}")
+    demisto.debug(f"{LOG_PREFIX} Command being called is {command}")
     try:
         client = build_client(params)
         event_type_names = argToList(params.get("event_type_names"))
@@ -258,7 +271,7 @@ def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{e}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e}", error=e)
 
 
 """ ENTRY POINT """
