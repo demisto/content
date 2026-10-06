@@ -181,7 +181,7 @@ def test_get_user_by_name_command(mocker, client):
 )
 def test_set_user_state_commands(mocker, client, command, expected_state):
     mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
-    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(status_code=200, json_data={"Contents": {"success": True}}))
+    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(status_code=200, json_data={"success": True}))
 
     result = command(client, {"user_id": "u-1"})
 
@@ -207,7 +207,7 @@ def test_force_logout_command(mocker, client):
 
 def test_remove_role_command_csv(mocker, client):
     mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
-    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(json_data={"Contents": {"success": True}}))
+    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(json_data={"success": True}))
 
     result = remove_role_command(client, {"role_id": "r-1", "user_ids": "u-1,u-2"})
 
@@ -229,7 +229,7 @@ def test_401_clears_token_and_retries_once(mocker, client):
     http = mocker.patch.object(
         client,
         "_http_request",
-        side_effect=[DemistoException("Error 401 Unauthorized"), _Resp(status_code=200, json_data={"Contents": {"success": True}})],
+        side_effect=[DemistoException("Error 401 Unauthorized"), _Resp(status_code=200, json_data={"success": True})],
     )
 
     result = lock_user_command(client, {"user_id": "u-1"})
@@ -281,7 +281,7 @@ def test_409_conflict_is_idempotent_success(mocker, client):
 
 def test_expire_password_command(mocker, client):
     mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
-    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(json_data={"Contents": {"success": True}}))
+    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(json_data={"success": True}))
 
     result = expire_password_command(client, {"username": "jdoe"})
 

@@ -93,7 +93,7 @@ def _extract_user_id(response: dict[str, Any]) -> str:
 def _identity_success(response: dict[str, Any]) -> bool:
     """Read the ``success`` flag from an Idira Identity response.
 
-    Identity endpoints wrap the payload as ``{"Contents": {"success": bool}, ...}``.
+    Identity endpoints return the flag at the top level as ``{"success": bool, ...}``.
     A 409 (idempotent conflict) is surfaced as ``{"status_code": 409}`` by the
     request layer and is treated as success (target already in requested state).
     """
@@ -101,7 +101,7 @@ def _identity_success(response: dict[str, Any]) -> bool:
         return False
     if response.get("status_code") == 409:
         return True
-    return bool((response.get("Contents") or {}).get("success"))
+    return bool(response.get("success"))
 
 # endregion
 
