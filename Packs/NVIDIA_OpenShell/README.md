@@ -93,8 +93,7 @@ This pack ships **no correlation rules**, by design.
 OpenShell's default policy denies all egress, including routine destinations
 such as `api.github.com`, so any detection keyed on denial volume fires
 continuously until a real policy is applied. Useful thresholds need a baseline
-from your own environment. Two draft rules, and the reasoning for holding them
-back, are in `future/CorrelationRules/`.
+from your own environment.
 
 Hunt with the normalized fields in the meantime:
 
