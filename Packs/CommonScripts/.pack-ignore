@@ -279,3 +279,6 @@ ignore=GR103
 
 [file:1_19_78.md]
 ignore=RN114
+
+[file:SendNotification.yml]
+ignore=GR109
