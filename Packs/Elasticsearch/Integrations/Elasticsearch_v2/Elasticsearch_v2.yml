@@ -1437,11 +1437,12 @@ script:
       type: Number
   - name: es-kibana-endpoint-execute-command
     description: Run a shell command on an endpoint.
+    execution: true
     arguments:
     - name: space_id
-      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+      description: The space ID. Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
     - name: endpoint_ids
-      description: List of endpoint IDs (cannot contain empty strings). Max of 250.
+      description: A comma-separated list of endpoint IDs (cannot contain empty strings). Max of 250.
       required: true
       isArray: true
     - name: agent_type
@@ -1454,13 +1455,13 @@ script:
       - crowdstrike
       - microsoft_defender_endpoint
     - name: alert_ids
-      description: Alert IDs associated with the action. A maximum of 50 IDs can be specified.
+      description: A comma-separated list of alert IDs associated with the action. A maximum of 50 IDs can be specified.
       isArray: true
     - name: case_ids
-      description: Case IDs in which to log the action. A maximum of 50 IDs can be specified.
+      description: A comma-separated list of case IDs in which to log the action. A maximum of 50 IDs can be specified.
       isArray: true
     - name: comment
-      description: An optional comment for the isolation action. Maximum length is 30,000 characters.
+      description: The optional comment for the isolation action. Maximum length is 30,000 characters.
     - name: command
       description: The shell command to run on the endpoint.
       required: true
@@ -1480,7 +1481,7 @@ script:
       description: The response action command.
       type: String
     - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.completedAt
-      description: The response action completion time.
+      description: The response action completion time (e.g., "2023-07-28T18:43:27.362Z").
       type: String
     - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.createdBy
       description: The user who created the response action.
@@ -1504,8 +1505,8 @@ script:
       description: The response action parameters for each agent ID.
       type: Unknown
     - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.startedAt
-      description: The response action start time.
-      type: Date
+      description: The response action start time (e.g., "2023-07-28T18:43:27.362Z").
+      type: String
     - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.status
       description: The response action status.
       type: String
@@ -1519,7 +1520,7 @@ script:
     description: Get the details of a response action using the action ID.
     arguments:
     - name: space_id
-      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+      description: The space ID. Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
     - name: action_id
       description: The ID of the response action to retrieve.
       required: true
@@ -1537,7 +1538,7 @@ script:
       description: The response action command.
       type: String
     - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.completedAt
-      description: The response action completion time.
+      description: The response action completion time (e.g., "2023-07-28T18:43:27.362Z").
       type: String
     - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.createdBy
       description: The user who created the response action.
@@ -1561,8 +1562,8 @@ script:
       description: The response action parameters for each agent ID.
       type: Unknown
     - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.startedAt
-      description: The response action start time.
-      type: Date
+      description: The response action start time (e.g., "2023-07-28T18:43:27.362Z").
+      type: String
     - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.status
       description: The response action status.
       type: String
@@ -1574,11 +1575,12 @@ script:
       type: Boolean
   - name: es-kibana-endpoint-isolate
     description: Isolate an endpoint from the network. The endpoint remains isolated until it's released.
+    execution: true
     arguments:
     - name: space_id
-      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+      description: The space ID. Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
     - name: endpoint_ids
-      description: Endpoint IDs to isolate. A maximum of 250 IDs can be specified.
+      description: A comma-separated list of endpoint IDs to isolate. A maximum of 250 IDs can be specified.
       required: true
       isArray: true
     - name: agent_type
@@ -1591,13 +1593,13 @@ script:
       - crowdstrike
       - microsoft_defender_endpoint
     - name: alert_ids
-      description: Alert IDs associated with the action. A maximum of 50 IDs can be specified.
+      description: A comma-separated list of alert IDs associated with the action. A maximum of 50 IDs can be specified.
       isArray: true
     - name: case_ids
-      description: Case IDs in which to log the action. A maximum of 50 IDs can be specified.
+      description: A comma-separated list of case IDs in which to log the action. A maximum of 50 IDs can be specified.
       isArray: true
     - name: comment
-      description: An optional comment for the isolation action. Maximum length is 30,000 characters.
+      description: The optional comment for the isolation action. Maximum length is 30,000 characters.
     outputs:
     - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.action
       description: The response action ID.
@@ -1613,6 +1615,9 @@ script:
       type: String
     - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.command
       description: The response action command.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.completedAt
+      description: The response action completion time (e.g., "2023-07-28T18:43:27.362Z").
       type: String
     - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.createdBy
       description: The user who created the response action.
@@ -1630,8 +1635,8 @@ script:
       description: The response action outputs for each agent ID.
       type: Unknown
     - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.startedAt
-      description: The response action start time.
-      type: Date
+      description: The response action start time (e.g., "2023-07-28T18:43:27.362Z").
+      type: String
     - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.status
       description: The response action status.
       type: String
@@ -1643,11 +1648,12 @@ script:
       type: Boolean
   - name: es-kibana-endpoint-unisolate
     description: Release an isolated endpoint, allowing it to rejoin a network.
+    execution: true
     arguments:
     - name: space_id
-      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+      description: The space ID. Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
     - name: endpoint_ids
-      description: EList of endpoint IDs (cannot contain empty strings). Max of 250.
+      description: A comma-separated list of endpoint IDs (cannot contain empty strings). Max of 250.
       required: true
       isArray: true
     - name: agent_type
@@ -1660,13 +1666,13 @@ script:
       - crowdstrike
       - microsoft_defender_endpoint
     - name: alert_ids
-      description: Alert IDs associated with the action. A maximum of 50 IDs can be specified.
+      description: A comma-separated list of alert IDs associated with the action. A maximum of 50 IDs can be specified.
       isArray: true
     - name: case_ids
-      description: Case IDs in which to log the action. A maximum of 50 IDs can be specified.
+      description: A comma-separated list of case IDs in which to log the action. A maximum of 50 IDs can be specified.
       isArray: true
     - name: comment
-      description: An optional comment for the isolation action. Maximum length is 30,000 characters.
+      description: The optional comment for the isolation action. Maximum length is 30,000 characters.
     outputs:
     - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.action
       description: The response action ID.
@@ -1682,6 +1688,9 @@ script:
       type: String
     - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.command
       description: The response action command.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.completedAt
+      description: The response action completion time (e.g., "2023-07-28T18:43:27.362Z").
       type: String
     - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.createdBy
       description: The user who created the response action.
@@ -1699,8 +1708,8 @@ script:
       description: The response action outputs for each agent ID.
       type: Unknown
     - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.startedAt
-      description: The response action start time.
-      type: Date
+      description: The response action start time (e.g., "2023-07-28T18:43:27.362Z").
+      type: String
     - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.status
       description: The response action status.
       type: String
@@ -1710,29 +1719,29 @@ script:
     - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.wasSuccessful
       description: Whether the response action was successful.
       type: Boolean
-  - name: es-kibana-endpoint-get-metadata
+  - name: es-kibana-endpoint-metadata-get
     description: Get host metadata for a specific endpoint.
     arguments:
     - name: space_id
-      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+      description: The space ID. Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
     - name: id
       description: The agent ID of the endpoint. Maximum length is 256.
       required: true
     outputs:
-    - contextPath: Elasticsearch.Kibana.EndpointGetMetadata.data.host_status
+    - contextPath: Elasticsearch.Kibana.EndpointMetadataGet.host_status
       description: The host status of the endpoint.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointGetMetadata.data.last_checkin
-      description: The last check-in time of the endpoint.
+    - contextPath: Elasticsearch.Kibana.EndpointMetadataGet.last_checkin
+      description: The last check-in time of the endpoint (e.g., "2023-07-28T18:43:27.362Z").
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointGetMetadata.data.metadata
+    - contextPath: Elasticsearch.Kibana.EndpointMetadataGet.metadata
       description: The metadata of the endpoint.
       type: Unknown
-  - name: es-kibana-endpoint-get-agent
+  - name: es-kibana-endpoint-agent-get
     description: Retrieves an Elastic Fleet agent by ID. Requires the fleet-agents-read privilege.
     arguments:
     - name: space_id
-      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+      description: The space ID. Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
     - name: agent_id
       description: The ID of the agent to retrieve.
       required: true
@@ -1743,10 +1752,9 @@ script:
       - 'true'
       - 'false'
     outputs:
-    - contextPath: Elasticsearch.Kibana.EndpointAgent.item
+    - contextPath: Elasticsearch.Kibana.EndpointAgentGet.item
       description: The agent returned by the request.
       type: Unknown
-      type: Number
   - name: es-kibana-endpoint-exception-list-item-create
     description: Create an Elastic Endpoint exception list item, and associate it with the Elastic Endpoint exception list.
     arguments:

@@ -2918,13 +2918,11 @@ class TestEsKibanaEndpointGetAgentCommand:
     def test_get_agent_passes_path_id_and_metrics_param(self, mocker):
         import Elasticsearch_v2
 
-        response = {
-            "item": {"id": "agent-1", "status": "online", "local_metadata": {"host": {"hostname": "host-1"}}}
-        }
+        response = {"item": {"id": "agent-1", "status": "online", "local_metadata": {"host": {"hostname": "host-1"}}}}
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
         mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Fleet agents")
 
-        result = Elasticsearch_v2.es_kibana_endpoint_get_agents_command(
+        result = Elasticsearch_v2.es_kibana_endpoint_get_agent_command(
             {
                 "space_id": "security",
                 "agent_id": "agent-1",
@@ -2951,11 +2949,9 @@ class TestEsKibanaEndpointGetAgentCommand:
         mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
         mocker.patch("Elasticsearch_v2.tableToMarkdown", return_value="Fleet agent")
 
-        result = Elasticsearch_v2.es_kibana_endpoint_get_agents_command({"agent_id": "agent-1"}, {})
+        result = Elasticsearch_v2.es_kibana_endpoint_get_agent_command({"agent_id": "agent-1"}, {})
 
-        mock_request.assert_called_once_with(
-            "GET", "/api/fleet/agents/agent-1", space_id=None, params={}, proxies={}
-        )
+        mock_request.assert_called_once_with("GET", "/api/fleet/agents/agent-1", space_id=None, params={}, proxies={})
         assert result.outputs == response
         assert result.readable_output == "Fleet agent"
 
@@ -2964,7 +2960,7 @@ class TestEsKibanaEndpointGetAgentCommand:
         from CommonServerPython import DemistoException
 
         with pytest.raises(DemistoException, match="agent_id"):
-            Elasticsearch_v2.es_kibana_endpoint_get_agents_command({}, {})
+            Elasticsearch_v2.es_kibana_endpoint_get_agent_command({}, {})
 
 
 class TestEsKibanaEndpointExecuteCommand:
@@ -3080,7 +3076,7 @@ class TestEsKibanaEndpointGetMetadataCommand:
             space_id="security",
             proxies={},
         )
-        assert result.outputs == response
+        assert result.outputs == {**response, "agent_id": "agent-1"}
         assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointMetadata"
         assert result.readable_output == "Endpoint metadata"
 
