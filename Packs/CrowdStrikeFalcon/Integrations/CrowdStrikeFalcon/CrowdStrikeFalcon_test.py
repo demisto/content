@@ -13624,7 +13624,7 @@ class TestSpotlightFetchTuning:
             side_effect=ContentClientError("severity died"),
         )
 
-        _total, _aids = await CrowdStrikeFalcon.fetch_spotlight_by_severity_parallel(
+        await CrowdStrikeFalcon.fetch_spotlight_by_severity_parallel(
             client=mocker.MagicMock(),
             context_store=mocker.MagicMock(),
             spotlight_state=mocker.MagicMock(),
