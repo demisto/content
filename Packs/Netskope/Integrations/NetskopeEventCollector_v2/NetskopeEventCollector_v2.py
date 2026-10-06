@@ -687,7 +687,13 @@ async def handle_fetch_and_send_all_events(
         # meaning, all the tasks was failed
         demisto.error(f"[Fetch][{coord_id}] All event-type tasks failed, raising the first exception")
         raise DemistoException(failures_tasks[0])
-    new_last_run: dict = {}
+    # Start every configured type from its previous state, so a type whose task raised keeps its cursor and
+    # retries from the same point next cycle, instead of falling back to the last 24 hours (re-ingesting it).
+    new_last_run: dict = {
+        event_type: {**last_run.get(event_type, {}), "failures": []} for event_type in client.event_types_to_fetch
+    }
+    for failed_task in failures_tasks:
+        demisto.debug(f"[Fetch][{coord_id}] A type task failed, keeping its previous cursor: {failed_task}")
     for task_result in success_tasks:
         # Type check for mypy
         if isinstance(task_result, tuple):
@@ -699,8 +705,6 @@ async def handle_fetch_and_send_all_events(
             existing_failures = demisto.get(new_last_run, f"{event_type}.failures", defaultParam=[])
             existing_failures.extend(event_type_res.pop("failures", []))
 
-            # in the init, set to the old last_run data
-            new_last_run.setdefault(event_type, last_run.get(event_type, {}))
             if event_type_res:
                 # in case of new data - override the old data
                 new_last_run[event_type] = event_type_res

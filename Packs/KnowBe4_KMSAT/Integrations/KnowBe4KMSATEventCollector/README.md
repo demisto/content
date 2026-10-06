@@ -1,6 +1,6 @@
-Allows you to push and pull your external data to and from the KnowBe4 console.
+Allows you to push and pull your external data to and from the KnowBe4 KSAT (Security Awareness Training) console. For subscription levels and pricing, see the [KnowBe4 Security Awareness Training pricing page](https://www.knowbe4.com/products/security-awareness-training/pricing).
 
-## Configure KnowBe4 KMSAT Event Collector in Cortex
+## Configure KnowBe4 KSAT Event Collector in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -99,7 +99,7 @@ Manual command to fetch events and display them.
 
 #### Human Readable Output
 
->### KnowBe4 KMSAT Logs
+>### KnowBe4 KSAT Logs
 >
 >|AccountId|Description|EventType|Id|OccurredDate|Risk|User|
 >|---|---|---|---|---|---|---|
