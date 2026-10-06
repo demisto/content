@@ -2,7 +2,7 @@
     "name": "FTP",
     "description": "FTP integration to download or upload file to remote ftp server. Please be noted that FTP transfer is insecure. Please use it with care. ",
     "support": "community",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.6",
     "author": "Jie Liau",
     "url": "",
     "email": "",
