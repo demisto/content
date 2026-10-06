@@ -1,0 +1,31 @@
+{
+    "query": {
+        "urls": ["https://www.netskope.com", "https://www.google.com"],
+        "disable_dns_lookup": false
+    },
+    "result": [
+        {
+            "categories": [
+                {"id": "26", "name": "Security Industry", "type": "predefined"},
+                {"id": "10023", "name": "My first category", "type": "custom"}
+            ],
+            "dynamic_classification": true,
+            "site": "netskope",
+            "app": "",
+            "url": "https://www.netskope.com",
+            "resolved_ip": "141.193.213.21",
+            "url_lists": [{"id": "1", "name": "My custom web list"}]
+        },
+        {
+            "categories": [
+                {"id": "551", "name": "Search Engine", "type": "predefined"}
+            ],
+            "dynamic_classification": false,
+            "site": "google",
+            "app": "",
+            "url": "https://www.google.com",
+            "resolved_ip": "142.251.46.196",
+            "url_lists": []
+        }
+    ]
+}
