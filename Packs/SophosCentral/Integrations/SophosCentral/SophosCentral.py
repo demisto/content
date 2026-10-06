@@ -8,7 +8,33 @@ import dateparser
 """GLOBAL VARS"""
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+DATE_FORMAT_NO_FRACTIONAL = "%Y-%m-%dT%H:%M:%SZ"
 COMMON_BASE_URL = "https://api.central.sophos.com"
+
+
+def parse_alert_raised_at(value: str) -> datetime:
+    """Parse a Sophos alert ``raisedAt`` timestamp.
+
+    The Sophos Central API returns ``raisedAt`` in ISO-8601 both with fractional
+    seconds (e.g. ``2020-11-04T09:31:19.895Z``) and without them
+    (e.g. ``2026-07-22T08:37:31Z``). Try the fractional format first (the more
+    common shape) and fall back to the second form.
+
+    Args:
+        value: The raw timestamp string returned by the Sophos API.
+
+    Returns:
+        A naive ``datetime`` (matching the previous ``strptime`` behaviour).
+
+    Raises:
+        DemistoException: If ``value`` matches neither supported format.
+    """
+    for fmt in (DATE_FORMAT, DATE_FORMAT_NO_FRACTIONAL):
+        try:
+            return datetime.strptime(value, fmt)
+        except ValueError:
+            continue
+    raise DemistoException(f"Unsupported Sophos raisedAt timestamp format: {value!r}")
 
 
 class Client(BaseClient):
@@ -3033,7 +3059,7 @@ def fetch_incidents(
     if incidents:
         demisto.debug(f"Found {len(incidents)} incidents.")
         last_incident_time = incidents[-1].get("occurred", "")
-        next_run = datetime.strptime(last_incident_time, DATE_FORMAT)
+        next_run = parse_alert_raised_at(last_incident_time)
     next_run += timedelta(milliseconds=1)
     next_run_timestamp = int(datetime.timestamp(next_run) * 1000)
     demisto.debug(f"Next run: {next_run_timestamp}")
