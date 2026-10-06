@@ -1,0 +1,25 @@
+global_rule_id: NVIDIAOpenShell_SandboxSecurityFinding
+name: NVIDIA OpenShell - High Severity Sandbox Security Finding
+alert_name: 'NVIDIA OpenShell: high severity finding raised in agent sandbox'
+description: Detects a high or critical OpenShell Detection Finding, raised when the supervisor observes proxy bypass, nonce replay or an unsafe policy.
+alert_description: Inspect the finding title and evidence for the named sandbox. These findings indicate the agent tried to evade the sandbox security controls.
+alert_category: OTHER
+alert_fields:
+  description: finding_title
+dataset: nvidia_openshell_raw
+drilldown_query_timeframe: ALERT
+execution_mode: SCHEDULED
+crontab: '*/10 * * * *'
+search_window: 20 MINUTES
+mitre_defs:
+  TA0005 - Defense Evasion:
+  - T1562 - Impair Defenses
+  - T1211 - Exploitation for Defense Evasion
+severity: SEV_040_HIGH
+suppression_enabled: true
+suppression_duration: 60 MINUTES
+suppression_fields: finding_uid
+xql_query: 'dataset = nvidia_openshell_raw | filter class_uid = 2004 and severity_id >= 4 | alter sandbox_id = json_extract_scalar(container, "$.uid"), finding_title = json_extract_scalar(finding_info, "$.title"), finding_uid = json_extract_scalar(finding_info, "$.uid") | filter finding_title != null'
+mapping_strategy: CUSTOM
+fromversion: 8.4.0
+investigation_query_link: 'dataset = nvidia_openshell_raw | filter class_uid = 2004 | alter sandbox_id = json_extract_scalar(container, "$.uid"), finding_title = json_extract_scalar(finding_info, "$.title"), finding_desc = json_extract_scalar(finding_info, "$.desc") | fields _time, sandbox_id, finding_title, finding_desc, severity, message'

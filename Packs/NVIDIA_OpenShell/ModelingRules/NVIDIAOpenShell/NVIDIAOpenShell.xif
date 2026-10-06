@@ -1,0 +1,90 @@
+[MODEL: dataset = "nvidia_openshell_raw"]
+// Downgrading OCSF below 1.8 strips the container object, losing sandbox id.
+alter
+    tmp_product_name = json_extract_scalar(metadata, "$.product.name"),
+    tmp_product_version = json_extract_scalar(metadata, "$.product.version"),
+    tmp_event_uid = json_extract_scalar(metadata, "$.uid"),
+    tmp_device_hostname = json_extract_scalar(device, "$.hostname"),
+    tmp_device_type = json_extract_scalar(device, "$.type"),
+    tmp_os_name = json_extract_scalar(device, "$.os.name"),
+    tmp_gateway_name = json_extract_scalar(device, "$.name"),
+    tmp_sandbox_id = json_extract_scalar(container, "$.uid"),
+    tmp_sandbox_name = json_extract_scalar(container, "$.name")
+| alter
+    tmp_actor_process_name = json_extract_scalar(actor, "$.process.name"),
+    tmp_actor_process_pid = json_extract_scalar(actor, "$.process.pid"),
+    tmp_actor_process_cmd = json_extract_scalar(actor, "$.process.cmd_line"),
+    tmp_target_process_name = json_extract_scalar(process, "$.name"),
+    tmp_target_process_pid = json_extract_scalar(process, "$.pid"),
+    tmp_target_process_cmd = json_extract_scalar(process, "$.cmd_line")
+| alter
+    tmp_src_ip = json_extract_scalar(src_endpoint, "$.ip"),
+    tmp_src_port = json_extract_scalar(src_endpoint, "$.port"),
+    tmp_dst_ip = json_extract_scalar(dst_endpoint, "$.ip"),
+    tmp_dst_port = json_extract_scalar(dst_endpoint, "$.port"),
+    tmp_dst_domain = json_extract_scalar(dst_endpoint, "$.domain"),
+    tmp_protocol = json_extract_scalar(connection_info, "$.protocol_name"),
+    tmp_rule_name = json_extract_scalar(firewall_rule, "$.name"),
+    tmp_rule_engine = json_extract_scalar(firewall_rule, "$.type")
+| alter
+    tmp_http_method = json_extract_scalar(http_request, "$.http_method"),
+    tmp_url_hostname = json_extract_scalar(http_request, "$.url.hostname"),
+    tmp_url_path = json_extract_scalar(http_request, "$.url.path"),
+    tmp_url_scheme = json_extract_scalar(http_request, "$.url.scheme"),
+    tmp_http_code = json_extract_scalar(http_response, "$.code"),
+    tmp_finding_title = json_extract_scalar(finding_info, "$.title"),
+    tmp_finding_desc = json_extract_scalar(finding_info, "$.desc")
+| alter
+    tmp_url_full = if(
+        tmp_url_hostname != null and tmp_url_scheme != null,
+        concat(tmp_url_scheme, "://", tmp_url_hostname, coalesce(tmp_url_path, "")),
+        null)
+// A blocked egress attempt emits twice: activity_id 5 (DNS) then 1 (TCP).
+| alter
+    xdm.observer.vendor = "NVIDIA",
+    xdm.observer.product = "OpenShell",
+    xdm.observer.version = tmp_product_version,
+    xdm.observer.type = tmp_product_name,
+    xdm.event.id = tmp_event_uid,
+    xdm.event.type = class_name,
+    xdm.event.operation_sub_type = activity_name,
+    xdm.event.description = coalesce(message, tmp_finding_title),
+    xdm.alert.description = tmp_finding_desc,
+    xdm.alert.name = tmp_finding_title,
+    xdm.source.agent.identifier = tmp_sandbox_id,
+    xdm.source.host.hostname = coalesce(tmp_sandbox_name, tmp_device_hostname),
+    xdm.source.host.device_id = tmp_sandbox_id,
+    xdm.source.host.os_family = if(
+        tmp_os_name = "Linux", XDM_CONST.OS_FAMILY_LINUX,
+        tmp_os_name = "Windows", XDM_CONST.OS_FAMILY_WINDOWS,
+        tmp_os_name = "macOS", XDM_CONST.OS_FAMILY_MACOS,
+        null),
+    xdm.source.ipv4 = tmp_src_ip,
+    xdm.source.port = to_integer(tmp_src_port),
+    xdm.target.ipv4 = tmp_dst_ip,
+    xdm.target.port = to_integer(tmp_dst_port),
+    xdm.target.host.hostname = coalesce(tmp_dst_domain, tmp_url_hostname),
+    xdm.network.ip_protocol = tmp_protocol,
+    xdm.network.http.method = tmp_http_method,
+    xdm.network.http.url = tmp_url_full,
+    xdm.network.http.response_code = to_string(tmp_http_code),
+    xdm.source.process.name = coalesce(tmp_actor_process_name, tmp_target_process_name),
+    xdm.source.process.pid = to_integer(coalesce(tmp_actor_process_pid, tmp_target_process_pid)),
+    xdm.source.process.command_line = coalesce(tmp_actor_process_cmd, tmp_target_process_cmd),
+    xdm.network.rule = tmp_rule_name,
+    xdm.observer.unique_identifier = coalesce(tmp_gateway_name, tmp_device_type),
+    xdm.event.outcome = if(
+        action_id = 2 or disposition_id = 2, XDM_CONST.OUTCOME_FAILED,
+        action_id = 1 or disposition_id = 1, XDM_CONST.OUTCOME_SUCCESS,
+        status_id = 1, XDM_CONST.OUTCOME_SUCCESS,
+        status_id = 2, XDM_CONST.OUTCOME_FAILED,
+        null),
+    xdm.event.outcome_reason = coalesce(status_detail, tmp_rule_engine),
+    xdm.alert.severity = if(
+        severity_id = 1, "Informational",
+        severity_id = 2, "Low",
+        severity_id = 3, "Medium",
+        severity_id = 4, "High",
+        severity_id = 5, "Critical",
+        severity_id = 6, "Fatal",
+        null);
