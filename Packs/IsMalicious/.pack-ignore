@@ -1,2 +1,1 @@
-[GLOBAL]
-ignore =
+# No validation errors or tests are ignored for this pack.

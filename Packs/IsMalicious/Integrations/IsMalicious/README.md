@@ -1,9 +1,9 @@
 Enrich IP, domain, URL and file-hash indicators with IsMalicious reputation, evidence and data-trust context.
-This integration uses the public IsMalicious REST API contract. Local validation uses synthetic provider responses and the real CommonServerPython framework; no production XSOAR deployment is claimed.
+This integration uses the public IsMalicious REST API contract. Local validation uses synthetic provider responses and the real CommonServerPython framework; no production Cortex XSOAR deployment is claimed.
 
 API checks consume the applicable account quota. Unknown hashes, delisted indicators and absent supported verdicts remain DBotScore 0; risk and confidence are separate fields. See the pack README for evidence interpretation and limits.
 
-## Configure IsMalicious in Cortex XSOAR
+## Configure IsMalicious in Cortex
 
 Create an API key and API secret at https://ismalicious.com/app/account. Configure the password field with Base64 of the exact apiKey:apiSecret pair. Keep this complete credential secret. TLS verification is mandatory, redirects and retries are disabled. Test connection performs an example.com lookup to validate authentication, not safety.
 
@@ -12,13 +12,15 @@ URL strings are preserved, including commas. Pass URL batches as arrays. URLs co
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | X-API-KEY credential (Base64 of apiKey:apiSecret) | Use the complete encoded credential, not the raw API key. Keep it secret. | True |
-| Use system proxy settings |  | False |
+| Use system proxy settings | Route requests through the proxy configured in the Cortex system settings. | False |
 | Source Reliability | Choose the reliability assessed by your team; this is not the provider's risk or confidence score. | False |
 
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+The examples below illustrate command syntax only; they are not recorded production executions or verdicts.
 
 ### ip
 
@@ -58,6 +60,12 @@ Enrich ip indicators with IsMalicious evidence. At most 50 values per command.
 | DBotScore.Score | Number | The actual score. |
 | IP.Address | String | IP address. |
 
+#### Command Example
+
+```text
+!ip ip=198.51.100.1
+```
+
 ### domain
 
 ***
@@ -96,6 +104,12 @@ Enrich domain indicators with IsMalicious evidence. At most 50 values per comman
 | DBotScore.Score | Number | The actual score. |
 | Domain.Name | String | Domain name. |
 
+#### Command Example
+
+```text
+!domain domain=example.com
+```
+
 ### url
 
 ***
@@ -133,6 +147,12 @@ Enrich url indicators with IsMalicious evidence. At most 50 values per command.
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
 | DBotScore.Score | Number | The actual score. |
 | URL.Data | String | Full URL. |
+
+#### Command Example
+
+```text
+!url url="https://example.com/path?a=1&b=2"
+```
 
 ### file
 
@@ -173,3 +193,9 @@ Enrich MD5, SHA1 or SHA256 hashes with IsMalicious evidence. At most 50 values p
 | File.MD5 | String | MD5 hash. |
 | File.SHA1 | String | SHA1 hash. |
 | File.SHA256 | String | SHA256 hash. |
+
+#### Command Example
+
+```text
+!file file=d41d8cd98f00b204e9800998ecf8427e
+```

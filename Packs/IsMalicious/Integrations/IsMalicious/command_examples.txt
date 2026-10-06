@@ -1,4 +1,4 @@
-!ip ip=8.8.8.8
+!ip ip=198.51.100.1
 !domain domain=example.com
 !url url="https://example.com/path?a=1&b=2"
 !file file=d41d8cd98f00b204e9800998ecf8427e

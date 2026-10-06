@@ -25,5 +25,8 @@
     ],
     "marketplaces": [
         "xsoar"
+    ],
+    "githubUser": [
+        "hexablob"
     ]
 }

@@ -6,6 +6,8 @@ import requests
 from CommonServerPython import Common, DBotScoreReliability, DemistoException
 from IsMalicious import Client, dbot_verdict, reputation_command
 
+import IsMalicious
+
 
 @pytest.mark.parametrize(
     "response,expected",
@@ -160,3 +162,17 @@ def test_ipv6_supported():
     c.check.return_value = {"malicious": False}
     reputation_command(c, {"ip": "2001:4860:4860::8888"}, "ip", DBotScoreReliability.F)
     c.check.assert_called_once_with("2001:4860:4860::8888")
+
+
+@pytest.mark.parametrize("params", [{}, {"credentials": None}, {"credentials": {}}, {"credentials": {"password": ""}}])
+def test_missing_credentials_report_error_before_client_creation(monkeypatch, params):
+    monkeypatch.setattr(IsMalicious.demisto, "params", Mock(return_value=params))
+    create_client = Mock()
+    report_error = Mock()
+    monkeypatch.setattr(IsMalicious, "Client", create_client)
+    monkeypatch.setattr(IsMalicious, "return_error", report_error)
+
+    IsMalicious.main()
+
+    create_client.assert_not_called()
+    report_error.assert_called_once_with("IsMalicious integration failed: The complete X-API-KEY credential is required.")

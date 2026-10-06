@@ -184,7 +184,7 @@ def reputation_command(client: Client, args: dict[str, Any], kind: str, reliabil
 
 def main() -> None:  # pragma: no cover
     params = demisto.params()
-    credential = params.get("credentials", {}).get("password")
+    credential = (params.get("credentials") or {}).get("password")
     try:
         if not credential:
             raise ValueError("The complete X-API-KEY credential is required.")

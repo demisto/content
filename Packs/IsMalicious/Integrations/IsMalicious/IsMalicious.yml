@@ -4,6 +4,7 @@ commonfields:
 name: IsMalicious
 display: IsMalicious
 category: Data Enrichment & Threat Intelligence
+supportlevelheader: community
 description: Enrich IP, domain, URL and file-hash indicators with IsMalicious reputation, evidence and data-trust context.
 sectionorder:
 - Connect
@@ -21,6 +22,7 @@ configuration:
   required: false
   type: 8
   section: Connect
+  additionalinfo: Route requests through the proxy configured in the Cortex system settings.
 - display: Source Reliability
   name: integrationReliability
   required: false
@@ -217,6 +219,6 @@ script:
     - contextPath: File.SHA256
       description: SHA256 hash.
       type: String
-fromversion: '6.10'
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

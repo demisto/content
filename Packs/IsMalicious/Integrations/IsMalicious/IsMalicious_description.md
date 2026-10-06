@@ -1,5 +1,18 @@
-IsMalicious provides indicator enrichment for IPs, domains, full URLs and MD5/SHA1/SHA256 hashes. It returns server evidence, risk and confidence, source context and data-trust information.
+## IsMalicious
 
-Create an account and API credential at https://ismalicious.com/app/account. The integration requires the complete X-API-KEY credential, Base64 of apiKey:apiSecret, not the raw API key alone. Individual checks use the account quota; TAXII feed access is separate.
+### Get API credentials
 
-This integration performs advisory lookups only. It does not ingest a TAXII feed, upload file contents, fetch incidents, or enable an automatic-block policy. Unknown hashes, delisted indicators and responses without a supported verdict return DBotScore 0. If a legacy response lacks the evidence object, explicit malicious=true is accepted as malicious; malicious=false remains unknown. Only explicit server clean/benign evidence can produce good (1). TLS verification is always enabled; redirects and automatic retries are disabled.
+1. Sign in to [your IsMalicious account](https://ismalicious.com/app/account), or create an account first.
+2. Generate an API key and API secret in the account settings.
+3. Base64-encode the exact `apiKey:apiSecret` pair. The raw API key alone is insufficient.
+4. Store the complete encoded credential in the integration's **X-API-KEY credential** password field. Keep this value secret.
+
+### Configure the integration instance
+
+API checks require REST access and consume the account's applicable request quota. TAXII feed access is separate. Enable **Use system proxy settings** only if requests should use the proxy configured in Cortex. TLS verification is mandatory; redirects and automatic retries are disabled.
+
+Select **Source Reliability** using your team's assessment of the provider, independently of indicator risk and confidence. The default is F (cannot be judged).
+
+### Test connection and troubleshoot
+
+**Test** checks `example.com` to validate authentication, not indicator safety. For HTTP 401 or 403, verify the complete credential and API permissions. For HTTP 429, check the account's quota and rate limits. An error or an unknown response does not produce a benign verdict.
