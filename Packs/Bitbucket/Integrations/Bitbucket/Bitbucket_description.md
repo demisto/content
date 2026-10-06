@@ -1,18 +1,35 @@
 ## Bitbucket Integration Help
 
-* To create an app password to Bitbucket
-  1. Go to your account -> under **Settings** -> click **Personal settings**.
-  2. On the sidebar, select **App passwords**.
-  3. Select **Create app password**.
-  4. Give the app password a name, usually related to the application that will use the password.
-  5. Select the permissions the App password needs. For detailed descriptions of each permission, see: [App password permissions](https://support.atlassian.com/bitbucket-cloud/docs/app-password-permissions/).
-  6. Select the **Create** button. The page will display the **New app password** dialog.
-  7. Copy the generated password and either record or paste it into the application you want to give access. ***The password is only displayed once and can't be retrieved later***.
-  8. Click [here](https://support.atlassian.com/bitbucket-cloud/docs/create-an-app-password/) for more information.
-  
+Bitbucket Cloud has deprecated app passwords (from **June 9, 2026**) in favor of scoped API tokens. For more information, see the [Bitbucket Cloud documentation](https://developer.atlassian.com/cloud/bitbucket/rest/intro/#app-passwords).
+
+### Authenticate with an API Token
+
+1. Go to **Atlassian account settings** -> **Security** -> **API tokens** (https://id.atlassian.com/manage-profile/security/api-tokens).
+
+2. **Create an API token with scopes**.
+
+3. In the integration instance settings, configure:
+
+   * **User Name** = your **Atlassian account email address**.
+
+   * **API Token** = the token you copied.
+
+### Authenticate with OAuth 2.0 Client Credentials
+
+Create an **OAuth consumer** in the Bitbucket workspace and enable the client-credentials grant:
+
+1. In Bitbucket Cloud, go to **Workspace settings** -> under **Apps and features** select **OAuth clients**.
+
+2. Select the required **Permissions/scopes** (e.g., read access to Account, Repositories, Projects, Pull requests, and Issues, matching the commands you intend to run).
+
+3. In the integration instance settings, configure:
+
+   * **Client ID** = the consumer **Key**.
+
+   * **Client Secret** = the consumer **Secret**.
+
+---
+
 ### Known Limitations
-* In order to perform the different project commands, add to the **app password**, **Read** permissions to **Projects**. 
-* In order to perform the ***bitbucket-issue-create*** command, an issue tracker is required. 
-* In order to create an issue tracker, click the relevant repo > Repository settings > Issue tracker, and create it.
 
-
+* To perform the project commands, ensure the **API Token** or **OAuth consumer** has **Read** permissions for **Projects**.

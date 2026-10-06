@@ -785,7 +785,7 @@ script:
       description: The value for the entry.
       required: true
     outputs: []
-  dockerimage: demisto/fastapi:0.125.0.10158186
+  dockerimage: demisto/fastapi:0.125.0.12689358
   isfetch: true
   runonce: false
   script: '-'

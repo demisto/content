@@ -1,0 +1,708 @@
+description: Starts a disk publishing session for a specific restore point.
+id: Veeam - Start Disk Publishing
+inputs:
+- description: ""
+  key: Instance
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      accessor: sourceInstance
+      root: incident
+- description: ""
+  key: backupObjectId
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      accessor: veeambackupobjectid
+      root: incident
+- description: ""
+  key: ""
+  playbookInputQuery:
+    daterange:
+      fromdate: "0001-01-01T00:00:00Z"
+      fromdatelicenseval: "0001-01-01T00:00:00Z"
+      period:
+        by: ""
+        byfrom: ""
+        byto: ""
+        field: ""
+        fromvalue: null
+        tovalue: null
+      todate: "0001-01-01T00:00:00Z"
+    query: ""
+    queryEntity: indicators
+    results: null
+    runFromLastJobTime: true
+  required: false
+  value: {}
+name: Veeam - Start Disk Publishing
+outputs: []
+quiet: true
+sourceplaybookid: Veeam - Start Scan Backup
+starttaskid: "0"
+fromversion: "6.10.0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7b30138d-91b7-45e1-8ade-c59a2b4f672e
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 7b30138d-91b7-45e1-8ade-c59a2b4f672e
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": -250
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: f0d4f74e-ce87-483b-8cb7-51aaa3d63cb6
+      iscommand: false
+      name: |
+        Clear Context Data
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: f0d4f74e-ce87-483b-8cb7-51aaa3d63cb6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": -105
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      backupObjectIdFilter:
+        complex:
+          root: inputs.backupObjectId
+      limit:
+        simple: "1"
+      orderAsc:
+        simple: "false"
+      orderColumn:
+        simple: CreationTime
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Gets the list of restore points.
+      id: c5b9cae5-ff7e-45d3-8946-d81619c00487
+      iscommand: true
+      name: Get Restore Points
+      script: VBR REST API|||veeam-vbr-get-restore-points
+      type: regular
+      version: -1
+    taskid: c5b9cae5-ff7e-45d3-8946-d81619c00487
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 40
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Allowed IPs
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: IP range of servers allowed to access the iSCSI target server (mount
+          server).
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Mount Server ID
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: Mount server ID.
+        type: shortText
+      sender: ""
+      title: Input Parameters for Disk Publishing
+      totalanswers: 0
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: {}
+      cc: null
+      format: ""
+      methods: []
+      replyOptions:
+      - AV
+      - YARA
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Enter Parameters for Disk Publishing.
+      id: b3cd8744-e0e7-4c0c-8c6f-1f2dbb3199fd
+      iscommand: false
+      name: Enter Parameters for Disk Publishing
+      type: collection
+      version: -1
+    taskid: b3cd8744-e0e7-4c0c-8c6f-1f2dbb3199fd
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 440
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      allowedIps:
+        complex:
+          accessor: "0"
+          root: Input Parameters for Disk Publishing.Answers
+      mountHostId:
+        complex:
+          accessor: "1"
+          root: Input Parameters for Disk Publishing.Answers
+      restorePointId:
+        complex:
+          accessor: id
+          root: Veeam.VBR.get_restore_points.data
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Publishes disk content from a restore point through the Data Integration
+        API using iSCSI Target mount mode.
+      id: 77851360-67b3-4589-8f12-a35bba2694ce
+      iscommand: true
+      name: Start Disk Publishing
+      script: VBR REST API|||veeam-vbr-start-disk-publishing
+      type: regular
+      version: -1
+    taskid: 77851360-67b3-4589-8f12-a35bba2694ce
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 620
+        }
+      }
+  "23":
+    continueonerrortype: ""
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2c012bd5-99f2-430f-8359-180af78144fc
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 2c012bd5-99f2-430f-8359-180af78144fc
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 2350
+        }
+      }
+  "24":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: Veeam.VBR.get_restore_points.data
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if the restore point exists.
+      id: 132c79ab-8949-4cea-866a-343863fd9d8d
+      iscommand: false
+      name: Check Restore Point Existence
+      type: condition
+      version: -1
+    taskid: 132c79ab-8949-4cea-866a-343863fd9d8d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 230
+        }
+      }
+  "25":
+    continueonerrortype: ""
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Finish:
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns an error if no restore points have been found.
+      id: 8df4e64b-2f37-4042-8aae-fba2da034a4b
+      iscommand: false
+      name: No Restore Points Found
+      type: condition
+      version: -1
+    taskid: 8df4e64b-2f37-4042-8aae-fba2da034a4b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1950
+        }
+      }
+  "27":
+    continueonerrortype: ""
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "No":
+      - "23"
+      "Yes":
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Waits user input to stop disk publishing.
+      id: 44d5de8a-71ad-406d-8907-57f405663c92
+      iscommand: false
+      name: Stop Disk Publishing?
+      type: condition
+      version: -1
+    taskid: 44d5de8a-71ad-406d-8907-57f405663c92
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1790
+        }
+      }
+  "28":
+    continueonerrortype: ""
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Instance:
+        complex:
+          root: inputs.Instance
+      mountId:
+        complex:
+          accessor: id
+          root: Veeam.VBR.get_disk_publishing_mount_point
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: aceed190-4938-45a7-8589-de7f17dde4e5
+      iscommand: false
+      name: Veeam - Stop Disk Publishing
+      playbookId: Veeam - Stop Disk Publishing
+      type: playbook
+      version: -1
+      description: ''
+    taskid: aceed190-4938-45a7-8589-de7f17dde4e5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 2120
+        }
+      }
+  "29":
+    continueonerrortype: ""
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: using
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: inputs.Instance
+      Ids:
+        complex:
+          accessor: id
+          root: Veeam.VBR.start_disk_publishing
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: mountId
+      PollingCommandName:
+        simple: veeam-vbr-get-disk-publishing-mount-point
+      Timeout:
+        simple: "120"
+      dt:
+        simple: Veeam.VBR.get_disk_publishing_mount_point(val.mountState !=='Mounted'&&val.mountState
+          !=='MountFailed').id
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 2c293e5d-bbf1-463b-83c7-d111b7500aaa
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 2c293e5d-bbf1-463b-83c7-d111b7500aaa
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 860
+        }
+      }
+  "30":
+    continueonerrortype: ""
+    id: "30"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      mountId:
+        complex:
+          accessor: id
+          root: Veeam.VBR.start_disk_publishing
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Gets current state of the disk publishing mount point.
+      id: 331805a8-3e87-47c6-82e9-0e21c0357e4a
+      iscommand: true
+      name: Get Mount State
+      script: VBR REST API|||veeam-vbr-get-disk-publishing-mount-point
+      type: regular
+      version: -1
+    taskid: 331805a8-3e87-47c6-82e9-0e21c0357e4a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 1050
+        }
+      }
+  "31":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: mountState
+                root: Veeam.VBR.get_disk_publishing_mount_point
+          operator: isEqualString
+          right:
+            value:
+              simple: Mounted
+      label: "yes"
+    continueonerrortype: ""
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "32"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check Mount State.
+      id: 5851540e-c3bd-4ea3-8076-049b5792fc81
+      iscommand: false
+      name: Check Mount State
+      type: condition
+      version: -1
+    taskid: 5851540e-c3bd-4ea3-8076-049b5792fc81
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1260
+        }
+      }
+  "32":
+    continueonerrortype: ""
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 355029d3-cde5-447b-8438-ded6f2565d74
+      iscommand: false
+      name: Success
+      type: title
+      version: -1
+      description: ''
+    taskid: 355029d3-cde5-447b-8438-ded6f2565d74
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 1450
+        }
+      }
+  "33":
+    continueonerrortype: ""
+    id: "33"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Finish:
+      - "23"
+      Stop Disk Publishing:
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns an error if a disk cannot be mounted.
+      id: 8b7c0fe7-32c1-41dd-85ee-794c4d4c93a9
+      iscommand: false
+      name: Mounting Disk Failed
+      type: condition
+      version: -1
+    taskid: 8b7c0fe7-32c1-41dd-85ee-794c4d4c93a9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1560
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "25_23_Finish": 0.31,
+      "27_23_No": 0.34
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2665,
+        "width": 1630,
+        "x": 50,
+        "y": -250
+      }
+    }
+  }

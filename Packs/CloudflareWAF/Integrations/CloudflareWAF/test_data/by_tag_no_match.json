@@ -1,0 +1,15 @@
+{
+    "result": {
+        "id": "managed_ruleset_id_1",
+        "name": "Cloudflare Managed Ruleset",
+        "description": "Managed ruleset created by Cloudflare",
+        "kind": "managed",
+        "phase": "http_request_firewall_managed",
+        "source": "firewall_managed",
+        "version": "2",
+        "last_updated": "2023-02-20T14:30:00Z"
+    },
+    "success": true,
+    "errors": [],
+    "messages": []
+}

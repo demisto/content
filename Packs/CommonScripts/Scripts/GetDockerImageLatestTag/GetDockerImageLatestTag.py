@@ -17,6 +17,10 @@ ACCEPT_HEADER = {
 TIMEOUT = 10
 DEFAULT_REGISTRY = "registry-1.docker.io"
 
+# OCI artifact tag suffixes that are not runnable Docker images.
+# These are produced by tools like cosign (.sig), OCI referrers (.att, .sbom), etc.
+NON_RUNNABLE_TAG_SUFFIXES = (".sig", ".att", ".sbom")
+
 
 def parse_www_auth(www_auth):
     """Parse realm and service from www-authenticate string of the form:
@@ -64,6 +68,29 @@ def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY, gateway_
         return None
 
 
+def is_runnable_tag(tag: Any) -> bool:
+    """Return True if *tag* represents a runnable Docker image tag.
+
+    Filters out OCI artifact tags such as cosign signature tags (``*.sig``),
+    attestation tags (``*.att``), and SBOM tags (``*.sbom``) which are not
+    valid Docker image tags and cannot be used to run a container.
+
+    Note that only tags *ending* with one of the artifact suffixes are
+    filtered, so a legitimate tag that merely contains the substring
+    (e.g. ``my.sig.image``) is preserved.
+
+    Args:
+        tag: A Docker image tag name. Non-string values are treated as
+            non-runnable rather than raising.
+
+    Returns:
+        True when the tag is a runnable image tag, False otherwise.
+    """
+    if not isinstance(tag, str) or not tag:
+        return False
+    return not tag.endswith(NON_RUNNABLE_TAG_SUFFIXES)
+
+
 def clear_non_numbered_tags(tags):
     """Clears a given tags list to only keep numbered tags
 
@@ -92,14 +119,24 @@ def lexical_find_latest_tag(tags):
 
     for example for the tag list: [2.0.2000, 2.1.2700 2.1.373, latest], will return 2.1.2700
 
+    Non-runnable OCI artifact tags (e.g. ``*.sig``, ``*.att``, ``*.sbom``) are
+    excluded before any comparison.
+
     Args:
         tags(list): list of docker image tag names - ordered in lexical order
-    """
 
-    only_numbered_tags = clear_non_numbered_tags(tags)
+    Returns:
+        The latest runnable tag, or an empty string when no runnable tag exists.
+    """
+    runnable_tags = [tag for tag in tags if is_runnable_tag(tag)]
+    if not runnable_tags:
+        demisto.debug("No runnable tags found after filtering non-runnable artifact tags.")
+        return ""
+
+    only_numbered_tags = clear_non_numbered_tags(runnable_tags)
 
     if len(only_numbered_tags) == 0:
-        return tags[-1]
+        return runnable_tags[-1]
 
     max_tag = only_numbered_tags[0]
 
@@ -113,6 +150,10 @@ def lexical_find_latest_tag(tags):
 def find_latest_tag_by_date(tags):
     """Get the latest tags by datetime comparison.
 
+    Non-runnable OCI artifact tags (e.g. ``*.sig``, ``*.att``, ``*.sbom``) are
+    excluded before comparison so that cosign signature artifacts are never
+    returned as the "latest" image tag.
+
     Args:
         tags(list): List of dictionaries representing the docker image tags
 
@@ -122,10 +163,23 @@ def find_latest_tag_by_date(tags):
     latest_tag_name = "latest"
     latest_tag_date = datetime.now() - timedelta(days=400000)
     for tag in tags:
-        tag_date = datetime.strptime(tag.get("last_updated"), "%Y-%m-%dT%H:%M:%S.%fZ")
+        tag_name = tag.get("name")
+        # is_runnable_tag() also rejects non-string / empty values, so past this
+        # guard tag_name is guaranteed to be a usable string.
+        if not is_runnable_tag(tag_name):
+            demisto.debug(f"Skipping non-runnable or invalid tag: {tag_name!r}")
+            continue
+
+        last_updated = tag.get("last_updated")
+        try:
+            tag_date = datetime.strptime(last_updated, "%Y-%m-%dT%H:%M:%S.%fZ")
+        except (TypeError, ValueError):
+            demisto.debug(f"Skipping tag {tag_name!r} with unparsable last_updated value: {last_updated!r}")
+            continue
+
         if tag_date >= latest_tag_date:
             latest_tag_date = tag_date
-            latest_tag_name = tag.get("name")
+            latest_tag_name = tag_name
 
     return latest_tag_name
 
@@ -151,6 +205,7 @@ def main():
         # first try to get the docker image tags using normal http request
         res = requests.get(
             url=f"https://hub.docker.com/v2/repositories/{image_name}/tags",
+            timeout=TIMEOUT,
             verify=verify_ssl,
         )
         if res.status_code == 200:
