@@ -3740,7 +3740,7 @@ def get_unified_exclusions_command(client: Client, args: dict) -> CommandResults
     include_children = argToBoolean(args.get("include_children", False))
     include_parents = argToBoolean(args.get("include_parents", False))
     tenant = argToBoolean(args.get("tenant")) if args.get("tenant") else None
-    limit = int(args.get("limit", 10))
+    limit = arg_to_number(args.get("limit", 10))
     cursor = args.get("cursor")
 
     response = client.get_unified_exclusions_request(

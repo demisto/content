@@ -454,9 +454,6 @@ script:
     - contextPath: SentinelOne.UnifiedExclusions.UserName
       description: Username of the user who created the exclusion item.
       type: string
-    - contextPath: SentinelOne.UnifiedExclusions.Conditions
-      description: Conditions applied to the exclusion item.
-      type: string
     - contextPath: SentinelOne.UnifiedExclusions.ThreatType
       description: Threat type associated with the exclusion item.
       type: string
