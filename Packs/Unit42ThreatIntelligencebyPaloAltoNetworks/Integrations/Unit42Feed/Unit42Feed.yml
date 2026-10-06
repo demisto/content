@@ -37,15 +37,6 @@ configuration:
   required: false
   section: Collect
   advanced: true
-- display: Maximum Indicators Per Fetch
-  name: limit
-  type: 0
-  defaultvalue: '20000'
-  additionalinfo: Maximum number of indicators to fetch.
-  required: false
-  section: Collect
-  advanced: true
-  hidden: true
 - display: Feed Fetch Interval
   additionalinfo: The feed fetch interval, which is set to 1 hour and is not configurable.
   name: feedFetchInterval
