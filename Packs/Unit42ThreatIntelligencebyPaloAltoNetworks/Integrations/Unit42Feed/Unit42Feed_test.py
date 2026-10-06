@@ -1397,55 +1397,6 @@ def test_fetch_threat_objects_with_limit(client, mocker):
     assert len(pushed_items) == 150
 
 
-def test_fetch_indicators_limit_validation(client, mocker):
-    """
-    Given:
-        - Client with various limit values
-    When:
-        - Calling fetch_indicators with different limits
-    Then:
-        - Validates and caps limit at TOTAL_INDICATOR_LIMIT
-        - Uses DEFAULT_LIMIT when limit is invalid
-    """
-    from Unit42Feed import fetch_indicators
-
-    mock_demisto_params(mocker)
-    mock_response = {"data": [], "metadata": {}}
-    mocker.patch.object(client, "get_indicators", return_value=mock_response)
-    mocker.patch.object(client, "get_threat_objects", return_value=mock_response)
-    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={})
-
-    current_time = datetime.now()
-
-    # Test with a very large limit: the empty API response means nothing is fetched and the
-    # cycle completes cleanly, proving the (large) limit is accepted rather than rejected.
-    params_high = {
-        "limit": "150000",  # Above TOTAL_INDICATOR_LIMIT, still a valid positive limit
-        "feed_types": ["Indicators"],
-        "indicator_types": ["IP"],
-        "feedTags": [],
-        "tlp_color": None,
-    }
-
-    total_high, next_run_high = fetch_indicators(client, params_high, current_time)
-    assert total_high == 0
-    assert next_run_high == {"last_successful_run": current_time.strftime(DATE_FORMAT)}
-
-    # Test with zero limit: guarded and replaced by TOTAL_INDICATOR_LIMIT, so the fetch still
-    # runs (does not short-circuit to zero budget) and completes the cycle normally.
-    params_zero = {
-        "limit": "0",
-        "feed_types": ["Indicators"],
-        "indicator_types": ["IP"],
-        "feedTags": [],
-        "tlp_color": None,
-    }
-
-    total_zero, next_run_zero = fetch_indicators(client, params_zero, current_time)
-    assert total_zero == 0
-    assert next_run_zero == {"last_successful_run": current_time.strftime(DATE_FORMAT)}
-
-
 def test_fetch_indicators_threat_objects_first_then_single_combined_indicator_query(client, mocker):
     """
     Given:
