@@ -320,18 +320,17 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-sql-db-transparent-data-encryption-enable-tde-quick-action",
     ],
     "Microsoft.Network/azureFirewalls/read": [
-        "azure-firewall-instance-list",
-        "azure-firewall-instance-get",
-        "azure-firewall-rule-collection-list",
-        "azure-firewall-rule-list",
+        "azure-firewall-list",
+        "azure-firewall-get",
+        "azure-firewall-rules-list",
         "azure-firewall-rule-get",
     ],
     "Microsoft.Network/firewallPolicies/ruleCollectionGroups/read": [
-        "azure-firewall-rule-collection-list",
-        "azure-firewall-rule-list",
+        "azure-vn-firewall-policy-rule-collection-groups-list",
+        "azure-firewall-rules-list",
         "azure-firewall-rule-get",
     ],
-    "Microsoft.Network/locations/serviceTagDetails/read": ["azure-firewall-service-tag-list"],
+    "Microsoft.Network/locations/serviceTagDetails/read": ["azure-firewall-service-tags-information-list"],
     "Microsoft.Consumption/usageDetails/read": ["azure-billing-usage-list"],
     "Microsoft.Consumption/budgets/read": ["azure-billing-budgets-list"],
     "Microsoft.CostManagement/forecast/read": ["azure-billing-forecast-list"],
@@ -3227,31 +3226,24 @@ def get_rules_of_collection(rule_collections: list, collection_name: str) -> lis
     )
 
 
-def get_firewall_rule_collections(
-    client: AzureClient, subscription_id: str, resource_group_name: str, firewall_name: str, rule_type: str
-) -> tuple[dict, list]:
+def get_firewall_rule_collections(firewall: dict, rule_type: str) -> list:
     """
-    Retrieves the rule collections of the given type from an Azure firewall.
+    Extracts the rule collections of the given type from an Azure firewall response.
 
     Args:
-        client (AzureClient): The authenticated Azure client used to make API requests.
-        subscription_id (str): The ID of the Azure subscription.
-        resource_group_name (str): The name of the resource group containing the firewall.
-        firewall_name (str): The name of the firewall containing the rule collections.
+        firewall (dict): The Azure firewall from the API response.
         rule_type (str): The rule collection type to retrieve.
 
     Returns:
-        tuple[dict, list]: The API response and the matching rule collections.
+        list: The matching rule collections.
     """
-    response = client.firewall_get_request(subscription_id, resource_group_name, firewall_name)
     rule_collection_key = {
         "network_rule": "networkRuleCollections",
         "application_rule": "applicationRuleCollections",
         "nat_rule": "natRuleCollections",
     }.get(rule_type, "")
-    rule_collections = dict_safe_get(response, ["properties", rule_collection_key], [])
 
-    return response, rule_collections
+    return dict_safe_get(firewall, ["properties", rule_collection_key], [])
 
 
 def get_policy_rule_collection_rules(
@@ -5744,10 +5736,12 @@ def firewall_list_command(client: AzureClient, params: dict[str, Any], args: dic
     Returns:
         CommandResults: A CommandResults object containing the list of Azure firewalls.
     """
+    # The subscription scopes the request in both scopes, so it is always resolved and validated as non-empty.
     subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
     resource = args.get("resource", "resource_group")
     next_token = args.get("next_token", "")
-    # The resource group scopes the request only when listing a resource group, so it is not resolved otherwise.
+    # The resource group scopes the request only when listing a resource group, so it is resolved - and
+    # validated as non-empty - only in that scope.
     resource_group_name = (
         get_from_args_or_params(args=args, params=params, key="resource_group_name") if resource == "resource_group" else ""
     )
@@ -5762,8 +5756,8 @@ def firewall_list_command(client: AzureClient, params: dict[str, Any], args: dic
         return CommandResults(readable_output=f"No Azure firewalls were found in the {scope}.")
 
     outputs = {
-        "Azure.Firewall.Instances(val.id && val.id == obj.id)": firewalls,
-        "Azure.Firewall(true)": {"InstancesNextToken": response.get("nextLink")},
+        "Azure.Firewall.Firewalls(val.id && val.id == obj.id)": firewalls,
+        "Azure.Firewall(true)": {"FirewallsNextToken": response.get("nextLink")},
     }
     readable_output = tableToMarkdown(
         "Azure Firewalls List",
@@ -5782,7 +5776,7 @@ def firewall_list_command(client: AzureClient, params: dict[str, Any], args: dic
 
 def firewall_get_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
-    Retrieves the information of a specific Azure firewall.
+    Retrieves the information of a specific Azure firewall, and optionally its rule collections of a given type.
 
     Args:
         client (AzureClient): The authenticated Azure client used to make API requests.
@@ -5795,8 +5789,9 @@ def firewall_get_command(client: AzureClient, params: dict[str, Any], args: dict
     subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
     resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
     firewall_name = args.get("firewall_name", "")
+    rule_type = args.get("rule_type", "")
 
-    demisto.debug(f"[Azure] Getting firewall with {subscription_id=}, {resource_group_name=}, {firewall_name=}")
+    demisto.debug(f"[Azure] Getting firewall with {subscription_id=}, {resource_group_name=}, {firewall_name=}, {rule_type=}")
     response = client.firewall_get_request(subscription_id, resource_group_name, firewall_name)
 
     readable_output = tableToMarkdown(
@@ -5807,8 +5802,27 @@ def firewall_get_command(client: AzureClient, params: dict[str, Any], args: dict
         headerTransform=pascalToSpace,
     )
 
+    if rule_type:
+        # The rule collections are nested in the firewall response, so they are displayed in their own table.
+        rule_collections = get_firewall_rule_collections(response, rule_type)
+        demisto.debug(f"[Azure] Received {len(rule_collections)} rule collections of {rule_type=}")
+        readable_output += tableToMarkdown(
+            f"Azure Firewall {firewall_name} {rule_type} Rule Collections",
+            [
+                {
+                    "name": collection.get("name"),
+                    "action": dict_safe_get(collection, ["properties", "action", "type"]),
+                    "priority": dict_safe_get(collection, ["properties", "priority"]),
+                }
+                for collection in rule_collections
+            ],
+            headers=["name", "action", "priority"],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+
     return CommandResults(
-        outputs_prefix="Azure.Firewall.Instances",
+        outputs_prefix="Azure.Firewall.Firewalls",
         outputs_key_field="id",
         outputs=response,
         readable_output=readable_output,
@@ -5816,9 +5830,11 @@ def firewall_get_command(client: AzureClient, params: dict[str, Any], args: dict
     )
 
 
-def firewall_rule_collection_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+def firewall_policy_rule_collection_groups_list_command(
+    client: AzureClient, params: dict[str, Any], args: dict[str, Any]
+) -> CommandResults:
     """
-    Lists the rule collections of an Azure firewall or of a firewall policy.
+    Lists the rule collection groups of an Azure firewall policy.
 
     Args:
         client (AzureClient): The authenticated Azure client used to make API requests.
@@ -5826,64 +5842,52 @@ def firewall_rule_collection_list_command(client: AzureClient, params: dict[str,
         args (dict): Command arguments.
 
     Returns:
-        CommandResults: A CommandResults object containing the list of rule collections.
+        CommandResults: A CommandResults object containing the list of rule collection groups.
     """
     subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
     resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
-    firewall_name: str = args.get("firewall_name", "")
     policy_name: str = args.get("policy_name", "")
     rule_type = args.get("rule_type", "")
     next_token = args.get("next_token", "")
 
-    validate_firewall_or_policy_provided(firewall_name, policy_name)
-
     demisto.debug(
-        f"[Azure] Listing rule collections with {subscription_id=}, {resource_group_name=}, "
-        f"{firewall_name=}, {policy_name=}, {rule_type=}"
+        f"[Azure] Listing policy rule collection groups with {subscription_id=}, {resource_group_name=}, "
+        f"{policy_name=}, {rule_type=}"
     )
-    if firewall_name:
-        response, rule_collections = get_firewall_rule_collections(
-            client, subscription_id, resource_group_name, firewall_name, rule_type
-        )
-        next_link = None
-    else:
-        response = client.firewall_policy_rule_collection_list_request(
-            subscription_id, resource_group_name, policy_name, next_token
-        )
-        rule_collections = filter_policy_rule_collections(response.get("value", []), rule_type)
-        next_link = response.get("nextLink")
-    demisto.debug(f"[Azure] Received {len(rule_collections)} rule collections, {bool(next_link)=}")
+    response = client.firewall_policy_rule_collection_list_request(subscription_id, resource_group_name, policy_name, next_token)
+    collection_groups = filter_policy_rule_collections(response.get("value", []), rule_type)
+    next_link = response.get("nextLink")
+    demisto.debug(f"[Azure] Received {len(collection_groups)} rule collection groups, {bool(next_link)=}")
 
-    if not rule_collections:
-        return CommandResults(readable_output=f"No {rule_type} rule collections were found in '{firewall_name or policy_name}'.")
+    if not collection_groups:
+        # A page can hold no rule collection groups of the requested type while later pages still hold some, so the
+        # token is returned to let the user keep paging, and is set to None otherwise to clear a stale token.
+        readable_output = f"No {rule_type} rule collection groups were found in '{policy_name}'."
+        if next_link:
+            readable_output += " More pages of results are available. Run the command with the next_token argument to view them."
+        return CommandResults(
+            outputs={"Azure.VirtualNetworks(true)": {"FirewallPolicyRuleCollectionGroupsNextToken": next_link}},
+            readable_output=readable_output,
+        )
 
     readable_data = []
-    for collection in rule_collections:
-        if firewall_name:
+    for collection_group in collection_groups:
+        # A rule collection group can hold several rule collections, so a row is displayed for each one of them.
+        for rule_collection in dict_safe_get(collection_group, ["properties", "ruleCollections"], []):
             readable_data.append(
                 {
-                    "name": collection.get("name"),
-                    "action": dict_safe_get(collection, ["properties", "action", "type"]),
-                    "priority": dict_safe_get(collection, ["properties", "priority"]),
+                    "name": rule_collection.get("name"),
+                    "action": dict_safe_get(rule_collection, ["action", "type"]),
+                    "priority": rule_collection.get("priority"),
                 }
             )
-        else:
-            # A rule collection group can hold several rule collections, so a row is displayed for each one of them.
-            for policy_collection in dict_safe_get(collection, ["properties", "ruleCollections"], []):
-                readable_data.append(
-                    {
-                        "name": policy_collection.get("name"),
-                        "action": dict_safe_get(policy_collection, ["action", "type"]),
-                        "priority": policy_collection.get("priority"),
-                    }
-                )
 
     outputs = {
-        "Azure.Firewall.RuleCollections(val.id && val.id == obj.id)": rule_collections,
-        "Azure.Firewall(true)": {"RuleCollectionsNextToken": next_link},
+        "Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups(val.id && val.id == obj.id)": collection_groups,
+        "Azure.VirtualNetworks(true)": {"FirewallPolicyRuleCollectionGroupsNextToken": next_link},
     }
     readable_output = tableToMarkdown(
-        f"{firewall_name or policy_name} Rule Collections List",
+        f"{policy_name} Rule Collection Groups List",
         readable_data,
         headers=["name", "action", "priority"],
         removeNull=True,
@@ -5926,10 +5930,8 @@ def firewall_rule_list_command(client: AzureClient, params: dict[str, Any], args
         if not rule_type:
             raise DemistoException("The 'rule_type' argument must be provided when the 'firewall_name' argument is used.")
 
-        response, rule_collections = get_firewall_rule_collections(
-            client, subscription_id, resource_group_name, firewall_name, rule_type
-        )
-        rules = get_rules_of_collection(rule_collections, collection_name)
+        response = client.firewall_get_request(subscription_id, resource_group_name, firewall_name)
+        rules = get_rules_of_collection(get_firewall_rule_collections(response, rule_type), collection_name)
     else:
         response, rules = get_policy_rule_collection_rules(
             client, subscription_id, resource_group_name, policy_name, collection_name
@@ -5990,10 +5992,8 @@ def firewall_rule_get_command(client: AzureClient, params: dict[str, Any], args:
         if not rule_type:
             raise DemistoException("The 'rule_type' argument must be provided when the 'firewall_name' argument is used.")
 
-        response, rule_collections = get_firewall_rule_collections(
-            client, subscription_id, resource_group_name, firewall_name, rule_type
-        )
-        rules = get_rules_of_collection(rule_collections, collection_name)
+        response = client.firewall_get_request(subscription_id, resource_group_name, firewall_name)
+        rules = get_rules_of_collection(get_firewall_rule_collections(response, rule_type), collection_name)
     else:
         response, rules = get_policy_rule_collection_rules(
             client, subscription_id, resource_group_name, policy_name, collection_name
@@ -6049,8 +6049,8 @@ def firewall_service_tag_list_command(client: AzureClient, params: dict[str, Any
         return CommandResults(readable_output=f"No service tags were found in the '{location}' location.")
 
     outputs = {
-        "Azure.Firewall.ServiceTags(val.id && val.id == obj.id)": service_tags,
-        "Azure.Firewall(true)": {"ServiceTagsNextToken": response.get("nextLink")},
+        "Azure.VirtualNetworks.ServiceTagsInformation(val.id && val.id == obj.id)": service_tags,
+        "Azure.VirtualNetworks(true)": {"ServiceTagsInformationNextToken": response.get("nextLink")},
     }
     readable_output = tableToMarkdown(
         "Azure Service Tags List",
@@ -6542,12 +6542,12 @@ def main():  # pragma: no cover
             "azure-postgres-config-set-log-retention-period-quick-action": set_postgres_config_command,
             "azure-postgres-config-set-statement-logging-quick-action": set_postgres_config_command,
             "azure-postgres-server-update-ssl-enforcement-quick-action": postgres_server_update_command,
-            "azure-firewall-instance-list": firewall_list_command,
-            "azure-firewall-instance-get": firewall_get_command,
-            "azure-firewall-rule-collection-list": firewall_rule_collection_list_command,
-            "azure-firewall-rule-list": firewall_rule_list_command,
+            "azure-firewall-list": firewall_list_command,
+            "azure-firewall-get": firewall_get_command,
+            "azure-vn-firewall-policy-rule-collection-groups-list": firewall_policy_rule_collection_groups_list_command,
+            "azure-firewall-rules-list": firewall_rule_list_command,
             "azure-firewall-rule-get": firewall_rule_get_command,
-            "azure-firewall-service-tag-list": firewall_service_tag_list_command,
+            "azure-firewall-service-tags-information-list": firewall_service_tag_list_command,
         }
 
         azure_ad_endpoint = params.get("azure_ad_endpoint") or DEFAULT_AZURE_AD_ENDPOINT
