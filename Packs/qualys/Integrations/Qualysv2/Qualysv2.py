@@ -3579,7 +3579,9 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
     raw_response, set_new_limit = client.get_host_list_detection(since_datetime, next_page, limit)
     if set_new_limit:
         demisto.debug("Host list detection request needs a reduced limit; deferring to next fetch without sending.")
-        return set_assets_last_run_with_new_limit(last_run, limit), True
+        # Only signal the reduction; the caller (fetch_assets_and_vulnerabilities_by_date) is the single place that
+        # builds the reduced-limit last run, so it is not computed twice (it also handles the ExecutionTimeout case).
+        return last_run, True
 
     stream_state: dict = {}
     batch: list = []

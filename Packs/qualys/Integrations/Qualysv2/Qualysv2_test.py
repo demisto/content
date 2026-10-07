@@ -2157,7 +2157,9 @@ def test_fetch_and_send_assets_streamed_set_new_limit(mocker: MockerFixture, cli
         - Calling fetch_and_send_assets_streamed.
 
     Assert:
-        - Nothing is sent to XSIAM and the last run is reduced to half the host limit for the next fetch.
+        - Nothing is sent to XSIAM and the function only signals the reduction (set_new_limit=True),
+          returning the last run unchanged. The actual limit reduction is the caller's responsibility
+          (fetch_assets_and_vulnerabilities_by_date), so it is computed in a single place.
     """
     last_run = {"stage": "assets", "total_assets": 10, "snapshot_id": SNAPSHOT_ID, "limit": HOST_LIMIT}
 
@@ -2168,8 +2170,40 @@ def test_fetch_and_send_assets_streamed_set_new_limit(mocker: MockerFixture, cli
 
     assert set_new_limit is True
     mock_send.assert_not_called()
-    assert new_last_run["limit"] == HOST_LIMIT // 2
-    assert new_last_run["nextTrigger"] == "0"
+    # The function signals the reduction but does not apply it; the limit is still unchanged here.
+    assert new_last_run is last_run
+    assert new_last_run["limit"] == HOST_LIMIT
+
+
+def test_fetch_assets_and_vulnerabilities_by_date_assets_stage_set_new_limit(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - The "assets" stage where the streamed assets fetch signals set_new_limit=True (e.g. read timeout).
+
+    When:
+        - Calling fetch_assets_and_vulnerabilities_by_date (the orchestrator).
+
+    Assert:
+        - The orchestrator is the single place that applies the limit reduction: it calls
+          set_assets_last_run_with_new_limit exactly once and saves a last run with the halved limit.
+          (fetch_and_send_assets_streamed only signals; it does not apply the reduction.)
+    """
+    last_run = {"stage": "assets", "total_assets": 10, "snapshot_id": SNAPSHOT_ID, "limit": HOST_LIMIT}
+
+    # Streamed fetch signals a reduction and returns the last run unchanged.
+    mocker.patch("Qualysv2.fetch_and_send_assets_streamed", return_value=(last_run, True))
+    spy_set_new_limit = mocker.patch(
+        "Qualysv2.set_assets_last_run_with_new_limit", wraps=Qualysv2.set_assets_last_run_with_new_limit
+    )
+    mock_set_assets_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+
+    fetch_assets_and_vulnerabilities_by_date(client, last_run)
+
+    # Reduction applied exactly once, by the orchestrator.
+    assert spy_set_new_limit.call_count == 1
+    saved_last_run = mock_set_assets_last_run.call_args[0][0]
+    assert saved_last_run["limit"] == HOST_LIMIT // 2
+    assert saved_last_run["nextTrigger"] == "0"
 
 
 def test_fetch_assets_and_vulnerabilities_by_date_vulnerabilities_stage(mocker: MockerFixture, client: Client):
