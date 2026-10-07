@@ -4122,7 +4122,8 @@ class AssetsDeviceHandler:
                     # batch and the snapshot can still seal on the rows that did land.
                     log_falcon_assets(
                         f"AssetsDeviceHandler: [Batch {current_batch_number}] Send failed, "
-                        f"{batch_size} asset(s) not counted towards the total: {e}",
+                        f"{batch_size} asset(s) not counted towards the total: {e}\n"
+                        f"{traceback.format_exc()}",
                         "error",
                     )
                 finally:
@@ -4134,7 +4135,10 @@ class AssetsDeviceHandler:
             log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Created send task")
 
         except Exception as e:
-            log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Error enriching assets: {e}", "error")
+            log_falcon_assets(
+                f"AssetsDeviceHandler: [Batch {current_batch_number}] Error enriching assets: {e}\n{traceback.format_exc()}",
+                "error",
+            )
             raise
 
     async def flush_remaining(self, submitted_aids_count: int) -> None:
