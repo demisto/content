@@ -101,13 +101,16 @@ def get_client():
     return Client()
 
 
-def parse_incident(i):
-    return {
+def parse_incident(i, roles=None):
+    incident = {
         "name": f"{i['name']}_{i['id']}",
         "occurred": datetime.fromtimestamp(i["record_created_at"] / 1000, timezone.utc).isoformat(),  # noqa: UP017
         "severity": parse_severity(i),
         "rawJSON": json.dumps(clean_null_terms(i)),
     }
+    if roles:
+        incident["roles"] = roles
+    return incident
 
 
 def clean_null_terms(d):
@@ -123,10 +126,14 @@ def clean_null_terms(d):
 
 
 def parse_severity(item):
-    result = int(float(item["risk"]) / 2)
-    if result < 1:
-        return 1
-    return result - 1 if result > 4 else result
+    risk = float(item["risk"])
+    if risk >= 10:
+        return IncidentSeverity.CRITICAL
+    if risk >= 8:
+        return IncidentSeverity.HIGH
+    if risk >= 6:
+        return IncidentSeverity.MEDIUM
+    return IncidentSeverity.LOW
 
 
 def ids_from_incidents(incidents_array):
@@ -174,6 +181,7 @@ def _fetch_incidents(time_filter, st, page, risk, also_n2os_incidents, client):
         f"{time_filter(st)}"
         f"{risk_filter(risk)}"
         f"{also_n2os_incidents_filter(also_n2os_incidents)}"
+        f"{custom_alert_filter(demisto.params().get('customAlertFilter'))}"
     )
 
     full_path = f"{query}&page={page}&count={min(int(incident_per_run()), 1000)}"
@@ -199,6 +207,17 @@ def risk_filter(risk):
     return f" | where risk >= {int(risk)}" if risk else ""
 
 
+def custom_alert_filter(custom_filter):
+    custom_filter = (custom_filter or "").strip()
+    if not custom_filter:
+        return ""
+    return f" {custom_filter}" if custom_filter.startswith("|") else f" | {custom_filter}"
+
+
+def default_incident_roles():
+    return argToList(demisto.params().get("defaultIncidentRole"))
+
+
 def incidents(st, last_run, risk, also_n2os_incidents, client):
     def get_incident_name(i):
         return i["name"]
@@ -216,7 +235,8 @@ def incidents(st, last_run, risk, also_n2os_incidents, client):
     if ibtt is None:
         return [], lft
 
-    parsed_incidents = [parse_incident(i) for i in ibtt]
+    roles = default_incident_roles()
+    parsed_incidents = [parse_incident(i, roles) for i in ibtt]
     parsed_incidents.sort(key=get_incident_name)
 
     return parsed_incidents, lft
