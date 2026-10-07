@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "add_enable_var"
+  CURRENT_BRANCH_NAME: "add-enable-var-to-hf"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "add_enable_var"
+    ref: "add-enable-var-to-hf"
     project: "${CI_PROJECT_NAMESPACE}/infra"
