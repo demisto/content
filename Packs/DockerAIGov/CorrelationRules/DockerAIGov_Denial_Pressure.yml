@@ -1,0 +1,54 @@
+global_rule_id: DockerAIGov_Denial_Pressure
+name: Docker AI Gov - Sustained Policy Denial Pressure
+alert_name: 'Docker AI Gov: agent repeatedly blocked by governance policy'
+description: Detects a Docker AI Governance session accumulating an unusual number of policy denials,
+  indicating an agent repeatedly attempting forbidden actions.
+alert_description: An agent session was denied repeatedly by Docker AI Governance policy. Review deny_reason
+  to see which predicates fired and which resources were targeted.
+alert_category: DISCOVERY
+alert_fields:
+  actor_effective_username: username
+  actor_process_image_name: agent
+dataset: docker_ai_gov_raw
+drilldown_query_timeframe: ALERT
+execution_mode: SCHEDULED
+crontab: '*/10 * * * *'
+search_window: 15 MINUTES
+mitre_defs:
+  TA0007 - Discovery:
+  - T1083 - File and Directory Discovery
+  - T1518 - Software Discovery
+severity: SEV_030_MEDIUM
+suppression_enabled: true
+suppression_duration: 60 MINUTES
+suppression_fields: audit_session_id
+xql_query: 'dataset = docker_ai_gov_raw
+
+  | filter category = "AUDIT_CATEGORY_EVALUATION"
+
+  | alter denied = if(decision = "AUDIT_DECISION_DENY", 1, 0)
+
+  | comp sum(denied) as denials, count() as total_decisions, values(action_type) as action_types, values(resource_id)
+  as resources by audit_session_id, username, agent, hostname
+
+  | alter denial_ratio = divide(denials, total_decisions)
+
+  | filter denials >= 5 and denial_ratio > 0.3
+
+  | sort desc denials'
+mapping_strategy: CUSTOM
+fromversion: 8.4.0
+investigation_query_link: 'dataset = docker_ai_gov_raw
+
+  | filter category = "AUDIT_CATEGORY_EVALUATION"
+
+  | alter denied = if(decision = "AUDIT_DECISION_DENY", 1, 0)
+
+  | comp sum(denied) as denials, count() as total_decisions, values(action_type) as action_types, values(resource_id)
+  as resources by audit_session_id, username, agent, hostname
+
+  | alter denial_ratio = divide(denials, total_decisions)
+
+  | filter denials >= 5 and denial_ratio > 0.3
+
+  | sort desc denials'
