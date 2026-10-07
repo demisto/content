@@ -1,0 +1,180 @@
+{
+    "data": [
+        {
+            "id": "A-0001",
+            "title": "Suspicious activity 1",
+            "severity": 1,
+            "status": "open",
+            "created_at": "2026-10-01T00:00:00Z"
+        },
+        {
+            "id": "A-0002",
+            "title": "Suspicious activity 2",
+            "severity": 2,
+            "status": "in_progress",
+            "created_at": "2026-10-01T01:00:00Z"
+        },
+        {
+            "id": "A-0003",
+            "title": "Suspicious activity 3",
+            "severity": 3,
+            "status": "closed",
+            "created_at": "2026-10-01T02:00:00Z"
+        },
+        {
+            "id": "A-0004",
+            "title": "Suspicious activity 4",
+            "severity": 4,
+            "status": "open",
+            "created_at": "2026-10-01T03:00:00Z"
+        },
+        {
+            "id": "A-0005",
+            "title": "Suspicious activity 5",
+            "severity": 1,
+            "status": "in_progress",
+            "created_at": "2026-10-01T04:00:00Z"
+        },
+        {
+            "id": "A-0006",
+            "title": "Suspicious activity 6",
+            "severity": 2,
+            "status": "closed",
+            "created_at": "2026-10-01T05:00:00Z"
+        },
+        {
+            "id": "A-0007",
+            "title": "Suspicious activity 7",
+            "severity": 3,
+            "status": "open",
+            "created_at": "2026-10-01T06:00:00Z"
+        },
+        {
+            "id": "A-0008",
+            "title": "Suspicious activity 8",
+            "severity": 4,
+            "status": "in_progress",
+            "created_at": "2026-10-01T07:00:00Z"
+        },
+        {
+            "id": "A-0009",
+            "title": "Suspicious activity 9",
+            "severity": 1,
+            "status": "closed",
+            "created_at": "2026-10-01T08:00:00Z"
+        },
+        {
+            "id": "A-0010",
+            "title": "Suspicious activity 10",
+            "severity": 2,
+            "status": "open",
+            "created_at": "2026-10-01T09:00:00Z"
+        },
+        {
+            "id": "A-0011",
+            "title": "Suspicious activity 11",
+            "severity": 3,
+            "status": "in_progress",
+            "created_at": "2026-10-01T10:00:00Z"
+        },
+        {
+            "id": "A-0012",
+            "title": "Suspicious activity 12",
+            "severity": 4,
+            "status": "closed",
+            "created_at": "2026-10-01T11:00:00Z"
+        },
+        {
+            "id": "A-0013",
+            "title": "Suspicious activity 13",
+            "severity": 1,
+            "status": "open",
+            "created_at": "2026-10-01T12:00:00Z"
+        },
+        {
+            "id": "A-0014",
+            "title": "Suspicious activity 14",
+            "severity": 2,
+            "status": "in_progress",
+            "created_at": "2026-10-01T13:00:00Z"
+        },
+        {
+            "id": "A-0015",
+            "title": "Suspicious activity 15",
+            "severity": 3,
+            "status": "closed",
+            "created_at": "2026-10-01T14:00:00Z"
+        },
+        {
+            "id": "A-0016",
+            "title": "Suspicious activity 16",
+            "severity": 4,
+            "status": "open",
+            "created_at": "2026-10-01T15:00:00Z"
+        },
+        {
+            "id": "A-0017",
+            "title": "Suspicious activity 17",
+            "severity": 1,
+            "status": "in_progress",
+            "created_at": "2026-10-01T16:00:00Z"
+        },
+        {
+            "id": "A-0018",
+            "title": "Suspicious activity 18",
+            "severity": 2,
+            "status": "closed",
+            "created_at": "2026-10-01T17:00:00Z"
+        },
+        {
+            "id": "A-0019",
+            "title": "Suspicious activity 19",
+            "severity": 3,
+            "status": "open",
+            "created_at": "2026-10-01T18:00:00Z"
+        },
+        {
+            "id": "A-0020",
+            "title": "Suspicious activity 20",
+            "severity": 4,
+            "status": "in_progress",
+            "created_at": "2026-10-01T19:00:00Z"
+        },
+        {
+            "id": "A-0021",
+            "title": "Suspicious activity 21",
+            "severity": 1,
+            "status": "closed",
+            "created_at": "2026-10-01T20:00:00Z"
+        },
+        {
+            "id": "A-0022",
+            "title": "Suspicious activity 22",
+            "severity": 2,
+            "status": "open",
+            "created_at": "2026-10-01T21:00:00Z"
+        },
+        {
+            "id": "A-0023",
+            "title": "Suspicious activity 23",
+            "severity": 3,
+            "status": "in_progress",
+            "created_at": "2026-10-01T22:00:00Z"
+        },
+        {
+            "id": "A-0024",
+            "title": "Suspicious activity 24",
+            "severity": 4,
+            "status": "closed",
+            "created_at": "2026-10-01T23:00:00Z"
+        },
+        {
+            "id": "A-0025",
+            "title": "Suspicious activity 25",
+            "severity": 1,
+            "status": "open",
+            "created_at": "2026-10-01T00:00:00Z"
+        }
+    ],
+    "next_cursor": "c2"
+}
