@@ -62,7 +62,10 @@ alter
     xdm.target.ipv4 = tmp_dst_ip,
     xdm.target.port = to_integer(tmp_dst_port),
     xdm.target.host.hostname = coalesce(tmp_dst_domain, tmp_url_hostname),
-    xdm.network.ip_protocol = tmp_protocol,
+    xdm.network.ip_protocol = if(
+        tmp_protocol = "tcp", XDM_CONST.IP_PROTOCOL_TCP,
+        tmp_protocol = "udp", XDM_CONST.IP_PROTOCOL_UDP,
+        null),
     xdm.network.http.method = tmp_http_method,
     xdm.network.http.url = tmp_url_full,
     xdm.network.http.response_code = to_string(tmp_http_code),
@@ -85,5 +88,5 @@ alter
         severity_id = 3, "Medium",
         severity_id = 4, "High",
         severity_id = 5, "Critical",
-        severity_id = 6, "Fatal",
+        severity_id = 6, "Critical",
         null);
