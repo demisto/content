@@ -222,9 +222,31 @@ def test_event_search_request(mocker):
         method="POST",
         full_url=expected_url,
         data=json.dumps(data_dict),
+        timeout=(20, 20),
         headers=expected_headers,
     )
     assert result == mocked_response
+
+
+@pytest.mark.parametrize("args, expected_read_timeout", [({}, 20), ({"read_timeout": "120"}, 120)])
+def test_event_search_command_read_timeout(mocker: MockerFixture, args: dict, expected_read_timeout: int):
+    """
+    GIVEN:
+        Command arguments with or without a 'read_timeout' value.
+    WHEN:
+        The 'event_search_command' function is called.
+    THEN:
+        The search request uses the given read timeout, or the 20 second default when none is given.
+    """
+    from ExabeamSecOpsPlatform import event_search_command
+
+    mocker.patch("ExabeamSecOpsPlatform.Client._authenticate")
+    client = Client(base_url="https://example-api.com", client_id="id", client_secret="secret", verify=False, proxy=False)
+    mock_search = mocker.patch.object(client, "event_search_request", return_value={"rows": []})
+
+    event_search_command(client, args)
+
+    assert mock_search.call_args.kwargs["read_timeout"] == expected_read_timeout
 
 
 @pytest.mark.parametrize(

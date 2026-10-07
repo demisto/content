@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 TOKEN_EXPIRY_BUFFER = timedelta(seconds=10)
+DEFAULT_TIMEOUT = 20
 
 # Fetch Incidents (XSOAR)
 DEFAULT_LIMIT = 50
@@ -31,7 +32,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, proxy: bool):
-        super().__init__(base_url=f"{base_url}", verify=verify, proxy=proxy, timeout=20)
+        super().__init__(base_url=f"{base_url}", verify=verify, proxy=proxy, timeout=DEFAULT_TIMEOUT)
         self.client_id = client_id
         self.client_secret = client_secret
         self.access_token = None
@@ -134,9 +135,13 @@ class Client(BaseClient):
             else:
                 raise
 
-    def event_search_request(self, data_dict: dict) -> dict:
+    def event_search_request(self, data_dict: dict, read_timeout: int = DEFAULT_TIMEOUT) -> dict:
         """
-        Performs basic get request to check if the server is reachable.
+        Searches for events matching the given search criteria.
+
+        Args:
+            data_dict: The search request body.
+            read_timeout: How long to wait for the server to send a response, in seconds.
         """
         data = json.dumps(data_dict)
         full_url = f"{self._base_url}/search/v2/events"
@@ -144,6 +149,7 @@ class Client(BaseClient):
             method="POST",
             full_url=full_url,
             data=data,
+            timeout=(DEFAULT_TIMEOUT, read_timeout),
         )
         return response
 
@@ -715,7 +721,8 @@ def event_search_command(client: Client, args: dict) -> CommandResults:
         group_list = argToList(group_by)
         kwargs.update({"groupBy": group_list, "fields": group_list})
 
-    response = client.event_search_request(kwargs)
+    read_timeout = arg_to_number(args.get("read_timeout")) or DEFAULT_TIMEOUT
+    response = client.event_search_request(kwargs, read_timeout=read_timeout)
 
     if error := response.get("errors", {}):
         raise DemistoException(error.get("message"))

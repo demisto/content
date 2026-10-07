@@ -42,6 +42,7 @@ Get events from Exabeam Security Operations Platform.
 | fields | Comma-separated list of fields to be returned from the search. | Optional |
 | group_by | Comma-separated list of fields by which to group the results. | Optional |
 | limit | The maximal number of results to return. Maximum value is 3000. | Optional |
+| read_timeout | How long to wait for Exabeam to send a response, in seconds (HTTP read timeout). Increase this value for searches that take longer to return. This is separate from the command execution timeout. Default is 20. | Optional |
 
 #### Context Output
 

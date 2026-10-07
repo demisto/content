@@ -138,6 +138,10 @@ script:
     - description: The maximal number of results to return. Maximum value is 3000.
       name: limit
       required: false
+    - defaultValue: "20"
+      description: How long to wait for Exabeam to send a response, in seconds (HTTP read timeout). Increase this value for searches that take longer to return. This is separate from the command execution timeout.
+      name: read_timeout
+      required: false
     description: Get events from Exabeam Security Operations Platform.
     name: exabeam-platform-event-search
     outputs:
