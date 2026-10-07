@@ -13852,7 +13852,12 @@ class TestSpotlightFetchTuning:
     @pytest.mark.asyncio
     async def test_asset_enrichment_tasks_are_bounded(self, mocker):
         """Nothing else bounds these: they are spawned from the vulnerability stream and only
-        awaited at the end of the cycle, so their payloads otherwise accumulate for the whole run."""
+        awaited at the end of the cycle, so their payloads otherwise accumulate for the whole run.
+
+        Patches the inner body, not enrich_and_ingest_batch: the latter is the semaphore wrapper,
+        so patching it would replace the limit being measured and the test would pass with the
+        bound removed entirely.
+        """
         import CrowdStrikeFalcon
 
         mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
@@ -13868,18 +13873,23 @@ class TestSpotlightFetchTuning:
         live = 0
         high_water = 0
 
-        async def slow_enrich(*_args, **_kwargs):
+        async def slow_body(_self, _batch, _final_items_count=1):
             nonlocal live, high_water
             live += 1
             high_water = max(high_water, live)
-            await asyncio.sleep(0)
+            # Several turns, so a batch stays in flight past the tick that starts the next one.
+            for _ in range(5):
+                await asyncio.sleep(0)
             live -= 1
 
-        mocker.patch.object(handler, "enrich_and_ingest_batch", side_effect=slow_enrich)
+        mocker.patch.object(CrowdStrikeFalcon.AssetsDeviceHandler, "_enrich_and_ingest_batch", slow_body)
 
         await handler.receive_new_aids({f"aid{i}" for i in range(40)})
+        # Dispatch no longer blocks, so nothing has run yet at this point.
+        await handler.drain()
 
         assert high_water <= CrowdStrikeFalcon.MAX_PENDING_ASSET_TASKS
+        assert high_water > 1, "no batches overlapped, so the bound was never exercised"
 
     @pytest.mark.asyncio
     async def test_asset_tasks_are_drained_when_the_cycle_does_not_seal(self, mocker):
