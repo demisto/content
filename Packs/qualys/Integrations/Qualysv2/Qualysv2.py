@@ -34,14 +34,10 @@ ASSET_SIZE_LIMIT = 10**6  # 1MB
 TEST_FROM_DATE = "one day"
 FETCH_ASSETS_COMMAND_TIME_OUT = 180
 QIDS_BATCH_SIZE = 500
+# Batch size for the by-date streamed sends. The by-date assets and vulnerabilities responses are streamed and
+# flushed in fixed-size batches into a single snapshot, keeping peak memory ~O(batch) instead of ~O(full response).
 VULNERABILITIES_SEND_BATCH_SIZE = 5000
-# Stream the by-date vulnerabilities send in bounded batches. By-date only: it's a standalone non-snapshot send
-# of one huge response. Excludes by-QIDs (already batched per fetch, and sealed into one snapshot with assets).
-VULNERABILITIES_STREAMING_SEND_ENABLED = True
 ASSETS_SEND_BATCH_SIZE = 5000
-# Stream the by-date assets send in bounded batches. `truncation_limit` bounds hosts per page, but a host's
-# `DETECTION_LIST` is unbounded, so flushing fixed-size batches into the same snapshot keeps peak memory ~O(batch).
-ASSETS_STREAMING_SEND_ENABLED = True
 # Retry configuration for Qualys rate-limit (HTTP 409, Error Code 1965) responses.
 RATE_LIMIT_STATUS_CODE = 409
 RATE_LIMIT_TO_WAIT_HEADER = "X-RateLimit-ToWait-Sec"
@@ -3867,71 +3863,27 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
     if fetch_stage == "assets":
         demisto.debug(f"Starting fetch for assets, {EXECUTION_START_TIME=}")
 
-        # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
-        # Initialize to True, could be changed to False via internal functions
+        # If assets request read timeout (set_new_limit flag is True) or exceeded max execution time, make next API call smaller.
+        # Initialize to True, could be changed to False via internal functions.
         set_new_limit = True
 
-        if ASSETS_STREAMING_SEND_ENABLED:
-            # Streamed path: fetch, parse, and send one page in bounded batches (peak memory ~O(batch), not O(page)).
-            # The page is fetched and sent inside the function; the timeout guard still reduces the limit on overrun.
-            with ExecutionTimeout(FETCH_ASSETS_COMMAND_TIME_OUT):
-                new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
-                demisto.debug("Finished streamed fetch for assets.")
-
-            if set_new_limit:
-                demisto.debug(
-                    f"Reducing limit for assets next run due to exceeding timeout: {FETCH_ASSETS_COMMAND_TIME_OUT}. "
-                    f"Elapsed time: {time.time() - EXECUTION_START_TIME}."
-                )
-                new_last_run = set_assets_last_run_with_new_limit(last_run, last_run.get("limit", HOST_LIMIT))
-
-            demisto.setAssetsLastRun(new_last_run)
-            demisto.debug(f"Finished fetch assets and vulnerabilities run (by date). Set last assets run: {new_last_run}")
-            return
-
+        # Fetch, parse, and send one page in bounded batches (peak memory ~O(batch), not O(page)).
+        # The page is fetched and sent inside the function; the timeout guard still reduces the limit on overrun.
         with ExecutionTimeout(FETCH_ASSETS_COMMAND_TIME_OUT):
-            # Exits code block below if it takes longer to execute than the specified timeout
-            assets, new_last_run, total_assets_to_report, snapshot_id, set_new_limit = fetch_assets(client, last_run)
-            demisto.debug("Finished fetch for assets.")
+            new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+            demisto.debug("Finished streamed fetch for assets.")
 
         if set_new_limit:
             demisto.debug(
                 f"Reducing limit for assets next run due to exceeding timeout: {FETCH_ASSETS_COMMAND_TIME_OUT}. "
-                f"Set new limit: {set_new_limit}. Elapsed time: {time.time() - EXECUTION_START_TIME}."
+                f"Elapsed time: {time.time() - EXECUTION_START_TIME}."
             )
             new_last_run = set_assets_last_run_with_new_limit(last_run, last_run.get("limit", HOST_LIMIT))
-        else:
-            cumulative_assets_count: int = new_last_run["total_assets"]
-            is_last_page = not new_last_run.get("next_page")
-            demisto.debug(
-                f"Sending {len(assets)} assets to XSIAM with snapshot ID: {snapshot_id}. "
-                f"Total assets collected so far: {cumulative_assets_count}. "
-                f"Reported items count: {total_assets_to_report}. Is last page: {is_last_page}."
-            )
-
-            if is_last_page:
-                assets, total_assets_to_report = close_snapshot_if_empty(assets, total_assets_to_report, snapshot_id, "assets")
-
-            send_assets_and_vulnerabilities_to_xsiam(
-                assets,
-                vendor=VENDOR,
-                product="assets",
-                snapshot_id=snapshot_id,
-                items_count=str(total_assets_to_report),
-                should_update_health_module=False,
-            )
-
-            demisto.updateModuleHealth({"assetsPulled": cumulative_assets_count})
 
         demisto.setAssetsLastRun(new_last_run)
 
     elif fetch_stage == "vulnerabilities":
-        if VULNERABILITIES_STREAMING_SEND_ENABLED:
-            new_last_run = fetch_and_send_vulnerabilities_streamed(client, last_run)
-        else:
-            vulnerabilities, new_last_run = fetch_vulnerabilities(client, last_run)
-            demisto.debug(f"Sending {len(vulnerabilities)} vulnerabilities to XSIAM.")
-            send_assets_and_vulnerabilities_to_xsiam(vulnerabilities, vendor=VENDOR, product="vulnerabilities")
+        new_last_run = fetch_and_send_vulnerabilities_streamed(client, last_run)
         demisto.setAssetsLastRun(new_last_run)
 
     demisto.debug(f"Finished fetch assets and vulnerabilities run (by date). Set last assets run: {new_last_run}")
