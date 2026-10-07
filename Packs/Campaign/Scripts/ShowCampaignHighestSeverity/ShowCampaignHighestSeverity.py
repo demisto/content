@@ -39,11 +39,11 @@ def main():  # pragma: no cover
         color = COLORS_AND_NAMES[highest_severity]["color"]
         description = COLORS_AND_NAMES[highest_severity]["dsc"]
         html = (
-            "<div style='text-align:center; font-size:17px; padding: 15px;'> Highest Severity</br> "
-            f"<div style='font-size:32px; color:{color};'> {description} </div></div>"
+            "<div style='text-align:center; font-size:17px; padding: 8px;'>Highest Severity"
+            f"<div style='font-size:24px; color:{color};'>{description}</div></div>"
         )
     except Exception:
-        html = "<div style='text-align:center; padding: 20px;'> <div> No severity </div>"
+        html = "<div style='text-align:center; font-size:17px; padding: 8px;'>Highest Severity<div>No severity</div></div>"
 
     # Return the data to the layout:
     return_results(

@@ -59,8 +59,8 @@ def main():
                 CommandResults(
                     content_format="html",
                     raw_response=(
-                        "<div style='text-align:center; font-size:17px; padding: 15px;'>Senders"
-                        "</br> <div style='font-size:20px;'> No incident senders found.</div></div>"
+                        "<div style='text-align:center; font-size:17px; padding: 8px;'>Senders"
+                        "<div style='font-size:20px;'>No incident senders found.</div></div>"
                     ),
                 )
             )

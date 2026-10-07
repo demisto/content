@@ -395,3 +395,4 @@ script:
 fromversion: 6.10.0
 tests:
 - PaloAltoNetworks_DeviceSecurity-Test
+excludefromtightlycoupled: true

@@ -1595,3 +1595,4 @@ fromversion: 8.7.0
 supportedModules:
 - xsiam
 - edr
+excludefromtightlycoupled: true

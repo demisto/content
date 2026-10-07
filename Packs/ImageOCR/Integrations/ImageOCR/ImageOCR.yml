@@ -54,3 +54,4 @@ script:
   subtype: python3
 tests:
 - No tests (auto formatted)
+excludefromtightlycoupled: true
