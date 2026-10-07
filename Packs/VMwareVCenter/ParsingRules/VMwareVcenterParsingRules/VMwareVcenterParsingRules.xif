@@ -6,7 +6,7 @@ filter _raw_log ~= "vcsa-audit"
 | alter
     tmp_obj_struct = arraystring(arraymap(tmp_keys, concat("(?P<", "@element", ">[^\|]+)")), ",")
 | alter 
-    tmp_values = replex(to_json_string(tmp_values), "\"", "")
+    tmp_values = arraystring(arraymap(tmp_values, replex("@element", "[\"\\\\]", "")), ",")
 | alter
     parsed_fields = regexcapture(tmp_values, tmp_obj_struct);
 
