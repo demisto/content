@@ -85,6 +85,15 @@ FILTER_VALUE_MAPS = {
         "peripheral control": "Peripheral Control",
     },
 }
+# DLP scores severity from 1 (Informational) to 5 (Critical), while XSOAR scores it from 0.5 to 4,
+# so the stored value must be translated before the incoming mapper copies it into the severity field.
+XSOAR_SEVERITY_BY_DLP_SEVERITY = {
+    "5": IncidentSeverity.CRITICAL,
+    "4": IncidentSeverity.HIGH,
+    "3": IncidentSeverity.MEDIUM,
+    "2": IncidentSeverity.LOW,
+    "1": IncidentSeverity.INFO,
+}
 # Characters that could break out of a quoted filter literal.
 UNSAFE_FILTER_VALUE = re.compile(r"['\\\x00-\x1f]")
 
@@ -658,6 +667,22 @@ def build_incident_filter(params: dict) -> str:
     return " AND ".join(clause for clause in clauses if clause)
 
 
+def to_xsoar_severity(dlp_severity: Any) -> float:
+    """
+    Translate a DLP incident severity to the XSOAR severity scale.
+
+    Args:
+        dlp_severity: The row's severity, either the stored number (1-5) or its readable name.
+
+    Returns:
+        float: The matching IncidentSeverity value, or IncidentSeverity.UNKNOWN when unrecognized.
+    """
+    severity = str(dlp_severity).strip().lower() if dlp_severity is not None else ""
+    # Readable names are accepted too, translated with the same map the severity filter uses.
+    severity = FILTER_VALUE_MAPS["Severity"].get(severity, severity)
+    return XSOAR_SEVERITY_BY_DLP_SEVERITY.get(severity, IncidentSeverity.UNKNOWN)
+
+
 def parse_created_date(value: Any) -> datetime | None:
     """
     Normalize a v4 ``created_date`` into a timezone-aware datetime.
@@ -732,7 +757,8 @@ def create_incident(row: dict, created_at: datetime, incident_type: str = "Data 
         "region": row.get("source_region"),
         "previousNotification": {"feedback_status": row.get("feedback_status")},
         "incidentDetails": {
-            "headers": [{"attribute_name": "severity", "attribute_value": row.get("severity")}],
+            # The incoming mapper copies this value into the severity field unchanged.
+            "headers": [{"attribute_name": "severity", "attribute_value": to_xsoar_severity(row.get("severity"))}],
             # The incoming mapper reads the App incident field from incidentDetails.app_details.name,
             # which the v1 fetch filled from the compressed details blob. "destination" is that
             # same value: the control point reports the application it resolved, and the inventory
@@ -943,6 +969,9 @@ def fetch_notifications(
 
     query_token = resp.get("query_token") or ""
     total_rows = resp.get("total_rows") or 0
+    # Set when paging stops before the result set was fully read, so the unread part of the
+    # window is not mistaken for an empty one.
+    incomplete_reason = ""
 
     offset = 0
     while rows:
@@ -964,15 +993,37 @@ def fetch_notifications(
             new_incidents.append(create_incident(row, created_at, incident_type))
             fetched_incident_ids_committed_timestamps[incident_id] = int(created_at.timestamp())
 
-        if len(new_incidents) >= max_fetch or not query_token or (total_rows and offset >= total_rows):
+        if len(new_incidents) >= max_fetch or (total_rows and offset >= total_rows):
             break
 
-        resp, _ = client.get_incidents_next_page(query_token, offset)
+        if not query_token:
+            # Without total_rows, a full page is the only sign that more rows may follow.
+            if total_rows or len(rows) >= V4_PAGE_SIZE:
+                incomplete_reason = f"No query token was returned after reading {offset} of {total_rows or 'unknown'} rows."
+            break
+
+        resp, status_code = client.get_incidents_next_page(query_token, offset)
+        if status_code not in (200, 201, 204):
+            error_message = resp.get("error") or "Could not determine the error reason."
+            incomplete_reason = f"Failed to fetch the page at {offset=}, got status code {status_code}. {error_message}"
+            break
+
         rows = resp.get("rows") or []
         demisto.debug(f"Fetched {len(rows)} rows at {offset=}.")
+        if not rows and total_rows and offset < total_rows:
+            incomplete_reason = f"Got an empty page after reading {offset} of {total_rows} rows."
 
     demisto.debug(f"Finished fetching. Got {len(new_incidents)} new incidents.")
     demisto.debug(f"Fetched incidents: {[inc.get('name') for inc in new_incidents]}.")
+
+    # Same contract as the first-page check above: an unread window must not advance the watermark.
+    # Incidents already collected are still returned, since the next run resumes from the latest of them.
+    if incomplete_reason and not new_incidents:
+        raise DemistoException(
+            f"{incomplete_reason} The last run was left unchanged, so this time window is re-queried on the next fetch."
+        )
+    if incomplete_reason:
+        demisto.info(f"{incomplete_reason} Returning the {len(new_incidents)} incidents collected so far.")
 
     next_run = compute_next_run(
         fetched_incident_ids_committed_timestamps,
