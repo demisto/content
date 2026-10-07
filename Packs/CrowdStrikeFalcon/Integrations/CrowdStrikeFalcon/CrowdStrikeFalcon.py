@@ -3973,7 +3973,7 @@ class AssetsDeviceHandler:
         self.asset_last_saved_batch_number = 0
 
         # Rows XSIAM confirmed storing. A snapshot declaring more rows than were stored can never
-        # seal (XSUP-77575), so the count must come from confirmed storage, not from enrichment.
+        # seal, so the count must come from confirmed storage, not from enrichment.
         self.stored_assets_count = 0
 
         # Row held back to carry the final count, as the vulnerability path does. It must be an
@@ -4146,7 +4146,7 @@ class AssetsDeviceHandler:
         Enrich the leftover AIDs, drain every in-flight send, then seal with the withheld row.
 
         The drain must precede the seal: the declared total is the number of rows XSIAM confirmed
-        storing, which is only final once every send has settled (XSUP-77575).
+        storing, which is only final once every send has settled.
 
         Args:
             submitted_aids_count: Unique AIDs submitted. Logged only; the declared total is the
