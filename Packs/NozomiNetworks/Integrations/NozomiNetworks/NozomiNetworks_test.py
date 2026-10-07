@@ -101,7 +101,7 @@ def test_parse_incidents():
 
     assert i == {
         "name": "Link RST sent by Slave_1af93f46-65c1-4f52-a46a-2a181597fb0c",
-        "severity": 2,
+        "severity": 1,
         "rawJSON": '{"id": "1af93f46-65c1-4f52-a46a-2a181597fb0c", '
         '"type_id": "NET:RST-FROM-SLAVE", "name": "Link RST sent by Slave", '
         '"description": "The slave 10.197.23.139 sent a RST of the connection to the master.", '
@@ -113,9 +113,30 @@ def test_parse_incidents():
     }
 
 
-@pytest.mark.parametrize("obj, expected", [(10, 4), (9.0, 4), (8.5, 4), (2.3, 1), (1.6, 1)])
+@pytest.mark.parametrize(
+    "obj, expected",
+    [
+        (0, 1),
+        (1, 1),
+        (1.6, 1),
+        (2.3, 1),
+        (5, 1),
+        (5.9, 1),
+        ("6", 2),
+        (6, 2),
+        (7, 2),
+        (7.9, 2),
+        (8, 3),
+        (8.5, 3),
+        ("9.0", 3),
+        (9, 3),
+        (9.9, 3),
+        (10, 4),
+        ("10.0", 4),
+    ],
+)
 def test_parse_severity(obj, expected):
-    assert parse_severity({"risk": obj}) is expected
+    assert parse_severity({"risk": obj}) == expected
 
 
 def test_http_incident_request(requests_mock):
@@ -161,8 +182,8 @@ def test_incidents_filtered(requests_mock):
 
     assert lr == 1392048082242
     assert [{"name": f"{i['name'].partition('_')[0]}", "severity": i["severity"]} for i in fi] == [
-        {"name": "Link RST sent by Slave", "severity": 2},
-        {"name": "New Node", "severity": 4},
+        {"name": "Link RST sent by Slave", "severity": 1},
+        {"name": "New Node", "severity": 3},
     ]
 
 
@@ -253,6 +274,102 @@ def test_ids_from_incidents():
 @pytest.mark.parametrize("obj, expected", [("8", " | where risk >= 8"), ("", ""), (None, "")])
 def test_risk_filter(obj, expected):
     assert risk_filter(obj) == expected
+
+
+@pytest.mark.parametrize(
+    "obj, expected",
+    [
+        (None, ""),
+        ("", ""),
+        ("   ", ""),
+        ("where risk >= 8", " | where risk >= 8"),
+        ("  where risk >= 8  ", " | where risk >= 8"),
+        ("| where risk >= 8", " | where risk >= 8"),
+        ("|where risk >= 8", " |where risk >= 8"),
+        ("where risk >= 8 | where is_security == true", " | where risk >= 8 | where is_security == true"),
+    ],
+)
+def test_custom_alert_filter(obj, expected):
+    assert custom_alert_filter(obj) == expected
+
+
+def test_incidents_with_custom_alert_filter(requests_mock):
+    with patch.object(demisto, "params", return_value={"customAlertFilter": "where type_id == SIGN:MALWARE-DETECTED"}):
+        fi, _ = incidents(
+            "1392048082000",
+            {},
+            "4",
+            False,
+            __get_client(
+                [
+                    {
+                        "json": __load_test_data("./test_data/incidents_better_than_time.json"),
+                        "path": "/api/open/query/do?query=alerts | sort record_created_at asc "
+                        "| where record_created_at > 1392048082000 | where risk >= 4 | where is_incident == false "
+                        "| where type_id == SIGN:MALWARE-DETECTED&page=1&count=100",
+                    }
+                ],
+                requests_mock,
+            ),
+        )
+
+    assert len(fi) == 2
+
+
+@pytest.mark.parametrize(
+    "demisto_params, expected",
+    [
+        ({}, []),
+        ({"defaultIncidentRole": ""}, []),
+        ({"defaultIncidentRole": "Administrator"}, ["Administrator"]),
+        ({"defaultIncidentRole": "Analyst_L2"}, ["Analyst_L2"]),
+        ({"defaultIncidentRole": "Analyst_L2, Administrator"}, ["Analyst_L2", "Administrator"]),
+    ],
+)
+def test_default_incident_roles(demisto_params, expected):
+    with patch.object(demisto, "params", return_value=demisto_params):
+        assert default_incident_roles() == expected
+
+
+def test_parse_incident_with_roles():
+    alert = {"id": "1", "name": "New Node", "record_created_at": 1392048082242, "risk": "9.0"}
+
+    assert parse_incident(alert, ["Analyst_L2"])["roles"] == ["Analyst_L2"]
+    assert "roles" not in parse_incident(alert)
+    assert "roles" not in parse_incident(alert, [])
+
+
+def test_fetch_incidents_assigns_default_role():
+    alerts = [
+        {"id": "1", "name": "New Node", "record_created_at": 1392048082242, "risk": "9.0"},
+        {"id": "2", "name": "Link RST sent by Slave", "record_created_at": 1392048082242, "risk": "4.5"},
+    ]
+    client = MagicMock()
+    client.http_get_request.return_value = {"result": alerts}
+
+    with (
+        patch.object(demisto, "params", return_value={"defaultIncidentRole": "Analyst_L2"}),
+        patch.object(demisto, "incidents") as mock_incidents,
+        patch.object(demisto, "setLastRun"),
+    ):
+        fetch_incidents(client, st="1392048082000", last_run={"page": 1}, risk="1", fetch_also_n2os_incidents=True)
+
+    created_incidents = mock_incidents.call_args[0][0]
+    assert len(created_incidents) == 2
+    assert all(incident["roles"] == ["Analyst_L2"] for incident in created_incidents)
+
+
+def test_fetch_incidents_without_default_role():
+    alerts = [{"id": "1", "name": "New Node", "record_created_at": 1392048082242, "risk": "9.0"}]
+    client = MagicMock()
+    client.http_get_request.return_value = {"result": alerts}
+
+    with patch.object(demisto, "params", return_value={}):
+        fetched, _ = fetch_incidents(
+            client, st="1392048082000", last_run={"page": 1}, risk="1", fetch_also_n2os_incidents=True, test_mode=True
+        )
+
+    assert "roles" not in fetched[0]
 
 
 @pytest.mark.parametrize("obj, expected", [(True, ""), (False, " | where is_incident == false")])
