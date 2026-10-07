@@ -26,6 +26,9 @@ DEFAULT_LIMIT = "50"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 STORAGE_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
 API_VERSION = "2022-09-01"
+# Azure Storage data-plane (Blob service) REST API version, used for both the x-ms-version
+# request header and the SAS token signed version (sv) so the two always stay in sync.
+STORAGE_API_VERSION = "2023-11-03"
 NEW_API_VERSION_PARAMS = {"api-version": "2024-05-01"}
 GRANT_BY_CONNECTION = {
     "Device Code": DEVICE_CODE,
@@ -1125,7 +1128,7 @@ class AzureClient:
             custom_headers (dict, optional): Custom headers to be added to the request.
         """
         request_headers = {
-            "x-ms-version": "2023-11-03",
+            "x-ms-version": STORAGE_API_VERSION,
             "x-ms-date": dt.datetime.utcnow().strftime(STORAGE_DATE_FORMAT),
         }
         if self.headers:
@@ -3841,7 +3844,10 @@ def storage_container_blob_list_command(client: AzureClient, params: dict, args:
     next_token = root.findtext("NextMarker")
 
     outputs = {
-        "Azure.Storage.Blob(val.name && val.name == obj.name)": {"ContainerName": container_name, "Blob": blobs},
+        "Azure.Storage.Blob(val.ContainerName && val.ContainerName == obj.ContainerName)": {
+            "ContainerName": container_name,
+            "Blob": blobs,
+        },
         "Azure.Storage(true)": {"BlobsNextToken": next_token},
     }
 
@@ -4002,7 +4008,7 @@ def generate_sas_token_command(client: AzureClient, params: dict, args: dict) ->
     signed_permissions = args["signed_permissions"]
     signed_ip = args.get("signed_ip", "")
     valid_permissions = "racwdxltmeop"
-    api_version = "2020-10-02"
+    api_version = STORAGE_API_VERSION
 
     if not check_valid_permission(valid_permissions, signed_permissions):
         raise DemistoException(

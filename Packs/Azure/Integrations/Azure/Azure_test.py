@@ -7679,7 +7679,7 @@ def test_storage_container_blob_list_command_success(mocker):
     }
     result = storage_container_blob_list_command(mock_client, {}, args)
 
-    outputs = result.outputs["Azure.Storage.Blob(val.name && val.name == obj.name)"]
+    outputs = result.outputs["Azure.Storage.Blob(val.ContainerName && val.ContainerName == obj.ContainerName)"]
     assert isinstance(result, CommandResults)
     assert outputs["ContainerName"] == "mock-container-1"
     assert len(outputs["Blob"]) == 2

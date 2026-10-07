@@ -962,9 +962,6 @@ script:
       name: subscription_id
       required: false
       required:platform: true
-    - description: "The resource group name."
-      name: resource_group_name
-      required: true
     - description: Filters the results to return only Containers whose names begin with the specified prefix.
       name: prefix
     - description: The maximum number of Containers to retrieve. Valid range 1-5000.
@@ -993,9 +990,6 @@ script:
       name: subscription_id
       required: false
       required:platform: true
-    - description: "The resource group name."
-      name: resource_group_name
-      required: true
     - description: Filters the results to return only Blobs whose names begin with the specified prefix.
       name: prefix
     - description: The maximum number of Blobs to retrieve. Valid range 1-5000.
@@ -1033,9 +1027,6 @@ script:
       name: subscription_id
       required: false
       required:platform: true
-    - description: "The resource group name."
-      name: resource_group_name
-      required: true
 
   - name: azure-storage-blob-delete
     description: "Marks a specific Blob for deletion. The Blob will be deleted during garbage collection. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete."
@@ -1054,9 +1045,6 @@ script:
       name: subscription_id
       required: false
       required:platform: true
-    - description: "The resource group name."
-      name: resource_group_name
-      required: true
 
   - name: azure-storage-container-sas-create
     description: "Creates a SAS token for a Container."
