@@ -3125,6 +3125,571 @@ There are no input arguments for this command.
 
 There is no context output for this command.
 
+### azure-firewall-policy-detach
+
+***
+Detaches the firewall policy from a firewall. The command detaches the policy from the firewall, but does not delete the policy. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write.
+
+#### Base Command
+
+`azure-firewall-policy-detach`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| firewall_name | The name of the firewall from which the policy is detached. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Firewall.Firewalls.id | String | The firewall resource ID. |
+| Azure.Firewall.Firewalls.name | String | The firewall resource name. |
+| Azure.Firewall.Firewalls.type | String | The firewall resource type. |
+| Azure.Firewall.Firewalls.location | String | The firewall resource location. |
+| Azure.Firewall.Firewalls.etag | String | The unique read-only string that changes whenever the resource is updated. |
+| Azure.Firewall.Firewalls.tags | Unknown | The firewall resource tags. |
+| Azure.Firewall.Firewalls.zones | Unknown | A list of availability zones from which the resource originates. |
+| Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the firewall resource. Possible values are "Succeeded", "Updating", "Deleting", or "Failed". |
+| Azure.Firewall.Firewalls.properties.threatIntelMode | String | The threat intelligence operation mode. |
+| Azure.Firewall.Firewalls.properties.firewallPolicy | Unknown | The firewall policy object associated with the firewall containing the id field. |
+| Azure.Firewall.Firewalls.properties.sku | Unknown | The SKU object of the firewall containing the name and tier fields. |
+| Azure.Firewall.Firewalls.properties.ipConfigurations | Unknown | The IP configurations of the firewall resource. |
+| Azure.Firewall.Firewalls.properties.hubIPAddresses | Unknown | The IP addresses associated with the firewall resource. |
+| Azure.Firewall.Firewalls.properties.virtualHub | Unknown | The virtual hub object to which the firewall belongs containing the id field. |
+| Azure.Firewall.Firewalls.properties.managementIpConfiguration | Unknown | The management IP configuration of the firewall resource used for forced tunneling. |
+| Azure.Firewall.Firewalls.properties.applicationRuleCollections | Unknown | A list of application rule collections of the firewall resource. Returned only when the firewall is not managed by a firewall policy. |
+| Azure.Firewall.Firewalls.properties.natRuleCollections | Unknown | A list of NAT rule collections of the firewall resource. Returned only when the firewall is not managed by a firewall policy. |
+| Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | A list of network rule collections of the firewall resource. Returned only when the firewall is not managed by a firewall policy. |
+| Azure.Firewall.Firewalls.properties.ipGroups | Unknown | A list of IP groups associated with the firewall resource. |
+| Azure.Firewall.Firewalls.properties.autoscaleConfiguration | Unknown | The autoscale settings of the firewall resource containing the minCapacity and maxCapacity fields. |
+| Azure.Firewall.Firewalls.properties.additionalProperties | Unknown | The additional properties used to further configure the firewall resource. |
+
+### azure-vn-firewall-policy-get
+
+***
+Retrieves a firewall policy. Required permission: Microsoft.Network/firewallPolicies/read.
+
+#### Base Command
+
+`azure-vn-firewall-policy-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the firewall policy to retrieve. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.FirewallPolicies.id | String | The firewall policy resource ID. |
+| Azure.VirtualNetworks.FirewallPolicies.name | String | The firewall policy resource name. |
+| Azure.VirtualNetworks.FirewallPolicies.type | String | The firewall policy resource type. |
+| Azure.VirtualNetworks.FirewallPolicies.location | String | The firewall policy resource location. |
+| Azure.VirtualNetworks.FirewallPolicies.etag | String | The unique read-only string that changes whenever the resource is updated. |
+| Azure.VirtualNetworks.FirewallPolicies.tags | Unknown | The firewall policy resource tags. |
+| Azure.VirtualNetworks.FirewallPolicies.identity | Unknown | The managed identity of the firewall policy containing the type, principalId, tenantId, and userAssignedIdentities fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.provisioningState | String | The provisioning state of the firewall policy resource. Possible values are "Succeeded", "Updating", "Deleting", or "Failed". |
+| Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelMode | String | The threat intelligence operation mode. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelWhitelist | Unknown | The threat intelligence allow list object containing the ipAddresses and fqdns fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.dnsSettings | Unknown | The DNS settings object containing the servers, enableProxy, and requireProxyForNetworkRules fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.sku | Unknown | The SKU object of the firewall policy containing the tier field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.basePolicy | Unknown | The parent firewall policy object from which rules are inherited containing the id field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.firewalls | Unknown | A list of references to Azure Firewalls associated with the firewall policy. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.childPolicies | Unknown | A list of references to child firewall policies. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.ruleCollectionGroups | Unknown | A list of references to rule collection groups of the firewall policy. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.size | String | The size of the firewall policy, in MB \(for example, 0.5 MB\). |
+| Azure.VirtualNetworks.FirewallPolicies.properties.insights | Unknown | The insights settings of the firewall policy containing the isEnabled, retentionDays, and logAnalyticsResources fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.snat | Unknown | The private IP address ranges to which traffic is not SNATed containing the privateRanges and autoLearnPrivateRanges fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.sql | Unknown | The SQL settings of the firewall policy containing the allowSqlRedirect field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.explicitProxy | Unknown | The explicit proxy settings of the firewall policy containing the enableExplicitProxy, httpPort, httpsPort, enablePacFile, pacFilePort, and pacFile fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.intrusionDetection | Unknown | The intrusion detection settings of the firewall policy containing the mode, profile, and configuration fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.transportSecurity | Unknown | The TLS inspection settings of the firewall policy containing the certificateAuthority field. |
+
+### azure-vn-firewall-policy-delete
+
+***
+Deletes a firewall policy resource. Required permission: Microsoft.Network/firewallPolicies/delete.
+
+#### Base Command
+
+`azure-vn-firewall-policy-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the firewall policy to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-vn-firewall-policy-list
+
+***
+Lists the firewall policies in a resource group. Use the next_token argument to view the next page of results. Required permission: Microsoft.Network/firewallPolicies/read.
+
+#### Base Command
+
+`azure-vn-firewall-policy-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| next_token | The URI to fetch the next page of results as returned in the Azure.VirtualNetworks.FirewallPoliciesNextToken output of a previous run. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.FirewallPolicies.id | String | The firewall policy resource ID. |
+| Azure.VirtualNetworks.FirewallPolicies.name | String | The firewall policy resource name. |
+| Azure.VirtualNetworks.FirewallPolicies.type | String | The firewall policy resource type. |
+| Azure.VirtualNetworks.FirewallPolicies.location | String | The firewall policy resource location. |
+| Azure.VirtualNetworks.FirewallPolicies.etag | String | The unique read-only string that changes whenever the resource is updated. |
+| Azure.VirtualNetworks.FirewallPolicies.tags | Unknown | The firewall policy resource tags. |
+| Azure.VirtualNetworks.FirewallPolicies.identity | Unknown | The managed identity of the firewall policy containing the type, principalId, tenantId, and userAssignedIdentities fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.provisioningState | String | The provisioning state of the firewall policy resource. Possible values are "Succeeded", "Updating", "Deleting", or "Failed". |
+| Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelMode | String | The threat intelligence operation mode. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelWhitelist | Unknown | The threat intelligence allow list object containing the ipAddresses and fqdns fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.dnsSettings | Unknown | The DNS settings object containing the servers, enableProxy, and requireProxyForNetworkRules fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.sku | Unknown | The SKU object of the firewall policy containing the tier field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.basePolicy | Unknown | The parent firewall policy object from which rules are inherited containing the id field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.firewalls | Unknown | A list of references to Azure Firewalls associated with the firewall policy. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.childPolicies | Unknown | A list of references to child firewall policies. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.ruleCollectionGroups | Unknown | A list of references to rule collection groups of the firewall policy. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.size | String | The size of the firewall policy, in MB \(for example, 0.5 MB\). |
+| Azure.VirtualNetworks.FirewallPolicies.properties.insights | Unknown | The insights settings of the firewall policy containing the isEnabled, retentionDays, and logAnalyticsResources fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.snat | Unknown | The private IP address ranges to which traffic is not SNATed containing the privateRanges and autoLearnPrivateRanges fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.sql | Unknown | The SQL settings of the firewall policy containing the allowSqlRedirect field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.explicitProxy | Unknown | The explicit proxy settings of the firewall policy containing the enableExplicitProxy, httpPort, httpsPort, enablePacFile, pacFilePort, and pacFile fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.intrusionDetection | Unknown | The intrusion detection settings of the firewall policy containing the mode, profile, and configuration fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.transportSecurity | Unknown | The TLS inspection settings of the firewall policy containing the certificateAuthority field. |
+| Azure.VirtualNetworks.FirewallPoliciesNextToken | String | The URI to fetch the next page of firewall policies. Run the same command with the next_token argument to get the next page. |
+
+### azure-firewall-policy-attach
+
+***
+Attaches a firewall policy to a firewall. The policy and the firewall must belong to the same tier. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write, Microsoft.Network/firewallPolicies/join/action.
+
+#### Base Command
+
+`azure-firewall-policy-attach`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| firewall_name | The name of the firewall to which the policy is attached. | Required |
+| policy_id | The ID of the firewall policy to attach. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Firewall.Firewalls.id | String | The firewall resource ID. |
+| Azure.Firewall.Firewalls.name | String | The firewall resource name. |
+| Azure.Firewall.Firewalls.type | String | The firewall resource type. |
+| Azure.Firewall.Firewalls.location | String | The firewall resource location. |
+| Azure.Firewall.Firewalls.etag | String | The unique read-only string that changes whenever the resource is updated. |
+| Azure.Firewall.Firewalls.tags | Unknown | The firewall resource tags. |
+| Azure.Firewall.Firewalls.zones | Unknown | A list of availability zones from which the resource originates. |
+| Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the firewall resource. Possible values are "Succeeded", "Updating", "Deleting", or "Failed". |
+| Azure.Firewall.Firewalls.properties.threatIntelMode | String | The threat intelligence operation mode. |
+| Azure.Firewall.Firewalls.properties.firewallPolicy | Unknown | The firewall policy object associated with the firewall containing the id field. |
+| Azure.Firewall.Firewalls.properties.sku | Unknown | The SKU object of the firewall containing the name and tier fields. |
+| Azure.Firewall.Firewalls.properties.ipConfigurations | Unknown | The IP configurations of the firewall resource. |
+| Azure.Firewall.Firewalls.properties.hubIPAddresses | Unknown | The IP addresses associated with the firewall resource. |
+| Azure.Firewall.Firewalls.properties.virtualHub | Unknown | The virtual hub object to which the firewall belongs containing the id field. |
+| Azure.Firewall.Firewalls.properties.managementIpConfiguration | Unknown | The management IP configuration of the firewall resource used for forced tunneling. |
+| Azure.Firewall.Firewalls.properties.applicationRuleCollections | Unknown | A list of application rule collections of the firewall resource. Returned only when the firewall is not managed by a firewall policy. |
+| Azure.Firewall.Firewalls.properties.natRuleCollections | Unknown | A list of NAT rule collections of the firewall resource. Returned only when the firewall is not managed by a firewall policy. |
+| Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | A list of network rule collections of the firewall resource. Returned only when the firewall is not managed by a firewall policy. |
+| Azure.Firewall.Firewalls.properties.ipGroups | Unknown | A list of IP groups associated with the firewall resource. |
+| Azure.Firewall.Firewalls.properties.autoscaleConfiguration | Unknown | The autoscale settings of the firewall resource containing the minCapacity and maxCapacity fields. |
+| Azure.Firewall.Firewalls.properties.additionalProperties | Unknown | The additional properties used to further configure the firewall resource. |
+
+### azure-vn-firewall-policy-update
+
+***
+Updates a firewall policy. Only provided arguments are updated. Required permissions: Microsoft.Network/firewallPolicies/read, Microsoft.Network/firewallPolicies/write.
+
+#### Base Command
+
+`azure-vn-firewall-policy-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the firewall policy to update. | Required |
+| threat_intelligence_mode | The threat intelligence operation mode. Possible values are: Alert, Deny, Off. | Optional |
+| ips | The comma-separated list of IP addresses for the threat intelligence allow list. | Optional |
+| domains | The comma-separated list of fully qualified domain names for the threat intelligence allow list (for example, "*.microsoft.com,email.college.edu"). | Optional |
+| base_policy_id | The ID of the parent firewall policy from which rules are inherited. | Optional |
+| enable_proxy | Whether to enable the DNS proxy on firewalls attached to the firewall policy. Possible values are: true, false. | Optional |
+| dns_servers | The comma-separated list of custom DNS servers. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.FirewallPolicies.id | String | The firewall policy resource ID. |
+| Azure.VirtualNetworks.FirewallPolicies.name | String | The firewall policy resource name. |
+| Azure.VirtualNetworks.FirewallPolicies.type | String | The firewall policy resource type. |
+| Azure.VirtualNetworks.FirewallPolicies.location | String | The firewall policy resource location. |
+| Azure.VirtualNetworks.FirewallPolicies.etag | String | The unique read-only string that changes whenever the resource is updated. |
+| Azure.VirtualNetworks.FirewallPolicies.tags | Unknown | The firewall policy resource tags. |
+| Azure.VirtualNetworks.FirewallPolicies.identity | Unknown | The managed identity of the firewall policy containing the type, principalId, tenantId, and userAssignedIdentities fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.provisioningState | String | The provisioning state of the firewall policy resource. Possible values are "Succeeded", "Updating", "Deleting", or "Failed". |
+| Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelMode | String | The threat intelligence operation mode. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelWhitelist | Unknown | The threat intelligence allow list object containing the ipAddresses and fqdns fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.dnsSettings | Unknown | The DNS settings object containing the servers, enableProxy, and requireProxyForNetworkRules fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.sku | Unknown | The SKU object of the firewall policy containing the tier field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.basePolicy | Unknown | The parent firewall policy object from which rules are inherited containing the id field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.firewalls | Unknown | A list of references to the Azure Firewalls associated with the firewall policy. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.childPolicies | Unknown | A list of references to child firewall policies. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.ruleCollectionGroups | Unknown | A list of references to rule collection groups of the firewall policy. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.size | String | The size of the firewall policy, in MB \(for example, 0.5 MB\). |
+| Azure.VirtualNetworks.FirewallPolicies.properties.insights | Unknown | The insights settings of the firewall policy containing the isEnabled, retentionDays, and logAnalyticsResources fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.snat | Unknown | The private IP address ranges to which traffic is not SNATed containing the privateRanges and autoLearnPrivateRanges fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.sql | Unknown | The SQL settings of the firewall policy containing the allowSqlRedirect field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.explicitProxy | Unknown | The explicit proxy settings of the firewall policy containing the enableExplicitProxy, httpPort, httpsPort, enablePacFile, pacFilePort, and pacFile fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.intrusionDetection | Unknown | The intrusion detection settings of the firewall policy containing the mode, profile, and configuration fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.transportSecurity | Unknown | The TLS inspection settings of the firewall policy containing the certificateAuthority field. |
+
+### azure-vn-firewall-policy-create
+
+***
+Creates a firewall policy. This command only creates the policy resource. To attach the policy to a firewall, run the azure-firewall-policy-attach command. Required permissions: Microsoft.Network/firewallPolicies/read, Microsoft.Network/firewallPolicies/write.
+
+#### Base Command
+
+`azure-vn-firewall-policy-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the firewall policy to create. | Required |
+| location | The region location of the firewall policy resource. | Required |
+| tier | The tier of the firewall policy. Possible values are: Standard, Premium, Basic. Default is Standard. | Required |
+| threat_intelligence_mode | The operation mode for threat intelligence. Possible values are: Alert, Deny, Off. | Optional |
+| ips | The comma-separated list of IP addresses for the threat intelligence allow list. | Optional |
+| domains | The comma-separated list of fully qualified domain names for the threat intelligence allow list (for example, "*.microsoft.com,email.college.edu"). | Optional |
+| base_policy_id | The ID of the parent firewall policy from which rules are inherited. | Optional |
+| enable_proxy | Whether to enable the DNS proxy on the firewalls attached to the firewall policy. Possible values are: true, false. | Optional |
+| dns_servers | The comma-separated list of custom DNS servers. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.FirewallPolicies.id | String | The firewall policy resource ID. |
+| Azure.VirtualNetworks.FirewallPolicies.name | String | The firewall policy resource name. |
+| Azure.VirtualNetworks.FirewallPolicies.type | String | The firewall policy resource type. |
+| Azure.VirtualNetworks.FirewallPolicies.location | String | The firewall policy resource location. |
+| Azure.VirtualNetworks.FirewallPolicies.etag | String | The unique read-only string that changes whenever the resource is updated. |
+| Azure.VirtualNetworks.FirewallPolicies.tags | Unknown | The firewall policy resource tags. |
+| Azure.VirtualNetworks.FirewallPolicies.identity | Unknown | The managed identity of the firewall policy, containing the type, principalId, tenantId, and userAssignedIdentities fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.provisioningState | String | The provisioning state of the firewall policy resource. Possible values are "Succeeded", "Updating", "Deleting", or "Failed". |
+| Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelMode | String | The operation mode for threat intelligence. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelWhitelist | Unknown | The threat intelligence allow list object containing the ipAddresses and fqdns fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.dnsSettings | Unknown | The DNS settings object containing the servers, enableProxy, and requireProxyForNetworkRules fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.sku | Unknown | The SKU object of the firewall policy containing the tier field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.basePolicy | Unknown | The parent firewall policy object from which rules are inherited containing the id field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.firewalls | Unknown | A list of references to Azure Firewalls associated with the firewall policy. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.childPolicies | Unknown | A list of references to child firewall policies. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.ruleCollectionGroups | Unknown | A list of references to rule collection groups of the firewall policy. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.size | String | The size of the firewall policy, in MB \(for example, 0.5 MB\). |
+| Azure.VirtualNetworks.FirewallPolicies.properties.insights | Unknown | The insights settings of the firewall policy containing the isEnabled, retentionDays, and logAnalyticsResources fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.snat | Unknown | The private IP address ranges to which traffic is not SNATed containing the privateRanges and autoLearnPrivateRanges fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.sql | Unknown | The SQL settings of the firewall policy containing the allowSqlRedirect field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.explicitProxy | Unknown | The explicit proxy settings of the firewall policy containing the enableExplicitProxy, httpPort, httpsPort, enablePacFile, pacFilePort, and pacFile fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.intrusionDetection | Unknown | The intrusion detection settings of the firewall policy containing the mode, profile, and configuration fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.transportSecurity | Unknown | The TLS inspection settings of the firewall policy containing the certificateAuthority field. |
+
+### azure-application-gateway-waf-policy-get
+
+***
+Retrieves an Application Gateway Web Application Firewall (WAF) policy by name. Required permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read.
+
+#### Base Command
+
+`azure-application-gateway-waf-policy-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group containing the policy. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the WAF policy to retrieve. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ApplicationGateway.WAFPolicies.id | String | The resource ID of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.name | String | The name of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.type | String | The resource type of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.location | String | The location of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.etag | String | The ETag used to prevent concurrent updates from overwriting the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.tags | Unknown | The tags of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.sku | Unknown | The WAF policy pricing tier containing the name field. |
+| Azure.ApplicationGateway.WAFPolicies.properties.provisioningState | String | The provisioning state of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.properties.resourceState | String | The resource state of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.properties.policySettings | Unknown | The policy settings object containing the mode, state, requestBodyCheck, maxRequestBodySizeInKb, and fileUploadLimitInMb fields. |
+| Azure.ApplicationGateway.WAFPolicies.properties.customRules | Unknown | The custom rules of the policy, each containing the name, priority, ruleType, matchConditions, and action fields. |
+| Azure.ApplicationGateway.WAFPolicies.properties.managedRules | Unknown | The managed rules of the policy containing the managedRuleSets, exclusions, and exceptions fields. |
+
+### azure-application-gateway-waf-policies-list
+
+***
+Lists the Application Gateway Web Application Firewall (WAF) policies of a resource group, or of the whole subscription when no resource group is given. Required permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read.
+
+#### Base Command
+
+`azure-application-gateway-waf-policies-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group from which to list policies. If not specified, lists policies for the entire subscription. | Optional |
+| next_token | The URI used to fetch the next page of results. Set to the value of the Azure.ApplicationGateway.WAFPoliciesNextToken context output from the previous response. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ApplicationGateway.WAFPolicies.id | String | The resource ID of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.name | String | The name of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.type | String | The resource type of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.location | String | The location of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.etag | String | The ETag used to prevent concurrent updates from overwriting the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.tags | Unknown | The tags of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.sku | Unknown | The WAF policy pricing tier containing the name field. |
+| Azure.ApplicationGateway.WAFPolicies.properties.provisioningState | String | The provisioning state of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.properties.resourceState | String | The resource state of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.properties.policySettings | Unknown | The policy settings object containing the mode, state, requestBodyCheck, maxRequestBodySizeInKb, and fileUploadLimitInMb fields. |
+| Azure.ApplicationGateway.WAFPolicies.properties.customRules | Unknown | The custom rules of the policy, each containing the name, priority, ruleType, matchConditions, and action fields. |
+| Azure.ApplicationGateway.WAFPolicies.properties.managedRules | Unknown | The managed rules of the policy containing the managedRuleSets, exclusions, and exceptions fields. |
+| Azure.ApplicationGateway.WAFPoliciesNextToken | String | The URI used to fetch the next page of policies. Pass this value to the next_token argument to retrieve the next page. |
+
+### azure-application-gateway-waf-policy-create-or-update
+
+***
+Creates an Application Gateway Web Application Firewall (WAF) policy, or fully replaces an existing one. Warning: this is a full replacement and not a partial update. Any property that is not provided as an argument is removed from the policy or reset to its default, since the policy is not read before it is written. Required permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/write.
+
+#### Base Command
+
+`azure-application-gateway-waf-policy-create-or-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group to create the policy in. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the WAF policy to create or update. | Required |
+| location | The Azure region of the policy. For example "westus2". | Required |
+| managed_rules | The managed rules of the policy, as a JSON string. For example, {"managedRuleSets": [{"ruleSetType": "OWASP", "ruleSetVersion": "3.2"}]}. | Required |
+| policy_settings | The policy settings, as a JSON string. For example, {"mode": "Prevention", "state": "Enabled"}. | Optional |
+| custom_rules | The custom rules of the policy, as a JSON string containing a list of rule objects. | Optional |
+| tags | The tags to assign to the policy, as a JSON string. For example, {"env": "prod"}. | Optional |
+| resource_id | The resource ID of the policy. Used when updating an existing policy. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ApplicationGateway.WAFPolicies.id | String | The resource ID of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.name | String | The name of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.type | String | The resource type of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.location | String | The location of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.etag | String | The ETag used to prevent concurrent updates from overwriting the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.tags | Unknown | The tags of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.sku | Unknown | The WAF policy pricing tier containing the name field. |
+| Azure.ApplicationGateway.WAFPolicies.properties.provisioningState | String | The provisioning state of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.properties.resourceState | String | The resource state of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.properties.policySettings | Unknown | The policy settings object containing the mode, state, requestBodyCheck, maxRequestBodySizeInKb, and fileUploadLimitInMb fields. |
+| Azure.ApplicationGateway.WAFPolicies.properties.customRules | Unknown | The custom rules of the policy, each containing the name, priority, ruleType, matchConditions, and action fields. |
+| Azure.ApplicationGateway.WAFPolicies.properties.managedRules | Unknown | The managed rules of the policy containing the managedRuleSets, exclusions, and exceptions fields. |
+
+### azure-application-gateway-waf-policy-delete
+
+***
+Deletes an Application Gateway Web Application Firewall (WAF) policy. Required permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete.
+
+#### Base Command
+
+`azure-application-gateway-waf-policy-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group containing the policy. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the WAF policy to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-front-door-policy-get
+
+***
+Retrieves a Front Door Web Application Firewall (WAF) policy by name. Required permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read.
+
+#### Base Command
+
+`azure-front-door-policy-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group containing the policy. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the Front Door WAF policy to retrieve. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.FrontDoor.Policies.id | String | The resource ID of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.name | String | The name of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.type | String | The resource type of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.location | String | The location of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.etag | String | The ETag used to prevent concurrent updates from overwriting the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.tags | Unknown | The tags of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.sku | Unknown | The Front Door WAF policy pricing tier containing the name field. |
+| Azure.FrontDoor.Policies.properties.provisioningState | String | The provisioning state of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.properties.resourceState | String | The resource state of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.properties.policySettings | Unknown | The policy settings object containing the mode, enabledState, redirectUrl, customBlockResponseStatusCode, and customBlockResponseBody fields. |
+| Azure.FrontDoor.Policies.properties.customRules | Unknown | The custom rules of the policy containing the rules field. |
+| Azure.FrontDoor.Policies.properties.managedRules | Unknown | The managed rules of the policy containing the managedRuleSets field. |
+| Azure.FrontDoor.Policies.properties.frontendEndpointLinks | Unknown | The Front Door endpoints associated with the policy. |
+
+### azure-front-door-policies-list
+
+***
+Lists the Front Door Web Application Firewall (WAF) policies of a resource group, or of the whole subscription when no resource group is given. Required permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read.
+
+#### Base Command
+
+`azure-front-door-policies-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group from which to list policies. When not provided, policies for the entire subscription are listed. | Optional |
+| next_token | The URI used to fetch the next page of results. Set to the value of the Azure.FrontDoor.PoliciesNextToken context output from the previous response. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.FrontDoor.Policies.id | String | The resource ID of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.name | String | The name of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.type | String | The resource type of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.location | String | The location of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.etag | String | The ETag used to prevent concurrent updates from overwriting the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.tags | Unknown | The tags of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.sku | Unknown | The Front Door WAF policy pricing tier containing the name field. |
+| Azure.FrontDoor.Policies.properties.provisioningState | String | The provisioning state of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.properties.resourceState | String | The resource state of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.properties.policySettings | Unknown | The policy settings object containing the mode, enabledState, redirectUrl, customBlockResponseStatusCode, and customBlockResponseBody fields. |
+| Azure.FrontDoor.Policies.properties.customRules | Unknown | The custom rules of the policy containing the rules field. |
+| Azure.FrontDoor.Policies.properties.managedRules | Unknown | The managed rules of the policy containing the managedRuleSets field. |
+| Azure.FrontDoor.PoliciesNextToken | String | The URI used to fetch the next page of policies. Pass this value to the next_token argument to retrieve the next page. |
+
+### azure-front-door-policy-create-or-update
+
+***
+Creates a Front Door Web Application Firewall (WAF) policy, or fully replaces an existing one. Warning: this is a full replacement and not a partial update. Any property that is not provided as an argument is removed from the policy or reset to its default, since the policy is not read before it is written. Required permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/write.
+
+#### Base Command
+
+`azure-front-door-policy-create-or-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group to create the policy in. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the Front Door WAF policy to create or update. | Required |
+| managed_rules | The managed rules of the policy, as a JSON string. For example, {"managedRuleSets": [{"ruleSetType": "DefaultRuleSet", "ruleSetVersion": "1.0"}]}. | Required |
+| policy_settings | The policy settings, as a JSON string. For example, {"mode": "Prevention", "enabledState": "Enabled"}. | Optional |
+| custom_rules | The custom rules of the policy, as a JSON string. For example, {"rules": []}. | Optional |
+| location | The Azure region of the policy. Front Door WAF policies are global resources. Default is Global. | Optional |
+| sku | The pricing tier of the policy. Possible values are: Classic_AzureFrontDoor, Standard_AzureFrontDoor, Premium_AzureFrontDoor. Default is Classic_AzureFrontDoor. | Optional |
+| tags | The tags to assign to the policy, as a JSON string. For example, {"env": "prod"}. | Optional |
+| etag | The ETag used to prevent concurrent updates from overwriting the WAF policy. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.FrontDoor.Policies.id | String | The resource ID of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.name | String | The name of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.type | String | The resource type of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.location | String | The location of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.etag | String | The ETag used to prevent concurrent updates from overwriting the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.tags | Unknown | The tags of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.sku | Unknown | The Front Door WAF policy pricing tier containing the name field. |
+| Azure.FrontDoor.Policies.properties.provisioningState | String | The provisioning state of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.properties.resourceState | String | The resource state of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.properties.policySettings | Unknown | The policy settings object containing the mode, enabledState, redirectUrl, customBlockResponseStatusCode, and customBlockResponseBody fields. |
+| Azure.FrontDoor.Policies.properties.customRules | Unknown | The custom rules of the policy containing the rules field. |
+| Azure.FrontDoor.Policies.properties.managedRules | Unknown | The managed rules of the policy containing the managedRuleSets field. |
+
+### azure-front-door-policy-delete
+
+***
+Deletes a Front Door Web Application Firewall (WAF) policy. Required permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/delete.
+
+#### Base Command
+
+`azure-front-door-policy-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group containing the policy. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the Front Door WAF policy to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
 ### azure-firewall-list
 
 ***
