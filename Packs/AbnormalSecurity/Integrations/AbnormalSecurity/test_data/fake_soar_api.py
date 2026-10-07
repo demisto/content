@@ -1,15 +1,16 @@
 """
-In-memory stand-in for the SOAR API endpoints that fetch-incidents calls, served through requests_mock.
+In-memory stand-in for the SOAR API endpoints that fetch-incidents calls, served as an httpx transport.
 
 List endpoints filter on the window the integration sends, page by offset, and are sorted by ID rather
 than by the filtered field, which is how the real API behaves. Failures can be injected per path so
-the integration's real `DemistoException` status handling is exercised.
+the integration's real `ContentClient` status handling is exercised.
 """
 
 import re
 from collections.abc import Callable
-from datetime import datetime, timezone
-from urllib.parse import parse_qs, urlparse
+from datetime import datetime
+
+import httpx
 
 # list endpoint -> (response list key, ID field)
 LIST_ENDPOINTS = {
@@ -24,22 +25,17 @@ PATH_RE = re.compile(r"^/(threats|abusecampaigns|cases)(?:/([^/]+))?$")
 
 
 def parse_timestamp(value: str) -> datetime:
-    value = value.rstrip("Z")
-    if "." in value:
-        head, fraction = value.split(".", 1)
-        value = f"{head}.{fraction[:6]}"
-        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f").replace(tzinfo=timezone.utc)
-    return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
+    return datetime.fromisoformat(value)
 
 
 class FakeSoarApi:
-    def __init__(self, requests_mock, base_url: str):
+    def __init__(self, base_url: str):
+        self.base_path = httpx.URL(base_url).path.rstrip("/")
         self.items: dict[str, list[dict]] = {endpoint: [] for endpoint in LIST_ENDPOINTS}
         self.calls: list[tuple[str, dict]] = []
         self.ascending = False
         self.on_call: Callable[[str], None] | None = None
         self._failures: list[dict] = []
-        requests_mock.get(re.compile(re.escape(base_url) + r"/(threats|abusecampaigns|cases)"), json=self._handle)
 
     def add_threat(self, threat_id: str, remediated: str, message_pages: list[list[dict]] | None = None) -> None:
         self.items["threats"].append({"threatId": threat_id, "latestTimeRemediated": remediated, "pages": message_pages})
@@ -71,11 +67,9 @@ class FakeSoarApi:
     def list_calls(self, endpoint: str) -> list[dict]:
         return [query for path, query in self.calls if path == f"/{endpoint}"]
 
-    def _handle(self, request, context):
-        # requests_mock lowercases `request.path` and `request.qs`, so parse the URL directly.
-        url = urlparse(request.url)
-        path = url.path
-        query = {key: values[0] for key, values in parse_qs(url.query).items()}
+    def handle(self, request: httpx.Request) -> httpx.Response:
+        path = request.url.path.removeprefix(self.base_path)
+        query = dict(request.url.params)
         self.calls.append((path, query))
         if self.on_call:
             self.on_call(path)
@@ -83,16 +77,21 @@ class FakeSoarApi:
             if failure["times"] != 0 and failure["pattern"].search(path):
                 if failure["times"] is not None:
                     failure["times"] -= 1
-                context.status_code = failure["status"]
-                return failure["body"] or {"message": f"injected {failure['status']}"}
-        endpoint, item_id = PATH_RE.match(path).groups()
+                return httpx.Response(failure["status"], json=failure["body"] or {"message": f"injected {failure['status']}"})
+        match = PATH_RE.match(path)
+        if match is None:
+            return httpx.Response(404, json={"message": f"no fake for {path}"})
+        endpoint, item_id = match.groups()
         if item_id is None:
-            return self._list(endpoint, query, context)
-        return self._detail(endpoint, item_id, query, context)
+            return self._list(endpoint, query)
+        return self._detail(endpoint, item_id, query)
 
-    def _list(self, endpoint: str, query: dict, context) -> dict:
+    def _list(self, endpoint: str, query: dict) -> httpx.Response:
         list_key, id_key = LIST_ENDPOINTS[endpoint]
-        field_name, gte, lte = FILTER_RE.match(query["filter"]).groups()
+        match = FILTER_RE.match(query.get("filter", ""))
+        if match is None:
+            return httpx.Response(400, json={"message": f"unsupported filter: {query.get('filter')}"})
+        field_name, gte, lte = match.groups()
         start, end = parse_timestamp(gte), parse_timestamp(lte)
         if endpoint in EXCLUSIVE_END_ENDPOINTS:
             start, end = start.replace(microsecond=0), end.replace(microsecond=0)
@@ -104,14 +103,17 @@ class FakeSoarApi:
             def in_window(t):
                 return start <= t <= end
 
+        page_size, page_number = query.get("pageSize", "100"), query.get("pageNumber", "1")
+        if not (page_size.isdigit() and page_number.isdigit()):
+            return httpx.Response(400, json={"message": "pageSize and pageNumber must be integers"})
+        page_size, page_number = int(page_size), int(page_number)
         matching = [item for item in self.items[endpoint] if in_window(parse_timestamp(item[field_name]))]
         matching.sort(key=lambda item: item[id_key], reverse=not self.ascending)
-        page_size, page_number = int(query.get("pageSize", 100)), int(query.get("pageNumber", 1))
         page = matching[(page_number - 1) * page_size : page_number * page_size]
         response = {list_key: [self._summary(endpoint, item) for item in page], "pageNumber": page_number}
         if page_number * page_size < len(matching):
             response["nextPageNumber"] = page_number + 1
-        return response
+        return httpx.Response(200, json=response)
 
     def _summary(self, endpoint: str, item: dict) -> dict:
         if endpoint == "cases":
@@ -119,23 +121,22 @@ class FakeSoarApi:
         _, id_key = LIST_ENDPOINTS[endpoint]
         return {id_key: item[id_key]}
 
-    def _detail(self, endpoint: str, item_id: str, query: dict, context) -> dict:
+    def _detail(self, endpoint: str, item_id: str, query: dict) -> httpx.Response:
         _, id_key = LIST_ENDPOINTS[endpoint]
         item = next((i for i in self.items[endpoint] if i[id_key] == item_id), None)
         if item is None:
-            context.status_code = 404
-            return {"message": "not found"}
+            return httpx.Response(404, json={"message": "not found"})
         if endpoint == "threats":
             pages = item["pages"] or [
                 [{"threatId": item_id, "receivedTime": item["latestTimeRemediated"], "remediationTimestamp": item["latestTimeRemediated"]}]
             ]
-            page_number = int(query.get("pageNumber", 1))
+            page_number = int(query.get("pageNumber", "1"))
             response = {"threatId": item_id, "messages": pages[page_number - 1], "pageNumber": page_number}
             if page_number < len(pages):
                 response["nextPageNumber"] = page_number + 1
-            return response
+            return httpx.Response(200, json=response)
         if endpoint == "abusecampaigns":
-            return {"campaignId": item_id, "firstReported": item["lastReportedTime"]}
+            return httpx.Response(200, json={"campaignId": item_id, "firstReported": item["lastReportedTime"]})
         details = {"caseId": item_id, "firstObserved": item["createdTime"], "genai_summary": f"summary {item_id}"}
         details.update(item["details"])
-        return {key: value for key, value in details.items() if value is not None}
+        return httpx.Response(200, json={key: value for key, value in details.items() if value is not None})

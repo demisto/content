@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, UTC
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import demistomock as demisto
+import httpx
 import pytest
 
 from AbnormalSecurity import (
@@ -40,9 +41,7 @@ from AbnormalSecurity import (
     build_list_filter,
     FetchWindow,
     Deadline,
-    RateLimiter,
     AuthError,
-    BudgetExhaustedError,
     fetch_settings_from_params,
     THREATS_SPEC,
     ABUSE_CAMPAIGNS_SPEC,
@@ -50,6 +49,7 @@ from AbnormalSecurity import (
     ISO_8601_FORMAT,
 )
 from CommonServerPython import DemistoException
+from ContentClientApiModule import ContentClient, ContentClientError, TokenBucketRateLimiter
 from test_data.fixtures import BASE_URL, apikey
 from test_data.fake_soar_api import FakeSoarApi
 
@@ -954,7 +954,7 @@ def test_download_message_eml_command_with_quarantine(mocker):
 )
 def test_is_skippable_error(status_code, expected):
     """Test that _is_skippable_error correctly categorizes errors by response status code."""
-    exc = DemistoException(f"Error in API call [{status_code}]", res=MockResponse(None, status_code))
+    exc = ContentClientError(f"Request failed [{status_code}]", response=httpx.Response(status_code))
     assert _is_skippable_error(exc) == expected
 
 
@@ -974,9 +974,14 @@ ALL_TYPES = {"fetch_threats": True, "fetch_abuse_campaigns": True, "fetch_accoun
 
 
 @pytest.fixture
-def api(requests_mock, mocker):
+def api(mocker):
     mocker.patch("AbnormalSecurity.get_current_datetime", return_value=FETCH_NOW)
-    return FakeSoarApi(requests_mock, BASE_URL)
+    # ContentClient logs every error response with demisto.error, which prints in tests.
+    mocker.patch.object(demisto, "error")
+    fake = FakeSoarApi(BASE_URL)
+    transport = httpx.MockTransport(fake.handle)
+    mocker.patch.object(ContentClient, "_get_async_client", lambda self: httpx.AsyncClient(transport=transport))
+    return fake
 
 
 def run_fetch(last_run=None, **kwargs):
@@ -1391,6 +1396,7 @@ def test_fetch_time_budget_bounds_hung_and_slow_responses(stub_server, mode, moc
     """
     stub_server.mode = mode
     mocker.patch("AbnormalSecurity.get_current_datetime", return_value=FETCH_NOW)
+    mocker.patch.object(demisto, "error")
     client = Client(
         server_url=f"http://127.0.0.1:{stub_server.server_port}", verify=False, proxy=False, auth=None, headers=headers
     )
@@ -1412,33 +1418,40 @@ def test_fetch_time_budget_bounds_hung_and_slow_responses(stub_server, mode, moc
     assert next_run["threats"]["window_start"] == "2026-10-02T09:00:00Z"
 
 
-def test_rate_limiter_spaces_calls_with_a_burst_of_one():
-    clock = {"now": 100.0}
-    sleeps = []
+def test_fetch_rate_limit_spaces_http_calls(api):
+    """
+    Given one list call and 4 detail calls, and a limit of 20 requests per second with a burst of 1.
+    When fetch runs with 4 workers.
+    Then the 5 calls take at least 4 intervals of 50ms, however many workers there are.
+    """
+    add_threats(api, 4)
+    started = time.monotonic()
 
-    def sleep(seconds):
-        sleeps.append(seconds)
-        clock["now"] += seconds
+    _, incidents, _ = run_fetch(detail_rate_per_second=20, max_window_minutes=10**6)
 
-    limiter = RateLimiter(2, clock=lambda: clock["now"], sleep=sleep)
-
-    for _ in range(3):
-        limiter.acquire()
-
-    assert sleeps == [0.5, 0.5]
+    assert len(incidents) == 4
+    assert len(api.calls) == 5
+    assert time.monotonic() - started >= 4 * 0.05
 
 
-def test_rate_limiter_stops_when_the_wait_would_pass_the_deadline():
-    clock = {"now": 0.0}
-    limiter = RateLimiter(0.1, clock=lambda: clock["now"], sleep=lambda _: None)
-    limiter.acquire()
+def test_fetch_waiting_for_a_rate_token_counts_against_the_budget(api):
+    """
+    Given a limit of one request every 2s and a 3s budget.
+    When fetch runs.
+    Then it stops at the budget while waiting for a token, instead of waiting past it.
+    """
+    add_threats(api, 3)
+    started = time.monotonic()
 
-    with pytest.raises(BudgetExhaustedError):
-        limiter.acquire(Deadline(5, clock=lambda: clock["now"]))
+    next_run, _, _ = run_fetch(detail_rate_per_second=0.5, fetch_time_budget=3, max_window_minutes=10**6, detail_concurrency=1)
+
+    assert time.monotonic() - started < 3 + 1
+    assert len(api.calls) == 2
+    assert next_run["threats"]["window_start"] == "2026-10-02T09:00:00Z"
 
 
 def patch_threat_details(mocker, delay):
-    """Serves threat details without requests_mock, which serializes requests behind a global lock."""
+    """Serves threat details after a per-threat delay, to control when each worker finishes."""
 
     def get_details(self, threat_id, deadline=None, **kwargs):
         time.sleep(delay(threat_id))
@@ -1471,7 +1484,7 @@ def test_fetch_detail_calls_stay_under_the_worker_cap(api, mocker):
 def test_fetch_takes_one_rate_token_per_http_call(api, mocker):
     page = [{"receivedTime": "2026-10-02T09:10:00Z", "remediationTimestamp": "2026-10-02T09:10:00Z"}]
     api.add_threat("t-paged", "2026-10-02T09:10:00Z", message_pages=[page, page, page])
-    acquire = mocker.spy(RateLimiter, "acquire")
+    acquire = mocker.spy(TokenBucketRateLimiter, "acquire")
 
     _, incidents, _ = run_fetch(max_window_minutes=10**6)
 

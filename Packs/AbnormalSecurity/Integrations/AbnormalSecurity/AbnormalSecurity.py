@@ -1,3 +1,5 @@
+import asyncio
+import sys
 import threading
 import time
 from collections.abc import Callable, Generator
@@ -9,6 +11,7 @@ from typing import Any
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
+from ContentClientApiModule import *  # noqa: F401
 
 urllib3.disable_warnings()
 
@@ -48,7 +51,9 @@ CASE_FETCH_MODES = {"Last modified time": CASE_MODE_MODIFIED, "Created time": CA
 MIN_REQUEST_SECONDS = 1.0
 MAX_ITEM_FAILURES = 3
 MAX_CONSECUTIVE_FAILURES = 5
-BODY_READ_CHUNK_BYTES = 65536
+# 50,000 items in one window. Only a window that can't be halved further, or that's already partly
+# emitted, is paginated, so this guards against a page number that never runs out.
+MAX_LIST_PAGES = 100
 
 
 def _is_skippable_error(e: DemistoException) -> bool:
@@ -69,8 +74,7 @@ def _is_skippable_error(e: DemistoException) -> bool:
 
 
 def _status_code(e: Exception) -> int | None:
-    res = getattr(e, "res", None)
-    return getattr(res, "status_code", None) if res is not None else None
+    return getattr(getattr(e, "response", None), "status_code", None)
 
 
 def try_str_to_datetime(time: str) -> datetime:
@@ -124,108 +128,51 @@ class Deadline:
         return remaining
 
 
-class RateLimiter:
-    """Thread-safe token bucket with a burst of 1, shared by every HTTP call in a fetch run."""
-
-    def __init__(
-        self,
-        rate_per_second: float,
-        clock: Callable[[], float] = time.monotonic,
-        sleep: Callable[[float], None] = time.sleep,
-    ):
-        self._interval = 1.0 / rate_per_second
-        self._clock = clock
-        self._sleep = sleep
-        self._lock = threading.Lock()
-        self._next_slot = 0.0
-
-    def acquire(self, deadline: Deadline | None = None) -> None:
-        with self._lock:
-            now = self._clock()
-            slot = max(now, self._next_slot)
-            wait = slot - now
-            if deadline is not None and wait > deadline.remaining() - MIN_REQUEST_SECONDS:
-                raise BudgetExhaustedError
-            self._next_slot = slot + self._interval
-        if wait > 0:
-            self._sleep(wait)
-
-
-def read_body_within_deadline(response, deadline: Deadline) -> bytes:
-    """Read a streamed response body, giving up when the deadline passes.
-
-    A per-call timeout only bounds each socket read, so a server that sends a few bytes at a time
-    could otherwise hold the run past its budget.
-    """
-    raw = response.raw
-    sock = getattr(getattr(raw, "connection", None), "sock", None)
-    chunks: list[bytes] = []
-    try:
-        while True:
-            remaining = deadline.request_timeout()
-            if sock is not None:
-                sock.settimeout(remaining)
-            chunk = raw.read1(BODY_READ_CHUNK_BYTES, decode_content=True)
-            if not chunk:
-                return b"".join(chunks)
-            chunks.append(chunk)
-    except (OSError, urllib3.exceptions.HTTPError) as e:
-        if deadline.expired():
-            raise BudgetExhaustedError from e
-        raise DemistoException(f"Failed reading response body: {e}", e) from e
-    finally:
-        response.close()
-
-
-class Client(BaseClient):
+class Client(ContentClient):
     CASES = "cases"
     ABUSE_CAMPAIGNS = "abusecampaigns"
     THREATS = "threats"
 
     def __init__(self, server_url, verify, proxy, headers, auth):
-        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth, timeout=2400)
-        self._init_args = (server_url, verify, proxy, headers, auth)
-        self.rate_limiter: RateLimiter | None = None
+        super().__init__(
+            base_url=server_url,
+            verify=verify,
+            proxy=proxy,
+            headers=headers,
+            auth=auth,
+            timeout=2400,
+            # No retries, as in earlier versions; fetch retries a failed call on its next run instead.
+            retry_policy=RetryPolicy(max_attempts=1),
+            # Fetch stops one incident type after MAX_CONSECUTIVE_FAILURES. A breaker shared by the
+            # whole client would also stop the other types, and would count skippable 404s.
+            circuit_breaker=CircuitBreakerPolicy(failure_threshold=sys.maxsize),
+            client_name="AbnormalSecurity",
+        )
 
-    def clone(self) -> "Client":
-        """A client with its own HTTP session, for use in another thread, sharing this one's rate limiter."""
-        client = Client(*self._init_args)
-        client.rate_limiter = self.rate_limiter
-        return client
+    def limit_rate(self, rate_per_second: float) -> None:
+        """Caps the requests this client sends, from all threads together, at `rate_per_second`."""
+        self._rate_limiter = TokenBucketRateLimiter(RateLimitPolicy(rate_per_second=rate_per_second))
 
     def _http_request(self, *args, deadline: Deadline | None = None, **kwargs):
-        """Fetch passes a `deadline`, which caps the call, including reading the body, at the time left.
+        """Fetch passes a `deadline`, which caps the whole call, from waiting for a rate token to
+        reading the body, at the time left.
 
         With a deadline, a 401 or 403 raises `AuthError` and a 429 raises `RateLimitedError`.
         """
-        if self.rate_limiter is not None:
-            self.rate_limiter.acquire(deadline)
         if deadline is None:
             return super()._http_request(*args, **kwargs)
-
-        budget = deadline
-
-        def raise_for_error(res: requests.Response):
-            res._content = read_body_within_deadline(res, budget)
-            self.client_error_handler(res)
-
-        kwargs.update(timeout=deadline.request_timeout(), resp_type="response", stream=True, error_handler=raise_for_error)
         try:
-            response = super()._http_request(*args, **kwargs)
-        except DemistoException as e:
-            status = _status_code(e)
-            if status in (401, 403):
-                raise AuthError(str(e)) from e
-            if status == 429:
-                raise RateLimitedError(str(e)) from e
-            if status is None and deadline.expired():
-                raise BudgetExhaustedError from e
-            raise
-        except requests.exceptions.RequestException as e:
-            if deadline.expired():
-                raise BudgetExhaustedError from e
-            raise DemistoException(f"Request failed: {e}", e) from e
-        return json.loads(read_body_within_deadline(response, deadline))
+            response = asyncio.run(asyncio.wait_for(self._request(*args, **kwargs), deadline.request_timeout()))
+        except TimeoutError as e:
+            raise BudgetExhaustedError from e
+        except ContentClientAuthenticationError as e:
+            raise AuthError(str(e)) from e
+        except ContentClientRateLimitError as e:
+            raise RateLimitedError(str(e)) from e
+        try:
+            return response.json()
+        except ValueError as e:
+            raise DemistoException(f"The response from {response.url} isn't valid JSON: {e}", e) from e
 
     def check_the_status_of_an_action_requested_on_a_case_request(self, case_id, action_id, subtenant):
         params = assign_params(subtenant)
@@ -1674,31 +1621,29 @@ def list_window_snapshot(run: FetchRun, spec: FetchTypeSpec, window: FetchWindow
     A window that already has emitted or failed IDs is paginated instead of halved, since halving
     it would drop the record of what the next window has already emitted.
     """
-    while True:
+    response = _list_page(run, spec, window, 1)
+    while response.get("nextPageNumber") and window.is_untouched() and _span_seconds(window) >= 2:
+        window.window_end = window.window_start + timedelta(seconds=_span_seconds(window) // 2)
+        demisto.debug(f"Halved the {spec.label} window to end at {format_timestamp(window.window_end)}")
         response = _list_page(run, spec, window, 1)
-        items = list(response.get(spec.list_key) or [])
+    items = list(response.get(spec.list_key) or [])
+    next_page = response.get("nextPageNumber")
+    while next_page:
+        if next_page > MAX_LIST_PAGES:
+            raise DemistoException(f"Listing {spec.label} returned more than {MAX_LIST_PAGES} pages")
+        response = _list_page(run, spec, window, next_page)
+        items.extend(response.get(spec.list_key) or [])
         next_page = response.get("nextPageNumber")
-        if not next_page:
-            return items
-        span_seconds = int((window.window_end - window.window_start).total_seconds())
-        if window.is_untouched() and span_seconds >= 2:
-            window.window_end = window.window_start + timedelta(seconds=span_seconds // 2)
-            demisto.debug(f"Halved the {spec.label} window to end at {format_timestamp(window.window_end)}")
-            continue
-        while next_page:
-            response = _list_page(run, spec, window, next_page)
-            items.extend(response.get(spec.list_key) or [])
-            next_page = response.get("nextPageNumber")
-        return items
+    return items
+
+
+def _span_seconds(window: FetchWindow) -> int:
+    return int((window.window_end - window.window_start).total_seconds())
 
 
 def _is_retention_error(e: Exception) -> bool:
-    try:
-        res = getattr(e, "res", None)
-        text = res.text if res is not None else ""
-    except Exception:
-        text = ""
-    return _status_code(e) == 400 and "retention" in f"{e} {text}".lower()
+    # The error message includes the response body, which names the retention range.
+    return _status_code(e) == 400 and "retention" in str(e).lower()
 
 
 def _run_stopping_error(e: Exception, deadline: Deadline) -> Exception | None:
@@ -1715,11 +1660,10 @@ def build_incidents(
 ) -> Generator[tuple[dict, dict | Exception | None], None, None]:
     """Yields `(item, incident_or_exception)` in list order, so the output doesn't depend on timing.
 
-    Items not started because an earlier one stopped the run yield None. Each worker thread gets its
-    own `Client`, since a `requests.Session` isn't thread-safe; only the caller updates the window.
+    Items not started because an earlier one stopped the run yield None. Workers share one `Client`,
+    which is safe to use from several threads; only the caller updates the window.
     """
     stop = threading.Event()
-    workers = threading.local()
 
     def build(item: dict) -> dict | Exception | None:
         if stop.is_set():
@@ -1728,9 +1672,7 @@ def build_incidents(
             stop.set()
             return BudgetExhaustedError()
         try:
-            if not hasattr(workers, "client"):
-                workers.client = run.client.clone()
-            return spec.builder(workers.client, item, window, deadline=run.deadline, max_page_number=run.max_page_number)
+            return spec.builder(run.client, item, window, deadline=run.deadline, max_page_number=run.max_page_number)
         except Exception as e:
             if _run_stopping_error(e, run.deadline) is not None:
                 stop.set()
@@ -1863,14 +1805,17 @@ def fetch_settings_from_params(params: dict[str, Any]) -> dict[str, Any]:
         value = params.get(name)
         if value in (None, ""):
             return default
-        number = cast(value)
+        try:
+            number = cast(value)
+        except ValueError as e:
+            raise DemistoException(f"{name} must be a number, got {value}") from e
         if number <= 0:
             raise DemistoException(f"{name} must be greater than 0, got {value}")
         return number
 
     case_fetch_mode = params.get("case_fetch_mode") or "Last modified time"
     if case_fetch_mode not in CASE_FETCH_MODES:
-        raise DemistoException(f"Unknown case fetch mode: {case_fetch_mode}")
+        raise DemistoException(f"Unknown case fetch mode: {case_fetch_mode}. Use one of: {', '.join(CASE_FETCH_MODES)}")
     return {
         "fetch_time_budget": positive("fetch_time_budget", DEFAULT_FETCH_TIME_BUDGET_SECONDS, float),
         "max_window_minutes": positive("max_window_minutes", DEFAULT_MAX_WINDOW_MINUTES, int),
@@ -1908,7 +1853,7 @@ def fetch_incidents(
         The next `last_run`, the incidents, and warnings to show in the instance's health.
     """
     deadline = deadline or Deadline(fetch_time_budget)
-    client.rate_limiter = RateLimiter(detail_rate_per_second)
+    client.limit_rate(detail_rate_per_second)
     now = get_current_datetime()
     polling_lag = polling_lag or timedelta(0)
     max_window = timedelta(minutes=max_window_minutes)
