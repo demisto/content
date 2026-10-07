@@ -4013,16 +4013,9 @@ class AssetsDeviceHandler:
 
             log_falcon_assets(f"AssetsDeviceHandler: Buffer full, triggering enrichment for {len(batch)} AIDs")
 
-            # Nothing else bounds these, and they are only awaited at the end of the cycle.
-            while len(self.running_tasks) >= MAX_PENDING_ASSET_TASKS:
-                done, _ = await asyncio.wait(self.running_tasks, return_when=asyncio.FIRST_COMPLETED)
-                # enrich_and_ingest_batch already logged any failure before re-raising, but the
-                # done-callback drops our last reference to the task. Retrieving the exception here
-                # keeps the GC from logging a bare "Task exception was never retrieved" as well.
-                for finished in done:
-                    if not finished.cancelled():
-                        finished.exception()
-
+            # Dispatched without blocking: this runs on the vulnerability page loop, and the
+            # pagination cursor's TTL is measured against the gap between that loop's requests.
+            # The limit is unchanged, just waited on inside the batch's own task instead.
             # Create async enrichment task
             task = asyncio.create_task(self.enrich_and_ingest_batch(batch))
             self.running_tasks.add(task)
@@ -4032,10 +4025,20 @@ class AssetsDeviceHandler:
         """
         Enrich a batch of AIDs via Devices API and send to XSIAM.
 
+        Holds a concurrency slot until this batch's upload has settled, so at most
+        MAX_PENDING_ASSET_TASKS batches are in flight. Waiting happens here, in the batch's own
+        task, rather than in receive_new_aids, which runs on the page loop.
+
         Args:
             aid_batch: List of AIDs to enrich
             final_items_count: Total items count to send to XSIAM (1 for intermediate batches, actual total for final batch)
         """
+        async with _loop_semaphore("asset_enrichment", MAX_PENDING_ASSET_TASKS):
+            await self._enrich_and_ingest_batch(aid_batch, final_items_count)
+
+    async def _enrich_and_ingest_batch(self, aid_batch: list[str], final_items_count: int = 1) -> None:
+        """Body of enrich_and_ingest_batch. Split out so the slot wrapping it is held until the
+        upload at the end has settled."""
         # Increment ASSET batch counter (separate from vulnerability chain)
         self.asset_batch_counter += 1
         current_batch_number = self.asset_batch_counter
@@ -4114,10 +4117,15 @@ class AssetsDeviceHandler:
                 finally:
                     self.running_tasks.discard(future)
 
-            # Track the send task
+            # Still tracked, so drain() stays authoritative over in-flight uploads.
             self.running_tasks.add(send_task)
             send_task.add_done_callback(update_last_saved)
             log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Created send task")
+
+            # Keeps the slot held until the upload settles. Suppressed, not raised: update_last_saved
+            # already logs it, and raising would newly fail a batch whose upload was tolerated before.
+            with contextlib.suppress(Exception):
+                await asyncio.shield(send_task)
 
         except Exception as e:
             log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Error enriching assets: {e}", "error")
@@ -4146,10 +4154,20 @@ class AssetsDeviceHandler:
             self.pending_buffer.clear()
 
         # Wait for all enrichment and send tasks to complete
-        await self.drain()
-        log_falcon_assets("AssetsDeviceHandler: All enrichment/send tasks completed successfully", "info")
+        lost_batches, first_error = await self.drain()
 
-    async def drain(self) -> None:
+        if lost_batches:
+            # Reported loudly: a silent failure here looks identical to a clean cycle in the logs,
+            # which is how a sustained enrichment outage stayed invisible in production.
+            log_falcon_assets(
+                f"AssetsDeviceHandler: {lost_batches} enrichment/send batch(es) failed; their assets "
+                f"were not ingested this cycle. First error: {first_error}",
+                "error",
+            )
+        else:
+            log_falcon_assets("AssetsDeviceHandler: All enrichment/send tasks completed successfully", "info")
+
+    async def drain(self) -> tuple[int, BaseException | None]:
         """Await every in-flight task, including ones spawned while we were already waiting.
 
         A single gather() over a snapshot is not enough: enrich_and_ingest_batch only registers
@@ -4157,13 +4175,32 @@ class AssetsDeviceHandler:
         the snapshot is taken adds a send task that the snapshot never covers. Looping until the
         set is empty is what guarantees nothing is left uploading when the caller closes the
         shared XSIAM session.
+
+        Waits and reports; it does not decide what to do about a failure. That keeps it reusable
+        from a caller that only needs to be sure nothing is still uploading, such as the teardown
+        path, which ignores the return value.
+
+        Returns:
+            (lost_batches, first_error). Failures are absorbed, never raised, as
+            reap_completed_send_tasks does for vulnerabilities: assets are flushed after the
+            vulnerability snapshot has already sealed, so raising would fail a fetch whose
+            vulnerability data is safely stored.
         """
+        lost_batches = 0
+        first_error: BaseException | None = None
         while self.running_tasks:
             # Snapshot, await, then remove: tasks added during the await stay for the next pass.
             current_batch = list(self.running_tasks)
             log_falcon_assets(f"AssetsDeviceHandler: Waiting for {len(current_batch)} background tasks to complete...", "info")
-            await asyncio.gather(*current_batch, return_exceptions=True)
+            results = await asyncio.gather(*current_batch, return_exceptions=True)
             self.running_tasks.difference_update(current_batch)
+
+            for result in results:
+                if isinstance(result, BaseException):
+                    lost_batches += 1
+                    first_error = first_error or result
+
+        return lost_batches, first_error
 
     @staticmethod
     def _filter_asset_fields(assets: list[Dict]) -> list[Dict]:
@@ -4198,6 +4235,9 @@ class AssetsDeviceHandler:
 # and a semaphore built on a closed loop raises when awaited from the next one.
 _SEMAPHORE_LOOP: asyncio.AbstractEventLoop | None = None
 _LOOP_SEMAPHORES: dict[str, asyncio.Semaphore] = {}
+
+# Resolved once: release_freed_memory runs every cycle and the handle does not change.
+_LIBC: Any = None
 
 
 def _loop_semaphore(name: str, value: int) -> asyncio.Semaphore:
@@ -4815,10 +4855,22 @@ def get_spotlight_lookback_days() -> int:
     """Lookback window in days, from the instance configuration.
 
     Falls back to the default for anything that is not a positive number: a zero or negative
-    window would build a filter that matches nothing and silently fetch an empty snapshot.
+    window matches nothing, and an unparseable one would abort the cycle. The fallback is logged,
+    since an ignored setting that looks applied costs a full cycle to discover.
     """
-    configured = arg_to_number(demisto.params().get("spotlight_lookback_days"))
+    raw = demisto.params().get("spotlight_lookback_days")
+    try:
+        configured = arg_to_number(raw)
+    except ValueError:
+        # arg_to_number raises on a non-numeric string rather than returning None.
+        configured = None
     if not configured or configured <= 0:
+        if raw not in (None, ""):
+            log_falcon_assets(
+                f"Invalid 'Spotlight vulnerabilities lookback (days)' value {raw!r}; "
+                f"falling back to {SPOTLIGHT_LOOKBACK_DAYS} days.",
+                "warning",
+            )
         return SPOTLIGHT_LOOKBACK_DAYS
     return configured
 
@@ -5267,14 +5319,12 @@ async def fetch_vulnerabilities_by_severity(
 
         # Check if this is an expired cursor error
         if "Search context expired" in error_str or ('"code": 404' in error_str and "after" in error_str):
-            # Upper bound on how long the cursor was alive: measured in-process from the moment the
-            # server handed it over to the moment it was rejected, so it includes the request itself.
             # Measured from the moment the page carrying this cursor arrived, so it covers the
             # whole time we held it. A small value means the context was reclaimed server-side
             # rather than aging out.
             token_age = f"{time.monotonic() - token_received_at:.1f}s" if token_received_at else "n/a (first page)"
             log_falcon_assets(
-                f"[{severity}] Pagination cursor rejected at batch {batch_counter + 1}, "
+                f"[{severity}] Pagination cursor rejected while fetching the page after batch {batch_counter}, "
                 f"{token_age} after the page carrying it arrived. "
                 f"Progress ({total_fetched} vulnerabilities) will be lost.",
                 "error",
@@ -5637,19 +5687,18 @@ async def fetch_spotlight_by_severity_parallel(
 
 
 async def fetch_spotlight_assets():
-    """Fetch Spotlight vulnerabilities using severity-based parallel approach.
+    """Fetch Spotlight vulnerabilities using severity-based fetching.
 
-    IMPLEMENTATION (Severity-Based Parallel):
-    1. Split vulnerability fetching by severity: CRITICAL, HIGH, MEDIUM, LOW, NONE, UNKNOWN
-    2. Run 6 parallel queries, each with independent cursor
-    3. Each query fetches continuously (no cursor expiration within query)
-    4. Aggregate results from all severities
-    5. Extract unique AIDs and enrich assets
-    6. Send vulnerabilities and assets to XSIAM with proper snapshot sealing
+    Severities are fetched MAX_CONCURRENT_SEVERITIES at a time (see SPOTLIGHT_SEVERITIES for the
+    order), each with an independent cursor. Running fewer at once bounds peak memory and shortens
+    the gap between a severity's pagination requests, which is what the cursor TTL is measured
+    against. Expect roughly sum(severity durations) / MAX_CONCURRENT_SEVERITIES.
 
-    This approach solves the pagination cursor TTL issue for customers with 6M+ vulnerabilities
-    by parallelizing across severity levels. Largest query (LOW, ~2.4M vulns) completes in ~136 minutes.
-    Total time = max(all queries) = ~2.3 hours. No cursor expiration, no duplication.
+    1. Fetch each severity's vulnerabilities, two severities at a time, prefetching the next page
+       while the current one is compressed and uploaded.
+    2. Aggregate results across severities.
+    3. Extract unique AIDs and enrich assets.
+    4. Seal the snapshot once every severity has completed.
     """
     log_falcon_assets("Starting Spotlight assets fetch execution (severity-based parallel approach).", "info")
     fetch_start_time = time.monotonic()
@@ -5772,11 +5821,20 @@ def release_freed_memory() -> None:
     long-running process's RSS ratchets up towards the limit across cycles even though the objects
     themselves are gone. Best-effort: malloc_trim is glibc-only and simply skipped elsewhere.
     """
+    global _LIBC
     collected = gc.collect()
     trimmed = False
-    with contextlib.suppress(Exception):
-        ctypes.CDLL("libc.so.6").malloc_trim(0)
+    try:
+        # Cached: this runs every cycle, and the library handle does not change.
+        if _LIBC is None:
+            _LIBC = ctypes.CDLL("libc.so.6")
+        _LIBC.malloc_trim(0)
         trimmed = True
+    except (OSError, AttributeError) as e:
+        # OSError: the library itself is missing (not glibc).
+        # AttributeError: the library loaded but has no malloc_trim (musl, and some slim images).
+        # Deliberately not a blanket suppress: anything else here is a real bug and should surface.
+        log_falcon_assets(f"malloc_trim unavailable, skipping RSS trim: {e}", "debug")
     log_falcon_assets(f"Released freed memory ({collected} objects collected, {trimmed=}). RSS: {_get_process_memory_mb()}")
 
 

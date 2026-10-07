@@ -11335,6 +11335,65 @@ class TestAssetsDeviceHandler:
         assert handler.pending_buffer == {"buffer_1", "new_1"}
 
     @pytest.mark.asyncio
+    async def test_a_saturated_handler_does_not_stall_the_page_loop(self, mocker):
+        """
+        Tests that receive_new_aids dispatches without blocking on asset concurrency.
+
+        Given:
+            - Far more batches than MAX_PENDING_ASSET_TASKS, with uploads that outlive their
+              enrichment, so the limit is saturated.
+        When:
+            - receive_new_aids is called.
+        Then:
+            - It never suspends waiting for asset work. It runs on the vulnerability page loop,
+              and the pagination cursor's TTL is measured against the gap between that loop's
+              requests. The limit itself is unchanged; it is awaited inside each batch's own task.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        handler = AssetsDeviceHandler(
+            client=mocker.AsyncMock(),
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=1,
+        )
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        async def _slow_upload():
+            for _ in range(5):
+                await asyncio.sleep(0)
+            return 1, 1
+
+        mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=lambda **_kwargs: asyncio.create_task(_slow_upload()),
+        )
+        mocker.patch.object(handler, "_filter_asset_fields", side_effect=lambda d: d)
+        handler.client._request.return_value = mocker.Mock(status_code=200, json=lambda: {"resources": [{"device_id": "d1"}]})
+
+        # How the previous implementation blocked once the task set was full.
+        blocking_waits = 0
+        real_wait = asyncio.wait
+
+        async def counting_wait(*args, **kwargs):
+            nonlocal blocking_waits
+            blocking_waits += 1
+            return await real_wait(*args, **kwargs)
+
+        mocker.patch("CrowdStrikeFalcon.asyncio.wait", side_effect=counting_wait)
+
+        # batch_limit=1 gives a threshold of 2, so each extra AID dispatches another batch.
+        await handler.receive_new_aids({f"aid{i}" for i in range(30)})
+
+        assert blocking_waits == 0, (
+            f"receive_new_aids blocked {blocking_waits} time(s) on asset enrichment, " f"spending the pagination cursor's TTL"
+        )
+
+        await handler.drain()
+
+    @pytest.mark.asyncio
     async def test_handler_flush_remaining(self, mocker):
         """
         Tests that flush_remaining processes any items left in the buffer.
@@ -11410,6 +11469,128 @@ class TestAssetsDeviceHandler:
         mock_create_task.assert_not_called()
         # The batch is marked processed even when nothing resolves, so invalid IDs are not retried.
         assert "d1" in handler.processed_aids
+
+    @pytest.mark.asyncio
+    async def test_drain_reports_no_losses_when_every_task_succeeds(self, mocker):
+        """
+        Tests that drain() awaits every in-flight task and reports a clean result.
+
+        Given:
+            - A handler with two in-flight tasks that both succeed.
+        When:
+            - drain() is awaited directly, as the teardown path does.
+        Then:
+            - Every task is awaited, running_tasks is emptied, and (0, None) is returned.
+              The caller needs the count to decide whether it may claim success.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        handler = AssetsDeviceHandler(
+            client=mocker.AsyncMock(),
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=10,
+        )
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        completed = []
+
+        async def _work(tag):
+            completed.append(tag)
+
+        handler.running_tasks = {asyncio.create_task(_work("a")), asyncio.create_task(_work("b"))}
+
+        lost_batches, first_error = await handler.drain()
+
+        assert sorted(completed) == ["a", "b"], "drain must await every in-flight task"
+        assert handler.running_tasks == set(), "drain must empty running_tasks"
+        assert (lost_batches, first_error) == (0, None)
+
+    @pytest.mark.asyncio
+    async def test_drain_reports_a_failed_task_instead_of_raising(self, mocker):
+        """
+        Tests that drain() absorbs a task failure and reports it to the caller.
+
+        Given:
+            - One in-flight task that raises and one that succeeds.
+        When:
+            - drain() is awaited.
+        Then:
+            - It returns (1, the exception) rather than propagating. Assets are flushed after the
+              vulnerability snapshot has already sealed, so raising here would fail a fetch whose
+              vulnerability data is safely stored. Returning it is what lets the caller log the
+              loss instead of silently claiming success.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        handler = AssetsDeviceHandler(
+            client=mocker.AsyncMock(),
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=10,
+        )
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        boom = RuntimeError("send failed")
+
+        async def _ok():
+            return None
+
+        async def _fails():
+            raise boom
+
+        handler.running_tasks = {asyncio.create_task(_ok()), asyncio.create_task(_fails())}
+
+        lost_batches, first_error = await handler.drain()
+
+        assert lost_batches == 1
+        assert first_error is boom
+        assert handler.running_tasks == set()
+
+    @pytest.mark.asyncio
+    async def test_flush_remaining_does_not_claim_success_when_a_batch_failed(self, mocker):
+        """
+        Tests that a failed enrichment/send batch is reported, not papered over.
+
+        On the live tenant roughly half the enrichment batches failed on authentication for
+        eight hours while the fetch logged unqualified success every cycle, so the loss was
+        invisible in the logs.
+
+        Given:
+            - An in-flight task that fails during the final flush.
+        When:
+            - flush_remaining is awaited.
+        Then:
+            - The "All enrichment/send tasks completed successfully" line is NOT logged, and an
+              error naming the failure is logged instead.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        handler = AssetsDeviceHandler(
+            client=mocker.AsyncMock(),
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=10,
+        )
+        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        async def _fails():
+            raise RuntimeError("send failed")
+
+        handler.running_tasks = {asyncio.create_task(_fails())}
+
+        await handler.flush_remaining(total_items_count=0)
+
+        logged = " ".join(str(call.args[0]) for call in mock_log.call_args_list)
+        assert "completed successfully" not in logged, "a failed batch must not be reported as success"
+        assert "send failed" in logged, "the failure must be surfaced in the logs"
+        assert any(call.args[1:] == ("error",) for call in mock_log.call_args_list), "the loss must be logged at error level"
 
     @pytest.mark.asyncio
     async def test_handler_enrichment_partial_success(self, mocker):
@@ -13460,6 +13641,72 @@ class TestSpotlightFetchTuning:
         assert all(task.done() for task in sent_tasks), "a send task outlived the severity that started it"
         assert send_finished, "the send was abandoned rather than drained"
 
+    @pytest.mark.asyncio
+    async def test_pending_prefetch_is_cancelled_when_the_severity_fails(self, mocker):
+        """A prefetched page left running would hold its records and log into a dead cycle.
+
+        The prefetch must be *pending*, not already failed: only then does the finally block's
+        cancel() actually run. test_send_tasks_are_drained_when_a_severity_fails makes the
+        prefetch itself raise, so the task is already done() and cancel() is skipped.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+        mocker.patch("CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context")
+
+        # The downstream work fails on page 1, while the prefetch of page 2 is still running.
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock(side_effect=RuntimeError("downstream boom"))
+
+        first_page = mocker.Mock()
+        first_page.json.return_value = {
+            "resources": [{"id": "vuln1", "aid": "aid1", "cve": {"severity": "HIGH"}}],
+            "meta": {"pagination": {"after": "tok"}},  # An 'after' token, so a prefetch is spawned.
+        }
+
+        first_call = True
+
+        async def responses(*_args, **_kwargs):
+            nonlocal first_call
+            if first_call:
+                first_call = False
+                return first_page
+            # Page 2 takes long enough to still be unfinished when the failure hits. Bounded, so a
+            # missing cancel() fails the assertion instead of hanging the suite.
+            await asyncio.sleep(5)
+            return first_page
+
+        mock_client = mocker.AsyncMock()
+        mock_client._request.side_effect = responses
+
+        # Capture the prefetch task itself: receive_new_aids raises before the scheduled prefetch
+        # gets its first turn on the loop, so it is pending-and-unstarted, which is exactly the
+        # state the finally block has to clean up.
+        prefetch_tasks: list[asyncio.Task] = []
+        real_create_task = asyncio.create_task
+
+        def tracking_create_task(coro, *args, **kwargs):
+            task = real_create_task(coro, *args, **kwargs)
+            prefetch_tasks.append(task)
+            return task
+
+        mocker.patch("CrowdStrikeFalcon.asyncio.create_task", side_effect=tracking_create_task)
+
+        with pytest.raises(RuntimeError, match="downstream boom"):
+            await fetch_vulnerabilities_by_severity(
+                client=mock_client,
+                severity="HIGH",
+                context_store=mocker.Mock(),
+                spotlight_state=mocker.Mock(),
+                snapshot_id="snap123",
+                asset_handler=mock_handler,
+            )
+
+        assert prefetch_tasks, "no prefetch was spawned, so cancel() is not being exercised"
+        assert all(
+            task.cancelled() for task in prefetch_tasks
+        ), f"a prefetched page outlived the failed severity: {[t for t in prefetch_tasks if not t.cancelled()]}"
+
     def test_lookback_defaults_to_100_days(self, mocker):
         import CrowdStrikeFalcon
 
@@ -13474,6 +13721,46 @@ class TestSpotlightFetchTuning:
         mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={"spotlight_lookback_days": "30"})
 
         assert CrowdStrikeFalcon.get_spotlight_lookback_days() == 30
+
+    @pytest.mark.parametrize("configured", ["abc", "30 days", "  "])
+    def test_lookback_falls_back_instead_of_crashing_the_cycle(self, mocker, configured):
+        """arg_to_number RAISES on a non-numeric value, it does not return None.
+
+        A typo in this parameter would otherwise abort the whole fetch with a bare ValueError,
+        which is a far worse outcome than ignoring the typo.
+        """
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={"spotlight_lookback_days": configured})
+        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        assert CrowdStrikeFalcon.get_spotlight_lookback_days() == 100
+        assert mock_log.called, "an ignored configuration value must say so"
+
+    @pytest.mark.parametrize("configured", ["0", "-5"])
+    def test_lookback_warns_when_a_non_positive_value_is_ignored(self, mocker, configured):
+        """A zero or negative window builds a filter that matches nothing.
+
+        Falling back silently costs a full cycle to discover, so the correction is logged.
+        """
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={"spotlight_lookback_days": configured})
+        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        assert CrowdStrikeFalcon.get_spotlight_lookback_days() == 100
+        assert mock_log.called, "an ignored configuration value must say so"
+
+    @pytest.mark.parametrize("params", [{}, {"spotlight_lookback_days": ""}, {"spotlight_lookback_days": None}])
+    def test_lookback_is_quiet_when_simply_unset(self, mocker, params):
+        """Not configuring the parameter is the normal case, not a mistake; it must not warn."""
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value=params)
+        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        assert CrowdStrikeFalcon.get_spotlight_lookback_days() == 100
+        mock_log.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_the_seal_is_sent_as_a_single_chunk(self, mocker):
