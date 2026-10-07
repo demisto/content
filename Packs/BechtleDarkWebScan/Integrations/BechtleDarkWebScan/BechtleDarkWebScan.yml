@@ -191,4 +191,3 @@ marketplaces:
 - platform
 tests:
 - No tests (auto formatted)
-excludefromtightlycoupled: true
