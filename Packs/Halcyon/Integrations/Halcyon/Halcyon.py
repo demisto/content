@@ -343,7 +343,8 @@ class Client(ContentClient):
             params["lastSeenBefore"] = last_seen_before
 
         demisto.debug(f"Fetching alerts with params: {params}")
-        return self._http_request(method="GET", url_suffix="/v2/alerts", params=params)
+        response = self._http_request(method="GET", url_suffix="/v2/alerts", params=params, resp_type="response")
+        return self._log_and_parse_response(response, "alerts")
 
     def get_events(
         self,
@@ -376,7 +377,66 @@ class Client(ContentClient):
             params["occurredBefore"] = occurred_before
 
         demisto.debug(f"Fetching events with params: {params}")
-        return self._http_request(method="GET", url_suffix="/v2/events", params=params)
+        response = self._http_request(method="GET", url_suffix="/v2/events", params=params, resp_type="response")
+        return self._log_and_parse_response(response, "events")
+
+    @staticmethod
+    def _log_and_parse_response(response: Any, log_type_string: str) -> dict:
+        """Log diagnostic metadata about an HTTP response, then return its parsed JSON body.
+
+        This is a debug aid for the "late-arrival behind watermark" investigation
+        (XSUP-78176). It surfaces whether the Halcyon API exposes a peak/volume
+        signal the collector could use at fetch time, via two channels:
+          * Response body envelope: top-level keys and any pagination/volume fields
+            (``totalCount``, ``totalPages``, ``page``, ``pageSize``).
+          * HTTP response headers: the header NAMES only (values are intentionally
+            omitted to avoid leaking secrets such as auth tokens).
+
+        The parsed JSON body is returned unchanged so downstream fetch logic is
+        unaffected.
+
+        Args:
+            response: The raw HTTP response object (``resp_type="response"``).
+            log_type_string: Human-readable log type ("events"/"alerts") for the log line.
+
+        Returns:
+            The parsed JSON body as a dict.
+        This whole method is wrapped in a defensive try/except: diagnostic logging
+        must NEVER break the fetch cycle, regardless of what the response object
+        looks like (dict, list, None, non-JSON, missing attributes, etc.).
+        """
+        body: Any = {}
+        try:
+            # Parse the body first - this is what we must return, so do it before any logging.
+            try:
+                body = response.json()
+            except Exception as parse_err:
+                demisto.debug(f"Halcyon {log_type_string} response: failed to parse JSON body: {parse_err}")
+                body = {}
+
+            # Header NAMES only - never log header values (may contain auth tokens).
+            try:
+                header_names = sorted(getattr(response, "headers", {}) or {})
+                demisto.debug(f"Halcyon {log_type_string} response header names: {header_names}")
+            except Exception as header_err:
+                demisto.debug(f"Halcyon {log_type_string} response: could not read header names: {header_err}")
+
+            # Body envelope diagnostics (pagination/volume signal for peak detection).
+            if isinstance(body, dict):
+                envelope = {key: body.get(key) for key in ("totalCount", "totalPages", "page", "pageSize") if key in body}
+                records = body.get("data", body.get("items", body.get("results", [])))
+                record_count = len(records) if isinstance(records, list) else "n/a"
+                demisto.debug(
+                    f"Halcyon {log_type_string} response body keys: {sorted(body.keys())}; "
+                    f"pagination/volume envelope: {envelope}; records_in_page: {record_count}"
+                )
+            else:
+                demisto.debug(f"Halcyon {log_type_string} response body is not a dict (type={type(body).__name__}).")
+        except Exception as e:
+            # Absolute safety net - never let diagnostic logging raise into the fetch flow.
+            demisto.debug(f"Halcyon {log_type_string} response: diagnostic logging failed, continuing: {e}")
+
+        return body
 
 
 """ HELPER FUNCTIONS """

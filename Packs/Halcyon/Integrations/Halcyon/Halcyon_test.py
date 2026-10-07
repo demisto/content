@@ -70,7 +70,7 @@ class TestClient:
 
     def test_get_alerts(self, mock_client, mocker):
         """Test fetching alerts."""
-        mock_response = {
+        mock_body = {
             "data": [
                 {
                     "alertId": "alert-1",
@@ -82,8 +82,15 @@ class TestClient:
                     "firstOccurredAt": "2024-01-01T01:00:00.000Z",
                     "kind": "PolicyViolation",
                 },
-            ]
+            ],
+            "totalCount": 2,
+            "totalPages": 1,
+            "page": 1,
+            "pageSize": 100,
         }
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = mock_body
+        mock_response.headers = {"Content-Type": "application/json", "X-RateLimit-Remaining": "99"}
 
         mocker.patch.object(mock_client, "_http_request", return_value=mock_response)
 
@@ -98,7 +105,7 @@ class TestClient:
 
     def test_get_events(self, mock_client, mocker):
         """Test fetching events."""
-        mock_response = {
+        mock_body = {
             "data": [
                 {
                     "eventId": "event-1",
@@ -110,8 +117,15 @@ class TestClient:
                     "occurredAt": "2024-01-01T01:00:00.000Z",
                     "kind": "SystemEvent",
                 },
-            ]
+            ],
+            "totalCount": 2,
+            "totalPages": 1,
+            "page": 1,
+            "pageSize": 100,
         }
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = mock_body
+        mock_response.headers = {"Content-Type": "application/json", "X-RateLimit-Remaining": "99"}
 
         mocker.patch.object(mock_client, "_http_request", return_value=mock_response)
 
@@ -123,6 +137,79 @@ class TestClient:
 
         assert len(result["data"]) == 2
         assert result["data"][0]["eventId"] == "event-1"
+
+    def test_log_and_parse_response_logs_metadata_without_header_values(self, mock_client, mocker):
+        """_log_and_parse_response returns the body unchanged and logs header NAMES only (no values)."""
+        import demistomock as demisto
+        from Halcyon import Client
+
+        body = {
+            "data": [{"id": "e1", "occurredAt": "2024-01-01T00:00:00.000Z"}],
+            "totalCount": 5000,
+            "totalPages": 50,
+            "page": 1,
+            "pageSize": 100,
+        }
+        response = mocker.Mock()
+        response.json.return_value = body
+        # A secret-bearing header value we must NEVER see in the logs.
+        response.headers = {"Authorization": "Bearer super-secret-token", "X-RateLimit-Remaining": "7"}
+
+        debug_mock = mocker.patch.object(demisto, "debug")
+
+        result = Client._log_and_parse_response(response, "events")
+
+        # Body is returned unchanged.
+        assert result == body
+
+        logged = " ".join(str(call.args[0]) for call in debug_mock.call_args_list)
+        # Header names are logged.
+        assert "Authorization" in logged
+        assert "X-RateLimit-Remaining" in logged
+        # Header VALUES (the secret) are never logged.
+        assert "super-secret-token" not in logged
+        # The pagination/volume envelope is surfaced for peak detection.
+        assert "totalCount" in logged
+        assert "5000" in logged
+
+    def test_log_and_parse_response_never_raises(self, mocker):
+        """_log_and_parse_response must never raise, no matter what the response looks like."""
+        from Halcyon import Client
+
+        mocker.patch("demistomock.debug")
+
+        # 1) json() raises (e.g. non-JSON / empty body).
+        r_bad_json = mocker.Mock()
+        r_bad_json.json.side_effect = ValueError("not json")
+        r_bad_json.headers = {"X-A": "1"}
+        assert Client._log_and_parse_response(r_bad_json, "events") == {}
+
+        # 2) headers attribute access raises.
+        r_bad_headers = mocker.Mock()
+        r_bad_headers.json.return_value = {"data": [], "totalCount": 0}
+        type(r_bad_headers).headers = property(lambda self: (_ for _ in ()).throw(RuntimeError("boom")))
+        assert Client._log_and_parse_response(r_bad_headers, "events") == {"data": [], "totalCount": 0}
+
+        # 3) body is a list (not a dict).
+        r_list = mocker.Mock()
+        r_list.json.return_value = [1, 2, 3]
+        r_list.headers = {}
+        assert Client._log_and_parse_response(r_list, "alerts") == [1, 2, 3]
+
+        # 4) body is None.
+        r_none = mocker.Mock()
+        r_none.json.return_value = None
+        r_none.headers = {}
+        assert Client._log_and_parse_response(r_none, "alerts") is None
+
+        # 5) response is None entirely.
+        assert Client._log_and_parse_response(None, "events") == {}
+
+        # 6) records field is not a list.
+        r_weird = mocker.Mock()
+        r_weird.json.return_value = {"data": "oops", "page": 1}
+        r_weird.headers = {"H": "v"}
+        assert Client._log_and_parse_response(r_weird, "events") == {"data": "oops", "page": 1}
 
 
 class TestHelperFunctions:
