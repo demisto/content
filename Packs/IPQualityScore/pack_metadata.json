@@ -2,7 +2,7 @@
     "name": "IPQualityScore (IPQS) Threat Risk Scoring",
     "description": "Provides IPQualityScore threat and reputation intelligence for risk scoring and enrichment of ip, phone, email, URL, and file indicators.",
     "support": "partner",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.1",
     "author": "IPQualityScore",
     "githubUser": ["ipqualityscore"],
     "url": "https://www.ipqualityscore.com",
