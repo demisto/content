@@ -136,6 +136,41 @@ XSIAM_EVENT_CHUNK_SIZE_LIMIT = 4 * (10**6)  # 4 MB
 MAX_404_RETRIES = 3  # Maximum number of 404 retries before giving up on current export
 
 
+class XSIAMSendConfig:
+    """Retry policy for sending data into XSIAM.
+
+    The XSIAM ingestion gateway intermittently answers with transient errors (502 from nginx,
+    connection resets, read timeouts). Without a retry a single transient error fails the whole
+    fetch cycle.
+    """
+
+    MAX_ATTEMPTS: int = 3
+    BACKOFF_SECONDS: int = 5
+    RETRYABLE_STATUS_CODES: frozenset[int] = frozenset({408, 500, 502, 503, 504})
+
+
+class XSIAMSendError(DemistoException):
+    """A failed XSIAM ingestion request that carries the HTTP status code of the response."""
+
+    def __init__(self, message: str, status_code: int | None = None, exception: Exception | None = None):
+        super().__init__(message, exception)
+        self.status_code = status_code
+
+
+class XSIAMIngestionClient(BaseClient):
+    """Client passed to ``send_data_to_xsiam`` so a failed response keeps its HTTP status code.
+
+    ``send_data_to_xsiam`` raises a plain ``DemistoException`` whose message does not include the
+    status code, which makes transient errors indistinguishable from permanent ones.
+    """
+
+    def _handle_error(self, error_handler: Any, res: requests.Response, should_update_metrics: bool) -> None:
+        try:
+            super()._handle_error(error_handler, res, should_update_metrics)
+        except DemistoException as exc:
+            raise XSIAMSendError(str(exc.message), status_code=res.status_code, exception=exc) from exc
+
+
 class Client(BaseClient):
     def list_scan_filters(self):
         return self._http_request("GET", "filters/scans/reports")
@@ -2024,6 +2059,80 @@ def should_seal_empty_assets_snapshot(assets: list, assets_fetch_in_progress: bo
     return assets_last_run.get("total_assets", 0) > 0
 
 
+def is_retryable_xsiam_error(error: BaseException) -> bool:
+    """Decide whether a failure while sending data into XSIAM is transient and worth retrying.
+
+    Args:
+        error: The exception raised by ``send_data_to_xsiam``.
+
+    Returns:
+        bool: True for retryable HTTP status codes, timeouts and dropped connections.
+    """
+    if isinstance(error, XSIAMSendError) and error.status_code is not None:
+        return error.status_code in XSIAMSendConfig.RETRYABLE_STATUS_CODES
+    # SSL and proxy errors are configuration problems; retrying them only delays the failure.
+    if isinstance(error, requests.exceptions.SSLError | requests.exceptions.ProxyError):
+        return False
+    if isinstance(
+        error,
+        requests.exceptions.Timeout | requests.exceptions.ConnectionError | requests.exceptions.ChunkedEncodingError,
+    ):
+        return True
+    # BaseClient wraps network errors in a DemistoException and keeps the original as `.exception`.
+    if isinstance(error, DemistoException) and isinstance(error.exception, BaseException):
+        return is_retryable_xsiam_error(error.exception)
+    return False
+
+
+def send_data_to_xsiam_with_retry(*args: Any, **kwargs: Any) -> None:
+    """Call ``send_data_to_xsiam`` with the exact same arguments, retrying transient ingestion errors.
+
+    The only differences from a direct ``send_data_to_xsiam`` call are:
+        - ``client_class=XSIAMIngestionClient``, so a failed response keeps its HTTP status code.
+        - On a retryable error (see ``XSIAMSendConfig.RETRYABLE_STATUS_CODES``, timeouts and dropped
+          connections) the same call is repeated, up to ``XSIAMSendConfig.MAX_ATTEMPTS`` times, with
+          exponential backoff. Any other error is raised immediately, exactly as before.
+
+    Only the product, the data type, the attempt number, the error class and the HTTP status code are
+    logged here - never the payload, the headers or the response body.
+
+    Args:
+        *args: Positional arguments forwarded to ``send_data_to_xsiam``.
+        **kwargs: Keyword arguments forwarded to ``send_data_to_xsiam``.
+
+    Raises:
+        Exception: The last error, when it is not retryable or all attempts are exhausted.
+    """
+    label = f"product={kwargs.get('product')} data_type={kwargs.get('data_type', EVENTS)}"
+    send_kwargs: dict[str, Any] = {**kwargs, "client_class": XSIAMIngestionClient}
+    max_attempts = XSIAMSendConfig.MAX_ATTEMPTS
+    for attempt in range(1, max_attempts + 1):
+        try:
+            send_data_to_xsiam(*args, **send_kwargs)
+        except Exception as exc:
+            status_code = getattr(exc, "status_code", None)
+            error_name = type(exc).__name__
+            if not is_retryable_xsiam_error(exc):
+                demisto.debug(f"[XSIAM Send] {label} failed with a non-retryable error ({error_name}, {status_code=}).")
+                raise
+            if attempt == max_attempts:
+                demisto.error(
+                    f"[XSIAM Send] {label} failed after {max_attempts} attempts. Last error: {error_name}, {status_code=}."
+                )
+                raise
+            delay = XSIAMSendConfig.BACKOFF_SECONDS * 2 ** (attempt - 1)
+            demisto.debug(
+                f"[XSIAM Send] {label} attempt {attempt}/{max_attempts} failed with a retryable error "
+                f"({error_name}, {status_code=}). Retrying in {delay}s."
+            )
+            time.sleep(delay)  # pylint: disable=E9003  # intentional backoff before retrying a transient XSIAM error
+            continue
+
+        if attempt > 1:
+            demisto.info(f"[XSIAM Send] {label} succeeded on attempt {attempt}/{max_attempts}.")
+        return
+
+
 def parse_vulnerabilities(vulns):  # pylint: disable=W9014
     demisto.debug("Parse the vulnerabilities...")
     if not isinstance(vulns, list):
@@ -2095,7 +2204,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 vulnerabilities = results.raw_response  # type: ignore    # pylint: disable=E1101
             return_results(results)
             if argToBoolean(args.get("should_push_events", "false")) and (is_xsiam() or is_platform()):
-                send_data_to_xsiam(vulnerabilities, product=f"{PRODUCT}_vulnerabilities", vendor=VENDOR)
+                send_data_to_xsiam_with_retry(vulnerabilities, product=f"{PRODUCT}_vulnerabilities", vendor=VENDOR)
 
         elif command == "tenable-io-list-scan-filters":
             return_results(list_scan_filters_command(client))
@@ -2115,13 +2224,13 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             return_results(results)
 
             if argToBoolean(args.get("should_push_events", "false")) and (is_xsiam() or is_platform()):
-                send_data_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                send_data_to_xsiam_with_retry(events, vendor=VENDOR, product=PRODUCT)
         # Fetch Commands
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
             demisto.debug(f"saved lastrun events: {last_run}")
             events, new_last_run = fetch_events_command(client, first_fetch, last_run, max_fetch)
-            send_data_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            send_data_to_xsiam_with_retry(events, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f"new lastrun events: {last_run}")
             demisto.setLastRun(new_last_run)
 
@@ -2189,7 +2298,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                     f"items_count={items_count}, cumulative_total={cumulative_total}, "
                     f"assets_fetch_in_progress={assets_fetch_in_progress}"
                 )
-                send_data_to_xsiam(
+                send_data_to_xsiam_with_retry(
                     data=assets,
                     vendor=VENDOR,
                     product=f"{PRODUCT}_assets",
@@ -2220,7 +2329,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                     f"[Fetch] Asset fetch completed with empty assets list. Sealing snapshot with "
                     f"snapshot_id={snapshot_id}, items_count={cumulative_total}"
                 )
-                send_data_to_xsiam(
+                send_data_to_xsiam_with_retry(
                     data=[],
                     vendor=VENDOR,
                     product=f"{PRODUCT}_assets",
@@ -2266,7 +2375,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             if vulnerabilities:
                 vulnerabilities = parse_vulnerabilities(vulnerabilities)
                 demisto.debug(f"sending {len(vulnerabilities)} vulnerabilities to XSIAM.")
-                send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f"{PRODUCT}_vulnerabilities")
+                send_data_to_xsiam_with_retry(data=vulnerabilities, vendor=VENDOR, product=f"{PRODUCT}_vulnerabilities")
                 # Release the vulnerabilities from memory once sent, mirroring the assets handling above.
                 del vulnerabilities
                 gc.collect()
