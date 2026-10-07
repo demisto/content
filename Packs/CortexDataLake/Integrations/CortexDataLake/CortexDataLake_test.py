@@ -723,23 +723,48 @@ def test_map_to_migrated_url_passthrough_for_unlisted_url(unmapped_url):
     assert map_to_migrated_url(unmapped_url) == unmapped_url
 
 
-def test_is_url_reachable_returns_true_on_response(mocker):
+@pytest.mark.parametrize("status_code", [200, 201, 204, 301, 399])
+def test_is_url_reachable_returns_true_on_success_status(mocker, status_code):
     """
     Given:
-        - A URL that responds to an HTTP request (any status code).
+        - A candidate URL whose query service responds with a non-error HTTP status (< 400).
     When:
         - Calling Client._is_url_reachable.
     Then:
-        - True is returned.
+        - True is returned, and the query service is built for the candidate URL.
     """
-    from CortexDataLake import Client, requests
+    from CortexDataLake import Client
 
     client = mocker.Mock(spec=Client)
-    client.use_ssl = True
-    client.trust_env = False
-    mocker.patch.object(requests.Session, "get", return_value=mocker.Mock())
+    query_service = mocker.Mock()
+    query_service.create_query = mocker.Mock(return_value=mocker.Mock(status_code=status_code))
+    client.initial_query_service = mocker.Mock(return_value=query_service)
 
-    assert Client._is_url_reachable(client, "https://api.de1.ew3.cdl.paloaltonetworks.com") is True
+    url = "https://api.de1.ew3.cdl.paloaltonetworks.com"
+    access_token = "test-token"
+    assert Client._is_url_reachable(client, url, access_token) is True
+    client.initial_query_service.assert_called_once_with(url=url, access_token=access_token)
+
+
+@pytest.mark.parametrize("status_code", [400, 403, 404, 500, 503])
+def test_is_url_reachable_returns_false_on_error_status(mocker, status_code):
+    """
+    Given:
+        - A candidate URL whose query service responds with an error HTTP status (>= 400),
+          e.g. a decommissioned host.
+    When:
+        - Calling Client._is_url_reachable.
+    Then:
+        - False is returned.
+    """
+    from CortexDataLake import Client
+
+    client = mocker.Mock(spec=Client)
+    query_service = mocker.Mock()
+    query_service.create_query = mocker.Mock(return_value=mocker.Mock(status_code=status_code))
+    client.initial_query_service = mocker.Mock(return_value=query_service)
+
+    assert Client._is_url_reachable(client, "https://api.de1.ew3.cdl.paloaltonetworks.com", "test-token") is False
 
 
 @pytest.mark.parametrize(
@@ -752,20 +777,20 @@ def test_is_url_reachable_returns_true_on_response(mocker):
 def test_is_url_reachable_returns_false_on_error(mocker, raised_exception):
     """
     Given:
-        - A URL probe that raises an error (e.g. timeout / connection error).
+        - A candidate URL whose query service raises an error (e.g. timeout / connection error).
     When:
         - Calling Client._is_url_reachable.
     Then:
         - False is returned.
     """
-    from CortexDataLake import Client, requests
+    from CortexDataLake import Client
 
     client = mocker.Mock(spec=Client)
-    client.use_ssl = True
-    client.trust_env = False
-    mocker.patch.object(requests.Session, "get", side_effect=raised_exception)
+    query_service = mocker.Mock()
+    query_service.create_query = mocker.Mock(side_effect=raised_exception)
+    client.initial_query_service = mocker.Mock(return_value=query_service)
 
-    assert Client._is_url_reachable(client, "https://api.de1.ew3.cdl.paloaltonetworks.com") is False
+    assert Client._is_url_reachable(client, "https://api.de1.ew3.cdl.paloaltonetworks.com", "test-token") is False
 
 
 def test_resolve_reachable_api_url_keeps_url_when_reachable(mocker):
@@ -775,7 +800,8 @@ def test_resolve_reachable_api_url_keeps_url_when_reachable(mocker):
     When:
         - Calling Client._resolve_reachable_api_url.
     Then:
-        - The original URL is returned unchanged and no mapping is attempted.
+        - The original URL is returned unchanged, the probe is authenticated with the access token,
+          and no mapping is attempted.
     """
     from CortexDataLake import Client
 
@@ -784,16 +810,18 @@ def test_resolve_reachable_api_url_keeps_url_when_reachable(mocker):
     mock_map = mocker.patch("CortexDataLake.map_to_migrated_url")
 
     original_url = "https://api.de1.ew3.cdl.paloaltonetworks.com"
-    result = Client._resolve_reachable_api_url(client, original_url)
+    access_token = "test-token"
+    result = Client._resolve_reachable_api_url(client, original_url, access_token)
 
     assert result == original_url
+    client._is_url_reachable.assert_called_once_with(original_url, access_token)
     mock_map.assert_not_called()
 
 
 def test_resolve_reachable_api_url_maps_url_when_unreachable(mocker):
     """
     Given:
-        - An oproxy api_url that is unreachable (e.g. timeout) and exists in the migration table.
+        - An oproxy api_url that is unreachable (a decommissioned host) and exists in the migration table.
     When:
         - Calling Client._resolve_reachable_api_url.
     Then:
@@ -807,9 +835,113 @@ def test_resolve_reachable_api_url_maps_url_when_unreachable(mocker):
     original_url = "https://api.de1.ew3.cdl.paloaltonetworks.com"
     migrated_url = "https://read-api.de1.prd.strata.logging.paloaltonetworks.com"
 
-    result = Client._resolve_reachable_api_url(client, original_url)
+    result = Client._resolve_reachable_api_url(client, original_url, "test-token")
 
     assert result == migrated_url
+
+
+def test_resolve_reachable_api_url_returns_unmapped_url_when_unreachable(mocker):
+    """
+    Given:
+        - An oproxy api_url with no migration mapping that is unreachable.
+    When:
+        - Calling Client._resolve_reachable_api_url.
+    Then:
+        - The original URL is returned unchanged (map_to_migrated_url has no entry for it).
+    """
+    from CortexDataLake import Client
+
+    client = mocker.Mock(spec=Client)
+    client._is_url_reachable = mocker.Mock(return_value=False)
+
+    original_url = "https://api.unknown.cdl.paloaltonetworks.com"
+    result = Client._resolve_reachable_api_url(client, original_url, "test-token")
+
+    assert result == original_url
+
+
+class TestQueryLoggingsErrorHandling:
+    """Tests that Client.query_loggings translates low-level SDK exceptions from create_query into short,
+    human-readable DemistoExceptions (keeping the raw traceback in the debug log only)."""
+
+    @staticmethod
+    def _build_client_raising(mocker, side_effect):
+        """Builds a Client mock whose create_query raises the given exception, for query_loggings error tests."""
+        from CortexDataLake import Client
+
+        client = mocker.Mock(spec=Client)
+        client.add_instance_id_to_query = mocker.Mock(side_effect=lambda query: query)
+        query_service = mocker.Mock()
+        query_service.create_query = mocker.Mock(side_effect=side_effect)
+        client.initial_query_service = mocker.Mock(return_value=query_service)
+        return client
+
+    def test_raises_readable_error_on_http_error(self, mocker):
+        """
+        Given:
+            - A transport-level failure (connection/timeout), so the SDK raises exceptions.HTTPError from create_query.
+        When:
+            - Calling Client.query_loggings.
+        Then:
+            - A short, human-readable DemistoException about connectivity is raised (no raw traceback in the message).
+        """
+        from CortexDataLake import Client
+        from pan_cortex_data_lake import exceptions
+
+        client = self._build_client_raising(mocker, exceptions.HTTPError("Connection refused"))
+
+        with pytest.raises(DemistoException) as exc_info:
+            Client.query_loggings(client, "SELECT * FROM `firewall.traffic` limit 1")
+
+        message = str(exc_info.value)
+        assert "Failed to reach Strata Logging Service" in message
+        assert "Traceback" not in message
+
+    def test_raises_readable_error_on_partial_credentials(self, mocker):
+        """
+        Given:
+            - The SDK cannot assemble complete credentials, so create_query raises exceptions.PartialCredentialsError.
+        When:
+            - Calling Client.query_loggings.
+        Then:
+            - A short, human-readable DemistoException about incomplete credentials is raised.
+        """
+        from CortexDataLake import Client
+        from pan_cortex_data_lake import exceptions
+
+        client = self._build_client_raising(mocker, exceptions.PartialCredentialsError("missing access_token"))
+
+        with pytest.raises(DemistoException) as exc_info:
+            Client.query_loggings(client, "SELECT * FROM `firewall.traffic` limit 1")
+
+        message = str(exc_info.value)
+        assert "Incomplete credentials for Strata Logging Service" in message
+        assert "Traceback" not in message
+
+    def test_raises_readable_error_on_invalid_json(self, mocker):
+        """
+        Given:
+            - Invalid credentials, so the API responds with a non-2xx, empty/non-JSON body and the SDK raises a
+              low-level CortexError ("Invalid JSON") from create_query.
+        When:
+            - Calling Client.query_loggings.
+        Then:
+            - A short, human-readable authentication DemistoException is raised instead of the raw SDK "Invalid JSON"
+              message (which is relegated to the debug log).
+        """
+        from CortexDataLake import Client
+        from pan_cortex_data_lake import exceptions
+
+        client = self._build_client_raising(
+            mocker, exceptions.CortexError("Invalid JSON: Expecting value: line 1 column 1 (char 0)")
+        )
+
+        with pytest.raises(DemistoException) as exc_info:
+            Client.query_loggings(client, "SELECT * FROM `firewall.traffic` limit 1")
+
+        message = str(exc_info.value)
+        assert "Failed to authenticate to Strata Logging Service" in message
+        assert "Invalid JSON" not in message
 
 
 # A valid base64-encoded 32-byte AES-GCM encryption key used across the SCM tests.

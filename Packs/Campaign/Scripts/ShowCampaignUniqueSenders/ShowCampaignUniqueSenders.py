@@ -11,11 +11,11 @@ try:
     campaign_incidents = demisto.get(context[0], "Contents.context.EmailCampaign.incidents")
     unique_senders = {incident.get("emailfrom") for incident in campaign_incidents}  # type: ignore[attr-defined]
     html = (
-        f"<div style='font-size:17px; text-align:center; padding-top: 20px;'> "
-        f"Unique Senders <div style='font-size:32px;'> <div> {len(unique_senders)} </div></div>"
+        f"<div style='font-size:17px; text-align:center; padding: 8px;'>"
+        f"Unique Senders<div style='font-size:24px;'>{len(unique_senders)}</div></div>"
     )
 except Exception:
-    html = "<div style='text-align:center; padding-top: 20px;'> <div> No senders </div>"
+    html = "<div style='font-size:17px; text-align:center; padding: 8px;'>Unique Senders<div>No senders</div></div>"
 
 # Return the data to the layout:
 demisto.results({"ContentsFormat": EntryFormat.HTML, "Type": EntryType.NOTE, "Contents": html})
