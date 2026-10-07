@@ -2,7 +2,7 @@
     "name": "Databricks",
     "description": "Comprehensive integration with Databricks workspace APIs for managing clusters, jobs, SQL, pipelines, Unity Catalog, MLflow, IAM, and more.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Jon Huebner",
     "url": "https://docs.databricks.com/api/workspace/",
     "email": "jhuebner@paloaltonetworks.com",
