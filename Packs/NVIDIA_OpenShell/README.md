@@ -31,18 +31,12 @@ OpenShell emits OCSF v1.8.0 by default. It can be configured to downgrade to 1.3
 
 ## Collection
 
-**Security telemetry must be collected from each sandbox. The gateway is not an aggregation point for it.**
-
-Sandboxes push logs to the gateway over gRPC, but only as pre-formatted text held in a bounded in-memory buffer that is lost on gateway restart. Those lines never re-enter the OCSF collector, so the gateway cannot emit sandbox security events as OCSF.
-
-Verified against OpenShell 0.1.2: 57 OCSF events from `--source sandbox`, zero from `--source gateway`.
+**Collect from each sandbox's supervisor.** The supervisor is the aggregation point for sandbox OCSF telemetry, one per sandbox. The gateway's log stream is a bounded in-memory buffer for operators and agents to inspect recent activity; it is not a collection path and is lost on gateway restart.
 
 | Source | Enable with | Produces | Classes |
 | --- | --- | --- | --- |
-| Sandbox supervisor | `ocsf_json_enabled` setting | `/var/log/openshell-ocsf.YYYY-MM-DD.log` inside each sandbox | 4001, 4002, 4007, 1007, 2004, 6002, 0 |
-| Gateway | `[openshell.gateway.ocsf_log]` in `gateway.toml` | JSONL file at the configured path | 5019 only |
-
-The gateway sink is **not available in 0.1.2** — the config key is rejected by the parser. It requires a later release.
+| Sandbox supervisor | `ocsf_json_enabled` setting | `/var/log/openshell-ocsf.YYYY-MM-DD.log` in the supervisor's filesystem | 4001, 4002, 4007, 1007, 2004, 6002, 0 |
+| Gateway | `[openshell.gateway.ocsf_log]` in `gateway.toml` (0.1.3 and later) | JSONL file at the configured path | 5019 only |
 
 Both sinks are disabled by default and produce the same event schema, so one parsing rule covers both. Use `metadata.product.name` to tell them apart: `OpenShell Sandbox Supervisor` or `OpenShell Gateway`.
 
@@ -54,6 +48,18 @@ openshell settings set --global --key ocsf_json_enabled --value true
 
 The supervisor picks the change up on its next poll, by default within 10 seconds. No restart is needed.
 
+### Where the supervisor writes
+
+The supervisor runs separately from the sandbox workload. `openshell sandbox exec` runs in the workload and cannot reach the supervisor's files.
+
+| Compute driver | Supervisor log location | Lifetime |
+| --- | --- | --- |
+| Kubernetes | `/var/log` in the supervisor pod's `supervisor` container | `emptyDir`, removed with the pod |
+| Docker / Podman | `/var/log` in the separate supervisor container | `tmpfs`, lost when the container stops |
+| VM | `/var/log` on the host running the supervisor, if writable | Host-managed |
+
+OpenShell does not configure a file collector. Ship files before rotation or teardown; on Kubernetes and Docker the logs disappear with the sandbox. The default supervisor image has no shell or `tar`, so `kubectl exec`, `kubectl cp` and `docker cp` cannot retrieve the files. Mount or sidecar the log volume with your collector. If the supervisor cannot open `/var/log` it falls back to stderr-only logging, which does not contain full OCSF JSON.
+
 ### Enable the gateway export (0.1.3 and later)
 
 ```toml
@@ -63,11 +69,7 @@ rotation = "daily"
 max_files = 7
 ```
 
-Rotation renames the active file to `{path}.{YYYY-MM-DD}.{uuid}`, so configure the collector to follow renamed files.
-
-### Known issue: macOS VM driver
-
-On the macOS VM compute driver, `/var/log` inside the sandbox is owned by the host uid while the sandbox process runs as uid 1000. The supervisor cannot create the JSONL file and logs `Could not open /var/log for log rotation; using stderr-only logging`. Events are still delivered to the gateway log stream, but no JSONL file is written. Not observed on Linux.
+Rotation renames the active file to `<path>.<date>.<uuid>`, so configure the collector to follow renamed files.
 
 ### Forward to Cortex XSIAM
 
