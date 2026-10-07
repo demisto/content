@@ -1,2 +1,2 @@
 [INGEST:vendor="dummy", product="collector", target_dataset="dummy_collector_raw", no_hit = keep]
-alter parsed_by = "dummycollectorregular";
+alter parsed_by = "dummycollector";

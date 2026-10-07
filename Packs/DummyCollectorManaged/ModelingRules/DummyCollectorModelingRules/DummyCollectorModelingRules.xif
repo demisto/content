@@ -2,7 +2,7 @@
 alter
     xdm.event.id = to_string(id),
     xdm.event.type = event_type,
-    xdm.event.description = concat("[managed-model] ", message),
+    xdm.event.description = message,
     xdm.source.user.username = user,
     xdm.source.ipv4 = source_ip,
     xdm.alert.severity = severity,
