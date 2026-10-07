@@ -4152,15 +4152,29 @@ class AssetsDeviceHandler:
             submitted_aids_count: Unique AIDs submitted. Logged only; the declared total is the
                 count of rows XSIAM confirmed storing.
         """
+        lost_batches = 0
+        first_error: BaseException | None = None
+
         if self.pending_buffer:
             leftovers = list(self.pending_buffer)
             self.pending_buffer.clear()
             log_falcon_assets(f"AssetsDeviceHandler: Enriching the final {len(leftovers)} buffered AID(s)", "info")
-            await self.enrich_and_ingest_batch(leftovers)
+            try:
+                await self.enrich_and_ingest_batch(leftovers)
+            except Exception as e:
+                # Absorbed for the same reason as the drain loop below: assets are flushed after
+                # the vulnerability snapshot has already sealed, so raising here would fail a fetch
+                # whose vulnerability data is safely stored. Only AID counts that are not an exact
+                # multiple of batch_limit reach this path, which is the common case.
+                lost_batches += 1
+                first_error = e
+                log_falcon_assets(
+                    f"AssetsDeviceHandler: Final buffered batch of {len(leftovers)} AID(s) failed to "
+                    f"enrich; their rows are not counted: {e}\n{traceback.format_exc()}",
+                    "error",
+                )
 
         # Wait for all in-flight enrichment and send tasks, so their stored counts are known.
-        lost_batches = 0
-        first_error: BaseException | None = None
         while self.running_tasks:
             log_falcon_assets("AssetsDeviceHandler: Starting flush of remaining assets.", "info")
             # Create a snapshot of the current tasks

@@ -11458,6 +11458,52 @@ class TestAssetsDeviceHandler:
         assert handler.stored_assets_count == 0
 
     @pytest.mark.asyncio
+    async def test_leftover_buffer_enrichment_failure_does_not_fail_the_fetch(self, mocker):
+        """
+        Tests the same absorb guarantee on the path where AIDs are still buffered.
+
+        The sibling test above drains a buffer that emptied exactly, so the only failures it sees
+        come from the gather. Here the final enrichment is awaited directly by flush_remaining,
+        which is a separate call site and needs its own guard. This is the common case in
+        production: an AID count is rarely an exact multiple of batch_limit.
+
+        Given:
+            - 3 AIDs left in pending_buffer with batch_limit=10, so they are enriched by
+              flush_remaining itself rather than by a background task.
+            - The Devices API returns a 404 with no resources and no errors (a broken endpoint).
+        When:
+            - flush_remaining runs.
+        Then:
+            - No exception escapes, so the already-sealed vulnerability fetch is not failed.
+            - Nothing is sent and nothing is counted.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        mock_client = mocker.AsyncMock()
+        mock_client._request.return_value = self._device_response(mocker, [], status_code=404)
+
+        handler = AssetsDeviceHandler(
+            client=mock_client,
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=10,
+        )
+        send_mock = self._patch_send(mocker)
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        # Fewer AIDs than batch_limit, so receive_new_aids dispatches nothing and they stay buffered.
+        await handler.receive_new_aids({"a" * 32, "b" * 32, "c" * 32})
+        assert handler.pending_buffer, "the AIDs must still be buffered for this path to be exercised"
+
+        # Must not raise: the vulnerability snapshot has already sealed by this point.
+        await handler.flush_remaining(submitted_aids_count=3)
+
+        send_mock.assert_not_called()
+        assert handler.stored_assets_count == 0
+
+    @pytest.mark.asyncio
     async def test_a_failed_batch_still_seals_on_the_rows_that_landed(self, mocker):
         """
         Tests that one broken batch costs only its own rows, not the whole snapshot.
