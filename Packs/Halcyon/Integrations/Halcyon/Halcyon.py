@@ -628,6 +628,14 @@ def fetch_events_for_log_type(
         last_fetch_time = datetime.now(timezone.utc).strftime(API_DATE_FORMAT)
         demisto.debug(f"No previous fetch time for {log_type.type_string}, starting from: {last_fetch_time}")
 
+    # The watermark (occurredAfter) is INCLUSIVE, so every cycle re-returns the
+    # events sitting exactly on the stored timestamp. We deduplicate DURING
+    # pagination and count only NEW (previously unseen) events toward max_fetch.
+    # This is what lets an over-cap backlog drain across cycles: when a group of
+    # events shares the exact same occurredAt and is larger than max_fetch, each
+    # cycle skips the already-ingested head (suppressed via previous_run_ids) and
+    # pages deeper to reach the un-ingested tail, instead of re-reading and
+    # re-truncating the same first max_fetch rows forever.
     all_events: list[dict] = []
     page = 1
     page_size = min(DEFAULT_PAGE_SIZE, max_fetch)
@@ -655,31 +663,43 @@ def fetch_events_for_log_type(
             demisto.debug(f"No more {log_type.type_string} to fetch.")
             break
 
-        all_events.extend(events)
-        demisto.debug(f"Fetched {len(events)} {log_type.type_string}, total: {len(all_events)}")
+        for event in events:
+            # Suppress events already ingested in a previous cycle (inclusive-watermark
+            # re-returns) and count only genuinely new events toward max_fetch, so each
+            # cycle makes forward progress through the backlog.
+            event_id = get_event_id(event, log_type)
+            if event_id and event_id in previous_run_ids:
+                continue
 
-        # Check if we've reached the end
+            all_events.append(event)
+            if len(all_events) >= max_fetch:
+                break
+
+        demisto.debug(
+            f"Fetched page {page} of {log_type.type_string}: {len(events)} rows, "
+            f"{len(all_events)} new so far (max_fetch={max_fetch})."
+        )
+
+        # Reached the cap of NEW events for this cycle; remaining rows (if any) will be
+        # picked up next cycle from the same inclusive watermark.
+        if len(all_events) >= max_fetch:
+            break
+
+        # Short page means the API has no more rows for this watermark.
         if len(events) < page_size:
             break
 
         page += 1
 
-        # Safety check to prevent infinite loops
-        if page > 100:
-            demisto.debug(f"Reached maximum page limit for {log_type.type_string}")
-            break
-
-    # Limit to max_fetch
-    all_events = all_events[:max_fetch]
-
-    # Get the max timestamp from raw events BEFORE deduplication
-    # This ensures we advance even if all events are deduplicated
+    # Get the max timestamp from the collected events so the watermark advances.
     raw_max_timestamp = get_max_timestamp_from_events(all_events, log_type)
 
-    # Deduplicate events
+    # all_events already contains only NEW events (filtered during pagination); pass an
+    # empty previous_run_ids so deduplicate_events only computes the last-timestamp ID
+    # set and the watermark for the next cycle without re-suppressing these new events.
     unique_events, new_ids, last_timestamp = deduplicate_events(
         events=all_events,
-        previous_run_ids=previous_run_ids,
+        previous_run_ids=set(),
         previous_timestamp=last_fetch_time,
         log_type=log_type,
     )

@@ -628,7 +628,6 @@ class TestFetchCursorDefects:
         api = FakeHalcyonEventsApi()
         # 2500 events, each at a DISTINCT second (no >1000-per-second needed),
         # all present at enablement -> a backlog deeper than a single 1000 cap.
-        base = "2026-09-30T13:00:"
         for i in range(2500):
             # Spread across minutes/seconds so each has a unique occurredAt.
             minute = i // 60
@@ -731,20 +730,19 @@ class TestFetchCursorDefects:
             f"should ensure every event is ingested at most once."
         )
 
-    @pytest.mark.xfail(reason="MISSING-events: rows beyond cap at one second starved.")
     @freeze_time("2026-09-30T13:00:00Z")
     def test_over_cap_single_second_starves_rows_beyond_cap(self, mock_client, mocker):
-        """Rows beyond max_fetch at a single second must eventually be ingested.
+        """Rows beyond max_fetch at a single timestamp must eventually be ingested.
 
-        With 1500 events at one second and max_fetch=1000, the collector reads the
-        first 1000 and can never page to the remaining 500, because it only remembers
-        a timestamp (not an offset within the second) and restarts pagination from
-        page 1 each cycle. Those 500 are lost permanently.
+        With 1500 events sharing one occurredAt and max_fetch=1000, the old collector
+        read the first 1000 and could never page to the remaining 500: it counted raw
+        rows toward the cap and restarted pagination from page 1 each cycle, so the
+        inclusive re-query kept re-reading the same head. Those 500 were lost.
 
-        This is a MISSING-events defect (distinct from duplication). It is expected
-        to FAIL until the cursor learns to fully drain a second (e.g. page offset /
-        occurredBefore bounding). Marked xfail so it documents the gap without
-        breaking CI; flip to a hard assertion once the missing-events fix lands.
+        After the drain fix, deduplication happens DURING pagination and only NEW
+        (previously unseen) events count toward max_fetch, so each cycle skips the
+        already-ingested head and pages deeper to reach the tail. All 1500 are
+        ingested exactly once across cycles.
         """
         api = FakeHalcyonEventsApi()
         same_second = "2026-09-30T13:05:00.000Z"
@@ -756,4 +754,43 @@ class TestFetchCursorDefects:
         assert len(ingested) == 1500, (
             f"Only {len(ingested)} of 1500 same-second events were ingested; "
             f"{1500 - len(ingested)} rows beyond the cap were starved (permanent loss)."
+        )
+
+    @freeze_time("2026-09-30T13:00:00Z")
+    def test_second_straddling_cap_boundary_loses_tail_of_second(self, mock_client, mocker):
+        """A second split by the max_fetch truncation loses its tail - at NORMAL volume.
+
+        This reproduces the customer's dominant "28.4% of missing events share their
+        exact second with an event we DID collect" signature, WITHOUT any 1000-event
+        burst and WITHOUT late arrival.
+
+        Setup: max_fetch=100. The backlog has events across distinct seconds, but the
+        second at the cap boundary (``13:01:39``) holds several events that land at
+        positions 99..104. The fetch loop truncates to exactly 100 (``all_events[:100]``),
+        so the events at positions 100..104 - same second as position 99, which WAS
+        collected - are dropped. The watermark then advances to that second and the
+        dedup memory contains the boundary IDs, so on the next cycle the inclusive
+        re-query returns those same-second rows but they are suppressed as "already
+        seen"... except they were never actually ingested. They are lost permanently.
+
+        Expected (correct behavior): all 105 events ingested exactly once.
+        """
+        api = FakeHalcyonEventsApi()
+        # 95 events at distinct early seconds (positions 0..94).
+        for i in range(95):
+            api.add_event(event_id=f"early-{i}", occurred_at=f"2026-09-30T13:0{i // 60}:{i % 60:02d}.000Z")
+        # 10 events ALL sharing one second (positions 95..104). max_fetch=100 cuts
+        # this group at position 100, splitting the second across the cap boundary.
+        boundary_second = "2026-09-30T13:05:00.000Z"
+        for i in range(10):
+            api.add_event(event_id=f"boundary-{i}", occurred_at=boundary_second)
+
+        ingested = _run_fetch_cycles(mock_client, mocker, api, num_cycles=5, max_fetch=100)
+
+        missing = [
+            eid for eid in ([f"early-{i}" for i in range(95)] + [f"boundary-{i}" for i in range(10)]) if eid not in ingested
+        ]
+        assert not missing, (
+            f"{len(missing)} events were never ingested (permanent loss at the cap-boundary second). "
+            f"Missing sample: {missing[:5]}"
         )
