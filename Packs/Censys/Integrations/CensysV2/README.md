@@ -1,7 +1,7 @@
 Built on the industry’s most comprehensive Internet Map, the Censys Platform delivers unmatched visibility into global internet assets, adversary infrastructure, and evolving threats.
 This integration was integrated and tested with version 2.0 of Censys.
 
-## Configure Censys v2 in Cortex
+## Configure Censys Platform in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
