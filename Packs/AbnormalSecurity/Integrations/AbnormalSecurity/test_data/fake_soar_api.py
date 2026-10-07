@@ -24,10 +24,6 @@ FILTER_RE = re.compile(r"(\w+) gte (\S+) and \1 lte (\S+)")
 PATH_RE = re.compile(r"^/(threats|abusecampaigns|cases)(?:/([^/]+))?$")
 
 
-def parse_timestamp(value: str) -> datetime:
-    return datetime.fromisoformat(value)
-
-
 class FakeSoarApi:
     def __init__(self, base_url: str):
         self.base_path = httpx.URL(base_url).path.rstrip("/")
@@ -92,7 +88,7 @@ class FakeSoarApi:
         if match is None:
             return httpx.Response(400, json={"message": f"unsupported filter: {query.get('filter')}"})
         field_name, gte, lte = match.groups()
-        start, end = parse_timestamp(gte), parse_timestamp(lte)
+        start, end = datetime.fromisoformat(gte), datetime.fromisoformat(lte)
         if endpoint in EXCLUSIVE_END_ENDPOINTS:
             start, end = start.replace(microsecond=0), end.replace(microsecond=0)
 
@@ -107,7 +103,7 @@ class FakeSoarApi:
         if not (page_size.isdigit() and page_number.isdigit()):
             return httpx.Response(400, json={"message": "pageSize and pageNumber must be integers"})
         page_size, page_number = int(page_size), int(page_number)
-        matching = [item for item in self.items[endpoint] if in_window(parse_timestamp(item[field_name]))]
+        matching = [item for item in self.items[endpoint] if in_window(datetime.fromisoformat(item[field_name]))]
         matching.sort(key=lambda item: item[id_key], reverse=not self.ascending)
         page = matching[(page_number - 1) * page_size : page_number * page_size]
         response = {list_key: [self._summary(endpoint, item) for item in page], "pageNumber": page_number}
