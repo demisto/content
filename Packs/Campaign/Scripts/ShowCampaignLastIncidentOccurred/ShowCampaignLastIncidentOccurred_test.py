@@ -23,8 +23,8 @@ INCIDENTS_WITH_MIXED_TZ_AWARENESS = [
 ]
 
 EXPECTED_HTML = (
-    "<div style='text-align:center; font-size:17px; padding: 15px;'>Last Incident Occurred</br> "
-    "<div style='font-size:24px;'> {value} </div></div>"
+    "<div style='text-align:center; font-size:17px; padding: 8px;'>Last Incident Occurred"
+    "<div style='font-size:24px;'>{value}</div></div>"
 )
 
 
