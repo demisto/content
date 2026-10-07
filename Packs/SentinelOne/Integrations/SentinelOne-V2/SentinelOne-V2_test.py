@@ -189,6 +189,59 @@ def test_fetch_uam_alerts(mocker, requests_mock):
     assert custom_fields["sentinelonesitename"] == "Default site"
 
 
+def test_fetch_uam_alerts_shifted_window(mocker, requests_mock):
+    """
+    When:
+        fetch-incidents is called with fetch_uam_alert_type configured.
+    Then:
+        The GraphQL query must include both start and end timestamps, with end = now - 5 minutes,
+        so that alerts have time to be indexed by SentinelOne before being queried (Geopost fix).
+        uam_time in lastRun must advance to the window end (uam_query_to), not the last alert's createdAt.
+    """
+    import time as time_module
+
+    mock_graphql_response = util_load_json("test_data/uam_alerts_raw.json")
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/unifiedalerts/graphql", json=mock_graphql_response)
+
+    uam_last_fetch = 1735041600000  # window start stored in lastRun
+    now_ms = int(time_module.time() * 1000)
+    expected_query_to = now_ms - sentinelone_v2.UAM_FETCH_DELAY_MS  # now - 5 min
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "token": "token",
+            "url": "https://usea1.sentinelone.net",
+            "api_version": "2.1",
+            "fetch_type": "None",
+            "fetch_uam_alert_type": "all",
+            "fetch_limit": "10",
+        },
+    )
+    mocker.patch.object(demisto, "getLastRun", return_value={"uam_time": uam_last_fetch})
+    mocker.patch.object(demisto, "command", return_value="fetch-incidents")
+    mocker.patch.object(demisto, "incidents")
+    mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+    main()
+
+    sent_query = requests_mock.last_request.json()["query"]
+
+    # Query must contain the window start
+    assert str(uam_last_fetch) in sent_query, "GQL query must include the start timestamp"
+
+    # Query must contain an end timestamp (shifted window)
+    assert "end:" in sent_query, "GQL query must include an end timestamp for the shifted window"
+
+    # uam_time saved to lastRun must be the window end (uam_query_to), not the last alert's createdAt
+    saved_uam_time = mock_set_last_run.call_args[0][0]["uam_time"]
+    tolerance_ms = 5000  # 5 seconds to account for test execution time
+    assert (
+        abs(saved_uam_time - expected_query_to) < tolerance_ms
+    ), f"uam_time ({saved_uam_time}) must be close to now-5min ({expected_query_to}), not the last alert's createdAt"
+
+
 def test_fetch_file(mocker, requests_mock):
     """
     When:
@@ -2590,3 +2643,225 @@ def test_export_threat_events(mocker, requests_mock):
     assert requests_mock.request_history[0].method == "GET"
     assert requests_mock.request_history[0].qs.get("format") == ["json"]
     assert requests_mock.request_history[0].qs.get("eventtypes") == ["events"]
+
+
+def test_get_unified_exclusions(mocker, requests_mock):
+    """
+    When:
+        sentinelone-get-unified-exclusions command is called with filters
+    Returns:
+        List of unified exclusion items with correct context outputs, and camelCase
+        query parameters sent to the API (e.g. osTypes, includeChildren, not ostypes).
+    """
+    raw_response = util_load_json("test_data/get_unified_exclusions_raw_response.json")
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/unified-exclusions", json=raw_response)
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-get-unified-exclusions")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "limit": "10",
+            "os_types": "windows",
+            "mode_type": "suppression",
+            "include_children": "true",
+            "include_parents": "false",
+            "exclusion_name_contains": "test",
+        },
+    )
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    assert len(outputs) == 1
+    assert outputs[0]["ID"] == "2543493559305834189"
+    assert outputs[0]["Name"] == "test api"
+    assert outputs[0]["Type"] == "path"
+    assert outputs[0]["Value"] == "ffffffffffffffffffffffffffffffffffffffff"
+    assert outputs[0]["OsType"] == "windows"
+    assert outputs[0]["ModeType"] == "suppression"
+
+    sent_qs = requests_mock.last_request.qs
+    assert sent_qs.get("ostypes") == ["windows"]
+    assert sent_qs.get("modetype") == ["suppression"]
+    assert sent_qs.get("includechildren") == ["true"]
+    assert sent_qs.get("includeparents") == ["false"]
+    assert sent_qs.get("exclusionname__contains") == ["test"]
+
+
+def test_create_unified_exclusion(mocker, requests_mock):
+    """
+    When:
+        sentinelone-create-unified-exclusion command is called with all required fields
+    Returns:
+        The created unified exclusion item with correct ID and field mappings.
+    """
+    raw_response = util_load_json("test_data/create_unified_exclusion_raw_response.json")
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/unified-exclusions", json=raw_response)
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-create-unified-exclusion")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "exclusion_name": "test api",
+            "os_type": "windows",
+            "mode_type": "suppression",
+            "exclusion_type": "path",
+            "value": "ffffffffffffffffffffffffffffffffffffffff",
+            "scope_level": "account",
+            "scope_level_id": "2458673717681591681",
+            "reason": "performance_issue",
+            "threat_type": "EDR",
+            "description": "TEST",
+        },
+    )
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    assert outputs["ID"] == "2543493559305834189"
+    assert outputs["Name"] == "test api"
+    assert outputs["Type"] == "path"
+    assert outputs["Value"] == "ffffffffffffffffffffffffffffffffffffffff"
+    assert outputs["ModeType"] == "suppression"
+    assert outputs["OsType"] == "windows"
+    assert outputs["ScopeName"] == "account"
+
+
+def test_delete_unified_exclusions(mocker, requests_mock):
+    """
+    When:
+        sentinelone-delete-unified-exclusions command is called with matching IDs and types
+    Returns:
+        Number of exclusion items successfully deleted as reported by the API.
+    """
+    raw_response = util_load_json("test_data/delete_unified_exclusions_raw_response.json")
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/unified-exclusions", json=raw_response)
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-delete-unified-exclusions")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "ids": "2543493559305834189",
+            "exclusion_types": "path",
+        },
+    )
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    assert outputs["Affected"] == 1
+    assert requests_mock.request_history[0].method == "DELETE"
+    assert requests_mock.last_request.json() == {"data": {"exclusions": [{"id": "2543493559305834189", "type": "path"}]}}
+
+
+def test_get_activities_multiple_types_single_param(mocker, requests_mock):
+    """
+    When:
+        sentinelone-get-activities is called with multiple activity_types (e.g. "6,7")
+    Then:
+        The API request must send activityTypes as a single comma-separated query parameter,
+        not as repeated query parameters (activityTypes=6&activityTypes=7).
+    """
+    raw_response = util_load_json("test_data/get_activities_raw_response.json")
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/activities", json=raw_response)
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-get-activities")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"activity_types": "6,7"},
+    )
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    assert mock_return_results.called
+    sent_qs = requests_mock.last_request.qs
+    assert sent_qs.get("activitytypes") == [
+        "6,7"
+    ], "activityTypes must be sent as a single comma-separated value, not repeated params"
+
+
+def test_get_alert_with_raw_indicators(mocker, requests_mock):
+    """
+    When:
+        sentinelone-get-alert-with-raw-indicators command is called with a valid alert ID
+    Returns:
+        Alert context with structured indicators, raw SDL indicators, and event search params.
+    """
+    raw_response = util_load_json("test_data/get_alert_with_raw_indicators_raw_response.json")
+    requests_mock.post(
+        "https://usea1.sentinelone.net/web/api/v2.1/unifiedalerts/graphql",
+        json=raw_response,
+    )
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-get-alert-with-raw-indicators")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"alert_id": "aaaaaaaa-bbbb-cccc-dddd-ffffffffffff"},
+    )
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    assert outputs["ID"] == "aaaaaaaa-bbbb-cccc-dddd-ffffffffffff"
+    assert outputs["Name"] == "testd - Execution of a mounted binary in a container detected"
+    assert outputs["Severity"] == "CRITICAL"
+    assert outputs["Status"] == "NEW"
+    assert outputs["StorylineId"] == "aaaaaaaa-bbbb-cccc-dddd-111111111111"
+    assert len(outputs["Indicators"]) == 2
+    assert outputs["Indicators"][0]["ID"] == "2370"
+    assert outputs["Indicators"][1]["Attacks"][0]["tactic"]["uid"] == "TA0004"
+    assert len(outputs["RawIndicators"]) == 2
+    assert outputs["RawIndicators"][0]["indicator.name"] == "TrustedBinaryUtilityModified"
+    assert outputs["EventSearchParams"]["type"] == "LOG"
+    assert outputs["Asset"]["osType"] == "LINUX"
+    assert outputs["Process"]["cmdLine"] == "testd --host=unix:///var/run/test.sock"
+    assert requests_mock.last_request.method == "POST"
+    assert "alertWithRawIndicators" in requests_mock.last_request.json()["query"]
