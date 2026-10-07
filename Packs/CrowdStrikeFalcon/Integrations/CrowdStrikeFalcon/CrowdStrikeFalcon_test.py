@@ -11411,6 +11411,141 @@ class TestAssetsDeviceHandler:
         )
 
     @pytest.mark.asyncio
+    async def test_enrichment_failure_does_not_fail_the_fetch(self, mocker):
+        """
+        Tests that a broken Devices API does not take the vulnerability fetch down with it.
+
+        Assets are flushed from finalize_severity_fetch *after* the vulnerability snapshot has
+        already been sealed, so raising here would fail a fetch whose vulnerability data is safely
+        stored. The asset path therefore absorbs and reports, exactly as reap_completed_send_tasks
+        does for vulnerability sends.
+
+        Given:
+            - Every batch gets a 404 with no resources and no errors (a broken endpoint).
+            - 10 AIDs with batch_limit=5, so pending_buffer is empty when flush_remaining runs.
+        When:
+            - flush_remaining drains the enrichment tasks.
+        Then:
+            - No exception escapes, so the vulnerability flow is unaffected.
+            - Nothing is sealed: no row was ever enriched, so there is no row to carry a count and
+              no bogus total is declared.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        mock_client = mocker.AsyncMock()
+        mock_client._request.return_value = self._device_response(mocker, [], status_code=404)
+
+        handler = AssetsDeviceHandler(
+            client=mock_client,
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=5,
+        )
+        send_mock = self._patch_send(mocker)
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        await handler.receive_new_aids({f"aid{index}" for index in range(10)})
+        # The batches consumed the buffer exactly, so nothing is awaited outside the drain.
+        assert not handler.pending_buffer
+
+        # Must not raise: the vulnerability snapshot has already sealed by this point.
+        await handler.flush_remaining(submitted_aids_count=10)
+
+        # Nothing enriched, so nothing to seal with - and no count is declared on empty.
+        send_mock.assert_not_called()
+        assert handler.stored_assets_count == 0
+
+    @pytest.mark.asyncio
+    async def test_a_failed_batch_still_seals_on_the_rows_that_landed(self, mocker):
+        """
+        Tests that one broken batch costs only its own rows, not the whole snapshot.
+
+        This is the partial-tolerance contract the vulnerability path already has: a failed batch
+        contributes nothing to the count, and the snapshot seals smaller rather than not at all.
+
+        Given:
+            - 10 AIDs with batch_limit=5; the first batch resolves, the second 404s.
+        When:
+            - flush_remaining drains both.
+        Then:
+            - The seal is still sent, declaring only the rows that actually landed.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        mock_client = mocker.AsyncMock()
+        mock_client._request.side_effect = [
+            self._device_response(mocker, [f"aid{index}" for index in range(5)]),
+            self._device_response(mocker, [], status_code=404),
+        ]
+
+        handler = AssetsDeviceHandler(
+            client=mock_client,
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=5,
+        )
+        send_mock = self._patch_send(mocker)
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        await handler.receive_new_aids({f"aid{index}" for index in range(10)})
+
+        await handler.flush_remaining(submitted_aids_count=10)
+
+        # Two sends: the four rows of the surviving batch, then the seal carrying the withheld row.
+        assert send_mock.call_count == 2
+        # The seal declares only what landed - 4 stored + 1 withheld - not the 10 AIDs submitted.
+        assert send_mock.call_args.kwargs["items_count"] == 5
+
+    @pytest.mark.asyncio
+    async def test_seals_when_the_aid_count_is_an_exact_multiple_of_batch_limit(self, mocker):
+        """
+        Tests the boundary where receive_new_aids consumes the buffer completely.
+
+        No AID is reserved for the flush, so an exact multiple of batch_limit leaves pending_buffer
+        empty and flush_remaining performs no final enrichment. The seal must still be sent, which
+        is only possible because a row was withheld rather than an AID.
+
+        Given:
+            - 10 AIDs with batch_limit=5, every device resolving.
+        When:
+            - flush_remaining runs with an empty buffer.
+        Then:
+            - No final enrichment call is made, and the snapshot still seals declaring all 10 rows.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        mock_client = mocker.AsyncMock()
+        mock_client._request.side_effect = [
+            self._device_response(mocker, [f"aid{index}" for index in range(5)]),
+            self._device_response(mocker, [f"aid{index}" for index in range(5, 10)]),
+        ]
+
+        handler = AssetsDeviceHandler(
+            client=mock_client,
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=5,
+        )
+        send_mock = self._patch_send(mocker)
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        await handler.receive_new_aids({f"aid{index}" for index in range(10)})
+        assert not handler.pending_buffer
+
+        await handler.flush_remaining(submitted_aids_count=10)
+
+        # Only the two bulk batches were enriched; the flush added no third lookup.
+        assert mock_client._request.await_count == 2
+        # 9 rows sent in bulk + the 1 withheld row carrying the count.
+        assert send_mock.call_args.kwargs["items_count"] == 10
+
+    @pytest.mark.asyncio
     async def test_bulk_batches_never_declare_a_sealing_count(self, mocker):
         """
         Tests that an enrichment batch never carries a count that could seal the snapshot.
@@ -11557,8 +11692,9 @@ class TestAssetsDeviceHandler:
         handler.pending_buffer = {"d" * 32, "e" * 32}
         await handler.flush_remaining(submitted_aids_count=5)
 
-        # The first batch stored 0, so only the final batch's own 2 rows are declared.
-        assert send_mock.call_args.kwargs["items_count"] == 2
+        # The first batch stored nothing, so its rows are excluded. Declared total is the 2 rows
+        # the second batch stored plus the 1 row withheld for the seal itself.
+        assert send_mock.call_args.kwargs["items_count"] == 3
 
     @pytest.mark.asyncio
     async def test_seal_declares_cumulative_total_across_multiple_batches(self, mocker):
@@ -11601,23 +11737,23 @@ class TestAssetsDeviceHandler:
         assert send_mock.call_args.kwargs["items_count"] == 5
 
     @pytest.mark.asyncio
-    async def test_snapshot_is_left_open_when_the_final_batch_resolves_nothing(self, mocker):
+    async def test_snapshot_still_seals_when_the_final_batch_resolves_nothing(self, mocker):
         """
-        Tests the accepted limitation of sealing with the final batch.
+        Tests that an unresolvable trailing AID no longer blocks the seal (XSUP-77575).
 
-        The count is carried by the last batch's own rows, so it needs that batch to resolve at
-        least one device. ``receive_new_aids`` reserves a final AID, but the Devices API can reject
-        it - an EASM or decommissioned host resolves to nothing.
+        The count is carried by a row withheld from the enriched output, not by whatever the last
+        batch happens to resolve. A trailing AID that the Devices API rejects - an EASM or
+        decommissioned host - therefore cannot leave the snapshot open, which is the regression
+        this withholding strategy exists to prevent.
 
         Given:
-            - A first batch that stores 3 devices, and a final AID that resolves no devices.
+            - A first batch that resolves 3 devices, and a final AID that resolves no devices.
         When:
             - flush_remaining runs.
         Then:
-            - No further send is made, so the snapshot stays open rather than being sealed at a
-              wrong count. The rows already stored under it are stranded: the next cycle starts a
-              new snapshot rather than resuming this one. Sealing here would require holding a row
-              back from the bulk batches specifically to carry the count.
+            - The seal is still sent, carrying the withheld row and declaring the rows that were
+              actually stored. Previously no row was available to carry the count, so the snapshot
+              stayed open and every row stored under it was stranded.
         """
         from CrowdStrikeFalcon import AssetsDeviceHandler
 
@@ -11642,9 +11778,12 @@ class TestAssetsDeviceHandler:
         handler.pending_buffer = {"d" * 32}
         await handler.flush_remaining(submitted_aids_count=4)
 
-        # Only the first batch was sent; the final batch had no rows to declare a total with.
-        assert send_mock.call_count == 1
-        assert send_mock.call_args.kwargs["items_count"] == 1
+        # Two sends: the bulk batch, then the seal. The final AID resolved nothing, but the
+        # withheld row is still there to carry the count.
+        assert send_mock.call_count == 2
+        # 2 rows stored by the bulk batch (3 resolved, 1 withheld) + the withheld row itself.
+        assert send_mock.call_args.kwargs["items_count"] == 3
+        assert [device["device_id"] for device in send_mock.call_args.kwargs["data"]] == ["c" * 32]
 
     @pytest.mark.asyncio
     async def test_final_batch_send_failure_propagates_out_of_flush_remaining(self, mocker):
