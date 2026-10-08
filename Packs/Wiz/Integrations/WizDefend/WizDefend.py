@@ -5,7 +5,7 @@ from CommonServerPython import *
 import demistomock as demisto
 from urllib import parse
 
-WIZ_VERSION = "1.1.0"
+WIZ_VERSION = "1.2.0"
 WIZ_DEFEND = "wiz_defend"
 WIZ_DEFEND_INCIDENT_TYPE = "WizDefend Detection"
 USER_AGENT_NAME = "xsoar_defend"
@@ -58,7 +58,9 @@ class WizApiResponse:
     DETECTIONS = "detections"
     ISSUES = "issues"
     UPDATE_ISSUE = "updateIssue"
-    CREATE_ISSUE_NOTE = "createIssueNote"
+    CREATE_COMMENT = "createCommentThreadComment"
+    DELETE_COMMENT = "deleteComment"
+    ISSUE = "issue"
     CLOUD_RESOURCES = "cloudResources"
     PROJECTS = "projects"
     GRAPH_SEARCH = "graphSearch"
@@ -71,7 +73,6 @@ class WizApiResponse:
     TYPE = "type"
     ERRORS = "errors"
     MESSAGE = "message"
-    NOTES = "notes"
 
 
 class WizApiInputFields:
@@ -141,7 +142,6 @@ class WizApiVariables:
     IDS = "ids"
     FETCH_CLOUD_ACCOUNTS_AND_CLOUD_ORG = "fetchCloudAccountsAndCloudOrganizations"
     PATCH = "patch"
-    NOTE = "note"
     RESOLUTION_REASON = "resolutionReason"
     DESCRIPTION = "description"
 
@@ -464,9 +464,6 @@ $includeTriggeringEvents: Boolean = true) {
           name
         }
         resolutionReason
-        notes {
-          text
-        }
       }
       ruleMatch {
         rule {
@@ -731,10 +728,6 @@ $fetchTdrLogic: Boolean = false, $fetchSecuritySubCategories: Boolean = false) {
         tags
         externalId
       }
-      notes {
-        id
-        text
-      }
       environments
       cloudAccounts @include(if: $fetchCloudAccountsAndCloudOrganizations) {
         id
@@ -968,53 +961,49 @@ mutation UpdateIssue(
     updateIssue(input: { id: $issueId, patch: $patch, override: $override }) {
       issue {
         id
-        notes {
-          ...IssueNoteDetails
-        }
         status
         dueAt
         resolutionReason
       }
     }
   }
-
-  fragment IssueNoteDetails on IssueNote {
-    id
-    text
-    updatedAt
-    createdAt
-    user {
-      id
-      email
-    }
-    serviceAccount {
-      id
-      name
-    }
-  }
 """
 CREATE_COMMENT_QUERY = """
-mutation CreateIssueComment($input: CreateIssueNoteInput!) {
-    createIssueNote(input: $input) {
-      issueNote {
-        createdAt
-        id
-        text
-        user {
+mutation CreateCommentThreadComment($input: AddCommentInput!) {
+  createCommentThreadComment(input: $input) {
+    commentThread {
+      id
+    }
+  }
+}
+"""
+DELETE_COMMENT_QUERY = """
+mutation DeleteComment($input: DeleteCommentInput!) {
+  deleteComment(input: $input) {
+    commentThread {
+      id
+    }
+  }
+}
+"""
+ISSUE_COMMENTS_QUERY = """
+query IssueComments($id: ID!, $after: String) {
+  issue(id: $id) {
+    commentThread {
+      comments(first: 500, after: $after, orderBy: { field: CREATED_AT, direction: ASC }) {
+        nodes {
           id
-          email
+          body
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
         }
       }
     }
   }
-    """
-DELETE_NOTE_QUERY = """
-    mutation DeleteIssueNote($input: DeleteIssueNoteInput!) {
-    deleteIssueNote(input: $input) {
-      _stub
-    }
-  }
-    """
+}
+"""
 
 PULL_THREAT_ISSUE_VARIABLES = {
     WizApiVariables.FILTER_BY: {WizApiVariables.TYPE: [WizThreatVariables.THREAT_DETECTION]},
@@ -1585,6 +1574,18 @@ def query_single_issue(issue_id):
         WizApiVariables.FILTER_BY: {WizApiVariables.ID: issue_id},
     }
     return query_issues(issue_variables, paginate=False)
+
+
+def get_issue_comments(issue_id):
+    """Needs read:comments, so keep it off the fetch and get paths."""
+    comments, after = [], None
+    while True:
+        issue, _ = get_entries(ISSUE_COMMENTS_QUERY, {"id": issue_id, "after": after}, WizApiResponse.ISSUE)
+        page = ((issue or {}).get("commentThread") or {}).get("comments") or {}
+        comments.extend(page.get("nodes") or [])
+        if not (page.get("pageInfo") or {}).get("hasNextPage"):
+            return comments
+        after = page["pageInfo"]["endCursor"]
 
 
 def query_api(query, variables, wiz_type, paginate=True, max_fetch=API_MAX_FETCH):
@@ -3568,7 +3569,6 @@ def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolv
         WizApiVariables.ISSUE_ID: issue_id,
         WizApiVariables.PATCH: {
             WizApiVariables.STATUS: status,
-            WizApiVariables.NOTE: truncate_note(reject_or_resolve_comment),
             WizApiVariables.RESOLUTION_REASON: reject_or_resolve_reason,
         },
     }
@@ -3576,6 +3576,7 @@ def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolv
 
     response = get_entries(query, variables, WizApiResponse.UPDATE_ISSUE)
     if response:
+        set_issue_note(issue_id, reject_or_resolve_comment)
         return_results(
             CommandResults(outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully modified the threat status to {status}.")
         )
@@ -3639,10 +3640,10 @@ def set_issue_note(issue_id, comment):
         return message
 
     comment = truncate_note(comment)
-    variables = {"input": {"issueId": issue_id, "text": comment}}
+    variables = {"input": {"subjectId": issue_id, "subjectType": "ISSUE", "body": comment}}
     query = CREATE_COMMENT_QUERY
 
-    response = get_entries(query, variables, WizApiResponse.CREATE_ISSUE_NOTE)
+    response = get_entries(query, variables, WizApiResponse.CREATE_COMMENT)
     if not response:
         return_error(f"Error: Failed to set note on issue with ID {issue_id}.\n" f"Please check the input parameters.")
     return response
@@ -3663,7 +3664,6 @@ def _reopen_issue(issue_id, reopen_note):
     variables = {"issueId": issue_id, "patch": {"status": "OPEN"}}
 
     response = get_entries(query, variables, WizApiResponse.UPDATE_ISSUE)
-    demisto.info(f"Ariel the response is {response}")
     if not response:
         error_message = f"Failed to reopen issue with ID {issue_id}. Please check the input parameters."
         demisto.error(error_message)
@@ -3734,13 +3734,14 @@ def clear_threat_comments():
     demisto.debug(f"clear_threat_note called with issue_id: {issue_id}")
 
     threat = get_filtered_threats(issue_id=issue_id)
-    threat_notes = threat[0].get(WizApiResponse.NOTES) or []
+    if isinstance(threat, str) or not threat:
+        return log_and_return_error(f"Error: Threat with ID {issue_id} was not found.")
 
-    for note in threat_notes:
-        variables = {"input": {"id": note["id"]}}
-        if not get_entries(DELETE_NOTE_QUERY, variables, "deleteIssueNote"):
+    for comment in get_issue_comments(issue_id):
+        variables = {"input": {"id": comment["id"]}}
+        if not get_entries(DELETE_COMMENT_QUERY, variables, WizApiResponse.DELETE_COMMENT):
             return log_and_return_error(
-                f"Error: Failed to delete the comment {note['text']} from the threat with ID {issue_id}. "
+                f"Error: Failed to delete the comment {comment['body']} from the threat with ID {issue_id}. "
                 f"Please check the input parameters and try again."
             )
 
