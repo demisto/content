@@ -187,7 +187,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, Dict, List, Any, Union, Set, cast
+    from typing import Optional, Dict, List, Any, Union, Set, Tuple, Iterator, Iterable, cast
 
     from urllib3 import disable_warnings
 
@@ -10204,6 +10204,13 @@ if 'requests' in sys.modules:
             """
             cred_type = credentials.get('type')
 
+            if cred_type == 'passthrough':
+                # A passthrough profile is self-managed: the integration applies the
+                # credential itself, or none is required. Leave the request untouched.
+                demisto.debug('[UCP][CommonServerPython.py] _apply_ucp_credentials: passthrough profile; '
+                              'leaving the request untouched (the integration owns this credential).')
+                return
+
             # Bug on UCP side where they return different types for the same credential type. To be fixed in July'26 version
             if cred_type == 'oauth2_client_credentials' or cred_type == 'oauth2_authorization_code' or cred_type == 'oauth2':
                 self._apply_ucp_oauth2(credentials, ctx)
@@ -10464,6 +10471,13 @@ if 'requests' in sys.modules:
                 Determines which data format to return from the HTTP request. The default
                 is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response'
                  to return the full response object.
+
+                 To stream the response body incrementally (instead of loading the full body into memory),
+                 pass ``resp_type='response'`` together with ``stream=True`` (forwarded to ``requests`` via
+                 ``**kwargs``). You can then read the body lazily, e.g. ``res.iter_content(...)`` /
+                 ``res.iter_lines()`` or ``res.raw``, and combine it with ``stream_json_items`` /
+                 ``stream_xml_elements`` to parse one record at a time and keep peak memory ~flat. This is
+                 recommended for large ``fetch``/``fetch-assets`` responses.
 
             :type ok_codes: ``tuple``
             :param ok_codes:
@@ -14399,6 +14413,201 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     return
 
 
+def send_assets_and_vulnerabilities_to_xsiam(data,  # type: Union[str, list]
+                                             vendor,  # type: str
+                                             product,  # type: str
+                                             data_format=None,  # type: Optional[str]
+                                             url_key='url',  # type: str
+                                             num_of_attempts=3,  # type: int
+                                             chunk_size=XSIAM_EVENT_CHUNK_SIZE,  # type: int
+                                             should_update_health_module=True,  # type: bool
+                                             add_proxy_to_request=False,  # type: bool
+                                             snapshot_id='',  # type: str
+                                             items_count=None,  # type: Optional[str]
+                                             multiple_threads=False,  # type: bool
+                                             client_class=None,  # type: Optional[Any]
+                                             use_streaming_send=True,  # type: bool
+                                             ):
+    # type: (...) -> Optional[list]
+    """
+    Send fetched assets and/or vulnerabilities into the XDR data-collector private api.
+
+    This is the assets/vulnerabilities analog of ``send_events_to_xsiam``. It delegates to
+    ``send_data_to_xsiam`` with ``data_type="assets"`` so the snapshot headers (``snapshot-id`` and
+    ``total-items-count``) and sealing behavior are preserved (vulnerabilities are sent as an assets-type
+    snapshot as well). To reduce peak memory in the ``fetch-assets`` flow, this function defaults
+    ``use_streaming_send`` to ``True`` (serialize+gzip one item at a time, freeing each as it goes). The
+    bytes sent to XSIAM are equivalent to the legacy (non-streaming) path.
+
+    :type data: ``Union[str, list]``
+    :param data: The assets or vulnerabilities to send to XSIAM server. Should be of the following:
+        1. List of strings or dicts where each string or dict represents an asset or vulnerability.
+        2. String containing raw records separated by a new line.
+
+    :type vendor: ``str``
+    :param vendor: The vendor corresponding to the integration that originated the data.
+
+    :type product: ``str``
+    :param product: The product corresponding to the integration that originated the data.
+
+    :type data_format: ``str``
+    :param data_format: Should only be filled in case the 'data' parameter contains a string of raw
+        records in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
+
+    :type url_key: ``str``
+    :param url_key: The param dict key where the integration url is located at. the default is 'url'.
+
+    :type num_of_attempts: ``int``
+    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
+
+    :type chunk_size: ``int``
+    :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
+
+    :type should_update_health_module: ``bool``
+    :param should_update_health_module: whether to trigger the health module showing how many assets were sent to xsiam.
+
+    :type add_proxy_to_request: ``bool``
+    :param add_proxy_to_request: whether to add proxy to the send assets request.
+
+    :type snapshot_id: ``str``
+    :param snapshot_id: the snapshot id.
+
+    :type items_count: ``str``
+    :param items_count: the asset snapshot items count.
+
+    :type multiple_threads: ``bool``
+    :param multiple_threads: whether to use multiple threads to send the assets to xsiam or not.
+        Note that when set to True, the updateModuleHealth should be done from the integration itself, and the
+        streaming send path is disabled (falls back to the legacy chunked path).
+
+    :type client_class: ``BaseClient``
+    :param client_class: The client class to use for the request.
+
+    :type use_streaming_send: ``bool``
+    :param use_streaming_send: Feature flag (default True for assets). When True, serializes and gzips the data
+        one item at a time (streaming) instead of building full copies of the whole batch, keeping peak memory
+        ~flat; the bytes sent to XSIAM are equivalent to the legacy path. Ignored when multiple_threads=True or
+        when data is already a raw string.
+
+    :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
+    In case of running with multiple threads, the list of futures will hold the number of assets sent and can be accessed by:
+    for future in concurrent.futures.as_completed(futures):
+        data_size += future.result()
+    :rtype: ``List[Future]`` or ``None``
+    """
+    return send_data_to_xsiam(
+        data,
+        vendor,
+        product,
+        data_format,
+        url_key,
+        num_of_attempts,
+        chunk_size,
+        data_type=ASSETS,
+        should_update_health_module=should_update_health_module,
+        add_proxy_to_request=add_proxy_to_request,
+        snapshot_id=snapshot_id,
+        items_count=items_count,
+        multiple_threads=multiple_threads,
+        client_class=client_class if client_class else BaseClient,
+        use_streaming_send=use_streaming_send,
+    )
+
+
+def stream_json_items(source, items_prefix='item'):
+    # type: (Any, str) -> Iterator[Any]
+    """
+    Stream-parse a JSON array/response one record at a time using ``ijson``, yielding a single record on
+    each iteration. This keeps peak memory ~flat compared to loading the entire body with ``json.loads``,
+    which is especially useful for large ``fetch-assets`` / ``fetch`` responses.
+
+    Note: ``ijson`` must be available in the integration's docker image. It is imported lazily so that
+    integrations that do not use this helper are unaffected.
+
+    Usage example (with a streamed HTTP response)::
+
+        res = client._http_request('GET', url_suffix='/assets', resp_type='response', stream=True)
+        res.raw.decode_content = True
+        for asset in stream_json_items(res.raw, items_prefix='data.item'):
+            process(asset)
+
+    :type source: ``Any``
+    :param source: The JSON source to parse. Can be a bytes/str object, a file-like object, or a
+        readable stream such as ``requests.Response.raw`` (when the request was made with ``stream=True``).
+
+    :type items_prefix: ``str``
+    :param items_prefix: The ijson prefix identifying the repeated items to yield. For a top-level JSON
+        array use ``'item'`` (the default). For items nested under a key, use e.g. ``'data.item'`` for
+        ``{"data": [ ... ]}``. See the ijson documentation for the prefix syntax.
+
+    :return: A generator yielding one parsed record (usually a ``dict``) at a time.
+    :rtype: ``Iterator[Any]``
+    """
+    try:
+        import ijson  # noqa
+    except ImportError:
+        raise DemistoException(
+            'stream_json_items requires the "ijson" package, which is not available in the current docker image. '
+            'Add "ijson" to the integration requirements / docker image to use streaming JSON parsing.'
+        )
+
+    for item in ijson.items(source, items_prefix):
+        yield item
+
+
+def stream_xml_elements(source, tags):
+    # type: (Any, Union[str, Iterable[str]]) -> Iterator[Tuple[str, Any]]
+    """
+    Stream-parse an XML response one element at a time using ``xml.etree.ElementTree.iterparse``, yielding
+    each matching element and then clearing it (``elem.clear()``) so memory does not grow with the size of
+    the document. This is the XML analog of ``stream_json_items`` and keeps peak memory ~flat for large
+    ``fetch-assets`` responses.
+
+    Multiple tags can be matched in a single pass over the stream, and a ``(local_tag_name, element)`` tuple
+    is yielded for each match so the caller can distinguish which tag matched. This lets callers extract
+    several different elements (for example a data element plus an error/pagination marker) in one
+    low-memory pass over the same stream - useful because a streamed HTTP response can only be read once.
+
+    Usage example (with a streamed HTTP response)::
+
+        res = client._http_request('GET', url_suffix='/assets.xml', resp_type='response', stream=True)
+        res.raw.decode_content = True
+        for local_tag, elem in stream_xml_elements(res.raw, tags=['HOST', 'CODE', 'URL']):
+            if local_tag == 'HOST':
+                process_host(elem)
+            elif local_tag == 'CODE':
+                handle_error(elem)
+            elif local_tag == 'URL':
+                next_url = elem.text
+
+    :type source: ``Any``
+    :param source: The XML source to parse. Can be a filename, a file-like object, or a readable stream such
+        as ``requests.Response.raw`` (when the request was made with ``stream=True``).
+
+    :type tags: ``Iterable[str]``
+    :param tags: The element tags to yield. Matching is namespace-agnostic - the local tag name is compared.
+        A single tag may also be passed as a string.
+
+    :return: A generator yielding ``(local_tag_name, element)`` tuples, one at a time. Each yielded element is
+        cleared after it is consumed by the caller (i.e. on the next iteration), so callers must extract any
+        needed data before advancing the generator.
+    :rtype: ``Iterator[tuple]``
+    """
+    def _local_name(elem_tag):
+        # Strip an optional '{namespace}' prefix so callers can match on the local tag name.
+        return elem_tag.rsplit('}', 1)[-1] if isinstance(elem_tag, str) else elem_tag
+
+    wanted_tags = {tags} if isinstance(tags, str) else set(tags)
+
+    context = ET.iterparse(source, events=('end',))
+    for _event, elem in context:
+        local_tag = _local_name(elem.tag)
+        if local_tag in wanted_tags:
+            yield local_tag, elem
+            # Free the element (and its children) as soon as the caller is done with it, keeping peak memory ~flat.
+            elem.clear()
+
+
 def comma_separated_mapping_to_dict(raw_text):
     """
      Transforming a textual comma-separated mapping into a dictionary object.
@@ -15348,12 +15557,43 @@ def should_use_ucp_auth():
     return is_ucp_enabled() and not _UCP_AUTH_PARAMS_INJECTED and not _ucp_auth_is_passthrough()
 
 
+def get_configured_ucp_capabilities():
+    # type: () -> List[str]
+    """Return the capabilities declared by the connector's connection profiles.
+
+    :return: Capability strings in ``connectionProfiles`` order, empty when UCP
+        metadata is unavailable or carries no profiles.
+    :rtype: ``List[str]``
+    """
+    profiles = []  # type: list
+    try:
+        connector_metadata = demisto.unifiedConnectorMetadata() or {}
+        profiles = connector_metadata.get('connectionProfiles') or []
+        return [p.get('capability') for p in profiles if p.get('capability')]
+    except Exception as e:
+        demisto.error(
+            '[UCP][CommonServerPython.py] get_configured_ucp_capabilities: could not read profiles ({}).\n'
+            'connectionProfiles: {}\n{}'.format(e, profiles, traceback.format_exc()))
+        return []
+
+
 def resolve_ucp_capability(command=None):
     # type: (Optional[str]) -> str
     """Resolve the UCP capability for the current (or given) command.
 
-    Uses ``_UCP_COMMAND_CAPABILITIES`` for known commands, falling back to
-    ``_UCP_DEFAULT_CAPABILITY`` (``'automation-and-remediation'``).
+    The command is mapped through ``_UCP_COMMAND_CAPABILITIES``, falling back to
+    ``_UCP_DEFAULT_CAPABILITY`` (``'automation-and-remediation'``). The result is
+    then reconciled against the capabilities the connector actually declares: a
+    capability no connection profile provides cannot select a profile, which
+    would leave capability-scoped lookups (profile selection, passthrough
+    detection) silently empty. When the mapped capability is unavailable, the
+    automation capability is preferred if the connector declares it, otherwise
+    the first profile's capability is used -- matching the first-profile
+    fallback in ``get_ucp_method_unique_id``.
+
+    Reconciliation applies to an explicitly supplied *command* as well, since a
+    command absent from the mapping resolves to the default capability whether
+    or not the caller passed it in.
 
     Integrations can override this function if they need custom mapping logic.
 
@@ -15365,7 +15605,19 @@ def resolve_ucp_capability(command=None):
     """
     if command is None:
         command = demisto.command()
-    return _UCP_COMMAND_CAPABILITIES.get(command, _UCP_DEFAULT_CAPABILITY)
+    resolved = _UCP_COMMAND_CAPABILITIES.get(command, _UCP_DEFAULT_CAPABILITY)
+
+    available = get_configured_ucp_capabilities()
+    if not available or resolved in available:
+        return resolved
+
+    demisto.debug(
+        '[UCP][CommonServerPython.py] resolve_ucp_capability: {!r} is not declared by any connection '
+        'profile {}; reconciling.'.format(resolved, available))
+
+    if _UCP_DEFAULT_CAPABILITY in available:
+        return _UCP_DEFAULT_CAPABILITY
+    return available[0]
 
 
 # -- Profile matching building blocks --

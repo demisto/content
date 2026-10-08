@@ -1,4 +1,5 @@
 import hashlib
+import traceback
 from typing import Any
 
 import demistomock as demisto
@@ -17,6 +18,10 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 ACCOUNT_AUDIT_PAGE_SIZE = 1000
 USER_AUDIT_PAGE_SIZE = 1000
 ACCESS_AUTHENTICATION_PAGE_SIZE = 1000
+# Retry transient Cloudflare server errors (e.g. HTTP 504 when the logs backend is slow) before failing the event type.
+RETRY_STATUS_CODES = [500, 502, 503, 504]
+RETRY_COUNT = 2
+RETRY_BACKOFF_FACTOR = 2
 DEFAULT_MAX_FETCH_ACCOUNT_AUDIT = 5000
 DEFAULT_MAX_FETCH_USER_AUDIT = 5000
 DEFAULT_MAX_FETCH_ACCESS_AUTHENTICATION = 5000
@@ -82,7 +87,15 @@ class Client(BaseClient):
             ACCESS_AUTHENTICATION_TYPE: f"/client/v4/accounts/{self.account_id}/access/logs/access_requests",
         }
         params = {"per_page": page_size, "page": page, "since": start_date, "direction": "asc"}
-        return self._http_request(method="GET", url_suffix=endpoint_urls[event_type], headers=self.headers, params=params)
+        return self._http_request(
+            method="GET",
+            url_suffix=endpoint_urls[event_type],
+            headers=self.headers,
+            params=params,
+            retries=RETRY_COUNT,
+            status_list_to_retry=RETRY_STATUS_CODES,
+            backoff_factor=RETRY_BACKOFF_FACTOR,
+        )
 
 
 def test_module(client: Client, event_types: list) -> str:
@@ -142,22 +155,51 @@ def fetch_events_for_type(
 
     start_date = calculate_fetch_dates(last_run, start_fetch_date)
     previous_event_ids = last_run.get("events_ids", [])
-    events_to_fetch = max_fetch + len(previous_event_ids)
-    page_size = min(events_to_fetch, max_page_size)
+    seen_event_ids = set(previous_event_ids)
+    # Always request a fixed page size and trim to `max_fetch` locally. Deriving it from `max_fetch` plus the number of
+    # deduplication IDs produces arbitrary values (e.g. 644), some of which the Access Authentication Logs endpoint
+    # rejects with HTTP 400 and error code 12091 (access.api.error.invalid_url_parameter_value).
+    page_size = max_page_size
 
+    since = start_date
     page = 1
     events: list[dict[str, Any]] = []
-    while len(events) < events_to_fetch:
-        response = client.get_events(start_date, page_size, page, event_type)
-        result = response.get("result", [])
-        demisto.debug(f"Fetched {len(result)} events of {event_type=} on {page=}.")
-        events.extend(result)
-        if len(result) < page_size:
+    while len(events) < max_fetch:
+        try:
+            response = client.get_events(since, page_size, page, event_type)
+        except SignalTimeoutError:
+            # Let the execution timeout propagate so fetch_events applies its existing timeout handling.
+            raise
+        except Exception as e:
+            if not events:
+                raise
+            # A later page failed (e.g. HTTP 500/504 when paging deep into a large backlog). Keep the events already
+            # fetched so the last run still advances; otherwise the same window is retried and fails on every fetch.
+            demisto.error(
+                f"[Fetch] Failed fetching {event_type=} on {page=}: {e}. "
+                f"Continuing with the {len(events)} events already fetched.\n{traceback.format_exc()}"
+            )
             break
-        page += 1
+        result = response.get("result", []) or []
+        demisto.debug(f"Fetched {len(result)} events of {event_type=} on {page=}.")
+        generate_event_id_if_not_exists(result)
+        new_events = handle_duplicates(result, seen_event_ids)
+        seen_event_ids.update(event["id"] for event in new_events)
+        events.extend(new_events)
+        if len(result) < page_size or not new_events:
+            # Stop on a short page (end of data), or if a full page had nothing new, so we can never loop forever.
+            break
+        # Move the `since` cursor to the last event instead of requesting deeper pages. Paging deep into an old window
+        # makes Cloudflare time out (HTTP 504), while a first page from a recent `since` returns quickly. Events that
+        # share the boundary second are returned again and removed by the ID deduplication above.
+        next_since, _ = prepare_next_run(result)
+        if next_since == since:
+            # Every event on this page shares the same second, so the cursor cannot move; page past it instead.
+            page += 1
+        else:
+            since, page = next_since, 1
 
-    generate_event_id_if_not_exists(events)
-    unique_events = handle_duplicates(events, previous_event_ids)[:max_fetch]
+    unique_events = events[:max_fetch]
     demisto.debug(f"{event_type=} has {len(unique_events)} events after deduplication.")
 
     if unique_events:
@@ -222,16 +264,25 @@ def fetch_events(
         },
     }
     event_type_is_finished: dict[str, bool] = {}
+    event_type_errors: dict[str, str] = {}
 
     for event_type in event_types_to_fetch:
         event_type_is_finished[event_type] = False
         event_type_timeout = FETCH_EVENTS_TIMEOUT // len(event_types_to_fetch)
         event_type_max_fetch = event_type_kwargs[event_type]["max_fetch"]
 
-        with ExecutionTimeout(event_type_timeout):
-            demisto.debug(f"Starting to fetch {event_type=} with {event_type_max_fetch=} and {event_type_timeout=}.")
-            fetched_events, event_type_next_run = fetch_events_for_type(client=client, **event_type_kwargs[event_type])
-            event_type_is_finished[event_type] = True
+        try:
+            with ExecutionTimeout(event_type_timeout):
+                demisto.debug(f"Starting to fetch {event_type=} with {event_type_max_fetch=} and {event_type_timeout=}.")
+                fetched_events, event_type_next_run = fetch_events_for_type(client=client, **event_type_kwargs[event_type])
+                event_type_is_finished[event_type] = True
+        except Exception as e:
+            # Isolate failures per event type so an error in one does not discard the events and progress of the others.
+            demisto.error(f"[Fetch] Failed fetching {event_type=}: {e}\n{traceback.format_exc()}")
+            event_type_errors[event_type] = str(e)
+            # Keep the existing last run (including any reduced max fetch) so the next iteration retries the same window.
+            next_run[event_type] = {**event_type_kwargs[event_type]["last_run"], "max_fetch": event_type_max_fetch}
+            continue
 
         if event_type_is_finished[event_type]:
             demisto.debug(
@@ -250,7 +301,14 @@ def fetch_events(
             event_type_last_run = event_type_kwargs[event_type]["last_run"]
             next_run[event_type] = {**event_type_last_run, "max_fetch": max(event_type_max_fetch // 2, 1)}
 
-    event_types_finished = event_type_is_finished.values()
+    if event_type_errors and len(event_type_errors) == len(event_types_to_fetch):
+        # Every event type failed, so there is no progress to save. Surface the error instead of silently continuing.
+        raise DemistoException(f"Failed fetching all event types: {event_type_errors}")
+
+    # Event types that raised an error are excluded, so a persistent error does not trigger an immediate re-fetch loop.
+    event_types_finished = [
+        is_finished for event_type, is_finished in event_type_is_finished.items() if event_type not in event_type_errors
+    ]
     # If at least one event type timed out and at least one finished in time, trigger instant next run
     if False in event_types_finished and True in event_types_finished:
         demisto.debug("Some event types timed out. Next fetch triggered immediately.")
@@ -358,18 +416,22 @@ def generate_event_id_if_not_exists(events: list[dict[str, Any]]):
     Args:
         events (list[dict[str, Any]]): The list of events to process.
     """
+    generated_count = 0
     for event in events:
         if "id" in event:
             continue
         # Access authentication logs do *not* have an "id" field, so we need to generate a unique hash for deduplication
         # https://developers.cloudflare.com/api/resources/zero_trust/subresources/access/subresources/logs/subresources/access_requests/
         encoded_event: bytes = json.dumps(event, sort_keys=True).encode("utf-8")
-        event_id = str(hashlib.sha256(encoded_event).hexdigest())
-        event["id"] = event_id
-        demisto.debug(f"Generated a unique SHA256 {event_id=} using the contents of {event=}.")
+        event["id"] = str(hashlib.sha256(encoded_event).hexdigest())
+        generated_count += 1
+    # Log once per batch, not once per event. A debug line per event costs about 17 ms each when debug logging is
+    # enabled (about 17 seconds per 1000 events), which made fetches time out on high-volume tenants.
+    if generated_count:
+        demisto.debug(f"Generated a unique SHA256 ID for {generated_count} events without an 'id' field.")
 
 
-def handle_duplicates(events: list[dict[str, Any]], previous_event_ids: list[str]) -> list[dict[str, Any]]:
+def handle_duplicates(events: list[dict[str, Any]], previous_event_ids: list[str] | set[str]) -> list[dict[str, Any]]:
     """
     Filters out events that have already been fetched.
 
