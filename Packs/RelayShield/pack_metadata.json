@@ -2,7 +2,7 @@
     "name": "RelayShield",
     "description": "Real-time identity-compromise and agent-security threat intelligence: breach, infostealer, active session, SIM-swap, domain-lookalike, MCP registry risk, and supply-chain vendor risk.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "RelayShield",
     "created": "2026-07-22T00:00:00Z",
     "url": "https://api.relayshield.net/developers",
