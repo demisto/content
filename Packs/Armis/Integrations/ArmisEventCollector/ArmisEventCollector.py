@@ -1627,7 +1627,6 @@ def main():  # pragma: no cover
     fetch_delay = arg_to_number(params.get("fetch_delay")) or DEFAULT_FETCH_DELAY
 
     demisto.debug(f"Command being called is {command}")
-    demisto.debug("Temp custom build")
 
     try:
         context_manager = IntegrationContextManager()
