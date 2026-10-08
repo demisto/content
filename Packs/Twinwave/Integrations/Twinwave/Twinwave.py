@@ -15,6 +15,8 @@ EXPIRE_SECONDS = 86400
 PDF_SIGNATURE = b"%PDF-"
 DEFAULT_API_HOST = "api.twinwave.io"
 USER_AGENT = "Twinwave XSOAR Integration"
+DEFAULT_POLLING_INTERVAL_IN_SECONDS = 60
+DEFAULT_POLLING_TIMEOUT_IN_SECONDS = 3600
 SUPPORTED_API_HOSTS = {
     "api.twinwave.io",
     "api.global2.twinwave.io",
@@ -403,12 +405,10 @@ def search_across_jobs_and_resources(client, args):
     )
 
 
-def get_job_summary(client, args):
+def build_job_summary(result: dict[str, Any]) -> list[CommandResults]:
     """
-    Job Summary
+    Build the existing job summary output from a job response.
     """
-    job_id = args.get("job_id")
-    result = client.get_job(job_id=job_id)
     command_results = []
     # Setting the DbotScore
     twinwave_score = round(float(result.get("Score")) * 100, 2)
@@ -498,6 +498,49 @@ def get_job_summary(client, args):
         ),
     )
     return command_results
+
+
+def get_job_summary(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    """Get a job summary, including the current score when available."""
+    result = client.get_job(job_id=args.get("job_id"))
+    return build_job_summary(result)
+
+
+@polling_function(
+    name="twinwave-wait-job",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds"))
+    or DEFAULT_POLLING_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds"))
+    or DEFAULT_POLLING_TIMEOUT_IN_SECONDS,
+    requires_polling_arg=False,
+)
+def wait_for_job(args: dict[str, Any], client: Client) -> PollResult:
+    """Poll a Twinwave job and return its scored summary only after completion."""
+    job_id = args["job_id"]
+    result = client.get_job(job_id=job_id)
+    state = str(result.get("State", "unknown"))
+    normalized_state = state.lower()
+
+    if normalized_state == "done":
+        return PollResult(response=build_job_summary(result), continue_to_poll=False)
+
+    status_result = CommandResults(
+        readable_output=f"Twinwave job {job_id} status: {state}.",
+        outputs_prefix="Twinwave.JobSummary",
+        outputs_key_field="ID",
+        outputs={"ID": job_id, "State": state},
+        raw_response={"ID": job_id, "State": state},
+    )
+    # Jobs remain pending/inprogress while running; done is handled above, and error is terminal.
+    if normalized_state == "error":
+        return PollResult(response=status_result, continue_to_poll=False)
+
+    return PollResult(
+        response=None,
+        partial_result=status_result,
+        continue_to_poll=True,
+        args_for_next_run=args,
+    )
 
 
 def get_job_normalized_forensics(client, args):
@@ -658,6 +701,9 @@ def main():
 
         elif demisto.command() == "twinwave-get-job-summary":
             return_results(get_job_summary(client, demisto.args()))
+
+        elif demisto.command() == "twinwave-wait-job":
+            return_results(wait_for_job(demisto.args(), client))
 
         elif demisto.command() == "twinwave-download-job-pdf":
             return_results(download_job_pdf(client, demisto.args()))
