@@ -2413,11 +2413,9 @@ class AzureClient:
             https://learn.microsoft.com/en-us/rest/api/virtualnetwork/ip-groups/list-by-resource-group?view=rest-virtualnetwork-2025-09-01
         """
         if next_token:
-            demisto.debug(f"using {next_token=} for retrieving the next page of results.")
-            # The api-version is stripped from the next link and passed explicitly, otherwise http_request injects the
-            # default API_VERSION on top of the one already present in the URL and Azure rejects the duplicated parameter.
-            full_url = remove_query_param_from_url(next_token, "api-version")
-            params = {"api-version": IP_GROUPS_API_VERSION}
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of IP groups.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
+            params: dict[str, Any] = {}
         else:
             resource_group_path = f"/resourceGroups/{resource_group_name}" if resource_group_name else ""
             full_url = f"{PREFIX_URL_AZURE}{subscription_id}{resource_group_path}/providers/Microsoft.Network/ipGroups"

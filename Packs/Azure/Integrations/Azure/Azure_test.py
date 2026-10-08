@@ -6837,21 +6837,37 @@ def test_ip_group_list_client_uses_next_token(mocker, client):
     When:
         - Calling the ip_group_list client method with that token.
     Then:
-        - The token is used as the full URL with its api-version stripped, and the IP groups api-version is passed
-          explicitly so that the default api-version is not injected on top of the one in the next link.
+        - The token is used as the full URL as is, with no api-version passed, so that the api-version already
+          present in the next link is the one that is sent.
     """
     from Azure import IP_GROUPS_API_VERSION
 
     mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+    next_token = f"https://management.azure.com/subscriptions/sub-id/next-page?api-version={IP_GROUPS_API_VERSION}"
 
-    client.ip_group_list(
-        subscription_id="sub-id",
-        resource_group_name="test-rg",
-        next_token=f"https://next.page?api-version={IP_GROUPS_API_VERSION}",
-    )
+    client.ip_group_list(subscription_id="sub-id", resource_group_name="test-rg", next_token=next_token)
 
-    assert mock_http_request.call_args.kwargs["full_url"] == "https://next.page"
-    assert mock_http_request.call_args.kwargs["params"] == {"api-version": IP_GROUPS_API_VERSION}
+    assert mock_http_request.call_args.kwargs["full_url"] == next_token
+    assert mock_http_request.call_args.kwargs["params"] == {}
+
+
+def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, client):
+    """
+    Given:
+        - An AzureClient and a next token pointing at a host that is not the configured Azure management endpoint.
+    When:
+        - Calling the ip_group_list client method with that token.
+    Then:
+        - A DemistoException is raised and no request is sent, so that the Azure access token is not leaked.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.ip_group_list(
+            subscription_id="sub-id", resource_group_name="test-rg", next_token="https://attacker.example.com/next-page"
+        )
+
+    mock_http_request.assert_not_called()
 
 
 def test_ip_group_list_client_by_subscription(mocker, client):
