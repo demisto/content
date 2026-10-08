@@ -63,6 +63,11 @@ alter
         xdm.source.application.name = arrayindex(regextract(_raw_log,"applicationName\s(\w+)\s"),0),
         xdm.session_context_id = arrayindex(regextract(_raw_log,"connectionId\s(\w+)\s"),0),
         xdm.source.user.username = coalesce(arrayindex(regextract(_raw_log,"username:domainname\s(\w+)\:"),0),
+                                            arrayindex(regextract(_raw_log,"User\s([\w\@\.\d]+)\s\:"),0),
+                                            arrayindex(regextract(_raw_log,"Context\s([\w\d]+)\@"),0),
+                                            arrayindex(regextract(_raw_log,"user:\s\<([\w\d\.\_\-]+)\@"),0),
+                                            arrayindex(regextract(_raw_log,"\sUser\s(\S+)"),0)
+                                            ),
         xdm.source.identity.username = coalesce(arrayindex(regextract(_raw_log,"username:domainname\s(\w+)\:"),0),
                                             arrayindex(regextract(_raw_log,"User\s([\w\@\.\d]+)\s\:"),0),
                                             arrayindex(regextract(_raw_log,"Context\s([\w\d]+)\@"),0),

@@ -2857,6 +2857,11 @@ def normalize_case_data_record(incident_record: Dict[str, Any]) -> Dict[str, Any
         records = dict_safe_get(incident_record, [source_key, "data"], default_return_value=[], return_type=list)
         if records:
             for record in records:
+                if case_key == "Issues":
+                    if "alert_id" in record:
+                        record["issue_id"] = record.pop("alert_id")
+                    host_ip = record.get("host_ip")
+                    record["host_ip_list"] = host_ip.split(",") if host_ip else []
                 record.setdefault("case_id", case_id)
             case[case_key] = records
 
@@ -3334,7 +3339,7 @@ def update_issue_command(client: Client, args: Dict) -> CommandResults:
         severity=args["severity"].upper() if args.get("severity") else None,
     )
     if status := ISSUE_STATUSES_MAP.get(args.get("status", "")):
-        update_data["status_progress"] = status
+        update_data["status"] = status
     if resolution_reason := ISSUE_REASON_MAP.get(args.get("resolve_reason", "")):
         update_data["status_resolution_reason"] = resolution_reason
     if resolution_comment := args.get("resolve_comment"):

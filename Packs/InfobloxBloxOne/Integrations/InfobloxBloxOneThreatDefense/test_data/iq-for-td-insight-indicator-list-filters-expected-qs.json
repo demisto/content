@@ -1,0 +1,8 @@
+{
+    "indicators": ["dummy-indicator-1.com,dummy-indicator-2.com"],
+    "threat_level": ["3"],
+    "status": ["blocked,not blocked"],
+    "users": ["dummy-user-1,dummy-user-2"],
+    "detected_at": ["2026-12-01t00:00:00.000"],
+    "limit": ["50"]
+}

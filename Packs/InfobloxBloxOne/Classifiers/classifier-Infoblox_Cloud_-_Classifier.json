@@ -4,7 +4,8 @@
     "id": "Infoblox Cloud - Classifier",
     "keyTypeMap": {
         "Infoblox Cloud DNS Security Event": "Infoblox Cloud DNS Security Event",
-        "Infoblox Cloud SOC Insight": "Infoblox Cloud SOC Insight"
+        "Infoblox Cloud SOC Insight": "Infoblox Cloud SOC Insight",
+        "Infoblox Cloud IQ for TD Insight": "Infoblox Cloud IQ for TD Insight"
     },
     "name": "Infoblox Cloud - Classifier",
     "propagationLabels": [

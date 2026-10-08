@@ -1,5 +1,5 @@
 import re
-from unittest.mock import Mock
+from unittest.mock import Mock, PropertyMock
 import Qualysv2
 import pytest
 import requests
@@ -27,7 +27,7 @@ from Qualysv2 import (
     validate_required_group,
     get_vulnerabilities,
     get_activity_logs_events_command,
-    send_assets_and_vulnerabilities_to_xsiam,
+    send_qualys_assets_and_vulnerabilities_to_xsiam,
     set_assets_last_run_with_new_limit,
     fetch_events,
     get_activity_logs_events,
@@ -1869,20 +1869,20 @@ def test_test_fetch_assets_and_vulnerabilities_by_qids(mocker: MockerFixture, cl
     expected_vulnerabilities = util_load_json("./test_data/fetched_vulnerabilities.json")
     mocker.patch("Qualysv2.fetch_vulnerabilities", return_value=(expected_vulnerabilities, {}))
 
-    mock_send_assets_and_vulnerabilities_to_xsiam = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+    mock_send_assets_and_vulnerabilities_to_xsiam = mocker.patch("Qualysv2.send_qualys_assets_and_vulnerabilities_to_xsiam")
     mock_set_assets_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
 
     fetch_assets_and_vulnerabilities_by_qids(client, last_run)
 
-    send_assets_and_vulnerabilities_to_xsiam = mock_send_assets_and_vulnerabilities_to_xsiam.call_args.kwargs
+    send_assets_and_vulnerabilities_kwargs = mock_send_assets_and_vulnerabilities_to_xsiam.call_args.kwargs
     next_run = mock_set_assets_last_run.call_args[0][0]
 
-    assert send_assets_and_vulnerabilities_to_xsiam["assets"] == expected_assets
-    assert send_assets_and_vulnerabilities_to_xsiam["vulnerabilities"] == expected_vulnerabilities
-    assert send_assets_and_vulnerabilities_to_xsiam["cumulative_assets_count"] == last_total_assets + len(expected_assets)
-    assert send_assets_and_vulnerabilities_to_xsiam["cumulative_vulns_count"] == last_total_vulns + len(expected_vulnerabilities)
-    assert send_assets_and_vulnerabilities_to_xsiam["has_next_page"] is True  # next_page not empty (not done pulling)
-    assert send_assets_and_vulnerabilities_to_xsiam["snapshot_id"] == SNAPSHOT_ID  # keep snapshot ID (not done pulling)
+    assert send_assets_and_vulnerabilities_kwargs["assets"] == expected_assets
+    assert send_assets_and_vulnerabilities_kwargs["vulnerabilities"] == expected_vulnerabilities
+    assert send_assets_and_vulnerabilities_kwargs["cumulative_assets_count"] == last_total_assets + len(expected_assets)
+    assert send_assets_and_vulnerabilities_kwargs["cumulative_vulns_count"] == last_total_vulns + len(expected_vulnerabilities)
+    assert send_assets_and_vulnerabilities_kwargs["has_next_page"] is True  # next_page not empty (not done pulling)
+    assert send_assets_and_vulnerabilities_kwargs["snapshot_id"] == SNAPSHOT_ID  # keep snapshot ID (not done pulling)
 
     assert next_run == {
         "stage": "assets",
@@ -1903,7 +1903,7 @@ def test_test_fetch_assets_and_vulnerabilities_by_qids(mocker: MockerFixture, cl
         pytest.param(False, "10", "13", id="Specified detection QIDs"),
     ],
 )
-def test_send_assets_and_vulnerabilities_to_xsiam(
+def test_send_qualys_assets_and_vulnerabilities_to_xsiam(
     mocker: MockerFixture,
     has_assets_next_page: bool,
     expected_assets_count_to_report: str,
@@ -1914,7 +1914,7 @@ def test_send_assets_and_vulnerabilities_to_xsiam(
         - Lists of assets and vulnerabilities, along with their respective cumulative counts, and a snapshot ID.
 
     When:
-        - Calling send_assets_and_vulnerabilities_to_xsiam.
+        - Calling send_qualys_assets_and_vulnerabilities_to_xsiam.
 
     Assert:
         - Ensure correct sending of assets and vulnerabilities data to XSIAM with the correct vendor and product.
@@ -1927,7 +1927,7 @@ def test_send_assets_and_vulnerabilities_to_xsiam(
 
     mock_send_data_to_xsiam = mocker.patch("Qualysv2.send_data_to_xsiam")
 
-    send_assets_and_vulnerabilities_to_xsiam(
+    send_qualys_assets_and_vulnerabilities_to_xsiam(
         assets=expected_assets,
         vulnerabilities=expected_vulnerabilities,
         cumulative_assets_count=cumulative_assets_count,
@@ -1955,14 +1955,14 @@ def test_send_assets_and_vulnerabilities_to_xsiam(
     assert not send_data_to_xsiam_vulns_kwargs["should_update_health_module"]
 
 
-def test_send_assets_and_vulnerabilities_to_xsiam_empty_last_page(mocker: MockerFixture):
+def test_send_qualys_assets_and_vulnerabilities_to_xsiam_empty_last_page(mocker: MockerFixture):
     """
     Given:
         - Empty assets and vulnerabilities lists on the closing snapshot (has_next_page=False).
         - Cumulative counts of 500 assets and 200 vulnerabilities from previous pages.
 
     When:
-        - Calling send_assets_and_vulnerabilities_to_xsiam with empty data and has_next_page=False.
+        - Calling send_qualys_assets_and_vulnerabilities_to_xsiam with empty data and has_next_page=False.
 
     Then:
         - Ensure close_snapshot_if_empty replaces empty lists with [{}] and increments items_count by 1.
@@ -1973,7 +1973,7 @@ def test_send_assets_and_vulnerabilities_to_xsiam_empty_last_page(mocker: Mocker
 
     mock_send_data_to_xsiam = mocker.patch("Qualysv2.send_data_to_xsiam")
 
-    send_assets_and_vulnerabilities_to_xsiam(
+    send_qualys_assets_and_vulnerabilities_to_xsiam(
         assets=[],
         vulnerabilities=[],
         cumulative_assets_count=cumulative_assets_count,
@@ -2194,3 +2194,116 @@ class TestRateLimitRetry:
         response = Mock()
         response.headers = {Qualysv2.RATE_LIMIT_TO_WAIT_HEADER: raw_wait} if raw_wait is not None else {}
         assert Client._get_rate_limit_wait_seconds(response) == expected
+
+
+CONCURRENCY_LIMIT_BODY = (
+    '<?xml version="1.0" encoding="UTF-8" ?>'
+    "<SIMPLE_RETURN><RESPONSE>"
+    f"<CODE>{Qualysv2.CONCURRENCY_LIMIT_ERROR_CODE}</CODE>"
+    "<TEXT>This API cannot be run again until 1 currently running instance has finished.</TEXT>"
+    "<ITEM_LIST><ITEM><KEY>CALLS_TO_FINISH</KEY><VALUE>1</VALUE></ITEM></ITEM_LIST>"
+    "</RESPONSE></SIMPLE_RETURN>"
+)
+
+
+def _make_concurrency_limit_exception() -> Qualysv2.DemistoException:
+    """Build a DemistoException mimicking a Qualys 409 concurrency-limit (Error Code 1960) response."""
+    response = Mock()
+    response.status_code = Qualysv2.RATE_LIMIT_STATUS_CODE
+    # Header is deliberately misleading (0) for 1960 - the fix must NOT rely on it.
+    response.headers = {Qualysv2.RATE_LIMIT_TO_WAIT_HEADER: "0"}
+    response.text = CONCURRENCY_LIMIT_BODY
+    return Qualysv2.DemistoException("concurrency limited", res=response)
+
+
+class TestConcurrencyLimitRetry:
+    def test_host_list_1960_retries_then_succeeds(self, mocker: MockerFixture, client: Client):
+        """
+        Given: a first 409/1960 concurrency-limit response followed by a successful response.
+        When:  get_host_list_detection is called.
+        Then:  it backs off (fixed wait) and returns the successful response, with set_new_limit=False.
+        """
+        sleep_mock = mocker.patch.object(Qualysv2.time, "sleep")
+        http_mock = mocker.patch.object(
+            client, "_http_request", side_effect=[_make_concurrency_limit_exception(), "host-list-data"]
+        )
+
+        response, set_new_limit = client.get_host_list_detection(since_datetime="2024-12-12", limit=HOST_LIMIT)
+
+        assert response == "host-list-data"
+        assert set_new_limit is False
+        assert http_mock.call_count == 2
+        sleep_mock.assert_called_once_with(Qualysv2.CONCURRENCY_LIMIT_WAIT_SEC)
+
+    def test_host_list_1960_exhausts_retries_sets_new_limit(self, mocker: MockerFixture, client: Client):
+        """
+        Given: persistent 409/1960 concurrency-limit responses on every attempt.
+        When:  get_host_list_detection is called.
+        Then:  it does NOT crash the fetch - it returns empty response with set_new_limit=True
+               so the next fetch retries with a reduced limit.
+        """
+        mocker.patch.object(Qualysv2.time, "sleep")
+        http_mock = mocker.patch.object(
+            client,
+            "_http_request",
+            side_effect=[_make_concurrency_limit_exception() for _ in range(Qualysv2.CONCURRENCY_LIMIT_MAX_RETRIES + 1)],
+        )
+
+        response, set_new_limit = client.get_host_list_detection(since_datetime="2024-12-12", limit=HOST_LIMIT)
+
+        assert response == ""
+        assert set_new_limit is True
+        assert http_mock.call_count == Qualysv2.CONCURRENCY_LIMIT_MAX_RETRIES + 1
+
+    def test_host_list_non_1960_409_raises(self, mocker: MockerFixture, client: Client):
+        """
+        Given: a 409 response that is NOT the 1960 concurrency error (e.g. 1965 rate-limit).
+        When:  get_host_list_detection is called.
+        Then:  the error propagates (we must not swallow genuine rate-limit errors) and no retry occurs.
+        """
+        mocker.patch.object(Qualysv2.time, "sleep")
+        other_response = Mock()
+        other_response.status_code = Qualysv2.RATE_LIMIT_STATUS_CODE
+        other_response.headers = {}
+        other_response.text = (
+            '<?xml version="1.0" encoding="UTF-8" ?><SIMPLE_RETURN><RESPONSE>'
+            "<CODE>1965</CODE><TEXT>This API cannot be run again for another 40 seconds.</TEXT>"
+            "</RESPONSE></SIMPLE_RETURN>"
+        )
+        http_mock = mocker.patch.object(
+            client, "_http_request", side_effect=Qualysv2.DemistoException("rate limited", res=other_response)
+        )
+
+        with pytest.raises(Qualysv2.DemistoException):
+            client.get_host_list_detection(since_datetime="2024-12-12", limit=HOST_LIMIT)
+
+        assert http_mock.call_count == 1
+
+    def test_is_concurrency_limit_error_detection(self):
+        """Validate _is_concurrency_limit_error correctly identifies 1960 vs other responses."""
+        # 409 + CODE 1960 -> True
+        resp_1960 = Mock()
+        resp_1960.status_code = Qualysv2.RATE_LIMIT_STATUS_CODE
+        resp_1960.text = CONCURRENCY_LIMIT_BODY
+        assert Client._is_concurrency_limit_error(resp_1960) is True
+
+        # 409 + CODE 1965 -> False
+        resp_1965 = Mock()
+        resp_1965.status_code = Qualysv2.RATE_LIMIT_STATUS_CODE
+        resp_1965.text = "<SIMPLE_RETURN><RESPONSE><CODE>1965</CODE><TEXT>x</TEXT></RESPONSE></SIMPLE_RETURN>"
+        assert Client._is_concurrency_limit_error(resp_1965) is False
+
+        # non-409 -> False
+        resp_500 = Mock()
+        resp_500.status_code = 500
+        resp_500.text = CONCURRENCY_LIMIT_BODY
+        assert Client._is_concurrency_limit_error(resp_500) is False
+
+        # None response -> False
+        assert Client._is_concurrency_limit_error(None) is False
+
+        # 409 but response body access/parse fails (e.g. missing/broken text attribute) -> False (fail-safe)
+        resp_no_text = Mock()
+        resp_no_text.status_code = Qualysv2.RATE_LIMIT_STATUS_CODE
+        type(resp_no_text).text = PropertyMock(side_effect=AttributeError("no text attribute"))
+        assert Client._is_concurrency_limit_error(resp_no_text) is False

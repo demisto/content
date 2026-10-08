@@ -29,6 +29,7 @@ configuration:
   required: false
   defaultvalue: '20'
   display: Maximum number of incidents per fetch.
+  additionalinfo: The maximum number of incidents to fetch each time. The maximum allowed value is 50.
 - name: creds_tenant_id
   type: 9
   section: Connect

@@ -5,7 +5,9 @@ from datetime import datetime, UTC
 import pytest
 from pytest_mock.plugin import MockerFixture
 import slack_sdk
+import SlackV3
 from CommonServerPython import *
+from CommonServerPython import CortexMissingArgError, CortexResourceNotFoundError
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
@@ -5459,14 +5461,14 @@ def test_conversation_history_no_channel_provided_error(mocker):
 
     Given: A conversation_history command is configured and no channel parameters are provided
     When: The conversation_history command is called with args missing both conversation_id and conversation_name
-    Then: The command raises ValueError with appropriate error message
+    Then: The command raises CortexMissingArgError with appropriate error message
     """
 
     args = {"limit": "10"}
 
     mocker.patch.object(demisto, "args", return_value=args)
 
-    with pytest.raises(ValueError, match="Either conversation_id or conversation_name must be provided."):
+    with pytest.raises(CortexMissingArgError, match="Either conversation_id or conversation_name must be provided."):
         conversation_history()
 
 
@@ -5508,12 +5510,12 @@ def test_resolve_conversation_id_from_name_no_channel_found(mocker):
 
     Given: The resolve_conversation_id_from_name function is called with a channel name that doesn't exist.
     When: No private conversation or channel exists for the specified name and channel id is not provided.
-    Then: The function raises ValueError with appropriate error message indicating the channel was not found.
+    Then: The function raises CortexResourceNotFoundError with appropriate error message indicating the channel was not found.
     """
     mocker.patch("SlackV3.get_direct_message_channel_id_by_username", return_value=None)
     mocker.patch("SlackV3.get_conversation_by_name", return_value={})
 
-    with pytest.raises(DemistoException, match="Channel 'nonexistent' does not exist."):
+    with pytest.raises(CortexResourceNotFoundError, match="Channel 'nonexistent' does not exist."):
         resolve_conversation_id_from_name("nonexistent")
 
 
@@ -5959,6 +5961,196 @@ async def test_post_agent_response_sync_with_invalid_attachments_fallback(mocker
     # Second call should use fallback_text
     second_call = SlackV3.send_message_to_destinations.call_args_list[1]
     assert second_call[0][1] == "This is the fallback message"
+
+
+def test_post_agent_response_sync_with_msg_blocks_too_long_single_block_fallback(mocker):
+    """
+    Given:
+        A single block that triggers msg_blocks_too_long and therefore cannot be usefully
+        split into multiple messages.
+    When:
+        Posting agent response.
+    Then:
+        Falls back to sending a plain text message instead of losing it entirely.
+    """
+    # First call fails with msg_blocks_too_long, second (plain-text fallback) succeeds.
+    mocker.patch.object(
+        SlackV3,
+        "send_message_to_destinations",
+        side_effect=[SlackApiError("msg_blocks_too_long", {"error": "msg_blocks_too_long"}), {"ts": "1234567890.123456"}],
+    )
+    mocker.patch.object(demisto, "error")
+
+    handler = SlackV3.slack_assistant_handler
+    result = handler.post_agent_response(
+        channel_id="C123",
+        thread_id="thread123",
+        blocks=[{"type": "section", "text": {"type": "mrkdwn", "text": "x" * 5000}}],
+        attachments=[],
+        agent_name="Test Agent",
+        fallback_text="This is the fallback message",
+    )
+
+    assert result == {"ts": "1234567890.123456"}
+    assert SlackV3.send_message_to_destinations.call_count == 2
+    # Second call should use fallback_text
+    second_call = SlackV3.send_message_to_destinations.call_args_list[1]
+    assert second_call[0][1] == "This is the fallback message"
+
+
+@pytest.mark.asyncio
+async def test_post_agent_response_splits_blocks_on_msg_blocks_too_long(mocker):
+    """
+    Given:
+        A model response with more than 50 blocks that triggers msg_blocks_too_long.
+    When:
+        Posting agent response.
+    Then:
+        The blocks are split into chunks of at most 50 and sent across multiple messages,
+        preserving the formatted content instead of degrading to plain text.
+    """
+    blocks = [{"type": "section", "text": {"type": "mrkdwn", "text": f"line {i}"}} for i in range(120)]
+
+    # First (single-message) call fails; the three chunk sends succeed.
+    mocker.patch.object(
+        SlackV3,
+        "send_message_to_destinations",
+        side_effect=[
+            SlackApiError("msg_blocks_too_long", {"error": "msg_blocks_too_long"}),
+            {"ts": "1.1"},
+            {"ts": "2.2"},
+            {"ts": "3.3"},
+        ],
+    )
+    mocker.patch.object(demisto, "error")
+
+    handler = SlackV3.slack_assistant_handler
+    result = handler.post_agent_response(
+        channel_id="C123",
+        thread_id="thread123",
+        blocks=blocks,
+        attachments=[],
+        agent_name="Test Agent",
+        fallback_text="fallback",
+    )
+
+    # 1 failed original + 3 chunk sends (120 blocks -> 50/50/20).
+    assert SlackV3.send_message_to_destinations.call_count == 4
+    # Returns the ts of the first successful chunk.
+    assert result == {"ts": "1.1"}
+    # Each chunk carries at most 50 blocks and no fallback text.
+    for call in SlackV3.send_message_to_destinations.call_args_list[1:]:
+        assert call[0][1] == ""  # message text is empty for block chunks
+        assert len(call[0][3]) <= 50  # blocks positional arg
+
+
+@pytest.mark.asyncio
+async def test_post_agent_response_splits_attachment_blocks_on_msg_blocks_too_long(mocker):
+    """
+    Given:
+        A step/error response whose blocks live inside a single attachment and exceed the
+        per-message block limit, triggering msg_blocks_too_long.
+    When:
+        Posting agent response.
+    Then:
+        The attachment blocks are split into multiple attachment messages that each preserve
+        the original attachment styling (e.g. color).
+    """
+    inner_blocks = [{"type": "section", "text": {"type": "mrkdwn", "text": f"step {i}"}} for i in range(80)]
+    attachments = [{"color": "#D1D2D3", "blocks": inner_blocks}]
+
+    mocker.patch.object(
+        SlackV3,
+        "send_message_to_destinations",
+        side_effect=[
+            SlackApiError("msg_blocks_too_long", {"error": "msg_blocks_too_long"}),
+            {"ts": "1.1"},
+            {"ts": "2.2"},
+        ],
+    )
+    mocker.patch.object(demisto, "error")
+
+    handler = SlackV3.slack_assistant_handler
+    result = handler.post_agent_response(
+        channel_id="C123",
+        thread_id="thread123",
+        blocks=[],
+        attachments=attachments,
+        agent_name="Test Agent",
+        fallback_text="fallback",
+    )
+
+    # 1 failed original + 2 chunk sends (80 blocks -> 50/30).
+    assert SlackV3.send_message_to_destinations.call_count == 3
+    assert result == {"ts": "1.1"}
+    for call in SlackV3.send_message_to_destinations.call_args_list[1:]:
+        chunk_attachments = call[0][4]  # attachments positional arg
+        assert len(chunk_attachments) == 1
+        assert chunk_attachments[0]["color"] == "#D1D2D3"
+        assert len(chunk_attachments[0]["blocks"]) <= 50
+
+
+@pytest.mark.asyncio
+async def test_post_agent_response_falls_back_to_plain_text_when_split_chunk_still_fails(mocker):
+    """
+    Given:
+        More than 50 blocks that trigger msg_blocks_too_long, but a chunk send still fails.
+    When:
+        Posting agent response.
+    Then:
+        Splitting is aborted and the response is sent as plain text so it isn't lost.
+    """
+    blocks = [{"type": "section", "text": {"type": "mrkdwn", "text": f"line {i}"}} for i in range(120)]
+
+    mocker.patch.object(
+        SlackV3,
+        "send_message_to_destinations",
+        side_effect=[
+            SlackApiError("msg_blocks_too_long", {"error": "msg_blocks_too_long"}),  # original
+            SlackApiError("msg_blocks_too_long", {"error": "msg_blocks_too_long"}),  # first chunk still fails
+            {"ts": "9.9"},  # plain-text fallback
+        ],
+    )
+    mocker.patch.object(demisto, "error")
+
+    handler = SlackV3.slack_assistant_handler
+    result = handler.post_agent_response(
+        channel_id="C123",
+        thread_id="thread123",
+        blocks=blocks,
+        attachments=[],
+        agent_name="Test Agent",
+        fallback_text="This is the fallback message",
+    )
+
+    assert result == {"ts": "9.9"}
+    last_call = SlackV3.send_message_to_destinations.call_args_list[-1]
+    assert last_call[0][1] == "This is the fallback message"
+
+
+def test_split_blocks_into_chunks():
+    """
+    Given:
+        Various block lists.
+    When:
+        Splitting them into chunks.
+    Then:
+        Chunks respect the max size and preserve all blocks in order.
+    """
+    from SlackUtilsApiModule import split_blocks_into_chunks
+
+    assert split_blocks_into_chunks([]) == []
+
+    blocks = [{"i": i} for i in range(120)]
+    chunks = split_blocks_into_chunks(blocks)
+    assert [len(c) for c in chunks] == [50, 50, 20]
+    assert [b for c in chunks for b in c] == blocks
+
+    small = [{"i": 0}, {"i": 1}]
+    assert split_blocks_into_chunks(small, max_blocks=5) == [small]
+
+    chunks = split_blocks_into_chunks(blocks, max_blocks=40)
+    assert [len(c) for c in chunks] == [40, 40, 40]
 
 
 def test_send_agent_response_adds_user_mention_for_model_type(mocker):

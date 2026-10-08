@@ -1,16 +1,23 @@
+import base64
 import pytest
 import json
 import re
 from datetime import datetime, timedelta
+from unittest.mock import MagicMock
 
 from pytest_mock import MockerFixture
-from CommonServerPython import parse_date_range, DemistoException
+from CommonServerPython import parse_date_range, DemistoException, urljoin
 from CortexDataLake import (
+    AUTH_MODE_OPROXY,
+    AUTH_MODE_SCM,
     FIRST_FAILURE_TIME_CONST,
     LAST_FAILURE_TIME_CONST,
-    STANDARD_TOKEN_URL,
+    LEGACY_COMMERCIAL_TOKEN_URL,
     IS_FEDRAMP_CONST,
-    FEDRAMP_TOKEN_URL,
+    LEGACY_FEDRAMP_TOKEN_URL,
+    MIGRATED_SLS_URL_BY_ORIGINAL_URL,
+    SCM_GATEWAY_FEDERAL_URL,
+    SCM_GATEWAY_URL,
 )
 
 HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES = [
@@ -540,43 +547,62 @@ class TestBackoffStrategy:
 
 
 @pytest.mark.parametrize(
-    "configured_reg_id_url, mock_is_fedramp_return_value, expected_result",
+    "configured_reg_id_url, auth_mode, mock_is_fedramp_return_value, expected_result",
     [
         pytest.param(
-            "test_id_custom@https://custom.test.com/api",
+            "test_id_std",
+            AUTH_MODE_OPROXY,
             False,
-            ("https://custom.test.com/api", "test_id_custom"),
-            id="FedRAMP tenant with URL in registration ID",
+            (LEGACY_COMMERCIAL_TOKEN_URL, "test_id_std"),
+            id="oproxy auth mode, standard tenant, no URL in registration ID - legacy commercial URL",
         ),
         pytest.param(
             "test_id_fr",
+            AUTH_MODE_OPROXY,
             True,
-            (FEDRAMP_TOKEN_URL, "test_id_fr"),
-            id="FedRAMP tenant without URL in registration ID",
+            (LEGACY_FEDRAMP_TOKEN_URL, "test_id_fr"),
+            id="oproxy auth mode, FedRAMP tenant, no URL in registration ID - legacy FedRAMP URL",
         ),
         pytest.param(
-            "test_id_std@https://custom.test.com/api",
+            "test_id_scm_std",
+            AUTH_MODE_SCM,
             False,
-            ("https://custom.test.com/api", "test_id_std"),
-            id="Standard tenant with URL in registration ID",
+            (SCM_GATEWAY_URL, "test_id_scm_std"),
+            id="SCM auth mode, standard tenant, no URL in registration ID - SCM gateway URL",
         ),
         pytest.param(
-            "test_id_std_nohost",
+            "test_id_scm_fr",
+            AUTH_MODE_SCM,
+            True,
+            (SCM_GATEWAY_FEDERAL_URL, "test_id_scm_fr"),
+            id="SCM auth mode, FedRAMP tenant, no URL in registration ID - SCM federal gateway URL",
+        ),
+        pytest.param(
+            "test_id_custom@https://custom.test.com/api",
+            AUTH_MODE_OPROXY,
+            True,
+            ("https://custom.test.com/api", "test_id_custom"),
+            id="oproxy auth mode, URL in registration ID - configured URL overrides inference",
+        ),
+        pytest.param(
+            "test_id_custom_scm@https://custom.test.com/api",
+            AUTH_MODE_SCM,
             False,
-            (STANDARD_TOKEN_URL, "test_id_std_nohost"),
-            id="Standard tenant without URL in registration ID",
+            ("https://custom.test.com/api", "test_id_custom_scm"),
+            id="SCM auth mode, URL in registration ID - configured URL overrides inference",
         ),
     ],
 )
 def test_extract_client_args(
     mocker: MockerFixture,
     configured_reg_id_url: str,
+    auth_mode: str,
     mock_is_fedramp_return_value: bool,
     expected_result: tuple,
 ):
     """
     Given:
-        - Configured "Registration ID" param value.
+        - Configured "Registration ID" param value and the authentication mode in use.
     When:
         - Calling `extract_client_args`.
     Then:
@@ -585,7 +611,7 @@ def test_extract_client_args(
     from CortexDataLake import extract_client_args
 
     mocker.patch("CortexDataLake.is_fedramp_tenant", return_value=mock_is_fedramp_return_value)
-    result = extract_client_args(configured_reg_id_url)
+    result = extract_client_args(configured_reg_id_url, auth_mode)
     assert result == expected_result
 
 
@@ -657,3 +683,711 @@ def test_is_fedramp_tenant(
     assert mocker_get_license_custom_field.call_count == 0 if is_cached else 1
     assert mock_set_integration_context.call_count == 0 if is_cached else 1
     assert is_fedramp == expected_is_fedramp
+
+
+@pytest.mark.parametrize("original_url, migrated_url", list(MIGRATED_SLS_URL_BY_ORIGINAL_URL.items()))
+def test_map_to_migrated_url_maps_listed_urls(original_url, migrated_url):
+    """
+    Given:
+        - A pre-migration SLS URL that exists in the migration mapping table.
+    When:
+        - Calling map_to_migrated_url.
+    Then:
+        - The corresponding migrated URL is returned.
+    """
+    from CortexDataLake import map_to_migrated_url
+
+    assert map_to_migrated_url(original_url) == migrated_url
+
+
+@pytest.mark.parametrize(
+    "unmapped_url",
+    [
+        "https://api.unknown.cdl.paloaltonetworks.com",
+        "https://api.us1.prd.strata.logging.paloaltonetworks.com",  # already migrated
+        "https://example.com",
+        "api.de1.ew3.cdl.paloaltonetworks.com",  # no scheme -> not an exact match, passthrough
+    ],
+)
+def test_map_to_migrated_url_passthrough_for_unlisted_url(unmapped_url):
+    """
+    Given:
+        - A URL that is not present (as an exact whole URL) in the migration mapping table.
+    When:
+        - Calling map_to_migrated_url.
+    Then:
+        - The original URL is returned unchanged.
+    """
+    from CortexDataLake import map_to_migrated_url
+
+    assert map_to_migrated_url(unmapped_url) == unmapped_url
+
+
+@pytest.mark.parametrize("status_code", [200, 201, 204, 301, 399])
+def test_is_url_reachable_returns_true_on_success_status(mocker, status_code):
+    """
+    Given:
+        - A candidate URL whose query service responds with a non-error HTTP status (< 400).
+    When:
+        - Calling Client._is_url_reachable.
+    Then:
+        - True is returned, and the query service is built for the candidate URL.
+    """
+    from CortexDataLake import Client
+
+    client = mocker.Mock(spec=Client)
+    query_service = mocker.Mock()
+    query_service.create_query = mocker.Mock(return_value=mocker.Mock(status_code=status_code))
+    client.initial_query_service = mocker.Mock(return_value=query_service)
+
+    url = "https://api.de1.ew3.cdl.paloaltonetworks.com"
+    access_token = "test-token"
+    assert Client._is_url_reachable(client, url, access_token) is True
+    client.initial_query_service.assert_called_once_with(url=url, access_token=access_token)
+
+
+@pytest.mark.parametrize("status_code", [400, 403, 404, 500, 503])
+def test_is_url_reachable_returns_false_on_error_status(mocker, status_code):
+    """
+    Given:
+        - A candidate URL whose query service responds with an error HTTP status (>= 400),
+          e.g. a decommissioned host.
+    When:
+        - Calling Client._is_url_reachable.
+    Then:
+        - False is returned.
+    """
+    from CortexDataLake import Client
+
+    client = mocker.Mock(spec=Client)
+    query_service = mocker.Mock()
+    query_service.create_query = mocker.Mock(return_value=mocker.Mock(status_code=status_code))
+    client.initial_query_service = mocker.Mock(return_value=query_service)
+
+    assert Client._is_url_reachable(client, "https://api.de1.ew3.cdl.paloaltonetworks.com", "test-token") is False
+
+
+@pytest.mark.parametrize(
+    "raised_exception",
+    [
+        Exception("timeout"),
+        ConnectionError("connection refused"),
+    ],
+)
+def test_is_url_reachable_returns_false_on_error(mocker, raised_exception):
+    """
+    Given:
+        - A candidate URL whose query service raises an error (e.g. timeout / connection error).
+    When:
+        - Calling Client._is_url_reachable.
+    Then:
+        - False is returned.
+    """
+    from CortexDataLake import Client
+
+    client = mocker.Mock(spec=Client)
+    query_service = mocker.Mock()
+    query_service.create_query = mocker.Mock(side_effect=raised_exception)
+    client.initial_query_service = mocker.Mock(return_value=query_service)
+
+    assert Client._is_url_reachable(client, "https://api.de1.ew3.cdl.paloaltonetworks.com", "test-token") is False
+
+
+def test_resolve_reachable_api_url_keeps_url_when_reachable(mocker):
+    """
+    Given:
+        - An oproxy api_url that is reachable.
+    When:
+        - Calling Client._resolve_reachable_api_url.
+    Then:
+        - The original URL is returned unchanged, the probe is authenticated with the access token,
+          and no mapping is attempted.
+    """
+    from CortexDataLake import Client
+
+    client = mocker.Mock(spec=Client)
+    client._is_url_reachable = mocker.Mock(return_value=True)
+    mock_map = mocker.patch("CortexDataLake.map_to_migrated_url")
+
+    original_url = "https://api.de1.ew3.cdl.paloaltonetworks.com"
+    access_token = "test-token"
+    result = Client._resolve_reachable_api_url(client, original_url, access_token)
+
+    assert result == original_url
+    client._is_url_reachable.assert_called_once_with(original_url, access_token)
+    mock_map.assert_not_called()
+
+
+def test_resolve_reachable_api_url_maps_url_when_unreachable(mocker):
+    """
+    Given:
+        - An oproxy api_url that is unreachable (a decommissioned host) and exists in the migration table.
+    When:
+        - Calling Client._resolve_reachable_api_url.
+    Then:
+        - The migrated URL is returned so it can be persisted to the integration context.
+    """
+    from CortexDataLake import Client
+
+    client = mocker.Mock(spec=Client)
+    client._is_url_reachable = mocker.Mock(return_value=False)
+
+    original_url = "https://api.de1.ew3.cdl.paloaltonetworks.com"
+    migrated_url = "https://read-api.de1.prd.strata.logging.paloaltonetworks.com"
+
+    result = Client._resolve_reachable_api_url(client, original_url, "test-token")
+
+    assert result == migrated_url
+
+
+def test_resolve_reachable_api_url_returns_unmapped_url_when_unreachable(mocker):
+    """
+    Given:
+        - An oproxy api_url with no migration mapping that is unreachable.
+    When:
+        - Calling Client._resolve_reachable_api_url.
+    Then:
+        - The original URL is returned unchanged (map_to_migrated_url has no entry for it).
+    """
+    from CortexDataLake import Client
+
+    client = mocker.Mock(spec=Client)
+    client._is_url_reachable = mocker.Mock(return_value=False)
+
+    original_url = "https://api.unknown.cdl.paloaltonetworks.com"
+    result = Client._resolve_reachable_api_url(client, original_url, "test-token")
+
+    assert result == original_url
+
+
+class TestQueryLoggingsErrorHandling:
+    """Tests that Client.query_loggings translates low-level SDK exceptions from create_query into short,
+    human-readable DemistoExceptions (keeping the raw traceback in the debug log only)."""
+
+    @staticmethod
+    def _build_client_raising(mocker, side_effect):
+        """Builds a Client mock whose create_query raises the given exception, for query_loggings error tests."""
+        from CortexDataLake import Client
+
+        client = mocker.Mock(spec=Client)
+        client.add_instance_id_to_query = mocker.Mock(side_effect=lambda query: query)
+        query_service = mocker.Mock()
+        query_service.create_query = mocker.Mock(side_effect=side_effect)
+        client.initial_query_service = mocker.Mock(return_value=query_service)
+        return client
+
+    def test_raises_readable_error_on_http_error(self, mocker):
+        """
+        Given:
+            - A transport-level failure (connection/timeout), so the SDK raises exceptions.HTTPError from create_query.
+        When:
+            - Calling Client.query_loggings.
+        Then:
+            - A short, human-readable DemistoException about connectivity is raised (no raw traceback in the message).
+        """
+        from CortexDataLake import Client
+        from pan_cortex_data_lake import exceptions
+
+        client = self._build_client_raising(mocker, exceptions.HTTPError("Connection refused"))
+
+        with pytest.raises(DemistoException) as exc_info:
+            Client.query_loggings(client, "SELECT * FROM `firewall.traffic` limit 1")
+
+        message = str(exc_info.value)
+        assert "Failed to reach Strata Logging Service" in message
+        assert "Traceback" not in message
+
+    def test_raises_readable_error_on_partial_credentials(self, mocker):
+        """
+        Given:
+            - The SDK cannot assemble complete credentials, so create_query raises exceptions.PartialCredentialsError.
+        When:
+            - Calling Client.query_loggings.
+        Then:
+            - A short, human-readable DemistoException about incomplete credentials is raised.
+        """
+        from CortexDataLake import Client
+        from pan_cortex_data_lake import exceptions
+
+        client = self._build_client_raising(mocker, exceptions.PartialCredentialsError("missing access_token"))
+
+        with pytest.raises(DemistoException) as exc_info:
+            Client.query_loggings(client, "SELECT * FROM `firewall.traffic` limit 1")
+
+        message = str(exc_info.value)
+        assert "Incomplete credentials for Strata Logging Service" in message
+        assert "Traceback" not in message
+
+    def test_raises_readable_error_on_invalid_json(self, mocker):
+        """
+        Given:
+            - Invalid credentials, so the API responds with a non-2xx, empty/non-JSON body and the SDK raises a
+              low-level CortexError ("Invalid JSON") from create_query.
+        When:
+            - Calling Client.query_loggings.
+        Then:
+            - A short, human-readable authentication DemistoException is raised instead of the raw SDK "Invalid JSON"
+              message (which is relegated to the debug log).
+        """
+        from CortexDataLake import Client
+        from pan_cortex_data_lake import exceptions
+
+        client = self._build_client_raising(
+            mocker, exceptions.CortexError("Invalid JSON: Expecting value: line 1 column 1 (char 0)")
+        )
+
+        with pytest.raises(DemistoException) as exc_info:
+            Client.query_loggings(client, "SELECT * FROM `firewall.traffic` limit 1")
+
+        message = str(exc_info.value)
+        assert "Failed to authenticate to Strata Logging Service" in message
+        assert "Invalid JSON" not in message
+
+
+# A valid base64-encoded 32-byte AES-GCM encryption key used across the SCM tests.
+VALID_SCM_ENC_KEY_B64 = base64.b64encode(b"0123456789abcdef0123456789abcdef").decode("ascii")
+SCM_CLIENT_SECRET = "super-secret-client-secret"  # guardrails-disable-line
+SCM_REGISTRATION_ID = "reg-id-123"
+
+
+def _build_scm_client(
+    mocker: MockerFixture,
+    integration_context: dict | None = None,
+    token_retrieval_url: str = SCM_GATEWAY_URL,
+):
+    """Constructs a Client in SCM auth mode with demisto context mocked so __init__ performs no network I/O.
+
+    The integration_context passed here is what demisto.getIntegrationContext() returns during __init__.
+    Callers that want to exercise a real authorize path should pass an empty/mismatched context AND mock
+    the relevant authorize method (or Client._http_request) before calling.
+    """
+    from CortexDataLake import AUTH_MODE_SCM, demisto
+
+    mocker.patch.object(
+        demisto, "getIntegrationContext", return_value=integration_context if integration_context is not None else {}
+    )
+    mocker.patch.object(demisto, "setIntegrationContext")
+    from CortexDataLake import Client
+
+    return Client(
+        token_retrieval_url=token_retrieval_url,
+        registration_id=SCM_REGISTRATION_ID,
+        use_ssl=True,
+        proxy=False,
+        refresh_token=None,
+        enc_key=VALID_SCM_ENC_KEY_B64,
+        client_secret=SCM_CLIENT_SECRET,
+        auth_mode=AUTH_MODE_SCM,
+    )
+
+
+def _decrypt_scm_signature(signature_b64: str, enc_key_b64: str) -> dict:
+    """Decrypts a base64 (gcm_nonce + ciphertext) SCM signature and returns the recovered JSON plaintext."""
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+    raw = base64.b64decode(signature_b64)
+    gcm_nonce, ciphertext = raw[:12], raw[12:]
+    key = base64.b64decode(enc_key_b64)
+    plaintext = AESGCM(key).decrypt(gcm_nonce, ciphertext, None)
+    return json.loads(plaintext.decode("utf-8"))
+
+
+def test_build_scm_signature_round_trip():
+    """
+    Given:
+        - A known base64-encoded 32-byte AES-GCM encryption key, a client secret, and a timestamp.
+    When:
+        - Calling build_scm_signature and decrypting the produced blob (first 12 bytes = gcm nonce).
+    Then:
+        - The recovered JSON contains the expected client_secret and timestamp.
+        - The recovered anti-replay nonce, once base64-decoded, is between 12 and 24 bytes.
+    """
+    from CortexDataLake import build_scm_signature
+
+    timestamp = 1_700_000_000
+    signature = build_scm_signature(VALID_SCM_ENC_KEY_B64, SCM_CLIENT_SECRET, timestamp)
+
+    recovered = _decrypt_scm_signature(signature, VALID_SCM_ENC_KEY_B64)
+
+    assert recovered["client_secret"] == SCM_CLIENT_SECRET
+    assert recovered["timestamp"] == timestamp
+    decoded_nonce = base64.b64decode(recovered["nonce"])
+    assert 12 <= len(decoded_nonce) <= 24
+
+
+@pytest.mark.parametrize(
+    "raw_key_len",
+    [
+        pytest.param(31, id="31-byte key is rejected"),
+        pytest.param(33, id="33-byte key is rejected"),
+    ],
+)
+def test_build_scm_signature_invalid_key_length(raw_key_len: int):
+    """
+    Given:
+        - A base64-encoded encryption key whose decoded length is not exactly 32 bytes.
+    When:
+        - Calling build_scm_signature.
+    Then:
+        - A DemistoException is raised (invalid encryption key length).
+    """
+    from CortexDataLake import build_scm_signature
+
+    bad_key_b64 = base64.b64encode(b"x" * raw_key_len).decode("ascii")
+    with pytest.raises(DemistoException):
+        build_scm_signature(bad_key_b64, SCM_CLIENT_SECRET, 1_700_000_000)
+
+
+def test_build_scm_request_body_binds_inner_and_outer_timestamp(mocker: MockerFixture):
+    """
+    Given:
+        - A frozen time source so int(time.time()) is deterministic.
+    When:
+        - Calling build_scm_request_body.
+    Then:
+        - The returned body carries registration_id, timestamp and signature.
+        - The outer body timestamp equals the inner signed timestamp (verified by decrypting the signature).
+    """
+    from CortexDataLake import build_scm_request_body
+
+    frozen_ts = 1_712_345_678
+    mocker.patch("CortexDataLake.time.time", return_value=frozen_ts + 0.9)
+
+    body = build_scm_request_body(SCM_REGISTRATION_ID, VALID_SCM_ENC_KEY_B64, SCM_CLIENT_SECRET)
+
+    assert body["registration_id"] == SCM_REGISTRATION_ID
+    assert body["timestamp"] == frozen_ts
+    assert "signature" in body
+
+    recovered = _decrypt_scm_signature(body["signature"], VALID_SCM_ENC_KEY_B64)
+    assert recovered["timestamp"] == body["timestamp"]
+
+
+def test_scm_authorize_success(mocker: MockerFixture):
+    """
+    Given:
+        - A commercial tenant and a mocked SCM POST returning access_token, expires_in and token_type.
+    When:
+        - Constructing a Client in SCM mode (which triggers _scm_authorize via _set_access_token).
+    Then:
+        - The client's access_token, api_url (DEFAULT_API_URL) and instance_id default are set correctly.
+        - The POST is made to the SCM token path relative to the client's base URL,
+          with a body containing registration_id/timestamp/signature.
+    """
+    from CortexDataLake import (
+        AUTH_MODE_SCM,
+        DEFAULT_API_URL,
+        EXPIRES_IN,
+        REFRESH_TOKEN_CONST,
+        SCM_TOKEN_PATH,
+        SECONDS_30,
+        demisto,
+    )
+
+    mocker.patch("CortexDataLake.is_fedramp_tenant", return_value=False)
+    # Freeze time so the persisted EXPIRES_IN (now + expires_in - SECONDS_30) is deterministic.
+    frozen_now = 1_000_000
+    mocker.patch("CortexDataLake.time.time", return_value=frozen_now)
+    # _scm_authorize calls _http_request(..., resp_type="response") and then reads the raw response
+    # object's .text/.json()/.status_code/.headers/.url/.history attributes. Return a response-like
+    # MagicMock exposing exactly those attributes rather than a plain dict.
+    success_body = {"access_token": "scm-access-token", "expires_in": 3599, "token_type": "Bearer"}
+    success_text = json.dumps(success_body)
+    scm_response = MagicMock()
+    scm_response.status_code = 200
+    scm_response.headers = {"Content-Type": "application/json", "Content-Length": str(len(success_text))}
+    scm_response.text = success_text
+    scm_response.url = urljoin(SCM_GATEWAY_URL, SCM_TOKEN_PATH)
+    scm_response.history = []
+    scm_response.json.return_value = success_body
+    http_mock = mocker.patch(
+        "CortexDataLake.Client._http_request",
+        return_value=scm_response,
+    )
+
+    client = _build_scm_client(mocker, integration_context={}, token_retrieval_url=SCM_GATEWAY_URL)
+
+    assert client.access_token == "scm-access-token"
+    assert client.api_url == DEFAULT_API_URL
+    assert client.instance_id == ""
+    assert client.auth_mode == AUTH_MODE_SCM
+
+    assert http_mock.call_count == 1
+    _, call_kwargs = http_mock.call_args
+    # The token URL is now composed by BaseClient from the client's base URL plus the SCM token path.
+    assert client._base_url == SCM_GATEWAY_URL
+    assert call_kwargs["method"] == "POST"
+    assert call_kwargs["url_suffix"] == SCM_TOKEN_PATH
+    posted_body = call_kwargs["json_data"]
+    assert posted_body["registration_id"] == SCM_REGISTRATION_ID
+    assert "timestamp" in posted_body
+    assert "signature" in posted_body
+
+    # The SCM POST must send a clean header set: no inherited OProxy Authorization or X-Content-* headers.
+    sent_headers = call_kwargs["headers"]
+    assert "Authorization" not in sent_headers
+    assert not any(key.lower().startswith("x-content-") for key in sent_headers)
+    assert sent_headers == {"Content-Type": "application/json", "Accept": "application/json"}
+
+    # _scm_authorize returns refresh_token=None and expires_in=3599; verify via the persisted context:
+    # EXPIRES_IN is stored as now + expires_in - SECONDS_30 and no refresh token is written when None.
+    written_context = demisto.setIntegrationContext.call_args[0][0]
+    assert written_context[EXPIRES_IN] == frozen_now + 3599 - SECONDS_30
+    assert REFRESH_TOKEN_CONST not in written_context
+
+
+def test_set_access_token_routes_to_scm_when_no_stored_token(mocker: MockerFixture):
+    """
+    Given:
+        - An empty integration context and auth_mode=SCM.
+    When:
+        - Constructing a Client (which calls _set_access_token).
+    Then:
+        - _scm_authorize is used (not _oproxy_authorize) and the written context records AUTH_MODE_CONST=scm.
+    """
+    from CortexDataLake import AUTH_MODE_CONST, AUTH_MODE_SCM, Client, demisto
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    set_context_mock = mocker.patch.object(demisto, "setIntegrationContext")
+    scm_mock = mocker.patch.object(Client, "_scm_authorize", return_value=("tok", "https://api.example", "", None, 3600))
+    oproxy_mock = mocker.patch.object(Client, "_oproxy_authorize")
+
+    Client(
+        token_retrieval_url=SCM_GATEWAY_URL,
+        registration_id=SCM_REGISTRATION_ID,
+        use_ssl=True,
+        proxy=False,
+        refresh_token=None,
+        enc_key=VALID_SCM_ENC_KEY_B64,
+        client_secret=SCM_CLIENT_SECRET,
+        auth_mode=AUTH_MODE_SCM,
+    )
+
+    assert scm_mock.call_count == 1
+    assert oproxy_mock.call_count == 0
+    assert set_context_mock.call_count == 1
+    written_context = set_context_mock.call_args[0][0]
+    assert written_context[AUTH_MODE_CONST] == AUTH_MODE_SCM
+
+
+def test_set_access_token_reauth_when_stored_auth_mode_differs(mocker: MockerFixture):
+    """
+    Given:
+        - A stored, still-valid access token stamped with auth_mode=oproxy, but the client uses auth_mode=SCM.
+    When:
+        - Constructing a Client in SCM mode.
+    Then:
+        - The stored token is not reused (mode mismatch) and re-authentication via _scm_authorize occurs,
+          verifying switch-to-new-auth invalidation.
+    """
+    from CortexDataLake import (
+        ACCESS_TOKEN_CONST,
+        AUTH_MODE_CONST,
+        AUTH_MODE_OPROXY,
+        AUTH_MODE_SCM,
+        EXPIRES_IN,
+        Client,
+        demisto,
+    )
+
+    stale_but_valid_context = {
+        ACCESS_TOKEN_CONST: "old-oproxy-token",
+        EXPIRES_IN: int(datetime.utcnow().timestamp()) + 100_000,  # not yet expired
+        AUTH_MODE_CONST: AUTH_MODE_OPROXY,
+    }
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=stale_but_valid_context)
+    mocker.patch.object(demisto, "setIntegrationContext")
+    scm_mock = mocker.patch.object(
+        Client, "_scm_authorize", return_value=("new-scm-token", "https://api.example", "", None, 3600)
+    )
+    oproxy_mock = mocker.patch.object(Client, "_oproxy_authorize")
+
+    client = Client(
+        token_retrieval_url=SCM_GATEWAY_URL,
+        registration_id=SCM_REGISTRATION_ID,
+        use_ssl=True,
+        proxy=False,
+        refresh_token=None,
+        enc_key=VALID_SCM_ENC_KEY_B64,
+        client_secret=SCM_CLIENT_SECRET,
+        auth_mode=AUTH_MODE_SCM,
+    )
+
+    assert scm_mock.call_count == 1
+    assert oproxy_mock.call_count == 0
+    assert client.access_token == "new-scm-token"
+
+
+def test_set_access_token_oproxy_regression(mocker: MockerFixture):
+    """
+    Given:
+        - An empty integration context and the default auth_mode=oproxy.
+    When:
+        - Constructing a Client (which calls _set_access_token).
+    Then:
+        - The legacy path is unaffected: _oproxy_authorize is used (not _scm_authorize).
+    """
+    from CortexDataLake import AUTH_MODE_CONST, AUTH_MODE_OPROXY, Client, demisto
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    set_context_mock = mocker.patch.object(demisto, "setIntegrationContext")
+    oproxy_mock = mocker.patch.object(
+        Client,
+        "_oproxy_authorize",
+        return_value=("oproxy-tok", "https://api.example.com", "instance-1", "refresh-tok", 3600),
+    )
+    scm_mock = mocker.patch.object(Client, "_scm_authorize")
+
+    client = Client(
+        token_retrieval_url="https://oproxy.demisto.ninja",  # guardrails-disable-line
+        registration_id=SCM_REGISTRATION_ID,
+        use_ssl=True,
+        proxy=False,
+        refresh_token=None,
+        enc_key=VALID_SCM_ENC_KEY_B64,
+        auth_mode=AUTH_MODE_OPROXY,
+    )
+
+    assert oproxy_mock.call_count == 1
+    assert scm_mock.call_count == 0
+    assert client.access_token == "oproxy-tok"
+    written_context = set_context_mock.call_args[0][0]
+    assert written_context[AUTH_MODE_CONST] == AUTH_MODE_OPROXY
+
+
+def test_set_access_token_legacy_oproxy_token_reused(mocker: MockerFixture):
+    """
+    Given:
+        - A pre-upgrade integration context holding a valid, unexpired access_token but NO AUTH_MODE_CONST key
+          (the stamp did not exist before the upgrade), and the client is in OProxy mode (no client_secret).
+    When:
+        - Constructing a Client (which calls _set_access_token).
+    Then:
+        - The absent stamp defaults to OProxy, so the stored token is reused: neither _oproxy_authorize nor
+          _scm_authorize is called (no manual OProxy token refresh is triggered) and the context is not rewritten.
+    """
+    from CortexDataLake import (
+        ACCESS_TOKEN_CONST,
+        API_URL_CONST,
+        AUTH_MODE_OPROXY,
+        EXPIRES_IN,
+        INSTANCE_ID_CONST,
+        Client,
+        demisto,
+    )
+
+    legacy_context = {
+        ACCESS_TOKEN_CONST: "legacy-oproxy-token",
+        EXPIRES_IN: int(datetime.utcnow().timestamp()) + 100_000,  # not yet expired
+        API_URL_CONST: "https://api.example.com",
+        INSTANCE_ID_CONST: "instance-legacy",
+        # NOTE: no AUTH_MODE_CONST key simulates a pre-upgrade context.
+    }
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=legacy_context)
+    set_context_mock = mocker.patch.object(demisto, "setIntegrationContext")
+    oproxy_mock = mocker.patch.object(Client, "_oproxy_authorize")
+    scm_mock = mocker.patch.object(Client, "_scm_authorize")
+
+    client = Client(
+        token_retrieval_url="https://oproxy.demisto.ninja",  # guardrails-disable-line
+        registration_id=SCM_REGISTRATION_ID,
+        use_ssl=True,
+        proxy=False,
+        refresh_token=None,
+        enc_key=VALID_SCM_ENC_KEY_B64,
+        auth_mode=AUTH_MODE_OPROXY,
+    )
+
+    assert oproxy_mock.call_count == 0
+    assert scm_mock.call_count == 0
+    assert set_context_mock.call_count == 0
+    assert client.access_token == "legacy-oproxy-token"
+
+
+def _credentials_params(reg_id=None, enc_key=None, refresh_token=None, client_secret=None) -> dict:
+    """Builds a demisto.params() dict in the credentials-object shape read by main()."""
+    return {
+        "credentials_reg_id": {"password": reg_id},
+        "credentials_auth_key": {"password": enc_key},
+        "credentials_refresh_token": {"password": refresh_token},
+        "credentials_client_secret": {"password": client_secret},
+    }
+
+
+@pytest.mark.parametrize(
+    "params, expected_error",
+    [
+        pytest.param(
+            _credentials_params(reg_id=SCM_REGISTRATION_ID, refresh_token="a-refresh-token"),
+            "Encryption Key must be provided.",
+            id="Missing encryption key",
+        ),
+        pytest.param(
+            _credentials_params(enc_key=VALID_SCM_ENC_KEY_B64, refresh_token="a-refresh-token"),
+            "Registration ID must be provided.",
+            id="Missing registration ID",
+        ),
+        pytest.param(
+            _credentials_params(reg_id=SCM_REGISTRATION_ID, enc_key=VALID_SCM_ENC_KEY_B64),
+            "Either an Authentication Token or a Client Secret must be provided, but not both.",
+            id="Neither refresh token nor client secret",
+        ),
+        pytest.param(
+            _credentials_params(
+                reg_id=SCM_REGISTRATION_ID,
+                enc_key=VALID_SCM_ENC_KEY_B64,
+                refresh_token="a-refresh-token",
+                client_secret=SCM_CLIENT_SECRET,
+            ),
+            "Either an Authentication Token or a Client Secret must be provided, but not both.",
+            id="Both refresh token and client secret",
+        ),
+        pytest.param(
+            _credentials_params(
+                reg_id=SCM_REGISTRATION_ID,
+                enc_key=VALID_SCM_ENC_KEY_B64,
+                refresh_token="a-refresh-token",
+            ),
+            None,
+            id="Valid OProxy credentials",
+        ),
+        pytest.param(
+            _credentials_params(
+                reg_id=SCM_REGISTRATION_ID,
+                enc_key=VALID_SCM_ENC_KEY_B64,
+                client_secret=SCM_CLIENT_SECRET,
+            ),
+            None,
+            id="Valid SCM credentials",
+        ),
+    ],
+)
+def test_main_credentials_validation(mocker: MockerFixture, params: dict, expected_error: str | None):
+    """
+    Given:
+        - A demisto.params() mapping with a combination of registration ID, encryption key,
+          authentication (refresh) token and client secret.
+    When:
+        - Running main() with the 'test-module' command, with Client construction and test_module mocked.
+    Then:
+        - Invalid combinations raise a DemistoException with the expected message and never reach test_module.
+        - Valid combinations pass validation and invoke test_module exactly once.
+    """
+    from CortexDataLake import demisto, main
+
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch("CortexDataLake.extract_client_args", return_value=("https://token.example.com", SCM_REGISTRATION_ID))
+    client_mock = mocker.patch("CortexDataLake.Client")
+    test_module_mock = mocker.patch("CortexDataLake.test_module")
+
+    if expected_error:
+        with pytest.raises(DemistoException, match=re.escape(expected_error)):
+            main()
+        assert client_mock.call_count == 0
+        assert test_module_mock.call_count == 0
+    else:
+        main()
+        assert client_mock.call_count == 1
+        assert test_module_mock.call_count == 1

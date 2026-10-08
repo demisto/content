@@ -328,6 +328,33 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/networkSecurityGroups/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Network/loadBalancers/backendAddressPools/join/action": ["azure-vn-network-interface-update"],
     "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list", "azure-rm-resource-groups-list"],
+    "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read": [
+        "azure-application-gateway-waf-policy-get",
+        "azure-application-gateway-waf-policies-list",
+    ],
+    "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/write": [
+        "azure-application-gateway-waf-policy-create-or-update"
+    ],
+    "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete": ["azure-application-gateway-waf-policy-delete"],
+    "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read": [
+        "azure-front-door-policy-get",
+        "azure-front-door-policies-list",
+    ],
+    "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/write": ["azure-front-door-policy-create-or-update"],
+    "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/delete": ["azure-front-door-policy-delete"],
+    "Microsoft.Network/firewallPolicies/read": [
+        "azure-vn-firewall-policy-get",
+        "azure-vn-firewall-policy-list",
+        "azure-vn-firewall-policy-update",
+    ],
+    "Microsoft.Network/firewallPolicies/write": [
+        "azure-vn-firewall-policy-create",
+        "azure-vn-firewall-policy-update",
+    ],
+    "Microsoft.Network/firewallPolicies/delete": ["azure-vn-firewall-policy-delete"],
+    "Microsoft.Network/firewallPolicies/join/action": ["azure-firewall-policy-attach"],
+    "Microsoft.Network/azureFirewalls/read": ["azure-firewall-policy-attach", "azure-firewall-policy-detach"],
+    "Microsoft.Network/azureFirewalls/write": ["azure-firewall-policy-attach", "azure-firewall-policy-detach"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -405,6 +432,27 @@ API_FUNCTION_TO_PERMISSIONS = {
     "get_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
     "get_all_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
     "list_security_rules": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
+    "waf_policy_get": ["Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read"],
+    "waf_policy_list": ["Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read"],
+    "waf_policy_upsert": ["Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/write"],
+    "waf_policy_delete": ["Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete"],
+    "waf_front_door_policy_get": ["Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read"],
+    "waf_front_door_policy_list": ["Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read"],
+    "waf_front_door_policy_upsert": ["Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/write"],
+    "waf_front_door_policy_delete": ["Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/delete"],
+    "firewall_policy_create_or_update": [
+        "Microsoft.Network/firewallPolicies/read",
+        "Microsoft.Network/firewallPolicies/write",
+    ],
+    "firewall_policy_get": ["Microsoft.Network/firewallPolicies/read"],
+    "firewall_policy_delete": ["Microsoft.Network/firewallPolicies/delete"],
+    "firewall_policy_list": ["Microsoft.Network/firewallPolicies/read"],
+    "firewall_get": ["Microsoft.Network/azureFirewalls/read"],
+    "firewall_update": [
+        "Microsoft.Network/azureFirewalls/read",
+        "Microsoft.Network/azureFirewalls/write",
+        "Microsoft.Network/firewallPolicies/join/action",
+    ],
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
@@ -460,6 +508,18 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Consumption/usageDetails/read",
     "Microsoft.Consumption/budgets/read",
     "Microsoft.CostManagement/forecast/read",
+    "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read",
+    "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/write",
+    "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete",
+    "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read",
+    "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/write",
+    "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/delete",
+    "Microsoft.Network/firewallPolicies/read",
+    "Microsoft.Network/firewallPolicies/write",
+    "Microsoft.Network/firewallPolicies/delete",
+    "Microsoft.Network/firewallPolicies/join/action",
+    "Microsoft.Network/azureFirewalls/read",
+    "Microsoft.Network/azureFirewalls/write",
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -478,6 +538,19 @@ COSMOS_DB_API_VERSION = "2024-11-15"
 PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
 NSG_API_VERSION = "2025-01-01"
+# Application Gateway and Front Door WAF policies are served by two separate resource providers,
+# each with its own independently released API version, so these two versions intentionally differ.
+WAF_POLICY_API_VERSION = "2025-09-01"
+WAF_FRONT_DOOR_POLICY_API_VERSION = "2026-04-01"
+WAF_POLICY_PATH = "providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
+WAF_FRONT_DOOR_POLICY_PATH = "providers/Microsoft.Network/FrontDoorWebApplicationFirewallPolicies"
+# WAF policy arguments that carry a JSON object or array. Every other argument is a plain string
+# and must be sent as-is, since parsing it as JSON would coerce values such as "123" to a number,
+# "true" to a boolean, or strip the quotes from a quoted ETag.
+WAF_POLICY_JSON_ARGUMENTS = {"tags", "policy_settings", "custom_rules", "managed_rules"}
+# The columns displayed for both Application Gateway and Front Door WAF policies.
+WAF_POLICY_HEADERS = ["name", "id", "type", "location", "etag", "tags"]
+FIREWALL_API_VERSION = "2025-09-01"
 
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
 # get_command_and_token_scopes.
@@ -500,11 +573,11 @@ COMMANDS_TO_OUTPUTS_PREFIX = {
     "azure-vm-instance-power-off": "Azure.Compute",
     "azure-compute-vm-power-off": "Azure.Compute.VirtualMachines",
     "azure-vm-instance-start": "Azure.Compute",
-    "azure-compute-vm-start": "Azure.Compute.VitualMachines",
+    "azure-compute-vm-start": "Azure.Compute.VirtualMachines",
     "azure-cosmos-db-update": "Azure.CosmosDB",
     "azure-cosmosdb-db-account-update": "Azure.CosmosDB.DBAccounts",
     "azure-key-vault-update": "Azure.KeyVault",
-    "azure-keyvault-vault-update": "azure-keyvault-vault-update",
+    "azure-keyvault-vault-update": "Azure.KeyVault.Vault",
     "azure-nsg-resource-group-list": "Azure.NSGResourceGroup",
     "azure-rm-resource-groups-list": "Azure.ResourceManagement.ResourceGroups",
     "azure-sql-db-threat-policy-update": "Azure.SqlDBThreatPolicy",
@@ -697,7 +770,11 @@ class AzureClient:
             params = {}
         if not self.headers:
             self.headers = {}
-        if not params.get("api-version") and "x-ms-version" not in self.headers:
+        # A paginated `full_url` (an Azure `nextLink`) already carries its own `api-version` in its query
+        # string. Injecting the default here would send the parameter twice, and ARM joins the two values
+        # into one invalid version (e.g. "2025-09-01,2022-09-01"), failing the request with InvalidResourceType.
+        url_has_api_version = bool(full_url) and "api-version" in parse_qs(urlparse(full_url or "").query)
+        if not params.get("api-version") and not url_has_api_version and "x-ms-version" not in self.headers:
             params["api-version"] = API_VERSION
 
         proxies = {"http": os.environ.get("CRTX_HTTP_PROXY"), "https": os.environ.get("CRTX_HTTP_PROXY")}
@@ -2784,6 +2861,491 @@ class AzureClient:
                 api_function_name="billing_budgets_list",
             )
 
+    def waf_policy_get(self, policy_name: str, subscription_id: str, resource_group_name: str):
+        """
+        Retrieve a single Application Gateway WAF policy by name.
+
+        Args:
+            policy_name: The name of the WAF policy to retrieve.
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the policy.
+
+        Returns:
+            A dictionary containing the WAF policy.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/application-gateway/web-application-firewall-policies/get
+        """
+        full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/{WAF_POLICY_PATH}/{policy_name}"
+        try:
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": WAF_POLICY_API_VERSION})
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=policy_name,
+                resource_type="WAF Policy",
+                api_function_name="waf_policy_get",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def waf_policy_list(self, subscription_id: str, resource_group_name: str, next_token: str = ""):
+        """
+        List Application Gateway WAF policies within a resource group, or within the whole
+        subscription when no resource group is given.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group to list policies from. When empty, the
+                policies of the entire subscription are listed.
+            next_token: The URL to fetch the next page of results.
+
+        Returns:
+            A dictionary containing the list of WAF policies.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/application-gateway/web-application-firewall-policies/list
+        """
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of WAF policies.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
+            params: dict[str, Any] = {}
+        elif resource_group_name:
+            full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/{WAF_POLICY_PATH}"
+            params = {"api-version": WAF_POLICY_API_VERSION}
+        else:
+            full_url = f"{PREFIX_URL_AZURE}{subscription_id}/{WAF_POLICY_PATH}"
+            params = {"api-version": WAF_POLICY_API_VERSION}
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_group_name or subscription_id,
+                resource_type="WAF Policies",
+                api_function_name="waf_policy_list",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def waf_policy_upsert(self, policy_name: str, subscription_id: str, resource_group_name: str, data: dict):
+        """
+        Create or update an Application Gateway WAF policy.
+
+        Args:
+            policy_name: The name of the WAF policy to create or update.
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group to create the policy in.
+            data: The policy request body.
+
+        Returns:
+            A dictionary containing the created or updated WAF policy.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/application-gateway/web-application-firewall-policies/create-or-update
+        """
+        full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/{WAF_POLICY_PATH}/{policy_name}"
+        try:
+            return self.http_request(
+                method="PUT", full_url=full_url, json_data=data, params={"api-version": WAF_POLICY_API_VERSION}
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=policy_name,
+                resource_type="WAF Policy",
+                api_function_name="waf_policy_upsert",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def waf_policy_delete(self, policy_name: str, subscription_id: str, resource_group_name: str):
+        """
+        Delete an Application Gateway WAF policy.
+
+        Args:
+            policy_name: The name of the WAF policy to delete.
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the policy.
+
+        Returns:
+            The HTTP response object from the delete operation.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/application-gateway/web-application-firewall-policies/delete
+        """
+        full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/{WAF_POLICY_PATH}/{policy_name}"
+        try:
+            return self.http_request(
+                method="DELETE", full_url=full_url, resp_type="response", params={"api-version": WAF_POLICY_API_VERSION}
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=policy_name,
+                resource_type="WAF Policy",
+                api_function_name="waf_policy_delete",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def waf_front_door_policy_get(self, policy_name: str, subscription_id: str, resource_group_name: str):
+        """
+        Retrieve a single Front Door WAF policy by name.
+
+        Args:
+            policy_name: The name of the Front Door WAF policy to retrieve.
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the policy.
+
+        Returns:
+            A dictionary containing the Front Door WAF policy.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/frontdoor/policies/get
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/{WAF_FRONT_DOOR_POLICY_PATH}/{policy_name}"
+        )
+        try:
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": WAF_FRONT_DOOR_POLICY_API_VERSION})
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=policy_name,
+                resource_type="Front Door WAF Policy",
+                api_function_name="waf_front_door_policy_get",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def waf_front_door_policy_list(self, subscription_id: str, resource_group_name: str, next_token: str = ""):
+        """
+        List Front Door WAF policies within a resource group, or within the whole
+        subscription when no resource group is given.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group to list policies from. When empty, the
+                policies of the entire subscription are listed.
+            next_token: The URL to fetch the next page of results.
+
+        Returns:
+            A dictionary containing the list of Front Door WAF policies.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/frontdoor/policies/list
+        """
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of Front Door WAF policies.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
+            params: dict[str, Any] = {}
+        elif resource_group_name:
+            full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/{WAF_FRONT_DOOR_POLICY_PATH}"
+            params = {"api-version": WAF_FRONT_DOOR_POLICY_API_VERSION}
+        else:
+            full_url = f"{PREFIX_URL_AZURE}{subscription_id}/{WAF_FRONT_DOOR_POLICY_PATH}"
+            params = {"api-version": WAF_FRONT_DOOR_POLICY_API_VERSION}
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_group_name or subscription_id,
+                resource_type="Front Door WAF Policies",
+                api_function_name="waf_front_door_policy_list",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def waf_front_door_policy_upsert(self, policy_name: str, subscription_id: str, resource_group_name: str, data: dict):
+        """
+        Create or update a Front Door WAF policy.
+
+        Args:
+            policy_name: The name of the Front Door WAF policy to create or update.
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group to create the policy in.
+            data: The policy request body.
+
+        Returns:
+            A dictionary containing the created or updated Front Door WAF policy.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/frontdoor/policies/create-or-update
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/{WAF_FRONT_DOOR_POLICY_PATH}/{policy_name}"
+        )
+        try:
+            return self.http_request(
+                method="PUT",
+                full_url=full_url,
+                json_data=data,
+                params={"api-version": WAF_FRONT_DOOR_POLICY_API_VERSION},
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=policy_name,
+                resource_type="Front Door WAF Policy",
+                api_function_name="waf_front_door_policy_upsert",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def waf_front_door_policy_delete(self, policy_name: str, subscription_id: str, resource_group_name: str):
+        """
+        Delete a Front Door WAF policy.
+
+        Args:
+            policy_name: The name of the Front Door WAF policy to delete.
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the policy.
+
+        Returns:
+            The HTTP response object from the delete operation.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/frontdoor/policies/delete
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/{WAF_FRONT_DOOR_POLICY_PATH}/{policy_name}"
+        )
+        try:
+            return self.http_request(
+                method="DELETE",
+                full_url=full_url,
+                resp_type="response",
+                params={"api-version": WAF_FRONT_DOOR_POLICY_API_VERSION},
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=policy_name,
+                resource_type="Front Door WAF Policy",
+                api_function_name="waf_front_door_policy_delete",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def firewall_policy_create_or_update(
+        self, subscription_id: str, resource_group_name: str, policy_name: str, policy_data: dict
+    ):
+        """
+        Create or update a firewall policy.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group that contains the firewall policy.
+            policy_name (str): The name of the firewall policy.
+            policy_data (dict): The full firewall policy object to send.
+
+        Returns:
+            dict: The created or updated firewall policy object.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/firewall-policies/create-or-update
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/firewallPolicies/{policy_name}"
+        )
+        try:
+            return self.http_request(
+                method="PUT",
+                full_url=full_url,
+                params={"api-version": FIREWALL_API_VERSION},
+                json_data=policy_data,
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=policy_name,
+                resource_type="Firewall Policy",
+                api_function_name="firewall_policy_create_or_update",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def firewall_policy_get(self, subscription_id: str, resource_group_name: str, policy_name: str):
+        """
+        Get a firewall policy.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group that contains the firewall policy.
+            policy_name (str): The name of the firewall policy.
+
+        Returns:
+            dict: The firewall policy object.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/firewall-policies/get
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/firewallPolicies/{policy_name}"
+        )
+        try:
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": FIREWALL_API_VERSION})
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=policy_name,
+                resource_type="Firewall Policy",
+                api_function_name="firewall_policy_get",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def firewall_policy_delete(self, subscription_id: str, resource_group_name: str, policy_name: str):
+        """
+        Delete a firewall policy.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group that contains the firewall policy.
+            policy_name (str): The name of the firewall policy to delete.
+
+        Returns:
+            The HTTP response object of the delete request.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/firewall-policies/delete
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/firewallPolicies/{policy_name}"
+        )
+        try:
+            return self.http_request(
+                method="DELETE",
+                full_url=full_url,
+                params={"api-version": FIREWALL_API_VERSION},
+                resp_type="response",
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=policy_name,
+                resource_type="Firewall Policy",
+                api_function_name="firewall_policy_delete",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def firewall_policy_list(self, subscription_id: str, resource_group_name: str, next_token: str = ""):
+        """
+        List the firewall policies in a resource group.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group that contains the firewall policies.
+            next_token (str): The URI to fetch the next page of results.
+
+        Returns:
+            dict: The list of firewall policies.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/firewall-policies/list
+        """
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of firewall policies.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
+            parameters: dict[str, Any] = {}
+        else:
+            full_url = (
+                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+                f"/providers/Microsoft.Network/firewallPolicies"
+            )
+            parameters = {"api-version": FIREWALL_API_VERSION}
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=parameters)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_group_name,
+                resource_type="Firewall Policy",
+                api_function_name="firewall_policy_list",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def firewall_get(self, subscription_id: str, resource_group_name: str, firewall_name: str):
+        """
+        Get an Azure firewall.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group that contains the firewall.
+            firewall_name (str): The name of the firewall.
+
+        Returns:
+            dict: The Azure firewall object.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/azure-firewalls/get
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/azureFirewalls/{firewall_name}"
+        )
+        try:
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": FIREWALL_API_VERSION})
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=firewall_name,
+                resource_type="Firewall",
+                api_function_name="firewall_get",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def firewall_update(self, subscription_id: str, resource_group_name: str, firewall_name: str, firewall_data: dict):
+        """
+        Create or update an Azure firewall.
+
+        This method uses PUT to update the firewall. The caller should first retrieve the current firewall
+        using firewall_get, modify the desired properties, and then pass the full object to this method.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group that contains the firewall.
+            firewall_name (str): The name of the firewall.
+            firewall_data (dict): The full firewall object with the updated properties.
+
+        Returns:
+            dict: The updated Azure firewall object.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/firewall/azure-firewalls/create-or-update?view=rest-firewall-2025-09-01&tabs=HTTP
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/azureFirewalls/{firewall_name}"
+        )
+        try:
+            return self.http_request(
+                method="PUT",
+                full_url=full_url,
+                params={"api-version": FIREWALL_API_VERSION},
+                json_data=firewall_data,
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=firewall_name,
+                resource_type="Firewall",
+                api_function_name="firewall_update",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
 
 """ HELPER FUNCTIONS """
 
@@ -2899,6 +3461,32 @@ def remove_query_param_from_url(url: str, param: str) -> str:
     return urlunparse(parsed._replace(query=new_query))
 
 
+def validate_next_link(next_link: str, expected_host: str) -> str:
+    """
+    Validate that a pagination link points at the configured Azure management endpoint.
+
+    The link is sent as a full URL with the integration's bearer token attached, so an arbitrary
+    host would receive a valid Azure access token.
+
+    Args:
+        next_link (str): The pagination link provided by the user.
+        expected_host (str): The hostname of the configured Azure management endpoint.
+
+    Returns:
+        str: The validated link.
+
+    Raises:
+        DemistoException: If the link is not an HTTPS URL pointing at the expected host.
+    """
+    parsed = urlparse(next_link)
+    if parsed.scheme != "https" or parsed.hostname != expected_host:
+        demisto.debug(f"[Azure] Rejected next_token with {parsed.scheme=} and {parsed.hostname=}, {expected_host=}")
+        raise DemistoException(
+            "Invalid next_token: it must be the next token value returned by a previous call to the same command."
+        )
+    return next_link
+
+
 def update_nic_properties(args: dict, params: dict, properties: dict):
     """
     Updates the properties dictionary of a Network Interface Card (NIC) based on the provided arguments.
@@ -2951,6 +3539,56 @@ def update_nic_properties(args: dict, params: dict, properties: dict):
     if remove_network_security_group:
         demisto.debug(f"Removing the network security group {properties.get('networkSecurityGroup')}")
         properties.pop("networkSecurityGroup", None)
+
+
+def parse_nested_keys_to_dict(base_dict: dict, keys: list, value: Any) -> None:
+    """
+    Recursively place a value into a nested dictionary following a list of keys.
+
+    A keys list of ["properties", "policySettings"] with the value {"mode": "Prevention"}
+    produces {"properties": {"policySettings": {"mode": "Prevention"}}}.
+
+    Args:
+        base_dict (dict): The dictionary to populate, modified in place.
+        keys (list): The hierarchy of keys leading to the value.
+        value (Any): The value to place at the end of the key hierarchy.
+    """
+    if len(keys) == 1:
+        base_dict[keys[0]] = value
+    else:
+        base_dict.setdefault(keys[0], {})
+        parse_nested_keys_to_dict(base_dict[keys[0]], keys[1:], value)
+
+
+def build_waf_policy_body(args: dict[str, Any], upsert_params: dict[str, str]) -> dict[str, Any]:
+    """
+    Build a WAF policy request body from the command arguments.
+
+    Each argument listed in the given mapping is placed at its dotted location in the body.
+    Only the arguments named in WAF_POLICY_JSON_ARGUMENTS are parsed as JSON; every other
+    argument is a plain string and is sent unchanged. Arguments that were not supplied are
+    skipped entirely.
+
+    Args:
+        args (dict[str, Any]): The command arguments.
+        upsert_params (dict[str, str]): Mapping of argument name to its dotted body location.
+
+    Returns:
+        dict[str, Any]: The request body to send to the Azure API.
+    """
+    body: dict[str, Any] = {}
+    for argument_name, body_path in upsert_params.items():
+        raw_value = args.get(argument_name)
+        if not raw_value:
+            continue
+        value: Any = raw_value
+        if argument_name in WAF_POLICY_JSON_ARGUMENTS and isinstance(raw_value, str):
+            try:
+                value = json.loads(raw_value)
+            except json.JSONDecodeError:
+                value = raw_value
+        parse_nested_keys_to_dict(base_dict=body, keys=body_path.split("."), value=value)
+    return body
 
 
 """ COMMAND FUNCTIONS """
@@ -5405,6 +6043,708 @@ def parse_forecast_table_to_dict(response: dict) -> list[dict]:
         raise DemistoException(f"Failed to parse API response. Malformed data structure: {e}")
 
 
+def waf_policy_get_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieve a single Application Gateway WAF policy by name.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments, including the policy name.
+
+    Returns:
+        CommandResults: The requested WAF policy.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    policy_name = args["policy_name"]
+
+    policy = client.waf_policy_get(
+        policy_name=policy_name, subscription_id=subscription_id, resource_group_name=resource_group_name
+    )
+
+    readable_output = tableToMarkdown(
+        name=f"WAF Policy {policy_name}",
+        t=policy,
+        headers=WAF_POLICY_HEADERS,
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.ApplicationGateway.WAFPolicies",
+        outputs_key_field="id",
+        outputs=policy,
+        readable_output=readable_output,
+        raw_response=policy,
+    )
+
+
+def waf_policy_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    List Application Gateway WAF policies.
+
+    When a resource group is supplied the policies of that resource group are listed,
+    otherwise the policies of the entire subscription are listed.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: The list of WAF policies.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    # Intentionally not falling back to the instance parameter, so that an instance configured
+    # with a default resource group can still list the policies of the entire subscription.
+    resource_group_name = args.get("resource_group_name", "")
+    next_token = args.get("next_token", "")
+
+    response = client.waf_policy_list(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, next_token=next_token
+    )
+    policies = response.get("value", [])
+
+    if not policies:
+        scope = f"resource group '{resource_group_name}'" if resource_group_name else f"subscription '{subscription_id}'"
+        # Clear the token of the previous page, so that a playbook paging until the token is
+        # empty does not keep reading a stale token from the context and loop forever.
+        return CommandResults(
+            outputs={"Azure.ApplicationGateway(true)": {"WAFPoliciesNextToken": None}},
+            readable_output=f"No WAF policies were found in {scope}.",
+        )
+
+    response_next_token = response.get("nextLink")
+    outputs = {
+        "Azure.ApplicationGateway.WAFPolicies(val.id && val.id == obj.id)": policies,
+        "Azure.ApplicationGateway(true)": {"WAFPoliciesNextToken": response_next_token},
+    }
+
+    readable_output = tableToMarkdown(
+        name="WAF Policies",
+        t=policies,
+        headers=WAF_POLICY_HEADERS,
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(outputs=outputs, readable_output=readable_output, raw_response=response)
+
+
+def waf_policy_create_or_update_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Create or update an Application Gateway WAF policy.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments, including the policy name, location and managed rules.
+
+    Returns:
+        CommandResults: The created or updated WAF policy.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    policy_name = args["policy_name"]
+
+    # Maps each command argument to its dotted location in the request body.
+    body = build_waf_policy_body(
+        args,
+        {
+            "resource_id": "id",
+            "location": "location",
+            "tags": "tags",
+            "policy_settings": "properties.policySettings",
+            "custom_rules": "properties.customRules",
+            "managed_rules": "properties.managedRules",
+        },
+    )
+
+    policy = client.waf_policy_upsert(
+        policy_name=policy_name,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        data=body,
+    )
+
+    readable_output = tableToMarkdown(
+        name=f"WAF Policy {policy_name} was created or updated successfully",
+        t=policy,
+        headers=WAF_POLICY_HEADERS,
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.ApplicationGateway.WAFPolicies",
+        outputs_key_field="id",
+        outputs=policy,
+        readable_output=readable_output,
+        raw_response=policy,
+    )
+
+
+def waf_policy_delete_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Delete an Application Gateway WAF policy.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments, including the policy name.
+
+    Returns:
+        CommandResults: A message describing the outcome of the delete operation.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    policy_name = args["policy_name"]
+
+    response = client.waf_policy_delete(
+        policy_name=policy_name, subscription_id=subscription_id, resource_group_name=resource_group_name
+    )
+
+    if response.status_code == 204:
+        message = f"WAF Policy {policy_name} was not found."
+    elif response.status_code == 202:
+        message = f"The delete request for WAF Policy {policy_name} was accepted and the operation will complete asynchronously."
+    else:
+        message = f"WAF Policy {policy_name} was deleted successfully."
+
+    return CommandResults(readable_output=message)
+
+
+def waf_front_door_policy_get_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieve a single Front Door WAF policy by name.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments, including the policy name.
+
+    Returns:
+        CommandResults: The requested Front Door WAF policy.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    policy_name = args["policy_name"]
+
+    policy = client.waf_front_door_policy_get(
+        policy_name=policy_name, subscription_id=subscription_id, resource_group_name=resource_group_name
+    )
+
+    readable_output = tableToMarkdown(
+        name=f"Front Door WAF Policy {policy_name}",
+        t=policy,
+        headers=WAF_POLICY_HEADERS,
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.FrontDoor.Policies",
+        outputs_key_field="id",
+        outputs=policy,
+        readable_output=readable_output,
+        raw_response=policy,
+    )
+
+
+def waf_front_door_policy_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    List Front Door WAF policies.
+
+    When a resource group is supplied the policies of that resource group are listed,
+    otherwise the policies of the entire subscription are listed.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: The list of Front Door WAF policies.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    # Intentionally not falling back to the instance parameter, so that an instance configured
+    # with a default resource group can still list the policies of the entire subscription.
+    resource_group_name = args.get("resource_group_name", "")
+    next_token = args.get("next_token", "")
+
+    response = client.waf_front_door_policy_list(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, next_token=next_token
+    )
+    policies = response.get("value", [])
+
+    if not policies:
+        scope = f"resource group '{resource_group_name}'" if resource_group_name else f"subscription '{subscription_id}'"
+        # Clear the token of the previous page, so that a playbook paging until the token is
+        # empty does not keep reading a stale token from the context and loop forever.
+        return CommandResults(
+            outputs={"Azure.FrontDoor(true)": {"PoliciesNextToken": None}},
+            readable_output=f"No Front Door WAF policies were found in {scope}.",
+        )
+
+    response_next_token = response.get("nextLink")
+    outputs = {
+        "Azure.FrontDoor.Policies(val.id && val.id == obj.id)": policies,
+        "Azure.FrontDoor(true)": {"PoliciesNextToken": response_next_token},
+    }
+
+    readable_output = tableToMarkdown(
+        name="Front Door WAF Policies",
+        t=policies,
+        headers=WAF_POLICY_HEADERS,
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(outputs=outputs, readable_output=readable_output, raw_response=response)
+
+
+def waf_front_door_policy_create_or_update_command(
+    client: AzureClient, params: dict[str, Any], args: dict[str, Any]
+) -> CommandResults:
+    """
+    Create or update a Front Door WAF policy.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments, including the policy name and managed rules.
+
+    Returns:
+        CommandResults: The created or updated Front Door WAF policy.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    policy_name = args["policy_name"]
+
+    # Maps each command argument to its dotted location in the request body.
+    body = build_waf_policy_body(
+        args,
+        {
+            "location": "location",
+            "tags": "tags",
+            "etag": "etag",
+            "sku": "sku.name",
+            "policy_settings": "properties.policySettings",
+            "custom_rules": "properties.customRules",
+            "managed_rules": "properties.managedRules",
+        },
+    )
+    # Front Door WAF policies are global resources, and the API requires a SKU on create.
+    body.setdefault("location", "Global")
+    body.setdefault("sku", {"name": "Classic_AzureFrontDoor"})
+
+    policy = client.waf_front_door_policy_upsert(
+        policy_name=policy_name,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        data=body,
+    )
+
+    readable_output = tableToMarkdown(
+        name=f"Front Door WAF Policy {policy_name} was created or updated successfully",
+        t=policy,
+        headers=WAF_POLICY_HEADERS,
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.FrontDoor.Policies",
+        outputs_key_field="id",
+        outputs=policy,
+        readable_output=readable_output,
+        raw_response=policy,
+    )
+
+
+def waf_front_door_policy_delete_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Delete a Front Door WAF policy.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments, including the policy name.
+
+    Returns:
+        CommandResults: A message describing the outcome of the delete operation.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    policy_name = args["policy_name"]
+
+    response = client.waf_front_door_policy_delete(
+        policy_name=policy_name, subscription_id=subscription_id, resource_group_name=resource_group_name
+    )
+
+    if response.status_code == 204:
+        message = f"Front Door WAF Policy {policy_name} was not found."
+    elif response.status_code == 202:
+        message = (
+            f"The delete request for Front Door WAF Policy {policy_name} was accepted "
+            f"and the operation will complete asynchronously."
+        )
+    else:
+        message = f"Front Door WAF Policy {policy_name} was deleted successfully."
+
+    return CommandResults(readable_output=message)
+
+
+def firewall_policy_create_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Create a firewall policy. The command only creates the policy resource. To attach the policy to a firewall,
+    run the azure-firewall-policy-attach command.
+
+    Args:
+        client (AzureClient): The Azure client.
+        params (dict[str, Any]): The configuration parameters.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: The created firewall policy.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    policy_name = args.get("policy_name", "")
+
+    policy_data = remove_empty_elements(
+        {
+            "location": args.get("location"),
+            "properties": {
+                "threatIntelMode": args.get("threat_intelligence_mode"),
+                "threatIntelWhitelist": {
+                    "ipAddresses": argToList(args.get("ips")),
+                    "fqdns": argToList(args.get("domains")),
+                },
+                "dnsSettings": {
+                    "servers": argToList(args.get("dns_servers")),
+                    "enableProxy": arg_to_bool_or_none(args.get("enable_proxy")),
+                },
+                "basePolicy": {"id": args.get("base_policy_id")},
+                "sku": {"tier": args.get("tier")},
+            },
+        }
+    )
+    demisto.debug(f"[Azure] Creating firewall policy {policy_name} with {policy_data.keys()=}")
+
+    response = client.firewall_policy_create_or_update(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        policy_name=policy_name,
+        policy_data=policy_data,
+    )
+
+    readable_output = tableToMarkdown(
+        name=f"Successfully created firewall policy {policy_name}",
+        t=response,
+        headers=["name", "id", "location"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.VirtualNetworks.FirewallPolicies",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def firewall_policy_update_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Update a firewall policy. Only the provided arguments are updated, the rest of the policy is left unchanged.
+
+    Args:
+        client (AzureClient): The Azure client.
+        params (dict[str, Any]): The configuration parameters.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: The updated firewall policy.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    policy_name = args.get("policy_name", "")
+
+    policy_data = client.firewall_policy_get(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, policy_name=policy_name
+    )
+    properties = policy_data.get("properties") or {}
+    policy_data["properties"] = properties
+
+    updated_properties = remove_empty_elements(
+        {
+            "threatIntelMode": args.get("threat_intelligence_mode"),
+            "threatIntelWhitelist": {
+                "ipAddresses": argToList(args.get("ips")),
+                "fqdns": argToList(args.get("domains")),
+            },
+            "basePolicy": {"id": args.get("base_policy_id")},
+            "dnsSettings": {
+                "servers": argToList(args.get("dns_servers")),
+                "enableProxy": arg_to_bool_or_none(args.get("enable_proxy")),
+            },
+        }
+    )
+    # Merge one level deep so that sibling fields the user did not provide are preserved, for example
+    # the existing DNS servers when only enable_proxy is updated.
+    for field_name, value in updated_properties.items():
+        if isinstance(value, dict):
+            existing_value = properties.get(field_name) or {}
+            existing_value.update(value)
+            properties[field_name] = existing_value
+        else:
+            properties[field_name] = value
+
+    demisto.debug(f"[Azure] Updating firewall policy {policy_name} with {updated_properties.keys()=}")
+
+    response = client.firewall_policy_create_or_update(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        policy_name=policy_name,
+        policy_data=policy_data,
+    )
+
+    readable_output = tableToMarkdown(
+        name=f"Successfully updated firewall policy {policy_name}",
+        t=response,
+        headers=["name", "id", "location"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.VirtualNetworks.FirewallPolicies",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def firewall_policy_get_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieve a firewall policy.
+
+    Args:
+        client (AzureClient): The Azure client.
+        params (dict[str, Any]): The configuration parameters.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: The requested firewall policy.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    policy_name = args.get("policy_name", "")
+    demisto.debug(f"[Azure] Retrieving firewall policy {policy_name}")
+
+    response = client.firewall_policy_get(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, policy_name=policy_name
+    )
+
+    readable_output = tableToMarkdown(
+        name=f"Firewall policy {policy_name}",
+        t=response,
+        headers=["name", "id", "location"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.VirtualNetworks.FirewallPolicies",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def firewall_policy_delete_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Delete a firewall policy.
+
+    Args:
+        client (AzureClient): The Azure client.
+        params (dict[str, Any]): The configuration parameters.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: A message indicating the result of the delete operation.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    policy_name = args.get("policy_name", "")
+    demisto.debug(f"[Azure] Deleting firewall policy {policy_name}")
+
+    response = client.firewall_policy_delete(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, policy_name=policy_name
+    )
+
+    if response.status_code == 202:
+        message = f"The delete request for firewall policy {policy_name} was accepted and will complete asynchronously."
+    elif response.status_code == 204:
+        message = (
+            f"Firewall policy {policy_name} with resource group {resource_group_name} "
+            f"and subscription ID {subscription_id} does not exist."
+        )
+    else:
+        message = f"Firewall policy {policy_name} was successfully deleted."
+
+    return CommandResults(readable_output=message)
+
+
+def firewall_policy_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    List the firewall policies in a resource group.
+
+    Args:
+        client (AzureClient): The Azure client.
+        params (dict[str, Any]): The configuration parameters.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: The list of firewall policies.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    next_token = args.get("next_token", "")
+    demisto.debug(f"[Azure] Listing firewall policies with {bool(next_token)=}")
+
+    response = client.firewall_policy_list(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, next_token=next_token
+    )
+    policies = response.get("value") or []
+    next_token = response.get("nextLink") or ""
+    demisto.debug(f"[Azure] Retrieved {len(policies)} firewall policies, {bool(next_token)=}")
+
+    if not policies:
+        return CommandResults(readable_output=f"No firewall policies were found in resource group '{resource_group_name}'.")
+
+    # The token is always written, as null on the last page, so a stale token is cleared from the context.
+    outputs = {
+        "Azure.VirtualNetworks.FirewallPolicies(val.id && val.id == obj.id)": policies,
+        "Azure.VirtualNetworks(true)": {"FirewallPoliciesNextToken": next_token or None},
+    }
+
+    readable_output = tableToMarkdown(
+        name="Firewall Policies List",
+        t=policies,
+        headers=["name", "id", "location"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def firewall_policy_attach_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Attach a firewall policy to a firewall. The policy and the firewall must belong to the same tier.
+
+    Args:
+        client (AzureClient): The Azure client.
+        params (dict[str, Any]): The configuration parameters.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: The updated firewall.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    firewall_name = args.get("firewall_name", "")
+    policy_id = args.get("policy_id", "")
+
+    firewall_data = client.firewall_get(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, firewall_name=firewall_name
+    )
+    firewall_properties = firewall_data.get("properties") or {}
+    firewall_properties["firewallPolicy"] = {"id": policy_id}
+    firewall_data["properties"] = firewall_properties
+    demisto.debug(f"[Azure] Attaching firewall policy {policy_id} to firewall {firewall_name}")
+
+    response = client.firewall_update(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        firewall_name=firewall_name,
+        firewall_data=firewall_data,
+    )
+
+    readable_output = tableToMarkdown(
+        name=f"Successfully attached the firewall policy to firewall {firewall_name}",
+        t=response,
+        headers=["name", "id", "location"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.Firewall.Firewalls",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def firewall_policy_detach_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Detach the firewall policy from a firewall. The command detaches the policy from the firewall, but does not
+    delete the policy.
+
+    Args:
+        client (AzureClient): The Azure client.
+        params (dict[str, Any]): The configuration parameters.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: The updated firewall.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    firewall_name = args.get("firewall_name", "")
+
+    firewall_data = client.firewall_get(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, firewall_name=firewall_name
+    )
+    (firewall_data.get("properties") or {}).pop("firewallPolicy", None)
+    demisto.debug(f"[Azure] Detaching the firewall policy from firewall {firewall_name}")
+
+    response = client.firewall_update(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        firewall_name=firewall_name,
+        firewall_data=firewall_data,
+    )
+
+    readable_output = tableToMarkdown(
+        name=f"Successfully detached the firewall policy from firewall {firewall_name}",
+        t=response,
+        headers=["name", "id", "location"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.Firewall.Firewalls",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def test_module(client: AzureClient) -> str:
     """Tests API connectivity and authentication.
 
@@ -5847,6 +7187,21 @@ def main():  # pragma: no cover
             "azure-postgres-config-set-log-retention-period-quick-action": set_postgres_config_command,
             "azure-postgres-config-set-statement-logging-quick-action": set_postgres_config_command,
             "azure-postgres-server-update-ssl-enforcement-quick-action": postgres_server_update_command,
+            "azure-application-gateway-waf-policy-get": waf_policy_get_command,
+            "azure-application-gateway-waf-policies-list": waf_policy_list_command,
+            "azure-application-gateway-waf-policy-create-or-update": waf_policy_create_or_update_command,
+            "azure-application-gateway-waf-policy-delete": waf_policy_delete_command,
+            "azure-front-door-policy-get": waf_front_door_policy_get_command,
+            "azure-front-door-policies-list": waf_front_door_policy_list_command,
+            "azure-front-door-policy-create-or-update": waf_front_door_policy_create_or_update_command,
+            "azure-front-door-policy-delete": waf_front_door_policy_delete_command,
+            "azure-vn-firewall-policy-create": firewall_policy_create_command,
+            "azure-vn-firewall-policy-update": firewall_policy_update_command,
+            "azure-vn-firewall-policy-get": firewall_policy_get_command,
+            "azure-vn-firewall-policy-delete": firewall_policy_delete_command,
+            "azure-vn-firewall-policy-list": firewall_policy_list_command,
+            "azure-firewall-policy-attach": firewall_policy_attach_command,
+            "azure-firewall-policy-detach": firewall_policy_detach_command,
         }
 
         azure_ad_endpoint = params.get("azure_ad_endpoint") or DEFAULT_AZURE_AD_ENDPOINT

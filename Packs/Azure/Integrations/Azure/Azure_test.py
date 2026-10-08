@@ -1,8 +1,11 @@
+import ast
 import json
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import demistomock as demisto
 import pytest
+import yaml
 import Azure
 from Azure import (
     AzureClient,
@@ -59,6 +62,11 @@ from MicrosoftApiModule import Resources
 from requests import Response
 from requests.structures import CaseInsensitiveDict
 from COOCApiModule import CloudTypes
+
+
+INTEGRATION_DIR = Path(__file__).parent
+YML_PATH = INTEGRATION_DIR / "Azure.yml"
+PY_PATH = INTEGRATION_DIR / "Azure.py"
 
 
 @pytest.fixture
@@ -6223,3 +6231,2839 @@ def test_main_auth_reset(mocker):
 
     mock_reset.assert_called_once()
     mock_get_client.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# YAML <-> Python wiring tests
+#
+# These tests read Azure.yml, extract the command names, argument names and
+# output prefixes, and assert that each one is actually wired up in Azure.py.
+#
+# Everything below is derived *statically* (yaml.safe_load + ast.parse). No
+# integration code is imported, instantiated or executed, so these tests make
+# no network calls, read no environment variables and do not depend on the
+# clock, the OS or the execution order of other tests.
+# ---------------------------------------------------------------------------
+
+# The name of the dict inside main() that maps command name -> handler function.
+DISPATCH_DICT_NAME = "commands_with_params_and_args"
+
+# Commands intentionally excluded from these wiring tests.
+#
+# - "*-quick-action" commands and "test-module" are excluded by request.
+# - Commands marked "deprecated: true" in the yml are excluded as well. They are
+#   kept only so existing playbooks keep working, and are no longer expected to
+#   hold their yml and their implementation in step.
+# - The auth/control commands below are routed by explicit if/elif branches in
+#   main() rather than through the dispatch dict, and expose no yml arguments
+#   or context outputs of the kind these tests inspect.
+QUICK_ACTION_SUFFIX = "-quick-action"
+
+# Arguments that are legitimately not read by the command handler.
+#
+# These are consumed earlier in main(), when the AzureClient itself is built by
+# get_azure_client(), and are also resolvable from the integration parameters
+# rather than the command arguments. A handler may therefore never mention them
+# even though the argument is fully wired up and honoured at runtime, so flagging
+# them here would be a false positive rather than a real defect.
+INFRASTRUCTURE_ARGUMENTS = frozenset(
+    {
+        "subscription_id",
+        "resource_group_name",
+    }
+)
+EXCLUDED_COMMANDS = frozenset(
+    {
+        "test-module",
+        "azure-auth-start",
+        "azure-auth-complete",
+        "azure-auth-test",
+        "azure-auth-reset",
+        "azure-generate-login-url",
+    }
+)
+
+
+def is_command_in_scope(command_name: str) -> bool:
+    """Return True if the given command should be covered by the wiring tests.
+
+    This is the single source of truth for test scope - every wiring test below
+    filters through it, so the scope cannot drift between tests.
+
+    Args:
+        command_name (str): The command name as declared in Azure.yml or used as a
+            key in the dispatch dict, for example "azure-storage-container-create".
+
+    Returns:
+        bool: True if the command should be checked by the wiring tests. False for
+            "*-quick-action" commands, "test-module", and the auth/control commands
+            listed in EXCLUDED_COMMANDS.
+    """
+    if command_name in EXCLUDED_COMMANDS:
+        return False
+    return not command_name.endswith(QUICK_ACTION_SUFFIX)
+
+
+def load_raw_yml_commands() -> list[dict]:
+    """Load Azure.yml and return its command list exactly as declared.
+
+    Use the ``raw_yml_commands`` fixture rather than calling this directly, so Azure.yml
+    is read and parsed only once for the whole module.
+
+    Returns:
+        list[dict]: Every command definition in the yml, with no filtering applied.
+    """
+    with YML_PATH.open(encoding="utf-8") as yml_file:
+        yml_content = yaml.safe_load(yml_file)
+
+    return yml_content.get("script", {}).get("commands") or []
+
+
+def select_deprecated_command_names(raw_commands: list[dict]) -> set[str]:
+    """Return the names of the commands marked ``deprecated: true``.
+
+    Deprecated commands are excluded from the wiring tests, but they are still routed
+    in main(), so the names are needed to keep test_dispatch_commands_exist_in_yml from
+    reporting them as undocumented.
+
+    Args:
+        raw_commands (list[dict]): The unfiltered yml command list.
+
+    Returns:
+        set[str]: The names of every command whose yml definition sets
+            ``deprecated: true`` at the command level.
+    """
+    return {command["name"] for command in raw_commands if command.get("deprecated") is True}
+
+
+def select_in_scope_commands(raw_commands: list[dict]) -> dict[str, dict]:
+    """Return the in-scope commands keyed by command name.
+
+    Args:
+        raw_commands (list[dict]): The unfiltered yml command list.
+
+    Returns:
+        dict[str, dict]: Mapping of command name to the raw yml command definition
+            (including its "arguments" and "outputs" entries). Out-of-scope commands are
+            filtered out via is_command_in_scope, and commands marked
+            ``deprecated: true`` are dropped as well, since a deprecated command is no
+            longer expected to keep its yml and its implementation in step.
+    """
+    return {
+        command["name"]: command
+        for command in raw_commands
+        if is_command_in_scope(command.get("name", "")) and command.get("deprecated") is not True
+    }
+
+
+def visible_arguments(command: dict) -> list[dict]:
+    """Return a command's declared arguments, excluding the hidden ones.
+
+    Arguments marked ``hidden: true`` are not offered to the user, so they are outside
+    the yml <-> py contract these tests enforce in either direction.
+
+    Args:
+        command (dict): A raw yml command definition.
+
+    Returns:
+        list[dict]: The command's argument definitions that are not marked hidden.
+    """
+    return [argument for argument in command.get("arguments") or [] if argument.get("hidden") is not True]
+
+
+def load_py_source_and_tree() -> tuple[str, ast.Module]:
+    """Read Azure.py and return its source text along with the parsed AST.
+
+    Args:
+        None. The Azure.py path is derived from this test file's own location.
+
+    Returns:
+        tuple[str, ast.Module]: The raw source text of Azure.py and its parsed AST.
+            The module is only parsed, never imported or executed.
+    """
+    source = PY_PATH.read_text(encoding="utf-8")
+    return source, ast.parse(source)
+
+
+def extract_dispatch_map(tree: ast.Module) -> dict[str, str]:
+    """Extract the command -> handler-function-name mapping from main().
+
+    The dispatch dict is a local variable inside main(), which is marked
+    "# pragma: no cover" and cannot be imported or safely executed, so it is
+    lifted straight out of the AST instead.
+
+    Args:
+        tree (ast.Module): The parsed AST of Azure.py.
+
+    Returns:
+        dict[str, str]: Mapping of command name to the name of the handler function
+            it is routed to, for example
+            {"azure-storage-container-create": "storage_container_create_command"}.
+
+    Raises:
+        AssertionError: If the dispatch dict cannot be found in Azure.py, if any of its
+            entries is in a shape this extractor cannot read (the offending entries are
+            named in the message), or if it is found but yields no command -> handler
+            pairs at all. In every case the dict shape has changed and this helper needs
+            updating.
+    """
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Assign):
+            continue
+        targets = [t.id for t in node.targets if isinstance(t, ast.Name)]
+        if DISPATCH_DICT_NAME not in targets or not isinstance(node.value, ast.Dict):
+            continue
+
+        dispatch: dict[str, str] = {}
+        unreadable: list[str] = []
+        for key, value in zip(node.value.keys, node.value.values):
+            if isinstance(key, ast.Constant) and isinstance(key.value, str) and isinstance(value, ast.Name):
+                dispatch[key.value] = value.id
+            else:
+                # A dict-unpacking entry (**other) has no key node at all.
+                key_source = "**" if key is None else ast.unparse(key)
+                unreadable.append(f"{key_source}: {ast.unparse(value)}")
+
+        # Guard against the dict being found but containing entries this extractor
+        # cannot read (e.g. values changed to lambdas or partials). Dropping them
+        # silently would report their commands as "not routed", wrongly blaming the
+        # integration instead of the extractor, so name them explicitly instead.
+        assert not unreadable, (
+            f"Found '{DISPATCH_DICT_NAME}' in Azure.py but could not read the following "
+            "entries, so the commands they route would be wrongly reported as unrouted. "
+            "The dict shape has changed and this test helper needs updating:\n" + "\n".join(unreadable)
+        )
+        assert dispatch, (
+            f"Found '{DISPATCH_DICT_NAME}' in Azure.py but could not extract any "
+            "command -> handler pairs from it. The dict shape has changed and this "
+            "test helper needs updating."
+        )
+        return dispatch
+
+    raise AssertionError(f"Could not find the '{DISPATCH_DICT_NAME}' dict inside Azure.py")
+
+
+def build_symbol_index(tree: ast.Module) -> dict[str, ast.FunctionDef]:
+    """Index module-level functions and AzureClient methods by name.
+
+    Client methods are indexed under their bare name so that a handler calling
+    ``client.storage_account_update_request(...)`` can be resolved.
+
+    Args:
+        tree (ast.Module): The parsed AST of Azure.py.
+
+    Returns:
+        dict[str, ast.FunctionDef]: Mapping of function/method name to its AST node.
+            Module-level functions take precedence over class methods of the same
+            name, since a bare call in a handler resolves to the module-level one.
+    """
+    index: dict[str, ast.FunctionDef] = {}
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef):
+            index[node.name] = node
+        elif isinstance(node, ast.ClassDef):
+            for child in node.body:
+                if isinstance(child, ast.FunctionDef):
+                    index.setdefault(child.name, child)
+    return index
+
+
+def collect_called_names(func_node: ast.FunctionDef) -> set[str]:
+    """Return the names of every function/method directly called by func_node.
+
+    Args:
+        func_node (ast.FunctionDef): The AST node of the function to inspect.
+
+    Returns:
+        set[str]: The bare names of all called callables. Attribute calls contribute
+            only the final attribute, so ``client.get_rule(...)`` yields "get_rule",
+            which is what allows AzureClient methods to be looked up in the symbol index.
+    """
+    called: set[str] = set()
+    for node in ast.walk(func_node):
+        if not isinstance(node, ast.Call):
+            continue
+        func = node.func
+        if isinstance(func, ast.Name):
+            called.add(func.id)
+        elif isinstance(func, ast.Attribute):
+            called.add(func.attr)
+    return called
+
+
+def collect_string_constants(func_node: ast.FunctionDef) -> set[str]:
+    """Return every string literal appearing anywhere inside func_node.
+
+    Args:
+        func_node (ast.FunctionDef): The AST node of the function to inspect.
+
+    Returns:
+        set[str]: All string constants in the function body, including argument keys
+            such as "account_name" and docstring text. Docstrings may add harmless
+            extra entries; they can only mask a failure, never invent one.
+    """
+    return {node.value for node in ast.walk(func_node) if isinstance(node, ast.Constant) and isinstance(node.value, str)}
+
+
+def collect_reachable_strings(handler_name: str, symbol_index: dict[str, ast.FunctionDef]) -> set[str]:
+    """Collect string literals in a handler plus those in its direct callees.
+
+    One level of call following is required for correctness: several handlers
+    (for example storage_account_update_command) hand the raw ``args`` dict to an
+    AzureClient method, and it is that method - not the handler - which reads the
+    individual argument keys.
+
+    Args:
+        handler_name (str): Name of the command handler function to start from.
+        symbol_index (dict[str, ast.FunctionDef]): Index produced by build_symbol_index,
+            used to resolve both the handler and the functions it calls.
+
+    Returns:
+        set[str]: Union of the string literals in the handler and in every function it
+            calls directly (one level deep). Returns an empty set if the handler name is
+            not present in the index.
+    """
+    handler = symbol_index.get(handler_name)
+    if handler is None:
+        return set()
+
+    strings = collect_string_constants(handler)
+    for callee_name in collect_called_names(handler):
+        callee = symbol_index.get(callee_name)
+        if callee is not None and callee is not handler:
+            strings |= collect_string_constants(callee)
+    return strings
+
+
+def collect_read_argument_names(func_node: ast.FunctionDef) -> set[str]:
+    """Return the command-argument names a function reads out of its ``args`` mapping.
+
+    Unlike collect_string_constants, which returns every string literal, this looks only
+    at the three shapes Azure.py uses to read a command argument: ``args.get("name")``,
+    ``args["name"]`` and ``"name" in args``. That precision is what makes it safe to
+    assert in the yml -> py direction: an unrelated literal such as a URL fragment or a
+    response key can never be mistaken for a command argument.
+
+    Args:
+        func_node (ast.FunctionDef): The AST node of the function to inspect.
+
+    Returns:
+        set[str]: The argument names read from the ``args`` mapping. Dynamic reads such
+            as ``args.get(key)`` contribute nothing, since the name is not a literal.
+    """
+    read: set[str] = set()
+    for node in ast.walk(func_node):
+        # args.get("name") / args.get("name", default)
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "get"
+            and isinstance(node.func.value, ast.Name)
+            and node.func.value.id == "args"
+            and node.args
+            and isinstance(node.args[0], ast.Constant)
+            and isinstance(node.args[0].value, str)
+        ):
+            read.add(node.args[0].value)
+
+        # args["name"]
+        elif (
+            isinstance(node, ast.Subscript)
+            and isinstance(node.value, ast.Name)
+            and node.value.id == "args"
+            and isinstance(node.slice, ast.Constant)
+            and isinstance(node.slice.value, str)
+        ):
+            read.add(node.slice.value)
+
+        # "name" in args
+        elif isinstance(node, ast.Compare) and isinstance(node.left, ast.Constant) and isinstance(node.left.value, str):
+            for operator, comparator in zip(node.ops, node.comparators):
+                if isinstance(operator, ast.In) and isinstance(comparator, ast.Name) and comparator.id == "args":
+                    read.add(node.left.value)
+
+    return read
+
+
+def collect_reachable_read_arguments(handler_name: str, symbol_index: dict[str, ast.FunctionDef]) -> set[str]:
+    """Collect the argument names read by a handler and by its direct callees.
+
+    Mirrors collect_reachable_strings, but uses collect_read_argument_names so that only
+    genuine ``args`` reads are returned. One level of call following is required for the
+    same reason: several handlers pass the raw ``args`` dict to an AzureClient method,
+    and it is that method which reads the individual keys.
+
+    Args:
+        handler_name (str): Name of the command handler function to start from.
+        symbol_index (dict[str, ast.FunctionDef]): Index produced by build_symbol_index.
+
+    Returns:
+        set[str]: Argument names read by the handler or by any function it calls directly.
+            Empty if the handler name is not present in the index.
+    """
+    handler = symbol_index.get(handler_name)
+    if handler is None:
+        return set()
+
+    read = collect_read_argument_names(handler)
+    for callee_name in collect_called_names(handler):
+        callee = symbol_index.get(callee_name)
+        if callee is not None and callee is not handler:
+            read |= collect_read_argument_names(callee)
+    return read
+
+
+def extract_fallback_prefix(handler_name: str, symbol_index: dict[str, ast.FunctionDef]) -> set[str]:
+    """Return the output prefixes a handler can produce, ignoring the lookup map.
+
+    Covers both shapes used in Azure.py: the ``COMMANDS_TO_OUTPUTS_PREFIX.get(command,
+    "<fallback>")`` pattern and a prefix passed directly as ``outputs_prefix=``.
+
+    Args:
+        handler_name (str): Name of the command handler function to inspect.
+        symbol_index (dict[str, ast.FunctionDef]): Index produced by build_symbol_index.
+
+    Returns:
+        set[str]: Every context prefix the handler may write to, for example
+            {"Azure.VirtualNetworks.SecurityRules"}. Empty if the handler is unknown or
+            builds its context another way, such as returning a plain outputs dict.
+    """
+    handler = symbol_index.get(handler_name)
+    if handler is None:
+        return set()
+
+    prefixes: set[str] = set()
+    for node in ast.walk(handler):
+        if not isinstance(node, ast.Call):
+            continue
+
+        # COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Something")
+        func = node.func
+        if (
+            isinstance(func, ast.Attribute)
+            and func.attr == "get"
+            and isinstance(func.value, ast.Name)
+            and func.value.id == "COMMANDS_TO_OUTPUTS_PREFIX"
+            and len(node.args) == 2
+            and isinstance(node.args[1], ast.Constant)
+            and isinstance(node.args[1].value, str)
+        ):
+            prefixes.add(node.args[1].value)
+
+        # CommandResults(outputs_prefix="Azure.Something", ...)
+        for keyword in node.keywords:
+            if (
+                keyword.arg == "outputs_prefix"
+                and isinstance(keyword.value, ast.Constant)
+                and isinstance(keyword.value.value, str)
+            ):
+                prefixes.add(keyword.value.value)
+
+    return prefixes
+
+
+@pytest.fixture(scope="module")
+def raw_yml_commands() -> list[dict]:
+    """Every command declared in Azure.yml, unfiltered.
+
+    Azure.yml is read and parsed here once per module, and every other yml-derived
+    fixture is built from this one rather than re-reading the file.
+    """
+    return load_raw_yml_commands()
+
+
+@pytest.fixture(scope="module")
+def yml_commands(raw_yml_commands: list[dict]) -> dict[str, dict]:
+    """The in-scope, non-deprecated commands declared in Azure.yml, keyed by command name."""
+    return select_in_scope_commands(raw_yml_commands)
+
+
+@pytest.fixture(scope="module")
+def deprecated_commands(raw_yml_commands: list[dict]) -> set[str]:
+    """The names of the commands marked deprecated in Azure.yml."""
+    return select_deprecated_command_names(raw_yml_commands)
+
+
+@pytest.fixture(scope="module")
+def py_tree() -> ast.Module:
+    """The parsed AST of Azure.py."""
+    _, tree = load_py_source_and_tree()
+    return tree
+
+
+@pytest.fixture(scope="module")
+def dispatch_map(py_tree: ast.Module) -> dict[str, str]:
+    """Mapping of command name -> handler function name, lifted from main()."""
+    return extract_dispatch_map(py_tree)
+
+
+@pytest.fixture(scope="module")
+def symbol_index(py_tree: ast.Module) -> dict[str, ast.FunctionDef]:
+    """Index of module-level functions and AzureClient methods by name."""
+    return build_symbol_index(py_tree)
+
+
+# ---------------------------------------------------------------------------
+# The wiring tests themselves: Azure.yml checked against Azure.py.
+# ---------------------------------------------------------------------------
+
+
+def test_py_read_arguments_are_declared_in_yml(yml_commands, raw_yml_commands, dispatch_map, symbol_index):
+    """
+    Given:
+        - yml_commands (dict[str, dict]): The arguments declared for each in-scope command in Azure.yml.
+        - raw_yml_commands (list[dict]): Every command in the yml, used to resolve arguments
+          declared only by a deprecated sibling that shares a handler.
+        - dispatch_map (dict[str, str]): The handler each command is routed to.
+        - symbol_index (dict[str, ast.FunctionDef]): Used to resolve the handler and its direct callees.
+    When:
+        - Every argument the handler reads out of its args mapping is looked up in the
+          command's declared yml arguments.
+    Then:
+        - No argument is consumed by the code without being documented, so a user can
+          discover every argument the command honours. This is the reverse of
+          test_command_arguments_are_read_by_handler, which checks the yml -> py
+          direction.
+        - Infrastructure arguments resolvable from the integration parameters are exempt,
+          matching the exemption applied in the other direction. An argument declared
+          ``hidden: true`` still counts as declared, so reading it is not a failure.
+        - When several commands share one handler, an argument declared by any of them
+          counts as declared for all of them, including by a deprecated sibling. A
+          shared handler routinely reads a renamed argument on behalf of its deprecated
+          predecessor - for example update_security_rule_command reads "action" for
+          azure-nsg-security-rule-update, while its replacement declares "access" -
+          and blaming the current command for that alias would be a false positive.
+    """
+    # Given: a cache so each handler's reachable argument reads are computed once
+    reachable_reads_cache: dict[str, set[str]] = {}
+    undeclared_arguments: list[str] = []
+
+    # Given: every argument name declared by any command sharing the same handler.
+    # This spans the raw yml rather than the filtered map, so an argument kept only for
+    # a deprecated sibling still counts as declared for the handler they share.
+    declared_per_handler: dict[str, set[str]] = {}
+    for command in raw_yml_commands:
+        handler_name = dispatch_map.get(command.get("name", ""))
+        if handler_name is None:
+            continue
+        declared_per_handler.setdefault(handler_name, set()).update(
+            argument.get("name") for argument in command.get("arguments") or []
+        )
+
+    for command_name in sorted(yml_commands):
+        handler_name = dispatch_map.get(command_name)
+        if handler_name is None:
+            continue  # covered by test_yml_commands_are_wired_in_dispatch
+
+        if handler_name not in reachable_reads_cache:
+            reachable_reads_cache[handler_name] = collect_reachable_read_arguments(handler_name, symbol_index)
+
+        declared = declared_per_handler.get(handler_name, set())
+
+        # When: checking each argument the code reads against the declared ones
+        for argument_name in sorted(reachable_reads_cache[handler_name]):
+            if argument_name in declared or argument_name in INFRASTRUCTURE_ARGUMENTS:
+                continue
+            undeclared_arguments.append(f"{command_name}: '{argument_name}' (handler: {handler_name})")
+
+    # Then: every argument the code consumes is documented in the yml
+    assert not undeclared_arguments, "Arguments read by the command handler but not declared in Azure.yml:\n" + "\n".join(
+        undeclared_arguments
+    )
+
+
+def test_yml_commands_are_wired_in_dispatch(yml_commands, dispatch_map, symbol_index):
+    """
+    Given:
+        - yml_commands (dict[str, dict]): The in-scope commands declared in Azure.yml.
+        - dispatch_map (dict[str, str]): The command dispatch dict extracted from main() in Azure.py.
+        - symbol_index (dict[str, ast.FunctionDef]): The index of every function and method defined in Azure.py.
+    When:
+        - Each yml command name is looked up in the dispatch dict, and the handler
+          it points to is looked up in the symbol index.
+    Then:
+        - Every command resolves to a handler, so none would raise
+          NotImplementedError at runtime.
+        - Every resolved handler actually exists as a function in Azure.py.
+    """
+    # Given: the yml command names and the dispatch table
+    yml_command_names = set(yml_commands)
+
+    # When: resolving each command to its handler, then confirming that handler is
+    # a real function in Azure.py rather than a stale or dangling name
+    unrouted = sorted(name for name in yml_command_names if name not in dispatch_map)
+    missing_handlers = sorted(
+        f"{name} -> {dispatch_map[name]}"
+        for name in yml_command_names
+        if name in dispatch_map and dispatch_map[name] not in symbol_index
+    )
+
+    # Then: every command is routed to a handler that exists
+    assert not unrouted, f"Commands declared in Azure.yml but not routed in main(): {unrouted}"
+    assert not missing_handlers, f"Commands routed to functions that do not exist in Azure.py: {missing_handlers}"
+
+
+def test_dispatch_commands_exist_in_yml(yml_commands, dispatch_map, deprecated_commands):
+    """
+    Given:
+        - The command dispatch dict extracted from main() in Azure.py.
+        - The in-scope, non-deprecated commands declared in Azure.yml.
+        - deprecated_commands (set[str]): The commands the yml marks deprecated.
+    When:
+        - Each in-scope dispatch key is looked up in the yml.
+    Then:
+        - No dispatch entry is orphaned, i.e. every routed command is documented.
+        - Deprecated commands are exempt: they are still routed in main() so that
+          existing playbooks keep working, but they are intentionally absent from the
+          filtered yml command map.
+    """
+    # Given: the in-scope dispatch keys, excluding the deprecated ones still routed
+    in_scope_dispatch = {name for name in dispatch_map if is_command_in_scope(name) and name not in deprecated_commands}
+
+    # When: checking them against the declared yml commands
+    undocumented = sorted(in_scope_dispatch - set(yml_commands))
+
+    # Then: every routed command is declared in the yml
+    assert not undocumented, f"Commands routed in main() but not declared in Azure.yml: {undocumented}"
+
+
+def test_command_arguments_are_read_by_handler(yml_commands, dispatch_map, symbol_index):
+    """
+    Given:
+        - yml_commands (dict[str, dict]): The arguments declared for each in-scope command in Azure.yml.
+        - dispatch_map (dict[str, str]): The handler each command is routed to.
+        - symbol_index (dict[str, ast.FunctionDef]): Used to resolve the handler and its direct callees.
+    When:
+        - Each argument name is searched for as a string literal in the handler
+          and in any AzureClient method or helper it calls directly.
+    Then:
+        - Every documented argument is read somewhere on the command's code path,
+          proving no advertised argument is silently ignored.
+        - Infrastructure arguments consumed before the handler runs are exempt, as are
+          arguments marked ``hidden: true``, which are not offered to the user.
+    """
+    # Given: a cache so each handler's reachable strings are computed once
+    reachable_strings_cache: dict[str, set[str]] = {}
+    unread_arguments: list[str] = []
+
+    for command_name, command in sorted(yml_commands.items()):
+        handler_name = dispatch_map.get(command_name)
+        if handler_name is None:
+            continue  # covered by test_yml_commands_are_wired_in_dispatch
+
+        if handler_name not in reachable_strings_cache:
+            reachable_strings_cache[handler_name] = collect_reachable_strings(handler_name, symbol_index)
+        reachable_strings = reachable_strings_cache[handler_name]
+
+        # When: checking each declared argument against the reachable literals
+        for argument in visible_arguments(command):
+            argument_name = argument.get("name")
+            if not argument_name or argument_name in INFRASTRUCTURE_ARGUMENTS:
+                continue
+            if argument_name not in reachable_strings:
+                unread_arguments.append(f"{command_name}: '{argument_name}' (handler: {handler_name})")
+
+    # Then: no documented argument is ignored by the code serving the command
+    assert not unread_arguments, "Arguments declared in Azure.yml but never read by the command handler:\n" + "\n".join(
+        unread_arguments
+    )
+
+
+def test_command_output_prefixes_are_wired(yml_commands, dispatch_map, symbol_index):
+    """
+    Given:
+        - The contextPath outputs declared for each in-scope command in Azure.yml.
+        - The output prefixes produced by the command's handler, either via the
+          COMMANDS_TO_OUTPUTS_PREFIX map or a fallback/literal outputs_prefix.
+    When:
+        - The yml context paths are compared against the prefixes in the code.
+    Then:
+        - Every command whose handler declares a prefix writes context under a
+          path the yml actually documents.
+    """
+    # Given: the explicit command -> prefix lookup used by most handlers
+    from Azure import COMMANDS_TO_OUTPUTS_PREFIX
+
+    mismatches: list[str] = []
+
+    for command_name, command in sorted(yml_commands.items()):
+        handler_name = dispatch_map.get(command_name)
+        outputs = command.get("outputs") or []
+        if handler_name is None or not outputs:
+            continue
+
+        context_paths = [output.get("contextPath", "") for output in outputs]
+
+        # When: resolving the prefix the code will actually use
+        mapped_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command_name)
+        candidate_prefixes = {mapped_prefix} if mapped_prefix else extract_fallback_prefix(handler_name, symbol_index)
+        if not candidate_prefixes:
+            continue  # handler builds context another way, e.g. a plain outputs dict
+
+        # Then: at least one produced prefix must match a documented context path
+        if not any(path == prefix or path.startswith(f"{prefix}.") for prefix in candidate_prefixes for path in context_paths):
+            mismatches.append(
+                f"{command_name}: code writes to {sorted(candidate_prefixes)} "
+                f"but Azure.yml documents "
+                f"{sorted({path.split('.')[0] + '.' + path.split('.')[1] for path in context_paths if '.' in path})}"
+            )
+
+    assert not mismatches, "Output prefixes in Azure.py do not match the contextPath declared in Azure.yml:\n" + "\n".join(
+        mismatches
+    )
+
+
+# ---------------------------------------------------------------------------
+# Unit tests for the helpers above.
+#
+# These guard the extractors themselves, so that a helper which silently stops
+# reading Azure.py is reported as a helper bug rather than surfacing as a
+# misleading failure - or a vacuous pass - in the wiring tests above.
+# ---------------------------------------------------------------------------
+
+
+def test_select_in_scope_commands_is_not_vacuous(yml_commands, raw_yml_commands, deprecated_commands):
+    """
+    Given:
+        - yml_commands (dict[str, dict]): The result of select_in_scope_commands() over the
+          real Azure.yml, which filters out both out-of-scope and deprecated commands.
+        - raw_yml_commands (list[dict]): The same yml before any filtering.
+        - deprecated_commands (set[str]): The names the yml marks deprecated.
+    When:
+        - The loaded map is compared against the raw command list in Azure.yml.
+    Then:
+        - The map is not empty, so the wiring tests below cannot pass vacuously by
+          silently iterating over nothing.
+        - The out-of-scope and deprecated commands that really exist in the yml were
+          dropped, and everything else was kept, proving both filters are applied.
+        - The raw yml definitions are preserved intact, so the arguments and outputs
+          the wiring tests inspect are present rather than skipped over.
+    """
+    # Given: the raw, unfiltered command list straight from the yml
+    raw_names = {command["name"] for command in raw_yml_commands}
+    out_of_scope_names = {name for name in raw_names if not is_command_in_scope(name)}
+
+    # When / Then: the selector returned something for the other tests to work on
+    assert yml_commands, f"select_in_scope_commands() returned no commands - is {YML_PATH.name} readable and non-empty?"
+
+    # Then: both filters kept the right commands and dropped the wrong ones
+    assert out_of_scope_names, (
+        "Azure.yml no longer declares any out-of-scope commands, so this test can no "
+        "longer prove that is_command_in_scope filtering is applied."
+    )
+    assert deprecated_commands, (
+        "Azure.yml no longer declares any deprecated commands, so this test can no "
+        "longer prove that deprecated commands are filtered out."
+    )
+    assert set(yml_commands) == raw_names - out_of_scope_names - deprecated_commands
+
+    # Then: the definitions kept their arguments and outputs, which the wiring tests
+    # below silently skip when absent
+    assert any(
+        command.get("arguments") for command in yml_commands.values()
+    ), "No loaded command declares 'arguments' - test_command_arguments_are_read_by_handler would pass vacuously."
+    assert any(
+        command.get("outputs") for command in yml_commands.values()
+    ), "No loaded command declares 'outputs' - test_command_output_prefixes_are_wired would pass vacuously."
+
+
+def test_visible_arguments_drops_only_hidden_arguments():
+    """
+    Given:
+        - A command declaring a plain argument, one explicitly marked hidden, and one
+          explicitly marked not hidden.
+    When:
+        - visible_arguments is called on the command.
+    Then:
+        - Only the hidden argument is dropped. An argument the user cannot supply is
+          outside the yml <-> py contract, while everything else must still be checked.
+        - The surviving definitions are returned unchanged, so callers can still read
+          their names.
+    """
+    # Given: a command mixing hidden and visible arguments
+    command = {
+        "name": "azure-disk-update",
+        "arguments": [
+            {"name": "disk_name"},
+            {"name": "internal_token", "hidden": True},
+            {"name": "public_network_access", "hidden": False},
+        ],
+    }
+
+    # When: filtering out the hidden arguments
+    visible = visible_arguments(command)
+
+    # Then: only the hidden one is gone, and the rest are untouched
+    assert [argument["name"] for argument in visible] == ["disk_name", "public_network_access"]
+
+
+def test_visible_arguments_handles_command_without_arguments():
+    """
+    Given:
+        - A command that declares no arguments at all, such as a simple list command.
+    When:
+        - visible_arguments is called on it.
+    Then:
+        - An empty list is returned rather than raising, so the wiring tests simply
+          find nothing to check for that command.
+    """
+    # Given / When / Then: a command with no arguments key yields nothing
+    assert visible_arguments({"name": "azure-resource-group-list"}) == []
+
+
+def test_extract_dispatch_map_reads_command_to_handler_pairs():
+    """
+    Given:
+        - A parsed main() containing a dispatch dict of the shape Azure.py uses,
+          mapping string command names to bare handler function names.
+    When:
+        - extract_dispatch_map is called on the tree.
+    Then:
+        - Every command name is mapped to the exact handler identifier it points to,
+          which is the contract the wiring tests below depend on.
+    """
+    # Given: a minimal main() holding a well-formed dispatch dict
+    source = (
+        "def main():\n"
+        f"    {DISPATCH_DICT_NAME} = {{\n"
+        "        'azure-storage-account-update': storage_account_update_command,\n"
+        "        'azure-disk-update': disk_update_command,\n"
+        "    }\n"
+    )
+
+    # When: lifting the dispatch table out of the AST
+    dispatch = extract_dispatch_map(ast.parse(source))
+
+    # Then: both commands resolve to their handler names
+    assert dispatch == {
+        "azure-storage-account-update": "storage_account_update_command",
+        "azure-disk-update": "disk_update_command",
+    }
+
+
+def test_extract_dispatch_map_raises_naming_entries_it_cannot_read():
+    """
+    Given:
+        - A dispatch dict mixing a readable "command": handler entry with entries this
+          extractor does not support: a non-string key and a value that is a call
+          expression rather than a bare function name.
+    When:
+        - extract_dispatch_map is called on the tree.
+    Then:
+        - An AssertionError is raised rather than the unsupported entries being dropped,
+          so their commands are never wrongly reported as unrouted.
+        - The message names every offending entry, pointing straight at what to fix.
+    """
+    # Given: a dispatch dict containing entry shapes the extractor cannot read
+    source = (
+        "def main():\n"
+        f"    {DISPATCH_DICT_NAME} = {{\n"
+        "        'azure-disk-update': disk_update_command,\n"
+        "        SOME_CONSTANT: acr_update_command,\n"
+        "        'azure-acr-update': partial(acr_update_command),\n"
+        "    }\n"
+    )
+
+    # When: lifting the dispatch table out of the AST
+    with pytest.raises(AssertionError) as error:
+        extract_dispatch_map(ast.parse(source))
+
+    # Then: both unreadable entries are named, and the readable one is not blamed
+    message = str(error.value)
+    assert "SOME_CONSTANT: acr_update_command" in message
+    assert "'azure-acr-update': partial(acr_update_command)" in message
+    assert "disk_update_command" not in message.split("updating:")[-1]
+
+
+def test_extract_dispatch_map_raises_when_dict_is_missing():
+    """
+    Given:
+        - A parsed main() that contains no dispatch dict at all, simulating the dict
+          being renamed or removed from Azure.py.
+    When:
+        - extract_dispatch_map is called on the tree.
+    Then:
+        - An AssertionError naming the expected dict is raised, so the wiring tests
+          fail loudly instead of reporting every command as unrouted.
+    """
+    # Given: a main() with no dispatch dict
+    source = "def main():\n    some_other_mapping = {'azure-disk-update': disk_update_command}\n"
+
+    # When / Then: the missing dict is reported explicitly
+    with pytest.raises(AssertionError, match=DISPATCH_DICT_NAME):
+        extract_dispatch_map(ast.parse(source))
+
+
+def test_extract_dispatch_map_raises_when_dict_is_empty():
+    """
+    Given:
+        - A dispatch dict that exists but is empty, simulating the routing being moved
+          out of the dict entirely.
+    When:
+        - extract_dispatch_map is called on the tree.
+    Then:
+        - An AssertionError is raised rather than an empty map being returned, so the
+          failure blames this helper instead of wrongly reporting every command in
+          Azure.yml as unrouted.
+    """
+    # Given: a main() whose dispatch dict has no entries
+    source = f"def main():\n    {DISPATCH_DICT_NAME} = {{}}\n"
+
+    # When / Then: the empty dict is reported as a helper problem
+    with pytest.raises(AssertionError, match="could not extract any"):
+        extract_dispatch_map(ast.parse(source))
+
+
+def test_build_symbol_index_indexes_module_functions_and_client_methods():
+    """
+    Given:
+        - A module defining a top-level handler function alongside a client class whose
+          methods are called as client.<method>(...) by that handler.
+    When:
+        - build_symbol_index is called on the tree.
+    Then:
+        - Both the module-level function and the class methods are indexed under their
+          bare names, which is what lets an attribute call be resolved back to its
+          definition.
+        - Each entry is the FunctionDef node itself, since callers walk its body.
+    """
+    # Given: a module with a top-level function and a client class
+    source = (
+        "def disk_update_command(client, params, args):\n"
+        "    pass\n"
+        "\n"
+        "class AzureClient:\n"
+        "    def disk_update_request(self, args):\n"
+        "        pass\n"
+        "\n"
+        "    def storage_account_update_request(self, args):\n"
+        "        pass\n"
+    )
+
+    # When: indexing the module
+    index = build_symbol_index(ast.parse(source))
+
+    # Then: both kinds of definition are reachable by bare name, as AST nodes
+    assert set(index) == {"disk_update_command", "disk_update_request", "storage_account_update_request"}
+    assert all(isinstance(node, ast.FunctionDef) for node in index.values())
+    assert index["disk_update_command"].name == "disk_update_command"
+
+
+def test_build_symbol_index_prefers_module_function_over_class_method():
+    """
+    Given:
+        - A module where a top-level function and a class method share the same name.
+    When:
+        - build_symbol_index is called on the tree.
+    Then:
+        - The module-level function wins, matching how Python resolves the bare call
+          format_rule(...) inside a handler. Indexing the method instead would make the
+          wiring tests inspect the wrong body.
+    """
+    # Given: a name defined both at module level and as a class method
+    source = (
+        "def format_rule(rule):\n"
+        "    module_level_marker = 1\n"
+        "\n"
+        "class AzureClient:\n"
+        "    def format_rule(self, rule):\n"
+        "        class_level_marker = 2\n"
+    )
+
+    # When: indexing the module
+    index = build_symbol_index(ast.parse(source))
+
+    # Then: the module-level definition is the one that was kept
+    assert "module_level_marker" in {
+        target.id
+        for node in ast.walk(index["format_rule"])
+        if isinstance(node, ast.Assign)
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    }
+
+
+def test_build_symbol_index_ignores_nested_functions():
+    """
+    Given:
+        - A module-level function containing a nested inner function.
+    When:
+        - build_symbol_index is called on the tree.
+    Then:
+        - Only the outer function is indexed. Nested helpers are not callable by bare
+          name from a handler, so indexing them could resolve a call to a definition
+          that is not actually in scope at the call site.
+    """
+    # Given: a function with a closure defined inside it
+    source = "def disk_update_command(client, args):\n    def inner_helper():\n        pass\n\n    return inner_helper()\n"
+
+    # When: indexing the module
+    index = build_symbol_index(ast.parse(source))
+
+    # Then: the nested definition was not indexed
+    assert set(index) == {"disk_update_command"}
+
+
+def test_build_symbol_index_returns_empty_for_module_without_functions():
+    """
+    Given:
+        - A module that defines no functions at all, only constants.
+    When:
+        - build_symbol_index is called on the tree.
+    Then:
+        - An empty index is returned without raising, since this helper reports what it
+          finds and leaves the "handler does not exist" verdict to the wiring tests.
+    """
+    # Given: a module with no function definitions
+    source = "API_VERSION = '2023-01-01'\nCOMMANDS_TO_OUTPUTS_PREFIX = {}\n"
+
+    # When: indexing the module
+    index = build_symbol_index(ast.parse(source))
+
+    # Then: nothing is indexed, and no error is raised
+    assert index == {}
+
+
+def test_collect_called_names_collects_bare_and_attribute_calls():
+    """
+    Given:
+        - A handler that calls a module-level helper by bare name and an AzureClient
+          method through the client attribute, which are the two call shapes used
+          throughout Azure.py.
+    When:
+        - collect_called_names is called on the handler.
+    Then:
+        - Both are returned, with the attribute call reduced to its final attribute.
+          That reduction is what lets a client.<method>(...) call be looked up in the
+          symbol index, which indexes methods under their bare names.
+    """
+    # Given: a handler using both call shapes
+    source = (
+        "def disk_update_command(client, params, args):\n"
+        "    response = client.disk_update_request(args)\n"
+        "    return format_rule(response)\n"
+    )
+    handler = ast.parse(source).body[0]
+
+    # When: collecting the names it calls
+    called = collect_called_names(handler)
+
+    # Then: the bare call and the reduced attribute call are both present
+    assert called == {"disk_update_request", "format_rule"}
+
+
+def test_collect_called_names_reduces_chained_calls_to_final_attribute():
+    """
+    Given:
+        - A function using the chained attribute calls that Azure.py really makes, such
+          as self.ms_client.http_request(...) and urllib.parse.urljoin(...).
+    When:
+        - collect_called_names is called on it.
+    Then:
+        - Each call contributes only its final attribute, and the intermediate
+          attributes are not reported as calls. Treating an intermediate such as
+          'ms_client' or 'parse' as a call could resolve it to an unrelated same-named
+          function in the symbol index.
+    """
+    # Given: a client method using the chained call shapes found in Azure.py
+    source = (
+        "def http_request(self, method, url_suffix, azure_ad_endpoint):\n"
+        "    token_url = urllib.parse.urljoin(azure_ad_endpoint, url_suffix)\n"
+        "    return self.ms_client.http_request(method=method, full_url=token_url)\n"
+    )
+    handler = ast.parse(source).body[0]
+
+    # When: collecting the names it calls
+    called = collect_called_names(handler)
+
+    # Then: only the final attributes are reported, not 'parse' or 'ms_client'
+    assert called == {"urljoin", "http_request"}
+
+
+def test_collect_called_names_includes_nested_and_argument_calls():
+    """
+    Given:
+        - A handler whose calls appear inside a nested block and as an argument to
+          another call, rather than as plain top-level statements.
+    When:
+        - collect_called_names is called on the handler.
+    Then:
+        - Every call is found regardless of nesting depth, because the whole function
+          body is walked. A handler that only reaches its client inside an if branch
+          must still be seen, or the argument wiring test would report false failures.
+    """
+    # Given: a handler with calls nested in a branch and inside another call
+    source = (
+        "def acr_update_command(client, args):\n"
+        "    if args.get('enabled'):\n"
+        "        for item in build_items(args):\n"
+        "            client.acr_update_request(format_rule(item))\n"
+    )
+    handler = ast.parse(source).body[0]
+
+    # When: collecting the names it calls
+    called = collect_called_names(handler)
+
+    # Then: nested and nested-as-argument calls are all collected
+    assert called == {"get", "build_items", "acr_update_request", "format_rule"}
+
+
+def test_collect_called_names_returns_empty_for_handler_without_calls():
+    """
+    Given:
+        - A handler that makes no calls at all.
+    When:
+        - collect_called_names is called on it.
+    Then:
+        - An empty set is returned without raising, so collect_reachable_strings simply
+          falls back to the handler's own string literals.
+    """
+    # Given: a handler with no calls in its body
+    source = "def disk_update_command(client, args):\n    return args\n"
+    handler = ast.parse(source).body[0]
+
+    # When / Then: nothing is collected, and no error is raised
+    assert collect_called_names(handler) == set()
+
+
+def test_collect_string_constants_collects_argument_keys_at_any_depth():
+    """
+    Given:
+        - A handler that reads its argument keys inside a branch, a nested dict literal
+          and a subscript, which is how Azure.py handlers build request payloads.
+    When:
+        - collect_string_constants is called on the handler.
+    Then:
+        - Every string literal is returned regardless of nesting depth, since the
+          argument wiring test relies on finding an argument name anywhere on the
+          handler's code path.
+    """
+    # Given: a handler reading argument keys at several nesting depths
+    source = (
+        "def disk_update_command(client, args):\n"
+        '    if args.get("public_network_access"):\n'
+        '        payload = {"properties": {"networkAccessPolicy": args["network_access_policy"]}}\n'
+        "    return client.disk_update_request(payload)\n"
+    )
+    handler = ast.parse(source).body[0]
+
+    # When: collecting its string literals
+    strings = collect_string_constants(handler)
+
+    # Then: keys nested in a branch, a dict literal and a subscript are all found
+    assert strings == {"public_network_access", "properties", "networkAccessPolicy", "network_access_policy"}
+
+
+def test_collect_string_constants_ignores_non_string_constants():
+    """
+    Given:
+        - A handler containing numeric, boolean and None constants alongside a single
+          argument key.
+    When:
+        - collect_string_constants is called on the handler.
+    Then:
+        - Only the string literal is returned. Non-string constants can never match an
+          argument name, so including them would only add noise that might mask a real
+          unread argument.
+    """
+    # Given: a handler mixing string and non-string constants
+    source = (
+        "def disk_update_command(client, args):\n"
+        "    timeout = 30\n"
+        "    enabled = True\n"
+        "    missing = None\n"
+        '    return client.disk_update_request(args["disk_name"], timeout, enabled, missing)\n'
+    )
+    handler = ast.parse(source).body[0]
+
+    # When: collecting its string literals
+    strings = collect_string_constants(handler)
+
+    # Then: only the argument key is returned
+    assert strings == {"disk_name"}
+
+
+def test_collect_string_constants_includes_docstring_text():
+    """
+    Given:
+        - A handler whose docstring mentions an argument name that the body never reads.
+    When:
+        - collect_string_constants is called on the handler.
+    Then:
+        - The docstring is returned along with the real literals, confirming the
+          documented caveat that docstrings add harmless extra entries. They can only
+          mask a failure, never invent one, so this is a known limitation of the
+          argument wiring test rather than a defect.
+    """
+    # Given: a handler documenting an argument it does not actually read
+    source = (
+        "def disk_update_command(client, args):\n"
+        '    """Update a disk, honouring data_access_auth_mode."""\n'
+        '    return client.disk_update_request(args["disk_name"])\n'
+    )
+    handler = ast.parse(source).body[0]
+
+    # When: collecting its string literals
+    strings = collect_string_constants(handler)
+
+    # Then: the real key is found, and the docstring text is included as documented
+    assert "disk_name" in strings
+    assert any("data_access_auth_mode" in text for text in strings)
+
+
+def test_collect_string_constants_collects_fstring_literal_parts_only():
+    """
+    Given:
+        - A client method building a URL with an f-string, the shape Azure.py uses for
+          every request path.
+    When:
+        - collect_string_constants is called on it.
+    Then:
+        - The literal fragments around the placeholders are returned, and the
+          interpolated names are not, since those are Name nodes rather than string
+          constants. An argument referenced only by interpolation is therefore not
+          matched by its fragment, which is why the handler must still read the
+          argument key itself somewhere on the path.
+    """
+    # Given: a client method interpolating a value into a request path
+    source = (
+        "def disk_update_request(self, subscription_id, args):\n"
+        '    url = f"/subscriptions/{subscription_id}/disks"\n'
+        "    return self.http_request(url)\n"
+    )
+    handler = ast.parse(source).body[0]
+
+    # When: collecting its string literals
+    strings = collect_string_constants(handler)
+
+    # Then: only the literal fragments are collected, not the interpolated name
+    assert strings == {"/subscriptions/", "/disks"}
+
+
+def test_collect_read_argument_names_collects_the_three_read_shapes():
+    """
+    Given:
+        - A handler reading arguments via args.get("x"), args.get("x", default),
+          args["x"] and "x" in args, which are the shapes Azure.py uses.
+    When:
+        - collect_read_argument_names is called on the handler.
+    Then:
+        - Every argument name is returned, so the py -> yml test below sees the full
+          set of arguments the code actually consumes.
+    """
+    # Given: a handler using all four read forms
+    source = (
+        "def storage_account_update_command(client, args):\n"
+        '    account_name = args.get("account_name", "")\n'
+        '    kind = args.get("kind")\n'
+        '    tags = args["tags"].split(",")\n'
+        '    if "use_sub_domain_name" in args:\n'
+        "        pass\n"
+    )
+    handler = ast.parse(source).body[0]
+
+    # When: collecting the argument names it reads
+    read = collect_read_argument_names(handler)
+
+    # Then: all four are found
+    assert read == {"account_name", "kind", "tags", "use_sub_domain_name"}
+
+
+def test_collect_read_argument_names_ignores_unrelated_literals_and_mappings():
+    """
+    Given:
+        - A handler containing string literals that are not command arguments: a read
+          from the params mapping, a response key, a URL fragment, and a dynamic
+          args.get(key) whose name is not a literal.
+    When:
+        - collect_read_argument_names is called on the handler.
+    Then:
+        - Only the genuine args read is returned. This precision is what makes the
+          py -> yml assertion safe, since a stray literal would otherwise be reported
+          as an argument missing from the yml.
+    """
+    # Given: a handler mixing a real args read with unrelated literals
+    source = (
+        "def disk_update_command(client, params, args, key):\n"
+        '    subscription_id = params.get("subscription_id")\n'
+        '    disk_name = args.get("disk_name")\n'
+        "    dynamic = args.get(key)\n"
+        '    url = "/providers/Microsoft.Compute/disks"\n'
+        '    return response["properties"]["diskState"]\n'
+    )
+    handler = ast.parse(source).body[0]
+
+    # When: collecting the argument names it reads
+    read = collect_read_argument_names(handler)
+
+    # Then: only the real args read is reported
+    assert read == {"disk_name"}
+
+
+def test_extract_fallback_prefix_reads_both_prefix_shapes():
+    """
+    Given:
+        - A handler using the COMMANDS_TO_OUTPUTS_PREFIX.get(command, "<fallback>")
+          lookup, and another passing outputs_prefix= directly to CommandResults, which
+          are the two shapes Azure.py uses to declare a context prefix.
+    When:
+        - extract_fallback_prefix is called on each handler.
+    Then:
+        - The prefix is recovered from both shapes, so the output wiring test can
+          compare it against the contextPath declared in the yml.
+    """
+    # Given: one handler per prefix shape, indexed as build_symbol_index would
+    source = (
+        "def disk_update_command(client, args):\n"
+        '    prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Compute.Disks")\n'
+        "    return CommandResults(outputs_prefix=prefix, outputs=response)\n"
+        "\n"
+        "def acr_update_command(client, args):\n"
+        '    return CommandResults(outputs_prefix="Azure.ContainerRegistry", outputs=response)\n'
+    )
+    symbol_index = build_symbol_index(ast.parse(source))
+
+    # When / Then: each shape yields its prefix
+    assert extract_fallback_prefix("disk_update_command", symbol_index) == {"Azure.Compute.Disks"}
+    assert extract_fallback_prefix("acr_update_command", symbol_index) == {"Azure.ContainerRegistry"}
+
+
+def test_extract_fallback_prefix_ignores_non_literal_and_unrelated_lookups():
+    """
+    Given:
+        - A handler whose outputs_prefix is a variable rather than a literal, whose
+          COMMANDS_TO_OUTPUTS_PREFIX lookup has no fallback argument, and which calls
+          .get on an unrelated mapping.
+    When:
+        - extract_fallback_prefix is called on the handler.
+    Then:
+        - Nothing is returned, so the output wiring test skips the command rather than
+          comparing the yml against a prefix that was never actually declared.
+    """
+    # Given: a handler declaring its prefix in ways this extractor cannot read
+    source = (
+        "def disk_update_command(client, args):\n"
+        "    prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command)\n"
+        '    other = SOME_OTHER_MAP.get(command, "Azure.NotAPrefix")\n'
+        "    return CommandResults(outputs_prefix=prefix, outputs=response)\n"
+    )
+    symbol_index = build_symbol_index(ast.parse(source))
+
+    # When / Then: no prefix is claimed
+    assert extract_fallback_prefix("disk_update_command", symbol_index) == set()
+
+
+def test_extract_fallback_prefix_collects_every_prefix_a_handler_may_write():
+    """
+    Given:
+        - A handler that returns a different context prefix on each branch, so more
+          than one prefix is reachable at runtime.
+    When:
+        - extract_fallback_prefix is called on the handler.
+    Then:
+        - Every reachable prefix is returned. The output wiring test then passes if any
+          of them matches the yml, which is the intended behaviour for a handler that
+          serves several commands.
+    """
+    # Given: a handler writing to two different prefixes
+    source = (
+        "def storage_account_update_command(client, args):\n"
+        '    if args.get("container_name"):\n'
+        '        return CommandResults(outputs_prefix="Azure.Storage.Containers", outputs=response)\n'
+        '    return CommandResults(outputs_prefix="Azure.Storage.StorageAccounts", outputs=response)\n'
+    )
+    symbol_index = build_symbol_index(ast.parse(source))
+
+    # When / Then: both branches contribute their prefix
+    assert extract_fallback_prefix("storage_account_update_command", symbol_index) == {
+        "Azure.Storage.Containers",
+        "Azure.Storage.StorageAccounts",
+    }
+
+
+def test_extract_fallback_prefix_returns_empty_for_unknown_handler():
+    """
+    Given:
+        - A handler name that is not present in the symbol index, which happens when a
+          command is routed to a function that does not exist.
+    When:
+        - extract_fallback_prefix is called with that name.
+    Then:
+        - An empty set is returned rather than raising, leaving the missing-handler
+          verdict to test_yml_commands_are_wired_in_dispatch, which reports it with a
+          far clearer message.
+    """
+    # Given: an index that does not contain the requested handler
+    symbol_index = build_symbol_index(ast.parse("def disk_update_command(client, args):\n    pass\n"))
+
+    # When / Then: the unknown name yields nothing, and no error is raised
+    assert extract_fallback_prefix("no_such_command", symbol_index) == set()
+
+
+# ---------------------------------------------------------------------------
+# WAF policy commands (Application Gateway and Front Door).
+# ---------------------------------------------------------------------------
+
+WAF_POLICY = {
+    "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network"
+    "/ApplicationGatewayWebApplicationFirewallPolicies/policy1",
+    "name": "policy1",
+    "type": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies",
+    "location": "westus2",
+    "properties": {
+        "provisioningState": "Succeeded",
+        "resourceState": "Enabled",
+        "policySettings": {"mode": "Prevention", "state": "Enabled"},
+        "managedRules": {"managedRuleSets": [{"ruleSetType": "OWASP", "ruleSetVersion": "3.2"}]},
+    },
+}
+
+FRONT_DOOR_POLICY = {
+    "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network"
+    "/FrontDoorWebApplicationFirewallPolicies/fdpolicy1",
+    "name": "fdpolicy1",
+    "type": "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies",
+    "location": "Global",
+    "sku": {"name": "Classic_AzureFrontDoor"},
+    "properties": {
+        "provisioningState": "Succeeded",
+        "resourceState": "Enabled",
+        "policySettings": {"mode": "Prevention", "enabledState": "Enabled"},
+        "managedRules": {"managedRuleSets": [{"ruleSetType": "DefaultRuleSet", "ruleSetVersion": "1.0"}]},
+    },
+}
+
+
+def test_waf_policy_get_command_success(mocker):
+    """
+    Given: An AzureClient whose waf_policy_get returns a WAF policy.
+    When: waf_policy_get_command is called with a policy name.
+    Then: The policy is returned under the Azure.ApplicationGateway.WAFPolicies prefix and the client is
+          called with the resolved subscription and resource group.
+    """
+    from Azure import waf_policy_get_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_policy_get.return_value = WAF_POLICY
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1", "policy_name": "policy1"}
+    result = waf_policy_get_command(mock_client, {}, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.ApplicationGateway.WAFPolicies"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == WAF_POLICY
+    assert "policy1" in result.readable_output
+    mock_client.waf_policy_get.assert_called_once_with(policy_name="policy1", subscription_id="sub1", resource_group_name="rg1")
+
+
+def test_waf_policy_list_command_success(mocker):
+    """
+    Given: An AzureClient whose waf_policy_list returns one policy and a next link.
+    When: waf_policy_list_command is called for a resource group.
+    Then: The policies and the continuation token are placed in the context outputs.
+    """
+    from Azure import waf_policy_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_policy_list.return_value = {"value": [WAF_POLICY], "nextLink": "next-page-token"}
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+    result = waf_policy_list_command(mock_client, {}, args)
+
+    assert result.outputs["Azure.ApplicationGateway.WAFPolicies(val.id && val.id == obj.id)"] == [WAF_POLICY]
+    assert result.outputs["Azure.ApplicationGateway(true)"] == {"WAFPoliciesNextToken": "next-page-token"}
+    assert "policy1" in result.readable_output
+    mock_client.waf_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="rg1", next_token="")
+
+
+def test_waf_policy_list_command_subscription_scope(mocker):
+    """
+    Given: No resource group, and several policies returned by the API.
+    When: waf_policy_list_command is called.
+    Then: The client is called with an empty resource group, so the whole subscription is
+          listed, and all the returned policies are placed in the context outputs.
+    """
+    from Azure import waf_policy_list_command
+
+    mock_client = mocker.Mock()
+    second_policy = {**WAF_POLICY, "name": "policy2", "id": "policy2-id"}
+    mock_client.waf_policy_list.return_value = {"value": [WAF_POLICY, second_policy]}
+
+    result = waf_policy_list_command(mock_client, {}, {"subscription_id": "sub1"})
+
+    assert result.outputs["Azure.ApplicationGateway.WAFPolicies(val.id && val.id == obj.id)"] == [WAF_POLICY, second_policy]
+    mock_client.waf_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="", next_token="")
+
+
+def test_waf_policy_list_command_ignores_the_resource_group_parameter(mocker):
+    """
+    Given: An instance configured with a default resource group, and a command call that does
+           not pass one.
+    When: waf_policy_list_command is called.
+    Then: The client is called with an empty resource group, so the instance default does not
+          prevent listing the policies of the whole subscription.
+    """
+    from Azure import waf_policy_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_policy_list.return_value = {"value": [WAF_POLICY]}
+
+    waf_policy_list_command(mock_client, {"resource_group_name": "default-rg"}, {"subscription_id": "sub1"})
+
+    mock_client.waf_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="", next_token="")
+
+
+def test_waf_front_door_policy_list_command_ignores_the_resource_group_parameter(mocker):
+    """
+    Given: An instance configured with a default resource group, and a command call that does
+           not pass one.
+    When: waf_front_door_policy_list_command is called.
+    Then: The client is called with an empty resource group, so the instance default does not
+          prevent listing the policies of the whole subscription.
+    """
+    from Azure import waf_front_door_policy_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_list.return_value = {"value": [FRONT_DOOR_POLICY]}
+
+    waf_front_door_policy_list_command(mock_client, {"resource_group_name": "default-rg"}, {"subscription_id": "sub1"})
+
+    mock_client.waf_front_door_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="", next_token="")
+
+
+def test_waf_policy_list_command_no_results(mocker):
+    """
+    Given: An AzureClient that returns no policies.
+    When: waf_policy_list_command is called.
+    Then: A readable "not found" message is returned, and the next token is cleared so that a
+          token left in the context by a previous page cannot be read again.
+    """
+    from Azure import waf_policy_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_policy_list.return_value = {"value": []}
+
+    result = waf_policy_list_command(mock_client, {}, {"subscription_id": "sub1", "resource_group_name": "rg1"})
+
+    assert result.readable_output == "No WAF policies were found in resource group 'rg1'."
+    assert result.outputs == {"Azure.ApplicationGateway(true)": {"WAFPoliciesNextToken": None}}
+
+
+def test_waf_policy_create_or_update_command_success(mocker):
+    """
+    Given: Every argument of the command, with the JSON arguments supplied as JSON strings.
+    When: waf_policy_create_or_update_command is called.
+    Then: Each argument reaches the request body at its documented location, the JSON
+          arguments are parsed into objects, and the created or updated policy is returned.
+    """
+    from Azure import waf_policy_create_or_update_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_policy_upsert.return_value = WAF_POLICY
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "policy_name": "policy1",
+        "resource_id": WAF_POLICY["id"],
+        "location": "westus2",
+        "managed_rules": '{"managedRuleSets": [{"ruleSetType": "OWASP", "ruleSetVersion": "3.2"}]}',
+        "policy_settings": '{"mode": "Prevention", "state": "Enabled"}',
+        "custom_rules": '[{"name": "blockIP", "priority": 1, "ruleType": "MatchRule", "action": "Block"}]',
+        "tags": '{"env": "prod"}',
+    }
+    result = waf_policy_create_or_update_command(mock_client, {}, args)
+
+    assert result.outputs_prefix == "Azure.ApplicationGateway.WAFPolicies"
+    assert result.outputs == WAF_POLICY
+    assert "created or updated successfully" in result.readable_output
+
+    mock_client.waf_policy_upsert.assert_called_once_with(
+        policy_name="policy1",
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        data={
+            "id": WAF_POLICY["id"],
+            "location": "westus2",
+            "tags": {"env": "prod"},
+            "properties": {
+                "policySettings": {"mode": "Prevention", "state": "Enabled"},
+                "customRules": [{"name": "blockIP", "priority": 1, "ruleType": "MatchRule", "action": "Block"}],
+                "managedRules": {"managedRuleSets": [{"ruleSetType": "OWASP", "ruleSetVersion": "3.2"}]},
+            },
+        },
+    )
+
+
+@pytest.mark.parametrize(
+    "status_code, expected_message",
+    [
+        (200, "WAF Policy policy1 was deleted successfully."),
+        (202, "The delete request for WAF Policy policy1 was accepted and the operation will complete asynchronously."),
+        (204, "WAF Policy policy1 was not found."),
+    ],
+)
+def test_waf_policy_delete_command_status_codes(mocker, status_code, expected_message):
+    """
+    Given: A delete call that returns 200, 202 or 204.
+    When: waf_policy_delete_command is called.
+    Then: The readable output reflects the distinct meaning of each status code.
+    """
+    from Azure import waf_policy_delete_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_policy_delete.return_value = mocker.Mock(status_code=status_code)
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1", "policy_name": "policy1"}
+    result = waf_policy_delete_command(mock_client, {}, args)
+
+    assert result.readable_output == expected_message
+
+
+def test_waf_front_door_policy_get_command_success(mocker):
+    """
+    Given: An AzureClient whose waf_front_door_policy_get returns a Front Door WAF policy.
+    When: waf_front_door_policy_get_command is called with a policy name.
+    Then: The policy is returned under the Azure.FrontDoor.Policies prefix.
+    """
+    from Azure import waf_front_door_policy_get_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_get.return_value = FRONT_DOOR_POLICY
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1", "policy_name": "fdpolicy1"}
+    result = waf_front_door_policy_get_command(mock_client, {}, args)
+
+    assert result.outputs_prefix == "Azure.FrontDoor.Policies"
+    assert result.outputs == FRONT_DOOR_POLICY
+    assert "fdpolicy1" in result.readable_output
+    mock_client.waf_front_door_policy_get.assert_called_once_with(
+        policy_name="fdpolicy1", subscription_id="sub1", resource_group_name="rg1"
+    )
+
+
+def test_waf_front_door_policy_list_command_success(mocker):
+    """
+    Given: An AzureClient whose waf_front_door_policy_list returns one policy and a next link.
+    When: waf_front_door_policy_list_command is called for a resource group.
+    Then: The policies and the continuation token are placed in the context outputs.
+    """
+    from Azure import waf_front_door_policy_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_list.return_value = {"value": [FRONT_DOOR_POLICY], "nextLink": "next-page-token"}
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+    result = waf_front_door_policy_list_command(mock_client, {}, args)
+
+    assert result.outputs["Azure.FrontDoor.Policies(val.id && val.id == obj.id)"] == [FRONT_DOOR_POLICY]
+    assert result.outputs["Azure.FrontDoor(true)"] == {"PoliciesNextToken": "next-page-token"}
+    mock_client.waf_front_door_policy_list.assert_called_once_with(
+        subscription_id="sub1", resource_group_name="rg1", next_token=""
+    )
+
+
+def test_waf_front_door_policy_list_command_no_results(mocker):
+    """
+    Given: An AzureClient that returns no Front Door policies.
+    When: waf_front_door_policy_list_command is called.
+    Then: A readable "not found" message is returned, and the next token is cleared so that a
+          token left in the context by a previous page cannot be read again.
+    """
+    from Azure import waf_front_door_policy_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_list.return_value = {"value": []}
+
+    result = waf_front_door_policy_list_command(mock_client, {}, {"subscription_id": "sub1"})
+
+    assert result.readable_output == "No Front Door WAF policies were found in subscription 'sub1'."
+    assert result.outputs == {"Azure.FrontDoor(true)": {"PoliciesNextToken": None}}
+
+
+def test_waf_front_door_policy_create_or_update_command_success(mocker):
+    """
+    Given: Every argument of the command, with the JSON arguments supplied as JSON strings.
+    When: waf_front_door_policy_create_or_update_command is called.
+    Then: Each argument reaches the request body at its documented location, the JSON
+          arguments are parsed into objects, and the created or updated policy is returned.
+    """
+    from Azure import waf_front_door_policy_create_or_update_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_upsert.return_value = FRONT_DOOR_POLICY
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "policy_name": "fdpolicy1",
+        "managed_rules": '{"managedRuleSets": [{"ruleSetType": "DefaultRuleSet", "ruleSetVersion": "1.0"}]}',
+        "policy_settings": '{"mode": "Prevention", "enabledState": "Enabled"}',
+        "custom_rules": '{"rules": [{"name": "blockIP", "priority": 1, "ruleType": "MatchRule", "action": "Block"}]}',
+        "location": "Global",
+        "sku": "Premium_AzureFrontDoor",
+        "tags": '{"env": "prod"}',
+        "etag": '"abc"',
+    }
+    result = waf_front_door_policy_create_or_update_command(mock_client, {}, args)
+
+    assert result.outputs_prefix == "Azure.FrontDoor.Policies"
+    assert result.outputs == FRONT_DOOR_POLICY
+    assert "created or updated successfully" in result.readable_output
+
+    mock_client.waf_front_door_policy_upsert.assert_called_once_with(
+        policy_name="fdpolicy1",
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        data={
+            "location": "Global",
+            "tags": {"env": "prod"},
+            "etag": '"abc"',
+            "sku": {"name": "Premium_AzureFrontDoor"},
+            "properties": {
+                "policySettings": {"mode": "Prevention", "enabledState": "Enabled"},
+                "customRules": {"rules": [{"name": "blockIP", "priority": 1, "ruleType": "MatchRule", "action": "Block"}]},
+                "managedRules": {"managedRuleSets": [{"ruleSetType": "DefaultRuleSet", "ruleSetVersion": "1.0"}]},
+            },
+        },
+    )
+
+
+def test_waf_front_door_policy_create_or_update_command_applies_global_defaults(mocker):
+    """
+    Given: Only a policy name and managed rules, with no location or SKU.
+    When: waf_front_door_policy_create_or_update_command is called.
+    Then: The body defaults to the Global location and the classic Front Door SKU, which
+          the API requires when creating the policy.
+    """
+    from Azure import waf_front_door_policy_create_or_update_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_upsert.return_value = FRONT_DOOR_POLICY
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "policy_name": "fdpolicy1",
+        "managed_rules": '{"managedRuleSets": [{"ruleSetType": "DefaultRuleSet", "ruleSetVersion": "1.0"}]}',
+    }
+    result = waf_front_door_policy_create_or_update_command(mock_client, {}, args)
+
+    assert result.outputs_prefix == "Azure.FrontDoor.Policies"
+    sent_body = mock_client.waf_front_door_policy_upsert.call_args.kwargs["data"]
+    assert sent_body["location"] == "Global"
+    assert sent_body["sku"] == {"name": "Classic_AzureFrontDoor"}
+    assert sent_body["properties"]["managedRules"]["managedRuleSets"][0]["ruleSetType"] == "DefaultRuleSet"
+
+
+def test_waf_front_door_policy_create_or_update_command_honours_explicit_sku(mocker):
+    """
+    Given: An explicit SKU argument.
+    When: waf_front_door_policy_create_or_update_command is called.
+    Then: The supplied SKU is nested under sku.name rather than being overridden by the
+          default.
+    """
+    from Azure import waf_front_door_policy_create_or_update_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_upsert.return_value = FRONT_DOOR_POLICY
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "policy_name": "fdpolicy1",
+        "managed_rules": '{"managedRuleSets": []}',
+        "sku": "Premium_AzureFrontDoor",
+    }
+    waf_front_door_policy_create_or_update_command(mock_client, {}, args)
+
+    sent_body = mock_client.waf_front_door_policy_upsert.call_args.kwargs["data"]
+    assert sent_body["sku"] == {"name": "Premium_AzureFrontDoor"}
+
+
+@pytest.mark.parametrize(
+    "etag",
+    [
+        '"abc"',
+        "123",
+        "true",
+    ],
+)
+def test_waf_front_door_policy_create_or_update_command_sends_plain_strings_unchanged(mocker, etag):
+    """
+    Given: An ETag that looks like JSON, such as a quoted string, a number or a boolean.
+    When: waf_front_door_policy_create_or_update_command is called.
+    Then: The ETag is sent to the API exactly as supplied, keeping its quotes and its string
+          type, because only the JSON arguments of the policy are parsed.
+    """
+    from Azure import waf_front_door_policy_create_or_update_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_upsert.return_value = FRONT_DOOR_POLICY
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "policy_name": "fdpolicy1",
+        "managed_rules": '{"managedRuleSets": []}',
+        "etag": etag,
+    }
+    waf_front_door_policy_create_or_update_command(mock_client, {}, args)
+
+    sent_body = mock_client.waf_front_door_policy_upsert.call_args.kwargs["data"]
+    assert sent_body["etag"] == etag
+
+
+def test_build_waf_policy_body_parses_only_the_json_arguments():
+    """
+    Given: A mapping holding both JSON arguments and plain string arguments, where the plain
+           strings contain values that are valid JSON.
+    When: build_waf_policy_body is called.
+    Then: The JSON arguments are parsed into objects while the plain strings keep their
+          original string value.
+    """
+    from Azure import build_waf_policy_body
+
+    body = build_waf_policy_body(
+        {
+            "resource_id": "12345",
+            "location": "true",
+            "tags": '{"env": "prod"}',
+            "policy_settings": '{"mode": "Prevention"}',
+        },
+        {
+            "resource_id": "id",
+            "location": "location",
+            "tags": "tags",
+            "policy_settings": "properties.policySettings",
+        },
+    )
+
+    assert body["id"] == "12345"
+    assert body["location"] == "true"
+    assert body["tags"] == {"env": "prod"}
+    assert body["properties"]["policySettings"] == {"mode": "Prevention"}
+
+
+@pytest.mark.parametrize(
+    "status_code, expected_message",
+    [
+        (200, "Front Door WAF Policy fdpolicy1 was deleted successfully."),
+        (
+            202,
+            "The delete request for Front Door WAF Policy fdpolicy1 was accepted "
+            "and the operation will complete asynchronously.",
+        ),
+        (204, "Front Door WAF Policy fdpolicy1 was not found."),
+    ],
+)
+def test_waf_front_door_policy_delete_command_status_codes(mocker, status_code, expected_message):
+    """
+    Given: A delete call that returns 200, 202 or 204.
+    When: waf_front_door_policy_delete_command is called.
+    Then: The readable output reflects the distinct meaning of each status code.
+    """
+    from Azure import waf_front_door_policy_delete_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_delete.return_value = mocker.Mock(status_code=status_code)
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1", "policy_name": "fdpolicy1"}
+    result = waf_front_door_policy_delete_command(mock_client, {}, args)
+
+    assert result.readable_output == expected_message
+
+
+def test_build_waf_policy_body_nests_and_skips_missing_arguments():
+    """
+    Given: A mix of JSON, plain string and absent arguments.
+    When: build_waf_policy_body is called.
+    Then: JSON values are parsed into objects, plain strings are kept as-is, dotted paths
+          are expanded into nested dictionaries, and absent arguments are omitted entirely.
+    """
+    from Azure import build_waf_policy_body
+
+    args = {"location": "westus2", "policy_settings": '{"mode": "Prevention"}', "tags": None}
+    body = build_waf_policy_body(
+        args,
+        {"location": "location", "policy_settings": "properties.policySettings", "tags": "tags"},
+    )
+
+    assert body == {"location": "westus2", "properties": {"policySettings": {"mode": "Prevention"}}}
+
+
+def test_build_waf_policy_body_keeps_invalid_json_as_plain_string():
+    """
+    Given: An argument whose value is not valid JSON.
+    When: build_waf_policy_body is called.
+    Then: The raw string is used as the value rather than raising, so a caller may pass a
+          plain string where the API accepts one.
+    """
+    from Azure import build_waf_policy_body
+
+    body = build_waf_policy_body({"location": "west us"}, {"location": "location"})
+
+    assert body == {"location": "west us"}
+
+
+def test_waf_client_methods_use_the_expected_urls_and_api_versions(mocker):
+    """
+    Given: An AzureClient with a mocked http_request.
+    When: The WAF policy and Front Door WAF policy client methods are called.
+    Then: Each targets its documented resource path and pins the api-version its API
+          expects, so a change to either is caught here.
+    """
+    from Azure import (
+        AzureClient,
+        WAF_POLICY_API_VERSION,
+        WAF_FRONT_DOOR_POLICY_API_VERSION,
+        WAF_POLICY_PATH,
+        WAF_FRONT_DOOR_POLICY_PATH,
+    )
+
+    client = mocker.Mock(spec=AzureClient)
+    client.http_request.return_value = WAF_POLICY
+
+    AzureClient.waf_policy_get(client, policy_name="policy1", subscription_id="sub1", resource_group_name="rg1")
+    call = client.http_request.call_args
+    assert call.kwargs["params"] == {"api-version": WAF_POLICY_API_VERSION}
+    assert call.kwargs["full_url"].endswith(f"{WAF_POLICY_PATH}/policy1")
+
+    AzureClient.waf_front_door_policy_get(client, policy_name="fdpolicy1", subscription_id="sub1", resource_group_name="rg1")
+    call = client.http_request.call_args
+    assert call.kwargs["params"] == {"api-version": WAF_FRONT_DOOR_POLICY_API_VERSION}
+    assert call.kwargs["full_url"].endswith(f"{WAF_FRONT_DOOR_POLICY_PATH}/fdpolicy1")
+
+
+def test_waf_policy_get_client_method_raises_value_error_on_404(mocker):
+    """
+    Given: An AzureClient whose http_request raises a 404 error.
+    When: waf_policy_get is called.
+    Then: handle_azure_error converts it into a ValueError naming the policy, so the user
+          learns the requested policy does not exist.
+    """
+    from Azure import AzureClient
+
+    client = AzureClient(
+        app_id="app",
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        verify=False,
+        proxy=False,
+        connection_type="Client Credentials",
+    )
+    mocker.patch.object(AzureClient, "http_request", side_effect=Exception("Error in API call [404] - Not Found"))
+
+    with pytest.raises(ValueError, match="policy1"):
+        client.waf_policy_get(policy_name="policy1", subscription_id="sub1", resource_group_name="rg1")
+
+
+def test_waf_policy_delete_client_method_names_the_permission_quoted_in_a_403(mocker):
+    """
+    Given: An AzureClient whose http_request raises a 403 that names the missing action,
+           which is how Azure reports an RBAC denial.
+    When: waf_policy_delete is called.
+    Then: The named delete permission is resolved from the api_function_name mapping and
+          reported through return_multiple_permissions_error, so the user is told exactly
+          which permission to grant instead of seeing a bare 403.
+    """
+    from Azure import AzureClient
+
+    client = AzureClient(
+        app_id="app",
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        verify=False,
+        proxy=False,
+        connection_type="Client Credentials",
+    )
+    error = Exception(
+        "Error in API call [403] - Forbidden. The client does not have authorization to perform action "
+        "'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete' over scope."
+    )
+    mocker.patch.object(AzureClient, "http_request", side_effect=error)
+    permissions_error = mocker.patch("Azure.return_multiple_permissions_error")
+
+    client.waf_policy_delete(policy_name="policy1", subscription_id="sub1", resource_group_name="rg1")
+
+    error_entries = permissions_error.call_args[0][0]
+    assert error_entries[0]["account_id"] == "sub1"
+    assert error_entries[0]["name"] == "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete"
+
+
+def test_waf_policy_delete_client_method_falls_back_when_403_names_no_permission(mocker):
+    """
+    Given: An AzureClient whose http_request raises a 403 that does not name any action.
+    When: waf_policy_delete is called.
+    Then: A permission error is still reported, with the name falling back to "N/A" rather
+          than the command guessing a permission the error never mentioned.
+    """
+    from Azure import AzureClient
+
+    client = AzureClient(
+        app_id="app",
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        verify=False,
+        proxy=False,
+        connection_type="Client Credentials",
+    )
+    mocker.patch.object(AzureClient, "http_request", side_effect=Exception("Error in API call [403] - Forbidden"))
+    permissions_error = mocker.patch("Azure.return_multiple_permissions_error")
+
+    client.waf_policy_delete(policy_name="policy1", subscription_id="sub1", resource_group_name="rg1")
+
+    error_entries = permissions_error.call_args[0][0]
+    assert error_entries[0]["name"] == "N/A"
+
+
+def test_waf_policy_list_client_method_scopes_by_resource_group_and_next_token(mocker):
+    """
+    Given: An AzureClient with a mocked http_request.
+    When: waf_policy_list is called with a resource group, without one, and with a next token.
+    Then: The resource-group URL, the subscription-wide URL and the verbatim next-token URL
+          are used respectively, with the api-version omitted when following a next link,
+          since the token already carries the full query string.
+    """
+    from Azure import AzureClient, WAF_POLICY_API_VERSION
+
+    client = mocker.Mock(spec=AzureClient)
+    client.http_request.return_value = {"value": []}
+    next_token = "https://management.azure.com/subscriptions/sub1/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies?$skipToken=abc"  # noqa: E501
+
+    AzureClient.waf_policy_list(client, subscription_id="sub1", resource_group_name="rg1")
+    assert "resourceGroups/rg1" in client.http_request.call_args.kwargs["full_url"]
+    assert client.http_request.call_args.kwargs["params"] == {"api-version": WAF_POLICY_API_VERSION}
+
+    AzureClient.waf_policy_list(client, subscription_id="sub1", resource_group_name="")
+    assert "resourceGroups" not in client.http_request.call_args.kwargs["full_url"]
+
+    AzureClient.waf_policy_list(client, subscription_id="sub1", resource_group_name="rg1", next_token=next_token)
+    assert client.http_request.call_args.kwargs["full_url"] == next_token
+    assert client.http_request.call_args.kwargs["params"] == {}
+
+
+@pytest.mark.parametrize(
+    "next_token",
+    [
+        pytest.param("https://evil.com/subscriptions/sub1", id="foreign_host"),
+        pytest.param("http://management.azure.com/subscriptions/sub1", id="non_https_scheme"),
+        pytest.param("next-page-token", id="not_a_url"),
+    ],
+)
+def test_waf_policy_list_client_method_rejects_invalid_next_token(mocker, next_token):
+    """
+    Given: A next token that does not point at the configured Azure management endpoint over HTTPS.
+    When: waf_policy_list is called with that token.
+    Then: A DemistoException is raised and no request is sent, so the bearer token is not leaked.
+    """
+    from Azure import AzureClient
+
+    client = mocker.Mock(spec=AzureClient)
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        AzureClient.waf_policy_list(client, subscription_id="sub1", resource_group_name="rg1", next_token=next_token)
+
+    client.http_request.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# Firewall policy commands
+# ---------------------------------------------------------------------------
+
+
+def test_firewall_policy_create_command_success(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_create_or_update returns a created firewall policy.
+    When:
+        - firewall_policy_create_command is called with the policy name, location, tier and
+          the optional threat intelligence, DNS and base policy arguments.
+    Then:
+        - The command returns CommandResults under the Azure.VirtualNetworks.FirewallPolicies prefix, and the
+          request body carries the location together with the translated properties.
+    """
+    from Azure import firewall_policy_create_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_create_or_update.return_value = {
+        "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/firewallPolicies/policy1",
+        "name": "policy1",
+        "location": "eastus",
+        "properties": {"provisioningState": "Succeeded", "threatIntelMode": "Alert", "sku": {"tier": "Standard"}},
+    }
+
+    args = {
+        "policy_name": "policy1",
+        "location": "eastus",
+        "tier": "Standard",
+        "threat_intelligence_mode": "Alert",
+        "ips": "1.1.1.1,2.2.2.2",
+        "domains": "*.microsoft.com",
+        "base_policy_id": "base-policy-id",
+        "enable_proxy": "true",
+        "dns_servers": "8.8.8.8",
+    }
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_create_command(client, params, args)
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicies"
+    assert result.outputs_key_field == "id"
+    assert "Successfully created firewall policy policy1" in result.readable_output
+    call_kwargs = client.firewall_policy_create_or_update.call_args[1]
+    assert call_kwargs["policy_name"] == "policy1"
+    assert call_kwargs["policy_data"] == {
+        "location": "eastus",
+        "properties": {
+            "threatIntelMode": "Alert",
+            "threatIntelWhitelist": {"ipAddresses": ["1.1.1.1", "2.2.2.2"], "fqdns": ["*.microsoft.com"]},
+            "dnsSettings": {"servers": ["8.8.8.8"], "enableProxy": True},
+            "basePolicy": {"id": "base-policy-id"},
+            "sku": {"tier": "Standard"},
+        },
+    }
+
+
+def test_firewall_policy_create_command_only_required_arguments(mocker):
+    """
+    Given:
+        - An AzureClient and only the required create arguments, with no optional
+          threat intelligence, DNS or base policy arguments.
+    When:
+        - firewall_policy_create_command is called.
+    Then:
+        - The unset optional keys are dropped from the request body, so the API receives
+          only the location and the SKU tier.
+    """
+    from Azure import firewall_policy_create_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_create_or_update.return_value = {"id": "policy-id", "name": "policy1"}
+
+    args = {"policy_name": "policy1", "location": "eastus", "tier": "Premium"}
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    firewall_policy_create_command(client, params, args)
+
+    call_kwargs = client.firewall_policy_create_or_update.call_args[1]
+    assert call_kwargs["policy_data"] == {"location": "eastus", "properties": {"sku": {"tier": "Premium"}}}
+
+
+def test_firewall_policy_create_command_permission_error(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_create_or_update raises a permission error,
+          mirroring the error the client layer raises after handle_azure_error.
+    When:
+        - firewall_policy_create_command is called.
+    Then:
+        - The error propagates to main() rather than being swallowed by the command.
+    """
+    from Azure import firewall_policy_create_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_create_or_update.side_effect = DemistoException(
+        'Failed to access Firewall Policy "policy1": 403 Forbidden'
+    )
+
+    args = {"policy_name": "policy1", "location": "eastus", "tier": "Standard"}
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    with pytest.raises(DemistoException, match="403 Forbidden"):
+        firewall_policy_create_command(client, params, args)
+
+
+def test_firewall_policy_update_command_success(mocker):
+    """
+    Given:
+        - An AzureClient returning an existing firewall policy, and update arguments for the
+          threat intelligence mode, allow lists, base policy and DNS settings.
+    When:
+        - firewall_policy_update_command is called.
+    Then:
+        - The existing policy is fetched, the provided fields are merged into its properties,
+          and the merged object is sent back to the API.
+    """
+    from Azure import firewall_policy_update_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_get.return_value = {
+        "id": "policy-id",
+        "name": "policy1",
+        "location": "eastus",
+        "properties": {"threatIntelMode": "Off", "sku": {"tier": "Standard"}},
+    }
+    client.firewall_policy_create_or_update.return_value = {
+        "id": "policy-id",
+        "name": "policy1",
+        "properties": {"threatIntelMode": "Deny", "provisioningState": "Succeeded"},
+    }
+
+    args = {
+        "policy_name": "policy1",
+        "threat_intelligence_mode": "Deny",
+        "ips": "1.1.1.1",
+        "domains": "*.microsoft.com",
+        "base_policy_id": "base-policy-id",
+        "enable_proxy": "false",
+        "dns_servers": "8.8.8.8",
+    }
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_update_command(client, params, args)
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicies"
+    assert "Successfully updated firewall policy policy1" in result.readable_output
+    client.firewall_policy_get.assert_called_once_with(subscription_id="sub1", resource_group_name="rg1", policy_name="policy1")
+    sent_properties = client.firewall_policy_create_or_update.call_args[1]["policy_data"]["properties"]
+    assert sent_properties == {
+        "threatIntelMode": "Deny",
+        "sku": {"tier": "Standard"},
+        "threatIntelWhitelist": {"ipAddresses": ["1.1.1.1"], "fqdns": ["*.microsoft.com"]},
+        "basePolicy": {"id": "base-policy-id"},
+        "dnsSettings": {"enableProxy": False, "servers": ["8.8.8.8"]},
+    }
+
+
+def test_firewall_policy_update_command_leaves_unprovided_fields_unchanged(mocker):
+    """
+    Given:
+        - An AzureClient returning an existing firewall policy, and no optional update arguments.
+    When:
+        - firewall_policy_update_command is called.
+    Then:
+        - The existing properties are sent back untouched, so a partial update never clears a
+          field the user did not provide.
+    """
+    from Azure import firewall_policy_update_command
+
+    client = mocker.MagicMock()
+    existing_properties = {
+        "threatIntelMode": "Alert",
+        "threatIntelWhitelist": {"ipAddresses": ["1.1.1.1"]},
+        "sku": {"tier": "Standard"},
+    }
+    client.firewall_policy_get.return_value = {"id": "policy-id", "name": "policy1", "properties": existing_properties}
+    client.firewall_policy_create_or_update.return_value = {"id": "policy-id", "name": "policy1"}
+
+    args = {"policy_name": "policy1"}
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    firewall_policy_update_command(client, params, args)
+
+    assert client.firewall_policy_create_or_update.call_args[1]["policy_data"]["properties"] == existing_properties
+
+
+def test_firewall_policy_update_command_preserves_sibling_nested_fields(mocker):
+    """
+    Given:
+        - An AzureClient returning a policy whose dnsSettings already holds custom servers, and an
+          update that sets only enable_proxy.
+    When:
+        - firewall_policy_update_command is called.
+    Then:
+        - enableProxy is updated while the existing servers are preserved, proving the nested
+          properties are merged rather than replaced wholesale.
+    """
+    from Azure import firewall_policy_update_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_get.return_value = {
+        "id": "policy-id",
+        "name": "policy1",
+        "properties": {"dnsSettings": {"servers": ["8.8.8.8"], "enableProxy": True}},
+    }
+    client.firewall_policy_create_or_update.return_value = {"id": "policy-id", "name": "policy1"}
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    firewall_policy_update_command(client, params, {"policy_name": "policy1", "enable_proxy": "false"})
+
+    sent_properties = client.firewall_policy_create_or_update.call_args[1]["policy_data"]["properties"]
+    assert sent_properties["dnsSettings"] == {"servers": ["8.8.8.8"], "enableProxy": False}
+
+
+def test_firewall_policy_update_command_not_found_error(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_get raises a not-found error for the policy.
+    When:
+        - firewall_policy_update_command is called.
+    Then:
+        - The error propagates and no update request is sent.
+    """
+    from Azure import firewall_policy_update_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_get.side_effect = ValueError('Firewall Policy "policy1" was not found.')
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    with pytest.raises(ValueError, match="was not found"):
+        firewall_policy_update_command(client, params, {"policy_name": "policy1"})
+
+    client.firewall_policy_create_or_update.assert_not_called()
+
+
+def test_firewall_policy_get_command_success(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_get returns a firewall policy.
+    When:
+        - firewall_policy_get_command is called with the policy name.
+    Then:
+        - The policy is returned under the Azure.VirtualNetworks.FirewallPolicies prefix, matching the prefix
+          used by the list command for the same resource.
+    """
+    from Azure import firewall_policy_get_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_get.return_value = {
+        "id": "policy-id",
+        "name": "policy1",
+        "location": "eastus",
+        "properties": {
+            "provisioningState": "Succeeded",
+            "threatIntelMode": "Alert",
+            "sku": {"tier": "Standard"},
+            "firewalls": [{"id": "firewall-id"}],
+        },
+    }
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_get_command(client, params, {"policy_name": "policy1"})
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.FirewallPolicies"
+    assert result.outputs["name"] == "policy1"
+    assert "Firewall policy policy1" in result.readable_output
+    client.firewall_policy_get.assert_called_once_with(subscription_id="sub1", resource_group_name="rg1", policy_name="policy1")
+
+
+def test_firewall_policy_get_command_not_found_error(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_get raises a not-found error.
+    When:
+        - firewall_policy_get_command is called.
+    Then:
+        - The error propagates to main() instead of returning an empty result.
+    """
+    from Azure import firewall_policy_get_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_get.side_effect = ValueError('Firewall Policy "policy1" was not found.')
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    with pytest.raises(ValueError, match="was not found"):
+        firewall_policy_get_command(client, params, {"policy_name": "policy1"})
+
+
+def test_firewall_policy_delete_command_status_codes(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_delete returns each of the status codes the
+          Azure delete endpoint may answer with.
+    When:
+        - firewall_policy_delete_command is called for each status code.
+    Then:
+        - 202 reports an asynchronous delete, 204 reports the policy does not exist, and 200
+          reports a successful delete.
+    """
+    from Azure import firewall_policy_delete_command
+
+    client = mocker.MagicMock()
+    response = mocker.Mock()
+    client.firewall_policy_delete.return_value = response
+
+    args = {"policy_name": "policy1"}
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    response.status_code = 202
+    assert "will complete asynchronously" in firewall_policy_delete_command(client, params, args).readable_output
+
+    response.status_code = 204
+    assert "does not exist" in firewall_policy_delete_command(client, params, args).readable_output
+
+    response.status_code = 200
+    assert "was successfully deleted" in firewall_policy_delete_command(client, params, args).readable_output
+
+    client.firewall_policy_delete.assert_called_with(subscription_id="sub1", resource_group_name="rg1", policy_name="policy1")
+
+
+def test_firewall_policy_delete_command_permission_error(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_delete raises a permission error.
+    When:
+        - firewall_policy_delete_command is called.
+    Then:
+        - The error propagates to main() rather than being reported as a successful delete.
+    """
+    from Azure import firewall_policy_delete_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_delete.side_effect = DemistoException('Failed to access Firewall Policy "policy1": 403 Forbidden')
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    with pytest.raises(DemistoException, match="403 Forbidden"):
+        firewall_policy_delete_command(client, params, {"policy_name": "policy1"})
+
+
+def test_firewall_policy_list_command_success(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_list returns a page of firewall policies
+          together with a nextLink.
+    When:
+        - firewall_policy_list_command is called.
+    Then:
+        - The policies are returned under the Azure.VirtualNetworks.FirewallPolicies DT path, and the
+          continuation token is emitted as FirewallPoliciesNextToken.
+    """
+    from Azure import firewall_policy_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_list.return_value = {
+        "value": [{"id": "policy-id", "name": "policy1", "properties": {"provisioningState": "Succeeded"}}],
+        "nextLink": "next_token_value",
+    }
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_list_command(client, params, {})
+
+    assert result.outputs == {
+        "Azure.VirtualNetworks.FirewallPolicies(val.id && val.id == obj.id)": [
+            {"id": "policy-id", "name": "policy1", "properties": {"provisioningState": "Succeeded"}}
+        ],
+        "Azure.VirtualNetworks(true)": {"FirewallPoliciesNextToken": "next_token_value"},
+    }
+    client.firewall_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="rg1", next_token="")
+
+
+def test_firewall_policy_list_command_no_policies(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_list returns no firewall policies.
+    When:
+        - firewall_policy_list_command is called.
+    Then:
+        - A no-results message naming the resource group is returned, and neither context nor a
+          raw response is written.
+    """
+    from Azure import firewall_policy_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_list.return_value = {"value": [], "nextLink": None}
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_list_command(client, params, {})
+
+    assert result.readable_output == "No firewall policies were found in resource group 'rg1'."
+    assert result.outputs is None
+    assert result.raw_response is None
+
+
+def test_firewall_policy_list_command_clears_stale_next_token(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_list returns the last page, so the response
+          carries no nextLink.
+    When:
+        - firewall_policy_list_command is called.
+    Then:
+        - FirewallPoliciesNextToken is still written, as None, so a token left in the context by a
+          previous run is cleared rather than being silently reused.
+    """
+    from Azure import firewall_policy_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_list.return_value = {"value": [{"id": "policy-id", "name": "policy1"}]}
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_list_command(client, params, {})
+
+    assert result.outputs["Azure.VirtualNetworks(true)"] == {"FirewallPoliciesNextToken": None}
+
+
+def test_firewall_policy_list_command_forwards_next_token(mocker):
+    """
+    Given:
+        - An AzureClient returning a page of firewall policies, and a next_token argument
+          pointing at that page.
+    When:
+        - firewall_policy_list_command is called with next_token.
+    Then:
+        - The next_token is forwarded to the client and every policy on the page is returned.
+    """
+    from Azure import firewall_policy_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_list.return_value = {
+        "value": [{"id": "policy-1", "name": "policy1"}, {"id": "policy-2", "name": "policy2"}]
+    }
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_list_command(client, params, {"next_token": "next_token_value"})
+
+    client.firewall_policy_list.assert_called_once_with(
+        subscription_id="sub1", resource_group_name="rg1", next_token="next_token_value"
+    )
+    assert result.outputs["Azure.VirtualNetworks.FirewallPolicies(val.id && val.id == obj.id)"] == [
+        {"id": "policy-1", "name": "policy1"},
+        {"id": "policy-2", "name": "policy2"},
+    ]
+
+
+def test_firewall_policy_list_command_fetches_a_single_page(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_list returns a page that carries a nextLink.
+    When:
+        - firewall_policy_list_command is called.
+    Then:
+        - Only that page is requested, and the nextLink is surfaced for the caller to pass back
+          as next_token rather than being followed internally.
+    """
+    from Azure import firewall_policy_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_list.side_effect = [
+        {"value": [{"id": "policy-1", "name": "policy1"}], "nextLink": "page_2_token"},
+        {"value": [{"id": "policy-2", "name": "policy2"}], "nextLink": "page_3_token"},
+    ]
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_list_command(client, params, {})
+
+    client.firewall_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="rg1", next_token="")
+    assert result.outputs["Azure.VirtualNetworks.FirewallPolicies(val.id && val.id == obj.id)"] == [
+        {"id": "policy-1", "name": "policy1"}
+    ]
+    assert result.outputs["Azure.VirtualNetworks(true)"] == {"FirewallPoliciesNextToken": "page_2_token"}
+
+
+def test_firewall_policy_attach_command_success(mocker):
+    """
+    Given:
+        - An AzureClient returning an existing firewall, and the ID of the policy to attach.
+    When:
+        - firewall_policy_attach_command is called.
+    Then:
+        - The firewall is fetched, its firewallPolicy property is set to the given policy ID,
+          and the updated firewall is returned under the Azure.Firewall.Firewalls prefix.
+    """
+    from Azure import firewall_policy_attach_command
+
+    client = mocker.MagicMock()
+    client.firewall_get.return_value = {
+        "id": "firewall-id",
+        "name": "firewall1",
+        "location": "eastus",
+        "properties": {"provisioningState": "Succeeded"},
+    }
+    client.firewall_update.return_value = {
+        "id": "firewall-id",
+        "name": "firewall1",
+        "properties": {"firewallPolicy": {"id": "policy-id"}, "provisioningState": "Updating"},
+    }
+
+    args = {"firewall_name": "firewall1", "policy_id": "policy-id"}
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_attach_command(client, params, args)
+
+    assert result.outputs_prefix == "Azure.Firewall.Firewalls"
+    assert "Successfully attached the firewall policy to firewall firewall1" in result.readable_output
+    sent_firewall = client.firewall_update.call_args[1]["firewall_data"]
+    assert sent_firewall["properties"]["firewallPolicy"] == {"id": "policy-id"}
+
+
+def test_firewall_policy_attach_command_firewall_not_found_error(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_get raises a not-found error for the firewall.
+    When:
+        - firewall_policy_attach_command is called.
+    Then:
+        - The error propagates and no update request is sent.
+    """
+    from Azure import firewall_policy_attach_command
+
+    client = mocker.MagicMock()
+    client.firewall_get.side_effect = ValueError('Firewall "firewall1" was not found.')
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    with pytest.raises(ValueError, match="was not found"):
+        firewall_policy_attach_command(client, params, {"firewall_name": "firewall1", "policy_id": "policy-id"})
+
+    client.firewall_update.assert_not_called()
+
+
+def test_firewall_policy_detach_command_success(mocker):
+    """
+    Given:
+        - An AzureClient returning a firewall that has a firewall policy attached.
+    When:
+        - firewall_policy_detach_command is called.
+    Then:
+        - The firewallPolicy property is removed from the firewall before the update is sent,
+          and the updated firewall is returned under the Azure.Firewall.Firewalls prefix.
+    """
+    from Azure import firewall_policy_detach_command
+
+    client = mocker.MagicMock()
+    client.firewall_get.return_value = {
+        "id": "firewall-id",
+        "name": "firewall1",
+        "location": "eastus",
+        "properties": {"firewallPolicy": {"id": "policy-id"}, "provisioningState": "Succeeded"},
+    }
+    client.firewall_update.return_value = {
+        "id": "firewall-id",
+        "name": "firewall1",
+        "properties": {"provisioningState": "Updating"},
+    }
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_detach_command(client, params, {"firewall_name": "firewall1"})
+
+    assert result.outputs_prefix == "Azure.Firewall.Firewalls"
+    assert "Successfully detached the firewall policy from firewall firewall1" in result.readable_output
+    assert "firewallPolicy" not in client.firewall_update.call_args[1]["firewall_data"]["properties"]
+
+
+def test_firewall_policy_detach_command_no_policy_attached(mocker):
+    """
+    Given:
+        - An AzureClient returning a firewall that has no firewall policy attached.
+    When:
+        - firewall_policy_detach_command is called.
+    Then:
+        - The update is still sent without raising, so detaching an already detached firewall
+          is a no-op rather than an error.
+    """
+    from Azure import firewall_policy_detach_command
+
+    client = mocker.MagicMock()
+    client.firewall_get.return_value = {"id": "firewall-id", "name": "firewall1", "properties": {}}
+    client.firewall_update.return_value = {"id": "firewall-id", "name": "firewall1", "properties": {}}
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_detach_command(client, params, {"firewall_name": "firewall1"})
+
+    assert result.outputs_prefix == "Azure.Firewall.Firewalls"
+    client.firewall_update.assert_called_once()
+
+
+def test_firewall_policy_detach_command_permission_error(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_update raises a permission error.
+    When:
+        - firewall_policy_detach_command is called.
+    Then:
+        - The error propagates to main() rather than being reported as a successful detach.
+    """
+    from Azure import firewall_policy_detach_command
+
+    client = mocker.MagicMock()
+    client.firewall_get.return_value = {"id": "firewall-id", "name": "firewall1", "properties": {}}
+    client.firewall_update.side_effect = DemistoException('Failed to access Firewall "firewall1": 403 Forbidden')
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    with pytest.raises(DemistoException, match="403 Forbidden"):
+        firewall_policy_detach_command(client, params, {"firewall_name": "firewall1"})
+
+
+def test_firewall_policy_create_or_update_client_error_is_handled(mocker):
+    """
+    Given:
+        - An AzureClient whose http_request raises a 403 error.
+    When:
+        - firewall_policy_create_or_update is called.
+    Then:
+        - handle_azure_error is invoked with the firewall_policy_create_or_update API function
+          name, so the missing permission can be resolved from API_FUNCTION_TO_PERMISSIONS.
+    """
+    client = AzureClient(app_id="app", subscription_id="sub1", resource_group_name="rg1")
+    mocker.patch.object(client, "http_request", side_effect=Exception("403 Forbidden"))
+    handle_error = mocker.patch.object(client, "handle_azure_error")
+
+    client.firewall_policy_create_or_update(
+        subscription_id="sub1", resource_group_name="rg1", policy_name="policy1", policy_data={}
+    )
+
+    assert handle_error.call_args[1]["api_function_name"] == "firewall_policy_create_or_update"
+    assert handle_error.call_args[1]["resource_type"] == "Firewall Policy"
+
+
+def test_firewall_get_client_error_is_handled(mocker):
+    """
+    Given:
+        - An AzureClient whose http_request raises a 404 error.
+    When:
+        - firewall_get is called.
+    Then:
+        - handle_azure_error is invoked with the firewall_get API function name and the
+          firewall resource details.
+    """
+    client = AzureClient(app_id="app", subscription_id="sub1", resource_group_name="rg1")
+    mocker.patch.object(client, "http_request", side_effect=Exception("404 Not Found"))
+    handle_error = mocker.patch.object(client, "handle_azure_error")
+
+    client.firewall_get(subscription_id="sub1", resource_group_name="rg1", firewall_name="firewall1")
+
+    assert handle_error.call_args[1]["api_function_name"] == "firewall_get"
+    assert handle_error.call_args[1]["resource_name"] == "firewall1"
+
+
+def test_firewall_policy_list_client_uses_next_token(mocker):
+    """
+    Given:
+        - An AzureClient and a next_token pointing at the next page of firewall policies.
+    When:
+        - firewall_policy_list is called with and without the next_token.
+    Then:
+        - Without a token the resource group URL and the api-version are used, and with a token
+          the token itself is requested with no extra parameters.
+    """
+    next_token = (
+        "https://management.azure.com/subscriptions/sub1/resourceGroups/rg1"
+        "/providers/Microsoft.Network/firewallPolicies?$skipToken=abc"
+    )
+    client = AzureClient(app_id="app", subscription_id="sub1", resource_group_name="rg1")
+    http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.firewall_policy_list(subscription_id="sub1", resource_group_name="rg1")
+    first_call = http_request.call_args[1]
+    assert first_call["full_url"].endswith("/resourceGroups/rg1/providers/Microsoft.Network/firewallPolicies")
+    assert first_call["params"] == {"api-version": Azure.FIREWALL_API_VERSION}
+
+    client.firewall_policy_list(subscription_id="sub1", resource_group_name="rg1", next_token=next_token)
+    second_call = http_request.call_args[1]
+    assert second_call["full_url"] == next_token
+    assert second_call["params"] == {}
+
+
+@pytest.mark.parametrize(
+    "next_token",
+    [
+        pytest.param("https://evil.io/subscriptions/sub1", id="other_host"),
+        pytest.param("https://management.azure.com.evil.io/subscriptions/sub1", id="suffixed_host"),
+        pytest.param("https://management.azure.com@evil.io/subscriptions/sub1", id="userinfo_host"),
+        pytest.param("http://management.azure.com/subscriptions/sub1", id="http_scheme"),
+    ],
+)
+def test_firewall_policy_list_client_rejects_foreign_next_token(mocker, next_token):
+    """
+    Given:
+        - A next_token pointing at a host other than the configured Azure management endpoint,
+          or using a non-HTTPS scheme.
+    When:
+        - firewall_policy_list is called with that token.
+    Then:
+        - A DemistoException is raised and no HTTP request is sent, so the bearer token is not leaked.
+    """
+    client = AzureClient(app_id="app", subscription_id="sub1", resource_group_name="rg1")
+    http_request = mocker.patch.object(client, "http_request")
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.firewall_policy_list(subscription_id="sub1", resource_group_name="rg1", next_token=next_token)
+
+    http_request.assert_not_called()
+
+
+def test_validate_next_link_accepts_the_configured_host():
+    """
+    Given:
+        - A pagination link pointing at the configured Azure management endpoint over HTTPS.
+    When:
+        - validate_next_link is called with the endpoint's hostname.
+    Then:
+        - The link is returned unchanged.
+    """
+    from Azure import validate_next_link
+
+    next_link = "https://management.azure.com/subscriptions/sub1/providers/Microsoft.Network/firewallPolicies?$skipToken=abc"
+
+    assert validate_next_link(next_link, "management.azure.com") == next_link
+
+
+def test_validate_next_link_on_a_gov_tenant():
+    """
+    Given:
+        - A Gov tenant, whose management endpoint host is management.usgovcloudapi.net.
+    When:
+        - validate_next_link is called with a Gov nextLink and with a commercial nextLink.
+    Then:
+        - The Gov link is returned unchanged and the commercial link is rejected.
+    """
+    from Azure import validate_next_link
+
+    gov_host = "management.usgovcloudapi.net"
+    gov_next_link = (
+        "https://management.usgovcloudapi.net/subscriptions/sub1" "/providers/Microsoft.Network/firewallPolicies?$skipToken=abc"
+    )
+    commercial_next_link = (
+        "https://management.azure.com/subscriptions/sub1/providers/Microsoft.Network/firewallPolicies?$skipToken=abc"
+    )
+
+    assert validate_next_link(gov_next_link, gov_host) == gov_next_link
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        validate_next_link(commercial_next_link, gov_host)
+
+
+def test_http_request_does_not_duplicate_api_version_from_full_url(mocker):
+    """
+    Given:
+        - A full_url (an Azure nextLink) that already carries an api-version in its query string.
+    When:
+        - http_request is called without an explicit api-version in params.
+    Then:
+        - The default API_VERSION is not injected, so ARM does not receive two api-version values
+          and reject the request with InvalidResourceType.
+    """
+    client = AzureClient(app_id="app", subscription_id="sub1", resource_group_name="rg1")
+    ms_http_request = mocker.patch.object(client.ms_client, "http_request")
+    full_url = (
+        "https://management.azure.com/subscriptions/sub1/resourceGroups/rg1"
+        "/providers/Microsoft.Network/firewallPolicies?api-version=2025-09-01&$skipToken=abc"
+    )
+
+    client.http_request(method="GET", full_url=full_url, params={})
+
+    assert "api-version" not in ms_http_request.call_args.kwargs["params"]
+
+
+def test_http_request_injects_default_api_version_without_full_url(mocker):
+    """
+    Given:
+        - A request with no full_url and no api-version supplied in params.
+    When:
+        - http_request is called.
+    Then:
+        - The default API_VERSION is injected, preserving the existing behavior.
+    """
+    from Azure import API_VERSION
+
+    client = AzureClient(app_id="app", subscription_id="sub1", resource_group_name="rg1")
+    ms_http_request = mocker.patch.object(client.ms_client, "http_request")
+
+    client.http_request(method="GET", url_suffix="sub1/resourceGroups", params={})
+
+    assert ms_http_request.call_args.kwargs["params"]["api-version"] == API_VERSION
