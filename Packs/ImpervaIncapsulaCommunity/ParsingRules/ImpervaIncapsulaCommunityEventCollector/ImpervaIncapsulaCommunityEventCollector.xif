@@ -1,0 +1,175 @@
+[INGEST:vendor="imperva", product="incapsula", target_dataset="imperva_incapsula_raw", no_hit=keep]
+
+// Imperva Incapsula emits CEF: a 7-field pipe-delimited header, then a single extension
+// section of space-separated key=value pairs (values may themselves contain spaces, but
+// per the CEF spec must not contain an unescaped "=" or "|"). This rule does not unescape
+// CEF "\|", "\=", "\\" sequences within extension values (confirmed present in real
+// Imperva output, e.g. "qstr=p\=%2fetc%2fpasswd" in Imperva's own documented example) -
+// they pass through exactly as they appear in _raw_log.
+//
+// Field vocabulary and canonical casing are taken from Imperva's official "Log File
+// Structure" documentation:
+// https://docs-cybersec.thalesgroup.com/bundle/cloud-application-security/page/more/log-file-structure.htm
+// That same page's own worked examples are internally inconsistent about field-name
+// casing (fileid vs fileId, requestmethod vs requestMethod, deviceExternalID vs
+// deviceExternalId, filetype vs fileType, filepermission vs filePermission all appear
+// on the wire), so every key boundary below is matched case-insensitively via the RE2
+// "(?i)" inline flag; the column is always stored under the table's documented casing
+// regardless of which casing appeared in a given line.
+//
+// Field boundaries cannot be found with a lookahead (XQL's RE2 regex engine does not
+// support one), so each known key is normalized to a "~~keyname=" boundary marker via a
+// literal (non-backreference) replex call - this only depends on the key *names* below
+// being complete, not on the CEF extension's actual field order, so it tolerates fields
+// being emitted in a different order or omitted entirely (access events omit every
+// attack-info field; only security events populate them).
+//
+// "~~" (not "\n") is the marker: empirically confirmed against a live XSIAM tenant that
+// a literal "\n" in a replex() replacement string does NOT produce a real newline byte
+// there (regextract's "\n" pattern then never matches anything, and every field comes
+// back null) - "~~" round-trips correctly through both replex() and regextract(). This
+// carries a small, accepted residual risk: a field value containing a literal "~" breaks
+// extraction of that one field early, same class of risk as the short-key-name collision
+// risk already accepted below.
+
+alter
+    cefName     = arrayindex(regextract(_raw_log, "^CEF:[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|([^|]*)\|"), 0),
+    cefSeverity = arrayindex(regextract(_raw_log, "^CEF:[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|([^|]*)\|"), 0),
+    tmp_ext     = arrayindex(regextract(_raw_log, "^CEF:[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|(.*)$"), 0)
+
+// cefSeverity is misleadingly named (inherited from XSIAM's built-in CEF parser
+// convention) - per Imperva's docs this position is actually the numeric attack rule
+// type code (e.g. "3" = Illegal Resource Access, "0" = SQL Injection, "-1" = ACL,
+// "0" with cefName="Normal" = no attack), not a severity level. Kept as cefSeverity for
+// naming consistency with the rest of this pack and the upstream Incapsula pack's own
+// modeling rule; see the pack README for the full code table.
+
+// The extension may or may not have a leading space before its first key depending on
+// account configuration (both forms have been observed in real Imperva output) -
+// prepending one unconditionally is harmless either way and guarantees the first
+// key=value pair always has a "\s" to match against below.
+| alter tmp_n = concat(" ", tmp_ext)
+
+| alter tmp_n = replex(tmp_n, "(?i)\ssuid=", "~~suid=")
+| alter tmp_n = replex(tmp_n, "(?i)\sCustomer=", "~~Customer=")
+| alter tmp_n = replex(tmp_n, "(?i)\stag=", "~~tag=")
+| alter tmp_n = replex(tmp_n, "(?i)\scicode=", "~~cicode=")
+| alter tmp_n = replex(tmp_n, "(?i)\ssrc=", "~~src=")
+| alter tmp_n = replex(tmp_n, "(?i)\sin=", "~~in=")
+| alter tmp_n = replex(tmp_n, "(?i)\sccode=", "~~ccode=")
+| alter tmp_n = replex(tmp_n, "(?i)\scn1=", "~~cn1=")
+| alter tmp_n = replex(tmp_n, "(?i)\sfileId=", "~~fileId=")
+| alter tmp_n = replex(tmp_n, "(?i)\srequestMethod=", "~~requestMethod=")
+| alter tmp_n = replex(tmp_n, "(?i)\sdeviceFacility=", "~~deviceFacility=")
+| alter tmp_n = replex(tmp_n, "(?i)\sapp=", "~~app=")
+| alter tmp_n = replex(tmp_n, "(?i)\sver=", "~~ver=")
+| alter tmp_n = replex(tmp_n, "(?i)\sref=", "~~ref=")
+| alter tmp_n = replex(tmp_n, "(?i)\sadditionalReqHeaders=", "~~additionalReqHeaders=")
+| alter tmp_n = replex(tmp_n, "(?i)\sdeviceExternalId=", "~~deviceExternalId=")
+| alter tmp_n = replex(tmp_n, "(?i)\sact=", "~~act=")
+| alter tmp_n = replex(tmp_n, "(?i)\sstart=", "~~start=")
+| alter tmp_n = replex(tmp_n, "(?i)\send=", "~~end=")
+| alter tmp_n = replex(tmp_n, "(?i)\sadditionalResHeaders=", "~~additionalResHeaders=")
+| alter tmp_n = replex(tmp_n, "(?i)\ssiteid=", "~~siteid=")
+| alter tmp_n = replex(tmp_n, "(?i)\ssourceServiceName=", "~~sourceServiceName=")
+| alter tmp_n = replex(tmp_n, "(?i)\ssiteTag=", "~~siteTag=")
+| alter tmp_n = replex(tmp_n, "(?i)\scpt=", "~~cpt=")
+| alter tmp_n = replex(tmp_n, "(?i)\srequest=", "~~request=")
+| alter tmp_n = replex(tmp_n, "(?i)\srequestClientApplication=", "~~requestClientApplication=")
+| alter tmp_n = replex(tmp_n, "(?i)\sxff=", "~~xff=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs11=", "~~cs11=")
+| alter tmp_n = replex(tmp_n, "(?i)\sfilePermission=", "~~filePermission=")
+| alter tmp_n = replex(tmp_n, "(?i)\sfileType=", "~~fileType=")
+| alter tmp_n = replex(tmp_n, "(?i)\sdproc=", "~~dproc=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs1=", "~~cs1=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs6=", "~~cs6=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs3=", "~~cs3=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs5=", "~~cs5=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs2=", "~~cs2=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs7=", "~~cs7=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs8=", "~~cs8=")
+| alter tmp_n = replex(tmp_n, "(?i)\spostbody=", "~~postbody=")
+| alter tmp_n = replex(tmp_n, "(?i)\sqstr=", "~~qstr=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs9=", "~~cs9=")
+| alter tmp_n = replex(tmp_n, "(?i)\ssip=", "~~sip=")
+| alter tmp_n = replex(tmp_n, "(?i)\sspt=", "~~spt=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs4=", "~~cs4=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs10=", "~~cs10=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs1Label=", "~~cs1Label=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs2Label=", "~~cs2Label=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs3Label=", "~~cs3Label=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs4Label=", "~~cs4Label=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs5Label=", "~~cs5Label=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs6Label=", "~~cs6Label=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs7Label=", "~~cs7Label=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs8Label=", "~~cs8Label=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs9Label=", "~~cs9Label=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs10Label=", "~~cs10Label=")
+| alter tmp_n = replex(tmp_n, "(?i)\scs11Label=", "~~cs11Label=")
+
+// Each field is now "~~key=value"; its value runs up to the next inserted "~~"
+// marker (or end of string).
+| alter
+    suid                     = arrayindex(regextract(tmp_n, "(?i)~~suid=([^~]*)"), 0),
+    Customer                 = arrayindex(regextract(tmp_n, "(?i)~~Customer=([^~]*)"), 0),
+    `tag`                      = arrayindex(regextract(tmp_n, "(?i)~~tag=([^~]*)"), 0),
+    cicode                   = arrayindex(regextract(tmp_n, "(?i)~~cicode=([^~]*)"), 0),
+    src                      = arrayindex(regextract(tmp_n, "(?i)~~src=([^~]*)"), 0),
+    `in`                       = arrayindex(regextract(tmp_n, "(?i)~~in=([^~]*)"), 0),
+    ccode                    = arrayindex(regextract(tmp_n, "(?i)~~ccode=([^~]*)"), 0),
+    cn1                      = arrayindex(regextract(tmp_n, "(?i)~~cn1=([^~]*)"), 0),
+    fileId                   = arrayindex(regextract(tmp_n, "(?i)~~fileId=([^~]*)"), 0),
+    requestMethod            = arrayindex(regextract(tmp_n, "(?i)~~requestMethod=([^~]*)"), 0),
+    deviceFacility           = arrayindex(regextract(tmp_n, "(?i)~~deviceFacility=([^~]*)"), 0),
+    app                      = arrayindex(regextract(tmp_n, "(?i)~~app=([^~]*)"), 0),
+    ver                      = arrayindex(regextract(tmp_n, "(?i)~~ver=([^~]*)"), 0),
+    ref                      = arrayindex(regextract(tmp_n, "(?i)~~ref=([^~]*)"), 0),
+    additionalReqHeaders     = arrayindex(regextract(tmp_n, "(?i)~~additionalReqHeaders=([^~]*)"), 0),
+    deviceExternalId         = arrayindex(regextract(tmp_n, "(?i)~~deviceExternalId=([^~]*)"), 0),
+    act                      = arrayindex(regextract(tmp_n, "(?i)~~act=([^~]*)"), 0),
+    start                    = arrayindex(regextract(tmp_n, "(?i)~~start=([^~]*)"), 0),
+    end                      = arrayindex(regextract(tmp_n, "(?i)~~end=([^~]*)"), 0),
+    additionalResHeaders     = arrayindex(regextract(tmp_n, "(?i)~~additionalResHeaders=([^~]*)"), 0),
+    siteid                   = arrayindex(regextract(tmp_n, "(?i)~~siteid=([^~]*)"), 0),
+    sourceServiceName        = arrayindex(regextract(tmp_n, "(?i)~~sourceServiceName=([^~]*)"), 0),
+    siteTag                  = arrayindex(regextract(tmp_n, "(?i)~~siteTag=([^~]*)"), 0),
+    cpt                      = arrayindex(regextract(tmp_n, "(?i)~~cpt=([^~]*)"), 0),
+    request                  = arrayindex(regextract(tmp_n, "(?i)~~request=([^~]*)"), 0),
+    requestClientApplication = arrayindex(regextract(tmp_n, "(?i)~~requestClientApplication=([^~]*)"), 0),
+    xff                      = arrayindex(regextract(tmp_n, "(?i)~~xff=([^~]*)"), 0),
+    cs11                     = arrayindex(regextract(tmp_n, "(?i)~~cs11=([^~]*)"), 0),
+    filePermission           = arrayindex(regextract(tmp_n, "(?i)~~filePermission=([^~]*)"), 0),
+    fileType                 = arrayindex(regextract(tmp_n, "(?i)~~fileType=([^~]*)"), 0),
+    dproc                    = arrayindex(regextract(tmp_n, "(?i)~~dproc=([^~]*)"), 0),
+    cs1                      = arrayindex(regextract(tmp_n, "(?i)~~cs1=([^~]*)"), 0),
+    cs6                      = arrayindex(regextract(tmp_n, "(?i)~~cs6=([^~]*)"), 0),
+    cs3                      = arrayindex(regextract(tmp_n, "(?i)~~cs3=([^~]*)"), 0),
+    cs5                      = arrayindex(regextract(tmp_n, "(?i)~~cs5=([^~]*)"), 0),
+    cs2                      = arrayindex(regextract(tmp_n, "(?i)~~cs2=([^~]*)"), 0),
+    cs7                      = arrayindex(regextract(tmp_n, "(?i)~~cs7=([^~]*)"), 0),
+    cs8                      = arrayindex(regextract(tmp_n, "(?i)~~cs8=([^~]*)"), 0),
+    postbody                 = arrayindex(regextract(tmp_n, "(?i)~~postbody=([^~]*)"), 0),
+    qstr                     = arrayindex(regextract(tmp_n, "(?i)~~qstr=([^~]*)"), 0),
+    cs9                      = arrayindex(regextract(tmp_n, "(?i)~~cs9=([^~]*)"), 0),
+    sip                      = arrayindex(regextract(tmp_n, "(?i)~~sip=([^~]*)"), 0),
+    spt                      = arrayindex(regextract(tmp_n, "(?i)~~spt=([^~]*)"), 0),
+    cs4                      = arrayindex(regextract(tmp_n, "(?i)~~cs4=([^~]*)"), 0),
+    cs10                     = arrayindex(regextract(tmp_n, "(?i)~~cs10=([^~]*)"), 0),
+    cs1Label                 = arrayindex(regextract(tmp_n, "(?i)~~cs1Label=([^~]*)"), 0),
+    cs2Label                 = arrayindex(regextract(tmp_n, "(?i)~~cs2Label=([^~]*)"), 0),
+    cs3Label                 = arrayindex(regextract(tmp_n, "(?i)~~cs3Label=([^~]*)"), 0),
+    cs4Label                 = arrayindex(regextract(tmp_n, "(?i)~~cs4Label=([^~]*)"), 0),
+    cs5Label                 = arrayindex(regextract(tmp_n, "(?i)~~cs5Label=([^~]*)"), 0),
+    cs6Label                 = arrayindex(regextract(tmp_n, "(?i)~~cs6Label=([^~]*)"), 0),
+    cs7Label                 = arrayindex(regextract(tmp_n, "(?i)~~cs7Label=([^~]*)"), 0),
+    cs8Label                 = arrayindex(regextract(tmp_n, "(?i)~~cs8Label=([^~]*)"), 0),
+    cs9Label                 = arrayindex(regextract(tmp_n, "(?i)~~cs9Label=([^~]*)"), 0),
+    cs10Label                = arrayindex(regextract(tmp_n, "(?i)~~cs10Label=([^~]*)"), 0),
+    cs11Label                = arrayindex(regextract(tmp_n, "(?i)~~cs11Label=([^~]*)"), 0)
+
+// start is epoch milliseconds. _time defaults to ingest time for raw-text events, so
+// this must be set explicitly or every event will appear to have occurred when the
+// collector ran, not when Imperva actually recorded it.
+| alter _time = to_timestamp(to_integer(start), "MILLIS")
+
+| fields -tmp_ext, tmp_n;
