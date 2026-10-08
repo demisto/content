@@ -2777,7 +2777,7 @@ def test_set_issue_note_truncates_long_note(mock_get_entries):
     set_issue_note(str(uuid.uuid4()), long_note)
 
     call_args = mock_get_entries.call_args
-    sent_text = call_args[0][1]["input"]["text"]
+    sent_text = call_args[0][1]["input"]["body"]
     assert len(sent_text) <= MAX_NOTE_LENGTH
     assert sent_text.endswith("... [truncated]")
 
@@ -2875,19 +2875,21 @@ def test_get_filtered_detections_existing_description_unchanged(mock_validate, m
 @pytest.mark.parametrize(
     "threat_notes,delete_success_count,should_succeed",
     [
-        ([{"id": "note-1", "text": "First comment"}, {"id": "note-2", "text": "Second comment"}], 2, True),
-        ([{"id": "note-1", "text": "Single comment"}], 1, True),
+        ([{"id": "note-1", "body": "First comment"}, {"id": "note-2", "body": "Second comment"}], 2, True),
+        ([{"id": "note-1", "body": "Single comment"}], 1, True),
         ([], 0, True),  # No notes to delete
-        ([{"id": "note-1", "text": "Comment"}], 0, False),  # Delete fails
+        ([{"id": "note-1", "body": "Comment"}], 0, False),  # Delete fails
     ],
 )
 @patch.object(demisto, "args", return_value={"issue_id": str(uuid.uuid4())})
-@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_threats")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_threats", return_value=[{"id": "threat-123"}])
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_issue_comments")
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_results")
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_error")
 def test_clear_threat_comments(
     mock_return_error,
     mock_return_results,
+    mock_get_issue_comments,
     mock_get_filtered_threats,
     mock_args,
     threat_notes,
@@ -2895,9 +2897,7 @@ def test_clear_threat_comments(
     should_succeed,
 ):
     """Test clear_threat_comments function with various note scenarios"""
-    # Mock threat with specified notes
-    threat_with_notes = [{"id": "threat-123", "notes": threat_notes}]
-    mock_get_filtered_threats.return_value = threat_with_notes
+    mock_get_issue_comments.return_value = threat_notes
 
     # Mock get_entries to return success or None based on test case
     get_entries_return = {"id": "deleted-note"} if should_succeed else None
@@ -2919,6 +2919,98 @@ def test_clear_threat_comments(
             error_message = mock_return_error.call_args[0][0]
             assert "Failed to delete the comment" in error_message
             assert not mock_return_results.called
+
+
+@patch.object(demisto, "args", return_value={"issue_id": str(uuid.uuid4())})
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_threats", return_value=[])
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_issue_comments")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_results")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_error")
+def test_clear_threat_comments_threat_not_found(
+    mock_return_error, mock_return_results, mock_get_entries, mock_get_issue_comments, mock_get_filtered_threats, mock_args
+):
+    clear_threat_comments()
+
+    mock_return_error.assert_called_once()
+    assert "Threat with ID" in mock_return_error.call_args[0][0]
+    assert "was not found" in mock_return_error.call_args[0][0]
+    assert not mock_get_issue_comments.called
+    assert not mock_get_entries.called
+    assert not mock_return_results.called
+
+
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_results")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries", return_value=({"id": "threat-123"}, None))
+def test_reject_or_resolve_issue_posts_comment_after_update(mock_get_entries, mock_return_results):
+    issue_id = str(uuid.uuid4())
+    reject_or_resolve_issue(issue_id, "ISSUE_FIXED", "Fixed the issue", WizStatus.RESOLVED)
+
+    assert mock_get_entries.call_count == 2
+
+    update_query, update_variables, update_type = mock_get_entries.call_args_list[0][0]
+    assert update_query == UPDATE_ISSUE_QUERY
+    assert update_type == WizApiResponse.UPDATE_ISSUE
+    assert update_variables[WizApiVariables.ISSUE_ID] == issue_id
+    assert update_variables[WizApiVariables.PATCH] == {
+        WizApiVariables.STATUS: WizStatus.RESOLVED,
+        WizApiVariables.RESOLUTION_REASON: "ISSUE_FIXED",
+    }
+    assert "note" not in update_variables[WizApiVariables.PATCH]
+
+    comment_query, comment_variables, comment_type = mock_get_entries.call_args_list[1][0]
+    assert comment_query == CREATE_COMMENT_QUERY
+    assert comment_type == WizApiResponse.CREATE_COMMENT
+    assert comment_variables == {"input": {"subjectId": issue_id, "subjectType": "ISSUE", "body": "Fixed the issue"}}
+
+    mock_return_results.assert_called_once()
+
+
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries")
+def test_get_issue_comments_paginates(mock_get_entries):
+    issue_id = str(uuid.uuid4())
+    mock_get_entries.side_effect = [
+        (
+            {
+                "commentThread": {
+                    "comments": {
+                        "nodes": [{"id": "c-1", "body": "first"}],
+                        "pageInfo": {"hasNextPage": True, "endCursor": "cursor-1"},
+                    }
+                }
+            },
+            None,
+        ),
+        (
+            {
+                "commentThread": {
+                    "comments": {
+                        "nodes": [{"id": "c-2", "body": "second"}],
+                        "pageInfo": {"hasNextPage": False, "endCursor": None},
+                    }
+                }
+            },
+            None,
+        ),
+    ]
+
+    comments = get_issue_comments(issue_id)
+
+    assert comments == [{"id": "c-1", "body": "first"}, {"id": "c-2", "body": "second"}]
+    assert mock_get_entries.call_count == 2
+    assert mock_get_entries.call_args_list[0][0] == (ISSUE_COMMENTS_QUERY, {"id": issue_id, "after": None}, WizApiResponse.ISSUE)
+    assert mock_get_entries.call_args_list[1][0] == (
+        ISSUE_COMMENTS_QUERY,
+        {"id": issue_id, "after": "cursor-1"},
+        WizApiResponse.ISSUE,
+    )
+
+
+def test_retired_notes_api_not_referenced():
+    assert "notes {" not in PULL_DETECTIONS_QUERY
+    assert "notes {" not in PULL_ISSUE_QUERY
+    assert "IssueNote" not in UPDATE_ISSUE_QUERY
+    assert "createIssueNote" not in CREATE_COMMENT_QUERY
 
 
 @pytest.mark.parametrize(
@@ -3929,7 +4021,8 @@ def test_command_validation(demisto_command, example, mocker):
 
     # Create mock results
     mock_result = [{"id": "test-id", "severity": "CRITICAL", "type": "THREAT_DETECTION"}]
-    mock_threat_with_notes = [{"id": "test-id", "severity": "CRITICAL", "notes": [{"id": "note1", "text": "test note"}]}]
+    mock_threat_with_notes = [{"id": "test-id", "severity": "CRITICAL"}]
+    mock_issue_comments = [{"id": "note1", "body": "test note"}]
     mock_api_response = {"data": {"updateIssue": {"id": "test-id", "status": "RESOLVED"}}}
     mock_single_issue = [{"id": "test-id", "type": "THREAT_DETECTION"}]
 
@@ -3950,6 +4043,7 @@ def test_command_validation(demisto_command, example, mocker):
 
     # Patch get_filtered_threats for commands that need it (like clear_threat_comments)
     mocker.patch.object(WizDefend, "get_filtered_threats", return_value=mock_threat_with_notes)
+    mocker.patch.object(WizDefend, "get_issue_comments", return_value=mock_issue_comments)
 
     # Patch set_issue_note for commands that use it
     mocker.patch.object(WizDefend, "set_issue_note", return_value=mock_api_response)
