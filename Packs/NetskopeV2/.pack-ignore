@@ -1,2 +1,8 @@
 [file:NetskopeV2_image.png]
 ignore=IM111
+
+[file:NetskopeV2.yml]
+ignore=BA129
+
+[file:NetskopeMergePrivateAppFields.yml]
+ignore=BA129

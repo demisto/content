@@ -3,40 +3,50 @@ provider: Netskope
 commonfields:
   id: Netskope (API v2)
   version: -1
+sectionorder:
+- Connect
 configuration:
 - display: URL of Netskope Tenant (e.g. https://tenant.goskope.com)
   name: url
   required: true
   type: 0
   additionalinfo: The URL of the Netskope tenant.
+  section: Connect
 - display: API Key
   name: api_key
   required: false
   type: 4
   hidden: true
   additionalinfo: Legacy API key field retained for backward compatibility.
+  section: Connect
 - name: api_key_credentials
   type: 9
   required: false
   displaypassword: API Key
   hiddenusername: true
   additionalinfo: The API v2 key used to authenticate to Netskope.
+  section: Connect
 - name: api_v1_token_credentials
   type: 9
   required: false
   displaypassword: API v1 Token (for file hash list commands)
   additionalinfo: The API v1 token used by the file hash list command.
   hiddenusername: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
   additionalinfo: Whether to trust unverified TLS certificates. Not recommended.
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   additionalinfo: Whether to use the system proxy settings for connections.
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Manages Netskope policy enforcement workflows for URLs, domains, file hashes, destination and network profiles, device classification, private applications, file inspection, and URL reputation.
 display: Netskope - Direct to Zero Trust
 name: Netskope (API v2)

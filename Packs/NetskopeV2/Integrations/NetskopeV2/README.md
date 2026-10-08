@@ -1,5 +1,5 @@
 Manages Netskope policy enforcement workflows for URLs, domains, file hashes, destination and network profiles, device classification, private applications, file inspection, and URL reputation.
-This integration was integrated and tested with version xx of Netskope (API v2).
+This integration was integrated and tested with Netskope API v2.
 
 ## Configure Netskope - Direct to Zero Trust in Cortex
 
