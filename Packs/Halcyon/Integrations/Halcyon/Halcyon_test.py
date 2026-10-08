@@ -664,6 +664,12 @@ class FakeHalcyonEventsApi:
         return {"data": visible[start:end]}
 
 
+# These cursor tests freeze "now" BEFORE the events they create (the first watermark is
+# "now"), so they pass a cycle start later than every event to keep the future-dated
+# hold-back out of the way. The hold-back has its own tests in TestHoldBackFutureDatedEvents.
+CYCLE_START_AFTER_ALL_TEST_EVENTS = "2099-01-01T00:00:00.000000Z"
+
+
 def _run_fetch_cycles(mock_client, mocker, api: FakeHalcyonEventsApi, num_cycles: int, max_fetch: int):
     """Drive ``fetch_events_for_log_type`` across cycles, threading last_run.
 
@@ -685,10 +691,97 @@ def _run_fetch_cycles(mock_client, mocker, api: FakeHalcyonEventsApi, num_cycles
             log_type=LogType.EVENTS,
             last_run=last_run,
             max_fetch=max_fetch,
+            cycle_start=CYCLE_START_AFTER_ALL_TEST_EVENTS,
         )
         for ev in events:
             ingested[ev["eventId"]] += 1
     return ingested
+
+
+class TestHoldBackFutureDatedEvents:
+    """Events dated after the cycle start are not sent and do not move the watermark."""
+
+    def test_truncate_cuts_only_trailing_future_events(self):
+        from Halcyon import LogType, truncate_events_after_cycle_start
+
+        events = [
+            {"id": "a", "occurredAt": "2026-10-06T05:09:00.000Z"},
+            {"id": "b", "occurredAt": "2026-10-06T05:09:09Z"},  # exactly the cycle start: kept
+            {"id": "c", "occurredAt": "2026-10-06T05:10:09.983Z"},  # future-dated: cut
+        ]
+        kept = truncate_events_after_cycle_start(events, "2026-10-06T05:09:09.000000Z", LogType.EVENTS)
+        assert [e["id"] for e in kept] == ["a", "b"]
+
+    def test_truncate_all_future_returns_empty(self):
+        from Halcyon import LogType, truncate_events_after_cycle_start
+
+        events = [{"id": "x", "occurredAt": "2026-10-06T06:00:00.000Z"}]
+        assert truncate_events_after_cycle_start(events, "2026-10-06T05:00:00.000000Z", LogType.EVENTS) == []
+
+    def test_future_event_held_back_then_collected_once(self, mock_client, mocker):
+        """Reproduces the 2026-10-06 05:09:09 cycle: a future-dated event must not move the
+        watermark past real events, and must itself be collected once its time has passed."""
+        from Halcyon import LogType, fetch_events_for_log_type
+
+        api = FakeHalcyonEventsApi()
+        api.add_event("on-time-1", "2026-10-06T05:09:01.000Z", visible_from_cycle=0)
+        api.add_event("on-time-2", "2026-10-06T05:09:05.000Z", visible_from_cycle=0)
+        api.add_event("future", "2026-10-06T05:10:09.983Z", visible_from_cycle=0)  # clock ahead
+        api.add_event("real-later", "2026-10-06T05:09:40.000Z", visible_from_cycle=1)
+        mocker.patch.object(mock_client, "get_events", side_effect=api.get_events)
+
+        last_run: dict = {"last_fetch_events": "2026-10-06T05:09:00.000000Z"}
+        ingested: list[str] = []
+        for cycle, cycle_start in enumerate(
+            ["2026-10-06T05:09:09.000000Z", "2026-10-06T05:10:09.000000Z", "2026-10-06T05:11:09.000000Z"]
+        ):
+            api.current_cycle = cycle
+            events, last_run = fetch_events_for_log_type(
+                client=mock_client, log_type=LogType.EVENTS, last_run=last_run, max_fetch=1000, cycle_start=cycle_start
+            )
+            ingested += [e["eventId"] for e in events]
+            if cycle == 0:
+                # Watermark stays at the newest kept event; the future event is not remembered as seen.
+                assert last_run["last_fetch_events"] == "2026-10-06T05:09:05.000000Z"
+                assert "future" not in last_run["previous_ids_events"]
+
+        assert sorted(ingested) == ["future", "on-time-1", "on-time-2", "real-later"]
+
+    def test_all_events_future_keeps_previous_watermark(self, mock_client, mocker):
+        from Halcyon import LogType, fetch_events_for_log_type
+
+        api = FakeHalcyonEventsApi()
+        api.add_event("future", "2026-10-06T06:00:00.000Z")
+        mocker.patch.object(mock_client, "get_events", side_effect=api.get_events)
+
+        last_run = {"last_fetch_events": "2026-10-06T05:00:00.000000Z", "previous_ids_events": ["old"]}
+        events, last_run = fetch_events_for_log_type(
+            client=mock_client,
+            log_type=LogType.EVENTS,
+            last_run=last_run,
+            max_fetch=1000,
+            cycle_start="2026-10-06T05:05:00.000000Z",
+        )
+
+        assert events == []
+        assert last_run["last_fetch_events"] == "2026-10-06T05:00:00.000000Z"
+        assert last_run["previous_ids_events"] == ["old"]
+
+    def test_alerts_are_not_held_back(self, mock_client, mocker):
+        from Halcyon import LogType, fetch_events_for_log_type
+
+        response = {"data": [{"alertId": "alert-future", "firstOccurredAt": "2026-10-06T06:00:00.000Z"}]}
+        mocker.patch.object(mock_client, "get_alerts", return_value=response)
+
+        events, _ = fetch_events_for_log_type(
+            client=mock_client,
+            log_type=LogType.ALERTS,
+            last_run={"last_fetch_alerts": "2026-10-06T05:00:00.000000Z"},
+            max_fetch=1000,
+            cycle_start="2026-10-06T05:05:00.000000Z",
+        )
+
+        assert [e["alertId"] for e in events] == ["alert-future"]
 
 
 class TestFetchCursorDefects:

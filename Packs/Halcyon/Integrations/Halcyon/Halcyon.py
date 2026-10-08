@@ -659,11 +659,45 @@ def get_max_timestamp_from_events(events: list[dict], log_type: LogType) -> str 
     return max_timestamp
 
 
+def truncate_events_after_cycle_start(events: list[dict], cycle_start: str, log_type: LogType) -> list[dict]:
+    """Drop events dated after the cycle start from the end of an ascending-sorted batch.
+
+    Some source clocks run ahead, so an event's time can be later than the real time.
+    Such an event must not be sent yet or move the watermark, otherwise the next query
+    would skip every real event dated before it. Because the batch is sorted ascending,
+    all such events sit at the end: walk back from the last event to the newest one that
+    is not after ``cycle_start`` and cut everything after it. The inclusive ``occurredAfter``
+    query returns the cut events again in a later cycle.
+
+    Args:
+        events: Events in ascending time order.
+        cycle_start: The cycle start time, as returned by ``normalize_timestamp``.
+        log_type: The LogType of the events.
+
+    Returns:
+        The events up to and including the newest one dated at or before ``cycle_start``.
+    """
+    keep_count = len(events)
+    while keep_count > 0:
+        event_time = normalize_timestamp(events[keep_count - 1].get(log_type.time_field))
+        if not event_time or event_time <= cycle_start:
+            break
+        keep_count -= 1
+
+    if keep_count < len(events):
+        demisto.debug(
+            f"Holding back {len(events) - keep_count} {log_type.type_string} dated after the cycle start "
+            f"({cycle_start}); they will be fetched in a later cycle."
+        )
+    return events[:keep_count]
+
+
 def fetch_events_for_log_type(
     client: Client,
     log_type: LogType,
     last_run: dict,
     max_fetch: int,
+    cycle_start: str | None = None,
 ) -> tuple[list[dict], dict]:
     """Fetches events for a specific log type.
 
@@ -672,6 +706,8 @@ def fetch_events_for_log_type(
         log_type: The LogType to fetch.
         last_run: The last run dictionary.
         max_fetch: Maximum number of events to fetch.
+        cycle_start: When the fetch cycle started. For events, anything dated after it is
+            held back to a later cycle. Defaults to now.
 
     Returns:
         A tuple of (events, updated_last_run).
@@ -750,6 +786,12 @@ def fetch_events_for_log_type(
             break
 
         page += 1
+
+    # Events only (the customer issue is on events; alerts keep their current behavior).
+    # Done before the watermark and dedup IDs are computed, so the cut events affect neither.
+    if log_type == LogType.EVENTS:
+        cutoff = normalize_timestamp(cycle_start) or datetime.now(timezone.utc).strftime(DATE_FORMAT)
+        all_events = truncate_events_after_cycle_start(all_events, cutoff, log_type)
 
     # Get the max timestamp from the collected events so the watermark advances.
     raw_max_timestamp = get_max_timestamp_from_events(all_events, log_type)
@@ -940,6 +982,8 @@ def fetch_events_command(
         A tuple of (all_events, updated_last_run).
     """
     all_events: list[dict] = []
+    # Taken once, before any API call, so the cut-off is the moment the cycle started.
+    cycle_start = datetime.now(timezone.utc).strftime(DATE_FORMAT)
 
     for log_type in log_types:
         demisto.debug(f"Fetching {log_type.type_string} with max_fetch={max_fetch}")
@@ -949,6 +993,7 @@ def fetch_events_command(
             log_type=log_type,
             last_run=last_run,
             max_fetch=max_fetch,
+            cycle_start=cycle_start,
         )
 
         demisto.debug(f"Fetched {len(events)} {log_type.type_string}")
