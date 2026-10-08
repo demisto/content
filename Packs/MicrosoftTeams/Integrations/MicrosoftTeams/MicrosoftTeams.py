@@ -2082,21 +2082,22 @@ def find_graph_mention_matches(content: str, content_type: str) -> list[re.Match
 
 
 def format_graph_chat_mentions(
-    content: str, content_type: str, chat_members: list[dict[str, Any]], chat: str
+    content: str,
+    content_type: str,
+    mention_matches: list[re.Match[str]],
+    chat_members: list[dict[str, Any]],
+    chat: str,
 ) -> tuple[str, str, list[dict[str, Any]]]:
     """
     Format ``@Display Name;`` tokens as Microsoft Graph chat mentions.
 
     :param content: The chat message content.
     :param content_type: The content type, either "html" or "text".
+    :param mention_matches: The mention matches found in the content by ``find_graph_mention_matches``.
     :param chat_members: The members of the destination chat.
     :param chat: The chat identifier or name supplied to the command, used in error messages.
     :return: The formatted HTML content, its content type, and the Microsoft Graph mention objects.
     """
-    mention_matches = find_graph_mention_matches(content, content_type)
-    if not mention_matches:
-        return content, content_type, []
-
     members_by_name: dict[str, list[dict[str, Any]]] = {}
     for member in chat_members:
         if display_name := member.get("displayName"):
@@ -2158,8 +2159,10 @@ def message_send_to_chat_command():
     chat_id, _ = get_chat_id_and_type(chat)
 
     mentions: list[dict[str, Any]] = []
-    if find_graph_mention_matches(content, content_type):
-        content, content_type, mentions = format_graph_chat_mentions(content, content_type, get_chat_members(chat_id), chat)
+    if mention_matches := find_graph_mention_matches(content, content_type):
+        content, content_type, mentions = format_graph_chat_mentions(
+            content, content_type, mention_matches, get_chat_members(chat_id), chat
+        )
 
     add_bot_to_chat(chat_id)
 

@@ -1839,10 +1839,12 @@ def test_message_send_to_chat_command_rejects_invalid_mention_before_post(mocker
 
 def test_format_graph_chat_mentions_preserves_html():
     """Existing HTML is retained while generated display-name markup is escaped."""
-    from MicrosoftTeams import format_graph_chat_mentions
+    from MicrosoftTeams import find_graph_mention_matches, format_graph_chat_mentions
 
     members = [{"displayName": "A&B <Admin>", "userId": "user-id"}]
-    content, content_type, mentions = format_graph_chat_mentions("<b>Hello</b> @A&B <Admin>;", "html", members, "chat")
+    content = "<b>Hello</b> @A&B <Admin>;"
+    matches = find_graph_mention_matches(content, "html")
+    content, content_type, mentions = format_graph_chat_mentions(content, "html", matches, members, "chat")
 
     assert content == '<b>Hello</b> <at id="0">A&amp;B &lt;Admin&gt;</at>'
     assert content_type == "html"
@@ -1865,10 +1867,12 @@ def test_format_graph_chat_mentions_preserves_html():
 )
 def test_format_graph_chat_mentions_rejects_invalid_member(members, expected_error):
     """Invalid mention identities fail before a message can be sent."""
-    from MicrosoftTeams import format_graph_chat_mentions
+    from MicrosoftTeams import find_graph_mention_matches, format_graph_chat_mentions
 
+    content = "Hello @Missing User;"
+    matches = find_graph_mention_matches(content, "text")
     with pytest.raises(ValueError, match=expected_error):
-        format_graph_chat_mentions("Hello @Missing User;", "text", members, "chat")
+        format_graph_chat_mentions(content, "text", matches, members, "chat")
 
 
 @pytest.mark.parametrize(
@@ -1879,19 +1883,19 @@ def test_format_graph_chat_mentions_rejects_invalid_member(members, expected_err
         "<a title='Contact > @Megan Bowen;'>Contact</a>",
     ],
 )
-def test_format_graph_chat_mentions_ignores_mentions_in_html_attributes(content):
-    from MicrosoftTeams import format_graph_chat_mentions
+def test_find_graph_mention_matches_ignores_mentions_in_html_attributes(content):
+    from MicrosoftTeams import find_graph_mention_matches
 
-    members = [{"displayName": "Megan Bowen", "userId": "user-id"}]
-
-    assert format_graph_chat_mentions(content, "html", members, "chat") == (content, "html", [])
+    assert find_graph_mention_matches(content, "html") == []
 
 
 def test_format_graph_chat_mentions_preserves_text_line_breaks():
-    from MicrosoftTeams import format_graph_chat_mentions
+    from MicrosoftTeams import find_graph_mention_matches, format_graph_chat_mentions
 
     members = [{"displayName": "Megan Bowen", "userId": "user-id"}]
-    content, _, _ = format_graph_chat_mentions("First line\r\nHello @Megan Bowen;\r\nLast line", "text", members, "chat")
+    content = "First line\r\nHello @Megan Bowen;\r\nLast line"
+    matches = find_graph_mention_matches(content, "text")
+    content, _, _ = format_graph_chat_mentions(content, "text", matches, members, "chat")
 
     assert content == 'First line<br>Hello <at id="0">Megan Bowen</at><br>Last line'
 
@@ -1899,19 +1903,15 @@ def test_format_graph_chat_mentions_preserves_text_line_breaks():
 @pytest.mark.parametrize("separator", ["\n", "\r\n", "\t", "(", ","])
 def test_graph_chat_mentions_match_send_notification_boundaries(separator):
     """Like send-notification, Graph mentions must start the message or follow a literal space."""
-    from MicrosoftTeams import format_graph_chat_mentions
+    from MicrosoftTeams import find_graph_mention_matches
 
-    members = [{"displayName": "Megan Bowen", "userId": "user-id"}]
-    content = f"Hello{separator}@Megan Bowen;"
-
-    assert format_graph_chat_mentions(content, "text", members, "chat") == (content, "text", [])
+    assert find_graph_mention_matches(f"Hello{separator}@Megan Bowen;", "text") == []
 
 
-def test_format_graph_chat_mentions_ignores_email_address():
-    from MicrosoftTeams import format_graph_chat_mentions
+def test_find_graph_mention_matches_ignores_email_address():
+    from MicrosoftTeams import find_graph_mention_matches
 
-    content = "Email a@example.com; for help"
-    assert format_graph_chat_mentions(content, "text", [], "chat") == (content, "text", [])
+    assert find_graph_mention_matches("Email a@example.com; for help", "text") == []
 
 
 def test_get_chat_members_follows_pagination(requests_mock):
