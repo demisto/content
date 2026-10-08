@@ -374,10 +374,20 @@ class SlackAssistantHandler(AssistantMessagingHandler):
                 return {"ts": response.get("ts")}
             return {}
         except SlackApiError as e:
-            # If blocks or attachments are invalid, send as plain text so the message isn't lost.
             error_str = str(e)
-            if "invalid_blocks" in error_str or "invalid_attachments" in error_str:
-                demisto.error(f"Invalid blocks/attachments format, sending as plain text: {e}")
+            # msg_blocks_too_long means the blocks payload is too large for a single message.
+            # Try to split it across several messages so the formatted response is preserved
+            # instead of being degraded to plain text.
+            if "msg_blocks_too_long" in error_str:
+                demisto.error(f"Blocks too long for a single message, splitting: {e}")
+                split_result = self._post_agent_response_split(channel_id, thread_id, blocks, attachments)
+                if split_result is not None:
+                    return split_result
+            # For invalid blocks/attachments (or if splitting still failed), send the message
+            # as plain text so it isn't lost.
+            block_errors = ("invalid_blocks", "invalid_attachments", "msg_blocks_too_long")
+            if any(err in error_str for err in block_errors):
+                demisto.error(f"Blocks/attachments rejected by Slack, sending as plain text: {e}")
                 if fallback_text:
                     response = send_message_to_destinations(
                         [channel_id], fallback_text, thread_id, bot_name=AssistantMessages.BOT_DISPLAY_NAME
@@ -385,6 +395,71 @@ class SlackAssistantHandler(AssistantMessagingHandler):
                     if response:
                         return {"ts": response.get("ts")}
             raise
+
+    def _post_agent_response_split(self, channel_id: str, thread_id: str, blocks: list, attachments: list) -> dict | None:
+        """
+        Sends an oversized agent response across several messages, respecting Slack's
+        per-message block limit.
+
+        Handles both delivery shapes used by the assistant:
+        - Model/final responses use top-level ``blocks``.
+        - Step/error responses wrap their blocks inside a single ``attachments`` entry.
+
+        Args:
+            channel_id: The channel ID.
+            thread_id: The thread ID.
+            blocks: Top-level message blocks (empty for step/error messages).
+            attachments: Message attachments (empty for model/final messages).
+
+        Returns:
+            The response dict of the first successfully sent chunk (with its ``ts``),
+            or None if splitting is not possible (so the caller can fall back to plain text).
+        """
+        block_chunks, attachment_template = self._build_chunks_for_split(blocks, attachments)
+        if not block_chunks or len(block_chunks) < 2:
+            # Nothing to gain from splitting (single chunk would still be too long).
+            return None
+
+        first_response: dict | None = None
+        for chunk in block_chunks:
+            chunk_blocks, chunk_attachments = self._wrap_chunk(chunk, attachment_template)
+            try:
+                response = send_message_to_destinations(
+                    [channel_id],
+                    "",
+                    thread_id,
+                    chunk_blocks,
+                    chunk_attachments,
+                    bot_name=AssistantMessages.BOT_DISPLAY_NAME,
+                )
+            except SlackApiError as chunk_error:
+                demisto.error(f"Failed to send split chunk, aborting split: {chunk_error}")
+                return None
+            if response and first_response is None:
+                first_response = {"ts": response.get("ts")}
+        return first_response
+
+    @staticmethod
+    def _build_chunks_for_split(blocks: list, attachments: list) -> tuple[list[list], dict | None]:
+        """
+        Determines the blocks to split and (for attachment-based messages) the attachment
+        wrapper to reuse for each chunk.
+
+        Returns:
+            Tuple of (block_chunks, attachment_template). attachment_template is None when
+            the message uses top-level blocks.
+        """
+        if attachments and isinstance(attachments[0], dict) and attachments[0].get("blocks"):
+            attachment_template = {k: v for k, v in attachments[0].items() if k != "blocks"}
+            return split_blocks_into_chunks(attachments[0]["blocks"]), attachment_template
+        return split_blocks_into_chunks(blocks or []), None
+
+    @staticmethod
+    def _wrap_chunk(chunk: list, attachment_template: dict | None) -> tuple[list, list]:
+        """Wraps a block chunk back into the (blocks, attachments) shape it originated from."""
+        if attachment_template is not None:
+            return [], [{**attachment_template, "blocks": chunk}]
+        return chunk, []
 
     def update_context(self, context_updates: dict):
         """
@@ -644,8 +719,7 @@ def test_module():
     # Status of mirroring check
     if MIRRORING_ENABLED and not LONG_RUNNING_ENABLED:
         demisto.error(
-            "Mirroring is enabled, however long running is disabled. For mirrors to work correctly,"
-            " long running must be enabled."
+            "Mirroring is enabled, however long running is disabled. For mirrors to work correctly, long running must be enabled."
         )
 
     # validation for permitted_notifications since not all the options are supported by xsiam
@@ -712,11 +786,13 @@ def return_user_filter(user_to_search: str, users_list):
     """
     users_filter = list(
         filter(
-            lambda u: u.get("name", "").lower() == user_to_search
-            or u.get("id", "").lower() == user_to_search
-            or u.get("profile", {}).get("display_name", "").lower() == user_to_search
-            or u.get("profile", {}).get("email", "").lower() == user_to_search
-            or u.get("profile", {}).get("real_name", "").lower() == user_to_search,
+            lambda u: (
+                u.get("name", "").lower() == user_to_search
+                or u.get("id", "").lower() == user_to_search
+                or u.get("profile", {}).get("display_name", "").lower() == user_to_search
+                or u.get("profile", {}).get("email", "").lower() == user_to_search
+                or u.get("profile", {}).get("real_name", "").lower() == user_to_search
+            ),
             users_list,
         )
     )
@@ -999,7 +1075,7 @@ def validate_slack_request_args(
 
     allowed_http_verb_values: tuple = get_args(ALLOWED_HTTP_VERBS)
     if http_verb not in allowed_http_verb_values:
-        raise ValueError(f'Invalid http_verb: {http_verb}. Allowed values: {", ".join(allowed_http_verb_values)}.')
+        raise ValueError(f"Invalid http_verb: {http_verb}. Allowed values: {', '.join(allowed_http_verb_values)}.")
 
 
 def send_slack_request_sync(
@@ -1231,8 +1307,7 @@ def mirror_investigation():
     """
     if MIRRORING_ENABLED and not LONG_RUNNING_ENABLED:
         demisto.error(
-            "Mirroring is enabled, however long running is disabled. For mirrors to work correctly,"
-            " long running must be enabled."
+            "Mirroring is enabled, however long running is disabled. For mirrors to work correctly, long running must be enabled."
         )
     args = demisto.args()
     demisto.debug(f"SlackV3 integration: This is the arguments for the mirror-investigation command: {args}")
@@ -1353,7 +1428,7 @@ def mirror_investigation():
             channel_topic = channel_mirror["channel_topic"]
         else:
             channel_topic = ""
-        mirrored_investigations_ids = [f'incident-{m["investigation_id"]}' for m in channel_filter]
+        mirrored_investigations_ids = [f"incident-{m['investigation_id']}" for m in channel_filter]
         if not channel_topic or channel_topic.find("incident-") != -1:
             new_topic = ", ".join(mirrored_investigations_ids + [mirror_name])
             if channel_topic != new_topic:
@@ -2498,8 +2573,7 @@ def send_mirrored_file_to_slack(entry: str, message: str, original_channel: str,
     file_name = demisto.getFilePath(entry)["name"]
     if FILE_MIRRORING_ENABLED:
         demisto.debug(
-            f"file {file_name} has been uploaded to a mirrored incident, "
-            f"uploading the file to slack channel {original_channel}"
+            f"file {file_name} has been uploaded to a mirrored incident, uploading the file to slack channel {original_channel}"
         )
         if comment:
             # if a comment was added when uploading the file, add it to the message
@@ -2724,7 +2798,7 @@ def slack_send_file(_channel: str | None = None, _channel_id: str = "", _entry_i
 
     file_dict = {"path": file_path["path"], "name": file_path["name"], "comment": comment}
 
-    error_message = f'Failed to send file: {file_path["name"]} to Slack.'
+    error_message = f"Failed to send file: {file_path['name']} to Slack."
     try:
         response = slack_send_request(to, channel, group, thread_id=thread_id, file_dict=file_dict, channel_id=channel_id)
         if response:
@@ -2991,7 +3065,7 @@ def slack_send_request(
             destinations.append(channel_id)
         if not destinations:
             destination_name = channel or group
-            mirrored_channel_filter = list(filter(lambda m: f'incident-{m["investigation_id"]}' == destination_name, mirrors))
+            mirrored_channel_filter = list(filter(lambda m: f"incident-{m['investigation_id']}" == destination_name, mirrors))
             if mirrored_channel_filter:
                 channel_mirror = mirrored_channel_filter[0]
                 conversation_id = channel_mirror["channel_id"]
@@ -3102,7 +3176,7 @@ def close_channel():
         channel_mirrors = list(filter(lambda m: channel_id == m["channel_id"], mirrors))
         for mirror in channel_mirrors:
             mirror["remove"] = True
-            demisto.mirrorInvestigation(mirror["investigation_id"], f'none:{mirror["mirror_direction"]}', mirror["auto_close"])
+            demisto.mirrorInvestigation(mirror["investigation_id"], f"none:{mirror['mirror_direction']}", mirror["auto_close"])
 
         set_to_integration_context_with_retries({"mirrors": mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
     if channel and not channel_id:
@@ -3395,7 +3469,7 @@ def list_channels():
             )
             entry["Creator"] = creator_details_response["user"]["name"]
         context.append(entry)
-    readable_output = tableToMarkdown(f'Channels list for {args.get("channel_types")} with filter {name_filter}', context)
+    readable_output = tableToMarkdown(f"Channels list for {args.get('channel_types')} with filter {name_filter}", context)
     demisto.results(
         {
             "Type": entryTypes["note"],
@@ -3641,7 +3715,7 @@ def conversation_replies(
     if isinstance(messages, dict):
         messages = [messages]
     if not isinstance(messages, list):
-        raise DemistoException(f'An error occurred while listing conversation replies: {raw_response.get("error")}')
+        raise DemistoException(f"An error occurred while listing conversation replies: {raw_response.get('error')}")
     for message in messages:
         reply_count = "No"
         name = "N/A"

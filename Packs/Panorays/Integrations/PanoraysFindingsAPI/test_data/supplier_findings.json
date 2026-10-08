@@ -1,0 +1,82 @@
+{
+    "data": [
+        {
+            "id": "find-1",
+            "status": "OPEN",
+            "severity": "CRITICAL",
+            "asset_name": "vpn.acme-logistics.example",
+            "category": "Network Security",
+            "sub_category": "Exposed Services",
+            "test_name": "Exposed RDP",
+            "test_text": "Checks for RDP exposed to the internet.",
+            "finding_text": "RDP is exposed to the internet.",
+            "description": "Remote Desktop reachable from any source address.",
+            "cves": [
+                "CVE-2019-0708"
+            ],
+            "metadata": {},
+            "segments": [
+                "seg-1"
+            ],
+            "insert_ts": "2099-01-01T00:00:00Z",
+            "update_ts": "2099-01-02T00:00:00Z",
+            "subcategories": [
+                "Exposed Services"
+            ],
+            "status_update_ts": null,
+            "evidence": null,
+            "dispute_reason": null,
+            "updated_by": null
+        },
+        {
+            "id": "find-2",
+            "status": "OPEN",
+            "severity": "HIGH",
+            "asset_name": "mail.acme-logistics.example",
+            "category": "Email Security",
+            "sub_category": "SPF",
+            "test_name": "SPF Missing",
+            "test_text": "Checks for a valid SPF record.",
+            "finding_text": "No SPF record configured.",
+            "description": "Domain lacks an SPF record.",
+            "cves": [],
+            "metadata": {},
+            "segments": [],
+            "insert_ts": "2099-01-01T00:00:00Z",
+            "update_ts": "2099-01-02T00:00:00Z",
+            "subcategories": [
+                "SPF"
+            ],
+            "status_update_ts": null,
+            "evidence": null,
+            "dispute_reason": null,
+            "updated_by": null
+        },
+        {
+            "id": "find-3",
+            "status": "REOPENED",
+            "severity": "CRITICAL",
+            "asset_name": "portal.acme-logistics.example",
+            "category": "Application",
+            "sub_category": "TLS",
+            "subcategories": [
+                "TLS"
+            ],
+            "test_name": "Expired Certificate",
+            "test_text": "Checks certificate validity.",
+            "finding_text": "TLS certificate has expired.",
+            "description": "The certificate presented by the host is past its expiry date.",
+            "cves": [],
+            "metadata": {},
+            "segments": [],
+            "status_update_ts": "2099-01-03T00:00:00Z",
+            "evidence": null,
+            "dispute_reason": null,
+            "updated_by": null,
+            "insert_ts": "2099-01-01T00:00:00Z",
+            "update_ts": "2099-01-03T00:00:00Z"
+        }
+    ],
+    "has_next": false,
+    "has_previous": false
+}

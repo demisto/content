@@ -2,6 +2,7 @@ import datetime
 import re
 
 import dateparser
+import demistomock as demisto
 import pytest
 from CloudflareZeroTrustEventCollector import (
     ACCOUNT_AUDIT_TYPE,
@@ -334,3 +335,289 @@ def test_validate_headers_raises_exception(params: dict, expected_error_message:
 
     with pytest.raises(DemistoException, match=re.escape(expected_error_message)):
         validate_headers(params)
+
+
+@pytest.mark.parametrize("max_fetch, previous_ids", [(625, 19), (625, 23), (1, 0), (5000, 0)])
+def test_fetch_events_for_type_uses_fixed_page_size(mock_client: Client, mocker, max_fetch: int, previous_ids: int):
+    """
+    Given: Any `max_fetch` limit (including a reduced one after timeouts) and any number of deduplication IDs.
+    When: Calling `fetch_events_for_type`.
+    Then: Ensure the request always uses the fixed page size, never a value derived from `max_fetch` + IDs.
+
+    Regression for XSUP-77377: a derived page size such as 644 made the Access Authentication Logs endpoint
+    return HTTP 400 with error code 12091, which stopped event collection.
+    """
+    from CloudflareZeroTrustEventCollector import ACCESS_AUTHENTICATION_PAGE_SIZE, fetch_events_for_type
+
+    get_events = mocker.patch.object(Client, "get_events", return_value={"result": []})
+    last_run = {"last_fetch": "2024-01-01T00:00:00Z", "events_ids": [str(i) for i in range(previous_ids)]}
+
+    fetch_events_for_type(
+        client=mock_client,
+        last_run=last_run,
+        max_fetch=max_fetch,
+        max_page_size=ACCESS_AUTHENTICATION_PAGE_SIZE,
+        event_type=ACCESS_AUTHENTICATION_TYPE,
+    )
+
+    assert get_events.call_args.args[1] == ACCESS_AUTHENTICATION_PAGE_SIZE
+
+
+def test_fetch_events_for_type_trims_to_max_fetch(mock_client: Client, mocker):
+    """
+    Given: A full page of events larger than `max_fetch`.
+    When: Calling `fetch_events_for_type`.
+    Then: Ensure only `max_fetch` events are returned, even though a full page was requested.
+    """
+    from CloudflareZeroTrustEventCollector import fetch_events_for_type
+
+    page = [{"id": str(i), "created_at": "2024-01-01T00:00:00Z"} for i in range(10)]
+    mocker.patch.object(Client, "get_events", return_value={"result": page})
+
+    events, _ = fetch_events_for_type(
+        client=mock_client, last_run={}, max_fetch=3, max_page_size=10, event_type=ACCESS_AUTHENTICATION_TYPE
+    )
+
+    assert [event["id"] for event in events] == ["0", "1", "2"]
+
+
+def test_fetch_events_for_type_advances_since_instead_of_paging(mock_client: Client, mocker):
+    """
+    Given: A full page of events followed by a short page.
+    When: Calling `fetch_events_for_type`.
+    Then: Ensure the second request moves `since` to the last event of the first page and asks for page 1 again,
+          and that events repeated at the boundary second are deduplicated.
+
+    Regression for XSUP-77377: paging deep into an old window (page=2, 3, ...) made Cloudflare return HTTP 504.
+    """
+    from CloudflareZeroTrustEventCollector import fetch_events_for_type
+
+    first_page = [
+        {"id": "a", "created_at": "2024-01-01T00:00:00Z"},
+        {"id": "b", "created_at": "2024-01-01T00:00:01Z"},
+        {"id": "c", "created_at": "2024-01-01T00:00:02Z"},
+    ]
+    # Cloudflare returns the boundary-second event "c" again, because `since` is inclusive.
+    second_page = [{"id": "c", "created_at": "2024-01-01T00:00:02Z"}, {"id": "d", "created_at": "2024-01-01T00:00:03Z"}]
+    get_events = mocker.patch.object(Client, "get_events", side_effect=[{"result": first_page}, {"result": second_page}])
+
+    events, next_run = fetch_events_for_type(
+        client=mock_client,
+        last_run={"last_fetch": "2024-01-01T00:00:00Z", "events_ids": []},
+        max_fetch=10,
+        max_page_size=3,
+        event_type=ACCESS_AUTHENTICATION_TYPE,
+    )
+
+    assert [call.args[0] for call in get_events.call_args_list] == ["2024-01-01T00:00:00Z", "2024-01-01T00:00:02Z"]
+    assert [call.args[2] for call in get_events.call_args_list] == [1, 1]  # always page 1, never deeper
+    assert [event["id"] for event in events] == ["a", "b", "c", "d"]
+    assert next_run == {"last_fetch": "2024-01-01T00:00:03Z", "events_ids": ["d"]}
+
+
+def test_fetch_events_for_type_pages_when_whole_page_shares_one_second(mock_client: Client, mocker):
+    """
+    Given: A full page where every event has the same timestamp, so `since` cannot move forward.
+    When: Calling `fetch_events_for_type`.
+    Then: Ensure it falls back to requesting the next page with the same `since`, instead of repeating the same request.
+    """
+    from CloudflareZeroTrustEventCollector import fetch_events_for_type
+
+    same_second = [{"id": str(i), "created_at": "2024-01-01T00:00:00Z"} for i in range(3)]
+    next_second = [{"id": "x", "created_at": "2024-01-01T00:00:01Z"}]
+    get_events = mocker.patch.object(Client, "get_events", side_effect=[{"result": same_second}, {"result": next_second}])
+
+    events, _ = fetch_events_for_type(
+        client=mock_client,
+        last_run={"last_fetch": "2024-01-01T00:00:00Z", "events_ids": []},
+        max_fetch=10,
+        max_page_size=3,
+        event_type=ACCESS_AUTHENTICATION_TYPE,
+    )
+
+    assert [(call.args[0], call.args[2]) for call in get_events.call_args_list] == [
+        ("2024-01-01T00:00:00Z", 1),
+        ("2024-01-01T00:00:00Z", 2),
+    ]
+    assert [event["id"] for event in events] == ["0", "1", "2", "x"]
+
+
+def test_fetch_events_for_type_stops_on_full_page_without_new_events(mock_client: Client, mocker):
+    """
+    Given: A full page that contains only events that were already fetched.
+    When: Calling `fetch_events_for_type`.
+    Then: Ensure the loop stops instead of requesting the same data forever.
+    """
+    from CloudflareZeroTrustEventCollector import fetch_events_for_type
+
+    page = [{"id": str(i), "created_at": f"2024-01-01T00:00:0{i}Z"} for i in range(3)]
+    get_events = mocker.patch.object(Client, "get_events", return_value={"result": page})
+
+    events, _ = fetch_events_for_type(
+        client=mock_client,
+        last_run={"last_fetch": "2024-01-01T00:00:00Z", "events_ids": ["0", "1", "2"]},
+        max_fetch=10,
+        max_page_size=3,
+        event_type=ACCESS_AUTHENTICATION_TYPE,
+    )
+
+    assert events == []
+    assert get_events.call_count == 1
+
+
+def test_get_events_retries_server_errors(mock_client: Client, mocker):
+    """
+    Given: A request to any Cloudflare endpoint.
+    When: Calling `get_events`.
+    Then: Ensure transient server errors (including HTTP 504) are retried with backoff.
+    """
+    from CloudflareZeroTrustEventCollector import RETRY_COUNT, RETRY_STATUS_CODES
+
+    http_request = mocker.patch.object(Client, "_http_request", return_value={"result": []})
+
+    mock_client.get_events("2024-01-01T00:00:00Z", 1000, 1, ACCESS_AUTHENTICATION_TYPE)
+
+    kwargs = http_request.call_args.kwargs
+    assert kwargs["retries"] == RETRY_COUNT > 0
+    assert 504 in kwargs["status_list_to_retry"] == RETRY_STATUS_CODES
+
+
+def test_generate_event_id_logs_once_per_batch(mocker):
+    """
+    Given: Many events without an `id` field.
+    When: Calling `generate_event_id_if_not_exists`.
+    Then: Ensure a single debug line is written for the whole batch, not one per event.
+
+    A debug line per event cost about 17 seconds per 1000 events, which made high-volume fetches time out.
+    """
+    debug = mocker.patch.object(demisto, "debug")
+    events = [{"created_at": "2024-01-01T00:00:00Z", "n": i} for i in range(50)]
+
+    generate_event_id_if_not_exists(events)
+
+    assert all("id" in event for event in events)
+    assert debug.call_count == 1
+
+
+@freeze_time(MOCK_TIME_UTC_NOW)
+def test_fetch_events_isolates_failing_event_type(mock_client: Client, mocker):
+    """
+    Given: One event type raises an API error while the other succeeds.
+    When: Calling `fetch_events`.
+    Then: Ensure the successful event type's events and last run are returned, and the failing type keeps its last run.
+
+    Regression for XSUP-77377: an error in one event type used to abort the whole fetch, so the last run was never
+    saved and the events of every other event type were discarded.
+    """
+    from CloudflareZeroTrustEventCollector import USER_AUDIT_TYPE
+
+    mocker.patch.object(demisto, "error")
+    failing_last_run = {"last_fetch": "2024-01-01T00:00:00Z", "events_ids": ["x"]}
+
+    def side_effect(client, last_run, max_fetch, max_page_size, event_type, start_fetch_date=""):
+        if event_type == ACCESS_AUTHENTICATION_TYPE:
+            raise DemistoException("Error in API call [400] - Bad Request")
+        return [{"id": "a"}], {"last_fetch": "2024-01-02T00:00:00Z", "events_ids": ["a"]}
+
+    mocker.patch("CloudflareZeroTrustEventCollector.fetch_events_for_type", side_effect=side_effect)
+
+    next_run, events = fetch_events(
+        client=mock_client,
+        last_run={ACCESS_AUTHENTICATION_TYPE: dict(failing_last_run, max_fetch=625)},
+        max_fetch_account_audit=5,
+        max_fetch_user_audit=5,
+        max_fetch_authentication=5,
+        event_types_to_fetch=[USER_AUDIT_TYPE, ACCESS_AUTHENTICATION_TYPE],
+    )
+
+    assert events == [{"id": "a"}]
+    assert next_run[USER_AUDIT_TYPE] == {"last_fetch": "2024-01-02T00:00:00Z", "events_ids": ["a"]}
+    assert next_run[ACCESS_AUTHENTICATION_TYPE] == dict(failing_last_run, max_fetch=625)
+    assert "nextTrigger" not in next_run
+
+
+def test_fetch_events_for_type_keeps_events_when_later_page_fails(mock_client: Client, mocker):
+    """
+    Given: The first page succeeds and a later page fails with a server error.
+    When: Calling `fetch_events_for_type`.
+    Then: Ensure the first page's events are returned and the last run advances past them.
+
+    Regression for XSUP-77377: a 500/504 on page 2 discarded page 1, so the last run never advanced and the same
+    window failed on every fetch.
+    """
+    from CloudflareZeroTrustEventCollector import fetch_events_for_type
+
+    mocker.patch.object(demisto, "error")
+    first_page = [{"id": str(i), "created_at": f"2024-01-01T00:00:{i:02d}Z"} for i in range(3)]
+    mocker.patch.object(
+        Client,
+        "get_events",
+        side_effect=[{"result": first_page}, DemistoException("Error in API call [504] - Gateway Timeout")],
+    )
+
+    events, next_run = fetch_events_for_type(
+        client=mock_client,
+        last_run={"last_fetch": "2024-01-01T00:00:00Z", "events_ids": []},
+        max_fetch=10,
+        max_page_size=3,
+        event_type=ACCESS_AUTHENTICATION_TYPE,
+    )
+
+    assert [event["id"] for event in events] == ["0", "1", "2"]
+    assert next_run == {"last_fetch": "2024-01-01T00:00:02Z", "events_ids": ["2"]}
+
+
+def test_fetch_events_for_type_raises_when_first_page_fails(mock_client: Client, mocker):
+    """
+    Given: The first page fails.
+    When: Calling `fetch_events_for_type`.
+    Then: Ensure the error is raised, since no progress was made.
+    """
+    from CloudflareZeroTrustEventCollector import fetch_events_for_type
+
+    mocker.patch.object(Client, "get_events", side_effect=DemistoException("Error in API call [500] - Internal Server Error"))
+
+    with pytest.raises(DemistoException, match="500"):
+        fetch_events_for_type(
+            client=mock_client, last_run={}, max_fetch=10, max_page_size=3, event_type=ACCESS_AUTHENTICATION_TYPE
+        )
+
+
+def test_fetch_events_for_type_propagates_timeout_on_later_page(mock_client: Client, mocker):
+    """
+    Given: The first page succeeds and the execution timeout fires while fetching a later page.
+    When: Calling `fetch_events_for_type`.
+    Then: Ensure the timeout propagates so `fetch_events` applies its timeout handling.
+    """
+    from CloudflareZeroTrustEventCollector import fetch_events_for_type
+
+    first_page = [{"id": str(i), "created_at": "2024-01-01T00:00:00Z"} for i in range(3)]
+    mocker.patch.object(Client, "get_events", side_effect=[{"result": first_page}, SignalTimeoutError()])
+
+    with pytest.raises(SignalTimeoutError):
+        fetch_events_for_type(
+            client=mock_client, last_run={}, max_fetch=10, max_page_size=3, event_type=ACCESS_AUTHENTICATION_TYPE
+        )
+
+
+def test_fetch_events_raises_when_all_event_types_fail(mock_client: Client, mocker):
+    """
+    Given: Every event type raises an API error.
+    When: Calling `fetch_events`.
+    Then: Ensure an exception is raised instead of silently reporting an empty successful fetch.
+    """
+    mocker.patch.object(demisto, "error")
+    mocker.patch(
+        "CloudflareZeroTrustEventCollector.fetch_events_for_type",
+        side_effect=DemistoException("Error in API call [400] - Bad Request"),
+    )
+
+    with pytest.raises(DemistoException, match="Failed fetching all event types"):
+        fetch_events(
+            client=mock_client,
+            last_run={},
+            max_fetch_account_audit=5,
+            max_fetch_user_audit=5,
+            max_fetch_authentication=5,
+            event_types_to_fetch=[ACCOUNT_AUDIT_TYPE, ACCESS_AUTHENTICATION_TYPE],
+        )
