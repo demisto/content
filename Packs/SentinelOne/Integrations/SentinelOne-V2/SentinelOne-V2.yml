@@ -439,6 +439,9 @@ script:
     - contextPath: SentinelOne.UnifiedExclusions.OsType
       description: Operating system type of the exclusion item.
       type: string
+    - contextPath: SentinelOne.UnifiedExclusions.ModeType
+      description: The exclusion mode type.
+      type: string
     - contextPath: SentinelOne.UnifiedExclusions.Description
       description: Description of the exclusion item.
       type: string
