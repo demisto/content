@@ -1,0 +1,724 @@
+{
+    "id": "HealthCheck issue Layout",
+    "version": 4,
+    "cacheVersn": 0,
+    "modified": "2026-07-13T11:18:03.133725786Z",
+    "sizeInBytes": 0,
+    "packID": "HealthCheck",
+    "packName": "System Diagnostics and Health Check",
+    "itemVersion": "3.5.0",
+    "fromServerVersion": "8.0.0",
+    "toServerVersion": "99.99.99",
+    "propagationLabels": [
+        "all"
+    ],
+    "packPropagationLabels": [
+        "all"
+    ],
+    "definitionId": "",
+    "isOverridable": false,
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "commitMessage": "",
+    "shouldCommit": false,
+    "name": "HealthCheckIssueLayout",
+    "description": "",
+    "prevName": "HealthCheckIssueLayout",
+    "system": true,
+    "locked": false,
+    "group": "incident",
+    "detached": false,
+    "detailsV2": {
+        "TypeName": "",
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "hidden": true,
+                "id": "platformOverview",
+                "name": "Overview",
+                "type": "platformOverview"
+            },
+            {
+                "hidden": false,
+                "id": "kyjcqpltmo",
+                "name": "Start Here",
+                "sections": [
+                    {
+                        "description": "1. Make sure you've opened all required dashboards for the playbook to be able to fetch data from them. \n\n2. If no playbook is associated with the issue, manually select the following playbook: Health Check - XSIAM. \nMake sure you enabled the following automation rule for future runs:\n\n3. Once finished, click the button below to export a report with all gathered data. ",
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "kyjcqpltmo-field-changed-kyjcqpltmo-12fe8070-da89-4bb0-9516-ac8eed6b7a57",
+                        "items": [
+                            {
+                                "args": {},
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 26,
+                                "id": "8ec20e29-4012-4b40-aacc-df089ecb105b",
+                                "index": 0,
+                                "name": "Export Summary Data",
+                                "scriptId": "HealthCheckExportIssueDataXSIAM",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Issue Instructions",
+                        "showFullDescription": true,
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "1ketdonhjm",
+                "name": "Health Check Stats",
+                "sections": [
+                    {
+                        "h": 2,
+                        "i": "1ketdonhjm-field-changed-1ketdonhjm-da4ec4d8-64cf-49b0-b46e-741d308cbaf8",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Number of Engines",
+                        "query": "HealthCheckNumberOfEngines",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "h": 2,
+                        "i": "1ketdonhjm-field-changed-1ketdonhjm-58a9b892-3cd4-4582-8908-6e6a6f98751d",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Number of Packs Installed",
+                        "query": "HealthCheckPacksInstalled",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "h": 2,
+                        "i": "1ketdonhjm-field-changed-1ketdonhjm-4386a478-de03-49eb-8cf5-94d050dc3034",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Number of outdated packs",
+                        "query": "HealthCheckOutdatedPacks",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 1,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "1ketdonhjm-field-changed-1ketdonhjm-f4f16dfc-dbda-40f2-a440-e69b85c0b593",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "healthcheckinstalledpacks",
+                                "height": 106,
+                                "id": "74fa75d6-4bb3-4396-8a0e-7d6efc97be7f",
+                                "index": 0,
+                                "listId": "1ketdonhjm-f4f16dfc-dbda-40f2-a440-e69b85c0b593",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Installed Packs",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 7
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "1ketdonhjm-field-changed-1ketdonhjm-0e0a75ea-e3bf-48ad-a159-431eeb5b92f6",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckenabledinstances",
+                                "height": 26,
+                                "id": "44bc45af-56c1-4cd2-a851-319b50c1ae3e",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Enabled Instances",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 7
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "1ketdonhjm-field-changed-1ketdonhjm-5a13c85c-ab2d-4c72-9a6a-66eca6818062",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "healthchecklicensedetails",
+                                "height": 106,
+                                "id": "7ba486c2-6746-400a-9db6-f453fcde1c5f",
+                                "index": 0,
+                                "listId": "1ketdonhjm-5a13c85c-ab2d-4c72-9a6a-66eca6818062",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "License Details",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "1ketdonhjm-field-changed-1ketdonhjm-244565e4-9e84-4687-ab25-c581d0e5c6f9",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "healthcheckcustomfielddetails",
+                                "height": 106,
+                                "id": "c0eb7fa6-8c77-4eed-84c5-f5b9ef8b27c7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Issue and Case Fields",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 10
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "1ketdonhjm-field-changed-1ketdonhjm-7b5455eb-9d4f-4125-9052-072adb13b497",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckcustomlayoutdetails",
+                                "height": 26,
+                                "id": "58389dd3-f8ac-4afe-95d4-0ae9bbc762db",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Issue and Case Layouts",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 10
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "1ketdonhjm-field-changed-1ketdonhjm-2a38de7e-b9e0-4b14-a28b-f5032b778063",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckcustomscriptdetails",
+                                "height": 26,
+                                "id": "44e670f4-878f-493f-8f9f-22f401c1d7b7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Custom Scripts",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 10
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1ketdonhjm-field-changed-1ketdonhjm-d7c1e024-c2c4-421b-8faa-f6198f15e57e",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckcustomdashboardcount",
+                                "height": 26,
+                                "id": "3c8042a0-6867-423a-a051-cd7b8e382e9c",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckcustomwidgetcount",
+                                "height": 26,
+                                "id": "73fda073-69e9-4eb4-9981-d94bdf296ea3",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Custom Content",
+                        "static": false,
+                        "w": 3,
+                        "wrapLabels": true,
+                        "x": 0,
+                        "y": 13
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "1ketdonhjm-field-changed-1ketdonhjm-bec3c347-de19-4042-859f-7cb9fbf606b4",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckdisconnectedenginescount",
+                                "height": 26,
+                                "id": "9a6494ad-aa04-4ddf-8768-9e6e5d228f5e",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Number of Disconnected Engines",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "1ketdonhjm-field-changed-1ketdonhjm-b38952c4-789a-4c47-9f3c-9298a4744617",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckoutdatedenginescount",
+                                "height": 53,
+                                "id": "ae1dac8a-5a8a-4934-9812-fe2d2bc12b7c",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Number of Outdated Engines",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1ketdonhjm-field-changed-d0d56396-ba0d-4d54-8f62-d66bbb06a9b4",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthchecktotaladminscount",
+                                "height": 26,
+                                "id": "7a35a13c-08b0-40ea-bbb2-e75b6779596a",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckinactiveadminscount",
+                                "height": 26,
+                                "id": "8e50f409-60bb-4052-9854-8f806c59a5be",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Admin users",
+                        "static": false,
+                        "w": 1,
+                        "wrapLabels": true,
+                        "x": 2,
+                        "y": 5
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "t0nnuznjdy",
+                "name": "Actionable Items",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 7,
+                        "hideName": false,
+                        "i": "t0nnuznjdy-18039634-de4f-44ff-8b7f-9c2091409161",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "healthcheckactionableitems",
+                                "height": 106,
+                                "id": "1bd68b15-8d53-4ce5-a4a4-eea50ece4193",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "New Section",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "hidden": true,
+                "id": "resolution",
+                "name": "Resolution",
+                "type": "resolution"
+            },
+            {
+                "hidden": true,
+                "id": "caseinfoid",
+                "name": "Issue Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 26,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 26,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 26,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 26,
+                                "id": "incident-sourceBrand-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 26,
+                                "id": "incident-sourceInstance-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 26,
+                                "id": "incident-playbookId-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 26,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 26,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 26,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 26,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 26,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 26,
+                                "id": "incident-dbotClosed-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 26,
+                                "id": "incident-closeReason-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 26,
+                                "id": "incident-closeNotes-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Closing Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 26,
+                                "id": "incident-details-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Investigation Data",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "edit": null,
+    "details": null,
+    "close": null,
+    "quickView": null,
+    "quickViewV2": null,
+    "mobile": null,
+    "indicatorsDetails": null,
+    "indicatorsQuickView": null,
+    "fromVersion": "8.0.0"
+}

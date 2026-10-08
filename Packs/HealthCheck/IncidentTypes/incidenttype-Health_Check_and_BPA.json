@@ -12,10 +12,10 @@
     },
     "hours": 0,
     "hoursR": 0,
-    "id": "System Diagnostics and Health Check",
-    "layout": "System Diagnostics and Health Check",
+    "id": "Health Check and BPA",
+    "layout": "Health Check and BPA",
     "locked": false,
-    "name": "System Diagnostics and Health Check",
+    "name": "Health Check and BPA",
     "onChangeRepAlg": 1,
     "playbookId": "HealthCheck",
     "readonly": false,
@@ -24,8 +24,9 @@
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
-    "fromVersion": "6.0.0",
+    "fromVersion": "8.10.0",
     "marketplaces": [
-        "xsoar"
+        "platform",
+        "marketplacev2"
     ]
 }

@@ -1,0 +1,43 @@
+comment: Collects health-check endpoint data from the Cortex XDR REST API. Fetches ALL endpoint records via paginated calls to /public_api/v1/endpoints/get_endpoint (PAGE_SIZE=100, no filters), builds a single pandas DataFrame, then runs six analysis queries against that DataFrame — zero additional API calls after the initial fetch. Results are presented as markdown tables in the war room.
+commonfields:
+  id: HealthCheckCollectData
+  version: -1
+enabled: true
+name: HealthCheckCollectData
+
+outputs:
+# - contextPath: HealthCheck.CollectResults.AgentStatusBreakdown
+#   description: Count of endpoints per connection status (connected, lost, disconnected, uninstalled).
+#   type: Unknown
+# - contextPath: HealthCheck.CollectResults.AgentEOLVersions
+#   description: Endpoints running end-of-life (outdated) agent versions, with endpoint name, version, and OS.
+#   type: Unknown
+# - contextPath: HealthCheck.CollectResults.InventoryByOS
+#   description: Endpoint count grouped by platform, operating system, and OS version.
+#   type: Unknown
+# - contextPath: HealthCheck.CollectResults.ContentAutoUpdateDisabled
+#   description: Endpoints with content auto-update disabled, grouped by assigned prevention policy.
+#   type: Unknown
+# - contextPath: HealthCheck.CollectResults.ConnectionLostEndpoints
+#   description: Endpoints in CONNECTION_LOST status with days since last seen.
+#   type: Unknown
+# - contextPath: HealthCheck.CollectResults.DisconnectedWorkstations
+#   description: Workstations in DISCONNECTED status for more than 20 days, with days since last seen.
+#   type: Unknown
+# - contextPath: HealthCheck.CollectResults.DisconnectedServers
+#   description: Servers in DISCONNECTED status for more than 20 days, with days since last seen.
+#   type: Unknown
+script: '-'
+system: false
+tags:
+- HealthCheck
+# timeout: '300'
+type: python
+subtype: python3
+dockerimage: demisto/pandas:1.0.0.117209
+fromversion: 8.0.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)

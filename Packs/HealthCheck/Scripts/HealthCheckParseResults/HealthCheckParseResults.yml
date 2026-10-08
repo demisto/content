@@ -1,0 +1,82 @@
+args:
+- default: false
+  description: >-
+    When set to true the script loads data from the bundled results-mock.json
+    file instead of reading HealthCheck.CollectResults from the incident context.
+    Use this during development and testing only.
+  isArray: false
+  name: use_mock
+  required: false
+  secret: false
+comment: >-
+  Parses the CollectResults dictionary produced by HealthCheckCollect and stored
+  in context under HealthCheck.CollectResults.  Each raw XQL-query result key is
+  classified into a dashboard category (AgentAndAsset, IngestionIntegration,
+  IssuesCases) and its rows are normalised into consistent CamelCase fields.
+  The structured output is written back to HealthCheck.CollectResults grouped by
+  category and query type, plus a flat ByKey lookup for direct access.
+commonfields:
+  id: HealthCheckParseResults
+  version: -1
+enabled: true
+name: HealthCheckParseResults
+outputs:
+- contextPath: HealthCheck.CollectResults.AgentAndAsset.AgentPolicyAssignment
+  description: Agent prevention-policy assignment counts per policy name.
+  type: Unknown
+- contextPath: HealthCheck.CollectResults.AgentAndAsset.AgentScanStatus
+  description: Agent scan status distribution.
+  type: Unknown
+- contextPath: HealthCheck.CollectResults.AgentAndAsset.AutoAgentUpgradeStatus
+  description: Auto-upgrade status distribution across agents.
+  type: Unknown
+- contextPath: HealthCheck.CollectResults.AgentAndAsset.EDRDisabledEndpoints
+  description: Endpoints where EDR is disabled.
+  type: Unknown
+- contextPath: HealthCheck.CollectResults.IngestionIntegration.CIEIngestedDomains
+  description: Identity domains ingested via CIE.
+  type: Unknown
+- contextPath: HealthCheck.CollectResults.IngestionIntegration.CIENonReportingDomains
+  description: CIE domains that have not reported recently.
+  type: Unknown
+- contextPath: HealthCheck.CollectResults.IngestionIntegration.HealthIssues
+  description: Health issues raised in the last 7 days.
+  type: Unknown
+- contextPath: HealthCheck.CollectResults.IngestionIntegration.PlaybookFailingTasks
+  description: Playbook tasks that have been failing in the last 30 days.
+  type: Unknown
+- contextPath: HealthCheck.CollectResults.IngestionIntegration.SourcesFeedingAuthPreset
+  description: Sources feeding the Authentication data preset in the last 3 days.
+  type: Unknown
+- contextPath: HealthCheck.CollectResults.IngestionIntegration.SourcesFeedingNetworkPreset
+  description: Sources feeding the Network data preset in the last 3 days.
+  type: Unknown
+- contextPath: HealthCheck.CollectResults.IngestionIntegration.SourcesFeedingSaaSAudit
+  description: Sources feeding the SaaS Audit dataset in the last 3 days.
+  type: Unknown
+- contextPath: HealthCheck.CollectResults.IssuesCases.CorrelationRulesWithoutAutomation
+  description: Correlation rules that fired without an associated automation.
+  type: Unknown
+- contextPath: HealthCheck.CollectResults.IssuesCases.NoisyIssueCategories
+  description: Noisy issue detection-method categories over the last 30 days.
+  type: Unknown
+- contextPath: HealthCheck.CollectResults.IssuesCases.NonPreventedIssues
+  description: Issues that were not prevented by the assigned policy.
+  type: Unknown
+- contextPath: HealthCheck.CollectResults.ByKey
+  description: >-
+    Flat dictionary mapping each original CollectResults key to its shaped rows.
+    Useful for direct lookup when the exact query key is known.
+  type: Unknown
+script: '-'
+system: false
+tags:
+- HealthCheck
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.13.8428455
+fromversion: 8.0.0
+marketplaces:
+- xsoar
+- marketplacev2

@@ -1,0 +1,23 @@
+{
+    "rule_id": "HealthCheck_issue_Layout_Rule",
+    "layout_id": "HealthCheck issue Layout",
+    "description": "HealthCheck and BPA Layout Rule",
+    "rule_name": "HealthCheck issue Layout Rule",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "SEARCH_FIELD": "alert_domain",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "DOMAIN_HEALTH"
+                },
+                {
+                    "SEARCH_FIELD": "alert_name",
+                    "SEARCH_TYPE": "CONTAINS",
+                    "SEARCH_VALUE": "System Diagnostics and Healthcheck Report"
+                }
+            ]
+        }
+    },
+    "fromVersion": "8.10.0"
+}

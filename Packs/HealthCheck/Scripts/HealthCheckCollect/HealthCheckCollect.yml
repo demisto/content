@@ -1,0 +1,34 @@
+commonfields:
+  id: HealthCheckCollect
+  version: -1
+name: HealthCheckCollect
+script: ''
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.8.3296088
+tags:
+- HealthCheck
+- XQL
+- Utilities
+comment: Two-stage script that collects dashboard query results for the current user. Stage 1 queries the query center history (last 60 minutes) to get execution_ids. Stage 2 fetches actual query results for each execution_id and stores them by query source name.
+enabled: true
+args:
+- name: dashboard_name
+  required: true
+  predefined:
+  - Ingestion/Integration
+  - Issues/Cases
+  - Agent and Asset
+  description: The dashboard to collect XQL query results from. Determines the expected widget count and the regex used to match widget names in the XQL query center history.
+outputs:
+- contextPath: HealthCheck.CollectResults
+  description: Dictionary containing query results organized by xql_query_source_name. Each key represents a dashboard query, and its value contains the actual query results fetched via execution_id.
+  type: Unknown
+scripttarget: 0
+polling: false
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+- platform
