@@ -9067,3 +9067,855 @@ def test_http_request_injects_default_api_version_without_full_url(mocker):
     client.http_request(method="GET", url_suffix="sub1/resourceGroups", params={})
 
     assert ms_http_request.call_args.kwargs["params"]["api-version"] == API_VERSION
+
+
+# ---------------------------------------------------------------------------
+# Azure Firewall commands.
+# ---------------------------------------------------------------------------
+
+
+FIREWALL_RESPONSE = {
+    "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/azureFirewalls/fw1",
+    "name": "fw1",
+    "location": "eastus",
+    "properties": {
+        "provisioningState": "Succeeded",
+        "threatIntelMode": "Alert",
+        "ipConfigurations": [{"properties": {"privateIPAddress": "10.0.0.4", "subnet": {"id": "subnet1"}}}],
+        "networkRuleCollections": [
+            {
+                "name": "collection1",
+                "properties": {
+                    "priority": 100,
+                    "action": {"type": "Allow"},
+                    "rules": [{"name": "rule1"}, {"name": "rule2"}],
+                },
+            }
+        ],
+    },
+}
+
+POLICY_RULE_COLLECTION_GROUP = {
+    "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/firewallPolicies/policy1"
+    "/ruleCollectionGroups/collection1",
+    "name": "collection1",
+    "properties": {
+        "ruleCollections": [
+            {
+                "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                "name": "collection1",
+                "priority": 200,
+                "action": {"type": "Deny"},
+                "rules": [{"name": "rule1", "ruleType": "NetworkRule"}],
+            }
+        ]
+    },
+}
+
+# A rule collection group holding more than one rule collection, where the requested rule type is not the first one.
+MULTI_POLICY_RULE_COLLECTION_GROUP = {
+    "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/firewallPolicies/policy1"
+    "/ruleCollectionGroups/collection1",
+    "name": "collection1",
+    "properties": {
+        "ruleCollections": [
+            {
+                "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                "name": "app-collection",
+                "priority": 100,
+                "action": {"type": "Allow"},
+                "rules": [{"name": "app-rule", "ruleType": "ApplicationRule"}],
+            },
+            {
+                "ruleCollectionType": "FirewallPolicyNatRuleCollection",
+                "name": "nat-collection",
+                "priority": 200,
+                "action": {"type": "Dnat"},
+                "rules": [{"name": "nat-rule", "ruleType": "NatRule"}],
+            },
+        ]
+    },
+}
+
+
+def test_firewall_list_command_success(mocker):
+    """
+    Given:
+        - Valid arguments for listing the Azure firewalls of a resource group.
+    When:
+        - Calling firewall_list_command.
+    Then:
+        - Ensure the command returns the firewalls and the next token under the expected context paths.
+    """
+    from Azure import firewall_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_list_request.return_value = {"value": [FIREWALL_RESPONSE], "nextLink": "next_token_value"}
+
+    result = firewall_list_command(client, {}, {"subscription_id": "sub1", "resource_group_name": "rg1"})
+
+    assert result.outputs == {
+        "Azure.Firewall.Firewalls(val.id && val.id == obj.id)": [FIREWALL_RESPONSE],
+        "Azure.Firewall(true)": {"FirewallsNextToken": "next_token_value"},
+    }
+    assert "fw1" in result.readable_output
+    client.firewall_list_request.assert_called_once_with("sub1", "rg1", "resource_group", "")
+
+
+def test_firewall_list_command_subscription_scope(mocker):
+    """
+    Given:
+        - The resource argument set to subscription and a next token, without a resource group.
+    When:
+        - Calling firewall_list_command.
+    Then:
+        - Ensure the scope and the next token are forwarded, and that the resource group is not
+          required, since it does not scope a subscription-wide request.
+    """
+    from Azure import firewall_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_list_request.return_value = {"value": [FIREWALL_RESPONSE]}
+
+    firewall_list_command(
+        client,
+        {},
+        {"subscription_id": "sub1", "resource": "subscription", "next_token": "token"},
+    )
+
+    client.firewall_list_request.assert_called_once_with("sub1", "", "subscription", "token")
+
+
+@pytest.mark.parametrize("resource_group_name", [None, ""])
+def test_firewall_list_command_resource_group_scope_requires_resource_group(mocker, resource_group_name):
+    """
+    Given:
+        - The default resource_group scope with a missing or an empty resource group in the args and the params.
+    When:
+        - Calling firewall_list_command.
+    Then:
+        - Ensure an error is raised, since the resource group scopes the request.
+    """
+    from Azure import firewall_list_command
+
+    with pytest.raises(Exception, match="No resource_group_name was provided"):
+        firewall_list_command(mocker.MagicMock(), {}, {"subscription_id": "sub1", "resource_group_name": resource_group_name})
+
+
+@pytest.mark.parametrize("resource", ["resource_group", "subscription"])
+@pytest.mark.parametrize("subscription_id", [None, ""])
+def test_firewall_list_command_requires_subscription_id(mocker, resource, subscription_id):
+    """
+    Given:
+        - A missing or an empty subscription ID in the args and the params, in both scopes.
+    When:
+        - Calling firewall_list_command.
+    Then:
+        - Ensure an error is raised, since the subscription scopes the request in both scopes.
+    """
+    from Azure import firewall_list_command
+
+    with pytest.raises(Exception, match="No subscription_id was provided"):
+        firewall_list_command(
+            mocker.MagicMock(), {}, {"subscription_id": subscription_id, "resource": resource, "resource_group_name": "rg1"}
+        )
+
+
+def test_firewall_list_command_no_firewalls(mocker):
+    """
+    Given:
+        - Valid arguments but no firewalls are returned.
+    When:
+        - Calling firewall_list_command.
+    Then:
+        - Ensure the command returns a "No Azure firewalls found." message.
+    """
+    from Azure import firewall_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_list_request.return_value = {"value": []}
+
+    result = firewall_list_command(client, {}, {"subscription_id": "sub1", "resource_group_name": "rg1"})
+
+    assert result.readable_output == "No Azure firewalls were found in the resource group 'rg1'."
+
+
+def test_firewall_list_command_clears_stale_next_token(mocker):
+    """
+    Given:
+        - A last page of results, which carries no nextLink.
+    When:
+        - Calling firewall_list_command.
+    Then:
+        - Ensure the token is written as None rather than omitted, so a stale token from a previous
+          run is cleared from the context.
+    """
+    from Azure import firewall_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_list_request.return_value = {"value": [FIREWALL_RESPONSE]}
+
+    result = firewall_list_command(client, {}, {"subscription_id": "sub1", "resource_group_name": "rg1"})
+
+    assert result.outputs["Azure.Firewall(true)"] == {"FirewallsNextToken": None}
+
+
+def test_firewall_get_command_success(mocker):
+    """
+    Given:
+        - Valid arguments for retrieving a specific Azure firewall.
+    When:
+        - Calling firewall_get_command.
+    Then:
+        - Ensure the command returns the firewall under the Azure.Firewall.Firewalls prefix.
+    """
+    from Azure import firewall_get_command
+
+    client = mocker.MagicMock()
+    client.firewall_get_request.return_value = FIREWALL_RESPONSE
+
+    result = firewall_get_command(client, {}, {"subscription_id": "sub1", "resource_group_name": "rg1", "firewall_name": "fw1"})
+
+    assert result.outputs_prefix == "Azure.Firewall.Firewalls"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == FIREWALL_RESPONSE
+    assert "Azure Firewall fw1 Information" in result.readable_output
+    client.firewall_get_request.assert_called_once_with("sub1", "rg1", "fw1")
+
+
+def test_firewall_get_command_with_rule_type(mocker):
+    """
+    Given:
+        - A firewall name and a rule type.
+    When:
+        - Calling firewall_get_command.
+    Then:
+        - Ensure the rule collections of the given type are displayed in an additional table, and that the
+          context output still holds the full firewall response.
+    """
+    from Azure import firewall_get_command
+
+    client = mocker.MagicMock()
+    client.firewall_get_request.return_value = FIREWALL_RESPONSE
+
+    result = firewall_get_command(
+        client,
+        {},
+        {"subscription_id": "sub1", "resource_group_name": "rg1", "firewall_name": "fw1", "rule_type": "network_rule"},
+    )
+
+    assert result.outputs == FIREWALL_RESPONSE
+    assert "Azure Firewall fw1 Information" in result.readable_output
+    assert "Azure Firewall fw1 network_rule Rule Collections" in result.readable_output
+    assert "collection1" in result.readable_output
+    client.firewall_get_request.assert_called_once_with("sub1", "rg1", "fw1")
+
+
+def test_firewall_get_command_not_found(mocker):
+    """
+    Given:
+        - A client whose firewall_get_request raises a ValueError for a missing firewall.
+    When:
+        - Calling firewall_get_command.
+    Then:
+        - Ensure the error propagates to main() instead of being swallowed.
+    """
+    from Azure import firewall_get_command
+
+    client = mocker.MagicMock()
+    client.firewall_get_request.side_effect = ValueError('Firewall "fw1" was not found.')
+
+    with pytest.raises(ValueError, match="was not found"):
+        firewall_get_command(client, {}, {"subscription_id": "sub1", "resource_group_name": "rg1", "firewall_name": "fw1"})
+
+
+def test_firewall_policy_rule_collection_groups_list_command(mocker):
+    """
+    Given:
+        - A policy name and a rule type.
+    When:
+        - Calling firewall_policy_rule_collection_groups_list_command.
+    Then:
+        - Ensure the policy rule collection groups matching the rule type are returned with the next token.
+    """
+    from Azure import firewall_policy_rule_collection_groups_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_rule_collection_list_request.return_value = {
+        "value": [POLICY_RULE_COLLECTION_GROUP],
+        "nextLink": "next_token_value",
+    }
+
+    result = firewall_policy_rule_collection_groups_list_command(
+        client,
+        {},
+        {
+            "subscription_id": "sub1",
+            "resource_group_name": "rg1",
+            "policy_name": "policy1",
+            "rule_type": "network_rule",
+        },
+    )
+
+    assert result.outputs == {
+        "Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups(val.id && val.id == obj.id)": [POLICY_RULE_COLLECTION_GROUP],
+        "Azure.VirtualNetworks(true)": {"FirewallPolicyRuleCollectionGroupsNextToken": "next_token_value"},
+    }
+    assert "collection1" in result.readable_output
+    client.firewall_policy_rule_collection_list_request.assert_called_once_with("sub1", "rg1", "policy1", "")
+
+
+def test_firewall_policy_rule_collection_groups_list_command_no_collections_in_page_keeps_next_token(mocker):
+    """
+    Given:
+        - A policy page that holds no rule collection groups of the requested type, but carries a nextLink.
+    When:
+        - Calling firewall_policy_rule_collection_groups_list_command.
+    Then:
+        - Ensure the token is returned so the later pages can be reached and filtered as well, and that the
+          message states that more pages are available.
+    """
+    from Azure import firewall_policy_rule_collection_groups_list_command
+
+    client = mocker.MagicMock()
+    # The group holds a network rule only, so filtering the page by nat_rule leaves no rule collection groups.
+    client.firewall_policy_rule_collection_list_request.return_value = {
+        "value": [POLICY_RULE_COLLECTION_GROUP],
+        "nextLink": "next_token_value",
+    }
+
+    result = firewall_policy_rule_collection_groups_list_command(
+        client,
+        {},
+        {"subscription_id": "sub1", "resource_group_name": "rg1", "policy_name": "policy1", "rule_type": "nat_rule"},
+    )
+
+    assert result.outputs == {"Azure.VirtualNetworks(true)": {"FirewallPolicyRuleCollectionGroupsNextToken": "next_token_value"}}
+    assert result.readable_output == (
+        "No nat_rule rule collection groups were found in 'policy1'. More pages of results are available. "
+        "Run the command with the next_token argument to view them."
+    )
+
+
+def test_firewall_policy_rule_collection_groups_list_command_no_collections(mocker):
+    """
+    Given:
+        - A last page of a policy that holds no rule collection groups of the requested type.
+    When:
+        - Calling firewall_policy_rule_collection_groups_list_command.
+    Then:
+        - Ensure a "no results" message is returned without a "more pages" note, and that the token is written
+          as None to clear a stale token from a previous run.
+    """
+    from Azure import firewall_policy_rule_collection_groups_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_rule_collection_list_request.return_value = {"value": []}
+
+    result = firewall_policy_rule_collection_groups_list_command(
+        client,
+        {},
+        {"subscription_id": "sub1", "resource_group_name": "rg1", "policy_name": "policy1", "rule_type": "nat_rule"},
+    )
+
+    assert result.readable_output == "No nat_rule rule collection groups were found in 'policy1'."
+    assert result.outputs == {"Azure.VirtualNetworks(true)": {"FirewallPolicyRuleCollectionGroupsNextToken": None}}
+
+
+def test_firewall_rule_list_command_firewall(mocker):
+    """
+    Given:
+        - A firewall name, a rule type and a collection name.
+    When:
+        - Calling firewall_rule_list_command.
+    Then:
+        - Ensure the rules of the given collection are returned under the Azure.Firewall.Rules prefix.
+    """
+    from Azure import firewall_rule_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_get_request.return_value = FIREWALL_RESPONSE
+
+    result = firewall_rule_list_command(
+        client,
+        {},
+        {
+            "subscription_id": "sub1",
+            "resource_group_name": "rg1",
+            "firewall_name": "fw1",
+            "rule_type": "network_rule",
+            "collection_name": "collection1",
+        },
+    )
+
+    assert result.outputs_prefix == "Azure.Firewall.Rules"
+    assert result.outputs == [{"name": "rule1"}, {"name": "rule2"}]
+
+
+def test_firewall_rule_list_command_policy(mocker):
+    """
+    Given:
+        - A policy name and a collection name.
+    When:
+        - Calling firewall_rule_list_command.
+    Then:
+        - Ensure the rules of the policy rule collection group are returned.
+    """
+    from Azure import firewall_rule_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_rule_collection_get_request.return_value = POLICY_RULE_COLLECTION_GROUP
+
+    result = firewall_rule_list_command(
+        client,
+        {},
+        {
+            "subscription_id": "sub1",
+            "resource_group_name": "rg1",
+            "policy_name": "policy1",
+            "collection_name": "collection1",
+        },
+    )
+
+    assert result.outputs == [{"name": "rule1", "ruleType": "NetworkRule"}]
+    client.firewall_policy_rule_collection_get_request.assert_called_once_with("sub1", "rg1", "policy1", "collection1")
+
+
+def test_firewall_rule_list_command_firewall_without_rule_type(mocker):
+    """
+    Given:
+        - A firewall name without the required rule_type argument.
+    When:
+        - Calling firewall_rule_list_command.
+    Then:
+        - Ensure a DemistoException is raised.
+    """
+    from Azure import firewall_rule_list_command
+
+    with pytest.raises(DemistoException, match="'rule_type' argument must be provided"):
+        firewall_rule_list_command(
+            mocker.MagicMock(),
+            {},
+            {
+                "subscription_id": "sub1",
+                "resource_group_name": "rg1",
+                "firewall_name": "fw1",
+                "collection_name": "collection1",
+            },
+        )
+
+
+def test_firewall_rule_list_command_no_rules(mocker):
+    """
+    Given:
+        - A collection name that does not exist in the firewall.
+    When:
+        - Calling firewall_rule_list_command.
+    Then:
+        - Ensure the command returns a message stating that no rules were found.
+    """
+    from Azure import firewall_rule_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_get_request.return_value = FIREWALL_RESPONSE
+
+    result = firewall_rule_list_command(
+        client,
+        {},
+        {
+            "subscription_id": "sub1",
+            "resource_group_name": "rg1",
+            "firewall_name": "fw1",
+            "rule_type": "network_rule",
+            "collection_name": "missing-collection",
+        },
+    )
+
+    assert result.readable_output == "No rules were found in the 'missing-collection' rule collection of 'fw1'."
+
+
+def test_filter_policy_rule_collections_matches_non_first_collection():
+    """
+    Given:
+        - A rule collection group whose matching rule collection is not the first one in the group.
+    When:
+        - Calling filter_policy_rule_collections.
+    Then:
+        - Ensure the group is returned and not silently dropped.
+    """
+    from Azure import filter_policy_rule_collections
+
+    assert filter_policy_rule_collections([MULTI_POLICY_RULE_COLLECTION_GROUP], "nat_rule") == [
+        MULTI_POLICY_RULE_COLLECTION_GROUP
+    ]
+
+
+def test_filter_policy_rule_collections_no_match():
+    """
+    Given:
+        - A rule collection group that has no rule collection of the requested type.
+    When:
+        - Calling filter_policy_rule_collections.
+    Then:
+        - Ensure the group is filtered out.
+    """
+    from Azure import filter_policy_rule_collections
+
+    assert filter_policy_rule_collections([POLICY_RULE_COLLECTION_GROUP], "nat_rule") == []
+
+
+def test_firewall_rule_list_command_policy_aggregates_all_collections(mocker):
+    """
+    Given:
+        - A rule collection group that contains several rule collections.
+    When:
+        - Calling firewall_rule_list_command.
+    Then:
+        - Ensure the rules of all the rule collections in the group are returned and not only the first ones.
+    """
+    from Azure import firewall_rule_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_rule_collection_get_request.return_value = MULTI_POLICY_RULE_COLLECTION_GROUP
+
+    result = firewall_rule_list_command(
+        client,
+        {},
+        {
+            "subscription_id": "sub1",
+            "resource_group_name": "rg1",
+            "policy_name": "policy1",
+            "collection_name": "collection1",
+        },
+    )
+
+    assert result.outputs == [
+        {"name": "app-rule", "ruleType": "ApplicationRule"},
+        {"name": "nat-rule", "ruleType": "NatRule"},
+    ]
+
+
+def test_firewall_policy_rule_collection_groups_list_command_displays_all_collections(mocker):
+    """
+    Given:
+        - A rule collection group that contains several rule collections.
+    When:
+        - Calling firewall_policy_rule_collection_groups_list_command.
+    Then:
+        - Ensure the readable output contains a row for each rule collection in the group.
+    """
+    from Azure import firewall_policy_rule_collection_groups_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_rule_collection_list_request.return_value = {"value": [MULTI_POLICY_RULE_COLLECTION_GROUP]}
+
+    result = firewall_policy_rule_collection_groups_list_command(
+        client,
+        {},
+        {
+            "subscription_id": "sub1",
+            "resource_group_name": "rg1",
+            "policy_name": "policy1",
+            "rule_type": "nat_rule",
+        },
+    )
+
+    assert "app-collection" in result.readable_output
+    assert "nat-collection" in result.readable_output
+
+
+def test_firewall_rule_get_command_firewall(mocker):
+    """
+    Given:
+        - A firewall name, a rule type, a collection name and a rule name.
+    When:
+        - Calling firewall_rule_get_command.
+    Then:
+        - Ensure the requested rule is returned under the Azure.Firewall.Rules prefix.
+    """
+    from Azure import firewall_rule_get_command
+
+    client = mocker.MagicMock()
+    client.firewall_get_request.return_value = FIREWALL_RESPONSE
+
+    result = firewall_rule_get_command(
+        client,
+        {},
+        {
+            "subscription_id": "sub1",
+            "resource_group_name": "rg1",
+            "firewall_name": "fw1",
+            "rule_type": "network_rule",
+            "collection_name": "collection1",
+            "rule_name": "rule2",
+        },
+    )
+
+    assert result.outputs_prefix == "Azure.Firewall.Rules"
+    assert result.outputs == {"name": "rule2"}
+    assert "Rule rule2 Information" in result.readable_output
+
+
+def test_firewall_rule_get_command_policy(mocker):
+    """
+    Given:
+        - A policy name, a collection name and a rule name.
+    When:
+        - Calling firewall_rule_get_command.
+    Then:
+        - Ensure the requested policy rule is returned.
+    """
+    from Azure import firewall_rule_get_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_rule_collection_get_request.return_value = POLICY_RULE_COLLECTION_GROUP
+
+    result = firewall_rule_get_command(
+        client,
+        {},
+        {
+            "subscription_id": "sub1",
+            "resource_group_name": "rg1",
+            "policy_name": "policy1",
+            "collection_name": "collection1",
+            "rule_name": "rule1",
+        },
+    )
+
+    assert result.outputs == {"name": "rule1", "ruleType": "NetworkRule"}
+
+
+def test_firewall_rule_get_command_rule_not_found(mocker):
+    """
+    Given:
+        - A rule name that does not exist in the rule collection.
+    When:
+        - Calling firewall_rule_get_command.
+    Then:
+        - Ensure a DemistoException is raised.
+    """
+    from Azure import firewall_rule_get_command
+
+    client = mocker.MagicMock()
+    client.firewall_get_request.return_value = FIREWALL_RESPONSE
+
+    with pytest.raises(DemistoException, match="was not found"):
+        firewall_rule_get_command(
+            client,
+            {},
+            {
+                "subscription_id": "sub1",
+                "resource_group_name": "rg1",
+                "firewall_name": "fw1",
+                "rule_type": "network_rule",
+                "collection_name": "collection1",
+                "rule_name": "missing-rule",
+            },
+        )
+
+
+def test_firewall_service_tag_list_command_success(mocker):
+    """
+    Given:
+        - A valid location for listing the service tags.
+    When:
+        - Calling firewall_service_tag_list_command.
+    Then:
+        - Ensure the service tags and the next token are returned under the expected context paths.
+    """
+    from Azure import firewall_service_tag_list_command
+
+    client = mocker.MagicMock()
+    service_tag = {"id": "ApiManagement", "name": "ApiManagement", "properties": {"region": "eastus"}}
+    client.firewall_service_tag_list_request.return_value = {"value": [service_tag], "nextLink": "next_token_value"}
+
+    result = firewall_service_tag_list_command(client, {}, {"subscription_id": "sub1", "location": "eastus"})
+
+    assert result.outputs == {
+        "Azure.VirtualNetworks.ServiceTagsInformation(val.id && val.id == obj.id)": [service_tag],
+        "Azure.VirtualNetworks(true)": {"ServiceTagsInformationNextToken": "next_token_value"},
+    }
+    client.firewall_service_tag_list_request.assert_called_once_with("sub1", "eastus", "")
+
+
+def test_firewall_service_tag_list_command_no_service_tags(mocker):
+    """
+    Given:
+        - A location that returns no service tags.
+    When:
+        - Calling firewall_service_tag_list_command.
+    Then:
+        - Ensure the command returns a "No service tags found." message.
+    """
+    from Azure import firewall_service_tag_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_service_tag_list_request.return_value = {"value": []}
+
+    result = firewall_service_tag_list_command(client, {}, {"subscription_id": "sub1", "location": "eastus"})
+
+    assert result.readable_output == "No service tags were found in the 'eastus' location."
+
+
+def test_firewall_get_request_handles_error(mocker, client):
+    """
+    Given:
+        - An AzureClient whose http_request raises a 403 permission error.
+    When:
+        - Calling firewall_get_request.
+    Then:
+        - Ensure handle_azure_error is called with the firewall_get_request api function name.
+    """
+    mocker.patch.object(client, "http_request", side_effect=Exception("403 forbidden"))
+    handle_error = mocker.patch.object(client, "handle_azure_error")
+
+    client.firewall_get_request("sub1", "rg1", "fw1")
+
+    handle_error.assert_called_once()
+    assert handle_error.call_args.kwargs["api_function_name"] == "firewall_get_request"
+    assert handle_error.call_args.kwargs["resource_name"] == "fw1"
+
+
+def test_firewall_service_tag_list_request_uses_next_token(mocker, client):
+    """
+    Given:
+        - A next token pointing to the next page of service tags.
+    When:
+        - Calling firewall_service_tag_list_request.
+    Then:
+        - Ensure the request is sent to the next token URL without additional parameters.
+    """
+    http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.firewall_service_tag_list_request("sub1", "eastus", "https://management.azure.com/next-page-url")
+
+    http_request.assert_called_once_with(method="GET", full_url="https://management.azure.com/next-page-url", params={})
+
+
+def test_validate_firewall_or_policy_provided_accepts_exactly_one():
+    """
+    Given:
+        - Exactly one of the firewall name or the policy name.
+    When:
+        - Calling validate_firewall_or_policy_provided.
+    Then:
+        - Ensure no error is raised for either of the two valid combinations.
+    """
+    from Azure import validate_firewall_or_policy_provided
+
+    assert validate_firewall_or_policy_provided("fw1", None) is None
+    assert validate_firewall_or_policy_provided(None, "policy1") is None
+
+
+def test_validate_firewall_or_policy_provided_rejects_none():
+    """
+    Given:
+        - Neither a firewall name nor a policy name.
+    When:
+        - Calling validate_firewall_or_policy_provided.
+    Then:
+        - Ensure a DemistoException is raised.
+    """
+    from Azure import validate_firewall_or_policy_provided
+
+    with pytest.raises(DemistoException, match="One of the arguments"):
+        validate_firewall_or_policy_provided(None, None)
+
+
+def test_get_rules_of_collection_returns_empty_for_missing_collection():
+    """
+    Given:
+        - Rule collections that do not contain the requested collection name.
+    When:
+        - Calling get_rules_of_collection.
+    Then:
+        - Ensure an empty list is returned rather than raising.
+    """
+    from Azure import get_rules_of_collection
+
+    collections = [{"name": "other", "properties": {"rules": [{"name": "rule1"}]}}]
+
+    assert get_rules_of_collection(collections, "collection1") == []
+    assert get_rules_of_collection(collections, "other") == [{"name": "rule1"}]
+
+
+def test_filter_policy_rule_collections_filters_by_rule_type():
+    """
+    Given:
+        - Policy rule collection groups of mixed rule types.
+    When:
+        - Calling filter_policy_rule_collections with the network_rule type.
+    Then:
+        - Ensure only the groups holding network rules are returned.
+    """
+    from Azure import filter_policy_rule_collections
+
+    nat_group = {
+        "name": "nat",
+        "properties": {
+            "ruleCollections": [
+                {
+                    "ruleCollectionType": "FirewallPolicyNatRuleCollection",
+                    "rules": [{"ruleType": "NatRule"}],
+                }
+            ]
+        },
+    }
+    empty_group = {"name": "empty", "properties": {"ruleCollections": []}}
+
+    result = filter_policy_rule_collections([POLICY_RULE_COLLECTION_GROUP, nat_group, empty_group], "network_rule")
+
+    assert result == [POLICY_RULE_COLLECTION_GROUP]
+
+
+def test_firewall_list_request_rejects_foreign_next_token(mocker, client):
+    """
+    Given:
+        - A next token pointing to a host that is not the configured Azure management endpoint.
+    When:
+        - Calling firewall_list_request.
+    Then:
+        - Ensure a DemistoException is raised and no request is sent.
+    """
+    http_request = mocker.patch.object(client, "http_request")
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.firewall_list_request("sub1", "test-rg", "resource_group", "https://attacker.example.com/next-page-url")
+
+    http_request.assert_not_called()
+
+
+def test_firewall_policy_rule_collection_list_request_rejects_foreign_next_token(mocker, client):
+    """
+    Given:
+        - A next token pointing to a host that is not the configured Azure management endpoint.
+    When:
+        - Calling firewall_policy_rule_collection_list_request.
+    Then:
+        - Ensure a DemistoException is raised and no request is sent.
+    """
+    http_request = mocker.patch.object(client, "http_request")
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.firewall_policy_rule_collection_list_request(
+            "sub1", "test-rg", "policy1", "https://attacker.example.com/next-page-url"
+        )
+
+    http_request.assert_not_called()
+
+
+def test_firewall_service_tag_list_request_rejects_foreign_next_token(mocker, client):
+    """
+    Given:
+        - A next token pointing to a host that is not the configured Azure management endpoint.
+    When:
+        - Calling firewall_service_tag_list_request.
+    Then:
+        - Ensure a DemistoException is raised and no request is sent.
+    """
+    http_request = mocker.patch.object(client, "http_request")
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.firewall_service_tag_list_request("sub1", "eastus", "https://attacker.example.com/next-page-url")
+
+    http_request.assert_not_called()
