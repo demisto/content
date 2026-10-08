@@ -366,6 +366,11 @@ configuration:
   advanced: true
   required: false
   section: Collect
+- display: Disable duplicate protection 
+  name: disable_duplicate_protection
+  type: 8
+  required: false
+  additionalinfo: Use this parameter to disable the protection against duplicates incidents. It is useful if you fetch on an 'update' field and you want to fetch everytime an update is made on the incident.
 - display: Interpret comments in a specific format
   name: comment_format
   section: Collect
