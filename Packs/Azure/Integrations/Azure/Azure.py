@@ -110,7 +110,7 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Storage/storageAccounts/blobServices/containers/read": [
         "azure-storage-container-property-get",
         "azure-storage-blob-containers-list",
-        "azure-storage-container-list",
+                "azure-storage-container-list",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/delete": ["azure-storage-container-delete"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": [
