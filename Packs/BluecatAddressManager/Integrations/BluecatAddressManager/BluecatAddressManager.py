@@ -149,12 +149,12 @@ class Client:
         :return: A dict representing the APIEntity object returned by the API.
         :rtype: dict
         """
-        params = {
-            "parentId": parent_id,
-            "name": name,
-            "type": entity_type,
-            "includeHA": include_ha,
-        }
+        params = assign_params(
+            parentId=parent_id,
+            name=name,
+            type=entity_type,
+            includeHA=include_ha,
+        )
         demisto.debug(f"Sending a GET request for an entity with the following arguments: {params}")
         return self.http_request("GET", "/getEntityByName", params=params)
 
