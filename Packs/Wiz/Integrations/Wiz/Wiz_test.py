@@ -2953,9 +2953,7 @@ def test_get_issue_comments_paginates(mock_check_api):
         return {
             "data": {
                 "issue": {
-                    "commentThread": {
-                        "comments": {"nodes": nodes, "pageInfo": {"hasNextPage": has_next, "endCursor": cursor}}
-                    }
+                    "commentThread": {"comments": {"nodes": nodes, "pageInfo": {"hasNextPage": has_next, "endCursor": cursor}}}
                 }
             }
         }

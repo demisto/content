@@ -2544,7 +2544,8 @@ def _get_issue(issue_id, is_evidence=False):
 
 def get_issue_comments(issue_id):
     """Needs read:comments, so keep it off the fetch and get paths."""
-    comments, after = [], None
+    comments: list[dict] = []
+    after = None
     while True:
         data = checkAPIerrors(ISSUE_COMMENTS_QUERY, {"id": issue_id, "after": after})
         thread = ((data.get("data") or {}).get("issue") or {}).get("commentThread") or {}

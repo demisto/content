@@ -1578,7 +1578,8 @@ def query_single_issue(issue_id):
 
 def get_issue_comments(issue_id):
     """Needs read:comments, so keep it off the fetch and get paths."""
-    comments, after = [], None
+    comments: list[dict] = []
+    after = None
     while True:
         issue, _ = get_entries(ISSUE_COMMENTS_QUERY, {"id": issue_id, "after": after}, WizApiResponse.ISSUE)
         page = ((issue or {}).get("commentThread") or {}).get("comments") or {}
