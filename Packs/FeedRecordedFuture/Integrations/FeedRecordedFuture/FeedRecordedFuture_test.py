@@ -5,7 +5,7 @@ from csv import DictReader
 
 import pytest
 from CommonServerPython import argToList
-from FeedRecordedFuture import Client, fetch_indicators_command, get_indicator_type, get_indicators_command, requests
+from FeedRecordedFuture import Client, fetch_indicators_command, get_indicator_type, get_indicators_command, main, requests
 from pytest_mock import MockerFixture
 
 
@@ -628,3 +628,52 @@ def test_client_init_with_null_values():
      - Verify that no errors were thrown (especially the part that check that malicious_threshold <= suspicious_threshold)
     """
     Client(indicator_type="ip", api_token="123", services=["fusion"], malicious_threshold=None, suspicious_threshold=None)
+
+
+@pytest.mark.parametrize(
+    "services_param",
+    [
+        ["connectApi"],
+        '["connectApi"]',
+        "connectApi",
+    ],
+)
+def test_main_services_param_normalization(mocker, services_param: list | str):
+    """
+    Given:
+     - The 'services' parameter from demisto.params() in different formats:
+       1. A native list (first configuration).
+       2. A JSON-encoded string (after save and re-edit on XSIAM).
+       3. A plain string.
+
+    When:
+     - Running main() with the 'test-module' command.
+
+    Then:
+     - Verify the client is initialized with a proper list of services and test_module completes without
+       raising a 'Service unknown' error.
+    """
+    mocker.patch.object(
+        Client, "build_iterator",
+    )
+    mocker.patch.object(
+        Client, "get_batches_from_file",
+    )
+    mocker.patch("demistomock.params", return_value={
+        "credentials_api_token": {"password": "dummytoken"},
+        "indicator_type": "ip",
+        "services": services_param,
+        "polling_timeout": "20",
+        "insecure": False,
+        "proxy": False,
+        "threshold": "65",
+        "suspicious_threshold": "25",
+        "risk_score_threshold": "0",
+        "performance": True,
+    })
+    mocker.patch("demistomock.command", return_value="test-module")
+    mock_return_outputs = mocker.patch("FeedRecordedFuture.return_outputs")
+
+    main()
+
+    mock_return_outputs.assert_called_once_with("ok", {}, {})
