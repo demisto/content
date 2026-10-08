@@ -448,7 +448,8 @@ configuration:
   required: false
 - additionalinfo: |-
     The number of days to look back for Spotlight vulnerabilities. Only vulnerabilities updated within this window are fetched.
-    Lower this on very large tenants: it is the most direct way to reduce the size of a fetch cycle, and therefore its duration and memory use.
+    Default and maximum are 100 days; a higher value is capped at 100.
+    Lower this value for very large tenants: it is the most direct way to reduce the size of a fetch cycle, and therefore its duration and memory use.
   display: Spotlight vulnerabilities lookback (days)
   name: spotlight_lookback_days
   defaultvalue: '100'
