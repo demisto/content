@@ -278,6 +278,100 @@ class TestHelperFunction:
 
         assert are_two_datetime_equal_by_second(x, y) == expected_result
 
+    def test_resume_advances_and_resets_offset_when_response_spans_multiple_seconds(self):
+        """
+        Given: a response spanning two or more distinct seconds, resumed from offset 30000.
+        When:  computing the next-cycle resume state.
+        Then:  'after' advances to the latest event's second and the offset resets to 0.
+        """
+        from ArmisEventCollector import compute_resume_state
+
+        response = [
+            {"id": "a", "time": "2026-10-06T08:33:16.100000+00:00"},
+            {"id": "b", "time": "2026-10-06T08:33:16.900000+00:00"},
+            {"id": "c", "time": "2026-10-06T08:33:17.050000+00:00"},
+        ]
+        after, offset = compute_resume_state(response, "2026-10-06T08:33:16", 30000, "time")
+        assert after == "2026-10-06T08:33:17"
+        assert offset == 0
+
+    def test_resume_steps_within_single_second_page(self):
+        """
+        Given: a full page whose events all share one second, resumed from offset 20000.
+        When:  computing the next-cycle resume state.
+        Then:  'after' stays on the same second and the offset steps forward by the page
+               length so the next cycle reads the following slice of that second.
+        """
+        from ArmisEventCollector import compute_resume_state
+
+        response = [
+            {"id": "d", "time": "2026-10-06T08:33:16.100000+00:00"},
+            {"id": "e", "time": "2026-10-06T08:33:16.200000+00:00"},
+            {"id": "f", "time": "2026-10-06T08:33:16.300000+00:00"},
+        ]
+        after, offset = compute_resume_state(response, "2026-10-06T08:33:16", 20000, "time")
+        assert after == "2026-10-06T08:33:16"
+        assert offset == 20003
+
+    def test_resume_does_not_advance_when_boundary_timestamp_missing(self):
+        """
+        Given: a multi-element response where an event is missing the order-by field.
+        When:  computing the next-cycle resume state.
+        Then:  the watermark is NOT advanced (a missing timestamp must not be mistaken
+               for a second boundary); the offset steps conservatively instead.
+        """
+        from ArmisEventCollector import compute_resume_state
+
+        response = [
+            {"id": "a"},  # missing 'time'
+            {"id": "b", "time": "2026-10-06T08:33:17.050000+00:00"},
+        ]
+        after, offset = compute_resume_state(response, "2026-10-06T08:33:16", 10, "time")
+        assert after == "2026-10-06T08:33:16"
+        assert offset == 12  # 10 + len(response)
+
+    def test_resume_keeps_state_unchanged_when_no_events(self):
+        """
+        Given: an empty response.
+        When:  computing the next-cycle resume state.
+        Then:  both 'after' and the offset are kept unchanged, so already-consumed
+               events are not re-fetched on the next cycle.
+        """
+        from ArmisEventCollector import compute_resume_state
+
+        after, offset = compute_resume_state([], "2026-10-06T08:33:16", 50000, "time")
+        assert after == "2026-10-06T08:33:16"
+        assert offset == 50000
+
+    def test_resume_offset_never_grows_across_a_second_boundary(self):
+        """
+        Given: a single second holding more events than one page, followed by a later second.
+        When:  draining it across multiple cycles.
+        Then:  the offset only ever counts within that one second and snaps back to 0 once
+               the later second appears, never accumulating into a deep offset.
+        """
+        from ArmisEventCollector import compute_resume_state
+
+        page_size = 3
+        after = "2026-10-06T08:33:16"
+        offset = 0
+        observed_offsets = []
+
+        hot_second = [{"id": c, "time": "2026-10-06T08:33:16.000000+00:00"} for c in "ABCDEFG"]
+        next_second = [{"id": "H", "time": "2026-10-06T08:33:17.000000+00:00"}]
+        all_events = hot_second + next_second
+
+        for _ in range(5):
+            page = all_events[offset : offset + page_size]
+            after, offset = compute_resume_state(page, after, offset, "time")
+            observed_offsets.append(offset)
+            if after == "2026-10-06T08:33:17":
+                break
+
+        assert max(observed_offsets) <= len(hot_second)
+        assert after == "2026-10-06T08:33:17"
+        assert offset == 0
+
     # test_dedup_events parametrize arguments
     case_all_events_with_same_time = (
         [
@@ -333,12 +427,15 @@ class TestHelperFunction:
     @pytest.mark.parametrize(
         "next_pointer, expected_last_run",
         [
+            # The response spans multiple distinct seconds, so the resume state advances
+            # to the latest second and resets the offset to 0 regardless of the API's
+            # 'next' pointer (the watermark decision no longer depends on it).
             (
                 4,
                 {
                     "events_last_fetch_ids": ["3"],
-                    "events_last_fetch_next_field": 4,
-                    "events_last_fetch_time": "2023-01-01T01:00:20",
+                    "events_last_fetch_next_field": 0,
+                    "events_last_fetch_time": "2023-01-01T01:00:30",
                 },
             ),
             (
@@ -346,7 +443,7 @@ class TestHelperFunction:
                 {
                     "events_last_fetch_ids": ["3"],
                     "events_last_fetch_next_field": 0,
-                    "events_last_fetch_time": "2023-01-01T01:00:30.123456+00:00",
+                    "events_last_fetch_time": "2023-01-01T01:00:30",
                 },
             ),
         ],
@@ -583,10 +680,11 @@ class TestFetchFlow:
         ["Events"],
         events_with_different_time_1,
         {"events": events_with_different_time_1},
+        # Multi-second response -> advance to latest second, reset offset to 0.
         {
             "events_last_fetch_ids": ["3"],
-            "events_last_fetch_next_field": 4,
-            "events_last_fetch_time": "2023-01-01T01:00:00",
+            "events_last_fetch_next_field": 0,
+            "events_last_fetch_time": "2023-01-01T01:00:30",
         },
         4,
     )
@@ -603,10 +701,11 @@ class TestFetchFlow:
         ["Events"],
         events_with_different_time_2,
         {"events": events_with_different_time_2},
+        # Multi-second response -> advance to latest second, reset offset to 0.
         {
             "events_last_fetch_ids": ["7", "6"],
-            "events_last_fetch_next_field": 8,
-            "events_last_fetch_time": "2023-01-01T01:00:30",
+            "events_last_fetch_next_field": 0,
+            "events_last_fetch_time": "2023-01-01T01:01:00",
         },
         8,
     )
@@ -627,10 +726,11 @@ class TestFetchFlow:
                 {"unique_id": "7", "time": "2023-01-01T01:01:00.123456+00:00"},
             ]
         },
+        # Multi-second response -> advance to latest second, reset offset to 0.
         {
             "events_last_fetch_ids": ["7", "6"],
-            "events_last_fetch_next_field": 8,
-            "events_last_fetch_time": "2023-01-01T01:00:30",
+            "events_last_fetch_next_field": 0,
+            "events_last_fetch_time": "2023-01-01T01:01:00",
         },
         8,
     )
@@ -647,7 +747,8 @@ class TestFetchFlow:
         ["Events"],
         {},
         {},
-        {"events_last_fetch_next_field": 4, "events_last_fetch_time": "2023-01-01T01:00:30"},
+        # Empty response -> keep watermark and offset unchanged (offset defaults to 0).
+        {"events_last_fetch_next_field": 0, "events_last_fetch_time": "2023-01-01T01:00:30.123456+00:00"},
         4,
     )
 
@@ -663,10 +764,11 @@ class TestFetchFlow:
         ["Events"],
         events_with_same_time,
         {"events": events_with_same_time},
+        # Single-second response -> keep watermark, step offset within the second (0 + 3).
         {
             "events_last_fetch_ids": ["1", "2", "3", "4", "5", "6"],
-            "events_last_fetch_next_field": 7,
-            "events_last_fetch_time": "2023-01-01T01:00:30",
+            "events_last_fetch_next_field": 3,
+            "events_last_fetch_time": "2023-01-01T01:00:30.123456+00:00",
         },
         7,
     )
@@ -757,10 +859,11 @@ class TestFetchFlow:
         mocker.patch.dict(EVENT_TYPES, {"Events": EVENT_TYPE("unique_id", "events_query", "events", "time", "events")})
 
         if fetch_start_time:
+            # Multi-second response -> advance to latest second, reset offset to 0.
             expected_next_run = {
                 "events_last_fetch_ids": ["3"],
-                "events_last_fetch_next_field": 4,
-                "events_last_fetch_time": "2023-01-01T01:00:00",
+                "events_last_fetch_next_field": 0,
+                "events_last_fetch_time": "2023-01-01T01:00:30",
             }
             assert fetch_events(dummy_client, 1000, 1000, {}, fetch_start_time, ["Events"], None) == (
                 {"events": events_with_different_time["data"]["results"]},
@@ -831,8 +934,9 @@ class TestFetchFlow:
         # Verify devices are mapped by id
         device_ids = {d["id"] for d in enriched_alert["devicesData"]}
         assert device_ids == {789, 12}
-        # Verify next_run state
-        assert next_run["alerts_last_fetch_next_field"] == 2
+        # Verify next_run state: single-second response (one alert) keeps the watermark
+        # and steps the offset within the second by the fetched count (0 + 1).
+        assert next_run["alerts_last_fetch_next_field"] == 1
 
 
 class TestMultithreading:
@@ -1590,7 +1694,9 @@ class TestStreamPageToXsiam:
         # streaming callback may read or mutate must be present.
         return {
             "last_fetch_ids": list(last_fetch_ids or []),
+            "first_event_time": None,
             "last_event_time": None,
+            "total_fetched": 0,
             "total_shipped": 0,
             "total_send_secs": 0.0,
             "page_count": 0,
@@ -1843,10 +1949,10 @@ class TestFetchByEventTypeStreamMode:
 
     def test_stream_mode_updates_next_run(self, mocker, dummy_client):
         """
-        Given: A streaming fetch with two events and a fully-drained cursor (next=0).
+        Given: A streaming fetch with events spanning two distinct seconds.
         When: fetch_by_event_type is called with stream=True.
-        Then: next_run captures last_fetch_ids and advances last_fetch_time to the
-              latest seen event timestamp (matches the non-streaming path's behaviour).
+        Then: next_run captures last_fetch_ids, advances last_fetch_time to the latest
+              seen second, and resets the offset to 0 (matches the non-streaming path).
         """
         mocker.patch("ArmisEventCollector.send_events_to_xsiam")
         response = [
@@ -1868,10 +1974,9 @@ class TestFetchByEventTypeStreamMode:
             stream=True,
         )
 
-        # next == 0 because the stub returns a fully drained cursor.
+        # Multi-second response -> advance to the latest second and reset the offset.
         assert next_run["activity_last_fetch_next_field"] == 0
-        # last_fetch_time should advance to the latest streamed event's timestamp.
-        assert next_run["activity_last_fetch_time"] == "2023-01-01T01:00:20.000000+00:00"
+        assert next_run["activity_last_fetch_time"] == "2023-01-01T01:00:20"
 
 
 def _streaming_fetch_stub(response: list[dict], next_cursor: int = 0):

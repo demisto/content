@@ -741,6 +741,62 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
         return new_events, new_ids
 
 
+def compute_resume_state(
+    response_events: list[dict],
+    last_fetch_time: str | None,
+    last_fetch_next: int,
+    order_by: str,
+) -> tuple[str | None, int]:
+    """Decide the next-cycle ``after`` watermark and ``from`` offset from a response.
+
+    The offset is kept shallow by re-anchoring it to the watermark whenever the
+    watermark advances, which avoids the slow deep-offset pagination that otherwise
+    grows unbounded while a backlog persists. Events are assumed ascending by
+    ``order_by`` (the same assumption ``dedup_events`` relies on).
+    """
+    if not response_events:
+        return last_fetch_time, last_fetch_next
+
+    earliest_second = str(response_events[0].get(order_by, ""))[:19]
+    latest_second = str(response_events[-1].get(order_by, ""))[:19]
+    return _next_fetch_window(earliest_second, latest_second, len(response_events), last_fetch_time, last_fetch_next)
+
+
+def _next_fetch_window(
+    earliest_second: str,
+    latest_second: str,
+    count: int,
+    last_fetch_time: str | None,
+    last_fetch_next: int,
+) -> tuple[str | None, int]:
+    """Compute the next fetch window (``after`` watermark and ``from`` offset).
+
+    Shared by both the streaming and non-streaming fetch paths. The streaming path
+    tracks the earliest/latest second and the fetched count as it ships pages, so it
+    reuses this without retaining the full response in memory.
+    """
+    if not count:
+        # Empty fetch: keep the position so already-consumed events are not re-read.
+        return last_fetch_time, last_fetch_next
+
+    if earliest_second and latest_second and earliest_second != latest_second:
+        # The latest second has started, so earlier seconds are complete: advance the
+        # watermark to the latest second and re-anchor the offset to 0 (dedup keeps the
+        # latest-second ids, so a shallow re-read stays duplicate-free). Both bounds must
+        # be present — a missing timestamp must not be mistaken for a second boundary.
+        return latest_second, 0
+
+    # Single-second fetch (possibly larger than a page), or a missing boundary timestamp:
+    # completion cannot be proven, so keep the watermark and step the offset within the
+    # second to read the next slice (conservative — re-read rather than risk a gap).
+    stepped_offset = last_fetch_next + count
+    demisto.debug(
+        f"[resume] hot second not drained at {latest_second or last_fetch_time}: "
+        f"keeping watermark, stepping offset {last_fetch_next} -> {stepped_offset} (count={count})"
+    )
+    return last_fetch_time, stepped_offset
+
+
 def _stream_page_to_xsiam(event_type: EVENT_TYPE, running_state: dict) -> Callable[[list[dict]], None]:
     """Build a per-page callback that dedups, ships to XSIAM, and frees the page.
 
@@ -773,6 +829,14 @@ def _stream_page_to_xsiam(event_type: EVENT_TYPE, running_state: dict) -> Callab
             safe_debug(f"[{tname}] [stream:{dataset}] page #{page_idx} empty — skipping")
             return
 
+        # Track the earliest second and the total fetched (pre-dedup) across the whole
+        # cycle so the caller can re-anchor the resume offset (see compute_resume_state).
+        if running_state.get("first_event_time") is None:
+            first_time = page[0].get(event_type.order_by)
+            if first_time:
+                running_state["first_event_time"] = first_time
+        running_state["total_fetched"] += page_len
+
         dedup_start = time.monotonic()
         new_events, updated_ids = dedup_events(
             page, running_state["last_fetch_ids"], event_type.unique_id_key, event_type.order_by
@@ -781,15 +845,16 @@ def _stream_page_to_xsiam(event_type: EVENT_TYPE, running_state: dict) -> Callab
         # Mutate the shared ID list in place so the next page sees the cumulative set.
         running_state["last_fetch_ids"] = updated_ids
         deduped_count = page_len - len(new_events)
+        # Always track the latest event timestamp from the raw page (even if everything
+        # deduped) so the watermark can still advance when a later second appears.
+        page_latest_time = page[-1].get(event_type.order_by)
+        if page_latest_time:
+            running_state["last_event_time"] = page_latest_time
         if not new_events:
             safe_debug(f"[{tname}] [stream:{dataset}] page #{page_idx} all {page_len} events deduped (no ship)")
             return
 
-        # Track the latest event timestamp so the caller can advance last_fetch_time
-        # after pagination completes (mirrors the non-streaming path).
-        latest_time = new_events[-1].get(event_type.order_by)
-        if latest_time:
-            running_state["last_event_time"] = latest_time
+        latest_time = page_latest_time
 
         add_time_to_events(new_events, dataset)
         product = f"{PRODUCT}_{dataset}" if event_type.type != EVENT_TYPE_ALERTS else PRODUCT
@@ -854,7 +919,9 @@ def fetch_by_event_type(
         stream_start = time.monotonic()
         running_state: dict = {
             "last_fetch_ids": list(last_run.get(last_fetch_ids, [])),  # copy so we mutate locally
+            "first_event_time": None,
             "last_event_time": None,
+            "total_fetched": 0,
             "total_shipped": 0,
             "total_send_secs": 0.0,
             "page_count": 0,
@@ -879,19 +946,22 @@ def fetch_by_event_type(
             f"total={total_secs:.2f}s, send={running_state['total_send_secs']:.2f}s ({send_share:.0f}%), "
             f"cursor_next={next}, fully_drained={not next}"
         )
-        # Advance last_fetch_time only when pagination is fully drained (next == 0),
-        # mirroring the non-streaming path. While next > 0 we keep the same window so
-        # the cursor (`from_param`) is meaningful on the next cycle.
-        if not next:
-            event_type_fetch_start_time = running_state["last_event_time"] or last_fetch_time
-            demisto.debug(
-                f"[stream:{event_type.dataset_name}] cursor drained — advancing last_fetch_time to {event_type_fetch_start_time}"
-            )
-        else:
-            demisto.debug(
-                f"[stream:{event_type.dataset_name}] cursor NOT drained (next={next}) — "
-                f"keeping last_fetch_time at {last_fetch_time} for next cycle resume"
-            )
+        # Re-anchor the resume window: advance the watermark to the latest drained
+        # second and reset the offset, or step the offset within an incomplete second.
+        earliest_second = str(running_state["first_event_time"] or "")[:19]
+        latest_second = str(running_state["last_event_time"] or "")[:19]
+        event_type_fetch_start_time, next_offset = _next_fetch_window(
+            earliest_second,
+            latest_second,
+            running_state["total_fetched"],
+            last_fetch_time,
+            last_fetch_next,
+        )
+        next_run[last_fetch_next_field] = next_offset
+        demisto.debug(
+            f"[stream:{event_type.dataset_name}] resume: after={event_type_fetch_start_time}, "
+            f"offset={next_offset} (fetched={running_state['total_fetched']}, api_next={next})"
+        )
     else:
         response, next = client.fetch_by_aql_query(
             aql_query=event_type.aql_query,
@@ -913,11 +983,17 @@ def fetch_by_event_type(
             last_event_str = str(new_events[-1])[:500] if new_events else "{}"
             demisto.debug(f"last {event_type.dataset_name} in list: {last_event_str}")
 
-        if not next:  # we wish to update the time only in case the next is 0 because the next is relative to the time.
-            event_type_fetch_start_time = new_events[-1].get(event_type.order_by) if new_events else last_fetch_time
-            #  can empty the list.
+        # Re-anchor the resume window from the raw response (see compute_resume_state).
+        event_type_fetch_start_time, next_run[last_fetch_next_field] = compute_resume_state(
+            response, last_fetch_time, last_fetch_next, event_type.order_by
+        )
+        advanced = event_type_fetch_start_time != last_fetch_time
+        demisto.debug(
+            f"[{event_type.dataset_name}] resume: after={event_type_fetch_start_time}, "
+            f"offset={next_run[last_fetch_next_field]} (fetched={len(response)}, "
+            f"advanced={advanced}, dedup_ids={len(next_run.get(last_fetch_ids, []))})"
+        )
 
-    next_run[last_fetch_next_field] = next
     if isinstance(event_type_fetch_start_time, datetime):
         event_type_fetch_start_time = event_type_fetch_start_time.strftime(DATE_FORMAT)
     next_run[last_fetch_time_field] = event_type_fetch_start_time
@@ -1548,6 +1624,7 @@ def main():  # pragma: no cover
     fetch_delay = arg_to_number(params.get("fetch_delay")) or DEFAULT_FETCH_DELAY
 
     demisto.debug(f"Command being called is {command}")
+    demisto.debug("Temp custom build")
 
     try:
         context_manager = IntegrationContextManager()
