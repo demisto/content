@@ -49,11 +49,8 @@ class Client(BaseClient):
         integration_context = get_integration_context()
         jwt_token = integration_context.get("jwt_token")
         jwt_token_issued_time = integration_context.get("jwt_token_issued_time") or 0.0
-        current_time = datetime.now().timestamp()
-        next_refresh = (
-            datetime.fromtimestamp(jwt_token_issued_time)
-            + timedelta(minutes=JWT_TOKEN_EXPIRATION_PERIOD - JWT_TOKEN_REFRESH_MARGIN)
-        ).timestamp()
+        current_time = time.time()
+        next_refresh = jwt_token_issued_time + (JWT_TOKEN_EXPIRATION_PERIOD - JWT_TOKEN_REFRESH_MARGIN) * 60
 
         if force_retrieve_jwt or not jwt_token or current_time > next_refresh:
             jwt_token = self.retrieve_jwt_token()
