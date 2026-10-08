@@ -235,17 +235,11 @@ def parse_mail_parts(parts):
             if headers.get("content-transfer-encoding") == "base64":
                 text = base64.b64decode(part._payload).decode("utf-8", "replace")
             elif headers.get("content-transfer-encoding") == "quoted-printable":
-                str_utf8 = part._payload.encode().decode("cp1252")
-                str_utf8 = str_utf8.encode("utf-8")
-                decoded_string = quopri.decodestring(str_utf8)
+                decoded_string = quopri.decodestring(part._payload.encode("utf-8"))
                 text = str(decoded_string, errors="ignore")
             else:
-                str_utf8 = part._payload.encode().decode("cp1252")
-                str_utf8 = str_utf8.encode("utf-8")
-                text = quopri.decodestring(str_utf8)  # type: ignore
-
-            if not isinstance(text, str):
-                text = text.decode("unicode-escape")
+                # 7bit/8bit/binary or missing header: the payload is already a decoded str.
+                text = part._payload
 
             if "text/html" in content_type:
                 html += text
