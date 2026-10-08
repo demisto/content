@@ -1,10 +1,14 @@
 import tempfile
+from email import message_from_bytes
 from pathlib import Path
 
 import demistomock as demisto
 import pytest
 from CommonServerPython import *
-from ParseEmailFilesV2 import data_to_md, main, parse_nesting_level
+from ParseEmailFilesV2 import data_to_md, main, parse_nesting_level, remove_root_attachment_disposition
+from pytest_mock import MockerFixture
+
+TEST_DATA_DIR = Path(__file__).parent / "test_data"
 
 
 def exec_command_for_file(
@@ -659,3 +663,144 @@ def test_html_unescape_populated_in_context(mocker):
 
     # Original HTML key must still be present (unchanged)
     assert "HTML" in email_context
+
+
+def run_script_on_email(
+    mocker: MockerFixture, monkeypatch: pytest.MonkeyPatch, email_path: Path, args: dict[str, str]
+) -> list[dict]:
+    """Run the script on an email file, mocking only the platform, and return the entries it returned."""
+    monkeypatch.chdir(email_path.parent)  # the script saves the attachments in the working directory
+    mocker.patch.object(demisto, "args", return_value={"entryid": "entry-id", **args})
+    mocker.patch.object(
+        demisto,
+        "executeCommand",
+        return_value=[{"Type": entryTypes["note"], "Contents": {"path": str(email_path), "name": email_path.name}}],
+    )
+    mocker.patch.object(demisto, "context", return_value={})
+    mocker.patch.object(demisto, "dt", return_value="RFC 822 mail text")
+    mocker.patch.object(demisto, "investigation", return_value={"id": "incident-id"})
+    mocker.patch.object(demisto, "uniqueFile", side_effect=["file-1", "file-2"])
+    results = mocker.patch.object(demisto, "results")
+
+    main()
+
+    return [call.args[0] for call in results.call_args_list]
+
+
+@pytest.mark.parametrize(
+    "max_depth, nesting_level, expected_depths, expected_files",
+    [
+        ("3", "All files", [0, 1], ["original_message.eml", "pixel.png"]),
+        ("3", "Outer file", [0], ["original_message.eml"]),
+        ("3", "Inner file", [1], ["pixel.png"]),
+        ("1", "All files", [0], ["original_message.eml"]),
+    ],
+)
+def test_root_attachment_email_with_attached_email(
+    mocker: MockerFixture,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    max_depth: str,
+    nesting_level: str,
+    expected_depths: list[int],
+    expected_files: list[str],
+) -> None:
+    """
+    Given:
+        - An email whose top-level part is marked as an attachment, with an attached email (base64 encoded message/rfc822)
+          which has an image attachment.
+    When:
+        - Running the script with different max_depth and nesting_level_to_return values.
+    Then:
+        - Ensure the attached email is parsed as a nested email of the email.
+        - Ensure the attachments are saved with their original content.
+    """
+    original_email = (TEST_DATA_DIR / "original_message.eml").read_bytes()
+    image = next(
+        part.get_payload(decode=True) for part in message_from_bytes(original_email).walk() if part.get_filename() == "pixel.png"
+    )
+    expected_content = {"original_message.eml": original_email, "pixel.png": image}
+    email_path = tmp_path / "reported_message_root_attachment.eml"
+    email_path.write_bytes((TEST_DATA_DIR / "reported_message_root_attachment.eml").read_bytes())
+
+    entries = run_script_on_email(
+        mocker, monkeypatch, email_path, {"max_depth": max_depth, "nesting_level_to_return": nesting_level}
+    )
+
+    files = {entry["File"]: entry["FileID"] for entry in entries if entry["Type"] == entryTypes["file"]}
+    emails = [entry["EntryContext"]["Email"] for entry in entries if "Email" in entry.get("EntryContext", {})]
+    assert sorted(files) == sorted(expected_files)
+    for file_name, file_id in files.items():
+        assert (tmp_path / f"incident-id_{file_id}").read_bytes() == expected_content[file_name]
+    assert [email["Depth"] for email in emails] == expected_depths
+    assert all(email["ParentFileName"] == email_path.name for email in emails if email["Depth"] == 1)
+
+
+def test_root_attachment_email_parse_only_headers(mocker: MockerFixture, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """
+    Given:
+        - An email whose top-level part is marked as an attachment, with an attached email.
+    When:
+        - Running the script with parse_only_headers=true.
+    Then:
+        - Ensure the headers are parsed from the file as is, including the Content-Disposition header, and no copy is saved.
+    """
+    email_path = tmp_path / "reported_message_root_attachment.eml"
+    email_path.write_bytes((TEST_DATA_DIR / "reported_message_root_attachment.eml").read_bytes())
+
+    entries = run_script_on_email(mocker, monkeypatch, email_path, {"parse_only_headers": "true"})
+
+    assert [entry["EntryContext"]["Email"]["HeadersMap"]["Content-Disposition"] for entry in entries] == ["attachment"]
+    assert list(tmp_path.iterdir()) == [email_path]
+
+
+def test_remove_root_attachment_disposition_removes_only_the_header(tmp_path: Path) -> None:
+    """
+    Given:
+        - An email with CRLF line endings, whose top-level part is marked as an attachment by a folded header,
+          with an attached email which is marked as an attachment as well.
+    When:
+        - Removing the Content-Disposition header of the top-level part.
+    Then:
+        - Ensure a copy of the file is saved, which differs from the file only by the lines of that header.
+    """
+    headers = b'From: reporter@example.org\r\nContent-Type: multipart/mixed; boundary="boundary"\r\n'
+    disposition_header = b'Content-Disposition: attachment;\r\n\tfilename="report.eml"\r\n'
+    rest_of_email = (
+        b"Subject: Report\r\n\r\n"
+        b"--boundary\r\n"
+        b'Content-Type: message/rfc822\r\nContent-Disposition: attachment; filename="original.eml"\r\n\r\n'
+        b"From: sender@example.com\r\nSubject: Original\r\n\r\nOriginal body.\r\n"
+        b"--boundary--\r\n"
+    )
+    email_path = tmp_path / "email.eml"
+    email_path.write_bytes(headers + disposition_header + rest_of_email)
+
+    copy_path = remove_root_attachment_disposition(str(email_path))
+
+    assert copy_path != str(email_path)
+    assert Path(copy_path).read_bytes() == headers + rest_of_email
+
+
+@pytest.mark.parametrize(
+    "file_name",
+    [
+        "eml_contains_emptytxt_htm_file.eml",  # the top-level part is marked as an attachment, without an attached email
+        "Fwd_test-inner_attachment_eml.eml",  # an attached email, the top-level part is not marked as an attachment
+    ],
+)
+def test_remove_root_attachment_disposition_other_emails_are_not_copied(tmp_path: Path, file_name: str) -> None:
+    """
+    Given:
+        - An email whose top-level part is marked as an attachment without an attached email,
+          or an email with an attached email, whose top-level part is not marked as an attachment.
+    When:
+        - Removing the Content-Disposition header of the top-level part.
+    Then:
+        - Ensure the path of the file is returned, and no copy is saved.
+    """
+    email_path = tmp_path / file_name
+    email_path.write_bytes((TEST_DATA_DIR / file_name).read_bytes())
+
+    assert remove_root_attachment_disposition(str(email_path)) == str(email_path)
+    assert list(tmp_path.iterdir()) == [email_path]
