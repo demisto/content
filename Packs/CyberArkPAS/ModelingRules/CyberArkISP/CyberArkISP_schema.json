@@ -1,0 +1,132 @@
+{
+  "cyberark_isp_raw": {
+    "uuid": {
+      "type": "string",
+      "is_array": false
+    },
+    "tenantId": {
+      "type": "string",
+      "is_array": false
+    },
+    "timestamp": {
+      "type": "string",
+      "is_array": false
+    },
+    "username": {
+      "type": "string",
+      "is_array": false
+    },
+    "applicationCode": {
+      "type": "string",
+      "is_array": false
+    },
+    "auditCode": {
+      "type": "string",
+      "is_array": false
+    },
+    "auditType": {
+      "type": "string",
+      "is_array": false
+    },
+    "action": {
+      "type": "string",
+      "is_array": false
+    },
+    "userId": {
+      "type": "string",
+      "is_array": false
+    },
+    "source": {
+      "type": "string",
+      "is_array": false
+    },
+    "actionType": {
+      "type": "string",
+      "is_array": false
+    },
+    "component": {
+      "type": "string",
+      "is_array": false
+    },
+    "serviceName": {
+      "type": "string",
+      "is_array": false
+    },
+    "accessMethod": {
+      "type": "string",
+      "is_array": false
+    },
+    "accountId": {
+      "type": "string",
+      "is_array": false
+    },
+    "target": {
+      "type": "string",
+      "is_array": false
+    },
+    "command": {
+      "type": "string",
+      "is_array": false
+    },
+    "sessionId": {
+      "type": "string",
+      "is_array": false
+    },
+    "message": {
+      "type": "string",
+      "is_array": false
+    },
+    "customData": {
+      "type": "string",
+      "is_array": false
+    },
+    "cloudProvider": {
+      "type": "string",
+      "is_array": false
+    },
+    "cloudWorkspacesAndRoles": {
+      "type": "string",
+      "is_array": false
+    },
+    "cloudIdentities": {
+      "type": "string",
+      "is_array": false
+    },
+    "cloudAssets": {
+      "type": "string",
+      "is_array": false
+    },
+    "safe": {
+      "type": "string",
+      "is_array": false
+    },
+    "accountName": {
+      "type": "string",
+      "is_array": false
+    },
+    "targetPlatform": {
+      "type": "string",
+      "is_array": false
+    },
+    "targetAccount": {
+      "type": "string",
+      "is_array": false
+    },
+    "identityType": {
+      "type": "string",
+      "is_array": false
+    },
+    "correlationId": {
+      "type": "string",
+      "is_array": false
+    },
+    "isDr": {
+      "type": "boolean",
+      "is_array": false
+    },
+    "originRegion": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

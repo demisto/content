@@ -383,8 +383,25 @@ def get_query_viewer_results(query_viewer_id):
         }
     ]
     """
-    results = [{field: result.get("value")[idx].get("$") for idx, field in enumerate(fields)} for result in results]
+    # Cell values may be either dict-wrapped (ArcSight ESM <= 7.6, e.g.
+    # ``{"@xsi.type": "xs:string", "$": "val"}``) or plain strings (ArcSight
+    # ESM 7.9+). Normalize both shapes so parsing works across server versions.
+    results = [
+        {field: _extract_cell_value(result.get("value", [])[idx]) for idx, field in enumerate(fields)} for result in results
+    ]
     return fields, results
+
+
+def _extract_cell_value(cell):
+    """Return the raw value of a Query Viewer row cell.
+
+    Handles both response shapes:
+      * ArcSight ESM <= 7.6: ``{"@xsi.type": "xs:string", "$": "val"}``
+      * ArcSight ESM 7.9+:   ``"val"`` (bare scalar)
+    """
+    if isinstance(cell, dict):
+        return cell.get("$")
+    return cell
 
 
 @logger

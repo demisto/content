@@ -8,12 +8,14 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "Unusual allocation of multiple cloud compute resources"
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "Unusual allocation of multiple cloud compute resources"
         }
       ]
     }
-  }
+  },
+  "supportedModules": [
+    "xsiam"
+  ]
 }
-

@@ -1,0 +1,61 @@
+{
+    "id": "GS-162RTEE07",
+    "finding_id": "GS-162RTEE07",
+    "first_seen": "11-06-2026 01:41:21 PM",
+    "last_seen": "11-06-2026 01:41:21 PM",
+    "type": "Gambling Sites",
+    "remarks": "GS-162RTEE07",
+    "external_link": "https://platform.ctm360.com/cbs/online_anti_fraud/gambling_sites/?filters=[]&searchQuery=GS-162RTEE07&selectedSearchField=finding_id",
+    "brand": "GIBM Giga",
+    "timestamp": 1781185291401,
+    "status": "new",
+    "url": "http://gambling-site-1.example.local",
+    "submitted_url": "http://gambling-site-1.example.local",
+    "landing_url": "https://gambling-site-1.example.local",
+    "title": "Example Gambling Site One",
+    "resolving_ip": "203.0.113.10",
+    "tags": [],
+    "status_code": 200,
+    "url_status": "active",
+    "scan_status": "completed",
+    "enrichment": {
+        "dns": {
+            "mx_record": [],
+            "a_record": [
+                "203.0.113.10",
+                "203.0.113.11"
+            ],
+            "spf_record": null,
+            "ns_record": [
+                "ns1.example.local",
+                "ns2.example.local"
+            ]
+        }
+    },
+    "external_links": [
+        "https://gambling-site-1.example.local/assets/style-1.css",
+        "https://gambling-site-1.example.local/games/crash",
+        "https://gambling-site-1.example.local/assets/font-1.woff2",
+        "https://gambling-site-1.example.local/assets/font-2.woff2",
+        "https://gambling-site-1.example.local/images/favicon.png",
+        "https://gambling-site-1.example.local/games/fishing",
+        "https://gambling-site-1.example.local/partners/portal",
+        "https://gambling-site-1.example.local/contact/chat",
+        "https://gambling-site-1.example.local/desktop",
+        "https://gambling-site-1.example.local/games/slots",
+        "https://gambling-site-1.example.local/register",
+        "https://gambling-site-1.example.local/support/live-chat",
+        "https://gambling-site-1.example.local/games/live-casino",
+        "https://gambling-site-1.example.local/games/lottery",
+        "https://gambling-site-1.example.local/assets/font-3.woff2",
+        "https://gambling-site-1.example.local/games/cockfight",
+        "https://gambling-site-1.example.local/support/welcome",
+        "https://gambling-site-1.example.local/assets/bootstrap.min.css",
+        "https://gambling-site-1.example.local/games/sports",
+        "https://gambling-site-1.example.local/login",
+        "https://gambling-site-1.example.local/assets/icons.min.css",
+        "https://gambling-site-1.example.local/jackpot",
+        "https://gambling-site-1.example.local/games/virtual"
+    ],
+    "internal_links": []
+}

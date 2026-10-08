@@ -2,7 +2,7 @@
     "name": "AWS",
     "description": "Amazon Web Services",
     "support": "xsoar",
-    "currentVersion": "2.1.14",
+    "currentVersion": "2.10.0",
     "author": "Cortex",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -21,6 +21,9 @@
         "edr"
     ],
     "marketplaces": [
+        "xsoar",
+        "marketplacev2",
         "platform"
-    ]
+    ],
+    "derivedSource": "cooc"
 }

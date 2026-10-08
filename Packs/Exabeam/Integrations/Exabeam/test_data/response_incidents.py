@@ -475,13 +475,15 @@ EXPECTED_LAST_RUN_FOR_LOOK_BACK = {
         "limit": 5,
         "time": "2022-12-22T09:59:05.001000",
         "found_incident_ids": {
+            "SOC-402": "",
             "SOC-403": "",
         },
     },
     "second_fetch": {
-        "limit": 3,
+        "limit": 5,
         "time": "2022-12-22T10:00:05.000000",
         "found_incident_ids": {
+            "SOC-402": "",
             "SOC-403": "",
         },
     },

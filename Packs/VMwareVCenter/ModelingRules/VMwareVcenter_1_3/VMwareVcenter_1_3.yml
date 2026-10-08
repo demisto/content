@@ -5,3 +5,5 @@ rules: ''
 schema: ''
 tags: VMware vCenter
 toversion: 8.12.0
+supportedModules:
+- xsiam

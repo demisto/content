@@ -993,3 +993,181 @@ class TestClientAllowlistUpdate:
         mock_client.update_allowlist(["c.com"], "OVERWRITE")
         sent = api_mock.call_args[1]["data"]
         assert sent["whitelistUrls"] == ["c.com"]
+
+
+# ---- Unit tests: 401 retry logic ----
+
+
+def _make_401_exception() -> DemistoException:
+    """Build a DemistoException whose .res.status_code is 401, matching the
+    production error-handler output."""
+    exc = DemistoException("Authentication/Authorization error (401): Unauthorized.")
+    mock_res = type("MockResponse", (), {"status_code": 401})()
+    exc.res = mock_res
+    return exc
+
+
+def _make_500_exception() -> DemistoException:
+    """Build a DemistoException whose .res.status_code is 500."""
+    exc = DemistoException("The request failed with status code 500.")
+    mock_res = type("MockResponse", (), {"status_code": 500})()
+    exc.res = mock_res
+    return exc
+
+
+class TestApiRequest401Retry:
+    def test_401_clears_token_and_retries(self, mock_client, mocker):
+        """
+        Given: The first API call raises a DemistoException with res.status_code == 401
+               (simulating a stale cached token due to clock drift).
+        When: api_request is called.
+        Then: The cached token is cleared from integration context, a new token
+              is fetched, and the request is retried exactly once, returning the
+              successful response from the retry.
+        """
+        success_response = {"data": "ok"}
+
+        mock_do_http = mocker.patch.object(
+            mock_client,
+            "_do_http_request",
+            side_effect=[
+                _make_401_exception(),
+                success_response,
+            ],
+        )
+        mock_set_ctx = mocker.patch("ZscalerZIdentity.set_integration_context")
+
+        result = mock_client.api_request("GET", "/some/endpoint")
+
+        assert result == success_response
+        assert mock_do_http.call_count == 2
+        # Verify the cached token was cleared from integration context
+        cleared_ctx = mock_set_ctx.call_args[0][0]
+        assert "access_token" not in cleared_ctx
+        assert "token_expires_at" not in cleared_ctx
+
+    def test_non_401_exception_is_reraised(self, mock_client, mocker):
+        """
+        Given: The API call raises a DemistoException with res.status_code == 500
+               (not a 401 auth error).
+        When: api_request is called.
+        Then: The exception is re-raised without retrying and without clearing
+              the integration context.
+        """
+        mocker.patch.object(
+            mock_client,
+            "_do_http_request",
+            side_effect=_make_500_exception(),
+        )
+        mock_set_ctx = mocker.patch("ZscalerZIdentity.set_integration_context")
+
+        with pytest.raises(DemistoException, match="500"):
+            mock_client.api_request("GET", "/some/endpoint")
+
+        mock_set_ctx.assert_not_called()
+
+    def test_401_retry_also_fails_raises_exception(self, mock_client, mocker):
+        """
+        Given: Both the initial request and the retry after token refresh raise
+               a DemistoException with res.status_code == 401.
+        When: api_request is called.
+        Then: The exception from the retry is propagated to the caller.
+        """
+        mocker.patch.object(
+            mock_client,
+            "_do_http_request",
+            side_effect=[
+                _make_401_exception(),
+                _make_401_exception(),
+            ],
+        )
+        mocker.patch("ZscalerZIdentity.set_integration_context")
+
+        with pytest.raises(DemistoException, match="401"):
+            mock_client.api_request("GET", "/some/endpoint")
+
+    def test_successful_request_does_not_clear_token(self, mock_client, mocker):
+        """
+        Given: The API call succeeds on the first attempt (no 401).
+        When: api_request is called.
+        Then: The integration context is never modified (token is not cleared).
+        """
+        success_response = {"data": "success"}
+        mocker.patch.object(mock_client, "_do_http_request", return_value=success_response)
+        mock_set_ctx = mocker.patch("ZscalerZIdentity.set_integration_context")
+
+        result = mock_client.api_request("GET", "/some/endpoint")
+
+        assert result == success_response
+        mock_set_ctx.assert_not_called()
+
+    def test_exception_without_res_attribute_is_reraised(self, mock_client, mocker):
+        """
+        Given: The API call raises a DemistoException that has no .res attribute
+               (e.g. a network-level error before any HTTP response).
+        When: api_request is called.
+        Then: The exception is re-raised without retrying and without clearing
+              the integration context.
+        """
+        exc = DemistoException("Connection error: no response received.")
+        # No .res attribute set — simulates a network-level failure
+        mocker.patch.object(mock_client, "_do_http_request", side_effect=exc)
+        mock_set_ctx = mocker.patch("ZscalerZIdentity.set_integration_context")
+
+        with pytest.raises(DemistoException, match="Connection error"):
+            mock_client.api_request("GET", "/some/endpoint")
+
+        mock_set_ctx.assert_not_called()
+
+
+class TestErrorHandler:
+    """Covers the authentication branch of Client._error_handler, which must attach the
+    originating response to the raised DemistoException so that api_request's 401 retry
+    logic can detect it."""
+
+    @staticmethod
+    def _mock_response(status_code: int, text: str = "Unauthorized"):
+        """Build a minimal stand-in for a requests.Response as consumed by _error_handler."""
+        return type("MockResponse", (), {"status_code": status_code, "text": text})()
+
+    @pytest.mark.parametrize("status_code", [401, 403])
+    def test_auth_error_attaches_response_to_exception(self, mock_client, status_code):
+        """
+        Given: The API returns an authentication/authorization failure (401 or 403).
+        When: _error_handler is called with that response.
+        Then: The raised DemistoException carries the originating response as .res,
+              so callers can inspect the status code.
+        """
+        res = self._mock_response(status_code)
+
+        with pytest.raises(DemistoException) as exc_info:
+            mock_client._error_handler(res)
+
+        assert exc_info.value.res is res
+
+    def test_401_from_error_handler_triggers_token_refresh_and_retry(self, mock_client, mocker):
+        """
+        Given: A 401 exception produced by the real _error_handler rather than a
+               hand-built one.
+        When: api_request receives it from the underlying request.
+        Then: The retry logic recognizes the 401, clears the cached token and retries,
+              proving the contract between _error_handler and api_request holds.
+        """
+        with pytest.raises(DemistoException) as exc_info:
+            mock_client._error_handler(self._mock_response(401))
+
+        success_response = {"data": "ok"}
+        mock_do_http = mocker.patch.object(
+            mock_client,
+            "_do_http_request",
+            side_effect=[exc_info.value, success_response],
+        )
+        mock_set_ctx = mocker.patch("ZscalerZIdentity.set_integration_context")
+
+        result = mock_client.api_request("GET", "/some/endpoint")
+
+        assert result == success_response
+        assert mock_do_http.call_count == 2
+        cleared_ctx = mock_set_ctx.call_args[0][0]
+        assert "access_token" not in cleared_ctx
+        assert "token_expires_at" not in cleared_ctx

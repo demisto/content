@@ -1,6 +1,9 @@
 fromversion: 8.4.0
+toversion: 8.14.0
 id: Fortinet_Fortiweb_ModelingRule
 name: Fortinet Fortiweb Modeling Rule
 rules: ''
 schema: ''
 tags: 
+supportedModules:
+- xsiam

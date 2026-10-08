@@ -1,6 +1,9 @@
 fromversion: 6.10.0
+toversion: 8.14.0
 id: Microsoft_IIS_Web_Server
 name: Microsoft IIS Web Server
 rules: ''
 schema: ''
 tags: Microsoft IIS Web Server
+supportedModules:
+- xsiam

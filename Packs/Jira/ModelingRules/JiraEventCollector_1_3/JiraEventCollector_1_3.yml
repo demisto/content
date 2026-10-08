@@ -1,8 +1,8 @@
 fromversion: 6.10.0
+toversion: 8.14.0
 id: JiraEventCollector
 name: JiraEventCollector
 rules: ''
 schema: ''
 supportedModules:
-- agentix
 - xsiam

@@ -299,3 +299,54 @@ CREATE_SHARELINK_RESPONSE = {
         }
     }
 }
+
+TAEGIS_EVENT_NEXT_PAGE = "eyJvZmZzZXQiOiAxMH0="
+
+TAEGIS_EVENT = {
+    "id": "event-12345-67890",
+    "metadata": {
+        "event_type": "process",
+        "event_time": "2024-05-20T14:30:05.123Z",
+        "tenant_id": "999-000-111",
+        "sensor_id": "win-endpoint-01",
+    },
+    "parent_process_id": "456",
+    "image_path": "C:\\Windows\\System32\\cmd.exe",
+    "commandline": 'cmd.exe /c "whoami"',
+    "username": "admin_user",
+    "next": None,
+}
+
+TAEGIS_EVENT_WITH_NEXT = {
+    **TAEGIS_EVENT,
+    "next": TAEGIS_EVENT_NEXT_PAGE,
+}
+
+FETCH_EVENTS_RESPONSE = {
+    "data": {
+        "eventsServiceSearch": [TAEGIS_EVENT],
+    }
+}
+
+FETCH_EVENTS_NEXT_PAGE_RESPONSE = {
+    "data": {
+        "eventsServiceSearch": [TAEGIS_EVENT_WITH_NEXT],
+    }
+}
+
+FETCH_EVENTS_BY_ID_RESPONSE = {
+    "data": {
+        "eventsServiceRetrieveEventsById": [TAEGIS_EVENT],
+    }
+}
+
+FETCH_EVENTS_PAGE_RESPONSE = {
+    "data": {
+        "eventsServiceEventPage": [TAEGIS_EVENT],
+    }
+}
+
+FETCH_EVENTS_BAD_RESPONSE = {
+    "data": {},
+    "errors": [{"message": "invalid CQL query", "path": ["eventsServiceSearch"]}],
+}

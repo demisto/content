@@ -4,3 +4,5 @@ name: Shodan Banner Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

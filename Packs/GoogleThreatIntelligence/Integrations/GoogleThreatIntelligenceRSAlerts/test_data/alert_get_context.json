@@ -1,0 +1,55 @@
+{
+  "name": "projects/test-project/alerts/alert-get-1",
+  "findings": [
+    "finding-1",
+    "finding-2"
+  ],
+  "state": "NEW",
+  "audit": {
+    "updateTime": "2026-04-22T06:43:07.513Z",
+    "createTime": "2026-04-22T06:43:07.513Z",
+    "creator": "creator-1",
+    "updater": "updater-1"
+  },
+  "displayName": "Test Alert Get 1",
+  "detail": {
+    "dataLeak": {
+      "severity": "SEVERITY_LEVEL_MEDIUM",
+      "discoveryDocumentIds": [
+        "doc-1"
+      ]
+    },
+    "detailType": "data_leak"
+  },
+  "etag": "etag-value",
+  "externalId": "external-id-1",
+  "aiSummary": "Test AI summary for the alert.",
+  "relevanceAnalysis": {
+    "relevant": true,
+    "confidence": "CONFIDENCE_LEVEL_HIGH",
+    "reasoning": "Test relevance reasoning",
+    "evidence": {
+      "commonThemes": [
+        "theme-1"
+      ],
+      "distinctThemes": [
+        "distinct-1"
+      ]
+    },
+    "relevanceLevel": "RELEVANCE_LEVEL_LOW"
+  },
+  "severityAnalysis": {
+    "severityLevel": "SEVERITY_LEVEL_MEDIUM",
+    "confidence": "CONFIDENCE_LEVEL_MEDIUM",
+    "reasoning": "Test severity reasoning"
+  },
+  "priorityAnalysis": {
+    "priorityLevel": "PRIORITY_LEVEL_LOW",
+    "confidence": "CONFIDENCE_LEVEL_LOW",
+    "reasoning": "Test priority reasoning"
+  },
+  "findingCount": "2",
+  "configurations": [
+    "config-1"
+  ]
+}

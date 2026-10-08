@@ -6,6 +6,18 @@
         "Backup Copy Creation Time": {
             "dontMapEventToLabels": true,
             "internalMapping": {
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
                 "Veeam Alarm Status": {
                     "simple": "status"
                 },
@@ -14,9 +26,6 @@
                 },
                 "Veeam Alarm Template Name": {
                     "simple": "name"
-                },
-                "Alert ID": {
-                    "simple": "predefinedAlarmId"
                 },
                 "Veeam Assigned Object": {
                     "complex": {
@@ -45,15 +54,6 @@
                             }
                         ]
                     }
-                },
-                "Comment": {
-                    "simple": "comment"
-                },
-                "Event ID": {
-                    "simple": "triggeredAlarmId"
-                },
-                "Number Of Found Related Alerts": {
-                    "simple": "childAlarmsCount"
                 },
                 "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
@@ -97,6 +97,18 @@
         "Backup Server Security Status": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
                 "Veeam Alarm Status": {
                     "simple": "status"
                 },
@@ -105,9 +117,6 @@
                 },
                 "Veeam Alarm Template Name": {
                     "simple": "name"
-                },
-                "Alert ID": {
-                    "simple": "predefinedAlarmId"
                 },
                 "Veeam Assigned Object": {
                     "complex": {
@@ -136,15 +145,6 @@
                             }
                         ]
                     }
-                },
-                "Comment": {
-                    "simple": "comment"
-                },
-                "Event ID": {
-                    "simple": "triggeredAlarmId"
-                },
-                "Number Of Found Related Alerts": {
-                    "simple": "childAlarmsCount"
                 },
                 "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
@@ -188,6 +188,18 @@
         "Enterprise Application Backup": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
                 "Veeam Alarm Status": {
                     "simple": "status"
                 },
@@ -196,9 +208,6 @@
                 },
                 "Veeam Alarm Template Name": {
                     "simple": "name"
-                },
-                "Alert ID": {
-                    "simple": "predefinedAlarmId"
                 },
                 "Veeam Assigned Object": {
                     "complex": {
@@ -227,15 +236,6 @@
                             }
                         ]
                     }
-                },
-                "Comment": {
-                    "simple": "comment"
-                },
-                "Event ID": {
-                    "simple": "triggeredAlarmId"
-                },
-                "Number Of Found Related Alerts": {
-                    "simple": "childAlarmsCount"
                 },
                 "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
@@ -279,6 +279,18 @@
         "Immutability Change Tracking": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
                 "Veeam Alarm Status": {
                     "simple": "status"
                 },
@@ -287,9 +299,6 @@
                 },
                 "Veeam Alarm Template Name": {
                     "simple": "name"
-                },
-                "Alert ID": {
-                    "simple": "predefinedAlarmId"
                 },
                 "Veeam Assigned Object": {
                     "complex": {
@@ -318,15 +327,6 @@
                             }
                         ]
                     }
-                },
-                "Comment": {
-                    "simple": "comment"
-                },
-                "Event ID": {
-                    "simple": "triggeredAlarmId"
-                },
-                "Number Of Found Related Alerts": {
-                    "simple": "childAlarmsCount"
                 },
                 "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
@@ -370,6 +370,18 @@
         "Immutability State": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
                 "Veeam Alarm Status": {
                     "simple": "status"
                 },
@@ -378,9 +390,6 @@
                 },
                 "Veeam Alarm Template Name": {
                     "simple": "name"
-                },
-                "Alert ID": {
-                    "simple": "predefinedAlarmId"
                 },
                 "Veeam Assigned Object": {
                     "complex": {
@@ -409,15 +418,6 @@
                             }
                         ]
                     }
-                },
-                "Comment": {
-                    "simple": "comment"
-                },
-                "Event ID": {
-                    "simple": "triggeredAlarmId"
-                },
-                "Number Of Found Related Alerts": {
-                    "simple": "childAlarmsCount"
                 },
                 "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
@@ -469,6 +469,18 @@
         "Incremental Backup Size": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
                 "Veeam Alarm Status": {
                     "simple": "status"
                 },
@@ -477,9 +489,6 @@
                 },
                 "Veeam Alarm Template Name": {
                     "simple": "name"
-                },
-                "Alert ID": {
-                    "simple": "predefinedAlarmId"
                 },
                 "Veeam Assigned Object": {
                     "complex": {
@@ -508,15 +517,6 @@
                             }
                         ]
                     }
-                },
-                "Comment": {
-                    "simple": "comment"
-                },
-                "Event ID": {
-                    "simple": "triggeredAlarmId"
-                },
-                "Number Of Found Related Alerts": {
-                    "simple": "childAlarmsCount"
                 },
                 "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
@@ -560,6 +560,18 @@
         "Job Disabling": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
                 "Veeam Alarm Status": {
                     "simple": "status"
                 },
@@ -568,9 +580,6 @@
                 },
                 "Veeam Alarm Template Name": {
                     "simple": "name"
-                },
-                "Alert ID": {
-                    "simple": "predefinedAlarmId"
                 },
                 "Veeam Assigned Object": {
                     "complex": {
@@ -599,15 +608,6 @@
                             }
                         ]
                     }
-                },
-                "Comment": {
-                    "simple": "comment"
-                },
-                "Event ID": {
-                    "simple": "triggeredAlarmId"
-                },
-                "Number Of Found Related Alerts": {
-                    "simple": "childAlarmsCount"
                 },
                 "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
@@ -651,6 +651,18 @@
         "Job Duration": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
                 "Veeam Alarm Status": {
                     "simple": "status"
                 },
@@ -659,9 +671,6 @@
                 },
                 "Veeam Alarm Template Name": {
                     "simple": "name"
-                },
-                "Alert ID": {
-                    "simple": "predefinedAlarmId"
                 },
                 "Veeam Assigned Object": {
                     "complex": {
@@ -690,15 +699,6 @@
                             }
                         ]
                     }
-                },
-                "Comment": {
-                    "simple": "comment"
-                },
-                "Event ID": {
-                    "simple": "triggeredAlarmId"
-                },
-                "Number Of Found Related Alerts": {
-                    "simple": "childAlarmsCount"
                 },
                 "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
@@ -742,6 +742,18 @@
         "Job Duration Deviation (Veeam Backup for Microsoft 365)": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
                 "Veeam Alarm Status": {
                     "simple": "status"
                 },
@@ -750,9 +762,6 @@
                 },
                 "Veeam Alarm Template Name": {
                     "simple": "name"
-                },
-                "Alert ID": {
-                    "simple": "predefinedAlarmId"
                 },
                 "Veeam Assigned Object": {
                     "complex": {
@@ -781,15 +790,6 @@
                             }
                         ]
                     }
-                },
-                "Comment": {
-                    "simple": "comment"
-                },
-                "Event ID": {
-                    "simple": "triggeredAlarmId"
-                },
-                "Number Of Found Related Alerts": {
-                    "simple": "childAlarmsCount"
                 },
                 "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
@@ -833,6 +833,18 @@
         "Malware Detection Change Tracking": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
                 "Veeam Alarm Status": {
                     "simple": "status"
                 },
@@ -841,9 +853,6 @@
                 },
                 "Veeam Alarm Template Name": {
                     "simple": "name"
-                },
-                "Alert ID": {
-                    "simple": "predefinedAlarmId"
                 },
                 "Veeam Assigned Object": {
                     "complex": {
@@ -872,15 +881,6 @@
                             }
                         ]
                     }
-                },
-                "Comment": {
-                    "simple": "comment"
-                },
-                "Event ID": {
-                    "simple": "triggeredAlarmId"
-                },
-                "Number Of Found Related Alerts": {
-                    "simple": "childAlarmsCount"
                 },
                 "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
@@ -924,6 +924,18 @@
         "Physical Machine Backup": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
                 "Veeam Alarm Status": {
                     "simple": "status"
                 },
@@ -932,9 +944,6 @@
                 },
                 "Veeam Alarm Template Name": {
                     "simple": "name"
-                },
-                "Alert ID": {
-                    "simple": "predefinedAlarmId"
                 },
                 "Veeam Assigned Object": {
                     "complex": {
@@ -963,15 +972,6 @@
                             }
                         ]
                     }
-                },
-                "Comment": {
-                    "simple": "comment"
-                },
-                "Event ID": {
-                    "simple": "triggeredAlarmId"
-                },
-                "Number Of Found Related Alerts": {
-                    "simple": "childAlarmsCount"
                 },
                 "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
@@ -1015,6 +1015,18 @@
         "Possible Malware Activity": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
                 "Veeam Alarm Status": {
                     "simple": "status"
                 },
@@ -1023,9 +1035,6 @@
                 },
                 "Veeam Alarm Template Name": {
                     "simple": "name"
-                },
-                "Alert ID": {
-                    "simple": "predefinedAlarmId"
                 },
                 "Veeam Assigned Object": {
                     "complex": {
@@ -1055,6 +1064,51 @@
                         ]
                     }
                 },
+                "Veeam Number of Triggered Alarms": {
+                    "simple": "repeatCount"
+                },
+                "Veeam Remediation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "remediation",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Remediation"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Veeam Triggered Time": {
+                    "simple": "triggeredTime"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Recon Threat State": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
                 "Comment": {
                     "simple": "comment"
                 },
@@ -1063,6 +1117,43 @@
                 },
                 "Number Of Found Related Alerts": {
                     "simple": "childAlarmsCount"
+                },
+                "Veeam Alarm Status": {
+                    "simple": "status"
+                },
+                "Veeam Alarm Template ID": {
+                    "simple": "alarmTemplateId"
+                },
+                "Veeam Alarm Template Name": {
+                    "simple": "name"
+                },
+                "Veeam Assigned Object": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alarmAssignment",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Alarm Created By"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
                 },
                 "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
@@ -1106,6 +1197,18 @@
         "Virtual Machine Backup": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
                 "Veeam Alarm Status": {
                     "simple": "status"
                 },
@@ -1114,9 +1217,6 @@
                 },
                 "Veeam Alarm Template Name": {
                     "simple": "name"
-                },
-                "Alert ID": {
-                    "simple": "predefinedAlarmId"
                 },
                 "Veeam Assigned Object": {
                     "complex": {
@@ -1145,15 +1245,6 @@
                             }
                         ]
                     }
-                },
-                "Comment": {
-                    "simple": "comment"
-                },
-                "Event ID": {
-                    "simple": "triggeredAlarmId"
-                },
-                "Number Of Found Related Alerts": {
-                    "simple": "childAlarmsCount"
                 },
                 "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
@@ -1197,6 +1288,18 @@
         "Virtual Machine Replica": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
                 "Veeam Alarm Status": {
                     "simple": "status"
                 },
@@ -1205,9 +1308,6 @@
                 },
                 "Veeam Alarm Template Name": {
                     "simple": "name"
-                },
-                "Alert ID": {
-                    "simple": "predefinedAlarmId"
                 },
                 "Veeam Assigned Object": {
                     "complex": {
@@ -1236,15 +1336,6 @@
                             }
                         ]
                     }
-                },
-                "Comment": {
-                    "simple": "comment"
-                },
-                "Event ID": {
-                    "simple": "triggeredAlarmId"
-                },
-                "Number Of Found Related Alerts": {
-                    "simple": "childAlarmsCount"
                 },
                 "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"

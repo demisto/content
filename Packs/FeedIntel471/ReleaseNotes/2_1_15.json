@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "<ul><li>Add support for a new backend API Verity471 alongside the existing integration surface</li><li>Expose backend selection in the feed/integration configuration so deployments can choose which API to use</li><li>Extend the legacy (Titan) path to handle data leak post alert types within the existing fetch and processing logic</li><li>Removal of `threat_type` configuration parameter from the Malware Indicator integration</li><li>Removal of `severity` configuration parameter from the Watcher Alerts integration</li><li>Rename of incident custom fields `titanurl` to `intel471url`, `titanwatcher` to `watcher` and `titanwatchergroup` to `watchergroup`</li></ul>"
+}

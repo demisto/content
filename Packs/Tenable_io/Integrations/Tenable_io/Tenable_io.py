@@ -1,3 +1,4 @@
+import gc
 import re  # pylint: disable=W9011
 import sys
 import time
@@ -133,6 +134,41 @@ MIN_ASSETS_INTERVAL = 60
 NOT_FOUND_ERROR = "404"
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 4 * (10**6)  # 4 MB
 MAX_404_RETRIES = 3  # Maximum number of 404 retries before giving up on current export
+
+
+class XSIAMSendConfig:
+    """Retry policy for sending data into XSIAM.
+
+    The XSIAM ingestion gateway intermittently answers with transient errors (502 from nginx,
+    connection resets, read timeouts). Without a retry a single transient error fails the whole
+    fetch cycle.
+    """
+
+    MAX_ATTEMPTS: int = 3
+    BACKOFF_SECONDS: int = 5
+    RETRYABLE_STATUS_CODES: frozenset[int] = frozenset({408, 500, 502, 503, 504})
+
+
+class XSIAMSendError(DemistoException):
+    """A failed XSIAM ingestion request that carries the HTTP status code of the response."""
+
+    def __init__(self, message: str, status_code: int | None = None, exception: Exception | None = None):
+        super().__init__(message, exception)
+        self.status_code = status_code
+
+
+class XSIAMIngestionClient(BaseClient):
+    """Client passed to ``send_data_to_xsiam`` so a failed response keeps its HTTP status code.
+
+    ``send_data_to_xsiam`` raises a plain ``DemistoException`` whose message does not include the
+    status code, which makes transient errors indistinguishable from permanent ones.
+    """
+
+    def _handle_error(self, error_handler: Any, res: requests.Response, should_update_metrics: bool) -> None:
+        try:
+            super()._handle_error(error_handler, res, should_update_metrics)
+        except DemistoException as exc:
+            raise XSIAMSendError(str(exc.message), status_code=res.status_code, exception=exc) from exc
 
 
 class Client(BaseClient):
@@ -1992,6 +2028,111 @@ def is_vulns_fetch_in_progress(last_run: dict) -> bool:
     return bool(last_run.get("vulns_available_chunks") or last_run.get("vuln_export_uuid"))
 
 
+def should_seal_empty_assets_snapshot(assets: list, assets_fetch_in_progress: bool, assets_last_run: dict) -> bool:
+    """
+    Decide whether the assets snapshot should be sealed with an empty payload on this run.
+
+    This guards against the XSUP-71765 regression: after the assets export finished and the
+    assets were committed to XSIAM, subsequent fetch-assets runs (which happen every fetch
+    interval while the vulnerabilities export is still processing) returned an empty assets
+    list and re-sealed the already-sealed snapshot with an empty payload. Re-sealing an
+    already-committed snapshot with empty data wipes the committed assets from the dataset.
+
+    The empty seal must happen exactly once per snapshot, only when:
+      - no new assets were fetched this run, and
+      - the assets export is complete (not in progress), and
+      - there is a committed snapshot to seal (cumulative total > 0), and
+      - the snapshot has not already been sealed this cycle.
+
+    Args:
+        assets: The assets fetched on the current run.
+        assets_fetch_in_progress: Whether the assets export still has pending work.
+        assets_last_run: The assets last run state object.
+
+    Returns:
+        bool: True if the snapshot should be sealed with an empty payload now.
+    """
+    if assets or assets_fetch_in_progress:
+        return False
+    if assets_last_run.get("assets_snapshot_sealed"):
+        return False
+    return assets_last_run.get("total_assets", 0) > 0
+
+
+def is_retryable_xsiam_error(error: BaseException) -> bool:
+    """Decide whether a failure while sending data into XSIAM is transient and worth retrying.
+
+    Args:
+        error: The exception raised by ``send_data_to_xsiam``.
+
+    Returns:
+        bool: True for retryable HTTP status codes, timeouts and dropped connections.
+    """
+    if isinstance(error, XSIAMSendError) and error.status_code is not None:
+        return error.status_code in XSIAMSendConfig.RETRYABLE_STATUS_CODES
+    # SSL and proxy errors are configuration problems; retrying them only delays the failure.
+    if isinstance(error, requests.exceptions.SSLError | requests.exceptions.ProxyError):
+        return False
+    if isinstance(
+        error,
+        requests.exceptions.Timeout | requests.exceptions.ConnectionError | requests.exceptions.ChunkedEncodingError,
+    ):
+        return True
+    # BaseClient wraps network errors in a DemistoException and keeps the original as `.exception`.
+    if isinstance(error, DemistoException) and isinstance(error.exception, BaseException):
+        return is_retryable_xsiam_error(error.exception)
+    return False
+
+
+def send_data_to_xsiam_with_retry(*args: Any, **kwargs: Any) -> None:
+    """Call ``send_data_to_xsiam`` with the exact same arguments, retrying transient ingestion errors.
+
+    The only differences from a direct ``send_data_to_xsiam`` call are:
+        - ``client_class=XSIAMIngestionClient``, so a failed response keeps its HTTP status code.
+        - On a retryable error (see ``XSIAMSendConfig.RETRYABLE_STATUS_CODES``, timeouts and dropped
+          connections) the same call is repeated, up to ``XSIAMSendConfig.MAX_ATTEMPTS`` times, with
+          exponential backoff. Any other error is raised immediately, exactly as before.
+
+    Only the product, the data type, the attempt number, the error class and the HTTP status code are
+    logged here - never the payload, the headers or the response body.
+
+    Args:
+        *args: Positional arguments forwarded to ``send_data_to_xsiam``.
+        **kwargs: Keyword arguments forwarded to ``send_data_to_xsiam``.
+
+    Raises:
+        Exception: The last error, when it is not retryable or all attempts are exhausted.
+    """
+    label = f"product={kwargs.get('product')} data_type={kwargs.get('data_type', EVENTS)}"
+    send_kwargs: dict[str, Any] = {**kwargs, "client_class": XSIAMIngestionClient}
+    max_attempts = XSIAMSendConfig.MAX_ATTEMPTS
+    for attempt in range(1, max_attempts + 1):
+        try:
+            send_data_to_xsiam(*args, **send_kwargs)
+        except Exception as exc:
+            status_code = getattr(exc, "status_code", None)
+            error_name = type(exc).__name__
+            if not is_retryable_xsiam_error(exc):
+                demisto.debug(f"[XSIAM Send] {label} failed with a non-retryable error ({error_name}, {status_code=}).")
+                raise
+            if attempt == max_attempts:
+                demisto.error(
+                    f"[XSIAM Send] {label} failed after {max_attempts} attempts. Last error: {error_name}, {status_code=}."
+                )
+                raise
+            delay = XSIAMSendConfig.BACKOFF_SECONDS * 2 ** (attempt - 1)
+            demisto.debug(
+                f"[XSIAM Send] {label} attempt {attempt}/{max_attempts} failed with a retryable error "
+                f"({error_name}, {status_code=}). Retrying in {delay}s."
+            )
+            time.sleep(delay)  # pylint: disable=E9003  # intentional backoff before retrying a transient XSIAM error
+            continue
+
+        if attempt > 1:
+            demisto.info(f"[XSIAM Send] {label} succeeded on attempt {attempt}/{max_attempts}.")
+        return
+
+
 def parse_vulnerabilities(vulns):  # pylint: disable=W9014
     demisto.debug("Parse the vulnerabilities...")
     if not isinstance(vulns, list):
@@ -2063,7 +2204,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 vulnerabilities = results.raw_response  # type: ignore    # pylint: disable=E1101
             return_results(results)
             if argToBoolean(args.get("should_push_events", "false")) and (is_xsiam() or is_platform()):
-                send_data_to_xsiam(vulnerabilities, product=f"{PRODUCT}_vulnerabilities", vendor=VENDOR)
+                send_data_to_xsiam_with_retry(vulnerabilities, product=f"{PRODUCT}_vulnerabilities", vendor=VENDOR)
 
         elif command == "tenable-io-list-scan-filters":
             return_results(list_scan_filters_command(client))
@@ -2083,13 +2224,13 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             return_results(results)
 
             if argToBoolean(args.get("should_push_events", "false")) and (is_xsiam() or is_platform()):
-                send_data_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                send_data_to_xsiam_with_retry(events, vendor=VENDOR, product=PRODUCT)
         # Fetch Commands
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
             demisto.debug(f"saved lastrun events: {last_run}")
             events, new_last_run = fetch_events_command(client, first_fetch, last_run, max_fetch)
-            send_data_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            send_data_to_xsiam_with_retry(events, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f"new lastrun events: {last_run}")
             demisto.setLastRun(new_last_run)
 
@@ -2105,14 +2246,24 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 # starting a whole new fetch process for assets
                 demisto.debug("starting new fetch")
                 assets_last_run.update({"assets_last_fetch": time.time()})
-            # Fetch Assets: Run if there's an ongoing assets export OR if starting a new fetch cycle
-            if is_assets_fetch_in_progress(assets_last_run_copy) or not is_vulns_fetch_in_progress(assets_last_run_copy):
-                assets = run_assets_fetch(client, assets_last_run)
-            # Fetch Vulnerabilities: Run if there's an ongoing vulns export OR if assets fetch is complete
-            if is_vulns_fetch_in_progress(assets_last_run_copy) or not is_assets_fetch_in_progress(assets_last_run_copy):
-                vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run)
+            # Determine which stages should run on this invocation BEFORE fetching anything.
+            # These flags are computed from the pre-fetch state (assets_last_run_copy) so that
+            # the assets and vulnerabilities stages are decided independently and consistently,
+            # even though they are now executed sequentially (assets fully sent and freed before
+            # vulnerabilities are fetched) to avoid holding both large datasets in memory at once
+            # (XSUP-73037 OOM).
+            should_fetch_assets = is_assets_fetch_in_progress(assets_last_run_copy) or not is_vulns_fetch_in_progress(
+                assets_last_run_copy
+            )
+            should_fetch_vulns = is_vulns_fetch_in_progress(assets_last_run_copy) or not is_assets_fetch_in_progress(
+                assets_last_run_copy
+            )
 
-            demisto.info(f"Received {len(assets)} assets and {len(vulnerabilities)} vulnerabilities.")
+            # Fetch Assets: Run if there's an ongoing assets export OR if starting a new fetch cycle
+            if should_fetch_assets:
+                assets = run_assets_fetch(client, assets_last_run)
+
+            demisto.info(f"Received {len(assets)} assets.")
 
             demisto.debug(f"new lastrun assets: {assets_last_run}")
             demisto.setAssetsLastRun(assets_last_run)
@@ -2130,6 +2281,10 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             # Vulnerabilities are separate and don't affect the assets snapshot completion
             assets_fetch_in_progress = is_assets_fetch_in_progress(assets_last_run)
 
+            # Remember whether assets were fetched this run before we free the list below,
+            # so downstream conditions (e.g. module health update) keep their original meaning.
+            fetched_assets_this_run = bool(assets)
+
             if assets:
                 # Calculate cumulative total BEFORE sending to XSIAM
                 # Per the Fetch Assets Development Flow doc (Case 2 - Continuation Iteration):
@@ -2143,7 +2298,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                     f"items_count={items_count}, cumulative_total={cumulative_total}, "
                     f"assets_fetch_in_progress={assets_fetch_in_progress}"
                 )
-                send_data_to_xsiam(
+                send_data_to_xsiam_with_retry(
                     data=assets,
                     vendor=VENDOR,
                     product=f"{PRODUCT}_assets",
@@ -2158,42 +2313,78 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 # Update cumulative asset count AFTER successful send_data_to_xsiam()
                 # This ensures the counter only reflects assets that were actually sent to XSIAM
                 assets_last_run["total_assets"] = cumulative_total
+                # If this send completed the assets snapshot (no more asset work pending), mark it
+                # as sealed so subsequent runs that only drain vulnerabilities do not re-seal it
+                # with an empty payload (XSUP-71765).
+                if not assets_fetch_in_progress:
+                    assets_last_run["assets_snapshot_sealed"] = True
                 demisto.setAssetsLastRun(assets_last_run)
 
-            elif not assets_fetch_in_progress:
-                # Edge case: asset fetch completed but returned an empty list of assets.
-                # We still need to seal the snapshot by sending an empty payload with the final items_count
-                # so XSIAM knows the snapshot is complete.
+            elif should_seal_empty_assets_snapshot(assets, assets_fetch_in_progress, assets_last_run):
+                # Asset fetch completed but this run returned an empty list of assets, and the
+                # snapshot has not been sealed yet. Seal it once by sending an empty payload with
+                # the final items_count so XSIAM knows the snapshot is complete.
                 cumulative_total = assets_last_run.get("total_assets", 0)
-                if cumulative_total > 0:
-                    demisto.debug(
-                        f"Asset fetch completed with empty assets list. Sealing snapshot with "
-                        f"snapshot_id={snapshot_id}, items_count={cumulative_total}"
-                    )
-                    send_data_to_xsiam(
-                        data=[],
-                        vendor=VENDOR,
-                        product=f"{PRODUCT}_assets",
-                        data_type="assets",
-                        snapshot_id=snapshot_id,
-                        items_count=str(cumulative_total),
-                        should_update_health_module=False,
-                    )
-                else:
-                    # First fetch returned empty - log this scenario
-                    demisto.debug(
-                        f"Asset fetch completed with empty assets list and cumulative_total=0. "
-                        f"No snapshot sealing needed for snapshot_id={snapshot_id}"
-                    )
+                demisto.debug(
+                    f"[Fetch] Asset fetch completed with empty assets list. Sealing snapshot with "
+                    f"snapshot_id={snapshot_id}, items_count={cumulative_total}"
+                )
+                send_data_to_xsiam_with_retry(
+                    data=[],
+                    vendor=VENDOR,
+                    product=f"{PRODUCT}_assets",
+                    data_type="assets",
+                    snapshot_id=snapshot_id,
+                    items_count=str(cumulative_total),
+                    should_update_health_module=False,
+                )
+                # Mark the snapshot as sealed so it is not re-sealed on the following runs
+                # while the vulnerabilities export is still in progress (XSUP-71765).
+                assets_last_run["assets_snapshot_sealed"] = True
+                demisto.setAssetsLastRun(assets_last_run)
+            elif not assets_fetch_in_progress:
+                # Asset fetch is complete but there is nothing to seal: either nothing was ever
+                # committed this cycle (cumulative_total == 0) or the snapshot was already sealed
+                # on a previous run. Do NOT re-send an empty payload for an already-sealed
+                # snapshot - doing so overwrites the committed assets in XSIAM (XSUP-71765).
+                demisto.debug(
+                    f"[Fetch] No assets to send and snapshot already sealed or nothing committed "
+                    f"(snapshot_id={snapshot_id}, "
+                    f"total_assets={assets_last_run.get('total_assets', 0)}, "
+                    f"assets_snapshot_sealed={assets_last_run.get('assets_snapshot_sealed', False)}). "
+                    f"Skipping snapshot seal."
+                )
+
+            # Release the assets from memory now that they have been sent to XSIAM, BEFORE fetching
+            # vulnerabilities. Assets and vulnerabilities are each up to tens of thousands of records;
+            # holding both in memory at once previously drove the fetch-assets container past its
+            # memory limit and caused an OOM kill mid-run, so vulnerabilities were never sent and the
+            # vulnerabilities dataset was never created (XSUP-73037). Freeing here caps the peak
+            # footprint at roughly one dataset at a time.
+            del assets
+            gc.collect()
+
+            # Fetch Vulnerabilities: Run if there's an ongoing vulns export OR if assets fetch is complete.
+            # Executed only after assets have been sent and freed above.
+            if should_fetch_vulns:
+                vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run)
+                demisto.info(f"Received {len(vulnerabilities)} vulnerabilities.")
+                demisto.debug(f"new lastrun assets after vulns fetch: {assets_last_run}")
+                demisto.setAssetsLastRun(assets_last_run)
 
             if vulnerabilities:
                 vulnerabilities = parse_vulnerabilities(vulnerabilities)
                 demisto.debug(f"sending {len(vulnerabilities)} vulnerabilities to XSIAM.")
-                send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f"{PRODUCT}_vulnerabilities")
+                send_data_to_xsiam_with_retry(data=vulnerabilities, vendor=VENDOR, product=f"{PRODUCT}_vulnerabilities")
+                # Release the vulnerabilities from memory once sent, mirroring the assets handling above.
+                del vulnerabilities
+                gc.collect()
 
-            # Update module health separately to show the number of assets pulled
+            # Update module health separately to show the number of assets pulled.
+            # Uses fetched_assets_this_run (captured before the assets list was freed above)
+            # to preserve the original "fetched assets this run OR assets fetch complete" semantics.
             cumulative_total = assets_last_run.get("total_assets", 0)
-            if assets or not assets_fetch_in_progress:
+            if fetched_assets_this_run or not assets_fetch_in_progress:
                 demisto.updateModuleHealth({"assetsPulled": cumulative_total})
 
             # Clean up snapshot state when the entire fetch cycle is complete
@@ -2206,6 +2397,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
                 )
                 assets_last_run.pop("snapshot_id", None)
                 assets_last_run.pop("total_assets", None)
+                assets_last_run.pop("assets_snapshot_sealed", None)
                 demisto.setAssetsLastRun(assets_last_run)
 
             demisto.info("Done Sending data to XSIAM.")
