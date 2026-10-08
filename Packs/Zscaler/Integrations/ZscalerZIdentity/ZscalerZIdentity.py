@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 import html
 import re
+import traceback
 
 """ CONSTANTS """
 
@@ -42,7 +43,7 @@ AUTO_ACTIVATE_CHANGES_COMMANDS = (
 handle_proxy()
 
 
-def _sanitize_url_entry(value: str) -> str:
+def _sanitize_url_entry(value: Any) -> Any:
     """Decodes HTML entities in a URL entry for the Zscaler ZIA API.
 
     Used as a fallback in update_url_category when Zscaler rejects a URL
@@ -472,6 +473,7 @@ class Client(BaseClient):
         except DemistoException as e:
             if not _is_html_content_error(e):
                 raise
+            demisto.debug(traceback.format_exc())
             demisto.debug(
                 "Zscaler rejected the URL category update with 'URLs must not contain HTML content'. "
                 "Retrying once with HTML entities decoded in the URL list."

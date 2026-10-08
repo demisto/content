@@ -626,8 +626,8 @@ class TestUrlSanitization:
         When: _sanitize_url_entry is called.
         Then: The value is returned unchanged.
         """
-        assert _sanitize_url_entry(None) is None  # type: ignore[arg-type]
-        assert _sanitize_url_entry(123) == 123  # type: ignore[arg-type]
+        assert _sanitize_url_entry(None) is None
+        assert _sanitize_url_entry(123) == 123
 
     def test_sanitize_url_list_handles_empty_and_none(self):
         """
