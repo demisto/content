@@ -68,21 +68,82 @@ Note: The information in the Playground is sensitive information. You should del
 8. In the Azure app, navigate to **Home** > **App registration** > **application name** and copy the Application (client) ID.
 9. In Cortex XSOAR/XSIAM, in the integration instance configuration, paste the application ID in **The application ID from the Azure portal** field.
 
-### Verify that the admin account has sufficient Exchange Online permissions
+### Grant the application sufficient Exchange Online permissions
 
-For the integration to work, the Azure AD application's service principal must have the correct permissions assigned in the Exchange Online role groups.
+For the integration to work, the Azure AD application's service principal must have an Exchange Online management role assigned. There are **two** supported ways to grant this permission. **You only need one of them.** If authentication (the **Test** button) does not work after using one option, try the other.
 
-1. Open the Microsoft Purview Portal: <https://purview.microsoft.com/>
-2. Log in using an admin account that can manage role assignments for the Azure AD application (for example, a Global Administrator or Privileged Role Administrator).
-3. In the top bar, select: **Settings → Roles and scopes**
-4. In the left sidebar, select: **Role Groups**
-5. Search for the following role groups:
-   - **Organization Management** – the most privileged role and fully supported for this integration.
-   - **Security Administrator** – a highly privileged security role that also provides full access.
-6. Open the role and verify that the **service principal of the Azure AD application used by the integration** is listed.
-7. If not listed, click **Edit → Add Users** and assign the required roles.
+- **Option A - Assign a Microsoft Entra directory role to the application.** This is covered in the **App authentication** section above (see "Assign Azure AD roles to the application"). Assigning a supported directory role such as **Security Administrator** to the app is sufficient.
+- **Option B - Create an Exchange Online service principal and add it to a role group (via PowerShell).** Use this option when Option A does not work, or when you want to scope the application to a specific Exchange role group.
 
-- Note - for more information go to the official [Microsoft Documentation.](https://learn.microsoft.com/en-us/defender-office-365)
+#### Option B: Add the service principal via Exchange Online PowerShell
+
+**Step 1: Connect to Exchange Online PowerShell as an administrator**
+
+1. Open PowerShell on your machine.
+2. Install the Exchange Online module (only needed the first time):
+
+   ```powershell
+   Install-Module -Name ExchangeOnlineManagement -Scope CurrentUser
+   ```
+
+3. Import the module:
+
+   ```powershell
+   Import-Module ExchangeOnlineManagement
+   ```
+
+4. Connect using an administrator account that can manage role assignments (for example, a Global Administrator or Privileged Role Administrator). A sign-in window will open for you to authenticate:
+
+   ```powershell
+   Connect-ExchangeOnline -UserPrincipalName <admin@yourdomain.com>
+   ```
+
+   Replace `<admin@yourdomain.com>` with your admin account.
+
+**Step 2: Get the correct IDs and create the service principal**
+
+You need two values:
+
+- **Application (client) ID** - take this from the **App registration** Overview page.
+- **Enterprise application Object ID** - this is **NOT** the Object ID shown on the App registration page. You must use the Object ID of the **Enterprise application** (the service principal).
+
+To get the Enterprise application Object ID:
+
+1. In the Azure portal, open your App registration (for example, your EWS app).
+2. On the Overview page, find the field **Managed application in local directory** and click the application name link next to it. This opens the matching Enterprise application. (Alternatively, go to **Microsoft Entra ID > Enterprise applications**, search for your app, and open it.)
+3. On the Enterprise application Overview page, copy the **Object ID**. This value is different from the Object ID on the App registration page.
+
+Now run the following command, using the Application (client) ID and the Enterprise application Object ID:
+
+```powershell
+New-ServicePrincipal -AppId "<Application-ID>" -ObjectId "<EnterpriseApp-ObjectId>" -DisplayName "<Application Name>"
+```
+
+**Step 3: Assign the required Exchange Online role**
+
+After the service principal is created, assign it the **Security Administrator** role so it has the permissions the integration needs to run its cmdlets:
+
+```powershell
+Add-RoleGroupMember -Identity "Security Administrator" -Member "<DisplayName>"
+```
+
+Use the same `<DisplayName>` value you set in Step 2.
+
+**Note:** If you get an error that `'Security Administrator' matches multiple entries`, use the **Organization Management** role instead (it is more privileged):
+
+```powershell
+Add-RoleGroupMember -Identity "Organization Management" -Member "<DisplayName>"
+```
+
+**Step 4: Verify**
+
+You can confirm the service principal now has the role with the following command. Use the same role name you assigned in Step 3:
+
+```powershell
+Get-RoleGroupMember -Identity "<Role>"
+```
+
+- Note - for more information go to the official [Microsoft Documentation.](https://learn.microsoft.com/en-us/powershell/exchange/app-only-auth-powershell-v2)
 
 ## Troubleshooting and Testing
 
@@ -106,9 +167,9 @@ See the **“App authentication”** section above for detailed guidance.
 When running a command, you receive an error similar to:  
 *“The term `cmdlet` is not recognized as a name of a cmdlet, function, script file, or executable program…”*
 
-**Solution:**  
-Make sure the **service principal of the Azure AD application used by the integration** has sufficient **Exchange Online permissions**.  
-Refer to the **“Exchange Online permissions”** section above to confirm the correct roles are assigned and detailed guidance.
+**Solution:**
+Make sure the **service principal of the Azure AD application used by the integration** has sufficient **Exchange Online permissions**.
+Refer to the **“Grant the application sufficient Exchange Online permissions”** section above to confirm the correct roles are assigned and for detailed guidance.
 
 ## Commands
 
