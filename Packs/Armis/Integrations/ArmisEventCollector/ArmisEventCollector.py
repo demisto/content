@@ -1541,7 +1541,10 @@ def handle_fetched_events(events: dict[str, list[dict[str, Any]]], next_run: dic
         demisto.debug("No collected events to send (either none fetched, or all streamed). Sending 0 to XSIAM.")
         send_events_to_xsiam([], vendor=VENDOR, product=PRODUCT)  # heartbeat
 
-    demisto.debug(f"setting {next_run=}")
+    # Summarize next_run for logging: collapse list values (e.g. dedup id lists) to their
+    # length so the long id lists do not spam the logs, while keeping scalar fields visible.
+    next_run_summary = {key: (f"<{len(value)} ids>" if isinstance(value, list) else value) for key, value in next_run.items()}
+    demisto.debug(f"setting next_run={next_run_summary}")
     next_run["nextTrigger"] = "1"
     demisto.setLastRun(next_run)
 
