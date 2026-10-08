@@ -1,0 +1,59 @@
+name: Portkey - API Key Protection Set And Then Absent - by GoCortexIO
+description: Reports an API key whose usage limit, expiry or rotation policy moved between set and absent within the window. A spending ceiling is a control rather than a hygiene attribute, so its removal is the event worth alerting on. A snapshot of current state cannot see a removal at all.
+severity: SEV_040_HIGH
+xql_query: |-
+  // PROVENANCE
+  //   Pattern:   a bound being taken off, rather than a bound never having been set. The
+  //              second is hygiene and this pack already reports it; the first is an act.
+  //   Basis:     the audit request body. A protection is removed by being written as null,
+  //              so the model names the null explicitly as `absent` rather than leaving the
+  //              field empty, because an empty field reads as no information rather than as
+  //              no limit.
+  //   ATT&CK:    T1562
+  //   Threshold: none.
+  //   Direction is NOT asserted. The aggregate sees both states in the window and cannot
+  //              order them, so this reports that a protection CHANGED and names both
+  //              states. Claiming removal from an unordered aggregate would be a guess, and
+  //              a setting being added is worth seeing too.
+  //   Grouping:  per key, by name with id as fallback, for the reason given in the scope rule.
+  datamodel dataset = portkey_audit_raw
+  | filter xdm.network.http.url contains "/api-keys"
+        and xdm.event.outcome_reason != null
+  | alter key_ref = coalesce(xdm.target.resource.name, xdm.target.resource.id)
+  | comp count_distinct(xdm.event.outcome_reason) as distinct_states,
+         values(xdm.event.outcome_reason) as states_seen,
+         count() as key_writes,
+         values(xdm.source.user.identifier) as actors,
+         min(_time) as first_seen,
+         max(_time) as last_seen
+      by key_ref, xdm.event.type
+  | filter distinct_states > 1
+  | sort desc key_writes
+  | fields key_ref, xdm.event.type, distinct_states, states_seen, key_writes, actors, first_seen, last_seen
+alert_name: Portkey - API key $key_ref protection settings changed
+alert_category: User Defined
+user_defined_category: xdm.event.type
+alert_description: API key $key_ref was written $key_writes time(s) by $actors and its usage limit, expiry or rotation policy differed between writes. States observed - $states_seen. A ceiling that has been taken off leaves an unbounded key; read the ordered writes to establish which way it went.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0005 - Defense Evasion:
+  - T1562 - Impair Defenses
+suppression_fields:
+- key_ref
+- states_seen
+global_rule_id: 7dc9a9aa-0a65-4ed1-b1b1-7ca1544a6d47
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 26 hours
+timezone: Australia/Melbourne
+crontab: '37 * * * *'
+suppression_enabled: true
+suppression_duration: 24 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_audit_raw | filter uri contains "/api-keys" and method != "DELETE"
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0
