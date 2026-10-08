@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from unittest.mock import patch
 from urllib.parse import parse_qs
 
@@ -209,8 +209,8 @@ def test_find_device(client, requests_mock):
     with patch(
         "NetskopeV2.arg_to_datetime",
         side_effect=[
-            datetime.fromtimestamp(1773101400, tz=timezone.utc),
-            datetime.fromtimestamp(1773187800, tz=timezone.utc),
+            datetime.fromtimestamp(1773101400, tz=UTC),
+            datetime.fromtimestamp(1773187800, tz=UTC),
         ],
     ):
         result = find_device(client, {"start_time": "1773101400", "end_time": "1773187800"})

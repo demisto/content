@@ -59,9 +59,7 @@ def test_main_builds_protocols_json(mocker):
     NetskopeBuildProtocolsJson.main()
 
     command_results = return_results.call_args.args[0]
-    assert command_results.outputs == {
-        "ProtocolsJson": '[{"type": "tcp", "port": "443"}, {"type": "tcp", "port": "8080"}]'
-    }
+    assert command_results.outputs == {"ProtocolsJson": '[{"type": "tcp", "port": "443"}, {"type": "tcp", "port": "8080"}]'}
     assert "2 port(s)" in command_results.readable_output
 
 
