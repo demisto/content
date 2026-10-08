@@ -1690,8 +1690,14 @@ def main():
     use_ssl = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     reliability = params.get("reliability", DBotScoreReliability.B)
-    relationships_limit = arg_to_number(params.get("relationships_limit")) or DEFAULT_RELATIONSHIPS_LIMIT
-    sandbox_array_limit = arg_to_number(params.get("sandbox_array_limit")) or DEFAULT_SANDBOX_ARRAY_LIMIT
+
+    relationships_limit = arg_to_number(params.get("relationships_limit"))
+    if relationships_limit is None or relationships_limit <= 0:
+        relationships_limit = DEFAULT_RELATIONSHIPS_LIMIT
+
+    sandbox_array_limit = arg_to_number(params.get("sandbox_array_limit"))
+    if sandbox_array_limit is None or sandbox_array_limit <= 0:
+        sandbox_array_limit = DEFAULT_SANDBOX_ARRAY_LIMIT
 
     command = demisto.command()
     demisto.debug(f"Command being called in CrowdStrikeFalconX Sandbox is: {command}")
