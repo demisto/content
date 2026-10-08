@@ -1485,7 +1485,7 @@ script:
       required: false
       required:platform: true
     - name: account_name
-      description: The storage account name.
+      description: The name of the storage account.
       required: true
     - name: table_name
       description: The name of the table to create. Must be alphanumeric, start with a letter, and be 3 to 63 characters long.
@@ -1502,7 +1502,7 @@ script:
       required: false
       required:platform: true
     - name: account_name
-      description: The storage account name.
+      description: The name of the storage account.
       required: true
     - name: table_name
       description: The name of the table to delete.
@@ -1515,17 +1515,17 @@ script:
       required: false
       required:platform: true
     - name: account_name
-      description: The storage account name.
+      description: The name of the storage account.
       required: true
     - name: limit
-      description: The maximum number of tables to return. Accepted range is 1-1000.
+      description: The maximum number of tables to return. Accepted values are 1 to 1000. Default is 50.
       required: false
       defaultvalue: '50'
     - name: filter
-      description: An OData query expression used to filter the returned tables.
+      description: The OData query expression used to filter the returned tables.
       required: false
     - name: next_token
-      description: A continuation token returned by a previous call (Azure.Storage.TablesNextToken), used to retrieve the next page of results.
+      description: The continuation token returned by a previous call (Azure.Storage.TablesNextToken), used to retrieve the next page of results.
       required: false
     outputs:
     - contextPath: Azure.Storage.Table.TableName
@@ -1542,19 +1542,19 @@ script:
       required: false
       required:platform: true
     - name: account_name
-      description: The storage account name.
+      description: The name of the storage account.
       required: true
     - name: table_name
-      description: The name of the table to insert the entity into.
+      description: The name of the table into which to insert the entity.
       required: true
     - name: partition_key
-      description: The PartitionKey property of the entity. Unique identifier for the partition within a given table.
+      description: The PartitionKey property of the entity which is the unique identifier for the partition within a given table.
       required: true
     - name: row_key
-      description: The RowKey property of the entity. Unique identifier for an entity within a given partition.
+      description: The RowKey property of the entity, which is the unique identifier for an entity within a given partition.
       required: true
     - name: entity_fields
-      description: 'A JSON object of the entity''s fields and their values, for example {"Age": 20}.'
+      description: 'A JSON object of the entity''s fields and their values, for example, {"Age": 20}.'
       required: true
     outputs:
     - contextPath: Azure.Storage.Table.Entity.PartitionKey
@@ -1564,7 +1564,7 @@ script:
       description: The RowKey property of the entity.
       type: String
     - contextPath: Azure.Storage.Table.Entity.Timestamp
-      description: The date and time the entity was last modified, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time the entity was last modified, in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
       type: Date
   - name: azure-storage-table-entity-update
     description: "Updates an existing entity in a table by merging the provided properties. Does not replace the existing entity. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/entities/write."
@@ -1574,7 +1574,7 @@ script:
       required: false
       required:platform: true
     - name: account_name
-      description: The storage account name.
+      description: The name of the storage account.
       required: true
     - name: table_name
       description: The name of the table containing the entity.
@@ -1586,7 +1586,7 @@ script:
       description: The RowKey property of the entity to update.
       required: true
     - name: entity_fields
-      description: 'A JSON object of the entity''s fields and their values to merge, for example {"Address": "New York"}.'
+      description: 'A JSON object of the entity''s fields and their values to merge, for example, {"Address": "New York"}.'
       required: true
   - name: azure-storage-table-entity-replace
     description: "Replaces an existing entity in a table. Replaces the entire entity and can be used to remove properties. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/entities/write."
@@ -1596,7 +1596,7 @@ script:
       required: false
       required:platform: true
     - name: account_name
-      description: The storage account name.
+      description: The name of the storage account.
       required: true
     - name: table_name
       description: The name of the table containing the entity.
@@ -1608,7 +1608,7 @@ script:
       description: The RowKey property of the entity to replace.
       required: true
     - name: entity_fields
-      description: 'A JSON object of the entity''s fields and their values. Replaces the entire entity, for example {"Address": "New York"}.'
+      description: 'A JSON object of the entity''s fields and their values. Replaces the entire entity, for example, {"Address": "New York"}.'
       required: true
   - name: azure-storage-table-entity-query
     description: "Queries entities in a table. Provide partition_key and row_key together to retrieve a single entity, or omit them to query multiple entities. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/entities/read."
@@ -1618,7 +1618,7 @@ script:
       required: false
       required:platform: true
     - name: account_name
-      description: The storage account name.
+      description: The name of the storage account.
       required: true
     - name: table_name
       description: The name of the table to query.
@@ -1630,18 +1630,18 @@ script:
       description: The RowKey property of a specific entity to retrieve. Must be provided together with partition_key.
       required: false
     - name: filter
-      description: An OData query expression used to filter the returned entities.
+      description: The OData query expression used to filter the returned entities.
       required: false
     - name: select
-      description: A comma-separated list of entity properties to return.
+      description: The comma-separated list of entity properties to return.
       required: false
       isArray: true
     - name: limit
-      description: The maximum number of entities to return. Accepted range is 1-1000.
+      description: The maximum number of entities to return. Accepted range is 1 to 1000. Default is 50.
       required: false
       defaultvalue: '50'
     - name: next_token
-      description: A continuation token returned by a previous call (Azure.Storage.EntitiesNextToken), used to retrieve the next page of results. Ignored when partition_key and row_key are provided.
+      description: The continuation token returned by a previous call (Azure.Storage.EntitiesNextToken), used to retrieve the next page of results. Ignored when partition_key and row_key are provided.
     outputs:
     - contextPath: Azure.Storage.Table.Entity.PartitionKey
       description: The PartitionKey property of the entity.
@@ -1650,7 +1650,7 @@ script:
       description: The RowKey property of the entity.
       type: String
     - contextPath: Azure.Storage.Table.Entity.Timestamp
-      description: The date and time the entity was last modified, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time the entity was last modified, in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Azure.Storage.EntitiesNextToken
       description: The continuation token to retrieve the next page of entities. Empty when there are no more results.
@@ -1663,7 +1663,7 @@ script:
       required: false
       required:platform: true
     - name: account_name
-      description: The storage account name.
+      description: The name of the storage account.
       required: true
     - name: table_name
       description: The name of the table containing the entity.
