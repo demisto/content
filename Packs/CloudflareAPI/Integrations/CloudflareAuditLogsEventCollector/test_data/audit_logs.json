@@ -1,0 +1,70 @@
+{
+  "page_1": {
+    "result": [
+      {
+        "id": "d5b0f326-1232-4452-8858-1089bd7168ef",
+        "action": {"result": true, "type": "change_setting"},
+        "actor": {
+          "id": "f6b5de0326bb5182b8a4840ee01ec774",
+          "email": "michelle@example.com",
+          "ip": "198.41.129.166",
+          "type": "user"
+        },
+        "interface": "API",
+        "metadata": {"name": "security_level", "type": "firewall", "value": "high"},
+        "newValue": "low",
+        "oldValue": "high",
+        "owner": {"id": "023e105f4ecef8ad9ca31a8372d0c353"},
+        "resource": {"id": "023e105f4ecef8ad9ca31a8372d0c353", "type": "zone"},
+        "when": "2024-04-26T17:31:07Z"
+      },
+      {
+        "id": "a1b2c3d4-0000-1111-2222-333344445555",
+        "action": {"result": true, "type": "login"},
+        "actor": {
+          "id": "aaaabbbbccccddddeeeeffff00001111",
+          "email": "admin@example.com",
+          "ip": "203.0.113.10",
+          "type": "user"
+        },
+        "interface": "UI",
+        "metadata": {},
+        "resource": {"id": "user", "type": "account"},
+        "when": "2024-04-26T18:00:00Z"
+      }
+    ],
+    "result_info": {"page": 1, "per_page": 1000, "total_count": 3, "total_pages": 2},
+    "success": true,
+    "errors": [],
+    "messages": []
+  },
+  "page_2": {
+    "result": [
+      {
+        "id": "ffffeeee-9999-8888-7777-666655554444",
+        "action": {"result": false, "type": "delete_record"},
+        "actor": {
+          "id": "aaaabbbbccccddddeeeeffff00001111",
+          "email": "admin@example.com",
+          "ip": "203.0.113.10",
+          "type": "user"
+        },
+        "interface": "API",
+        "metadata": {},
+        "resource": {"id": "023e105f4ecef8ad9ca31a8372d0c353", "type": "dns_record"},
+        "when": "2024-04-26T18:05:30Z"
+      }
+    ],
+    "result_info": {"page": 2, "per_page": 1000, "total_count": 3, "total_pages": 2},
+    "success": true,
+    "errors": [],
+    "messages": []
+  },
+  "empty": {
+    "result": [],
+    "result_info": {"page": 1, "per_page": 1000, "total_count": 0, "total_pages": 0},
+    "success": true,
+    "errors": [],
+    "messages": []
+  }
+}
