@@ -578,7 +578,7 @@ script:
     - contextPath: AnthropicClaude.DeletedProjectDocument.Deleted
       description: The deletion result for the project document (true when deleted).
       type: Boolean
-  dockerimage: demisto/parse-emails:0.1.48.10569905
+  dockerimage: demisto/parse-emails:0.2.0.12624354
   runonce: false
   script: ''
   subtype: python3
