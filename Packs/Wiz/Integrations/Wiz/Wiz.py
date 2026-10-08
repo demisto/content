@@ -12,7 +12,7 @@ WIZ_API_LIMIT = 500  # limit number of returned records from the Wiz API
 MAX_NOTE_LENGTH = 1400  # Hard limit for issue note text length enforced by the Wiz API
 WIZ = "wiz"
 
-WIZ_VERSION = "1.7.0"
+WIZ_VERSION = "1.8.0"
 INTEGRATION_GUID = "8864e131-72db-4928-1293-e292f0ed699f"
 NOT_DEFINED = "Not Defined"
 
@@ -173,19 +173,6 @@ query IssuesTable(
         externalId
         name
         url
-      }
-      notes {
-        id
-        createdAt
-        updatedAt
-        text
-        user {
-          name
-          email
-        }
-        serviceAccount {
-          name
-        }
       }
     }
     pageInfo {
@@ -1419,53 +1406,35 @@ mutation UpdateIssue(
     updateIssue(input: { id: $issueId, patch: $patch, override: $override }) {
       issue {
         id
-        notes {
-          ...IssueNoteDetails
-        }
         status
         dueAt
         resolutionReason
       }
     }
   }
-
-  fragment IssueNoteDetails on IssueNote {
-    id
-    text
-    updatedAt
-    createdAt
-    user {
-      id
-      email
-    }
-    serviceAccount {
-      id
-      name
-    }
-  }
 """
 CREATE_COMMENT_QUERY = """
-mutation CreateIssueComment($input: CreateIssueNoteInput!) {
-    createIssueNote(input: $input) {
-      issueNote {
-        createdAt
-        id
-        text
-        user {
-          id
-          email
-        }
+mutation CreateCommentThreadComment($input: AddCommentInput!) {
+  createCommentThreadComment(input: $input) { commentThread { id } }
+}
+"""
+DELETE_COMMENT_QUERY = """
+mutation DeleteComment($input: DeleteCommentInput!) {
+  deleteComment(input: $input) { commentThread { id } }
+}
+"""
+ISSUE_COMMENTS_QUERY = """
+query IssueComments($id: ID!, $after: String) {
+  issue(id: $id) {
+    commentThread {
+      comments(first: 500, after: $after, orderBy: { field: CREATED_AT, direction: ASC }) {
+        nodes { id body createdAt updatedAt author { name } serviceAccount { name } }
+        pageInfo { hasNextPage endCursor }
       }
     }
   }
-    """
-DELETE_NOTE_QUERY = """
-    mutation DeleteIssueNote($input: DeleteIssueNoteInput!) {
-    deleteIssueNote(input: $input) {
-      _stub
-    }
-  }
-    """
+}
+"""
 
 # Resources Queries
 PULL_RESOURCES_ID_NATIVE_QUERY = """
@@ -2495,13 +2464,14 @@ def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolv
         "issueId": issue_id,
         "patch": {
             "status": status,
-            "note": truncate_note(reject_or_resolve_comment),
             "resolutionReason": reject_or_resolve_reason,
         },
     }
     query = UPDATE_ISSUE_QUERY
 
     response = checkAPIerrors(query, variables)
+
+    set_issue_comment(issue_id, reject_or_resolve_comment)
 
     return response
 
@@ -2572,6 +2542,19 @@ def _get_issue(issue_id, is_evidence=False):
     return issue_response
 
 
+def get_issue_comments(issue_id):
+    """Needs read:comments, so keep it off the fetch and get paths."""
+    comments, after = [], None
+    while True:
+        data = checkAPIerrors(ISSUE_COMMENTS_QUERY, {"id": issue_id, "after": after})
+        thread = ((data.get("data") or {}).get("issue") or {}).get("commentThread") or {}
+        page = thread.get("comments") or {}
+        comments.extend(page.get("nodes") or [])
+        if not (page.get("pageInfo") or {}).get("hasNextPage"):
+            return comments
+        after = page["pageInfo"]["endCursor"]
+
+
 def _get_issue_type(issue_id):
     """
     Return the Wiz Issue `type` (e.g. THREAT_DETECTION, TOXIC_COMBINATION) for an
@@ -2630,7 +2613,7 @@ def set_issue_comment(issue_id, comment):
         return message
 
     comment = truncate_note(comment)
-    issue_variables = {"input": {"issueId": issue_id, "text": comment}}
+    issue_variables = {"input": {"subjectId": issue_id, "subjectType": "ISSUE", "body": comment}}
     issue_query = CREATE_COMMENT_QUERY
 
     response = checkAPIerrors(issue_query, issue_variables)
@@ -2668,17 +2651,9 @@ def clear_issue_note(issue_id):
     if not is_valid_id:
         return message
 
-    issue_object = _get_issue(issue_id)
-
-    issue_notes = issue_object["data"]["issues"]["nodes"][0].get("notes") or []
-    demisto.info(f"The issue notes are: {issue_notes}")
-
-    query = DELETE_NOTE_QUERY
     response = None
-    for note in issue_notes:
-        variables = {"input": {"id": note["id"]}}
-
-        response = checkAPIerrors(query, variables)
+    for comment in get_issue_comments(issue_id):
+        response = checkAPIerrors(DELETE_COMMENT_QUERY, {"input": {"id": comment["id"]}})
 
     return response
 
@@ -2955,7 +2930,7 @@ def get_remote_data_command(args):
     issue = issues[0]
     _attach_mirror_metadata(issue)
 
-    entries = _build_new_note_entries(issue, last_update)
+    entries = _build_new_note_entries(get_issue_comments(issue_id), last_update)
     return GetRemoteDataResponse(issue, entries)
 
 
@@ -2986,20 +2961,20 @@ def _parse_iso_timestamp(value):
         return None
 
 
-def _build_new_note_entries(issue, last_update):
-    """Build war room entries for notes added since last_update.
+def _build_new_note_entries(comments, last_update):
+    """Build war room entries for comments added since last_update.
 
     First sync (no last_update) returns []: we intentionally avoid back-filling
-    the entire pre-existing note history into a fresh war room. Subsequent
-    syncs surface only notes newer than the previous sync.
+    the entire pre-existing comment history into a fresh war room. Subsequent
+    syncs surface only comments newer than the previous sync.
     """
     entries: list[dict] = []
     if not last_update:
         return entries
 
     last_update_dt = _parse_iso_timestamp(last_update)
-    for note in issue.get("notes") or []:
-        if XSOAR_MIRROR_MARKER in note.get("text", ""):
+    for note in comments:
+        if XSOAR_MIRROR_MARKER in note.get("body", ""):
             continue
         note_time = note.get("updatedAt") or note.get("createdAt", "")
         note_dt = _parse_iso_timestamp(note_time)
@@ -3008,15 +2983,15 @@ def _build_new_note_entries(issue, last_update):
         )
         if is_newer:
             author = ""
-            if note.get("user"):
-                author = note["user"].get("name", "")
+            if note.get("author"):
+                author = note["author"].get("name", "")
             elif note.get("serviceAccount"):
                 author = f"[SA] {note['serviceAccount'].get('name', '')}"
 
             entries.append(
                 {
                     "Type": entryTypes["note"],
-                    "Contents": f"**{author}** ({note_time}):\n{note.get('text', '')}",
+                    "Contents": f"**{author}** ({note_time}):\n{note.get('body', '')}",
                     "ContentsFormat": formats["markdown"],
                     "Note": True,
                 }
