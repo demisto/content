@@ -21,6 +21,8 @@ DEFAULT_LIMIT = 50
 DEFAULT_LOOK_BACK_MINUTES = 30
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MAX_SEEN_IDS = 10_000
+MAX_REMAINED_INCIDENTS = 10_000
+MAX_REMAINED_INCIDENTS_BYTES = 10 * 1024 * 1024  # 10 MB, well under the 100 MB server cap
 
 
 def get_now():
@@ -57,6 +59,64 @@ def prune_seen_ids(seen_ids: dict[str, str], look_back_minutes: int) -> dict[str
 
     demisto.debug(f"Pruned seen_ids: {len(seen_ids)=}, {len(pruned)=}")
     return pruned
+
+
+def bound_remained_incidents(remained_incidents: list) -> list:
+    """Bound the overflow backlog before it is persisted to the integration context.
+
+    The integration context is a single Elasticsearch document. Writing more than
+    `http.max_content_length` (100 MB by default) is rejected by the server, which wedges
+    the instance permanently: the rejected write means the drained backlog is never saved,
+    so every later fetch re-reads the same oversized document and fails the same way.
+
+    Keeping the newest incidents (and dropping the oldest) matches the drain order used by
+    `fetch_incidents`, which always serves `remained_incidents[:limit]` from the front.
+
+    Args:
+        remained_incidents: Overflow incidents that did not fit into the current fetch.
+
+    Returns:
+        The backlog, truncated to `MAX_REMAINED_INCIDENTS` entries and
+        `MAX_REMAINED_INCIDENTS_BYTES` bytes.
+    """
+    if not remained_incidents:
+        return remained_incidents
+
+    bounded = remained_incidents
+    if len(bounded) > MAX_REMAINED_INCIDENTS:
+        dropped = len(bounded) - MAX_REMAINED_INCIDENTS
+        demisto.error(
+            f"Integration context backlog exceeded {MAX_REMAINED_INCIDENTS} incidents; "
+            f"dropping the {dropped} oldest queued incidents to keep the context writable. "
+            f"The fetch rate cannot keep up with the event volume - consider narrowing the "
+            f"'Events to fetch' / threat filters for this instance."
+        )
+        bounded = bounded[-MAX_REMAINED_INCIDENTS:]
+
+    # Size-based bound: incident sizes vary widely (rawJSON payloads), so a count cap
+    # alone is not enough to guarantee the document stays under the server limit.
+    total_bytes = sum(len(incident.get("rawJSON", "")) for incident in bounded)
+    if total_bytes <= MAX_REMAINED_INCIDENTS_BYTES:
+        return bounded
+
+    kept: list = []
+    kept_bytes = 0
+    for incident in reversed(bounded):  # newest first
+        incident_bytes = len(incident.get("rawJSON", ""))
+        if kept_bytes + incident_bytes > MAX_REMAINED_INCIDENTS_BYTES:
+            break
+        kept.append(incident)
+        kept_bytes += incident_bytes
+    kept.reverse()
+
+    demisto.error(
+        f"Integration context backlog reached {total_bytes} bytes (limit "
+        f"{MAX_REMAINED_INCIDENTS_BYTES}); dropping the {len(bounded) - len(kept)} oldest "
+        f"queued incidents to keep the context writable. The fetch rate cannot keep up with "
+        f"the event volume - consider narrowing the 'Events to fetch' / threat filters for "
+        f"this instance."
+    )
+    return kept
 
 
 def get_fetch_times(last_fetch, look_back_minutes: int = 0):
@@ -657,12 +717,10 @@ def fetch_incidents(
     incidents = []
     end_query_time = ""
 
-    # Check if there are incidents saved in context (overflow from previous fetch)
+    carried_over_incidents: list = []
     if integration_context:
-        remained_incidents = integration_context.get("incidents")
-        demisto.debug(f"remained_incidents: {len(remained_incidents) if remained_incidents else 0}")
-        if remained_incidents:
-            return last_run, remained_incidents[:limit], remained_incidents[limit:]
+        carried_over_incidents = integration_context.get("incidents") or []
+        demisto.debug(f"remained_incidents: {len(carried_over_incidents)}")
 
     # Load dedup state
     seen_ids: dict[str, str] = last_run.get("seen_ids", {})
@@ -726,10 +784,14 @@ def fetch_incidents(
 
     fetch_intervals = get_fetch_times(start_query_time, effective_look_back_minutes)
 
-    # If no valid intervals, skip this fetch cycle
+    # If no valid intervals, skip querying the API but still drain the carried-over backlog.
     if not fetch_intervals:
-        demisto.debug("No fetch intervals generated - skipping this fetch cycle")
-        return last_run, [], []
+        demisto.debug("No fetch intervals generated - skipping the API query for this fetch cycle")
+        return (
+            last_run,
+            carried_over_incidents[:limit],
+            bound_remained_incidents(carried_over_incidents[limit:]),
+        )
 
     dedup_count = 0
 
@@ -795,16 +857,22 @@ def fetch_incidents(
     if carry_enabled_from is not None:
         next_run["look_back_enabled_from"] = carry_enabled_from
 
+    # Serve the carried-over backlog before the newly fetched incidents, so incidents are
+    # created in roughly the order they occurred and the backlog cannot starve.
+    pending_incidents = carried_over_incidents + incidents
+    remained_incidents = bound_remained_incidents(pending_incidents[limit:])
+
     demisto.debug(
         f"Fetch summary: {len(fetch_intervals)} intervals, "
-        f"{len(incidents)} total incidents, "
-        f"returning {min(len(incidents), limit)}, "
-        f"remaining {max(0, len(incidents) - limit)}, "
+        f"{len(incidents)} new incidents, "
+        f"{len(carried_over_incidents)} carried over, "
+        f"returning {min(len(pending_incidents), limit)}, "
+        f"remaining {len(remained_incidents)}, "
         f"seen_ids={len(seen_ids)}, "
         f"next last_fetch={end_query_time}"
     )
 
-    return next_run, incidents[:limit], incidents[limit:]
+    return next_run, pending_incidents[:limit], remained_incidents
 
 
 def handle_interval(time_range: datetime, is_hours_interval: bool = True, is_days_interval: bool = False):
@@ -1522,8 +1590,19 @@ def main():
             # Save last_run, incidents, remained incidents into integration
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-            # preserve context dict
-            demisto.setIntegrationContext({"incidents": remained_incidents})
+            # Preserve the overflow backlog. `bound_remained_incidents` keeps this document
+            # well under the server's size limit, but guard the write anyway: if persisting
+            # the backlog ever fails, dropping it is far better than failing the whole fetch,
+            # which would re-create the already-reported incidents on the next run.
+            try:
+                demisto.setIntegrationContext({"incidents": remained_incidents})
+            except Exception as context_error:
+                demisto.error(
+                    f"Failed to persist {len(remained_incidents)} queued incidents to the integration "
+                    f"context: {context_error}. Dropping the backlog to keep fetching; these events "
+                    f"may be re-fetched on a later cycle if they fall within the look-back window."
+                )
+                demisto.setIntegrationContext({"incidents": []})
 
         elif command in commands:
             return_outputs(*commands[command](client, args))
