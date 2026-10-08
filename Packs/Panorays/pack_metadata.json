@@ -1,8 +1,8 @@
 {
     "name": "Panorays",
-    "description": "The Panorays pack enables organizations to monitor their own security posture by ingesting internal findings and security events from the Panorays platform, allowing for automated internal risk management and reporting.",
+    "description": "The Panorays pack enables organizations to monitor their own security posture and the security posture of their supply chain by ingesting findings from the Panorays platform, creating incidents for critical supplier findings and automating third-party risk response.",
     "support": "partner",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.2.0",
     "author": "Panorays",
     "url": "https://panorays.com",
     "email": "support@panorays.com",
