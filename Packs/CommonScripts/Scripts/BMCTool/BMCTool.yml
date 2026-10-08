@@ -30,3 +30,4 @@ tests:
 outputs:
 - contextPath: Collages
   description: Collage image of the tiles from the RDP session cache.
+# touched for a CI control run - no functional change

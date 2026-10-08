@@ -17,3 +17,4 @@ tests:
 - No tests (auto formatted)
 fromversion: 8.8.0
 comment: This script is only meant to be used to disable the Enrich Excluded button in an indicator. It should not be used otherwise.
+# touched for a CI control run - no functional change
