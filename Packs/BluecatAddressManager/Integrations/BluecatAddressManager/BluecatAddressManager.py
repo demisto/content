@@ -399,7 +399,7 @@ def get_entity_by_name_command(client: Client) -> None:
     name = args.get("name")
     parent_id = arg_to_number(args.get("parent_id"))
     entity_type = args.get("type")
-    include_ha = argToBoolean(args.get("include_ha") or "true")
+    include_ha = arg_to_bool_or_none(args.get("include_ha"))
     demisto.debug(f"bluecat-am-get-entity-by-name called with {name=}, {parent_id=}, {entity_type=}, {include_ha=}")
 
     raw_res = client.get_entity_by_name(name, parent_id, entity_type, include_ha)
