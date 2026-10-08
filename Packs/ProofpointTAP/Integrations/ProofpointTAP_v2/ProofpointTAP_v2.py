@@ -1,4 +1,5 @@
 import json
+import traceback
 from datetime import datetime, timedelta, UTC
 
 import dateparser
@@ -1600,7 +1601,8 @@ def main():
                 demisto.error(
                     f"Failed to persist {len(remained_incidents)} queued incidents to the integration "
                     f"context: {context_error}. Dropping the backlog to keep fetching; these events "
-                    f"may be re-fetched on a later cycle if they fall within the look-back window."
+                    f"may be re-fetched on a later cycle if they fall within the look-back window.\n"
+                    f"{traceback.format_exc()}"
                 )
                 demisto.setIntegrationContext({"incidents": []})
 
