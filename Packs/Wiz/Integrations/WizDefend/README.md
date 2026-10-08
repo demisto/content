@@ -240,6 +240,15 @@ When the Wiz API returns a detection without a description, the integration auto
 
 `wiz-defend-set-threat-comment` and `wiz-defend-resolve-threat` truncate any note input longer than 1400 characters (suffixed with `... [truncated]`) to avoid Wiz API errors.
 
+### Required permissions
+
+Threat comments are stored as Wiz Issue comments. The service account needs the following scopes:
+
+| Operation | Scope |
+| --- | --- |
+| `wiz-defend-set-threat-comment`, note arguments of `wiz-defend-resolve-threat` / `wiz-defend-reopen-threat` | `write:comments` |
+| `wiz-defend-clear-threat-comments` | `read:comments` + `write:comments` |
+
 ## Known Limitations
 
 - Maximum fetch limit is 1000 detections per run
