@@ -143,7 +143,7 @@ You can confirm the service principal now has the role with the following comman
 Get-RoleGroupMember -Identity "<Role>"
 ```
 
-- Note - for more information go to the official [Microsoft Documentation.](https://learn.microsoft.com/en-us/powershell/exchange/app-only-auth-powershell-v2)
+**Note:** For more information, see the official [Microsoft Documentation](https://learn.microsoft.com/en-us/powershell/exchange/app-only-auth-powershell-v2).
 
 ## Troubleshooting and Testing
 
