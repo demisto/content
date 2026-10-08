@@ -3978,6 +3978,9 @@ class AssetsDeviceHandler:
         self.running_tasks: set[asyncio.Task] = set()
 
         # Also in running_tasks; marked here so drain() does not double-count their failures.
+        # Deliberately NOT discarded in the done-callback: that callback runs before gather()
+        # hands control back to drain(), so the set would be empty exactly when the guard reads
+        # it. drain() clears it once everything has settled.
         self.send_tasks: set[asyncio.Task] = set()
 
         # Counted in the done-callback: _enrich_and_ingest_batch swallows send failures, and a
@@ -4178,6 +4181,9 @@ class AssetsDeviceHandler:
         Reports but never raises - assets are flushed after the vulnerability snapshot has sealed,
         so raising would fail a fetch whose vulnerability data is safely stored.
 
+        Safe to call more than once: the send-failure tally is consumed, so a second call cannot
+        re-report the same losses.
+
         Returns:
             (lost_batches, first_error). Enrichment failures come from the gathered results; send
             failures from the done-callback counter, which sees the ones the batch wrapper swallows.
@@ -4200,6 +4206,13 @@ class AssetsDeviceHandler:
 
         lost_batches += self.send_failures
         first_error = first_error or self.first_send_error
+
+        # Consume the tally and release the task references. Both are safe only here, after the
+        # loop has confirmed nothing is still in flight. Without this, a second drain() would
+        # add the same send failures again and report losses that were already reported.
+        self.send_failures = 0
+        self.first_send_error = None
+        self.send_tasks.clear()
         return lost_batches, first_error
 
     @staticmethod

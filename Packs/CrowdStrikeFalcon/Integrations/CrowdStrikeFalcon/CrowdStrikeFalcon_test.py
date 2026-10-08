@@ -11603,6 +11603,54 @@ class TestAssetsDeviceHandler:
         assert lost_batches == 1, "a single failed upload must not be reported twice"
 
     @pytest.mark.asyncio
+    async def test_draining_twice_does_not_re_report_the_same_send_failure(self, mocker):
+        """
+        Tests that a second drain() reports nothing when nothing new has failed.
+
+        Given:
+            - A cycle whose single upload failed and which has already been drained once.
+        When:
+            - drain() is awaited a second time, as happens when flush_remaining drains and the
+              surrounding finally block then drains again before teardown.
+        Then:
+            - The second call reports 0. The tally is consumed by the first call, so leaving it
+              set would re-add the same failure on every subsequent drain and the teardown log
+              would claim fresh asset loss that never happened.
+            - send_tasks is emptied too, so the references do not outlive the cycle.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        handler = AssetsDeviceHandler(
+            client=mocker.AsyncMock(),
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=10,
+        )
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        boom = RuntimeError("upload rejected")
+
+        async def _fails():
+            raise boom
+
+        send_task = asyncio.create_task(_fails())
+        handler.running_tasks = {send_task}
+        handler.send_tasks = {send_task}
+        handler.send_failures = 1
+        handler.first_send_error = boom
+
+        first_lost, first_error = await handler.drain()
+        second_lost, second_error = await handler.drain()
+
+        assert first_lost == 1, "the real failure must be reported by the first drain"
+        assert first_error is boom
+        assert second_lost == 0, "a second drain must not re-report an already-reported failure"
+        assert second_error is None
+        assert handler.send_tasks == set(), "drained send tasks must not be retained"
+
+    @pytest.mark.asyncio
     async def test_cancelling_a_batch_does_not_escape_past_the_shielded_send(self, mocker):
         """
         Tests that cancellation is absorbed at the await on the shielded upload.
@@ -11640,16 +11688,25 @@ class TestAssetsDeviceHandler:
         mocker.patch.object(handler, "_filter_asset_fields", side_effect=lambda devices: devices)
 
         send_started = asyncio.Event()
+        # Tracked so the shielded upload can be cleaned up below. shield() deliberately leaves it
+        # running when the batch is cancelled, which is the behaviour under test, but a task still
+        # pending when the loop closes is reported as "Task was destroyed but it is pending".
+        created_send_tasks: list[asyncio.Task] = []
 
         async def _slow_send():
             send_started.set()
             await asyncio.sleep(0.2)
             return (1, 1)
 
+        def _spawn_send(**kwargs):
+            send_task = asyncio.create_task(_slow_send())
+            created_send_tasks.append(send_task)
+            return send_task
+
         mocker.patch.object(
             CrowdStrikeFalcon,
             "create_task_send_batch_to_xsiam_and_save_context",
-            side_effect=lambda **kwargs: asyncio.create_task(_slow_send()),
+            side_effect=_spawn_send,
         )
 
         batch_task = asyncio.create_task(handler.enrich_and_ingest_batch(["aid1"]))
@@ -11661,6 +11718,12 @@ class TestAssetsDeviceHandler:
         assert not isinstance(
             results[0], asyncio.CancelledError
         ), "CancelledError escaped the shielded send, so the slot was freed mid-upload"
+
+        # The upload outliving the cancelled batch is the point of the test; settle it here rather
+        # than leaving it for the garbage collector to report against an unrelated test.
+        for send_task in created_send_tasks:
+            send_task.cancel()
+        await asyncio.gather(*created_send_tasks, return_exceptions=True)
 
     @pytest.mark.asyncio
     async def test_flush_remaining_does_not_claim_success_when_a_batch_failed(self, mocker, caplog):

@@ -145,6 +145,8 @@ Select the desired method in the Fetch Assets Type parameter:
 - Spotlight: Fetches vulnerabilities from the Spotlight Vulnerabilities Endpoint and enriches them with the associated host details. Both the vulnerabilities and the corresponding assets are ingested into the Unified Asset Inventory. Only vulnerabilities updated within the last 100 days are retrieved, keeping each collection focused on recent data.
 - CNAPP Alerts: Fetches Cloud Native Application Protection Platform (CNAPP) alerts as assets.
 
+**Note:** The *Spotlight vulnerabilities lookback (days)* parameter can only narrow the 100-day window, not widen it. A value above 100 is clamped to 100 and a warning is written to the log, so configuring 200 days fetches 100. Lowering it is the most direct way to shorten a fetch cycle on a large tenant.
+
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
