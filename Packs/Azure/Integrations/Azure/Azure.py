@@ -355,6 +355,14 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/firewallPolicies/join/action": ["azure-firewall-policy-attach"],
     "Microsoft.Network/azureFirewalls/read": ["azure-firewall-policy-attach", "azure-firewall-policy-detach"],
     "Microsoft.Network/azureFirewalls/write": ["azure-firewall-policy-attach", "azure-firewall-policy-detach"],
+    "Microsoft.Network/ipGroups/read": [
+        "azure-vn-ip-group-get",
+        "azure-vn-ip-groups-list",
+        "azure-vn-ip-group-create",
+        "azure-vn-ip-group-update",
+    ],
+    "Microsoft.Network/ipGroups/write": ["azure-vn-ip-group-create", "azure-vn-ip-group-update"],
+    "Microsoft.Network/ipGroups/delete": ["azure-vn-ip-group-delete"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -453,6 +461,11 @@ API_FUNCTION_TO_PERMISSIONS = {
         "Microsoft.Network/azureFirewalls/write",
         "Microsoft.Network/firewallPolicies/join/action",
     ],
+    "ip_group_create": ["Microsoft.Network/ipGroups/write"],
+    "ip_group_update": ["Microsoft.Network/ipGroups/read", "Microsoft.Network/ipGroups/write"],
+    "ip_group_get": ["Microsoft.Network/ipGroups/read"],
+    "ip_group_list": ["Microsoft.Network/ipGroups/read"],
+    "ip_group_delete": ["Microsoft.Network/ipGroups/delete"],
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
@@ -520,6 +533,9 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Network/firewallPolicies/join/action",
     "Microsoft.Network/azureFirewalls/read",
     "Microsoft.Network/azureFirewalls/write",
+    "Microsoft.Network/ipGroups/read",
+    "Microsoft.Network/ipGroups/write",
+    "Microsoft.Network/ipGroups/delete",
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -551,6 +567,17 @@ WAF_POLICY_JSON_ARGUMENTS = {"tags", "policy_settings", "custom_rules", "managed
 # The columns displayed for both Application Gateway and Front Door WAF policies.
 WAF_POLICY_HEADERS = ["name", "id", "type", "location", "etag", "tags"]
 FIREWALL_API_VERSION = "2025-09-01"
+IP_GROUPS_API_VERSION = "2025-09-01"
+
+# Polling settings for the IP group create and update commands.
+DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval between polling attempts for the IP group polling commands.
+DEFAULT_TIMEOUT_POLLING_COMMAND = 600  # Default timeout for the IP group polling commands.
+PROVISIONING_STATE_SUCCEEDED = "Succeeded"  # The terminal success state of an Azure resource provisioning operation.
+PROVISIONING_STATE_FAILED = "Failed"  # The terminal failure state of an Azure resource provisioning operation.
+IP_GROUP_TABLE_HEADERS = ["name", "id", "location", "type"]
+# Commands decorated with @polling_function. The decorator requires the command arguments to be passed as the
+# first positional argument, so main() dispatches these commands differently from the regular ones.
+POLLING_COMMANDS = {"azure-vn-ip-group-create", "azure-vn-ip-group-update"}
 
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
 # get_command_and_token_scopes.
@@ -2263,6 +2290,177 @@ class AzureClient:
                 resource_name=f"{security_group_name}/{security_rule_name}",
                 resource_type="Security Group",
                 api_function_name="delete_rule",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def ip_group_create(
+        self, subscription_id: str, resource_group_name: str, ip_group_name: str, location: str, ip_addresses: list
+    ):
+        """
+        Create or update an IP group resource.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group name.
+            ip_group_name: The name of the IP group.
+            location: The location of the IP group resource.
+            ip_addresses: IP addresses or IP address prefixes in the IP group resource.
+
+        Return:
+            A dictionary containing the IP group information.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/ip-groups/create-or-update?view=rest-virtualnetwork-2025-09-01
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/ipGroups/{ip_group_name}"
+        )
+        json_data = remove_empty_elements({"location": location, "properties": {"ipAddresses": ip_addresses}})
+        try:
+            return self.http_request(
+                method="PUT", full_url=full_url, json_data=json_data, params={"api-version": IP_GROUPS_API_VERSION}
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=ip_group_name,
+                resource_type="IP Group",
+                api_function_name="ip_group_create",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def ip_group_update(self, subscription_id: str, resource_group_name: str, ip_group_name: str, ip_group_data: dict):
+        """
+        Update an IP group resource.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group name.
+            ip_group_name: The name of the IP group to update.
+            ip_group_data: The IP group resource JSON information.
+
+        Return:
+            A dictionary containing the updated IP group information.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/ip-groups/create-or-update?view=rest-virtualnetwork-2025-09-01
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/ipGroups/{ip_group_name}"
+        )
+        try:
+            return self.http_request(
+                method="PUT", full_url=full_url, json_data=ip_group_data, params={"api-version": IP_GROUPS_API_VERSION}
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=ip_group_name,
+                resource_type="IP Group",
+                api_function_name="ip_group_update",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def ip_group_get(self, subscription_id: str, resource_group_name: str, ip_group_name: str):
+        """
+        Retrieve an IP group resource.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group name.
+            ip_group_name: The name of the IP group to retrieve.
+
+        Return:
+            A dictionary containing the IP group information.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/ip-groups/get?view=rest-virtualnetwork-2025-09-01
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/ipGroups/{ip_group_name}"
+        )
+        try:
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": IP_GROUPS_API_VERSION})
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=ip_group_name,
+                resource_type="IP Group",
+                api_function_name="ip_group_get",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def ip_group_list(self, subscription_id: str, resource_group_name: str, next_token: str):
+        """
+        List the IP groups in a resource group, or in the subscription when no resource group is provided.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the IP groups. When empty, lists by subscription.
+            next_token: The URL to fetch the next page of results.
+
+        Return:
+            A dictionary containing the list of IP groups.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/ip-groups/list-by-resource-group?view=rest-virtualnetwork-2025-09-01
+        """
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of IP groups.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
+            params: dict[str, Any] = {}
+        else:
+            resource_group_path = f"/resourceGroups/{resource_group_name}" if resource_group_name else ""
+            full_url = f"{PREFIX_URL_AZURE}{subscription_id}{resource_group_path}/providers/Microsoft.Network/ipGroups"
+            params = {"api-version": IP_GROUPS_API_VERSION}
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_group_name or subscription_id,
+                resource_type="IP Groups",
+                api_function_name="ip_group_list",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def ip_group_delete(self, subscription_id: str, resource_group_name: str, ip_group_name: str):
+        """
+        Delete an IP group resource.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group name.
+            ip_group_name: The name of the IP group to delete.
+
+        Return:
+            The HTTP response object from the delete operation.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/ip-groups/delete?view=rest-virtualnetwork-2025-09-01
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/ipGroups/{ip_group_name}"
+        )
+        try:
+            return self.http_request(
+                method="DELETE", full_url=full_url, params={"api-version": IP_GROUPS_API_VERSION}, resp_type="response"
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=ip_group_name,
+                resource_type="IP Group",
+                api_function_name="ip_group_delete",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -5175,6 +5373,348 @@ def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any]
     return CommandResults(readable_output=message)
 
 
+def validate_ip_group_polling_args(args: dict[str, Any]) -> None:
+    """
+    Validates the polling arguments of the IP group create and update commands.
+
+    Args:
+        args: The command arguments, optionally including 'interval_in_seconds' and 'polling_timeout'.
+
+    Raises:
+        DemistoException: If 'interval_in_seconds' or 'polling_timeout' is not a positive number.
+    """
+    # The values are read with an explicit "is None" check rather than "or", so that an explicit 0 is
+    # validated and rejected instead of being silently replaced by the default.
+    interval = arg_to_number(args.get("interval_in_seconds"))
+    interval = DEFAULT_INTERVAL_IN_SECONDS if interval is None else interval
+    timeout = arg_to_number(args.get("polling_timeout"))
+    timeout = DEFAULT_TIMEOUT_POLLING_COMMAND if timeout is None else timeout
+
+    if interval <= 0:
+        raise DemistoException(f"The interval_in_seconds argument must be a positive number. Currently the value is {interval}")
+    if timeout <= 0:
+        raise DemistoException(f"The polling_timeout argument must be a positive number. Currently the value is {timeout}")
+
+
+def ip_group_poll_result(
+    client: AzureClient,
+    subscription_id: str,
+    resource_group_name: str,
+    ip_group_name: str,
+    command_name: str,
+    success_message: str,
+) -> PollResult:
+    """
+    Retrieves an IP group and keeps polling while its provisioning has not reached a terminal state.
+
+    As long as the provisioning state is neither 'Succeeded' nor 'Failed', the returned PollResult instructs the
+    ``polling_function`` decorator to schedule another run of the command.
+
+    Args:
+        client: The AzureClient.
+        subscription_id: The Azure subscription ID.
+        resource_group_name: The resource group name.
+        ip_group_name: The name of the IP group being provisioned.
+        command_name: The command name, used for debug logging.
+        success_message: The readable output title used once provisioning succeeded.
+
+    Returns:
+        PollResult: The provisioned IP group, or an indication to poll again.
+
+    Raises:
+        DemistoException: If the provisioning of the IP group failed.
+    """
+    response = client.ip_group_get(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, ip_group_name=ip_group_name
+    )
+    provisioning_state = dict_safe_get(response, ["properties", "provisioningState"])
+    demisto.debug(f"[Azure] {command_name}: IP group {ip_group_name} provisioning state is {provisioning_state}")
+
+    if provisioning_state == PROVISIONING_STATE_FAILED:
+        raise DemistoException(f"The provisioning of IP group {ip_group_name} failed.")
+
+    if provisioning_state != PROVISIONING_STATE_SUCCEEDED:
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            partial_result=CommandResults(
+                readable_output=(f"Waiting for IP group {ip_group_name} to be provisioned. Current state: {provisioning_state}.")
+            ),
+        )
+
+    hr = tableToMarkdown(
+        name=success_message,
+        t=response,
+        removeNull=True,
+        headers=IP_GROUP_TABLE_HEADERS,
+        headerTransform=pascalToSpace,
+    )
+
+    return PollResult(
+        response=CommandResults(
+            outputs_prefix="Azure.VirtualNetworks.IPGroups",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=hr,
+            raw_response=response,
+        ),
+        continue_to_poll=False,
+    )
+
+
+@polling_function(
+    name="azure-vn-ip-group-create",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def ip_group_create_command(args: dict[str, Any], client: AzureClient, params: dict[str, Any]) -> PollResult:
+    """
+    Creates an IP group resource and polls until it is fully provisioned.
+    Args:
+        args: args dictionary.
+        client: The AzureClient
+        params: configuration parameters
+    Returns:
+        PollResult: The created IP group, or an indication to poll again.
+    """
+    validate_ip_group_polling_args(args)
+
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    ip_group_name = args.get("ip_group_name", "")
+
+    # On the first run the IP group is created, and on every scheduled run afterwards only its provisioning
+    # state is polled, so that the create request is not sent again on each poll.
+    if not argToBoolean(args.get("ip_group_created", False)):
+        location = args.get("location", "")
+        ip_addresses = argToList(args.get("ip_addresses"))
+
+        response = client.ip_group_create(
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            ip_group_name=ip_group_name,
+            location=location,
+            ip_addresses=ip_addresses,
+        )
+        provisioning_state = dict_safe_get(response, ["properties", "provisioningState"])
+        demisto.debug(f"[Azure] created IP group {response.get('name')=} {response.get('id')=} {provisioning_state=}")
+        args["ip_group_created"] = True
+
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            partial_result=CommandResults(
+                readable_output=f"The creation of IP group {ip_group_name} has started. Current state: {provisioning_state}."
+            ),
+            args_for_next_run=args,
+        )
+
+    return ip_group_poll_result(
+        client=client,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        ip_group_name=ip_group_name,
+        command_name="azure-vn-ip-group-create",
+        success_message=f"The IP group {ip_group_name} was created successfully",
+    )
+
+
+@polling_function(
+    name="azure-vn-ip-group-update",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def ip_group_update_command(args: dict[str, Any], client: AzureClient, params: dict[str, Any]) -> PollResult:
+    """
+    Updates an IP group resource by adding or removing IP addresses, and polls until it is fully provisioned.
+    Args:
+        args: args dictionary.
+        client: The AzureClient
+        params: configuration parameters
+    Returns:
+        PollResult: The updated IP group, or an indication to poll again.
+    """
+    validate_ip_group_polling_args(args)
+
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    ip_group_name = args.get("ip_group_name", "")
+    ip_addresses_to_add = argToList(args.get("ip_addresses_to_add"))
+    ip_addresses_to_remove = argToList(args.get("ip_addresses_to_remove"))
+
+    if not ip_addresses_to_add and not ip_addresses_to_remove:
+        raise DemistoException("One of the arguments: `ip_addresses_to_add` or `ip_addresses_to_remove` must be provided.")
+
+    # On the first run the IP group is updated, and on every scheduled run afterwards only its provisioning
+    # state is polled, so that the update request is not sent again on each poll.
+    if not argToBoolean(args.get("ip_group_updated", False)):
+        ip_group_data = client.ip_group_get(
+            subscription_id=subscription_id, resource_group_name=resource_group_name, ip_group_name=ip_group_name
+        )
+        # The updated list is assigned back explicitly rather than mutated in place, so that an IP group with no
+        # "ipAddresses" key yet (an empty group) still receives the added addresses instead of silently dropping them.
+        existing_ip_addresses = dict_safe_get(ip_group_data, ["properties", "ipAddresses"], []) or []
+        # dict.fromkeys merges the existing and the added addresses while preserving their order and dropping
+        # duplicates, so re-adding an address that is already in the group does not create a duplicate entry.
+        ip_addresses = list(dict.fromkeys(existing_ip_addresses + ip_addresses_to_add))
+        ip_addresses = [ip_address for ip_address in ip_addresses if ip_address not in ip_addresses_to_remove]
+        # "properties" is read with "or {}" rather than setdefault, so that an explicit null value is replaced as well.
+        properties = ip_group_data.get("properties") or {}
+        properties["ipAddresses"] = ip_addresses
+        ip_group_data["properties"] = properties
+        demisto.debug(f"[Azure] updating IP group {ip_group_name} with {len(ip_addresses)} IP addresses.")
+
+        response = client.ip_group_update(
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            ip_group_name=ip_group_name,
+            ip_group_data=ip_group_data,
+        )
+        provisioning_state = dict_safe_get(response, ["properties", "provisioningState"])
+        demisto.debug(f"[Azure] updated IP group {response.get('name')=} {response.get('id')=} {provisioning_state=}")
+        args["ip_group_updated"] = True
+
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            partial_result=CommandResults(
+                readable_output=f"The update of IP group {ip_group_name} has started. Current state: {provisioning_state}."
+            ),
+            args_for_next_run=args,
+        )
+
+    return ip_group_poll_result(
+        client=client,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        ip_group_name=ip_group_name,
+        command_name="azure-vn-ip-group-update",
+        success_message=f"The IP group {ip_group_name} was updated successfully",
+    )
+
+
+def ip_group_get_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves an IP group resource.
+    Args:
+        client: The AzureClient
+        params: configuration parameters
+        args: args dictionary.
+    Returns:
+        CommandResults: The requested IP group.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    ip_group_name = args.get("ip_group_name", "")
+
+    response = client.ip_group_get(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, ip_group_name=ip_group_name
+    )
+    demisto.debug(f"[Azure] retrieved IP group {response.get('name')=} {response.get('id')=}")
+
+    hr = tableToMarkdown(
+        name=f"IP Group {ip_group_name}",
+        t=response,
+        removeNull=True,
+        headers=["name", "id", "location", "type"],
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.VirtualNetworks.IPGroups",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=hr,
+        raw_response=response,
+    )
+
+
+def ip_group_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Lists the IP groups in a resource group, or in the subscription when no resource group is provided.
+    Args:
+        client: The AzureClient
+        params: configuration parameters
+        args: args dictionary.
+    Returns:
+        CommandResults: The list of IP groups.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    # The instance default resource group is deliberately not used as a fallback here, so that omitting the
+    # argument lists the IP groups of the whole subscription even when a default resource group is configured.
+    resource_group_name = args.get("resource_group_name", "")
+    next_token = args.get("next_token", "")
+
+    response = client.ip_group_list(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, next_token=next_token
+    )
+    ip_groups = response.get("value", [])
+    next_link = response.get("nextLink")
+    demisto.debug(f"[Azure] listed IP groups {len(ip_groups)=} {bool(next_link)=}")
+
+    if not ip_groups:
+        scope = f"resource group '{resource_group_name}'" if resource_group_name else f"subscription '{subscription_id}'"
+        return CommandResults(readable_output=f"No IP groups were found in {scope}.")
+
+    # The next token is written even when it is None, so that a stale token from a previous page is cleared
+    # from the context instead of lingering. remove_empty_elements must not be applied to these outputs.
+    outputs = {
+        "Azure.VirtualNetworks.IPGroups(val.id && val.id == obj.id)": ip_groups,
+        "Azure.VirtualNetworks(true)": {"IPGroupsNextToken": next_link},
+    }
+
+    hr = tableToMarkdown(
+        name="IP Groups List",
+        t=ip_groups,
+        removeNull=True,
+        headers=["name", "id", "location", "type"],
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs=outputs,
+        readable_output=hr,
+        raw_response=response,
+    )
+
+
+def ip_group_delete_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes an IP group resource.
+    Args:
+        client: The AzureClient
+        params: configuration parameters
+        args: args dictionary.
+    Returns:
+        CommandResults: Message that the IP group was deleted.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    ip_group_name = args.get("ip_group_name", "")
+
+    ip_group_deleted = client.ip_group_delete(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, ip_group_name=ip_group_name
+    )
+    message = ""
+    if ip_group_deleted.status_code == 202:
+        message = (
+            f"The delete request for IP group {ip_group_name} with resource group "
+            f"{resource_group_name} and subscription ID {subscription_id} "
+            f"was accepted and the operation will complete asynchronously."
+        )
+    elif ip_group_deleted.status_code == 204:
+        message = (
+            f"IP group {ip_group_name} with resource group "
+            f"{resource_group_name} and subscription ID {subscription_id} was not found."
+        )
+    else:
+        message = f"IP group {ip_group_name} was successfully deleted."
+
+    return CommandResults(readable_output=message)
+
+
 def nsg_resource_group_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
     List all resource groups in the subscription.
@@ -7128,6 +7668,9 @@ def main():  # pragma: no cover
             "azure-vn-security-rule-create": nsg_security_rule_create_command,
             "azure-nsg-security-rule-delete": nsg_security_rule_delete_command,
             "azure-vn-security-rule-delete": nsg_security_rule_delete_command,
+            "azure-vn-ip-group-get": ip_group_get_command,
+            "azure-vn-ip-groups-list": ip_group_list_command,
+            "azure-vn-ip-group-delete": ip_group_delete_command,
             "azure-nsg-resource-group-list": nsg_resource_group_list_command,
             "azure-rm-resource-groups-list": nsg_resource_group_list_command,
             "azure-nsg-network-interfaces-list": nsg_network_interfaces_list_command,
@@ -7202,6 +7745,8 @@ def main():  # pragma: no cover
             "azure-vn-firewall-policy-list": firewall_policy_list_command,
             "azure-firewall-policy-attach": firewall_policy_attach_command,
             "azure-firewall-policy-detach": firewall_policy_detach_command,
+            "azure-vn-ip-group-create": ip_group_create_command,
+            "azure-vn-ip-group-update": ip_group_update_command,
         }
 
         azure_ad_endpoint = params.get("azure_ad_endpoint") or DEFAULT_AZURE_AD_ENDPOINT
@@ -7236,6 +7781,10 @@ def main():  # pragma: no cover
             return_results(test_connection(client))
         elif command == "azure-generate-login-url":
             return_results(generate_login_url(_get_ms_client(client), azure_ad_endpoint))
+        elif command in POLLING_COMMANDS:
+            # Polling commands are decorated with @polling_function and therefore take args as their first
+            # positional argument instead of receiving it as a keyword argument.
+            return_results(commands_with_params_and_args[command](args, client=client, params=params))
         elif command in commands_with_params_and_args:
             return_results(commands_with_params_and_args[command](client=client, params=params, args=args))
         else:
