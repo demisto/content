@@ -114,10 +114,6 @@
           "complex": null,
           "simple": "issue.resolutionReason"
         },
-        "Wiz Issue Note": {
-          "complex": null,
-          "simple": "issue.notes.text"
-        },
         "severity": {
           "complex": {
             "accessor": "severity",
