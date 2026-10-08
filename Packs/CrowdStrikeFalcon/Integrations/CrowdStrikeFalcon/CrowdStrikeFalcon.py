@@ -104,6 +104,10 @@ SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS = [2, 5, 15]
 # Statuses worth re-requesting at a smaller page size. Mirrors RetryPolicy.retryable_status_codes in
 # ContentClientApiModule; anything else (expired cursor 404, 401, 400) cannot be helped by shrinking.
 SPOTLIGHT_TRANSIENT_HTTP_STATUS_CODES = {408, 413, 425, 429, 500, 502, 503, 504}
+# Event-loop yields flush_remaining will spend waiting for send-task done-callbacks to run before
+# it reads stored_assets_count for the seal. Callbacks are scheduled with call_soon, so one yield
+# is normally enough; the bound only exists so a callback that never runs cannot hang the fetch.
+_FLUSH_CALLBACK_DRAIN_MAX_YIELDS = 10
 # Longest single blocking sleep in the long-running loop. The wait between cycles can be ~24h, and
 # a one-shot sleep of that length leaves the container unable to answer a shutdown request or
 # health check until it returns, so the wait is served in chunks of at most this many seconds.
@@ -3982,6 +3986,13 @@ class AssetsDeviceHandler:
 
         self.running_tasks: set[asyncio.Task] = set()
 
+        # stored_assets_count is accumulated by send-task done-callbacks, which asyncio runs on a
+        # later event-loop pass than the gather that saw the task finish. These two counters let
+        # flush_remaining tell "every callback has run" from "the tasks are merely finished", so
+        # the seal is never computed from a half-applied count.
+        self._send_callbacks_registered = 0
+        self._send_callbacks_completed = 0
+
     async def receive_new_aids(self, new_aids: set[str]) -> None:
         """
         Receive new AIDs and trigger enrichment when buffer reaches batch_limit.
@@ -4127,10 +4138,12 @@ class AssetsDeviceHandler:
                         "error",
                     )
                 finally:
+                    self._send_callbacks_completed += 1
                     self.running_tasks.discard(future)
 
             # Track the send task
             self.running_tasks.add(send_task)
+            self._send_callbacks_registered += 1
             send_task.add_done_callback(update_last_saved)
             log_falcon_assets(f"AssetsDeviceHandler: [Batch {current_batch_number}] Created send task")
 
@@ -4175,6 +4188,11 @@ class AssetsDeviceHandler:
                 )
 
         # Wait for all in-flight enrichment and send tasks, so their stored counts are known.
+        #
+        # running_tasks holds two kinds of task: the enrichment wrappers and the send tasks they
+        # spawn. A wrapper registers its send task and returns without awaiting it, so draining a
+        # wrapper can enqueue new work; the loop therefore re-checks the set rather than gathering
+        # once.
         while self.running_tasks:
             log_falcon_assets("AssetsDeviceHandler: Starting flush of remaining assets.", "info")
             # Create a snapshot of the current tasks
@@ -4195,6 +4213,32 @@ class AssetsDeviceHandler:
                 if isinstance(result, BaseException):
                     lost_batches += 1
                     first_error = first_error or result
+
+        # A task's done-callback is scheduled with call_soon, so it runs on a LATER event-loop pass
+        # than the gather that observed the task finishing. stored_assets_count is accumulated by
+        # those callbacks, so reading it straight after the loop can miss a batch and seal the
+        # snapshot short.
+        #
+        # The wait is a plain bounded yield rather than a check on running_tasks: the drain loop
+        # above has already removed every task from that set via difference_update, so any
+        # "is it still tracked?" condition is satisfied before the callbacks have run and would
+        # wait for nothing.
+        #
+        # Each yield lets one round of queued callbacks run. Callbacks registered on tasks that
+        # were already complete need one pass; the small bound covers chained scheduling without
+        # letting a callback that never runs hang the fetch.
+        if self._send_callbacks_completed < self._send_callbacks_registered:
+            for _ in range(_FLUSH_CALLBACK_DRAIN_MAX_YIELDS):
+                await asyncio.sleep(0)
+                if self._send_callbacks_completed >= self._send_callbacks_registered:
+                    break
+            else:
+                log_falcon_assets(
+                    f"AssetsDeviceHandler: {self._send_callbacks_registered - self._send_callbacks_completed} "
+                    f"send callback(s) had not run after {_FLUSH_CALLBACK_DRAIN_MAX_YIELDS} yields; "
+                    f"the seal may undercount.",
+                    "warning",
+                )
 
         if lost_batches:
             # Reported loudly: the snapshot still seals, but smaller than what Falcon returned.
@@ -5410,7 +5454,26 @@ async def finalize_severity_fetch(
         log_falcon_assets(
             f"Flushing remaining AIDs and waiting for asset enrichment tasks. Submitted AIDs: {total_assets_count}", "info"
         )
-        await asset_handler.flush_remaining(submitted_aids_count=total_assets_count)
+        try:
+            await asset_handler.flush_remaining(submitted_aids_count=total_assets_count)
+        except Exception as e:
+            # flush_remaining deliberately raises on a failed asset seal so that it, and its own
+            # callers, cannot mistake an unsealed snapshot for a sealed one. It is absorbed here,
+            # and only here, because of what has already happened by this point: the vulnerability
+            # snapshot sealed at the top of this function. Propagating would fail a cycle whose
+            # vulnerability data is safely stored, and because the caller skips its state reset on
+            # failure, the next cycle would re-enter finalize and seal the same vulnerability
+            # snapshot_id a second time.
+            #
+            # The cost of absorbing is one unsealed asset snapshot: those rows stay invisible until
+            # the next cycle, which starts from a fresh snapshot_id and re-enriches the same AIDs.
+            # That is recoverable; a duplicate vulnerability seal is not.
+            log_falcon_assets(
+                f"Asset snapshot_id={snapshot_id} failed to seal; its rows stay invisible until the "
+                f"next cycle re-enriches them. The vulnerability snapshot already sealed and is "
+                f"unaffected. Error: {e}\n{traceback.format_exc()}",
+                "error",
+            )
 
         log_falcon_assets(
             f"Parallel severity fetch completed. Total vulnerabilities: {total_vulnerabilities}, "

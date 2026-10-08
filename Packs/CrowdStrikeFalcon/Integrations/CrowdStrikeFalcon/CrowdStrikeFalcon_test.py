@@ -10847,6 +10847,77 @@ class TestSpotlightSeverityBasedFetch:
         assert withheld == [{"id": "v1", "aid": "aid1"}]
 
     @pytest.mark.asyncio
+    async def test_asset_seal_failure_does_not_fail_a_cycle_whose_vulnerabilities_sealed(self, mocker):
+        """
+        Tests that a failed asset seal does not discard an otherwise successful fetch cycle.
+
+        flush_remaining raises on a failed seal on purpose, so neither it nor its own callers can
+        mistake an unsealed snapshot for a sealed one. By the time finalize_severity_fetch calls
+        it, however, the vulnerability snapshot has ALREADY sealed a few lines earlier. Letting the
+        exception past this point would fail a cycle whose vulnerability data is safely stored,
+        and - because the caller skips its state reset on failure - the next cycle would re-enter
+        finalize and seal the same vulnerability snapshot_id a second time.
+
+        The cost of absorbing is one unsealed asset snapshot, which the next cycle re-enriches
+        under a fresh snapshot_id. That is recoverable; a duplicate vulnerability seal is not.
+
+        Given:
+            - All severities completed, so the vulnerability snapshot seals.
+            - The asset seal inside flush_remaining then fails.
+        When:
+            - finalize_severity_fetch runs.
+        Then:
+            - No exception escapes, so the cycle is not retried and the seal is not duplicated.
+            - The vulnerability seal still went out.
+            - The asset failure is logged as an error rather than passing silently.
+        """
+        from CrowdStrikeFalcon import finalize_severity_fetch, SPOTLIGHT_SEVERITIES
+
+        mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
+
+        def create_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.set_result(1)
+            return f
+
+        mock_create_task = mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=create_task_side_effect,
+        )
+
+        mock_handler = mocker.Mock()
+        mock_handler.processed_aids = set()
+        mock_handler.stored_assets_count = 0
+        # The asset seal is rejected by XSIAM, exactly as flush_remaining is designed to surface.
+        mock_handler.flush_remaining = mocker.AsyncMock(side_effect=DemistoException("XSIAM rejected the asset seal"))
+
+        mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+        mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        # Must not raise: the vulnerability data is already safe.
+        await finalize_severity_fetch(
+            all_pending_tasks=set(),
+            current_completed_severities=list(SPOTLIGHT_SEVERITIES),
+            total_vulnerabilities=1000,
+            all_unique_aids={"aid1", "aid2"},
+            asset_handler=mock_handler,
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(),
+            snapshot_id="snap123",
+            withheld_records=[{"id": "v1", "aid": "aid1"}],
+        )
+
+        mock_handler.flush_remaining.assert_awaited_once()
+        # The vulnerability seal still went out, which is what makes absorbing safe.
+        assert mock_create_task.called, "the vulnerability snapshot must still have sealed"
+        # The asset failure is reported loudly rather than vanishing.
+        assert any(
+            "failed to seal" in str(call.args[0]) and len(call.args) > 1 and call.args[1] == "error"
+            for call in mock_log.call_args_list
+        ), "the asset seal failure must be logged as an error"
+
+    @pytest.mark.asyncio
     async def test_finalize_seals_with_real_withheld_records(self, mocker):
         """
         Tests that the final sealing batch carries real withheld records and the true total count.
@@ -11830,6 +11901,81 @@ class TestAssetsDeviceHandler:
         # 2 rows stored by the bulk batch (3 resolved, 1 withheld) + the withheld row itself.
         assert send_mock.call_args.kwargs["items_count"] == 3
         assert [device["device_id"] for device in send_mock.call_args.kwargs["data"]] == ["c" * 32]
+
+    @pytest.mark.asyncio
+    async def test_seal_counts_every_batch_even_when_sends_resolve_without_awaiting_io(self, mocker):
+        """
+        Tests that the seal counts rows from sends that completed before the drain loop looked.
+
+        stored_assets_count is accumulated by the send task's done-callback, which asyncio
+        schedules with call_soon: it runs on a LATER event-loop pass than the gather that saw the
+        task finish. Reading the counter straight after the drain loop can therefore miss the last
+        batch and seal the snapshot short - the exact symptom this PR exists to fix.
+
+        The window only opens when a send resolves without ever suspending on I/O, so it is
+        invisible against a live tenant but reachable whenever a send is served from cache or
+        mocked. The seal must not depend on scheduling order either way.
+
+        Multiple batches are used because a single batch hides the bug: its row is withheld for the
+        seal and never counted through a callback at all.
+
+        Given:
+            - Several enrichment batches whose sends resolve immediately, with no awaited I/O.
+        When:
+            - flush_remaining runs.
+        Then:
+            - The declared total equals every stored row plus the withheld one, not a short count.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        aids = [chr(ord("a") + i) * 32 for i in range(3)]
+
+        mock_client = mocker.AsyncMock()
+        # One resolved device per batch, so each batch produces a send with a countable row.
+        mock_client._request.side_effect = [self._device_response(mocker, [aid, aid[::-1]]) for aid in aids]
+
+        handler = AssetsDeviceHandler(
+            client=mock_client,
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=10,
+        )
+        mocker.patch.object(handler, "_filter_asset_fields", side_effect=lambda d: d)
+        send_mock = self._patch_send(mocker)
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        # Drive the batches directly so each one creates its own send task, exactly as the
+        # buffer-full path does.
+        for aid in aids:
+            await handler.enrich_and_ingest_batch([aid])
+
+        # Advance the loop by exactly one pass. That leaves a send task finished but with its
+        # done-callback still queued and the task not yet discarded from running_tasks.
+        # asyncio.gather on an already-finished task returns without giving that callback a turn,
+        # so the drain loop exits and stored_assets_count is read while it is still stale.
+        #
+        # The alignment is pinned deliberately because the window is one event-loop pass wide:
+        # with zero yields the sends are still pending and gather awaits them properly, and with
+        # two or more the callbacks have already run and emptied the set. Neither state can expose
+        # the bug, so a version of this test that did not pin the timing passed against the
+        # unfixed code and proved nothing.
+        await asyncio.sleep(0)
+
+        await handler.flush_remaining(submitted_aids_count=len(aids))
+
+        # 3 batches x 2 devices = 6 rows; one is withheld for the seal, so 5 are sent in bulk.
+        assert handler.stored_assets_count == 5, (
+            "every completed send must be counted before the seal is computed; a short count here "
+            "means a done-callback had not run yet"
+        )
+        # Identify the seal by its sentinel batch number rather than by position: the bulk sends
+        # all carry items_count=1 to keep the snapshot open, so picking the last call by index
+        # silently asserts against a bulk batch instead of the seal.
+        seal_calls = [call for call in send_mock.call_args_list if call.kwargs.get("batch_number") == 999999]
+        assert len(seal_calls) == 1, "exactly one sealing send is expected"
+        assert seal_calls[0].kwargs["items_count"] == 6, "the seal must declare stored rows plus the withheld row"
 
     @pytest.mark.asyncio
     async def test_final_batch_send_failure_propagates_out_of_flush_remaining(self, mocker):
