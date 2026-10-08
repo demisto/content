@@ -955,7 +955,7 @@ Notes:
 - This command will fail if the consent user is not a member of the destination chat.
 - This command may fail if the bot app has not yet appeared in the "built for your org" section in teams.
 - This command can only send messages from type 'message'.
-- To mention a chat member, use `@Display Name;`. The display name must uniquely match a member of the destination chat. Messages containing mentions are sent as HTML.
+- To mention a chat member, use `@Display Name;`. The display name must uniquely match a member of the destination chat. Messages containing mentions are sent as HTML. Any text that starts with `@` and ends with `;` (for example, `Meet @ 5pm;`) is treated as a mention, and the command fails if it does not match a chat member.
 
 ##### Base Command
 
@@ -982,7 +982,7 @@ Note: Chat.Create is needed only when sending to one-on-one chats.
 | **Argument Name** | **Description**                                                                                                                       | **Required** |
 |-------------------|---------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). Note - the consent user must be a member of the chat. |  Required     |
-| content           | The content of the chat message. To mention a chat member, use `@Display Name;`. The display name must uniquely match a member of the destination chat. Messages containing mentions are sent as HTML. | Required     |
+| content           | The content of the chat message. To mention a chat member, use `@Display Name;`. The display name must uniquely match a member of the destination chat. Messages containing mentions are sent as HTML. Any text that starts with `@` and ends with `;` (for example, `Meet @ 5pm;`) is treated as a mention, and the command fails if it does not match a chat member. | Required     |
 | content_type      | The message content type. Possible values are: text, html. Default is text.      | Optional     |
 
 #### Context Output

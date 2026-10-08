@@ -1662,9 +1662,7 @@ def create_meeting(user_id: str, subject: str, start_date_time: str, end_date_ti
     return channel_data
 
 
-def send_message_in_chat(
-    content: str, chat_id: str, content_type: str, mentions: list[dict[str, Any]] | None = None
-) -> dict:
+def send_message_in_chat(content: str, chat_id: str, content_type: str, mentions: list[dict[str, Any]] | None = None) -> dict:
     """
     Send a message in a Microsoft Teams chat.
 
@@ -2112,20 +2110,17 @@ def format_graph_chat_mentions(
             raise ValueError(f"Mentioned user '{requested_name}' is not a member of chat '{chat}'.")
         if len(matching_members) > 1:
             raise ValueError(
-                f"Mentioned user '{requested_name}' is ambiguous in chat '{chat}'. "
-                "Use a unique member display name."
+                f"Mentioned user '{requested_name}' is ambiguous in chat '{chat}'. Use a unique member display name."
             )
         if not matching_members[0].get("userId"):
-            raise ValueError(
-                f"Mentioned user '{requested_name}' cannot be mentioned because an Entra user ID is unavailable."
-            )
+            raise ValueError(f"Mentioned user '{requested_name}' cannot be mentioned because an Entra user ID is unavailable.")
         resolved_mentions.append((match, matching_members[0]))
 
     formatted_parts: list[str] = []
     graph_mentions: list[dict[str, Any]] = []
     previous_end = 0
     for mention_id, (match, member) in enumerate(resolved_mentions):
-        preceding_content = content[previous_end: match.start()]
+        preceding_content = content[previous_end : match.start()]
         formatted_parts.append(text_to_html(preceding_content) if content_type == "text" else preceding_content)
 
         display_name = member["displayName"]

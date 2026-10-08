@@ -1756,16 +1756,12 @@ def test_message_send_to_chat_command_without_mentions_does_not_get_members(mock
     from MicrosoftTeams import message_send_to_chat_command
 
     content = "<b>Hello World</b>" if content_type == "html" else "Hello World"
-    mocker.patch.object(
-        demisto, "args", return_value={"chat": GROUP_CHAT_ID, "content": content, "content_type": content_type}
-    )
+    mocker.patch.object(demisto, "args", return_value={"chat": GROUP_CHAT_ID, "content": content, "content_type": content_type})
     mocker.patch("MicrosoftTeams.get_chat_id_and_type", return_value=(GROUP_CHAT_ID, "group"))
     mocker.patch("MicrosoftTeams.add_bot_to_chat")
     get_chat_members = mocker.patch("MicrosoftTeams.get_chat_members")
     mocker.patch("MicrosoftTeams.return_results")
-    requests_mock.post(
-        f"{GRAPH_BASE_URL}/v1.0/chats/{GROUP_CHAT_ID}/messages", json=test_data.get("send_message_chat")
-    )
+    requests_mock.post(f"{GRAPH_BASE_URL}/v1.0/chats/{GROUP_CHAT_ID}/messages", json=test_data.get("send_message_chat"))
 
     message_send_to_chat_command()
 
@@ -1792,17 +1788,14 @@ def test_message_send_to_chat_command_with_mention(mocker, requests_mock):
     mocker.patch("MicrosoftTeams.add_bot_to_chat")
     mocker.patch("MicrosoftTeams.get_chat_members", return_value=test_data.get("list_members").get("value"))
     mocker.patch("MicrosoftTeams.return_results")
-    requests_mock.post(
-        f"{GRAPH_BASE_URL}/v1.0/chats/{GROUP_CHAT_ID}/messages", json=test_data.get("send_message_chat")
-    )
+    requests_mock.post(f"{GRAPH_BASE_URL}/v1.0/chats/{GROUP_CHAT_ID}/messages", json=test_data.get("send_message_chat"))
 
     message_send_to_chat_command()
 
     assert requests_mock.last_request.json() == {
         "body": {
             "content": (
-                "Review &lt;this&gt; &amp; &quot;that&quot; with <at id=\"0\">Megan Bowen</at> "
-                "and <at id=\"1\">Megan Bowen</at>"
+                'Review &lt;this&gt; &amp; &quot;that&quot; with <at id="0">Megan Bowen</at> and <at id="1">Megan Bowen</at>'
             ),
             "contentType": "html",
         },
@@ -1849,9 +1842,7 @@ def test_format_graph_chat_mentions_preserves_html():
     from MicrosoftTeams import format_graph_chat_mentions
 
     members = [{"displayName": "A&B <Admin>", "userId": "user-id"}]
-    content, content_type, mentions = format_graph_chat_mentions(
-        "<b>Hello</b> @A&B <Admin>;", "html", members, "chat"
-    )
+    content, content_type, mentions = format_graph_chat_mentions("<b>Hello</b> @A&B <Admin>;", "html", members, "chat")
 
     assert content == '<b>Hello</b> <at id="0">A&amp;B &lt;Admin&gt;</at>'
     assert content_type == "html"
