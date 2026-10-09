@@ -9253,7 +9253,7 @@ class TestSpotlightSeverityBasedFetch:
         )
 
         # Execute
-        total, aids, tasks, withheld = await fetch_vulnerabilities_by_severity(
+        total, aids, withheld = await fetch_vulnerabilities_by_severity(
             client=mock_client,
             severity="CRITICAL",
             context_store=mock_context_store,
@@ -9265,9 +9265,6 @@ class TestSpotlightSeverityBasedFetch:
         # Verify
         assert total == 2
         assert aids == {"aid1", "aid2"}
-        # Fix 1 (P0): send tasks are drained inside the severity fetch (count-on-success),
-        # so the returned pending set is empty once all sends complete.
-        assert len(tasks) == 0
         # First record is withheld for the seal
         assert withheld == [vulnerabilities[0]]
 
@@ -9342,7 +9339,7 @@ class TestSpotlightSeverityBasedFetch:
         )
 
         # Execute
-        total, aids, tasks, withheld = await fetch_vulnerabilities_by_severity(
+        total, aids, withheld = await fetch_vulnerabilities_by_severity(
             client=mock_client,
             severity="HIGH",
             context_store=mocker.Mock(),
@@ -9354,8 +9351,6 @@ class TestSpotlightSeverityBasedFetch:
         # Verify
         assert total == 3  # 2 from page1 + 1 from page2
         assert aids == {"aid1", "aid2", "aid3"}
-        # Fix 1 (P0): tasks are drained inside the fetch, so the returned pending set is empty.
-        assert len(tasks) == 0
         assert withheld == [page1_vulns[0]]
         assert mock_client._request.call_count == 2
 
@@ -9388,14 +9383,14 @@ class TestSpotlightSeverityBasedFetch:
         # Mock fetch_vulnerabilities_by_severity to return different results per severity
         async def mock_fetch_by_severity(client, severity, **kwargs):
             severity_data = {
-                "CRITICAL": (10, {"aid1", "aid2"}, set(), [{"id": "c1", "aid": "aid1"}]),
-                "HIGH": (20, {"aid3", "aid4"}, set(), [{"id": "h1", "aid": "aid3"}]),
-                "MEDIUM": (15, {"aid5"}, set(), [{"id": "m1", "aid": "aid5"}]),
-                "LOW": (5, {"aid6"}, set(), [{"id": "l1", "aid": "aid6"}]),
-                "NONE": (0, set(), set(), []),
-                "UNKNOWN": (0, set(), set(), []),
+                "CRITICAL": (10, {"aid1", "aid2"}, [{"id": "c1", "aid": "aid1"}]),
+                "HIGH": (20, {"aid3", "aid4"}, [{"id": "h1", "aid": "aid3"}]),
+                "MEDIUM": (15, {"aid5"}, [{"id": "m1", "aid": "aid5"}]),
+                "LOW": (5, {"aid6"}, [{"id": "l1", "aid": "aid6"}]),
+                "NONE": (0, set(), []),
+                "UNKNOWN": (0, set(), []),
             }
-            return severity_data.get(severity, (0, set(), set(), []))
+            return severity_data.get(severity, (0, set(), []))
 
         mocker.patch(
             "CrowdStrikeFalcon.fetch_vulnerabilities_by_severity",
@@ -9407,9 +9402,11 @@ class TestSpotlightSeverityBasedFetch:
         mock_handler = mock_handler_cls.return_value
         mock_handler.flush_remaining = mocker.AsyncMock()
         mock_handler.processed_aids = {"aid1", "aid2", "aid3", "aid4", "aid5", "aid6"}
+        # A real empty set, not the auto-created attribute: a MagicMock is truthy, which would
+        # send the teardown drain down a path this test has nothing in flight for.
+        mock_handler.running_tasks = set()
 
         # Mock background task waiter
-        mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
 
         # Mock the per-severity data batch sender, which reports (batch_number, records_stored).
         def create_task_side_effect(*args, **kwargs):
@@ -9494,7 +9491,7 @@ class TestSpotlightSeverityBasedFetch:
         async def mock_fetch_by_severity(client, severity, lost_records_by_severity=None, **kwargs):
             if lost_records_by_severity is not None:
                 lost_records_by_severity[severity] = losses.get(severity, 0)
-            return (10, {f"aid-{severity}"}, set(), [{"id": f"w-{severity}"}])
+            return (10, {f"aid-{severity}"}, [{"id": f"w-{severity}"}])
 
         mocker.patch(
             "CrowdStrikeFalcon.fetch_vulnerabilities_by_severity",
@@ -9505,8 +9502,7 @@ class TestSpotlightSeverityBasedFetch:
         mock_handler = mock_handler_cls.return_value
         mock_handler.flush_remaining = mocker.AsyncMock()
         mock_handler.processed_aids = set()
-
-        mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
+        mock_handler.running_tasks = set()
 
         def create_task_side_effect(*args, **kwargs):
             f = asyncio.Future()
@@ -9562,13 +9558,13 @@ class TestSpotlightSeverityBasedFetch:
             if severity == "HIGH":
                 raise Exception("HIGH severity API error")
             severity_data = {
-                "CRITICAL": (10, {"aid1"}, set(), [{"id": "c1", "aid": "aid1"}]),
-                "MEDIUM": (5, {"aid2"}, set(), [{"id": "m1", "aid": "aid2"}]),
-                "LOW": (3, {"aid3"}, set(), [{"id": "l1", "aid": "aid3"}]),
-                "NONE": (0, set(), set(), []),
-                "UNKNOWN": (0, set(), set(), []),
+                "CRITICAL": (10, {"aid1"}, [{"id": "c1", "aid": "aid1"}]),
+                "MEDIUM": (5, {"aid2"}, [{"id": "m1", "aid": "aid2"}]),
+                "LOW": (3, {"aid3"}, [{"id": "l1", "aid": "aid3"}]),
+                "NONE": (0, set(), []),
+                "UNKNOWN": (0, set(), []),
             }
-            return severity_data.get(severity, (0, set(), set(), []))
+            return severity_data.get(severity, (0, set(), []))
 
         mocker.patch(
             "CrowdStrikeFalcon.fetch_vulnerabilities_by_severity",
@@ -9580,8 +9576,7 @@ class TestSpotlightSeverityBasedFetch:
         mock_handler = mock_handler_cls.return_value
         mock_handler.flush_remaining = mocker.AsyncMock()
         mock_handler.processed_aids = set()
-
-        mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
+        mock_handler.running_tasks = set()
 
         def create_task_side_effect(*args, **kwargs):
             f = asyncio.Future()
@@ -9671,7 +9666,7 @@ class TestSpotlightSeverityBasedFetch:
         )
 
         # Execute
-        total, aids, tasks, _withheld = await fetch_vulnerabilities_by_severity(
+        total, aids, _withheld = await fetch_vulnerabilities_by_severity(
             client=mock_client,
             severity="MEDIUM",
             context_store=mocker.Mock(),
@@ -9727,7 +9722,7 @@ class TestSpotlightSeverityBasedFetch:
         )
 
         # Execute
-        total, aids, tasks, withheld = await fetch_vulnerabilities_by_severity(
+        total, aids, withheld = await fetch_vulnerabilities_by_severity(
             client=mock_client,
             severity="LOW",
             context_store=mocker.Mock(),
@@ -9739,8 +9734,6 @@ class TestSpotlightSeverityBasedFetch:
         # Verify
         assert total == 0
         assert aids == set()
-        # Fix 1 (P0): the empty-data-batch task is created then drained, so nothing is returned.
-        assert len(tasks) == 0
         assert withheld == []  # Nothing to withhold from an empty severity
 
         # Verify handler received empty set
@@ -9900,7 +9893,7 @@ class TestSpotlightSeverityBasedFetch:
             side_effect=create_task_side_effect,
         )
 
-        total, aids, tasks, withheld = await fetch_vulnerabilities_by_severity(
+        total, aids, withheld = await fetch_vulnerabilities_by_severity(
             client=mock_client,
             severity="CRITICAL",
             context_store=mocker.Mock(),
@@ -9969,7 +9962,7 @@ class TestSpotlightSeverityBasedFetch:
             side_effect=create_task_side_effect,
         )
 
-        total, aids, tasks, withheld = await fetch_vulnerabilities_by_severity(
+        total, aids, withheld = await fetch_vulnerabilities_by_severity(
             client=mock_client,
             severity="HIGH",
             context_store=mocker.Mock(),
@@ -10019,7 +10012,7 @@ class TestSpotlightSeverityBasedFetch:
             side_effect=create_task_side_effect,
         )
 
-        total, aids, tasks, withheld = await fetch_vulnerabilities_by_severity(
+        total, aids, withheld = await fetch_vulnerabilities_by_severity(
             client=mock_client,
             severity="LOW",
             context_store=mocker.Mock(),
@@ -10070,7 +10063,7 @@ class TestSpotlightSeverityBasedFetch:
 
         # Disable stdout capture since this test intentionally triggers a shrink warning log.
         with capfd.disabled():
-            vulns, response_data = await fetch_spotlight_page_with_shrink(
+            vulns, response_data, _received_at = await fetch_spotlight_page_with_shrink(
                 client=mock_client,
                 after_token="tok_same",
                 filter_query="filter",
@@ -10150,7 +10143,7 @@ class TestSpotlightSeverityBasedFetch:
         sleep_mock = mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new=mocker.AsyncMock())
 
         with capfd.disabled():
-            vulns, _ = await fetch_spotlight_page_with_shrink(
+            vulns, _, _received_at = await fetch_spotlight_page_with_shrink(
                 client=mock_client,
                 after_token="tok_same",
                 filter_query="filter",
@@ -10196,7 +10189,7 @@ class TestSpotlightSeverityBasedFetch:
         mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new=mocker.AsyncMock())
 
         with capfd.disabled():
-            vulns, _ = await fetch_spotlight_page_with_shrink(
+            vulns, _, _received_at = await fetch_spotlight_page_with_shrink(
                 client=mock_client,
                 after_token="tok_same",
                 filter_query="filter",
@@ -10321,7 +10314,7 @@ class TestSpotlightSeverityBasedFetch:
         mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new=mocker.AsyncMock())
 
         with capfd.disabled():
-            vulns, _ = await fetch_spotlight_page_with_shrink(
+            vulns, _, _received_at = await fetch_spotlight_page_with_shrink(
                 client=mock_client,
                 after_token="tok_same",
                 filter_query="filter",
@@ -10419,7 +10412,7 @@ class TestSpotlightSeverityBasedFetch:
         )
 
         with capfd.disabled():
-            total, _aids, tasks, withheld = await fetch_vulnerabilities_by_severity(
+            total, _aids, withheld = await fetch_vulnerabilities_by_severity(
                 client=mock_client,
                 severity="CRITICAL",
                 context_store=mocker.Mock(),
@@ -10432,7 +10425,6 @@ class TestSpotlightSeverityBasedFetch:
         # because the withheld record is guaranteed to ship in the seal batch.
         assert total == 1
         assert withheld == [{"id": "v1", "aid": "aid1"}]
-        assert len(tasks) == 0
 
     @pytest.mark.asyncio
     async def test_fetch_vulnerabilities_by_severity_counts_partially_stored_batch(self, mocker, capfd):
@@ -10475,7 +10467,7 @@ class TestSpotlightSeverityBasedFetch:
         )
 
         with capfd.disabled():
-            total, _aids, _tasks, withheld = await fetch_vulnerabilities_by_severity(
+            total, _aids, withheld = await fetch_vulnerabilities_by_severity(
                 client=mock_client,
                 severity="CRITICAL",
                 context_store=mocker.Mock(),
@@ -10535,7 +10527,7 @@ class TestSpotlightSeverityBasedFetch:
         lost_records_by_severity: dict = {}
 
         with capfd.disabled():
-            total, _aids, _tasks, _withheld = await fetch_vulnerabilities_by_severity(
+            total, _aids, _withheld = await fetch_vulnerabilities_by_severity(
                 client=mock_client,
                 severity="CRITICAL",
                 context_store=mocker.Mock(),
@@ -10593,7 +10585,7 @@ class TestSpotlightSeverityBasedFetch:
         lost_records_by_severity: dict = {}
 
         with capfd.disabled():
-            total, _aids, _tasks, _withheld = await fetch_vulnerabilities_by_severity(
+            total, _aids, _withheld = await fetch_vulnerabilities_by_severity(
                 client=mock_client,
                 severity="HIGH",
                 context_store=mocker.Mock(),
@@ -10640,7 +10632,7 @@ class TestSpotlightSeverityBasedFetch:
         mock_create_task = mocker.patch("CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context")
 
         with capfd.disabled():
-            total, _aids, _tasks, withheld = await fetch_vulnerabilities_by_severity(
+            total, _aids, withheld = await fetch_vulnerabilities_by_severity(
                 client=mock_client,
                 severity="CRITICAL",
                 context_store=mocker.Mock(),
@@ -10679,7 +10671,7 @@ class TestSpotlightSeverityBasedFetch:
         mock_create_task = mocker.patch("CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context")
 
         with capfd.disabled():
-            total, _aids, _tasks, withheld = await fetch_vulnerabilities_by_severity(
+            total, _aids, withheld = await fetch_vulnerabilities_by_severity(
                 client=mock_client,
                 severity="UNKNOWN",
                 context_store=mocker.Mock(),
@@ -10730,7 +10722,7 @@ class TestSpotlightSeverityBasedFetch:
         )
 
         with capfd.disabled():
-            total, _aids, _tasks, _withheld = await fetch_vulnerabilities_by_severity(
+            total, _aids, _withheld = await fetch_vulnerabilities_by_severity(
                 client=mock_client,
                 severity="CRITICAL",
                 context_store=mocker.Mock(),
@@ -10780,7 +10772,7 @@ class TestSpotlightSeverityBasedFetch:
         )
 
         with capfd.disabled():
-            total, _aids, _tasks, _withheld = await fetch_vulnerabilities_by_severity(
+            total, _aids, _withheld = await fetch_vulnerabilities_by_severity(
                 client=mock_client,
                 severity="CRITICAL",
                 context_store=mocker.Mock(),
@@ -10833,7 +10825,7 @@ class TestSpotlightSeverityBasedFetch:
             side_effect=create_task_side_effect,
         )
 
-        total, aids, tasks, withheld = await fetch_vulnerabilities_by_severity(
+        total, aids, withheld = await fetch_vulnerabilities_by_severity(
             client=mock_client,
             severity="CRITICAL",
             context_store=mocker.Mock(),
@@ -10873,7 +10865,8 @@ class TestSpotlightSeverityBasedFetch:
         """
         from CrowdStrikeFalcon import finalize_severity_fetch, SPOTLIGHT_SEVERITIES
 
-        mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
+        # No stub for a global background-task wait: vulnerability send tasks are now drained
+        # per-severity, so finalize_severity_fetch has nothing left to await before the seal.
 
         def create_task_side_effect(*args, **kwargs):
             f = asyncio.Future()
@@ -10896,8 +10889,9 @@ class TestSpotlightSeverityBasedFetch:
         mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
 
         # Must not raise: the vulnerability data is already safe.
+        # No all_pending_tasks argument: send tasks are drained per-severity before this point,
+        # so finalize_severity_fetch no longer takes a global set of tasks to await.
         await finalize_severity_fetch(
-            all_pending_tasks=set(),
             current_completed_severities=list(SPOTLIGHT_SEVERITIES),
             total_vulnerabilities=1000,
             all_unique_aids={"aid1", "aid2"},
@@ -10934,8 +10928,6 @@ class TestSpotlightSeverityBasedFetch:
         """
         from CrowdStrikeFalcon import finalize_severity_fetch, SPOTLIGHT_SEVERITIES
 
-        mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
-
         seal_call = {}
 
         def create_task_side_effect(*args, **kwargs):
@@ -10959,7 +10951,6 @@ class TestSpotlightSeverityBasedFetch:
         withheld_records = [{"id": "v1", "aid": "aid1"}, {"id": "v2", "aid": "aid2"}]
 
         await finalize_severity_fetch(
-            all_pending_tasks=set(),
             current_completed_severities=list(SPOTLIGHT_SEVERITIES),
             total_vulnerabilities=1000,
             all_unique_aids={"aid1", "aid2"},
@@ -10998,8 +10989,6 @@ class TestSpotlightSeverityBasedFetch:
         """
         from CrowdStrikeFalcon import finalize_severity_fetch, SPOTLIGHT_SEVERITIES
 
-        mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
-
         verify_lines: list = []
         mocker.patch(
             "CrowdStrikeFalcon.log_falcon_assets",
@@ -11028,7 +11017,6 @@ class TestSpotlightSeverityBasedFetch:
         lost_records_by_severity["LOW"] = 4
 
         await finalize_severity_fetch(
-            all_pending_tasks=set(),
             current_completed_severities=list(SPOTLIGHT_SEVERITIES),
             total_vulnerabilities=993,
             all_unique_aids={"aid1"},
@@ -11069,8 +11057,6 @@ class TestSpotlightSeverityBasedFetch:
         """
         from CrowdStrikeFalcon import finalize_severity_fetch, SPOTLIGHT_SEVERITIES
 
-        mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
-
         verify_lines: list = []
         mocker.patch(
             "CrowdStrikeFalcon.log_falcon_assets",
@@ -11095,7 +11081,6 @@ class TestSpotlightSeverityBasedFetch:
         mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
 
         await finalize_severity_fetch(
-            all_pending_tasks=set(),
             current_completed_severities=list(SPOTLIGHT_SEVERITIES),
             total_vulnerabilities=1000,
             all_unique_aids={"aid1"},
@@ -11123,8 +11108,6 @@ class TestSpotlightSeverityBasedFetch:
         """
         from CrowdStrikeFalcon import finalize_severity_fetch, SPOTLIGHT_SEVERITIES
 
-        mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
-
         mock_create_task = mocker.patch(
             "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
         )
@@ -11137,7 +11120,6 @@ class TestSpotlightSeverityBasedFetch:
         mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
 
         await finalize_severity_fetch(
-            all_pending_tasks=set(),
             current_completed_severities=list(SPOTLIGHT_SEVERITIES),
             total_vulnerabilities=0,
             all_unique_aids=set(),
@@ -11166,7 +11148,6 @@ class TestSpotlightSeverityBasedFetch:
         """
         from CrowdStrikeFalcon import finalize_severity_fetch
 
-        mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
         mock_create_task = mocker.patch(
             "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
         )
@@ -11177,7 +11158,6 @@ class TestSpotlightSeverityBasedFetch:
         # This path intentionally logs a "NOT sealed" warning to stderr; disable capture.
         with capfd.disabled():
             await finalize_severity_fetch(
-                all_pending_tasks=set(),
                 current_completed_severities=["CRITICAL", "HIGH"],
                 total_vulnerabilities=30,
                 all_unique_aids={"aid1"},
@@ -11213,15 +11193,14 @@ class TestSpotlightSeverityBasedFetch:
             return f
 
         severity_tasks = [
-            ("CRITICAL", make_task((10, {"aid1"}, set(), [{"id": "c1", "aid": "aid1"}]))),
-            ("HIGH", make_task((20, {"aid2"}, set(), [{"id": "h1", "aid": "aid2"}]))),
-            ("LOW", make_task((0, set(), set(), []))),
+            ("CRITICAL", make_task((10, {"aid1"}, [{"id": "c1", "aid": "aid1"}]))),
+            ("HIGH", make_task((20, {"aid2"}, [{"id": "h1", "aid": "aid2"}]))),
+            ("LOW", make_task((0, set(), []))),
         ]
 
         (
             total,
             all_aids,
-            all_tasks,
             completed,
             withheld,
         ) = await await_and_aggregate_severity_results(
@@ -11265,13 +11244,12 @@ class TestSpotlightSeverityBasedFetch:
 
         prior = [{"id": "c1", "aid": "aid1"}, {"id": "h1", "aid": "aid2"}]
         severity_tasks = [
-            ("MEDIUM", make_task((15, {"aid3"}, set(), [{"id": "m1", "aid": "aid3"}]))),
+            ("MEDIUM", make_task((15, {"aid3"}, [{"id": "m1", "aid": "aid3"}]))),
         ]
 
         (
             total,
             all_aids,
-            all_tasks,
             completed,
             withheld,
         ) = await await_and_aggregate_severity_results(
@@ -11399,6 +11377,65 @@ class TestAssetsDeviceHandler:
 
         # Verify
         assert handler.pending_buffer == {"buffer_1", "new_1"}
+
+    @pytest.mark.asyncio
+    async def test_a_saturated_handler_does_not_stall_the_page_loop(self, mocker):
+        """
+        Tests that receive_new_aids dispatches without blocking on asset concurrency.
+
+        Given:
+            - Far more batches than MAX_PENDING_ASSET_TASKS, with uploads that outlive their
+              enrichment, so the limit is saturated.
+        When:
+            - receive_new_aids is called.
+        Then:
+            - It never suspends waiting for asset work. It runs on the vulnerability page loop,
+              and the pagination cursor's TTL is measured against the gap between that loop's
+              requests. The limit itself is unchanged; it is awaited inside each batch's own task.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        handler = AssetsDeviceHandler(
+            client=mocker.AsyncMock(),
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=1,
+        )
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        async def _slow_upload():
+            for _ in range(5):
+                await asyncio.sleep(0)
+            return 1, 1
+
+        mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=lambda **_kwargs: asyncio.create_task(_slow_upload()),
+        )
+        mocker.patch.object(handler, "_filter_asset_fields", side_effect=lambda d: d)
+        handler.client._request.return_value = mocker.Mock(status_code=200, json=lambda: {"resources": [{"device_id": "d1"}]})
+
+        # How the previous implementation blocked once the task set was full.
+        blocking_waits = 0
+        real_wait = asyncio.wait
+
+        async def counting_wait(*args, **kwargs):
+            nonlocal blocking_waits
+            blocking_waits += 1
+            return await real_wait(*args, **kwargs)
+
+        mocker.patch("CrowdStrikeFalcon.asyncio.wait", side_effect=counting_wait)
+
+        # batch_limit=1 gives a threshold of 2, so each extra AID dispatches another batch.
+        await handler.receive_new_aids({f"aid{i}" for i in range(30)})
+
+        assert blocking_waits == 0, (
+            f"receive_new_aids blocked {blocking_waits} time(s) on asset enrichment, " f"spending the pagination cursor's TTL"
+        )
+
+        await handler.drain()
 
     @pytest.mark.asyncio
     async def test_handler_flush_remaining(self, mocker):
@@ -11673,7 +11710,7 @@ class TestAssetsDeviceHandler:
             - The batch is enriched and sent.
         Then:
             - The declared count is 1, leaving the snapshot open. Only the dedicated sealing
-              send may declare the real total (XSUP-77575).
+              send may declare the real total.
         """
         from CrowdStrikeFalcon import AssetsDeviceHandler
 
@@ -11783,7 +11820,7 @@ class TestAssetsDeviceHandler:
         Then:
             - The declared count counts only the rows that actually landed, not everything the
               Devices API resolved. Declaring the unstored rows would leave the snapshot claiming
-              more than exists, so it could never seal — the original XSUP-77575 symptom.
+              more than exists, so it could never seal.
         """
         from CrowdStrikeFalcon import AssetsDeviceHandler
 
@@ -11825,7 +11862,7 @@ class TestAssetsDeviceHandler:
         Then:
             - The declared count is 5, the cumulative number of asset rows stored across the whole
               cycle. Declaring only the final batch's 2 would seal the snapshot short and strand
-              the rows from earlier batches (XSUP-77575).
+              the rows from earlier batches.
         """
         from CrowdStrikeFalcon import AssetsDeviceHandler
 
@@ -11856,7 +11893,7 @@ class TestAssetsDeviceHandler:
     @pytest.mark.asyncio
     async def test_snapshot_still_seals_when_the_final_batch_resolves_nothing(self, mocker):
         """
-        Tests that an unresolvable trailing AID no longer blocks the seal (XSUP-77575).
+        Tests that an unresolvable trailing AID does not block the seal.
 
         The count is carried by a row withheld from the enriched output, not by whatever the last
         batch happens to resolve. A trailing AID that the Devices API rejects - an EASM or
@@ -12182,6 +12219,342 @@ class TestAssetsDeviceHandler:
         assert "d1" in handler.processed_aids
 
     @pytest.mark.asyncio
+    async def test_drain_reports_no_losses_when_every_task_succeeds(self, mocker):
+        """
+        Tests that drain() awaits every in-flight task and reports a clean result.
+
+        Given:
+            - A handler with two in-flight tasks that both succeed.
+        When:
+            - drain() is awaited directly, as the teardown path does.
+        Then:
+            - Every task is awaited, running_tasks is emptied, and (0, None) is returned.
+              The caller needs the count to decide whether it may claim success.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        handler = AssetsDeviceHandler(
+            client=mocker.AsyncMock(),
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=10,
+        )
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        completed = []
+
+        async def _work(tag):
+            completed.append(tag)
+
+        handler.running_tasks = {asyncio.create_task(_work("a")), asyncio.create_task(_work("b"))}
+
+        lost_batches, first_error = await handler.drain()
+
+        assert sorted(completed) == ["a", "b"], "drain must await every in-flight task"
+        assert handler.running_tasks == set(), "drain must empty running_tasks"
+        assert (lost_batches, first_error) == (0, None)
+
+    @pytest.mark.asyncio
+    async def test_drain_reports_a_failed_task_instead_of_raising(self, mocker):
+        """
+        Tests that drain() absorbs a task failure and reports it to the caller.
+
+        Given:
+            - One in-flight task that raises and one that succeeds.
+        When:
+            - drain() is awaited.
+        Then:
+            - It returns (1, the exception) rather than propagating. Assets are flushed after the
+              vulnerability snapshot has already sealed, so raising here would fail a fetch whose
+              vulnerability data is safely stored. Returning it is what lets the caller log the
+              loss instead of silently claiming success.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        handler = AssetsDeviceHandler(
+            client=mocker.AsyncMock(),
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=10,
+        )
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        boom = RuntimeError("send failed")
+
+        async def _ok():
+            return None
+
+        async def _fails():
+            raise boom
+
+        handler.running_tasks = {asyncio.create_task(_ok()), asyncio.create_task(_fails())}
+
+        lost_batches, first_error = await handler.drain()
+
+        assert lost_batches == 1
+        assert first_error is boom
+        assert handler.running_tasks == set()
+
+    @pytest.mark.asyncio
+    async def test_drain_reports_a_send_failure_the_wrapper_swallowed(self, mocker):
+        """
+        Tests that a failed upload is reported even though nothing re-raises it.
+
+        Given:
+            - A send task that failed and whose done-callback has already removed it from
+              running_tasks, which is what happens when the callback fires before drain() takes
+              its snapshot.
+        When:
+            - drain() is awaited with nothing left in flight.
+        Then:
+            - The loss is still reported. The batch wrapper suppresses the send exception so one
+              bad upload cannot fail the batch, and the task is already gone from the set, so
+              inferring purely from gathered results would report a clean cycle and the caller
+              would log "All enrichment/send tasks completed successfully" over lost assets.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        handler = AssetsDeviceHandler(
+            client=mocker.AsyncMock(),
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=10,
+        )
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        boom = RuntimeError("upload rejected")
+        handler.send_failures = 1
+        handler.first_send_error = boom
+
+        lost_batches, first_error = await handler.drain()
+
+        assert lost_batches == 1, "a swallowed send failure must still be reported"
+        assert first_error is boom
+
+    @pytest.mark.asyncio
+    async def test_drain_counts_a_failed_send_once(self, mocker):
+        """
+        Tests that a send failure visible in both places is counted a single time.
+
+        Given:
+            - A failed send task still in running_tasks AND recorded in the failure counter,
+              which is the normal case before its callback removes it.
+        When:
+            - drain() is awaited.
+        Then:
+            - It reports 1, not 2. Send tasks are tracked in running_tasks so drain() waits for
+              them, so counting the gathered exception as well as the counter would
+              double-report every failed upload.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        handler = AssetsDeviceHandler(
+            client=mocker.AsyncMock(),
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=10,
+        )
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        boom = RuntimeError("upload rejected")
+
+        async def _fails():
+            raise boom
+
+        send_task = asyncio.create_task(_fails())
+        handler.running_tasks = {send_task}
+        handler.send_tasks = {send_task}
+        handler.send_failures = 1
+        handler.first_send_error = boom
+
+        lost_batches, _first_error = await handler.drain()
+
+        assert lost_batches == 1, "a single failed upload must not be reported twice"
+
+    @pytest.mark.asyncio
+    async def test_draining_twice_does_not_re_report_the_same_send_failure(self, mocker):
+        """
+        Tests that a second drain() reports nothing when nothing new has failed.
+
+        Given:
+            - A cycle whose single upload failed and which has already been drained once.
+        When:
+            - drain() is awaited a second time, as happens when flush_remaining drains and the
+              surrounding finally block then drains again before teardown.
+        Then:
+            - The second call reports 0. The tally is consumed by the first call, so leaving it
+              set would re-add the same failure on every subsequent drain and the teardown log
+              would claim fresh asset loss that never happened.
+            - send_tasks is emptied too, so the references do not outlive the cycle.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        handler = AssetsDeviceHandler(
+            client=mocker.AsyncMock(),
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=10,
+        )
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        boom = RuntimeError("upload rejected")
+
+        async def _fails():
+            raise boom
+
+        send_task = asyncio.create_task(_fails())
+        handler.running_tasks = {send_task}
+        handler.send_tasks = {send_task}
+        handler.send_failures = 1
+        handler.first_send_error = boom
+
+        first_lost, first_error = await handler.drain()
+        second_lost, second_error = await handler.drain()
+
+        assert first_lost == 1, "the real failure must be reported by the first drain"
+        assert first_error is boom
+        assert second_lost == 0, "a second drain must not re-report an already-reported failure"
+        assert second_error is None
+        assert handler.send_tasks == set(), "drained send tasks must not be retained"
+
+    @pytest.mark.asyncio
+    async def test_cancelling_a_batch_does_not_escape_past_the_shielded_send(self, mocker):
+        """
+        Tests that cancellation is absorbed at the await on the shielded upload.
+
+        Given:
+            - A batch whose upload is in flight when the surrounding task is cancelled.
+        When:
+            - The batch task is cancelled and awaited.
+        Then:
+            - The batch finishes without CancelledError propagating out of the await. shield()
+              re-raises CancelledError at the await point even though the send itself is
+              protected, and since 3.8 CancelledError does not derive from Exception - so a bare
+              suppress(Exception) would let it escape, freeing the semaphore slot while the
+              upload is still running and allowing more than MAX_PENDING_ASSET_TASKS concurrent
+              uploads during teardown.
+        """
+        import CrowdStrikeFalcon
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        handler = AssetsDeviceHandler(
+            client=mocker.AsyncMock(),
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=10,
+        )
+
+        response = mocker.Mock()
+        response.status_code = 200
+        # Two devices, because the first resolved row is withheld to carry the seal count. With a
+        # single device the batch withholds it and returns before creating a send task, so there
+        # would be no in-flight upload for the cancellation under test to race.
+        response.json.return_value = {"resources": [{"device_id": "aid1"}, {"device_id": "aid2"}], "errors": []}
+        handler.client._request = mocker.AsyncMock(return_value=response)
+        mocker.patch.object(handler, "_filter_asset_fields", side_effect=lambda devices: devices)
+
+        send_started = asyncio.Event()
+        # Tracked so the shielded upload can be cleaned up below. shield() deliberately leaves it
+        # running when the batch is cancelled, which is the behaviour under test, but a task still
+        # pending when the loop closes is reported as "Task was destroyed but it is pending".
+        created_send_tasks: list[asyncio.Task] = []
+
+        async def _slow_send():
+            send_started.set()
+            await asyncio.sleep(0.2)
+            return (1, 1)
+
+        def _spawn_send(**kwargs):
+            send_task = asyncio.create_task(_slow_send())
+            created_send_tasks.append(send_task)
+            return send_task
+
+        mocker.patch.object(
+            CrowdStrikeFalcon,
+            "create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=_spawn_send,
+        )
+
+        batch_task = asyncio.create_task(handler.enrich_and_ingest_batch(["aid1", "aid2"]))
+        # Bounded: if the batch stops creating a send task, this fails in seconds instead of
+        # hanging the whole suite on a wait that can never be satisfied.
+        await asyncio.wait_for(send_started.wait(), timeout=5)
+        batch_task.cancel()
+
+        results = await asyncio.gather(batch_task, return_exceptions=True)
+
+        assert not isinstance(
+            results[0], asyncio.CancelledError
+        ), "CancelledError escaped the shielded send, so the slot was freed mid-upload"
+
+        # The upload outliving the cancelled batch is the point of the test; settle it here rather
+        # than leaving it for the garbage collector to report against an unrelated test.
+        for send_task in created_send_tasks:
+            send_task.cancel()
+        await asyncio.gather(*created_send_tasks, return_exceptions=True)
+
+    @pytest.mark.asyncio
+    async def test_flush_remaining_does_not_claim_success_when_a_batch_failed(self, mocker, caplog):
+        """
+        Tests that a failed enrichment/send batch is reported, not papered over.
+
+        On the live tenant roughly half the enrichment batches failed on authentication for
+        eight hours while the fetch logged unqualified success every cycle, so the loss was
+        invisible in the logs.
+
+        Given:
+            - An in-flight task that fails during the final flush.
+        When:
+            - flush_remaining is awaited.
+        Then:
+            - The "All enrichment/send tasks completed successfully" line is NOT logged, and an
+              error naming the failure is logged instead.
+        """
+        from CrowdStrikeFalcon import AssetsDeviceHandler
+
+        handler = AssetsDeviceHandler(
+            client=mocker.AsyncMock(),
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(metadata={}),
+            snapshot_id="snap1",
+            processed_aids=set(),
+            batch_limit=10,
+        )
+        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        async def _fails():
+            raise RuntimeError("send failed")
+
+        handler.running_tasks = {asyncio.create_task(_fails())}
+
+        # submitted_aids_count, not the old total_items_count: the declared total now comes from
+        # the rows XSIAM confirmed storing, and this argument is only logged.
+        await handler.flush_remaining(submitted_aids_count=0)
+
+        logged = " ".join(str(call.args[0]) for call in mock_log.call_args_list)
+        assert "completed successfully" not in logged, "a failed batch must not be reported as success"
+        assert "send failed" in logged, "the failure must be surfaced in the logs"
+        assert any(call.args[1:] == ("error",) for call in mock_log.call_args_list), "the loss must be logged at error level"
+
+        # The failure above is the point of the test, so the records it leaves behind are expected
+        # and must be cleared for the autouse check_logging fixture.
+        caplog.clear()
+
+    @pytest.mark.asyncio
     async def test_handler_enrichment_partial_success(self, mocker):
         """
         Tests that a CrowdStrike partial-success response (HTTP 400 with valid resources and
@@ -12239,7 +12612,7 @@ class TestAssetsDeviceHandler:
     async def test_handler_enrichment_404_partial_success(self, mocker):
         """
         Tests that a CrowdStrike partial-success response returned with HTTP 404 still ingests the
-        resolved devices (XSUP-77575).
+        resolved devices.
 
         The Devices API answers this call with 404 while the body still contains fully populated
         device records (meta.powered_by == "device-api"). Before the fix, 404 was absent from
@@ -12302,7 +12675,7 @@ class TestAssetsDeviceHandler:
     @pytest.mark.asyncio
     async def test_handler_enrichment_404_through_real_content_client(self, mocker):
         """
-        End-to-end regression test for XSUP-77575 exercising the real ContentClient.
+        End-to-end regression test for the partial-success 404 path, exercising the real ContentClient.
 
         The other tests in this class mock client._request directly, so they verify the handler's
         behaviour given a response but never exercise the ok_codes gate in ContentClient._request -
@@ -13418,7 +13791,7 @@ class TestXsiamSendFailureIsNotCounted:
         session_ctx.__aenter__ = mocker.AsyncMock(return_value=session)
         session_ctx.__aexit__ = mocker.AsyncMock(return_value=False)
 
-        mocker.patch("CrowdStrikeFalcon.aiohttp.ClientSession", return_value=session_ctx)
+        mocker.patch("CrowdStrikeFalcon.get_xsiam_session", new_callable=mocker.AsyncMock, return_value=session)
         return session
 
     @pytest.mark.asyncio
@@ -13499,7 +13872,7 @@ class TestXsiamSendFailureIsNotCounted:
         session_ctx = mocker.MagicMock()
         session_ctx.__aenter__ = mocker.AsyncMock(return_value=session)
         session_ctx.__aexit__ = mocker.AsyncMock(return_value=False)
-        mocker.patch("CrowdStrikeFalcon.aiohttp.ClientSession", return_value=session_ctx)
+        mocker.patch("CrowdStrikeFalcon.get_xsiam_session", new_callable=mocker.AsyncMock, return_value=session)
 
         save_state_callback = mocker.MagicMock()
         data = [{"id": f"vuln{i}", "aid": "aid1"} for i in range(50)]
@@ -13557,7 +13930,7 @@ class TestXsiamSendFailureIsNotCounted:
         session_ctx = mocker.MagicMock()
         session_ctx.__aenter__ = mocker.AsyncMock(return_value=session)
         session_ctx.__aexit__ = mocker.AsyncMock(return_value=False)
-        mocker.patch("CrowdStrikeFalcon.aiohttp.ClientSession", return_value=session_ctx)
+        mocker.patch("CrowdStrikeFalcon.get_xsiam_session", new_callable=mocker.AsyncMock, return_value=session)
 
         await xsiam_api_call_async(xsiam_url="mock_url", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets")
 
@@ -13601,7 +13974,7 @@ class TestXsiamSendFailureIsNotCounted:
         session_ctx = mocker.MagicMock()
         session_ctx.__aenter__ = mocker.AsyncMock(return_value=session)
         session_ctx.__aexit__ = mocker.AsyncMock(return_value=False)
-        mocker.patch("CrowdStrikeFalcon.aiohttp.ClientSession", return_value=session_ctx)
+        mocker.patch("CrowdStrikeFalcon.get_xsiam_session", new_callable=mocker.AsyncMock, return_value=session)
 
         with pytest.raises(DemistoException, match="502"):
             await xsiam_api_call_async(xsiam_url="mock_url", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets")
@@ -13674,7 +14047,7 @@ class TestXsiamSendFailureIsNotCounted:
         session_ctx = mocker.MagicMock()
         session_ctx.__aenter__ = mocker.AsyncMock(return_value=session)
         session_ctx.__aexit__ = mocker.AsyncMock(return_value=False)
-        mocker.patch("CrowdStrikeFalcon.aiohttp.ClientSession", return_value=session_ctx)
+        mocker.patch("CrowdStrikeFalcon.get_xsiam_session", new_callable=mocker.AsyncMock, return_value=session)
 
         await xsiam_api_call_async(xsiam_url="mock_url", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets")
 
@@ -13754,7 +14127,7 @@ class TestXsiamSendFailureIsNotCounted:
             side_effect=create_task_side_effect,
         )
 
-        total, aids, _tasks, withheld = await fetch_vulnerabilities_by_severity(
+        total, aids, withheld = await fetch_vulnerabilities_by_severity(
             client=mock_client,
             severity="HIGH",
             context_store=mocker.Mock(),
@@ -14103,3 +14476,619 @@ class TestModuleTestConnectionErrors:
         mocker.patch("CrowdStrikeFalcon.get_token", return_value="token")
 
         assert module_test() == "ok"
+
+
+class TestSpotlightFetchTuning:
+    """The cursor died because each page spent too long off the wire, and memory sat near the
+    container limit. These assert the dials that bound both."""
+
+    @pytest.mark.asyncio
+    async def test_severities_are_fetched_two_at_a_time(self, mocker):
+        """Six concurrent severities was the dominant memory variable and the main source of event
+        loop contention between a page arriving and the next one being requested."""
+        import CrowdStrikeFalcon
+
+        live = 0
+        high_water = 0
+
+        async def track_concurrency(*_args, **kwargs):
+            nonlocal live, high_water
+            live += 1
+            high_water = max(high_water, live)
+            await asyncio.sleep(0)
+            live -= 1
+            return 0, set(), []
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+        # running_tasks must be a real empty set: a MagicMock attribute is truthy and would send
+        # the teardown drain down a path this test has nothing in flight for.
+        mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler").return_value.running_tasks = set()
+        mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+        mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+        mocker.patch("CrowdStrikeFalcon.finalize_severity_fetch", new_callable=mocker.AsyncMock, return_value=True)
+        mocker.patch(
+            "CrowdStrikeFalcon.fetch_vulnerabilities_by_severity",
+            new_callable=mocker.AsyncMock,
+            side_effect=track_concurrency,
+        )
+
+        await CrowdStrikeFalcon.fetch_spotlight_by_severity_parallel(
+            client=mocker.MagicMock(),
+            context_store=mocker.MagicMock(),
+            spotlight_state=mocker.MagicMock(),
+            snapshot_id="snap-1",
+            completed_severities=[],
+        )
+
+        assert high_water <= CrowdStrikeFalcon.MAX_CONCURRENT_SEVERITIES
+
+    @pytest.mark.asyncio
+    async def test_severities_start_smallest_first(self, mocker):
+        """HIGH and MEDIUM carry the most rows. Starting them together puts the peak at the start
+        of the cycle; smallest-first leaves the largest running alone at the tail."""
+        import CrowdStrikeFalcon
+
+        started = []
+
+        async def record_start(*_args, **kwargs):
+            started.append(kwargs["severity"])
+            return 0, set(), []
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+        mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler").return_value.running_tasks = set()
+        mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+        mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+        mocker.patch("CrowdStrikeFalcon.finalize_severity_fetch", new_callable=mocker.AsyncMock, return_value=True)
+        mocker.patch(
+            "CrowdStrikeFalcon.fetch_vulnerabilities_by_severity",
+            new_callable=mocker.AsyncMock,
+            side_effect=record_start,
+        )
+
+        await CrowdStrikeFalcon.fetch_spotlight_by_severity_parallel(
+            client=mocker.MagicMock(),
+            context_store=mocker.MagicMock(),
+            spotlight_state=mocker.MagicMock(),
+            snapshot_id="snap-1",
+            completed_severities=[],
+        )
+
+        # Pinned literally: asserting against the constant would pass for any ordering, including
+        # the heaviest-first one this test exists to rule out.
+        assert started == ["UNKNOWN", "NONE", "LOW", "CRITICAL", "MEDIUM", "HIGH"]
+        assert set(started) == set(CrowdStrikeFalcon.SPOTLIGHT_SEVERITIES), "the fetch order must cover every severity"
+
+    def test_completed_severities_are_not_refetched(self, mocker):
+        """The resume path skips what is already done and keeps the rest in fetch order."""
+        import CrowdStrikeFalcon
+
+        remaining = [s for s in CrowdStrikeFalcon.SPOTLIGHT_SEVERITIES if s not in ["LOW", "NONE"]]
+
+        assert "LOW" not in remaining
+        assert "NONE" not in remaining
+        assert len(remaining) == len(CrowdStrikeFalcon.SPOTLIGHT_SEVERITIES) - 2
+
+    def test_long_running_uses_the_smaller_page(self, mocker):
+        """Smaller pages cut both the resident working set and the per-page parse/compress time
+        that is charged against the cursor's TTL."""
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={"longRunning": True})
+
+        assert CrowdStrikeFalcon.get_spotlight_page_size() == CrowdStrikeFalcon.SPOTLIGHT_PAGE_SIZE_LONG_RUNNING
+
+    def test_scheduled_fetch_keeps_the_large_page(self, mocker):
+        """The scheduled flow is bound by a 12h timeout, so extra round trips cost more there than
+        the memory they save."""
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={})
+
+        assert CrowdStrikeFalcon.get_spotlight_page_size() == CrowdStrikeFalcon.MAX_FETCH_SPOTLIGHT_ASSETS
+
+    def test_shrink_ladder_never_retries_above_the_page_size(self, mocker):
+        """With a 3000 page, retrying at the old 5000 first rung would request more than the
+        original attempt."""
+        import CrowdStrikeFalcon
+
+        ladder = CrowdStrikeFalcon.build_spotlight_shrink_ladder(3000)
+
+        assert ladder[0] == 3000
+        assert ladder == sorted(ladder, reverse=True)
+        assert max(ladder) == 3000
+
+    @pytest.mark.asyncio
+    async def test_ladder_walks_every_rung_before_giving_up(self, mocker):
+        """There is no way to continue a severity without this page, so stopping early only turns a
+        page a smaller limit could still have fetched into a discarded severity. Every rung runs."""
+        import CrowdStrikeFalcon
+        from ContentClientApiModule import ContentClientError
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+        mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new_callable=mocker.AsyncMock)
+
+        response = mocker.MagicMock()
+        response.status_code = 500
+        page = mocker.patch.object(
+            CrowdStrikeFalcon,
+            "fetch_spotlight_vulnerabilities_page",
+            new_callable=mocker.AsyncMock,
+            side_effect=ContentClientError("upstream 500", response=response),
+        )
+
+        with pytest.raises(ContentClientError):
+            await CrowdStrikeFalcon.fetch_spotlight_page_with_shrink(
+                client=mocker.MagicMock(), after_token="tok", filter_query="q", severity="LOW", page_size=3000
+            )
+
+        expected_rungs = len(CrowdStrikeFalcon.build_spotlight_shrink_ladder(3000))
+        assert page.call_count == expected_rungs, "the ladder abandoned the page before trying every smaller limit"
+
+    @pytest.mark.asyncio
+    async def test_ladder_recovers_on_a_later_rung(self, mocker):
+        """The rung that matters: a page too large to parse at 3000 can still succeed at a smaller
+        limit. Any early exit would throw away a severity this rescues."""
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+        mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new_callable=mocker.AsyncMock)
+
+        recovered = ([{"id": "vuln1"}], {"meta": {"pagination": {}}})
+        page = mocker.patch.object(
+            CrowdStrikeFalcon,
+            "fetch_spotlight_vulnerabilities_page",
+            new_callable=mocker.AsyncMock,
+            side_effect=[
+                json.JSONDecodeError("oversized", "", 0),
+                json.JSONDecodeError("oversized", "", 0),
+                recovered,
+            ],
+        )
+
+        vulns, response_data, received_at = await CrowdStrikeFalcon.fetch_spotlight_page_with_shrink(
+            client=mocker.MagicMock(), after_token="tok", filter_query="q", severity="LOW", page_size=3000
+        )
+
+        assert (vulns, response_data) == recovered
+        # The arrival stamp is what the cursor-age log measures from, so it must be a real reading.
+        assert isinstance(received_at, float)
+        assert page.call_count == 3
+        # The same cursor is reused on every rung: a new token would skip records.
+        assert {call.kwargs["after_token"] for call in page.call_args_list} == {"tok"}
+
+    @pytest.mark.asyncio
+    async def test_retry_log_reports_the_limit_actually_used_next(self, mocker):
+        """The log must name the rung the code will really try; indexing the module-level ladder
+        instead of the locally built one reports a limit that is never requested."""
+        import CrowdStrikeFalcon
+        from ContentClientApiModule import ContentClientError
+
+        logged: list[str] = []
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets", side_effect=lambda msg, *a, **k: logged.append(msg))
+        mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new_callable=mocker.AsyncMock)
+
+        response = mocker.MagicMock()
+        response.status_code = 500
+        # page_size 2000 gives the ladder [2000, 1000, 500], which is offset from the module
+        # constant [5000, 2500, 1000, 500] - so a wrong index shows up as a wrong number.
+        mocker.patch.object(
+            CrowdStrikeFalcon,
+            "fetch_spotlight_vulnerabilities_page",
+            new_callable=mocker.AsyncMock,
+            side_effect=ContentClientError("upstream 500", response=response),
+        )
+
+        with pytest.raises(ContentClientError):
+            await CrowdStrikeFalcon.fetch_spotlight_page_with_shrink(
+                client=mocker.MagicMock(), after_token="tok", filter_query="q", severity="LOW", page_size=2000
+            )
+
+        retry_lines = [line for line in logged if "then retrying the same page at limit=" in line]
+        assert retry_lines, "no retry line was logged"
+        assert "at limit=1000" in retry_lines[0], f"log names a rung the ladder will not use: {retry_lines[0]}"
+
+    @pytest.mark.asyncio
+    async def test_send_tasks_are_drained_when_a_severity_fails(self, mocker):
+        """A severity that raises must not leave uploads running.
+
+        Nothing downstream awaits them - the caller never receives this severity's task set - so
+        they would still be uploading when the cycle closes the shared XSIAM session underneath
+        them, turning a batch the server actually stored into a client-side error.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+        from ContentClientApiModule import ContentClientError
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+
+        vulnerabilities = [
+            {"id": "vuln1", "aid": "aid1", "cve": {"severity": "HIGH"}},
+            {"id": "vuln2", "aid": "aid2", "cve": {"severity": "HIGH"}},
+        ]
+        first_page = mocker.Mock()
+        first_page.json.return_value = {
+            "resources": vulnerabilities,
+            "meta": {"pagination": {"after": "tok"}},  # A second page, so a send task is spawned.
+        }
+
+        mock_client = mocker.AsyncMock()
+        # First page succeeds and starts an upload; the prefetched second page then fails.
+        mock_client._request.side_effect = [first_page, ContentClientError("boom")]
+
+        send_finished = False
+
+        async def slow_send(**kwargs):
+            nonlocal send_finished
+            await asyncio.sleep(0)
+            send_finished = True
+            return 1, len(kwargs.get("data", []))
+
+        sent_tasks: list[asyncio.Task] = []
+
+        def create_task_side_effect(*args, **kwargs):
+            task = asyncio.create_task(slow_send(**kwargs))
+            sent_tasks.append(task)
+            return task
+
+        mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=create_task_side_effect,
+        )
+
+        with pytest.raises(ContentClientError):
+            await fetch_vulnerabilities_by_severity(
+                client=mock_client,
+                severity="HIGH",
+                context_store=mocker.Mock(),
+                spotlight_state=mocker.Mock(),
+                snapshot_id="snap123",
+                asset_handler=mock_handler,
+            )
+
+        assert sent_tasks, "no send task was created, so the drain is not being exercised"
+        assert all(task.done() for task in sent_tasks), "a send task outlived the severity that started it"
+        assert send_finished, "the send was abandoned rather than drained"
+
+    @pytest.mark.asyncio
+    async def test_pending_prefetch_is_cancelled_when_the_severity_fails(self, mocker):
+        """A prefetched page left running would hold its records and log into a dead cycle.
+
+        The prefetch must be *pending*, not already failed: only then does the finally block's
+        cancel() actually run. test_send_tasks_are_drained_when_a_severity_fails makes the
+        prefetch itself raise, so the task is already done() and cancel() is skipped.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+        mocker.patch("CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context")
+
+        # The downstream work fails on page 1, while the prefetch of page 2 is still running.
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock(side_effect=RuntimeError("downstream boom"))
+
+        first_page = mocker.Mock()
+        first_page.json.return_value = {
+            "resources": [{"id": "vuln1", "aid": "aid1", "cve": {"severity": "HIGH"}}],
+            "meta": {"pagination": {"after": "tok"}},  # An 'after' token, so a prefetch is spawned.
+        }
+
+        first_call = True
+
+        async def responses(*_args, **_kwargs):
+            nonlocal first_call
+            if first_call:
+                first_call = False
+                return first_page
+            # Page 2 takes long enough to still be unfinished when the failure hits. Bounded, so a
+            # missing cancel() fails the assertion instead of hanging the suite.
+            await asyncio.sleep(5)
+            return first_page
+
+        mock_client = mocker.AsyncMock()
+        mock_client._request.side_effect = responses
+
+        # Capture the prefetch task itself: receive_new_aids raises before the scheduled prefetch
+        # gets its first turn on the loop, so it is pending-and-unstarted, which is exactly the
+        # state the finally block has to clean up.
+        prefetch_tasks: list[asyncio.Task] = []
+        real_create_task = asyncio.create_task
+
+        def tracking_create_task(coro, *args, **kwargs):
+            task = real_create_task(coro, *args, **kwargs)
+            prefetch_tasks.append(task)
+            return task
+
+        mocker.patch("CrowdStrikeFalcon.asyncio.create_task", side_effect=tracking_create_task)
+
+        with pytest.raises(RuntimeError, match="downstream boom"):
+            await fetch_vulnerabilities_by_severity(
+                client=mock_client,
+                severity="HIGH",
+                context_store=mocker.Mock(),
+                spotlight_state=mocker.Mock(),
+                snapshot_id="snap123",
+                asset_handler=mock_handler,
+            )
+
+        assert prefetch_tasks, "no prefetch was spawned, so cancel() is not being exercised"
+        assert all(
+            task.cancelled() for task in prefetch_tasks
+        ), f"a prefetched page outlived the failed severity: {[t for t in prefetch_tasks if not t.cancelled()]}"
+
+    def test_lookback_defaults_to_100_days(self, mocker):
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={})
+
+        assert CrowdStrikeFalcon.get_spotlight_lookback_days() == 100
+
+    def test_lookback_is_configurable(self, mocker):
+        """The most direct lever a support engineer has for shrinking a cycle on a huge tenant."""
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={"spotlight_lookback_days": "30"})
+
+        assert CrowdStrikeFalcon.get_spotlight_lookback_days() == 30
+
+    @pytest.mark.parametrize("configured", ["abc", "30 days", "  "])
+    def test_lookback_falls_back_instead_of_crashing_the_cycle(self, mocker, configured):
+        """arg_to_number RAISES on a non-numeric value, it does not return None.
+
+        A typo in this parameter would otherwise abort the whole fetch with a bare ValueError,
+        which is a far worse outcome than ignoring the typo.
+        """
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={"spotlight_lookback_days": configured})
+        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        assert CrowdStrikeFalcon.get_spotlight_lookback_days() == 100
+        assert mock_log.called, "an ignored configuration value must say so"
+
+    @pytest.mark.parametrize("configured", ["0", "-5"])
+    def test_lookback_warns_when_a_non_positive_value_is_ignored(self, mocker, configured):
+        """A zero or negative window builds a filter that matches nothing.
+
+        Falling back silently costs a full cycle to discover, so the correction is logged.
+        """
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={"spotlight_lookback_days": configured})
+        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        assert CrowdStrikeFalcon.get_spotlight_lookback_days() == 100
+        assert mock_log.called, "an ignored configuration value must say so"
+
+    @pytest.mark.parametrize("configured", ["101", "365", "5000"])
+    def test_lookback_is_capped_at_the_maximum(self, mocker, configured):
+        """The parameter exists to shrink a cycle, so it must not be usable to grow one.
+
+        A value above the default would enlarge the very dataset this setting is meant to bound,
+        which is the opposite of its purpose, so it is clamped rather than honoured.
+        """
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={"spotlight_lookback_days": configured})
+        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        assert CrowdStrikeFalcon.get_spotlight_lookback_days() == 100
+        assert mock_log.called, "a clamped configuration value must say so"
+
+    def test_lookback_accepts_the_maximum_itself(self, mocker):
+        """The boundary is inclusive: 100 is the default, so configuring it explicitly is not an error."""
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={"spotlight_lookback_days": "100"})
+        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        assert CrowdStrikeFalcon.get_spotlight_lookback_days() == 100
+        mock_log.assert_not_called()
+
+    @pytest.mark.parametrize("params", [{}, {"spotlight_lookback_days": ""}, {"spotlight_lookback_days": None}])
+    def test_lookback_is_quiet_when_simply_unset(self, mocker, params):
+        """Not configuring the parameter is the normal case, not a mistake; it must not warn."""
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value=params)
+        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        assert CrowdStrikeFalcon.get_spotlight_lookback_days() == 100
+        mock_log.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_the_seal_is_sent_as_a_single_chunk(self, mocker):
+        """A seal split across chunks can partially store. The retry then re-sends the withheld
+        records, so stored can never equal declared again and the snapshot never becomes queryable."""
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+        handler = mocker.MagicMock()
+        handler.flush_remaining = mocker.AsyncMock()
+        handler.processed_aids = set()
+
+        seal_task = asyncio.get_running_loop().create_future()
+        seal_task.set_result((1, 1))
+        mock_create = mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            return_value=seal_task,
+        )
+
+        await CrowdStrikeFalcon.finalize_severity_fetch(
+            current_completed_severities=list(CrowdStrikeFalcon.SPOTLIGHT_SEVERITIES),
+            total_vulnerabilities=42,
+            all_unique_aids=set(),
+            asset_handler=handler,
+            context_store=mocker.MagicMock(),
+            spotlight_state=mocker.MagicMock(),
+            snapshot_id="snap-1",
+            withheld_records=[{"id": "v1"}],
+        )
+
+        assert mock_create.call_args.kwargs["chunk_size"] == CrowdStrikeFalcon.XSIAM_EVENT_CHUNK_SIZE_LIMIT
+        # Left at its default, which is the strict setting: any failing chunk raises rather than
+        # letting a partially stored seal fall through to the state reset.
+        assert mock_create.call_args.kwargs.get("count_stored", False) is False, "the seal must stay all-or-nothing"
+
+    @pytest.mark.asyncio
+    async def test_semaphores_of_different_names_coexist(self, mocker):
+        """Looking up a new name must not disturb the semaphores already handed out.
+
+        All names share one cache. If it were reset whenever a name was missing rather than when
+        the loop changed, the first lookup of a new name mid-cycle would replace the severity
+        semaphore that running tasks were already holding, silently removing the limit.
+        """
+        import CrowdStrikeFalcon
+
+        severity_sem = CrowdStrikeFalcon.get_severity_semaphore()
+        await severity_sem.acquire()
+
+        CrowdStrikeFalcon._loop_semaphore("some_other_name", 3)
+
+        assert (
+            CrowdStrikeFalcon.get_severity_semaphore() is severity_sem
+        ), "the severity semaphore was replaced, so its limit no longer applies to in-flight tasks"
+        assert severity_sem.locked() is (CrowdStrikeFalcon.MAX_CONCURRENT_SEVERITIES == 1)
+        severity_sem.release()
+
+    @pytest.mark.asyncio
+    async def test_semaphores_are_rebuilt_for_a_new_event_loop(self, mocker):
+        """The long-running flow calls asyncio.run() per cycle; a semaphore bound to a closed loop
+        raises when awaited from the next one, so each cycle must get fresh ones.
+
+        The previous cycle's loop is seeded directly rather than by running a second loop, because
+        the cache must be invalidated even when the new loop reuses the freed one's id() - which is
+        what CPython does with addresses, and what a two-live-loops test can never reproduce.
+        """
+        import CrowdStrikeFalcon
+
+        closed_loop = asyncio.new_event_loop()
+        closed_loop.close()
+        stale = asyncio.Semaphore(CrowdStrikeFalcon.MAX_CONCURRENT_SEVERITIES)
+        mocker.patch.object(CrowdStrikeFalcon, "_SEMAPHORE_LOOP", closed_loop)
+        mocker.patch.dict(CrowdStrikeFalcon._LOOP_SEMAPHORES, {"severity": stale}, clear=True)
+
+        assert (
+            CrowdStrikeFalcon.get_severity_semaphore() is not stale
+        ), "a semaphore bound to a closed event loop was handed to the new cycle"
+
+    def test_loop_identity_is_the_loop_object_not_its_id(self):
+        """id() is an address and CPython reuses the addresses of freed objects, so comparing ids
+        would let a new cycle's loop masquerade as the previous one and keep its dead semaphores."""
+        import CrowdStrikeFalcon
+
+        assert not isinstance(
+            CrowdStrikeFalcon._SEMAPHORE_LOOP, int
+        ), "the cached loop identity must be the loop object itself, not its id()"
+
+    @pytest.mark.asyncio
+    async def test_asset_enrichment_tasks_are_bounded(self, mocker):
+        """Nothing else bounds these: they are spawned from the vulnerability stream and only
+        awaited at the end of the cycle, so their payloads otherwise accumulate for the whole run.
+
+        Patches the inner body, not enrich_and_ingest_batch: the latter is the semaphore wrapper,
+        so patching it would replace the limit being measured and the test would pass with the
+        bound removed entirely.
+        """
+        import CrowdStrikeFalcon
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+        handler = CrowdStrikeFalcon.AssetsDeviceHandler(
+            client=mocker.MagicMock(),
+            context_store=mocker.MagicMock(),
+            spotlight_state=mocker.MagicMock(),
+            snapshot_id="snap-1",
+            processed_aids=set(),
+            batch_limit=1,
+        )
+
+        live = 0
+        high_water = 0
+
+        async def slow_body(_self, _batch):
+            nonlocal live, high_water
+            live += 1
+            high_water = max(high_water, live)
+            # Several turns, so a batch stays in flight past the tick that starts the next one.
+            for _ in range(5):
+                await asyncio.sleep(0)
+            live -= 1
+
+        mocker.patch.object(CrowdStrikeFalcon.AssetsDeviceHandler, "_enrich_and_ingest_batch", slow_body)
+
+        await handler.receive_new_aids({f"aid{i}" for i in range(40)})
+        # Dispatch no longer blocks, so nothing has run yet at this point.
+        await handler.drain()
+
+        assert high_water <= CrowdStrikeFalcon.MAX_PENDING_ASSET_TASKS
+        assert high_water > 1, "no batches overlapped, so the bound was never exercised"
+
+    @pytest.mark.asyncio
+    async def test_asset_tasks_are_drained_when_the_cycle_does_not_seal(self, mocker):
+        """flush_remaining only runs when every severity completed.
+
+        On any other exit the enrichment tasks are still uploading, and the caller closes the
+        shared XSIAM session the moment this returns - so they must be settled here rather than
+        left to fail against a closed connector.
+        """
+        import CrowdStrikeFalcon
+        from ContentClientApiModule import ContentClientError
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        finished = False
+        send_finished = False
+        running_tasks: set = set()
+
+        async def slow_send():
+            nonlocal send_finished
+            await asyncio.sleep(0.2)
+            send_finished = True
+
+        async def slow_enrich():
+            nonlocal finished
+            # Long enough that it cannot finish incidentally while the severities unwind:
+            # a sleep(0) would be resumed by any of the awaits on the way out and the test
+            # would pass with or without the drain.
+            await asyncio.sleep(0.2)
+            finished = True
+            # Two-stage, like the real enrich_and_ingest_batch: the send task only joins
+            # running_tasks after the enrichment await. A drain that gathers a single snapshot
+            # never sees this one, so the upload would race the closing XSIAM session.
+            send_task = asyncio.create_task(slow_send())
+            running_tasks.add(send_task)
+            send_task.add_done_callback(running_tasks.discard)
+
+        enrichment_task = asyncio.create_task(slow_enrich())
+        running_tasks.add(enrichment_task)
+
+        handler = mocker.MagicMock()
+        handler.running_tasks = running_tasks
+        handler.flush_remaining = mocker.AsyncMock()
+        handler.processed_aids = set()
+        # Bind the real drain so this exercises the production loop rather than a mock that
+        # would "succeed" no matter how the drain is implemented.
+        handler.drain = CrowdStrikeFalcon.AssetsDeviceHandler.drain.__get__(handler)
+        mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler", return_value=handler)
+
+        # Every severity dies, so none is marked complete, the snapshot cannot seal and
+        # flush_remaining is never reached - the exact path that used to abandon these tasks.
+        mocker.patch(
+            "CrowdStrikeFalcon.fetch_vulnerabilities_by_severity",
+            new_callable=mocker.AsyncMock,
+            side_effect=ContentClientError("severity died"),
+        )
+
+        await CrowdStrikeFalcon.fetch_spotlight_by_severity_parallel(
+            client=mocker.MagicMock(),
+            context_store=mocker.MagicMock(),
+            spotlight_state=mocker.MagicMock(),
+            snapshot_id="snap-1",
+            completed_severities=[],
+        )
+
+        handler.flush_remaining.assert_not_awaited()
+        assert enrichment_task.done(), "an enrichment task outlived the cycle that owns it"
+        assert finished, "the enrichment upload was abandoned rather than drained"
+        assert send_finished, "the send task spawned during the drain was left running"

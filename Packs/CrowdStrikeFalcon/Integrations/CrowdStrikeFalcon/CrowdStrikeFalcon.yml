@@ -446,6 +446,23 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- additionalinfo: |-
+    The number of days to look back for Spotlight vulnerabilities. Only vulnerabilities updated within this window are fetched.
+    Default and maximum are 100 days; a higher value is capped at 100.
+    Lower this value for very large tenants: it is the most direct way to reduce the size of a fetch cycle, and therefore its duration and memory use.
+  display: Spotlight vulnerabilities lookback (days)
+  name: spotlight_lookback_days
+  defaultvalue: '100'
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - xsoar
+  - xpanse
+  supportedModules:
+  - "xsiam"
+  - "exposure_management"
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
