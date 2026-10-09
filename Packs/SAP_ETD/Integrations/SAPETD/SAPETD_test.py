@@ -1,68 +1,87 @@
-"""Tests for SAP Enterprise Threat Detection integration."""
+"""Tests for the SAP Enterprise Threat Detection integration."""
 
 import copy
 import json
 import os
+import re
+from datetime import datetime, UTC
+from http import HTTPStatus
 from typing import Any
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import demistomock as demisto  # noqa: F401
+import demistomock as demisto
 import pytest
-from CommonServerPython import *  # noqa: F401
+from CommonServerPython import *  # noqa: F401,F403
 
+with patch("ContentClientApiModule.support_multithreading"):
+    from SAPETD import (
+        INTEGRATION_NAME,
+        Commands,
+        Config,
+        Messages,
+        SAPETDClient,
+        add_time_to_events,
+        build_next_last_run,
+        deduplicate_events,
+        fetch_alerts_with_pagination,
+        fetch_events_command,
+        filter_new_alerts,
+        format_timestamp,
+        get_error_status_code,
+        get_events_command,
+        main,
+        parse_date_to_iso,
+        parse_integration_params,
+        test_module as run_test_module,
+    )
 
-@pytest.fixture(autouse=True)
-def mock_support_multithreading():
-    """Mock support_multithreading to prevent demistomock attribute errors.
-
-    This fixture automatically runs before each test to mock the support_multithreading
-    function which is called during ContentClient initialization. Without this mock,
-    tests fail because demistomock doesn't have the _Demisto__do attribute.
-    """
-    with patch("ContentClientApiModule.support_multithreading"):
-        yield
-
-
-from SAPETD import (
-    INTEGRATION_NAME,
-    Config,
-    SAPETDClient,
-    add_time_to_events,
-    deduplicate_events,
-    fetch_alerts_with_pagination,
-    filter_new_alerts,
-    fetch_events_command,
-    get_events_command,
-    main,
-    parse_date_to_iso,
-    parse_integration_params,
-    test_module as _test_module,
-)
-
-
-# region Test data helpers
+# region Test data and helpers
 # =================================
-# Test data helpers
+# Test data and helpers
 # =================================
 
 TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), "test_data")
+SERVER_URL = "https://etd.example.com:4300"
+FROM_TIMESTAMP = "2022-04-29T14:00:00.000Z"
+OUTPUT_TIMESTAMP_PATTERN = r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$"
+OUTPUT_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
 def load_test_data(filename: str) -> Any:
-    """Load test data from a JSON file in the test_data directory.
-
-    Args:
-        filename: Name of the JSON file to load.
-
-    Returns:
-        Parsed JSON data.
-    """
-    filepath = os.path.join(TEST_DATA_DIR, filename)
-    with open(filepath) as f:
-        return json.load(f)
+    """Load a JSON file from the test_data directory."""
+    with open(os.path.join(TEST_DATA_DIR, filename)) as file:
+        return json.load(file)
 
 
 SAMPLE_ALERTS: list[dict[str, Any]] = load_test_data("sample_alerts.json")
+
+
+def make_alert(alert_id: int, timestamp: str) -> dict[str, Any]:
+    """Build a minimal alert."""
+    return {Config.ALERT_ID_FIELD: alert_id, Config.ALERT_TIME_FIELD: timestamp}
+
+
+def make_page(start_id: int, count: int, timestamp: str | None = None) -> list[dict[str, Any]]:
+    """Build a page of alerts, each with its own timestamp unless one is given."""
+    return [
+        make_alert(alert_id, timestamp or f"2022-04-29T14:{alert_id % 60:02d}:{alert_id % 60:02d}.000Z")
+        for alert_id in range(start_id, start_id + count)
+    ]
+
+
+class FakeResponse:
+    """Minimal stand-in for an HTTP response carrying a status code."""
+
+    def __init__(self, status_code: Any) -> None:
+        self.status_code = status_code
+
+
+def http_error(status_code: Any, message: str = "Request failed") -> DemistoException:
+    """Build a client error carrying an HTTP response, like ContentClientError does."""
+    error = DemistoException(message)
+    error.response = FakeResponse(status_code)  # type: ignore[attr-defined]
+    return error
+
 
 # endregion
 
@@ -72,17 +91,24 @@ SAMPLE_ALERTS: list[dict[str, Any]] = load_test_data("sample_alerts.json")
 # =================================
 
 
+@pytest.fixture(autouse=True)
+def mock_support_multithreading():
+    """Prevent ContentClient from calling the XSOAR runtime during client creation."""
+    with patch("ContentClientApiModule.support_multithreading"):
+        yield
+
+
 @pytest.fixture
 def sample_alerts() -> list[dict[str, Any]]:
-    """Return a deep copy of sample alerts for test isolation."""
+    """Deep copy of the sample alerts, for test isolation."""
     return copy.deepcopy(SAMPLE_ALERTS)
 
 
 @pytest.fixture
 def mock_config() -> dict[str, Any]:
-    """Return a valid mock configuration dict."""
+    """A validated configuration dict."""
     return {
-        "base_url": "https://etd.example.com:4300",
+        "base_url": SERVER_URL,
         "username": "test_user",
         "password": "test_password",
         "verify": False,
@@ -93,9 +119,9 @@ def mock_config() -> dict[str, Any]:
 
 @pytest.fixture
 def mock_params() -> dict[str, Any]:
-    """Return valid raw integration params as from demisto.params()."""
+    """Raw integration params, as returned by demisto.params()."""
     return {
-        "url": "https://etd.example.com:4300",
+        "url": SERVER_URL,
         "credentials": {"identifier": "test_user", "password": "test_password"},
         "insecure": False,
         "proxy": False,
@@ -105,1453 +131,695 @@ def mock_params() -> dict[str, Any]:
 
 @pytest.fixture
 def client(mock_config: dict[str, Any]) -> SAPETDClient:
-    """Create a SAPETDClient instance for testing."""
+    """A SAPETDClient instance."""
     return SAPETDClient(mock_config)
 
 
 # endregion
 
-# region parse_date_to_iso tests
+# region Date helpers
 # =================================
-# parse_date_to_iso tests
+# Date helpers
 # =================================
+
+
+class TestFormatTimestamp:
+    @pytest.mark.parametrize(
+        "value, expected",
+        [
+            pytest.param(datetime(2026, 1, 15, 15, 0, 0, tzinfo=UTC), "2026-01-15T15:00:00.000Z", id="no_fraction"),
+            pytest.param(datetime(2022, 4, 29, 14, 20, 29, 682999, tzinfo=UTC), "2022-04-29T14:20:29.682Z", id="truncates_us"),
+            pytest.param(datetime(2022, 4, 29, 14, 20, 29, 5000), "2022-04-29T14:20:29.005Z", id="naive_pads_ms"),
+        ],
+    )
+    def test_format_timestamp(self, value: datetime, expected: str) -> None:
+        """Milliseconds are kept, zero-padded, and microseconds are dropped."""
+        assert format_timestamp(value) == expected
 
 
 class TestParseDateToIso:
-    """Tests for the parse_date_to_iso helper function."""
-
     @pytest.mark.parametrize(
-        "date_input, expected_pattern",
+        "date_input, expected",
         [
-            pytest.param(
-                "3 days ago",
-                r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z",
-                id="relative_date",
-            ),
-            pytest.param(
-                "2026-01-15T15:00:00Z",
-                r"2026-01-15T15:00:00\.000000Z",
-                id="absolute_date",
-            ),
-            pytest.param(
-                None,
-                r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z",
-                id="none_input_uses_current_utc",
-            ),
-            pytest.param(
-                "not_a_real_date_xyz",
-                r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z",
-                id="invalid_string_fallback_to_current_utc",
-            ),
+            pytest.param("2026-01-15T15:00:00Z", "2026-01-15T15:00:00.000Z", id="absolute"),
+            pytest.param("2022-04-29T14:20:29.682Z", "2022-04-29T14:20:29.682Z", id="api_timestamp_round_trips"),
+            pytest.param("2022-04-29T14:20:29.682999Z", "2022-04-29T14:20:29.682Z", id="microseconds_dropped"),
         ],
     )
-    def test_parse_date_to_iso(self, date_input: str | None, expected_pattern: str) -> None:
-        """Test that parse_date_to_iso returns a valid ISO 8601 timestamp."""
-        import re
+    def test_absolute_dates(self, date_input: str, expected: str) -> None:
+        assert parse_date_to_iso(date_input) == expected
 
+    @pytest.mark.parametrize("date_input", ["5 minutes ago", Config.DEFAULT_FIRST_FETCH, Config.TEST_MODULE_LOOKBACK])
+    def test_relative_date_is_in_the_past(self, date_input: str) -> None:
         result = parse_date_to_iso(date_input)
-        assert re.match(expected_pattern, result), f"Result '{result}' did not match pattern '{expected_pattern}'"
-
-    def test_relative_date_is_in_past(self) -> None:
-        """Test that a relative date like '3 days ago' produces a timestamp in the past."""
-        result = parse_date_to_iso("3 days ago")
-        parsed = datetime.strptime(result, Config.DATE_FORMAT).replace(tzinfo=timezone.utc)
-        now = datetime.now(tz=timezone.utc)
-        assert parsed < now, "Parsed '3 days ago' should be in the past"
-
-    def test_none_returns_recent_timestamp(self) -> None:
-        """Test that None input returns a timestamp close to current UTC time."""
-        before = datetime.now(tz=timezone.utc)
-        result = parse_date_to_iso(None)
-        after = datetime.now(tz=timezone.utc)
-
-        parsed = datetime.strptime(result, Config.DATE_FORMAT).replace(tzinfo=timezone.utc)
-        assert before <= parsed <= after, "None input should return current UTC time"
-
-    def test_absolute_date_exact_value(self) -> None:
-        """Test that an absolute ISO date is parsed to the expected exact value."""
-        result = parse_date_to_iso("2026-01-15T15:00:00Z")
-        assert result == "2026-01-15T15:00:00.000000Z"
-
-
-# endregion
-
-# region parse_integration_params tests
-# =================================
-# parse_integration_params tests
-# =================================
-
-
-class TestParseIntegrationParams:
-    """Tests for the parse_integration_params function."""
-
-    def test_valid_params(self, mock_params: dict[str, Any]) -> None:
-        """Test parsing valid parameters returns correct config."""
-        config = parse_integration_params(mock_params)
-
-        assert config["base_url"] == "https://etd.example.com:4300"
-        assert config["username"] == "test_user"
-        assert config["password"] == "test_password"
-        assert config["verify"] is True  # insecure=False means verify=True
-        assert config["proxy"] is False
-        assert config["max_fetch"] == Config.DEFAULT_MAX_FETCH
-
-    def test_url_trailing_slash_stripped(self) -> None:
-        """Test that trailing slashes are stripped from the URL."""
-        params = {
-            "url": "https://etd.example.com:4300///",
-            "credentials": {"identifier": "dummy_user", "password": "dummy_pass"},
-        }
-        config = parse_integration_params(params)
-        assert config["base_url"] == "https://etd.example.com:4300"
+        assert re.match(OUTPUT_TIMESTAMP_PATTERN, result)
+        assert datetime.strptime(result, OUTPUT_TIMESTAMP_FORMAT).replace(tzinfo=UTC) < datetime.now(tz=UTC)
 
     @pytest.mark.parametrize(
-        "params, expected_error",
+        "date_input, side_effect",
         [
-            pytest.param(
-                {"url": "", "credentials": {"identifier": "dummy_user", "password": "dummy_pass"}},
-                "Server URL is required",
-                id="missing_url",
-            ),
-            pytest.param(
-                {"url": "https://example.com", "credentials": {"identifier": "", "password": "dummy_pass"}},
-                "Username and Password are required",
-                id="missing_username",
-            ),
-            pytest.param(
-                {"url": "https://example.com", "credentials": {"identifier": "dummy_user", "password": ""}},
-                "Username and Password are required",
-                id="missing_password",
-            ),
-            pytest.param(
-                {"url": "https://example.com", "credentials": {}},
-                "Username and Password are required",
-                id="empty_credentials",
-            ),
-            pytest.param(
-                {"url": "https://example.com"},
-                "Username and Password are required",
-                id="no_credentials_key",
-            ),
+            pytest.param(None, None, id="none"),
+            pytest.param("", None, id="empty"),
+            pytest.param("not a date", ValueError("bad date"), id="parser_raises"),
         ],
     )
-    def test_missing_required_params(self, params: dict, expected_error: str) -> None:
-        """Test that missing required parameters raise DemistoException."""
-        with pytest.raises(DemistoException, match=expected_error):
-            parse_integration_params(params)
-
-    def test_default_max_fetch(self) -> None:
-        """Test that max_fetch defaults to Config.DEFAULT_MAX_FETCH when not provided."""
-        params = {
-            "url": "https://example.com",
-            "credentials": {"identifier": "dummy_user", "password": "dummy_pass"},
-        }
-        config = parse_integration_params(params)
-        assert config["max_fetch"] == Config.DEFAULT_MAX_FETCH
+    def test_unparsable_input_falls_back_to_now(self, date_input: str | None, side_effect: Exception | None) -> None:
+        """Empty or invalid input returns the current UTC time instead of failing."""
+        before = datetime.now(tz=UTC).replace(microsecond=0)
+        with patch("SAPETD.arg_to_datetime", side_effect=side_effect, return_value=None):
+            result = parse_date_to_iso(date_input)
+        parsed = datetime.strptime(result, OUTPUT_TIMESTAMP_FORMAT).replace(tzinfo=UTC)
+        assert before <= parsed <= datetime.now(tz=UTC)
 
 
 # endregion
 
-# region add_time_to_events tests
+# region Event helpers
 # =================================
-# add_time_to_events tests
+# Event helpers
 # =================================
 
 
 class TestAddTimeToEvents:
-    """Tests for the add_time_to_events helper function."""
-
     @pytest.mark.parametrize(
-        "events, expected_time_keys",
+        "event, expected_time",
         [
-            pytest.param(
-                [
-                    {"AlertId": 1, "AlertCreationTimestamp": "2022-04-29T14:20:29.682Z"},
-                    {"AlertId": 2, "AlertCreationTimestamp": "2022-04-29T15:30:00.000Z"},
-                ],
-                {1: "2022-04-29T14:20:29.682000+00:00", 2: "2022-04-29T15:30:00+00:00"},
-                id="with_timestamps",
-            ),
-            pytest.param(
-                [{"AlertId": 1}],
-                {1: None},
-                id="without_timestamp",
-            ),
-            pytest.param(
-                [],
-                {},
-                id="empty_list",
-            ),
-            pytest.param(
-                [
-                    {"AlertId": 1},
-                    {"AlertId": 2, "AlertCreationTimestamp": "2022-04-29T15:30:00.000Z"},
-                    {"AlertId": 3, "AlertCreationTimestamp": "2022-04-29T16:00:00.000Z"},
-                    {"AlertId": 4},
-                ],
-                {1: None, 2: "2022-04-29T15:30:00+00:00", 3: "2022-04-29T16:00:00+00:00", 4: None},
-                id="mixed_events",
-            ),
+            pytest.param(make_alert(1, "2022-04-29T14:20:29.682Z"), "2022-04-29T14:20:29.682000+00:00", id="valid_timestamp"),
+            pytest.param({Config.ALERT_ID_FIELD: 2}, None, id="missing_timestamp"),
+            pytest.param(make_alert(3, ""), None, id="empty_timestamp"),
+            pytest.param({Config.ALERT_TIME_FIELD: ""}, None, id="missing_id_and_timestamp"),
         ],
     )
-    def test_adds_time_field(self, events: list[dict], expected_time_keys: dict[int, str | None]) -> None:
-        """Test that _time is set from AlertCreationTimestamp when present."""
+    def test_sets_time_field(self, event: dict[str, Any], expected_time: str | None) -> None:
+        add_time_to_events([event])
+        assert event.get(Config.XSIAM_TIME_FIELD) == expected_time
+
+    def test_unparsable_timestamp_is_kept_as_is(self) -> None:
+        event = make_alert(1, "garbage")
+        with patch("SAPETD.arg_to_datetime", return_value=None):
+            add_time_to_events([event])
+        assert event[Config.XSIAM_TIME_FIELD] == "garbage"
+
+    def test_empty_list(self) -> None:
+        events: list[dict[str, Any]] = []
         add_time_to_events(events)
-        for event in events:
-            alert_id = event["AlertId"]
-            expected = expected_time_keys[alert_id]
-            if expected is None:
-                assert "_time" not in event, f"AlertId {alert_id} should not have _time"
-            else:
-                assert event["_time"] == expected, f"AlertId {alert_id} _time mismatch"
-
-
-# endregion
-
-# region deduplicate_events tests
-# =================================
-# deduplicate_events tests
-# =================================
+        assert events == []
 
 
 class TestDeduplicateEvents:
-    """Tests for the deduplicate_events helper function."""
-
     @pytest.mark.parametrize(
-        "events, last_ids, expected_count, expected_ids",
+        "events, last_ids, expected_ids",
         [
-            pytest.param(
-                [
-                    {"AlertId": 6101, "AlertCreationTimestamp": "2022-04-29T14:20:29.682Z"},
-                    {"AlertId": 6102, "AlertCreationTimestamp": "2022-04-29T15:30:00.000Z"},
-                    {"AlertId": 6103, "AlertCreationTimestamp": "2022-04-29T15:30:00.000Z"},
-                ],
-                [6101, 6102],
-                1,
-                [6103],
-                id="removes_duplicates",
-            ),
-            pytest.param(
-                [{"AlertId": 6104, "AlertCreationTimestamp": "2022-04-30T10:00:00.000Z"}],
-                [6101, 6102],
-                1,
-                [6104],
-                id="no_duplicates",
-            ),
-            pytest.param(
-                [{"AlertId": 6101, "AlertCreationTimestamp": "2022-04-29T14:20:29.682Z"}],
-                [],
-                1,
-                [6101],
-                id="first_run_no_previous_ids",
-            ),
-            pytest.param(
-                [],
-                [6101],
-                0,
-                [],
-                id="empty_events",
-            ),
-            pytest.param(
-                [
-                    {"AlertId": 6101, "AlertCreationTimestamp": "2022-04-29T14:20:29.682Z"},
-                    {"AlertId": 6102, "AlertCreationTimestamp": "2022-04-29T15:30:00.000Z"},
-                ],
-                [6101, 6102],
-                0,
-                [],
-                id="all_duplicates",
-            ),
+            pytest.param([], [1], [], id="no_events"),
+            pytest.param([make_alert(1, "t")], [], [1], id="no_previous_ids"),
+            pytest.param([make_alert(1, "t"), make_alert(2, "t")], [1], [2], id="one_duplicate"),
+            pytest.param([make_alert(1, "t"), make_alert(2, "t")], [1, 2], [], id="all_duplicates"),
+            pytest.param([make_alert(1, "t"), make_alert(2, "t")], [3], [1, 2], id="no_duplicates"),
+            pytest.param([{Config.ALERT_TIME_FIELD: "t"}], [1], [None], id="alert_without_id_kept"),
         ],
     )
-    def test_deduplication(
-        self,
-        events: list[dict],
-        last_ids: list[int],
-        expected_count: int,
-        expected_ids: list[int],
-    ) -> None:
-        """Test deduplication with various scenarios."""
-        result = deduplicate_events(events, last_ids)
-        assert len(result) == expected_count
-        assert [e["AlertId"] for e in result] == expected_ids
-
-
-# endregion
-
-# region fetch_alerts_with_pagination tests
-# =================================
-# fetch_alerts_with_pagination tests
-# =================================
-
-
-class TestFetchAlertsWithPagination:
-    """Tests for the shared fetch_alerts_with_pagination function with pagination."""
-
-    def test_returns_sorted_alerts(self, client: SAPETDClient) -> None:
-        """Test that alerts are returned sorted by AlertCreationTimestamp ascending."""
-        unsorted_alerts = [
-            {"AlertId": 2, "AlertCreationTimestamp": "2022-04-29T15:30:00.000Z"},
-            {"AlertId": 1, "AlertCreationTimestamp": "2022-04-29T14:20:29.682Z"},
-            {"AlertId": 3, "AlertCreationTimestamp": "2022-04-29T16:00:00.000Z"},
-        ]
-        client.get_alerts = MagicMock(return_value=unsorted_alerts)
-
-        result = fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=10)
-
-        assert len(result) == 3
-        assert result[0]["AlertId"] == 1
-        assert result[1]["AlertId"] == 2
-        assert result[2]["AlertId"] == 3
-
-    def test_slices_to_max_alerts(self, client: SAPETDClient, sample_alerts: list[dict]) -> None:
-        """Test that results are sliced to max_alerts limit."""
-        client.get_alerts = MagicMock(return_value=sample_alerts)
-
-        result = fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=2)
-
-        assert len(result) == 2
-        # Should keep the first 2 after sorting (oldest first)
-        assert result[0]["AlertId"] == 6101
-        assert result[1]["AlertId"] == 6102
-
-    def test_empty_response(self, client: SAPETDClient) -> None:
-        """Test that empty API response returns empty list."""
-        client.get_alerts = MagicMock(return_value=[])
-
-        result = fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=10)
-
-        assert result == []
-
-    def test_single_alert(self, client: SAPETDClient) -> None:
-        """Test with a single alert returned."""
-        single_alert = [{"AlertId": 1, "AlertCreationTimestamp": "2022-04-29T14:20:29.682Z"}]
-        client.get_alerts = MagicMock(return_value=single_alert)
-
-        result = fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=1)
-
-        assert len(result) == 1
-        assert result[0]["AlertId"] == 1
-
-    def test_no_slicing_when_under_limit(self, client: SAPETDClient) -> None:
-        """Test that no slicing occurs when results are under the limit."""
-        alerts = [
-            {"AlertId": 1, "AlertCreationTimestamp": "2022-04-29T14:20:29.682Z"},
-            {"AlertId": 2, "AlertCreationTimestamp": "2022-04-29T15:30:00.000Z"},
-        ]
-        client.get_alerts = MagicMock(return_value=alerts)
-
-        result = fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=10)
-
-        assert len(result) == 2
-
-    def test_propagates_client_exception(self, client: SAPETDClient) -> None:
-        """Test that exceptions from client.get_alerts are propagated."""
-        client.get_alerts = MagicMock(side_effect=Exception("API Error"))
-
-        with pytest.raises(Exception, match="API Error"):
-            fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=10)
-
-    def test_pagination_multiple_batches(self, client: SAPETDClient) -> None:
-        """Test that pagination fetches multiple batches until max_alerts is reached."""
-        batch1 = [{"AlertId": i, "AlertCreationTimestamp": f"2022-04-29T14:{i:02d}:00.000Z"} for i in range(1, 1001)]
-        batch2 = [{"AlertId": i, "AlertCreationTimestamp": f"2022-04-29T15:{(i - 1000):02d}:00.000Z"} for i in range(1001, 1501)]
-
-        client.get_alerts = MagicMock(side_effect=[batch1, batch2])
-
-        result = fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=1500)
-
-        assert len(result) == 1500
-        assert client.get_alerts.call_count == 2
-        # First call should request MAX_PAGE_SIZE (1000)
-        assert client.get_alerts.call_args_list[0].kwargs["batch_size"] == Config.MAX_PAGE_SIZE
-        # Second call should request remaining 500
-        assert client.get_alerts.call_args_list[1].kwargs["batch_size"] == 500
-
-    def test_pagination_stops_on_empty_batch(self, client: SAPETDClient) -> None:
-        """Test that pagination stops when an empty batch is returned."""
-        # batch1 must have exactly MAX_PAGE_SIZE items so pagination continues to batch2
-        batch1 = [{"AlertId": i, "AlertCreationTimestamp": f"2022-04-29T14:{(i % 60):02d}:00.000Z"} for i in range(1, 1001)]
-
-        client.get_alerts = MagicMock(side_effect=[batch1, []])
-
-        result = fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=2000)
-
-        assert len(result) == 1000
-        assert client.get_alerts.call_count == 2
-
-    def test_pagination_stops_when_batch_smaller_than_requested(self, client: SAPETDClient) -> None:
-        """Test that pagination stops when batch returns fewer alerts than requested."""
-        # Request 2000 alerts, but only 800 exist
-        batch1 = [{"AlertId": i, "AlertCreationTimestamp": f"2022-04-29T14:{i:02d}:00.000Z"} for i in range(1, 801)]
-
-        client.get_alerts = MagicMock(return_value=batch1)
-
-        result = fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=2000)
-
-        assert len(result) == 800
-        # Should only call once since 800 < 1000 (MAX_PAGE_SIZE)
-        assert client.get_alerts.call_count == 1
-
-    def test_pagination_updates_from_timestamp(self, client: SAPETDClient) -> None:
-        """Test that from_timestamp is updated to last alert's timestamp between pages."""
-        batch1 = [
-            {"AlertId": 1, "AlertCreationTimestamp": "2022-04-29T14:00:00.000Z"},
-            {"AlertId": 2, "AlertCreationTimestamp": "2022-04-29T14:30:00.000Z"},
-        ]
-        batch2 = [
-            {"AlertId": 3, "AlertCreationTimestamp": "2022-04-29T15:00:00.000Z"},
-        ]
-
-        client.get_alerts = MagicMock(side_effect=[batch1, batch2])
-
-        # Request max_alerts=3 with MAX_PAGE_SIZE=1000, but batch1 has only 2 (< 1000)
-        # so it stops after first batch. To test timestamp update, we need batch1 to be full.
-        # Let's use a different approach: set max_alerts=2 per page via smaller batches.
-        # Actually, since batch1 has 2 items < 1000 (MAX_PAGE_SIZE), pagination stops.
-        # We need to make batch1 exactly MAX_PAGE_SIZE to continue.
-        batch1_full = [
-            {"AlertId": i, "AlertCreationTimestamp": f"2022-04-29T14:{(i % 60):02d}:00.000Z"}
-            for i in range(1, Config.MAX_PAGE_SIZE + 1)
-        ]
-        last_ts = batch1_full[-1]["AlertCreationTimestamp"]
-
-        batch2_partial = [
-            {"AlertId": Config.MAX_PAGE_SIZE + 1, "AlertCreationTimestamp": "2022-04-29T15:00:00.000Z"},
-        ]
-
-        client.get_alerts = MagicMock(side_effect=[batch1_full, batch2_partial])
-
-        fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=1500)
-
-        assert client.get_alerts.call_count == 2
-        # Second call should use the last alert's timestamp from batch1
-        second_call_kwargs = client.get_alerts.call_args_list[1].kwargs
-        assert second_call_kwargs["from_timestamp"] == last_ts
-
-    def test_pagination_three_full_batches(self, client: SAPETDClient) -> None:
-        """Test pagination across three full batches."""
-
-        def make_batch(start_id: int, count: int, hour: int) -> list[dict]:
-            return [
-                {"AlertId": start_id + i, "AlertCreationTimestamp": f"2022-04-29T{hour:02d}:{(i % 60):02d}:00.000Z"}
-                for i in range(count)
-            ]
-
-        batch1 = make_batch(1, Config.MAX_PAGE_SIZE, 14)
-        batch2 = make_batch(1001, Config.MAX_PAGE_SIZE, 15)
-        batch3 = make_batch(2001, Config.MAX_PAGE_SIZE, 16)
-
-        client.get_alerts = MagicMock(side_effect=[batch1, batch2, batch3])
-
-        result = fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=3000)
-
-        assert len(result) == 3000
-        assert client.get_alerts.call_count == 3
-
-    def test_pagination_respects_max_page_size(self, client: SAPETDClient) -> None:
-        """Test that individual batch requests never exceed MAX_PAGE_SIZE."""
-        batch1 = [
-            {"AlertId": i, "AlertCreationTimestamp": f"2022-04-29T14:{(i % 60):02d}:00.000Z"}
-            for i in range(1, Config.MAX_PAGE_SIZE + 1)
-        ]
-        batch2 = [
-            {"AlertId": i, "AlertCreationTimestamp": f"2022-04-29T15:{(i % 60):02d}:00.000Z"}
-            for i in range(Config.MAX_PAGE_SIZE + 1, Config.MAX_PAGE_SIZE + 501)
-        ]
-
-        client.get_alerts = MagicMock(side_effect=[batch1, batch2])
-
-        fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=1500)
-
-        # First call: min(1000, 1500) = 1000
-        assert client.get_alerts.call_args_list[0].kwargs["batch_size"] == Config.MAX_PAGE_SIZE
-        # Second call: min(1000, 500) = 500
-        assert client.get_alerts.call_args_list[1].kwargs["batch_size"] == 500
-
-    def test_pagination_small_max_alerts(self, client: SAPETDClient) -> None:
-        """Test pagination when max_alerts is smaller than MAX_PAGE_SIZE."""
-        alerts = [{"AlertId": i, "AlertCreationTimestamp": f"2022-04-29T14:{i:02d}:00.000Z"} for i in range(1, 51)]
-        client.get_alerts = MagicMock(return_value=alerts)
-
-        result = fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=50)
-
-        assert len(result) == 50
-        # batch_size should be min(1000, 50) = 50
-        assert client.get_alerts.call_args_list[0].kwargs["batch_size"] == 50
-        assert client.get_alerts.call_count == 1
-
-    def test_pagination_no_duplicate_ids_on_boundary_timestamp(self, client: SAPETDClient) -> None:
-        """Boundary overlap: alerts sharing the cursor timestamp across pages must not be duplicated.
-
-        The API filter uses 'ge' (>=) and the next-page cursor is the last alert's timestamp,
-        so an alert whose timestamp equals the boundary is re-returned on the following page.
-        The function must dedup by AlertId across pages so no duplicate reaches the caller.
-        """
-        # batch1 is a full page (MAX_PAGE_SIZE); its LAST alert shares a timestamp with
-        # the FIRST alert of batch2 (the classic 'ge' overlap).
-        boundary_ts = "2022-04-29T15:00:00.000Z"
-        batch1 = [
-            {"AlertId": i, "AlertCreationTimestamp": f"2022-04-29T14:{(i % 60):02d}:00.000Z"}
-            for i in range(1, Config.MAX_PAGE_SIZE)
-        ]
-        batch1.append({"AlertId": Config.MAX_PAGE_SIZE, "AlertCreationTimestamp": boundary_ts})
-
-        # batch2 re-includes the boundary alert (same AlertId + timestamp) then a new one.
-        batch2 = [
-            {"AlertId": Config.MAX_PAGE_SIZE, "AlertCreationTimestamp": boundary_ts},
-            {"AlertId": Config.MAX_PAGE_SIZE + 1, "AlertCreationTimestamp": "2022-04-29T15:01:00.000Z"},
-        ]
-
-        client.get_alerts = MagicMock(side_effect=[batch1, batch2])
-
-        result = fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=1500)
-
-        returned_ids = [event["AlertId"] for event in result]
-        assert len(returned_ids) == len(set(returned_ids)), "Duplicate AlertIds returned across page boundary"
-        # The boundary alert must appear exactly once.
-        assert returned_ids.count(Config.MAX_PAGE_SIZE) == 1
-
-    def test_pagination_stops_when_cursor_stalls_on_uniform_timestamp(self, client: SAPETDClient) -> None:
-        """Stalled cursor: a full page whose alerts all share one timestamp must not re-fetch forever.
-
-        With 'ge' and a timestamp-only cursor, if an entire MAX_PAGE_SIZE page shares one
-        AlertCreationTimestamp, the cursor never advances. The loop must detect the stall and
-        stop instead of re-paging the same records up to max_alerts.
-        """
-        uniform_ts = "2022-04-29T15:30:00.000Z"
-        uniform_page = [{"AlertId": i, "AlertCreationTimestamp": uniform_ts} for i in range(1, Config.MAX_PAGE_SIZE + 1)]
-
-        # Always return the same uniform page. A correct implementation must stop early.
-        client.get_alerts = MagicMock(return_value=uniform_page)
-
-        result = fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=10000)
-
-        # No duplicates and no runaway paging: exactly MAX_PAGE_SIZE unique alerts.
-        returned_ids = [event["AlertId"] for event in result]
-        assert len(returned_ids) == Config.MAX_PAGE_SIZE
-        assert len(returned_ids) == len(set(returned_ids)), "Stalled cursor produced duplicate AlertIds"
-        # Guard against runaway re-fetching of the identical page.
-        assert client.get_alerts.call_count <= 2
+    def test_deduplicate(self, events: list[dict], last_ids: list[int], expected_ids: list[int | None]) -> None:
+        assert [event.get(Config.ALERT_ID_FIELD) for event in deduplicate_events(events, last_ids)] == expected_ids
 
 
 class TestFilterNewAlerts:
-    """Tests for the filter_new_alerts helper function."""
-
-    def test_all_new_alerts_kept_and_ids_tracked(self) -> None:
-        """Happy path: when nothing has been seen, every alert is returned and recorded."""
-        seen_ids: set = set()
-        batch = [
-            {"AlertId": 1, "AlertCreationTimestamp": "2022-04-29T14:00:00.000Z"},
-            {"AlertId": 2, "AlertCreationTimestamp": "2022-04-29T14:01:00.000Z"},
-        ]
-
-        result = filter_new_alerts(batch, seen_ids)
-
-        assert [alert["AlertId"] for alert in result] == [1, 2]
-        assert seen_ids == {1, 2}
-
-    def test_already_seen_alerts_filtered_out(self) -> None:
-        """Boundary overlap: alerts whose AlertId was already collected are dropped."""
-        seen_ids: set = {1, 2}
-        batch = [
-            {"AlertId": 2, "AlertCreationTimestamp": "2022-04-29T14:01:00.000Z"},  # duplicate
-            {"AlertId": 3, "AlertCreationTimestamp": "2022-04-29T14:02:00.000Z"},  # new
-        ]
-
-        result = filter_new_alerts(batch, seen_ids)
-
-        assert [alert["AlertId"] for alert in result] == [3]
-        assert seen_ids == {1, 2, 3}
-
-    def test_all_duplicates_returns_empty(self) -> None:
-        """Bad path: a page fully made of already-seen alerts returns nothing."""
-        seen_ids: set = {1, 2}
-        batch = [
-            {"AlertId": 1, "AlertCreationTimestamp": "2022-04-29T14:00:00.000Z"},
-            {"AlertId": 2, "AlertCreationTimestamp": "2022-04-29T14:01:00.000Z"},
-        ]
-
-        result = filter_new_alerts(batch, seen_ids)
-
-        assert result == []
-        assert seen_ids == {1, 2}
-
-    def test_empty_batch_returns_empty(self) -> None:
-        """Bad path: an empty page returns an empty list and leaves seen_ids untouched."""
-        seen_ids: set = {1}
-
-        result = filter_new_alerts([], seen_ids)
-
-        assert result == []
-        assert seen_ids == {1}
-
-    def test_alert_missing_id_is_kept_but_not_tracked(self) -> None:
-        """Bad path: an alert without an AlertId is not tracked (None is never added to seen_ids)."""
-        seen_ids: set = set()
-        batch: list[dict[str, Any]] = [
-            {"AlertCreationTimestamp": "2022-04-29T14:00:00.000Z"},  # no AlertId
-            {"AlertId": 5, "AlertCreationTimestamp": "2022-04-29T14:01:00.000Z"},
-        ]
-
-        result = filter_new_alerts(batch, seen_ids)
-
-        assert len(result) == 2
-        # None must not pollute the seen set; only the real id is tracked.
-        assert seen_ids == {5}
-
-
-# endregion
-
-# region test_module tests
-# =================================
-# test_module tests
-# =================================
-
-
-class TestTestModule:
-    """Tests for the test_module command."""
-
-    def test_success(self, client: SAPETDClient) -> None:
-        """Test successful connectivity check."""
-        client.get_alerts = MagicMock(return_value=[SAMPLE_ALERTS[0]])
-
-        result = _test_module(client)
-
-        assert result == "ok"
-        client.get_alerts.assert_called_once()
-
-    def test_empty_response_success(self, client: SAPETDClient) -> None:
-        """Test that empty response is still considered successful."""
-        client.get_alerts = MagicMock(return_value=[])
-
-        result = _test_module(client)
-
-        assert result == "ok"
-
     @pytest.mark.parametrize(
-        "error_message, expected_substring",
+        "batch, seen, expected_ids, expected_seen",
         [
-            pytest.param("401 Unauthorized", "Authorization Error", id="401_error"),
-            pytest.param("403 Forbidden", "Authorization Error", id="403_error"),
-            pytest.param("HTTP 401", "Authorization Error", id="http_401"),
-            pytest.param("unauthorized access", "Authorization Error", id="unauthorized_lowercase"),
+            pytest.param([make_alert(1, "t"), make_alert(2, "t")], set(), [1, 2], {1, 2}, id="all_new"),
+            pytest.param([make_alert(1, "t"), make_alert(2, "t")], {1}, [2], {1, 2}, id="boundary_overlap"),
+            pytest.param([make_alert(1, "t")], {1}, [], {1}, id="all_seen"),
+            pytest.param([], {1}, [], {1}, id="empty_batch"),
+            pytest.param(
+                [{Config.ALERT_TIME_FIELD: "t"}, make_alert(5, "t")], set(), [None, 5], {5}, id="missing_id_not_tracked"
+            ),
         ],
     )
-    def test_auth_error(self, client: SAPETDClient, error_message: str, expected_substring: str) -> None:
-        """Test authentication error handling returns user-friendly message."""
-        client.get_alerts = MagicMock(side_effect=Exception(error_message))
-
-        result = _test_module(client)
-
-        assert expected_substring in result
-
-    def test_unexpected_error(self, client: SAPETDClient) -> None:
-        """Test that unexpected errors are re-raised."""
-        client.get_alerts = MagicMock(side_effect=Exception("Connection timeout"))
-
-        with pytest.raises(Exception, match="Connection timeout"):
-            _test_module(client)
+    def test_filter(self, batch: list[dict], seen: set, expected_ids: list, expected_seen: set) -> None:
+        result = filter_new_alerts(batch, seen)
+        assert [alert.get(Config.ALERT_ID_FIELD) for alert in result] == expected_ids
+        assert seen == expected_seen
 
 
-# endregion
+class TestBuildNextLastRun:
+    @pytest.mark.parametrize(
+        "events, expected",
+        [
+            pytest.param(
+                [make_alert(1, "t1"), make_alert(2, "t2"), make_alert(3, "t2")],
+                {Config.LAST_RUN_TIMESTAMP_KEY: "t2", Config.LAST_RUN_IDS_KEY: [2, 3]},
+                id="ids_at_high_water_mark",
+            ),
+            pytest.param(
+                [make_alert(1, "t1"), {Config.ALERT_TIME_FIELD: "t1"}],
+                {Config.LAST_RUN_TIMESTAMP_KEY: "t1", Config.LAST_RUN_IDS_KEY: [1]},
+                id="alert_without_id_ignored",
+            ),
+            pytest.param([make_alert(1, "t1"), {Config.ALERT_ID_FIELD: 2}], None, id="last_alert_without_timestamp"),
+        ],
+    )
+    def test_build(self, events: list[dict], expected: dict | None) -> None:
+        assert build_next_last_run(events) == expected
 
-# region get_events_command tests
-# =================================
-# get_events_command tests
-# =================================
 
-
-class TestGetEventsCommand:
-    """Tests for the get_events_command (sap-etd-get-events)."""
-
-    def test_returns_command_results(self, client: SAPETDClient, sample_alerts: list[dict]) -> None:
-        """Test that command returns CommandResults with alert data."""
-        client.get_alerts = MagicMock(return_value=sample_alerts)
-
-        args = {"from_date": "3 days ago", "limit": "50", "should_push_events": "false"}
-        result = get_events_command(client, args)
-
-        assert isinstance(result, CommandResults)
-        assert result.outputs_prefix == "SAPETD.Alert"
-        assert result.outputs_key_field == "AlertId"
-        assert len(result.outputs) == 3
-
-    def test_with_limit(self, client: SAPETDClient, sample_alerts: list[dict]) -> None:
-        """Test that limit is applied correctly."""
-        client.get_alerts = MagicMock(return_value=sample_alerts)
-
-        args = {"from_date": "3 days ago", "limit": "1", "should_push_events": "false"}
-        result = get_events_command(client, args)
-
-        assert isinstance(result, CommandResults)
-        assert len(result.outputs) == 1
-
-    @patch("SAPETD.send_events_to_xsiam")
-    def test_push_events(self, mock_send: MagicMock, client: SAPETDClient, sample_alerts: list[dict]) -> None:
-        """Test that events are pushed to XSIAM when should_push_events is true."""
-        client.get_alerts = MagicMock(return_value=sample_alerts)
-
-        args = {"from_date": "3 days ago", "limit": "50", "should_push_events": "true"}
-        result = get_events_command(client, args)
-
-        assert isinstance(result, str)
-        assert "3" in result
-        # send_events_to_xsiam is called internally by client.send_events
-        mock_send.assert_called_once()
-        call_kwargs = mock_send.call_args
-        assert call_kwargs.kwargs["vendor"] == Config.VENDOR
-        assert call_kwargs.kwargs["product"] == Config.PRODUCT
-
-    def test_empty_response(self, client: SAPETDClient) -> None:
-        """Test handling of empty API response."""
-        client.get_alerts = MagicMock(return_value=[])
-
-        args = {"from_date": "3 days ago", "limit": "50", "should_push_events": "false"}
-        result = get_events_command(client, args)
-
-        assert isinstance(result, CommandResults)
-        assert result.outputs == []
-
-    @patch("SAPETD.send_events_to_xsiam")
-    def test_push_events_empty_no_send(self, mock_send: MagicMock, client: SAPETDClient) -> None:
-        """Test that empty events are not pushed to XSIAM."""
-        client.get_alerts = MagicMock(return_value=[])
-
-        args = {"from_date": "3 days ago", "limit": "50", "should_push_events": "true"}
-        result = get_events_command(client, args)
-
-        # Empty events should return CommandResults, not push
-        assert isinstance(result, CommandResults)
-        mock_send.assert_not_called()
-
-    def test_events_sorted_ascending(self, client: SAPETDClient) -> None:
-        """Test that events are sorted by AlertCreationTimestamp ascending."""
-        unsorted_alerts = [
-            {"AlertId": 2, "AlertCreationTimestamp": "2022-04-29T15:30:00.000Z"},
-            {"AlertId": 1, "AlertCreationTimestamp": "2022-04-29T14:20:29.682Z"},
-        ]
-        client.get_alerts = MagicMock(return_value=unsorted_alerts)
-
-        args = {"from_date": "3 days ago", "limit": "50", "should_push_events": "false"}
-        result = get_events_command(client, args)
-
-        assert isinstance(result, CommandResults)
-        assert result.outputs[0]["AlertId"] == 1
-        assert result.outputs[1]["AlertId"] == 2
+class TestGetErrorStatusCode:
+    @pytest.mark.parametrize(
+        "error, expected",
+        [
+            pytest.param(http_error(HTTPStatus.UNAUTHORIZED), 401, id="with_status"),
+            pytest.param(Exception("no response"), None, id="no_response"),
+            pytest.param(http_error(None), None, id="response_without_status"),
+            pytest.param(http_error("401"), None, id="non_int_status"),
+        ],
+    )
+    def test_status_code(self, error: Exception, expected: int | None) -> None:
+        assert get_error_status_code(error) == expected
 
 
 # endregion
 
-# region fetch_events_command tests
+# region Params
 # =================================
-# fetch_events_command tests
+# Params
 # =================================
 
 
-class TestFetchEventsCommand:
-    """Tests for the fetch_events_command (fetch-events)."""
-
-    @patch("SAPETD.send_events_to_xsiam")
-    def test_first_run(self, mock_send: MagicMock, client: SAPETDClient, sample_alerts: list[dict]) -> None:
-        """Test first run with no last_run state."""
-        client.get_alerts = MagicMock(return_value=sample_alerts)
-
-        mock_last_run: dict = {}
-
-        with (
-            patch.object(demisto, "getLastRun", return_value=mock_last_run),
-            patch.object(demisto, "setLastRun") as mock_set_last_run,
-        ):
-            fetch_events_command(client, max_fetch=Config.DEFAULT_MAX_FETCH)
-
-        # Verify events were sent
-        mock_send.assert_called_once()
-        sent_events = mock_send.call_args.kwargs["events"]
-        assert len(sent_events) == 3
-
-        # Verify last run was updated
-        mock_set_last_run.assert_called_once()
-        new_last_run = mock_set_last_run.call_args[0][0]
-        assert new_last_run["last_fetch"] == "2022-04-29T15:30:00.000Z"
-        # AlertIds 6102 and 6103 share the same HWM timestamp
-        assert set(new_last_run["last_fetched_alert_ids"]) == {6102, 6103}
-
-    @patch("SAPETD.send_events_to_xsiam")
-    def test_subsequent_run_with_dedup(self, mock_send: MagicMock, client: SAPETDClient, sample_alerts: list[dict]) -> None:
-        """Test subsequent run with deduplication of previously fetched alerts."""
-        client.get_alerts = MagicMock(return_value=sample_alerts)
-
-        mock_last_run = {
-            "last_fetch": "2022-04-29T14:20:29.682Z",
-            "last_fetched_alert_ids": [6101],
+class TestParseIntegrationParams:
+    def test_valid_params(self, mock_params: dict[str, Any]) -> None:
+        assert parse_integration_params(mock_params) == {
+            "base_url": SERVER_URL,
+            "username": "test_user",
+            "password": "test_password",
+            "verify": True,
+            "proxy": False,
+            "max_fetch": Config.DEFAULT_MAX_FETCH,
         }
 
-        with (
-            patch.object(demisto, "getLastRun", return_value=mock_last_run),
-            patch.object(demisto, "setLastRun") as mock_set_last_run,
-        ):
-            fetch_events_command(client, max_fetch=Config.DEFAULT_MAX_FETCH)
+    @pytest.mark.parametrize(
+        "overrides, key, expected",
+        [
+            pytest.param({"url": f"  {SERVER_URL}/  "}, "base_url", SERVER_URL, id="url_trimmed"),
+            pytest.param({"insecure": True}, "verify", False, id="insecure"),
+            pytest.param({"proxy": True}, "proxy", True, id="proxy"),
+            pytest.param({"max_fetch": "500"}, "max_fetch", 500, id="custom_max_fetch"),
+            pytest.param({"max_fetch": None}, "max_fetch", Config.DEFAULT_MAX_FETCH, id="max_fetch_none"),
+            pytest.param({"max_fetch": "0"}, "max_fetch", Config.DEFAULT_MAX_FETCH, id="max_fetch_zero"),
+            pytest.param({"credentials": {"identifier": " u ", "password": " p "}}, "username", "u", id="creds_trimmed"),
+        ],
+    )
+    def test_options(self, mock_params: dict[str, Any], overrides: dict, key: str, expected: Any) -> None:
+        assert parse_integration_params(mock_params | overrides)[key] == expected
 
-        # Verify only new events were sent (6101 should be deduped)
-        mock_send.assert_called_once()
-        sent_events = mock_send.call_args.kwargs["events"]
-        assert len(sent_events) == 2
-        sent_ids = [e["AlertId"] for e in sent_events]
-        assert 6101 not in sent_ids
-        assert 6102 in sent_ids
-        assert 6103 in sent_ids
+    def test_max_fetch_missing(self, mock_params: dict[str, Any]) -> None:
+        mock_params.pop("max_fetch")
+        assert parse_integration_params(mock_params)["max_fetch"] == Config.DEFAULT_MAX_FETCH
 
-        # Verify last run was updated with new HWM
-        new_last_run = mock_set_last_run.call_args[0][0]
-        assert new_last_run["last_fetch"] == "2022-04-29T15:30:00.000Z"
+    @pytest.mark.parametrize(
+        "overrides, expected_error",
+        [
+            pytest.param({"url": ""}, Messages.MISSING_URL, id="empty_url"),
+            pytest.param({"url": "   "}, Messages.MISSING_URL, id="blank_url"),
+            pytest.param({"credentials": {}}, Messages.MISSING_CREDENTIALS, id="no_credentials"),
+            pytest.param({"credentials": {"identifier": "u"}}, Messages.MISSING_CREDENTIALS, id="no_password"),
+            pytest.param({"credentials": {"password": "p"}}, Messages.MISSING_CREDENTIALS, id="no_username"),
+        ],
+    )
+    def test_missing_required(self, mock_params: dict[str, Any], overrides: dict, expected_error: str) -> None:
+        with pytest.raises(DemistoException, match=re.escape(expected_error)):
+            parse_integration_params(mock_params | overrides)
 
-    @patch("SAPETD.send_events_to_xsiam")
-    def test_no_events(self, mock_send: MagicMock, client: SAPETDClient) -> None:
-        """Test fetch when no events are returned."""
-        client.get_alerts = MagicMock(return_value=[])
+    @pytest.mark.parametrize("missing_key", ["url", "credentials"])
+    def test_missing_keys(self, mock_params: dict[str, Any], missing_key: str) -> None:
+        mock_params.pop(missing_key)
+        with pytest.raises(DemistoException):
+            parse_integration_params(mock_params)
 
-        mock_last_run: dict = {}
-
-        with (
-            patch.object(demisto, "getLastRun", return_value=mock_last_run),
-            patch.object(demisto, "setLastRun") as mock_set_last_run,
-        ):
-            fetch_events_command(client, max_fetch=Config.DEFAULT_MAX_FETCH)
-
-        # No events should be sent and last run should not be updated
-        mock_send.assert_not_called()
-        mock_set_last_run.assert_not_called()
-
-    @patch("SAPETD.send_events_to_xsiam")
-    def test_all_duplicates(self, mock_send: MagicMock, client: SAPETDClient) -> None:
-        """Test fetch when all events are duplicates."""
-        single_alert = [copy.deepcopy(SAMPLE_ALERTS[0])]
-        client.get_alerts = MagicMock(return_value=single_alert)
-
-        mock_last_run = {
-            "last_fetch": "2022-04-29T14:20:29.682Z",
-            "last_fetched_alert_ids": [6101],
-        }
-
-        with (
-            patch.object(demisto, "getLastRun", return_value=mock_last_run),
-            patch.object(demisto, "setLastRun") as mock_set_last_run,
-        ):
-            fetch_events_command(client, max_fetch=Config.DEFAULT_MAX_FETCH)
-
-        # No events should be sent (all duplicates)
-        mock_send.assert_not_called()
-
-        # But last run should still be updated (HWM advances)
-        mock_set_last_run.assert_called_once()
-
-    @patch("SAPETD.send_events_to_xsiam")
-    def test_hwm_update_with_ids_at_timestamp(
-        self, mock_send: MagicMock, client: SAPETDClient, sample_alerts: list[dict]
-    ) -> None:
-        """Test that HWM correctly tracks AlertIds at the latest timestamp."""
-        client.get_alerts = MagicMock(return_value=sample_alerts)
-
-        with (
-            patch.object(demisto, "getLastRun", return_value={}),
-            patch.object(demisto, "setLastRun") as mock_set_last_run,
-        ):
-            fetch_events_command(client, max_fetch=Config.DEFAULT_MAX_FETCH)
-
-        new_last_run = mock_set_last_run.call_args[0][0]
-        # Alerts 6102 and 6103 both have timestamp "2022-04-29T15:30:00.000Z"
-        assert new_last_run["last_fetch"] == "2022-04-29T15:30:00.000Z"
-        assert set(new_last_run["last_fetched_alert_ids"]) == {6102, 6103}
-
-    @patch("SAPETD.send_events_to_xsiam")
-    def test_boundary_overlap_events_not_sent_twice_in_one_cycle(self, mock_send: MagicMock, client: SAPETDClient) -> None:
-        """End-to-end: a boundary-overlap alert must not be sent to XSIAM twice within one fetch cycle.
-
-        Simulates the 'ge' page overlap where a full first page ends on a timestamp that the
-        second page repeats. Even without a previous run to dedup against, no AlertId may be
-        sent more than once in a single cycle.
-        """
-        boundary_ts = "2022-04-29T15:00:00.000Z"
-        batch1 = [
-            {"AlertId": i, "AlertCreationTimestamp": f"2022-04-29T14:{(i % 60):02d}:00.000Z"}
-            for i in range(1, Config.MAX_PAGE_SIZE)
-        ]
-        batch1.append({"AlertId": Config.MAX_PAGE_SIZE, "AlertCreationTimestamp": boundary_ts})
-        batch2 = [
-            {"AlertId": Config.MAX_PAGE_SIZE, "AlertCreationTimestamp": boundary_ts},  # boundary duplicate
-            {"AlertId": Config.MAX_PAGE_SIZE + 1, "AlertCreationTimestamp": "2022-04-29T15:01:00.000Z"},
-        ]
-        client.get_alerts = MagicMock(side_effect=[batch1, batch2])
-
-        with (
-            patch.object(demisto, "getLastRun", return_value={}),
-            patch.object(demisto, "setLastRun"),
-        ):
-            fetch_events_command(client, max_fetch=1500)
-
-        mock_send.assert_called_once()
-        sent_ids = [event["AlertId"] for event in mock_send.call_args.kwargs["events"]]
-        assert len(sent_ids) == len(set(sent_ids)), "Boundary-overlap alert sent to XSIAM more than once"
-        assert sent_ids.count(Config.MAX_PAGE_SIZE) == 1
+    def test_password_not_logged(self, mock_params: dict[str, Any]) -> None:
+        with patch.object(demisto, "debug") as mock_debug:
+            parse_integration_params(mock_params)
+        assert all("test_password" not in str(call) for call in mock_debug.call_args_list)
 
 
 # endregion
 
-# region Client tests
+# region Client
 # =================================
-# Client tests
+# Client
 # =================================
 
 
 class TestClient:
-    """Tests for the SAPETDClient class.
-
-    Note: ContentClient uses httpx internally, so requests_mock won't work.
-    We mock client.get() directly instead.
-    """
+    """ContentClient uses httpx, so client.get() is mocked directly."""
 
     @pytest.mark.parametrize(
-        "api_response, expected_count, expected_first_id",
+        "api_response, expected_count",
         [
-            pytest.param(SAMPLE_ALERTS, 3, 6101, id="success_multiple_alerts"),
-            pytest.param([SAMPLE_ALERTS[0]], 1, 6101, id="success_single_alert"),
-            pytest.param([], 0, None, id="empty_response"),
+            pytest.param(SAMPLE_ALERTS, len(SAMPLE_ALERTS), id="multiple_alerts"),
+            pytest.param([SAMPLE_ALERTS[0]], 1, id="single_alert"),
+            pytest.param([], 0, id="empty"),
         ],
     )
-    def test_get_alerts_responses(
+    def test_get_alerts_returns_list(self, client: SAPETDClient, api_response: list, expected_count: int) -> None:
+        with patch.object(client, "get", return_value=api_response) as mock_get:
+            result = client.get_alerts(from_timestamp=FROM_TIMESTAMP, batch_size=100)
+        assert len(result) == expected_count
+        mock_get.assert_called_once()
+
+    def test_get_alerts_request(self, client: SAPETDClient) -> None:
+        """The documented endpoint and query parameters are sent, and parsed JSON is requested."""
+        with patch.object(client, "get", return_value=[]) as mock_get:
+            client.get_alerts(from_timestamp=FROM_TIMESTAMP, batch_size=500)
+        kwargs = mock_get.call_args.kwargs
+        assert kwargs["url_suffix"] == Config.ALERTS_ENDPOINT
+        assert kwargs["resp_type"] == "json"
+        assert kwargs["params"] == {
+            "$query": f"{Config.ALERT_TIME_FIELD} ge {FROM_TIMESTAMP}",
+            "$format": Config.RESPONSE_FORMAT,
+            "$batchSize": "500",
+            "$includeEvents": Config.INCLUDE_EVENTS,
+        }
+
+    def test_get_alerts_default_batch_size(self, client: SAPETDClient) -> None:
+        with patch.object(client, "get", return_value=[]) as mock_get:
+            client.get_alerts(from_timestamp=FROM_TIMESTAMP)
+        assert mock_get.call_args.kwargs["params"]["$batchSize"] == str(Config.MAX_PAGE_SIZE)
+
+    @pytest.mark.parametrize(
+        "api_response",
+        [
+            pytest.param({"error": "unexpected"}, id="dict"),
+            pytest.param("<html>login</html>", id="string"),
+            pytest.param(None, id="none"),
+        ],
+    )
+    def test_get_alerts_non_list_raises(self, client: SAPETDClient, api_response: Any) -> None:
+        """A non-list response raises instead of silently returning no alerts."""
+        with patch.object(client, "get", return_value=api_response), pytest.raises(DemistoException, match="JSON array"):
+            client.get_alerts(from_timestamp=FROM_TIMESTAMP)
+
+    @pytest.mark.parametrize(
+        "error",
+        [
+            pytest.param(DemistoException("API Error 500"), id="demisto_exception"),
+            pytest.param(ConnectionError("Connection refused"), id="connection_error"),
+        ],
+    )
+    def test_get_alerts_propagates_errors(self, client: SAPETDClient, error: Exception) -> None:
+        with patch.object(client, "get", side_effect=error), pytest.raises(type(error)):
+            client.get_alerts(from_timestamp=FROM_TIMESTAMP)
+
+    @pytest.mark.parametrize("events", [pytest.param(SAMPLE_ALERTS, id="events"), pytest.param([], id="empty")])
+    def test_send_events(self, client: SAPETDClient, events: list[dict]) -> None:
+        with patch("SAPETD.send_events_to_xsiam") as mock_send:
+            client.send_events(events)
+        mock_send.assert_called_once_with(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
+
+
+# endregion
+
+# region Pagination
+# =================================
+# Pagination
+# =================================
+
+
+class TestFetchAlertsWithPagination:
+    def test_sorted_by_creation_time(self, client: SAPETDClient) -> None:
+        unsorted = [make_alert(2, "2022-04-29T15:00:00.000Z"), make_alert(1, "2022-04-29T14:00:00.000Z")]
+        with patch.object(client, "get_alerts", return_value=unsorted):
+            result = fetch_alerts_with_pagination(client, FROM_TIMESTAMP, max_alerts=10)
+        assert [alert[Config.ALERT_ID_FIELD] for alert in result] == [1, 2]
+
+    @pytest.mark.parametrize(
+        "pages, max_alerts, expected_count, expected_calls, expected_batch_sizes",
+        [
+            pytest.param([[]], 10, 0, 1, [10], id="empty"),
+            pytest.param([make_page(1, 3)], 10, 3, 1, [10], id="single_partial_page"),
+            pytest.param([make_page(1, 50)], 50, 50, 1, [50], id="exact_small_page"),
+            pytest.param([make_page(1, 1000), make_page(1001, 500)], 1500, 1500, 2, [1000, 500], id="two_full_pages"),
+            pytest.param([make_page(1, 1000), []], 2000, 1000, 2, [1000, 1000], id="stops_on_empty_page"),
+            pytest.param([make_page(1, 800)], 2000, 800, 1, [1000], id="stops_on_partial_page"),
+            pytest.param(
+                [make_page(1, 1000), make_page(1001, 1000), make_page(2001, 1000)],
+                3000,
+                3000,
+                3,
+                [1000, 1000, 1000],
+                id="three_full_pages",
+            ),
+        ],
+    )
+    def test_pagination(
         self,
         client: SAPETDClient,
-        api_response: list,
+        pages: list,
+        max_alerts: int,
         expected_count: int,
-        expected_first_id: int | None,
+        expected_calls: int,
+        expected_batch_sizes: list[int],
     ) -> None:
-        """Test get_alerts with various API response types."""
-        client.get = MagicMock(return_value=api_response)  # type: ignore[method-assign]
-
-        result = client.get_alerts(
-            from_timestamp="2022-04-29T14:00:00.000000Z",
-            batch_size=100,
-        )
-
+        with patch.object(client, "get_alerts", side_effect=pages) as mock_get:
+            result = fetch_alerts_with_pagination(client, FROM_TIMESTAMP, max_alerts=max_alerts)
         assert len(result) == expected_count
-        if expected_first_id is not None:
-            assert result[0]["AlertId"] == expected_first_id
-        client.get.assert_called_once()
+        assert mock_get.call_count == expected_calls
+        assert [call.kwargs["batch_size"] for call in mock_get.call_args_list] == expected_batch_sizes
 
-    def test_get_alerts_query_params(self, client: SAPETDClient) -> None:
-        """Test that correct query parameters are sent."""
-        client.get = MagicMock(return_value=[])  # type: ignore[method-assign]
+    def test_cursor_moves_to_last_alert_timestamp(self, client: SAPETDClient) -> None:
+        first_page = make_page(1, 1000)
+        with patch.object(client, "get_alerts", side_effect=[first_page, make_page(1001, 10)]) as mock_get:
+            fetch_alerts_with_pagination(client, FROM_TIMESTAMP, max_alerts=1500)
+        assert mock_get.call_args_list[0].kwargs["from_timestamp"] == FROM_TIMESTAMP
+        assert mock_get.call_args_list[1].kwargs["from_timestamp"] == first_page[-1][Config.ALERT_TIME_FIELD]
 
-        client.get_alerts(
-            from_timestamp="2022-04-29T14:00:00.000000Z",
-            batch_size=500,
-        )
+    def test_boundary_alerts_not_duplicated(self, client: SAPETDClient) -> None:
+        """Alerts repeated at the start of the next page ('ge' filter) are collected once."""
+        boundary = "2022-04-29T15:00:00.000Z"
+        first_page = make_page(1, 998) + [make_alert(9001, boundary), make_alert(9002, boundary)]
+        second_page = [make_alert(9001, boundary), make_alert(9002, boundary), make_alert(9003, "2022-04-29T16:00:00.000Z")]
+        with patch.object(client, "get_alerts", side_effect=[first_page, second_page]):
+            result = fetch_alerts_with_pagination(client, FROM_TIMESTAMP, max_alerts=1500)
+        ids = [alert[Config.ALERT_ID_FIELD] for alert in result]
+        assert len(ids) == len(set(ids)) == 1001
 
-        call_kwargs = client.get.call_args
-        params = call_kwargs.kwargs.get("params") or call_kwargs[1].get("params")
-        assert params["$query"] == "AlertCreationTimestamp ge 2022-04-29T14:00:00.000000Z"
-        assert params["$format"] == "JSON"
-        assert params["$batchSize"] == "500"
-        assert params["$includeEvents"] == "true"
+    def test_stops_when_cursor_does_not_advance(self, client: SAPETDClient) -> None:
+        """A full page sharing one timestamp is not re-fetched forever."""
+        uniform_page = make_page(1, Config.MAX_PAGE_SIZE, timestamp="2022-04-29T14:00:00.000Z")
+        with patch.object(client, "get_alerts", return_value=uniform_page) as mock_get:
+            result = fetch_alerts_with_pagination(client, FROM_TIMESTAMP, max_alerts=Config.DEFAULT_MAX_FETCH)
+        assert len(result) == Config.MAX_PAGE_SIZE
+        assert mock_get.call_count == 2
 
-    @pytest.mark.parametrize(
-        "api_response, expected_result",
-        [
-            pytest.param({"error": "unexpected"}, [], id="dict_response"),
-            pytest.param({"results": []}, [], id="dict_with_results_key"),
-            pytest.param("not_a_list", [], id="string_response"),
-        ],
-    )
-    def test_get_alerts_unexpected_response(self, client: SAPETDClient, api_response: Any, expected_result: list) -> None:
-        """Test handling of unexpected (non-list) response formats."""
-        client.get = MagicMock(return_value=api_response)  # type: ignore[method-assign]
+    def test_stops_when_last_alert_has_no_timestamp(self, client: SAPETDClient) -> None:
+        page = make_page(1, Config.MAX_PAGE_SIZE)
+        page[-1].pop(Config.ALERT_TIME_FIELD)
+        with patch.object(client, "get_alerts", return_value=page) as mock_get:
+            result = fetch_alerts_with_pagination(client, FROM_TIMESTAMP, max_alerts=2000)
+        assert len(result) == Config.MAX_PAGE_SIZE
+        assert mock_get.call_count == 1
 
-        result = client.get_alerts(
-            from_timestamp="2022-04-29T14:00:00.000000Z",
-        )
+    def test_truncates_when_server_ignores_batch_size(self, client: SAPETDClient) -> None:
+        with patch.object(client, "get_alerts", return_value=make_page(1, 5)):
+            result = fetch_alerts_with_pagination(client, FROM_TIMESTAMP, max_alerts=2)
+        assert len(result) == 2
 
-        assert result == expected_result
-
-    @pytest.mark.parametrize(
-        "error_type, error_msg",
-        [
-            pytest.param(Exception, "Internal Server Error", id="generic_exception"),
-            pytest.param(DemistoException, "API Error 500", id="demisto_exception"),
-            pytest.param(ConnectionError, "Connection refused", id="connection_error"),
-        ],
-    )
-    def test_get_alerts_error_propagation(self, client: SAPETDClient, error_type: type, error_msg: str) -> None:
-        """Test that various HTTP errors are properly propagated."""
-        client.get = MagicMock(side_effect=error_type(error_msg))  # type: ignore[method-assign]
-
-        with pytest.raises(error_type, match=error_msg):
-            client.get_alerts(from_timestamp="2022-04-29T14:00:00.000000Z")
+    def test_propagates_client_errors(self, client: SAPETDClient) -> None:
+        with patch.object(client, "get_alerts", side_effect=DemistoException("API Error")), pytest.raises(DemistoException):
+            fetch_alerts_with_pagination(client, FROM_TIMESTAMP, max_alerts=10)
 
 
 # endregion
 
-# region Config class tests
+# region test-module
 # =================================
-# Config class tests
+# test-module
 # =================================
 
 
-class TestConfig:
-    """Tests for the Config class constants."""
+class TestTestModule:
+    @pytest.mark.parametrize("alerts", [pytest.param([SAMPLE_ALERTS[0]], id="alerts"), pytest.param([], id="no_alerts")])
+    def test_success(self, client: SAPETDClient, alerts: list[dict]) -> None:
+        with patch.object(client, "get_alerts", return_value=alerts) as mock_get:
+            assert run_test_module(client) == "ok"
+        assert mock_get.call_args.kwargs["batch_size"] == Config.TEST_MODULE_MAX_EVENTS
 
-    def test_vendor_and_product(self) -> None:
-        """Test that VENDOR and PRODUCT are set correctly."""
-        assert Config.VENDOR == "SAP"
-        assert Config.PRODUCT == "Threat Detection"
+    @pytest.mark.parametrize(
+        "status_code",
+        [
+            pytest.param(HTTPStatus.UNAUTHORIZED, id="401"),
+            pytest.param(HTTPStatus.FORBIDDEN, id="403"),
+            pytest.param(HTTPStatus.NOT_FOUND, id="404"),
+        ],
+    )
+    def test_http_errors_classified_by_status(self, client: SAPETDClient, status_code: HTTPStatus) -> None:
+        with patch.object(client, "get_alerts", side_effect=http_error(int(status_code))):
+            assert run_test_module(client) == Messages.HTTP_ERRORS[status_code]
 
-    def test_default_values(self) -> None:
-        """Test that default configuration values are correct."""
-        assert Config.DEFAULT_MAX_FETCH == 10000
-        assert Config.MAX_PAGE_SIZE == 1000
-        assert Config.DEFAULT_LIMIT == 50
-        assert Config.DEFAULT_FIRST_FETCH == "3 days ago"
+    def test_404_body_with_401_is_not_auth_error(self, client: SAPETDClient) -> None:
+        """Regression: a 404 page containing '401' inside a number is not reported as an auth error."""
+        error = http_error(HTTPStatus.NOT_FOUND, "Page not found. lastModification=1791401531072")
+        with patch.object(client, "get_alerts", side_effect=error):
+            assert run_test_module(client) == Messages.HTTP_ERRORS[HTTPStatus.NOT_FOUND]
 
-    def test_date_format(self) -> None:
-        """Test that DATE_FORMAT is a valid strftime format."""
-        assert Config.DATE_FORMAT == "%Y-%m-%dT%H:%M:%S.%fZ"
+    def test_non_json_response(self, client: SAPETDClient) -> None:
+        """An HTML page returned with 200 fails the test instead of reporting 'ok'."""
+        with patch.object(client, "get_alerts", side_effect=json.JSONDecodeError("Expecting value", "<html>", 0)):
+            assert run_test_module(client) == Messages.NON_JSON_RESPONSE
 
-    def test_test_module_settings(self) -> None:
-        """Test that test module settings are correct."""
-        assert Config.TEST_MODULE_LOOKBACK_MINUTES == 1
-        assert Config.TEST_MODULE_MAX_EVENTS == 1
+    def test_non_list_response_raises(self, client: SAPETDClient) -> None:
+        with patch.object(client, "get", return_value={"error": "x"}), pytest.raises(DemistoException, match="JSON array"):
+            run_test_module(client)
 
-    def test_max_page_size_less_than_max_fetch(self) -> None:
-        """Test that MAX_PAGE_SIZE is less than or equal to DEFAULT_MAX_FETCH."""
-        assert Config.MAX_PAGE_SIZE <= Config.DEFAULT_MAX_FETCH
+    @pytest.mark.parametrize(
+        "error",
+        [
+            pytest.param(Exception("401 Unauthorized"), id="auth_text_without_status"),
+            pytest.param(http_error(HTTPStatus.INTERNAL_SERVER_ERROR), id="500"),
+            pytest.param(ConnectionError("timeout"), id="connection_error"),
+        ],
+    )
+    def test_other_errors_are_raised(self, client: SAPETDClient, error: Exception) -> None:
+        """Errors without a known status code are raised, never guessed from their text."""
+        with patch.object(client, "get_alerts", side_effect=error), pytest.raises(type(error)):
+            run_test_module(client)
+
+    def test_error_body_not_logged(self, client: SAPETDClient) -> None:
+        error = http_error(HTTPStatus.UNAUTHORIZED, "secret-response-body")
+        with patch.object(client, "get_alerts", side_effect=error), patch.object(demisto, "debug") as mock_debug:
+            run_test_module(client)
+        assert all("secret-response-body" not in str(call) for call in mock_debug.call_args_list)
 
 
 # endregion
 
-# region main() tests
+# region get-events
 # =================================
-# main() tests
+# get-events
+# =================================
+
+
+class TestGetEventsCommand:
+    def test_returns_command_results(self, client: SAPETDClient, sample_alerts: list[dict]) -> None:
+        with patch.object(client, "get_alerts", return_value=sample_alerts):
+            result = get_events_command(client, {"from_date": "3 days ago", "limit": "50"})
+        assert isinstance(result, CommandResults)
+        assert result.outputs_prefix == Config.OUTPUTS_PREFIX
+        assert result.outputs_key_field == Config.ALERT_ID_FIELD
+        assert result.outputs == sample_alerts
+        assert Config.TABLE_TITLE in result.readable_output
+        for header in Config.TABLE_HEADERS:
+            assert header in result.readable_output
+
+    @pytest.mark.parametrize(
+        "args, expected_limit",
+        [
+            pytest.param({}, Config.DEFAULT_LIMIT, id="defaults"),
+            pytest.param({"limit": "1"}, 1, id="custom_limit"),
+            pytest.param({"limit": "0"}, Config.DEFAULT_LIMIT, id="zero_limit_uses_default"),
+        ],
+    )
+    def test_limit(self, client: SAPETDClient, args: dict, expected_limit: int) -> None:
+        with patch.object(client, "get_alerts", return_value=[]) as mock_get:
+            get_events_command(client, args)
+        assert mock_get.call_args.kwargs["batch_size"] == expected_limit
+
+    def test_default_from_date(self, client: SAPETDClient) -> None:
+        with (
+            patch("SAPETD.parse_date_to_iso", return_value=FROM_TIMESTAMP) as mock_parse,
+            patch.object(client, "get_alerts", return_value=[]),
+        ):
+            get_events_command(client, {})
+        mock_parse.assert_called_once_with(Config.DEFAULT_FIRST_FETCH)
+
+    def test_push_events(self, client: SAPETDClient, sample_alerts: list[dict]) -> None:
+        with patch.object(client, "get_alerts", return_value=sample_alerts), patch("SAPETD.send_events_to_xsiam") as mock_send:
+            result = get_events_command(client, {"should_push_events": "true"})
+        assert result == Messages.PUSHED_EVENTS.format(count=len(sample_alerts))
+        sent = mock_send.call_args.kwargs["events"]
+        assert all(Config.XSIAM_TIME_FIELD in event for event in sent)
+
+    @pytest.mark.parametrize("should_push", ["true", "false"])
+    def test_no_alerts(self, client: SAPETDClient, should_push: str) -> None:
+        with patch.object(client, "get_alerts", return_value=[]), patch("SAPETD.send_events_to_xsiam") as mock_send:
+            result = get_events_command(client, {"should_push_events": should_push})
+        assert isinstance(result, CommandResults)
+        assert result.outputs == []
+        mock_send.assert_not_called()
+
+
+# endregion
+
+# region fetch-events
+# =================================
+# fetch-events
+# =================================
+
+
+class TestFetchEventsCommand:
+    def test_first_run(self, client: SAPETDClient, sample_alerts: list[dict]) -> None:
+        with (
+            patch.object(demisto, "getLastRun", return_value={}),
+            patch.object(demisto, "setLastRun") as mock_set,
+            patch("SAPETD.parse_date_to_iso", return_value=FROM_TIMESTAMP) as mock_parse,
+            patch.object(client, "get_alerts", return_value=sample_alerts) as mock_get,
+            patch("SAPETD.send_events_to_xsiam") as mock_send,
+        ):
+            fetch_events_command(client, max_fetch=100)
+        mock_parse.assert_called_once_with(Config.DEFAULT_FIRST_FETCH)
+        assert mock_get.call_args.kwargs["from_timestamp"] == FROM_TIMESTAMP
+        assert len(mock_send.call_args.kwargs["events"]) == len(sample_alerts)
+        mock_set.assert_called_once_with(build_next_last_run(sample_alerts))
+
+    def test_subsequent_run_deduplicates(self, client: SAPETDClient, sample_alerts: list[dict]) -> None:
+        last_run = {Config.LAST_RUN_TIMESTAMP_KEY: "2022-04-29T14:20:29.682Z", Config.LAST_RUN_IDS_KEY: [6101]}
+        with (
+            patch.object(demisto, "getLastRun", return_value=last_run),
+            patch.object(demisto, "setLastRun"),
+            patch.object(client, "get_alerts", return_value=sample_alerts) as mock_get,
+            patch("SAPETD.send_events_to_xsiam") as mock_send,
+        ):
+            fetch_events_command(client, max_fetch=100)
+        assert mock_get.call_args.kwargs["from_timestamp"] == last_run[Config.LAST_RUN_TIMESTAMP_KEY]
+        sent_ids = [event[Config.ALERT_ID_FIELD] for event in mock_send.call_args.kwargs["events"]]
+        assert 6101 not in sent_ids
+
+    def test_all_duplicates_still_advance_last_run(self, client: SAPETDClient) -> None:
+        alert = make_alert(1, "2022-04-29T14:00:00.000Z")
+        last_run = {Config.LAST_RUN_TIMESTAMP_KEY: alert[Config.ALERT_TIME_FIELD], Config.LAST_RUN_IDS_KEY: [1]}
+        with (
+            patch.object(demisto, "getLastRun", return_value=last_run),
+            patch.object(demisto, "setLastRun") as mock_set,
+            patch.object(client, "get_alerts", return_value=[alert]),
+            patch("SAPETD.send_events_to_xsiam") as mock_send,
+        ):
+            fetch_events_command(client, max_fetch=100)
+        mock_send.assert_not_called()
+        mock_set.assert_called_once()
+
+    @pytest.mark.parametrize(
+        "alerts",
+        [pytest.param([], id="no_alerts"), pytest.param([{Config.ALERT_ID_FIELD: 1}], id="last_alert_without_timestamp")],
+    )
+    def test_last_run_not_updated(self, client: SAPETDClient, alerts: list[dict]) -> None:
+        with (
+            patch.object(demisto, "getLastRun", return_value={}),
+            patch.object(demisto, "setLastRun") as mock_set,
+            patch.object(client, "get_alerts", return_value=alerts),
+            patch("SAPETD.send_events_to_xsiam"),
+        ):
+            fetch_events_command(client, max_fetch=100)
+        mock_set.assert_not_called()
+
+    def test_failed_send_does_not_update_last_run(self, client: SAPETDClient, sample_alerts: list[dict]) -> None:
+        """If sending to XSIAM fails, the same alerts are fetched again on the next cycle."""
+        with (
+            patch.object(demisto, "getLastRun", return_value={}),
+            patch.object(demisto, "setLastRun") as mock_set,
+            patch.object(client, "get_alerts", return_value=sample_alerts),
+            patch("SAPETD.send_events_to_xsiam", side_effect=DemistoException("XSIAM down")),
+            pytest.raises(DemistoException),
+        ):
+            fetch_events_command(client, max_fetch=100)
+        mock_set.assert_not_called()
+
+    @pytest.mark.parametrize("raw_ids", [pytest.param(None, id="none"), pytest.param("6101", id="string")])
+    def test_invalid_previous_ids_ignored(self, client: SAPETDClient, sample_alerts: list[dict], raw_ids: Any) -> None:
+        last_run = {Config.LAST_RUN_TIMESTAMP_KEY: FROM_TIMESTAMP, Config.LAST_RUN_IDS_KEY: raw_ids}
+        with (
+            patch.object(demisto, "getLastRun", return_value=last_run),
+            patch.object(demisto, "setLastRun"),
+            patch.object(client, "get_alerts", return_value=sample_alerts),
+            patch("SAPETD.send_events_to_xsiam") as mock_send,
+        ):
+            fetch_events_command(client, max_fetch=100)
+        assert len(mock_send.call_args.kwargs["events"]) == len(sample_alerts)
+
+
+# endregion
+
+# region main
+# =================================
+# main
 # =================================
 
 
 class TestMain:
-    """Tests for the main() entry point and command routing."""
-
-    @patch("SAPETD.return_results")
-    @patch("SAPETD.SAPETDClient")
-    @patch("SAPETD.parse_integration_params")
-    def test_test_module_command(
-        self,
-        mock_parse: MagicMock,
-        mock_client_cls: MagicMock,
-        mock_return_results: MagicMock,
-        mock_params: dict[str, Any],
-    ) -> None:
-        """Test main() routes test-module command correctly."""
-        mock_parse.return_value = {
-            "base_url": "https://etd.example.com:4300",
-            "username": "test_user",
-            "password": "test_password",
-            "verify": False,
-            "proxy": False,
-            "max_fetch": 10000,
-        }
-        mock_client = MagicMock()
-        mock_client.get_alerts.return_value = []
-        mock_client_cls.return_value = mock_client
-
+    @pytest.mark.parametrize(
+        "command, handler",
+        [
+            pytest.param(Commands.TEST_MODULE, "test_module", id="test_module"),
+            pytest.param(Commands.GET_EVENTS, "get_events_command", id="get_events"),
+        ],
+    )
+    def test_routes_commands_with_results(self, mock_params: dict[str, Any], command: str, handler: str) -> None:
         with (
-            patch.object(demisto, "command", return_value="test-module"),
+            patch.object(demisto, "command", return_value=command),
             patch.object(demisto, "params", return_value=mock_params),
+            patch.object(demisto, "args", return_value={}),
+            patch(f"SAPETD.{handler}", return_value="result") as mock_handler,
+            patch("SAPETD.return_results") as mock_return,
         ):
             main()
+        mock_handler.assert_called_once()
+        mock_return.assert_called_once_with("result")
 
-        mock_return_results.assert_called_once()
-
-    @patch("SAPETD.fetch_events_command")
-    @patch("SAPETD.SAPETDClient")
-    @patch("SAPETD.parse_integration_params")
-    def test_fetch_events_command_routing(
-        self,
-        mock_parse: MagicMock,
-        mock_client_cls: MagicMock,
-        mock_fetch: MagicMock,
-        mock_params: dict[str, Any],
-    ) -> None:
-        """Test main() routes fetch-events command correctly."""
-        mock_parse.return_value = {
-            "base_url": "https://etd.example.com:4300",
-            "username": "test_user",
-            "password": "test_password",
-            "verify": False,
-            "proxy": False,
-            "max_fetch": 10000,
-        }
-        mock_client_cls.return_value = MagicMock()
-
+    def test_routes_fetch_events(self, mock_params: dict[str, Any]) -> None:
         with (
-            patch.object(demisto, "command", return_value="fetch-events"),
-            patch.object(demisto, "params", return_value=mock_params),
+            patch.object(demisto, "command", return_value=Commands.FETCH_EVENTS),
+            patch.object(demisto, "params", return_value=mock_params | {"max_fetch": "123"}),
+            patch("SAPETD.fetch_events_command") as mock_fetch,
         ):
             main()
+        assert mock_fetch.call_args.kwargs["max_fetch"] == 123
 
-        mock_fetch.assert_called_once()
-
-    @patch("SAPETD.return_results")
-    @patch("SAPETD.SAPETDClient")
-    @patch("SAPETD.parse_integration_params")
-    def test_get_events_command_routing(
-        self,
-        mock_parse: MagicMock,
-        mock_client_cls: MagicMock,
-        mock_return_results: MagicMock,
-        mock_params: dict[str, Any],
+    @pytest.mark.parametrize(
+        "command, params_override, expected_in_error",
+        [
+            pytest.param("unknown-command", {}, "unknown-command", id="unknown_command"),
+            pytest.param(Commands.TEST_MODULE, {"credentials": {}}, Messages.MISSING_CREDENTIALS, id="invalid_params"),
+        ],
+    )
+    def test_errors_reported(
+        self, mock_params: dict[str, Any], command: str, params_override: dict, expected_in_error: str
     ) -> None:
-        """Test main() routes sap-etd-get-events command correctly."""
-        mock_parse.return_value = {
-            "base_url": "https://etd.example.com:4300",
-            "username": "test_user",
-            "password": "test_password",
-            "verify": False,
-            "proxy": False,
-            "max_fetch": 10000,
-        }
-        mock_client = MagicMock()
-        mock_client.get_alerts.return_value = []
-        mock_client_cls.return_value = mock_client
-
         with (
-            patch.object(demisto, "command", return_value="sap-etd-get-events"),
-            patch.object(demisto, "params", return_value=mock_params),
-            patch.object(demisto, "args", return_value={"from_date": "3 days ago", "limit": "10", "should_push_events": "false"}),
+            patch.object(demisto, "command", return_value=command),
+            patch.object(demisto, "params", return_value=mock_params | params_override),
+            patch.object(demisto, "error"),
+            patch("SAPETD.return_error") as mock_error,
         ):
             main()
+        error_message = mock_error.call_args.args[0]
+        assert command in error_message
+        assert expected_in_error in error_message
 
-        mock_return_results.assert_called_once()
-
-    @patch("SAPETD.return_error")
-    @patch("SAPETD.parse_integration_params")
-    def test_unknown_command(
-        self,
-        mock_parse: MagicMock,
-        mock_return_error: MagicMock,
-        mock_params: dict[str, Any],
-    ) -> None:
-        """Test main() handles unknown command with return_error."""
-        mock_parse.return_value = {
-            "base_url": "https://etd.example.com:4300",
-            "username": "test_user",
-            "password": "test_password",
-            "verify": False,
-            "proxy": False,
-            "max_fetch": 10000,
-        }
-
+    def test_handler_exception_reported(self, mock_params: dict[str, Any]) -> None:
         with (
-            patch.object(demisto, "command", return_value="unknown-command"),
+            patch.object(demisto, "command", return_value=Commands.FETCH_EVENTS),
             patch.object(demisto, "params", return_value=mock_params),
             patch.object(demisto, "error"),
+            patch("SAPETD.fetch_events_command", side_effect=DemistoException("API Error")),
+            patch("SAPETD.return_error") as mock_error,
         ):
             main()
-
-        mock_return_error.assert_called_once()
-        error_msg = mock_return_error.call_args[0][0]
-        assert "unknown-command" in error_msg
-
-    @patch("SAPETD.return_error")
-    def test_exception_handling(
-        self,
-        mock_return_error: MagicMock,
-        mock_params: dict[str, Any],
-    ) -> None:
-        """Test main() catches exceptions and calls return_error."""
-        with (
-            patch.object(demisto, "command", return_value="test-module"),
-            patch.object(demisto, "params", return_value={"url": ""}),
-            patch.object(demisto, "error"),
-        ):
-            main()
-
-        mock_return_error.assert_called_once()
-        error_msg = mock_return_error.call_args[0][0]
-        assert "Server URL is required" in error_msg
-
-    @patch("SAPETD.return_error")
-    def test_missing_credentials_error(
-        self,
-        mock_return_error: MagicMock,
-    ) -> None:
-        """Test main() handles missing credentials gracefully."""
-        with (
-            patch.object(demisto, "command", return_value="test-module"),
-            patch.object(demisto, "params", return_value={"url": "https://example.com", "credentials": {}}),
-            patch.object(demisto, "error"),
-        ):
-            main()
-
-        mock_return_error.assert_called_once()
-        error_msg = mock_return_error.call_args[0][0]
-        assert "Username and Password" in error_msg
+        assert "API Error" in mock_error.call_args.args[0]
 
 
 # endregion
 
-# region Additional edge case tests
+# region Config
 # =================================
-# Additional edge case tests
+# Config
 # =================================
 
 
-class TestEdgeCases:
-    """Tests for edge cases to improve coverage."""
-
-    @patch("SAPETD.send_events_to_xsiam")
-    def test_fetch_events_missing_timestamp_in_last_event(self, mock_send: MagicMock, client: SAPETDClient) -> None:
-        """Test fetch_events_command when last event has no AlertCreationTimestamp."""
-        alert_no_timestamp = [{"AlertId": 9999}]
-        client.get_alerts = MagicMock(return_value=alert_no_timestamp)
-
-        with (
-            patch.object(demisto, "getLastRun", return_value={}),
-            patch.object(demisto, "setLastRun") as mock_set_last_run,
-        ):
-            fetch_events_command(client, max_fetch=Config.DEFAULT_MAX_FETCH)
-
-        # Last run should NOT be updated since AlertCreationTimestamp is missing
-        mock_set_last_run.assert_not_called()
-
-    def test_pagination_stops_when_last_alert_missing_timestamp(self, client: SAPETDClient) -> None:
-        """Test that pagination stops when last alert in batch has no AlertCreationTimestamp."""
-        batch1 = [{"AlertId": i} for i in range(1, Config.MAX_PAGE_SIZE + 1)]  # No timestamps
-
-        client.get_alerts = MagicMock(return_value=batch1)
-
-        result = fetch_alerts_with_pagination(client, from_timestamp="2022-04-29T14:00:00.000000Z", max_alerts=2000)
-
-        # Should stop after first batch since last alert has no timestamp
-        assert len(result) == Config.MAX_PAGE_SIZE
-        assert client.get_alerts.call_count == 1
-
-    @pytest.mark.parametrize(
-        "error_message, expected_substring",
-        [
-            pytest.param("403 Forbidden", "User lacks required application privileges", id="403_forbidden"),
-            pytest.param("forbidden access denied", "User lacks required application privileges", id="forbidden_lowercase"),
-        ],
-    )
-    def test_test_module_403_errors(self, client: SAPETDClient, error_message: str, expected_substring: str) -> None:
-        """Test that 403/Forbidden errors return specific privilege error message."""
-        client.get_alerts = MagicMock(side_effect=Exception(error_message))
-
-        result = _test_module(client)
-
-        assert expected_substring in result
-
-    @pytest.mark.parametrize(
-        "param_overrides, config_key, expected_value",
-        [
-            pytest.param({"insecure": True}, "verify", False, id="insecure_true_sets_verify_false"),
-            pytest.param({"insecure": False}, "verify", True, id="insecure_false_sets_verify_true"),
-            pytest.param({"proxy": True}, "proxy", True, id="proxy_true"),
-            pytest.param({"proxy": False}, "proxy", False, id="proxy_false"),
-            pytest.param({"max_fetch": "5000"}, "max_fetch", 5000, id="custom_max_fetch"),
-            pytest.param({"max_fetch": "100"}, "max_fetch", 100, id="small_max_fetch"),
-            pytest.param({}, "max_fetch", Config.DEFAULT_MAX_FETCH, id="default_max_fetch"),
-        ],
-    )
-    def test_parse_integration_params_options(self, param_overrides: dict, config_key: str, expected_value: Any) -> None:
-        """Test various parse_integration_params configuration options."""
-        base_params: dict[str, Any] = {
-            "url": "https://example.com",
-            "credentials": {"identifier": "dummy_user", "password": "dummy_pass"},
-        }
-        base_params.update(param_overrides)
-        config = parse_integration_params(base_params)
-        assert config[config_key] == expected_value
-
-    def test_integration_name_constant(self) -> None:
-        """Test that INTEGRATION_NAME is set correctly."""
+class TestConfig:
+    def test_values(self) -> None:
         assert INTEGRATION_NAME == "SAP Enterprise Threat Detection"
-
-    @patch("SAPETD.send_events_to_xsiam")
-    def test_fetch_events_subsequent_run_uses_last_fetch(self, mock_send: MagicMock, client: SAPETDClient) -> None:
-        """Test that subsequent run uses last_fetch timestamp from last_run."""
-        alerts = [copy.deepcopy(SAMPLE_ALERTS[0])]
-        client.get_alerts = MagicMock(return_value=alerts)
-
-        mock_last_run = {
-            "last_fetch": "2022-04-29T14:20:29.682Z",
-            "last_fetched_alert_ids": [],
-        }
-
-        with (
-            patch.object(demisto, "getLastRun", return_value=mock_last_run),
-            patch.object(demisto, "setLastRun"),
-        ):
-            fetch_events_command(client, max_fetch=Config.DEFAULT_MAX_FETCH)
-
-        # Verify the client was called with the last_fetch timestamp
-        call_kwargs = client.get_alerts.call_args_list[0].kwargs
-        assert call_kwargs["from_timestamp"] == "2022-04-29T14:20:29.682Z"
-
-    @patch("SAPETD.send_events_to_xsiam")
-    def test_fetch_events_raw_ids_not_list(self, mock_send: MagicMock, client: SAPETDClient) -> None:
-        """Test that non-list last_fetched_alert_ids is handled gracefully."""
-        alerts = [copy.deepcopy(SAMPLE_ALERTS[0])]
-        client.get_alerts = MagicMock(return_value=alerts)
-
-        mock_last_run = {
-            "last_fetch": "2022-04-29T14:00:00.000Z",
-            "last_fetched_alert_ids": "not_a_list",  # Invalid type
-        }
-
-        with (
-            patch.object(demisto, "getLastRun", return_value=mock_last_run),
-            patch.object(demisto, "setLastRun"),
-        ):
-            # Should not raise - treats invalid type as empty list
-            fetch_events_command(client, max_fetch=Config.DEFAULT_MAX_FETCH)
-
-        mock_send.assert_called_once()
-
-    def test_get_events_command_default_args(self, client: SAPETDClient) -> None:
-        """Test get_events_command with minimal/default arguments."""
-        client.get_alerts = MagicMock(return_value=[])
-
-        result = get_events_command(client, {})
-
-        assert isinstance(result, CommandResults)
-
-    def test_get_events_command_readable_output_headers(self, client: SAPETDClient, sample_alerts: list[dict]) -> None:
-        """Test that readable output contains expected table headers."""
-        client.get_alerts = MagicMock(return_value=sample_alerts)
-
-        args = {"from_date": "3 days ago", "limit": "50", "should_push_events": "false"}
-        result = get_events_command(client, args)
-
-        assert isinstance(result, CommandResults)
-        assert "AlertId" in result.readable_output
-        assert "AlertSeverity" in result.readable_output
-        assert INTEGRATION_NAME in result.readable_output
-
-    @patch("SAPETD.send_events_to_xsiam")
-    def test_send_events_method(self, mock_send: MagicMock, client: SAPETDClient) -> None:
-        """Test that client.send_events calls send_events_to_xsiam with correct vendor/product."""
-        events = [{"AlertId": 1, "AlertCreationTimestamp": "2022-04-29T14:20:29.682Z"}]
-
-        client.send_events(events)
-
-        mock_send.assert_called_once_with(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
-
-    @patch("SAPETD.send_events_to_xsiam")
-    def test_send_events_empty_list(self, mock_send: MagicMock, client: SAPETDClient) -> None:
-        """Test that client.send_events works with empty list."""
-        client.send_events([])
-
-        mock_send.assert_called_once_with(events=[], vendor=Config.VENDOR, product=Config.PRODUCT)
-
-    @patch("SAPETD.SAPETDClient")
-    @patch("SAPETD.parse_integration_params")
-    def test_main_finally_diagnostic_report(
-        self,
-        mock_parse: MagicMock,
-        mock_client_cls: MagicMock,
-        mock_params: dict[str, Any],
-    ) -> None:
-        """Test that main() generates diagnostic report in finally block."""
-        mock_parse.return_value = {
-            "base_url": "https://etd.example.com:4300",
-            "username": "test_user",
-            "password": "test_password",
-            "verify": False,
-            "proxy": False,
-            "max_fetch": 10000,
-        }
-        mock_client = MagicMock()
-        mock_client.get_alerts.return_value = []
-        mock_client_cls.return_value = mock_client
-
-        with (
-            patch.object(demisto, "command", return_value="test-module"),
-            patch.object(demisto, "params", return_value=mock_params),
-            patch("SAPETD.return_results"),
-        ):
-            main()
-
-        # Verify diagnostic report was requested
-        mock_client.get_diagnostic_report.assert_called_once()
-
-    @patch("SAPETD.return_error")
-    @patch("SAPETD.SAPETDClient")
-    @patch("SAPETD.parse_integration_params")
-    def test_main_finally_diagnostic_report_on_error(
-        self,
-        mock_parse: MagicMock,
-        mock_client_cls: MagicMock,
-        mock_return_error: MagicMock,
-        mock_params: dict[str, Any],
-    ) -> None:
-        """Test that diagnostic report is generated even when command fails."""
-        mock_parse.return_value = {
-            "base_url": "https://etd.example.com:4300",
-            "username": "test_user",
-            "password": "test_password",
-            "verify": False,
-            "proxy": False,
-            "max_fetch": 10000,
-        }
-        mock_client = MagicMock()
-        mock_client.get_alerts.side_effect = Exception("API Error")
-        mock_client_cls.return_value = mock_client
-
-        with (
-            patch.object(demisto, "command", return_value="sap-etd-get-events"),
-            patch.object(demisto, "params", return_value=mock_params),
-            patch.object(demisto, "args", return_value={"from_date": "3 days ago"}),
-            patch.object(demisto, "error"),
-        ):
-            main()
-
-        # Verify diagnostic report was still requested despite the error
-        mock_client.get_diagnostic_report.assert_called_once()
-        # Verify error was reported
-        mock_return_error.assert_called_once()
-
-    @patch("SAPETD.SAPETDClient")
-    @patch("SAPETD.parse_integration_params")
-    def test_main_finally_diagnostic_report_failure_is_swallowed(
-        self,
-        mock_parse: MagicMock,
-        mock_client_cls: MagicMock,
-        mock_params: dict[str, Any],
-    ) -> None:
-        """Test that a failure while generating the diagnostic report does not crash main()."""
-        mock_parse.return_value = {
-            "base_url": "https://etd.example.com:4300",
-            "username": "test_user",
-            "password": "test_password",
-            "verify": False,
-            "proxy": False,
-            "max_fetch": 10000,
-        }
-        mock_client = MagicMock()
-        mock_client.get_alerts.return_value = []
-        # The diagnostic report itself raises inside the finally block.
-        mock_client.get_diagnostic_report.side_effect = Exception("Diagnostic failure")
-        mock_client_cls.return_value = mock_client
-
-        with (
-            patch.object(demisto, "command", return_value="test-module"),
-            patch.object(demisto, "params", return_value=mock_params),
-            patch("SAPETD.return_results"),
-            patch.object(demisto, "debug") as mock_debug,
-        ):
-            # Must not raise even though get_diagnostic_report failed.
-            main()
-
-        mock_client.get_diagnostic_report.assert_called_once()
-        # The failure is logged via demisto.debug rather than propagated.
-        assert any("Failed to generate diagnostic report" in str(call.args[0]) for call in mock_debug.call_args_list)
+        assert (Config.VENDOR, Config.PRODUCT) == ("SAP", "Threat Detection")
+        assert Config.ALERTS_ENDPOINT == "/sap/secmon/services/Alerts.xsjs"
+        assert Config.DEFAULT_MAX_FETCH == 10000
+        assert Config.DEFAULT_FIRST_FETCH == "5 minutes ago"
+        assert Config.MAX_PAGE_SIZE <= Config.DEFAULT_MAX_FETCH
 
 
 # endregion

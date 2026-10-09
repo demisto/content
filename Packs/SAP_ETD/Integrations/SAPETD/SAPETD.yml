@@ -42,7 +42,7 @@ configuration:
   type: 8
   section: Collect
 - name: max_fetch
-  display: Maximum alerts per fetch
+  display: Maximum number of Threat Detection Alerts per fetch
   required: false
   type: 0
   section: Collect

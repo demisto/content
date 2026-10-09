@@ -1,14 +1,12 @@
 # ruff: noqa: F401
-import json
 import traceback
+from http import HTTPStatus
 from typing import Any
 
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 from ContentClientApiModule import *
-from BaseContentApiModule import *
 
 # region Constants and helpers
 # =================================
@@ -17,39 +15,114 @@ from BaseContentApiModule import *
 
 INTEGRATION_NAME = "SAP Enterprise Threat Detection"
 
-ALERTS_ENDPOINT = "/sap/secmon/services/Alerts.xsjs"
-
 
 class Config:
     """Global static configuration."""
 
     VENDOR = "SAP"
     PRODUCT = "Threat Detection"
+    CLIENT_NAME = "SAPETDClient"
 
-    DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+    # Path of the SAP ETD Alerts API, appended to the Server URL.
+    ALERTS_ENDPOINT = "/sap/secmon/services/Alerts.xsjs"
+    # Alert creation time: used in the $query filter, as the fetch cursor, for sorting, and as the source of _time.
+    ALERT_TIME_FIELD = "AlertCreationTimestamp"
+    # Unique alert identifier: used to deduplicate alerts that share the cursor timestamp across pages and fetch cycles.
+    ALERT_ID_FIELD = "AlertId"
+    # Field read by XSIAM as the event time.
+    XSIAM_TIME_FIELD = "_time"
+
+    # Alerts API query parameters (see the SAP ETD Alert Pull API documentation).
+    QUERY_TEMPLATE = "{field} ge {timestamp}"
+    RESPONSE_FORMAT = "JSON"
+    INCLUDE_EVENTS = "true"
+
+    # Seconds format; milliseconds are appended separately (see format_timestamp).
+    DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
     DEFAULT_MAX_FETCH = 10000
     MAX_PAGE_SIZE = 1000
     DEFAULT_LIMIT = 50
-    DEFAULT_FIRST_FETCH = "3 days ago"
+    DEFAULT_FIRST_FETCH = "5 minutes ago"
+
+    # Last run keys: the high-water mark timestamp and the AlertIds already sent at that timestamp.
+    LAST_RUN_TIMESTAMP_KEY = "last_fetch"
+    LAST_RUN_IDS_KEY = "last_fetched_alert_ids"
+
+    # Command outputs
+    OUTPUTS_PREFIX = "SAPETD.Alert"
+    TABLE_TITLE = f"{INTEGRATION_NAME} Alerts"
+    TABLE_HEADERS = [
+        ALERT_ID_FIELD,
+        "AlertSeverity",
+        "AlertStatus",
+        "Category",
+        "PatternName",
+        ALERT_TIME_FIELD,
+        "Text",
+        "Score",
+    ]
 
     # Test module settings
-    TEST_MODULE_LOOKBACK_MINUTES = 1
+    TEST_MODULE_LOOKBACK = "1 minute ago"
     TEST_MODULE_MAX_EVENTS = 1
+
+
+class Messages:
+    """User-facing messages."""
+
+    MISSING_URL = "Server URL is required. Please provide the SAP ETD server URL."
+    MISSING_CREDENTIALS = "Username and Password are required for Basic Auth."
+    UNEXPECTED_RESPONSE = (
+        "Unexpected response from the SAP ETD Alerts API: expected a JSON array of alerts, "
+        "received {type_name}. Verify the Server URL points to the SAP ETD server."
+    )
+    NON_JSON_RESPONSE = "Connection Error: The server did not return JSON. Verify the Server URL points to the SAP ETD server."
+    PUSHED_EVENTS = "Successfully retrieved and pushed {count} events to XSIAM."
+    UNKNOWN_COMMAND = "Command '{command}' is not implemented."
+    COMMAND_FAILED = "Failed to execute {command}. Error: {error}"
+    # test-module messages, by HTTP status code
+    HTTP_ERRORS = {
+        HTTPStatus.UNAUTHORIZED: "Authorization Error: Verify username and password are correct.",
+        HTTPStatus.FORBIDDEN: "Authorization Error: User lacks required application privileges (e.g. sap.secmon::AlertRead).",
+        HTTPStatus.NOT_FOUND: f"Connection Error: {Config.ALERTS_ENDPOINT} was not found. Verify the Server URL.",
+    }
+
+
+class Commands:
+    """Supported command names."""
+
+    TEST_MODULE = "test-module"
+    FETCH_EVENTS = "fetch-events"
+    GET_EVENTS = "sap-etd-get-events"
+
+
+def format_timestamp(value: datetime) -> str:
+    """Format a datetime as an ISO 8601 UTC string with millisecond precision.
+
+    The Alerts API documents fractional seconds (e.g. '2026-01-15T15:00:00.00Z') and returns
+    timestamps with milliseconds (e.g. '2022-04-29T14:20:29.682Z'), so microseconds are not sent.
+
+    Args:
+        value: Timezone-aware or naive (assumed UTC) datetime.
+
+    Returns:
+        Timestamp string such as '2026-01-15T15:00:00.000Z'.
+    """
+    return f"{value.strftime(Config.DATE_FORMAT)}.{value.microsecond // 1000:03d}Z"
 
 
 def parse_date_to_iso(date_input: str | None) -> str:
     """Parse a date string and return an ISO 8601 formatted timestamp.
 
-    Uses arg_to_datetime for consistent date parsing across the platform.
+    Falls back to the current UTC time when the input is empty or cannot be parsed.
 
     Args:
-        date_input: Date string to parse (e.g., '3 days ago', '2025-09-15T17:10:00Z').
+        date_input: Date string to parse (e.g., '5 minutes ago', '2025-09-15T17:10:00Z').
 
     Returns:
-        ISO 8601 formatted timestamp string (e.g., '2026-01-15T15:00:00.000000Z').
+        ISO 8601 formatted timestamp string (e.g., '2026-01-15T15:00:00.000Z').
     """
-    demisto.debug(f"[Date Helper] Attempting to parse date string: '{date_input}'")
     try:
         parsed = arg_to_datetime(
             arg=date_input,
@@ -60,68 +133,103 @@ def parse_date_to_iso(date_input: str | None) -> str:
         parsed = None
 
     if not parsed:
-        demisto.debug(f"[Date Helper] Failed to parse '{date_input}'. Falling back to current UTC.")
-        return datetime.now(tz=timezone.utc).strftime(Config.DATE_FORMAT)
+        demisto.debug(f"[Date Helper] Could not parse '{date_input}'. Falling back to current UTC.")
+        return format_timestamp(datetime.now(tz=timezone.utc))
 
-    result = parsed.strftime(Config.DATE_FORMAT)
-    demisto.debug(f"[Date Helper] Input: '{date_input}' -> Output: '{result}'")
+    result = format_timestamp(parsed)
+    demisto.debug(f"[Date Helper] '{date_input}' -> '{result}'")
     return result
 
 
 def add_time_to_events(events: list[dict[str, Any]]) -> None:
-    """Add _time field to events for XSIAM ingestion.
-
-    Maps the event's 'AlertCreationTimestamp' field to '_time' for proper XSIAM indexing.
-    Ensures the timestamp is in ISO 8601 format accepted by XSIAM.
+    """Set the XSIAM time field on each event from its creation timestamp.
 
     Args:
-        events: List of alert event dicts.
+        events: Alert dicts, updated in place.
     """
     for event in events:
-        raw_timestamp = event.get("AlertCreationTimestamp")
-        if raw_timestamp:
-            parsed_time = arg_to_datetime(raw_timestamp)
-            event["_time"] = parsed_time.isoformat() if parsed_time else raw_timestamp
-        else:
+        raw_timestamp = event.get(Config.ALERT_TIME_FIELD)
+        if not raw_timestamp:
             demisto.debug(
-                f"[Event Time] WARNING: Event missing 'AlertCreationTimestamp' "
-                f"(AlertId: {event.get('AlertId', 'unknown')}). Skipping _time assignment."
+                f"[Event Time] Alert {event.get(Config.ALERT_ID_FIELD, 'unknown')} has no "
+                f"{Config.ALERT_TIME_FIELD}. Skipping {Config.XSIAM_TIME_FIELD}."
             )
+            continue
+        parsed_time = arg_to_datetime(raw_timestamp)
+        event[Config.XSIAM_TIME_FIELD] = parsed_time.isoformat() if parsed_time else raw_timestamp
 
 
-def deduplicate_events(
-    events: list[dict[str, Any]],
-    last_fetched_ids: list[int],
-) -> list[dict[str, Any]]:
-    """Remove already-processed events based on previously fetched AlertIds.
+def deduplicate_events(events: list[dict[str, Any]], last_fetched_ids: list[int]) -> list[dict[str, Any]]:
+    """Remove alerts already sent in the previous fetch cycle.
 
     Args:
-        events: List of alert event dicts.
-        last_fetched_ids: List of AlertId values from the previous fetch cycle.
+        events: Alert dicts from the current cycle.
+        last_fetched_ids: AlertIds sent at the previous high-water mark timestamp.
 
     Returns:
-        List of new (non-duplicate) events.
+        Alerts whose AlertId was not sent before.
     """
-    if not events:
-        demisto.debug("[Dedup] No events to process")
+    if not events or not last_fetched_ids:
         return events
 
-    if not last_fetched_ids:
-        demisto.debug("[Dedup] No deduplication needed (first run - no previous IDs)")
-        return events
-
-    demisto.debug(f"[Dedup] Checking {len(events)} events against {len(last_fetched_ids)} previously fetched AlertIds")
-
-    fetched_ids_set = set(last_fetched_ids)
-    new_events = [event for event in events if event.get("AlertId") not in fetched_ids_set]
-    skipped_count = len(events) - len(new_events)
-
-    if skipped_count > 0:
-        demisto.debug(f"[Dedup] Skipped {skipped_count} duplicates. {len(new_events)} new events remain.")
-    else:
-        demisto.debug("[Dedup] No duplicates found.")
-
+    fetched_ids = set(last_fetched_ids)
+    new_events = [event for event in events if event.get(Config.ALERT_ID_FIELD) not in fetched_ids]
+    demisto.debug(f"[Dedup] {len(events) - len(new_events)} duplicates skipped, {len(new_events)} new alerts.")
     return new_events
+
+
+def filter_new_alerts(batch: list[dict[str, Any]], seen_ids: set[Any]) -> list[dict[str, Any]]:
+    """Return only the alerts from a page that have not been collected yet in this fetch cycle.
+
+    The Alerts API filters with 'ge' and the next page starts from the last alert's timestamp,
+    so alerts on the page boundary are returned again. This drops those already-collected alerts.
+
+    Args:
+        batch: Alerts returned for the current page.
+        seen_ids: AlertIds already collected in this cycle. Updated in place with new ids.
+
+    Returns:
+        The subset of batch whose AlertId was not seen before.
+    """
+    new_alerts = [alert for alert in batch if alert.get(Config.ALERT_ID_FIELD) not in seen_ids]
+    seen_ids.update(alert_id for alert in new_alerts if (alert_id := alert.get(Config.ALERT_ID_FIELD)) is not None)
+    return new_alerts
+
+
+def build_next_last_run(events: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Build the next last run from the alerts of the current cycle.
+
+    Uses all fetched alerts (not only the new ones) so the high-water mark always advances.
+
+    Args:
+        events: Alerts of the current cycle, sorted by creation time.
+
+    Returns:
+        The last run dict, or None when the last alert has no creation timestamp.
+    """
+    high_water_mark = events[-1].get(Config.ALERT_TIME_FIELD)
+    if not high_water_mark:
+        return None
+
+    ids_at_high_water_mark = [
+        event[Config.ALERT_ID_FIELD]
+        for event in events
+        if event.get(Config.ALERT_TIME_FIELD) == high_water_mark and event.get(Config.ALERT_ID_FIELD) is not None
+    ]
+    return {Config.LAST_RUN_TIMESTAMP_KEY: high_water_mark, Config.LAST_RUN_IDS_KEY: ids_at_high_water_mark}
+
+
+def get_error_status_code(error: Exception) -> int | None:
+    """Return the HTTP status code attached to a client error, if any.
+
+    Args:
+        error: Exception raised by the HTTP client.
+
+    Returns:
+        The HTTP status code, or None when the error has no HTTP response.
+    """
+    status_code = getattr(getattr(error, "response", None), "status_code", None)
+    return status_code if isinstance(status_code, int) else None
 
 
 # endregion
@@ -144,24 +252,22 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     Raises:
         DemistoException: If required parameters are missing.
     """
-    demisto.debug("[Config] Starting parameter validation")
-
-    base_url = (params.get("url", "")).strip().rstrip("/")
+    base_url = params.get("url", "").strip().rstrip("/")
     if not base_url:
-        raise DemistoException("Server URL is required. Please provide the SAP ETD server URL.")
+        raise DemistoException(Messages.MISSING_URL)
 
     credentials = params.get("credentials", {})
     username = credentials.get("identifier", "").strip()
     password = credentials.get("password", "").strip()
     if not username or not password:
-        raise DemistoException("Username and Password are required for Basic Auth.")
+        raise DemistoException(Messages.MISSING_CREDENTIALS)
 
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
-
     max_fetch = arg_to_number(params.get("max_fetch", Config.DEFAULT_MAX_FETCH)) or Config.DEFAULT_MAX_FETCH
 
-    demisto.debug(f"[Config] Base URL: {base_url} | Verify: {verify_certificate} | Proxy: {proxy} | Max Fetch: {max_fetch}")
+    # Credentials are intentionally not logged.
+    demisto.debug(f"[Config] URL: {base_url} | Verify: {verify_certificate} | Proxy: {proxy} | Max fetch: {max_fetch}")
 
     return {
         "base_url": base_url,
@@ -189,43 +295,31 @@ class SAPETDClient(ContentClient):
     """
 
     def __init__(self, config: dict[str, Any]):
-        """Initialize SAP ETD client with ContentClient capabilities.
+        """Initialize the client with Basic authentication.
 
         Args:
             config: Validated configuration dict from parse_integration_params.
         """
-        auth_handler = BasicAuthHandler(
-            username=config["username"],
-            password=config["password"],
-        )
         super().__init__(
             base_url=config["base_url"],
             verify=config["verify"],
             proxy=config["proxy"],
-            auth_handler=auth_handler,
-            client_name="SAPETDClient",
+            auth_handler=BasicAuthHandler(username=config["username"], password=config["password"]),
+            client_name=Config.CLIENT_NAME,
         )
-        demisto.debug("[API] SAPETDClient initialized")
 
     def send_events(self, events: list[dict[str, Any]]) -> None:
-        """Send events to XSIAM using the ContentClient context.
-
-        Wraps send_events_to_xsiam to keep event sending encapsulated
-        within the client class for consistent logging and diagnostics.
+        """Send events to XSIAM.
 
         Args:
             events: List of event dicts to send.
         """
-        demisto.debug(f"[API] Sending {len(events)} events to XSIAM")
+        demisto.debug(f"[XSIAM] Sending {len(events)} events")
         send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
-        demisto.debug(f"[API] Successfully sent {len(events)} events to XSIAM")
+        demisto.debug(f"[XSIAM] Sent {len(events)} events")
 
-    def get_alerts(
-        self,
-        from_timestamp: str,
-        batch_size: int = Config.DEFAULT_MAX_FETCH,
-    ) -> list[dict]:
-        """Fetch alerts from the SAP ETD Alerts API.
+    def get_alerts(self, from_timestamp: str, batch_size: int = Config.MAX_PAGE_SIZE) -> list[dict]:
+        """Fetch one page of alerts created at or after from_timestamp.
 
         Args:
             from_timestamp: ISO 8601 timestamp to filter alerts from.
@@ -233,29 +327,26 @@ class SAPETDClient(ContentClient):
 
         Returns:
             List of alert dictionaries.
+
+        Raises:
+            DemistoException: If the API does not return a JSON array of alerts.
         """
-        demisto.debug(f"[HTTP Call] GET {ALERTS_ENDPOINT} | from: {from_timestamp} | batch_size: {batch_size}")
-
         params = {
-            "$query": f"AlertCreationTimestamp ge {from_timestamp}",
-            "$format": "JSON",
+            "$query": Config.QUERY_TEMPLATE.format(field=Config.ALERT_TIME_FIELD, timestamp=from_timestamp),
+            "$format": Config.RESPONSE_FORMAT,
             "$batchSize": str(batch_size),
-            "$includeEvents": "true",
+            "$includeEvents": Config.INCLUDE_EVENTS,
         }
+        demisto.debug(f"[API] GET {Config.ALERTS_ENDPOINT} | from: {from_timestamp} | batch size: {batch_size}")
 
-        response = self.get(
-            url_suffix=ALERTS_ENDPOINT,
-            params=params,
-        )
+        # ContentClient.get() returns the raw response object unless resp_type="json" is passed.
+        response = self.get(url_suffix=Config.ALERTS_ENDPOINT, params=params, resp_type="json")
 
-        # The API returns a JSON array of alert objects
-        if isinstance(response, list):
-            demisto.debug(f"[API] Retrieved {len(response)} alerts")
-            return response
+        if not isinstance(response, list):
+            raise DemistoException(Messages.UNEXPECTED_RESPONSE.format(type_name=type(response).__name__))
 
-        # Handle unexpected response format
-        demisto.debug(f"[API] Unexpected response type: {type(response)}. Returning empty list.")
-        return []
+        demisto.debug(f"[API] Retrieved {len(response)} alerts")
+        return response
 
 
 # endregion
@@ -266,112 +357,68 @@ class SAPETDClient(ContentClient):
 # =================================
 
 
-def filter_new_alerts(batch: list[dict[str, Any]], seen_ids: set[Any]) -> list[dict[str, Any]]:
-    """Return only the alerts from a page that have not been collected yet this fetch cycle.
-
-    The Alerts API filters with 'ge' (AlertCreationTimestamp >= from_timestamp) and the next
-    page starts from the last alert's timestamp. When a single timestamp holds more alerts than
-    one page can carry, the alert(s) on the page boundary are returned again at the start of the
-    following page. This filter drops those already-collected alerts so no duplicate is kept.
-
-    Args:
-        batch: Alerts returned for the current page.
-        seen_ids: AlertIds already collected in this fetch cycle. Updated in place with new ids.
-
-    Returns:
-        The subset of batch whose AlertId was not seen before.
-    """
-    new_alerts = [alert for alert in batch if alert.get("AlertId") not in seen_ids]
-    for alert in new_alerts:
-        if (alert_id := alert.get("AlertId")) is not None:
-            seen_ids.add(alert_id)
-    return new_alerts
-
-
 def fetch_alerts_with_pagination(
     client: SAPETDClient,
     from_timestamp: str,
     max_alerts: int = Config.DEFAULT_MAX_FETCH,
 ) -> list[dict[str, Any]]:
-    """Fetch alerts from SAP ETD with pagination support.
-
-    Paginates in batches of Config.MAX_PAGE_SIZE, accumulating results until
-    the desired max_alerts count is reached or no more data is available.
+    """Fetch alerts page by page, moving a timestamp cursor forward, up to max_alerts.
 
     Args:
         client: SAP ETD API client instance.
-        from_timestamp: ISO 8601 timestamp to filter alerts from.
+        from_timestamp: ISO 8601 timestamp to fetch alerts from.
         max_alerts: Maximum number of alerts to return.
 
     Returns:
-        List of alert dicts sorted by AlertCreationTimestamp ascending, limited to max_alerts.
+        Alerts sorted by creation time ascending, limited to max_alerts.
     """
     events: list[dict[str, Any]] = []
     seen_ids: set[Any] = set()
-    page_count = 0
     previous_cursor: str | None = None
-
-    demisto.debug(f"[Pagination Loop] Start. Goal: {max_alerts}. From: {from_timestamp}")
+    page = 0
+    demisto.debug(f"[Pagination] Start from {from_timestamp}, max {max_alerts} alerts")
 
     while len(events) < max_alerts:
-        page_count += 1
-        remaining_needed = max_alerts - len(events)
-        batch_size = min(Config.MAX_PAGE_SIZE, remaining_needed)
-
+        page += 1
+        batch_size = min(Config.MAX_PAGE_SIZE, max_alerts - len(events))
         batch = client.get_alerts(from_timestamp=from_timestamp, batch_size=batch_size)
-
         if not batch:
-            demisto.debug(f"[Pagination Loop] Page {page_count}: Empty. Stopping.")
+            demisto.debug(f"[Pagination] Page {page} is empty. Stopping.")
             break
 
-        # Drop alerts already collected on a previous page (boundary overlap from the 'ge' filter).
         new_alerts = filter_new_alerts(batch, seen_ids)
         events.extend(new_alerts)
         demisto.debug(
-            f"[Pagination Loop] Page {page_count}: +{len(new_alerts)} new alerts "
-            f"({len(batch) - len(new_alerts)} boundary duplicates skipped). Total accumulated: {len(events)}"
+            f"[Pagination] Page {page}: {len(new_alerts)} new, {len(batch) - len(new_alerts)} boundary duplicates. "
+            f"Total: {len(events)}"
         )
 
         if len(batch) < batch_size:
-            demisto.debug("[Pagination Loop] No more alerts available. Stopping.")
+            demisto.debug("[Pagination] Last page reached. Stopping.")
             break
 
-        if len(events) >= max_alerts:
-            demisto.debug(f"[Pagination Loop] Threshold reached ({len(events)} >= {max_alerts}). Stopping.")
+        cursor = batch[-1].get(Config.ALERT_TIME_FIELD)
+        if not cursor:
+            demisto.debug(f"[Pagination] Page {page}: last alert has no timestamp. Stopping.")
             break
 
-        last_alert_timestamp = batch[-1].get("AlertCreationTimestamp")
-        if not last_alert_timestamp:
-            demisto.debug(f"[Pagination Loop] Page {page_count}: Last alert missing timestamp. Stopping.")
+        # A full page sharing one timestamp cannot move the cursor; stop instead of re-fetching the same page.
+        if cursor == previous_cursor and not new_alerts:
+            demisto.debug("[Pagination] Cursor did not advance. Stopping.")
             break
+        previous_cursor = from_timestamp = cursor
 
-        # If a whole page shares one timestamp, the cursor cannot advance and the next request
-        # would return the same page again. Stop once the cursor repeats with nothing new.
-        if last_alert_timestamp == previous_cursor and not new_alerts:
-            demisto.debug("[Pagination Loop] Cursor did not advance and no new alerts returned. Stopping.")
-            break
-
-        # Move the cursor to the last alert's timestamp for the next page.
-        previous_cursor = last_alert_timestamp
-        from_timestamp = last_alert_timestamp
-
-    if not events:
-        demisto.debug("[Pagination Result] No alerts found.")
-        return []
-
-    # Sort by AlertCreationTimestamp ascending
-    events.sort(key=lambda e: e.get("AlertCreationTimestamp", ""))
-
-    # Slice to limit
-    if len(events) > max_alerts:
-        events = events[:max_alerts]
-
-    demisto.debug(f"[Pagination Result] Returning {len(events)} alerts (sorted by AlertCreationTimestamp asc)")
-    return events
+    events.sort(key=lambda event: event.get(Config.ALERT_TIME_FIELD, ""))
+    demisto.debug(f"[Pagination] Done after {page} pages: {len(events)} alerts")
+    # Guards against a server that ignores $batchSize and returns more alerts than requested.
+    return events[:max_alerts]
 
 
 def test_module(client: SAPETDClient) -> str:
     """Test API connectivity by fetching 1 alert.
+
+    Errors are classified by HTTP status code, never by searching the error text, so numbers
+    that happen to contain '401' or '403' are not reported as authorization errors.
 
     Args:
         client: SAP ETD API client instance.
@@ -379,20 +426,22 @@ def test_module(client: SAPETDClient) -> str:
     Returns:
         'ok' if successful, error message otherwise.
     """
-    demisto.debug("[Test Module] Starting connectivity test...")
     try:
-        from_timestamp = parse_date_to_iso(f"{Config.TEST_MODULE_LOOKBACK_MINUTES} minute ago")
+        from_timestamp = parse_date_to_iso(Config.TEST_MODULE_LOOKBACK)
         fetch_alerts_with_pagination(client, from_timestamp=from_timestamp, max_alerts=Config.TEST_MODULE_MAX_EVENTS)
-        demisto.debug("[Test Module] Success - API connection verified")
         return "ok"
 
+    except ValueError:
+        # JSONDecodeError subclasses ValueError: the server answered with something other than JSON.
+        demisto.debug("[Test Module] Non-JSON response")
+        return Messages.NON_JSON_RESPONSE
+
     except Exception as error:
-        error_msg = str(error)
-        demisto.debug(f"[Test Module] Failed: {error_msg}")
-        if "401" in error_msg or "unauthorized" in error_msg.lower():
-            return "Authorization Error: Verify username and password are correct."
-        if "403" in error_msg or "forbidden" in error_msg.lower():
-            return "Authorization Error: User lacks required application privileges."
+        status_code = get_error_status_code(error)
+        # Only the status and error type are logged; the response body may contain server data.
+        demisto.debug(f"[Test Module] Failed with status {status_code} ({type(error).__name__})")
+        if status_code in Messages.HTTP_ERRORS:
+            return Messages.HTTP_ERRORS[HTTPStatus(status_code)]
         raise
 
 
@@ -406,102 +455,59 @@ def get_events_command(client: SAPETDClient, args: dict[str, Any]) -> CommandRes
     Returns:
         CommandResults with alert data, or a string message if events were pushed.
     """
-    demisto.debug("[Command] sap-etd-get-events triggered")
-
-    from_date_input = args.get("from_date", Config.DEFAULT_FIRST_FETCH)
+    from_timestamp = parse_date_to_iso(args.get("from_date", Config.DEFAULT_FIRST_FETCH))
     limit = arg_to_number(args.get("limit", Config.DEFAULT_LIMIT)) or Config.DEFAULT_LIMIT
     should_push_events = argToBoolean(args.get("should_push_events", False))
-
-    from_timestamp = parse_date_to_iso(from_date_input)
-
-    demisto.debug(f"[Command] Params - From: {from_timestamp}, Limit: {limit}, Push: {should_push_events}")
+    demisto.debug(f"[Get Events] From: {from_timestamp} | Limit: {limit} | Push: {should_push_events}")
 
     events = fetch_alerts_with_pagination(client, from_timestamp=from_timestamp, max_alerts=limit)
-
-    demisto.debug(f"[Command] Retrieved {len(events)} events")
 
     if should_push_events and events:
         add_time_to_events(events)
         client.send_events(events)
-        return f"Successfully retrieved and pushed {len(events)} events to XSIAM."
-
-    readable_output = tableToMarkdown(
-        f"{INTEGRATION_NAME} Alerts",
-        events,
-        headers=["AlertId", "AlertSeverity", "AlertStatus", "Category", "PatternName", "AlertCreationTimestamp", "Text", "Score"],
-        removeNull=True,
-    )
+        return Messages.PUSHED_EVENTS.format(count=len(events))
 
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix="SAPETD.Alert",
-        outputs_key_field="AlertId",
+        readable_output=tableToMarkdown(Config.TABLE_TITLE, events, headers=Config.TABLE_HEADERS, removeNull=True),
+        outputs_prefix=Config.OUTPUTS_PREFIX,
+        outputs_key_field=Config.ALERT_ID_FIELD,
         outputs=events,
     )
 
 
 def fetch_events_command(client: SAPETDClient, max_fetch: int) -> None:
-    """Scheduled command to fetch events using high-water mark pattern.
+    """Fetch new alerts since the last run, send them to XSIAM and save the new high-water mark.
 
     Args:
         client: SAP ETD API client instance.
         max_fetch: Maximum number of alerts to fetch per cycle.
     """
-    demisto.debug(f"[Fetch] Starting fetch-events cycle. Max fetch: {max_fetch}")
-
     last_run = demisto.getLastRun()
-    last_fetch_timestamp = last_run.get("last_fetch")
-    raw_ids = last_run.get("last_fetched_alert_ids")
-    last_fetched_alert_ids: list[int] = raw_ids if isinstance(raw_ids, list) else []
+    raw_ids = last_run.get(Config.LAST_RUN_IDS_KEY)
+    last_fetched_ids: list[int] = raw_ids if isinstance(raw_ids, list) else []
+    from_timestamp = last_run.get(Config.LAST_RUN_TIMESTAMP_KEY) or parse_date_to_iso(Config.DEFAULT_FIRST_FETCH)
+    demisto.debug(f"[Fetch] From: {from_timestamp} | Previous AlertIds: {len(last_fetched_ids)} | Max: {max_fetch}")
 
-    if last_fetch_timestamp:
-        from_timestamp = last_fetch_timestamp
-        demisto.debug(
-            f"[Fetch] Continuing from Last Run. Fetching from: {from_timestamp}. "
-            f"Prev AlertId count: {len(last_fetched_alert_ids)}"
-        )
-    else:
-        from_timestamp = parse_date_to_iso(Config.DEFAULT_FIRST_FETCH)
-        demisto.debug(f"[Fetch] First Run - starting from: {from_timestamp}")
-
-    # Fetch alerts (sorted and limited by shared function)
     events = fetch_alerts_with_pagination(client, from_timestamp=from_timestamp, max_alerts=max_fetch)
-
     if not events:
-        demisto.debug("[Fetch] No events found.")
+        demisto.debug("[Fetch] No alerts found.")
         return
 
-    # Deduplicate
-    new_events = deduplicate_events(events, last_fetched_alert_ids)
-
-    if not new_events:
-        demisto.debug("[Fetch] All events were duplicates.")
-    else:
+    new_events = deduplicate_events(events, last_fetched_ids)
+    if new_events:
         add_time_to_events(new_events)
         client.send_events(new_events)
 
-    # Update Last Run - always update based on ALL fetched events (not just new_events)
-    # This ensures we advance the high-water mark even if some/all events were duplicates
-    last_event = events[-1]
-    new_last_fetch = last_event.get("AlertCreationTimestamp")
-
-    if new_last_fetch:
-        # Collect AlertIds at the high-water mark timestamp for deduplication
-        ids_at_hwm = [
-            event.get("AlertId")
-            for event in events
-            if event.get("AlertCreationTimestamp") == new_last_fetch and event.get("AlertId") is not None
-        ]
-
-        demisto.setLastRun(
-            {
-                "last_fetch": new_last_fetch,
-                "last_fetched_alert_ids": ids_at_hwm,
-            }
-        )
-        demisto.debug(f"[Fetch] State updated. New HWM: {new_last_fetch}, AlertIds at HWM: {len(ids_at_hwm)}")
-    else:
-        demisto.debug("[Fetch] Warning: Last event missing AlertCreationTimestamp. State not updated.")
+    # Saved only after a successful send, so a failed send is retried on the next cycle.
+    next_run = build_next_last_run(events)
+    if next_run is None:
+        demisto.debug(f"[Fetch] Last alert has no {Config.ALERT_TIME_FIELD}. Last run not updated.")
+        return
+    demisto.setLastRun(next_run)
+    demisto.debug(
+        f"[Fetch] Last run updated: {next_run[Config.LAST_RUN_TIMESTAMP_KEY]} "
+        f"({len(next_run[Config.LAST_RUN_IDS_KEY])} AlertIds at that timestamp)"
+    )
 
 
 # endregion
@@ -514,44 +520,26 @@ def fetch_events_command(client: SAPETDClient, max_fetch: int) -> None:
 
 def main() -> None:
     """Main entry point for SAP Enterprise Threat Detection integration."""
-    demisto.debug(f"[Main] {INTEGRATION_NAME} integration started")
     command = demisto.command()
-    demisto.debug(f"[Main] Executing command: {command}")
-
-    client: SAPETDClient | None = None
+    demisto.debug(f"[Main] Command: {command}")
 
     try:
-        params = demisto.params()
-        config = parse_integration_params(params)
-
+        config = parse_integration_params(demisto.params())
         client = SAPETDClient(config)
 
-        if command == "test-module":
+        if command == Commands.TEST_MODULE:
             return_results(test_module(client))
-
-        elif command == "fetch-events":
+        elif command == Commands.FETCH_EVENTS:
             fetch_events_command(client, max_fetch=config["max_fetch"])
-
-        elif command == "sap-etd-get-events":
+        elif command == Commands.GET_EVENTS:
             return_results(get_events_command(client, demisto.args()))
-
         else:
-            raise DemistoException(f"Command '{command}' is not implemented.")
+            raise DemistoException(Messages.UNKNOWN_COMMAND.format(command=command))
 
     except Exception as error:
-        error_msg = f"Failed to execute {command}. Error: {str(error)}"
+        error_msg = Messages.COMMAND_FAILED.format(command=command, error=error)
         demisto.error(f"{error_msg}\n{traceback.format_exc()}")
         return_error(error_msg)
-
-    finally:
-        if client:
-            try:
-                report = client.get_diagnostic_report()
-                demisto.debug(f"[Main] Diagnostic Report: {json.dumps(report.__dict__, default=str, indent=2)}")
-            except Exception as e:
-                demisto.debug(f"[Main] Failed to generate diagnostic report: {e}")
-
-        demisto.debug(f"[Main] {INTEGRATION_NAME} integration finished")
 
 
 # endregion
