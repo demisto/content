@@ -4724,7 +4724,7 @@ def extract_sentinelone_zip_file(zip_file_data: bytes, password: str) -> tuple[s
     # We assume only one file was collected, since that's how our integration commands are
     # implemented
 
-    file_names = [name for name in zip_file.namelist() if name != "manifest.json"]
+    file_names = [info.filename for info in zip_file.infolist() if not info.is_dir() and info.filename != "manifest.json"]
     if len(file_names) < 1:
         raise DemistoException("No file found in upload from agent. Perhaps the path submitted is wrong?")
 
