@@ -10,6 +10,7 @@ This integration was integrated and tested with version v1.0 of ExabeamSecOpsPla
 | Client Secret | | True |
 | Trust any certificate (not secure) | | False |
 | Use system proxy settings | | False |
+| Request timeout (seconds) | The HTTP read timeout in seconds for API requests. Increase this value if searches over broad time ranges time out. Default is 60. | False |
 | Fetch incidents | Supported on Cortex XSOAR only. | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Supported on Cortex XSOAR only. | False |
 | Maximum Incidents Per Fetch | Supported on Cortex XSOAR only. This value should not exceed 3,000 due to product's API limitations. | False |
@@ -42,6 +43,7 @@ Get events from Exabeam Security Operations Platform.
 | fields | Comma-separated list of fields to be returned from the search. | Optional |
 | group_by | Comma-separated list of fields by which to group the results. | Optional |
 | limit | The maximal number of results to return. Maximum value is 3000. | Optional |
+| timeout | The HTTP read timeout in seconds for this search request. Overrides the instance "Request timeout (seconds)" parameter. Useful for searches over broad time ranges. | Optional |
 
 #### Context Output
 

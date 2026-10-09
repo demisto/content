@@ -227,6 +227,75 @@ def test_event_search_request(mocker):
     assert result == mocked_response
 
 
+def test_event_search_request_with_timeout(mocker: MockerFixture):
+    """
+    GIVEN:
+        A client and an explicit timeout value.
+    WHEN:
+        'event_search_request' is called with the timeout.
+    THEN:
+        The timeout is forwarded to '_http_request'.
+    """
+    mocker.patch("ExabeamSecOpsPlatform.Client._authenticate")
+    mock_http_request = mocker.patch("ExabeamSecOpsPlatform.Client._http_request", return_value={})
+    client = Client(base_url="https://example-api.com", client_id="id", client_secret="secret", verify=False, proxy=False)
+    client.access_token = "dummy_token"
+
+    client.event_search_request({"key": "value"}, timeout=120)
+
+    assert mock_http_request.call_args.kwargs["timeout"] == 120
+
+
+@pytest.mark.parametrize(
+    "client_kwargs, expected_timeout",
+    [
+        pytest.param({}, 60, id="default timeout"),
+        pytest.param({"timeout": 180}, 180, id="instance parameter timeout"),
+    ],
+)
+def test_client_timeout(mocker: MockerFixture, client_kwargs: dict, expected_timeout: int):
+    """
+    GIVEN:
+        Client initialization with or without a timeout value.
+    WHEN:
+        The client is created.
+    THEN:
+        The client timeout equals the provided value, or the 60 seconds default (instead of the former hardcoded 20).
+    """
+    mocker.patch("ExabeamSecOpsPlatform.Client._authenticate")
+    client = Client(
+        base_url="https://example-api.com", client_id="id", client_secret="secret", verify=False, proxy=False, **client_kwargs
+    )
+
+    assert client.timeout == expected_timeout
+
+
+@pytest.mark.parametrize(
+    "args, expected_timeout",
+    [
+        pytest.param({}, None, id="no timeout argument"),
+        pytest.param({"timeout": "300"}, 300, id="timeout argument override"),
+    ],
+)
+def test_event_search_command_timeout(mocker: MockerFixture, args: dict, expected_timeout: int | None):
+    """
+    GIVEN:
+        'exabeam-platform-event-search' arguments with or without a 'timeout' argument.
+    WHEN:
+        'event_search_command' is called.
+    THEN:
+        The parsed timeout is passed to 'event_search_request' (None falls back to the client timeout).
+    """
+    from ExabeamSecOpsPlatform import event_search_command
+
+    client = MockClient("", "", "", False, False)
+    mock_request = mocker.patch.object(client, "event_search_request", return_value={"rows": []})
+
+    event_search_command(client, {"start_time": "2024-05-01T00:00:00", "end_time": "2024-05-08T00:00:00", **args})
+
+    assert mock_request.call_args.kwargs["timeout"] == expected_timeout
+
+
 @pytest.mark.parametrize(
     "args, expected_output", [({}, 50), ({"limit": None}, 50), ({"limit": 1000}, 1000), ({"limit": 5000}, 3000)]
 )

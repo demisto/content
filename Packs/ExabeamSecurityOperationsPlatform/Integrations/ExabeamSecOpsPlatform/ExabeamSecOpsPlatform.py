@@ -21,6 +21,9 @@ GET_EVENTS_DEFAULT_LIMIT = 10
 GET_EVENTS_DEFAULT_FROM_DATE = "1 hour ago"
 GET_EVENTS_DEFAULT_TO_DATE = "now"
 
+# HTTP request timeout (seconds)
+DEFAULT_REQUEST_TIMEOUT = 60
+
 
 """ CLIENT CLASS """
 
@@ -30,8 +33,16 @@ class Client(BaseClient):
     Exabeam Client: A Python Wrapper for Interacting with the Exabeam API
     """
 
-    def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, proxy: bool):
-        super().__init__(base_url=f"{base_url}", verify=verify, proxy=proxy, timeout=20)
+    def __init__(
+        self,
+        base_url: str,
+        client_id: str,
+        client_secret: str,
+        verify: bool,
+        proxy: bool,
+        timeout: int = DEFAULT_REQUEST_TIMEOUT,
+    ):
+        super().__init__(base_url=f"{base_url}", verify=verify, proxy=proxy, timeout=timeout)
         self.client_id = client_id
         self.client_secret = client_secret
         self.access_token = None
@@ -134,18 +145,24 @@ class Client(BaseClient):
             else:
                 raise
 
-    def event_search_request(self, data_dict: dict) -> dict:
+    def event_search_request(self, data_dict: dict, timeout: int | None = None) -> dict:
         """
-        Performs basic get request to check if the server is reachable.
+        Searches for events in Exabeam.
+
+        Args:
+            data_dict (dict): The search request body.
+            timeout (int | None): HTTP read timeout in seconds for this request.
+                If not provided, the client's default timeout is used.
+
+        Returns:
+            dict: The API response.
         """
         data = json.dumps(data_dict)
         full_url = f"{self._base_url}/search/v2/events"
-        response = self.request(
-            method="POST",
-            full_url=full_url,
-            data=data,
-        )
-        return response
+        request_kwargs: dict[str, Any] = {"method": "POST", "full_url": full_url, "data": data}
+        if timeout:
+            request_kwargs["timeout"] = timeout
+        return self.request(**request_kwargs)
 
     def case_search_request(self, data_dict: dict) -> dict:
         """
@@ -715,7 +732,8 @@ def event_search_command(client: Client, args: dict) -> CommandResults:
         group_list = argToList(group_by)
         kwargs.update({"groupBy": group_list, "fields": group_list})
 
-    response = client.event_search_request(kwargs)
+    timeout = arg_to_number(args.get("timeout"), arg_name="timeout")
+    response = client.event_search_request(kwargs, timeout=timeout)
 
     if error := response.get("errors", {}):
         raise DemistoException(error.get("message"))
@@ -1233,10 +1251,18 @@ def main() -> None:  # pragma: no cover
     base_url = params.get("url", "")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
+    request_timeout = (
+        arg_to_number(params.get("request_timeout"), arg_name="Request timeout (seconds)") or DEFAULT_REQUEST_TIMEOUT
+    )
 
     try:
         client = Client(
-            base_url.rstrip("/"), verify=verify_certificate, client_id=client_id, client_secret=client_secret, proxy=proxy
+            base_url.rstrip("/"),
+            verify=verify_certificate,
+            client_id=client_id,
+            client_secret=client_secret,
+            proxy=proxy,
+            timeout=request_timeout,
         )
 
         demisto.debug(f"Command being called is {command}")
