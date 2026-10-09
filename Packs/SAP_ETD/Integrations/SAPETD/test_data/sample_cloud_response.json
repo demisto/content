@@ -1,0 +1,31 @@
+{
+  "@odata.context": "$metadata#Alerts",
+  "value": [
+    {
+      "AlertId": 7101,
+      "Version": "1.0",
+      "CreationTimestamp": "2026-01-15T15:00:01.1234567Z",
+      "Status": "OPEN",
+      "PatternName": "Brute force attack",
+      "PatternDescription": "The number of failed logons from one terminal ID has exceeded a threshold.",
+      "MinTimestamp": "2026-01-15T14:40:00.0000000Z",
+      "MaxTimestamp": "2026-01-15T14:59:59.0000000Z",
+      "Score": 50,
+      "Threshold": 50,
+      "Measure": 1065
+    },
+    {
+      "AlertId": 7102,
+      "Version": "1.0",
+      "CreationTimestamp": "2026-01-15T15:10:00.0000000Z",
+      "Status": "INVESTIG_TRIGGERED",
+      "PatternName": "Critical authorization assigned",
+      "PatternDescription": "A critical authorization was assigned to a user.",
+      "MinTimestamp": "2026-01-15T15:05:00.0000000Z",
+      "MaxTimestamp": "2026-01-15T15:09:00.0000000Z",
+      "Score": 80,
+      "Threshold": 1,
+      "Measure": 1
+    }
+  ]
+}

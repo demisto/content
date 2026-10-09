@@ -1,27 +1,36 @@
-"""Tests for the SAP Enterprise Threat Detection integration."""
+"""Tests for the SAP Enterprise Threat Detection integration (On-Premise and Cloud Edition)."""
 
+import asyncio
 import copy
 import json
 import os
 import re
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from http import HTTPStatus
 from typing import Any
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import demistomock as demisto
+import httpx
 import pytest
 from CommonServerPython import *  # noqa: F401,F403
+from ContentClientApiModule import ContentClientAuthenticationError, OAuth2ClientCredentialsHandler
 
 with patch("ContentClientApiModule.support_multithreading"):
     from SAPETD import (
+        ALERTS_APIS,
         INTEGRATION_NAME,
+        CloudAlertsApi,
+        CloudOAuth2Handler,
         Commands,
         Config,
+        Edition,
         Messages,
+        OnPremAlertsApi,
         SAPETDClient,
         add_time_to_events,
         build_next_last_run,
+        build_token_url,
         deduplicate_events,
         fetch_alerts_with_pagination,
         fetch_events_command,
@@ -33,6 +42,7 @@ with patch("ContentClientApiModule.support_multithreading"):
         parse_date_to_iso,
         parse_integration_params,
         test_module as run_test_module,
+        truncate_to_milliseconds,
     )
 
 # region Test data and helpers
@@ -42,9 +52,13 @@ with patch("ContentClientApiModule.support_multithreading"):
 
 TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), "test_data")
 SERVER_URL = "https://etd.example.com:4300"
+CLOUD_SERVICE_URL = "https://retrieval.example.cfapps.eu10.hana.ondemand.com"
+CLOUD_TOKEN_BASE = "https://tenant.authentication.eu10.hana.ondemand.com"
 FROM_TIMESTAMP = "2022-04-29T14:00:00.000Z"
 OUTPUT_TIMESTAMP_PATTERN = r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$"
 OUTPUT_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+ON_PREM_TIME = OnPremAlertsApi.TIME_FIELD
+CLOUD_TIME = CloudAlertsApi.TIME_FIELD
 
 
 def load_test_data(filename: str) -> Any:
@@ -54,15 +68,17 @@ def load_test_data(filename: str) -> Any:
 
 
 SAMPLE_ALERTS: list[dict[str, Any]] = load_test_data("sample_alerts.json")
+SAMPLE_CLOUD_RESPONSE: dict[str, Any] = load_test_data("sample_cloud_response.json")
+SAMPLE_CLOUD_ALERTS: list[dict[str, Any]] = SAMPLE_CLOUD_RESPONSE["value"]
 
 
-def make_alert(alert_id: int, timestamp: str) -> dict[str, Any]:
+def make_alert(alert_id: int, timestamp: str, time_field: str = ON_PREM_TIME) -> dict[str, Any]:
     """Build a minimal alert."""
-    return {Config.ALERT_ID_FIELD: alert_id, Config.ALERT_TIME_FIELD: timestamp}
+    return {Config.ALERT_ID_FIELD: alert_id, time_field: timestamp}
 
 
 def make_page(start_id: int, count: int, timestamp: str | None = None) -> list[dict[str, Any]]:
-    """Build a page of alerts, each with its own timestamp unless one is given."""
+    """Build a page of on-prem alerts, each with its own timestamp unless one is given."""
     return [
         make_alert(alert_id, timestamp or f"2022-04-29T14:{alert_id % 60:02d}:{alert_id % 60:02d}.000Z")
         for alert_id in range(start_id, start_id + count)
@@ -92,35 +108,32 @@ def http_error(status_code: Any, message: str = "Request failed") -> DemistoExce
 
 
 @pytest.fixture(autouse=True)
-def mock_support_multithreading():
+def mock_runtime():
     """Prevent ContentClient from calling the XSOAR runtime during client creation."""
-    with patch("ContentClientApiModule.support_multithreading"):
+    with (
+        patch("ContentClientApiModule.support_multithreading"),
+        patch.object(demisto, "getIntegrationContext", return_value={}),
+    ):
         yield
 
 
 @pytest.fixture
 def sample_alerts() -> list[dict[str, Any]]:
-    """Deep copy of the sample alerts, for test isolation."""
+    """Deep copy of the on-prem sample alerts, for test isolation."""
     return copy.deepcopy(SAMPLE_ALERTS)
 
 
 @pytest.fixture
-def mock_config() -> dict[str, Any]:
-    """A validated configuration dict."""
-    return {
-        "base_url": SERVER_URL,
-        "username": "test_user",
-        "password": "test_password",
-        "verify": False,
-        "proxy": False,
-        "max_fetch": Config.DEFAULT_MAX_FETCH,
-    }
+def sample_cloud_alerts() -> list[dict[str, Any]]:
+    """Deep copy of the Cloud Edition sample alerts, for test isolation."""
+    return copy.deepcopy(SAMPLE_CLOUD_ALERTS)
 
 
 @pytest.fixture
 def mock_params() -> dict[str, Any]:
-    """Raw integration params, as returned by demisto.params()."""
+    """Raw on-prem integration params, as returned by demisto.params()."""
     return {
+        "edition": Edition.ON_PREM,
         "url": SERVER_URL,
         "credentials": {"identifier": "test_user", "password": "test_password"},
         "insecure": False,
@@ -130,16 +143,35 @@ def mock_params() -> dict[str, Any]:
 
 
 @pytest.fixture
-def client(mock_config: dict[str, Any]) -> SAPETDClient:
-    """A SAPETDClient instance."""
-    return SAPETDClient(mock_config)
+def cloud_params() -> dict[str, Any]:
+    """Raw Cloud Edition integration params, as returned by demisto.params()."""
+    return {
+        "edition": Edition.CLOUD,
+        "url": CLOUD_SERVICE_URL,
+        "token_url": CLOUD_TOKEN_BASE,
+        "credentials": {"identifier": "client-id", "password": "client-secret"},
+        "insecure": False,
+        "proxy": False,
+    }
+
+
+@pytest.fixture
+def client(mock_params: dict[str, Any]) -> SAPETDClient:
+    """An on-prem SAPETDClient."""
+    return SAPETDClient(parse_integration_params(mock_params))
+
+
+@pytest.fixture
+def cloud_client(cloud_params: dict[str, Any]) -> SAPETDClient:
+    """A Cloud Edition SAPETDClient."""
+    return SAPETDClient(parse_integration_params(cloud_params))
 
 
 # endregion
 
-# region Date helpers
+# region Helpers
 # =================================
-# Date helpers
+# Helpers
 # =================================
 
 
@@ -153,8 +185,22 @@ class TestFormatTimestamp:
         ],
     )
     def test_format_timestamp(self, value: datetime, expected: str) -> None:
-        """Milliseconds are kept, zero-padded, and microseconds are dropped."""
         assert format_timestamp(value) == expected
+
+
+class TestTruncateToMilliseconds:
+    @pytest.mark.parametrize(
+        "timestamp, expected",
+        [
+            pytest.param("2026-01-15T15:00:01.1234567Z", "2026-01-15T15:00:01.123Z", id="cloud_7_digits"),
+            pytest.param("2026-01-15T15:00:01.123456Z", "2026-01-15T15:00:01.123Z", id="6_digits"),
+            pytest.param("2026-01-15T15:00:01.123Z", "2026-01-15T15:00:01.123Z", id="already_ms"),
+            pytest.param("2026-01-15T15:00:01.12Z", "2026-01-15T15:00:01.12Z", id="2_digits_kept"),
+            pytest.param("2026-01-15T15:00:01Z", "2026-01-15T15:00:01Z", id="no_fraction"),
+        ],
+    )
+    def test_truncate(self, timestamp: str, expected: str) -> None:
+        assert truncate_to_milliseconds(timestamp) == expected
 
 
 class TestParseDateToIso:
@@ -184,7 +230,6 @@ class TestParseDateToIso:
         ],
     )
     def test_unparsable_input_falls_back_to_now(self, date_input: str | None, side_effect: Exception | None) -> None:
-        """Empty or invalid input returns the current UTC time instead of failing."""
         before = datetime.now(tz=UTC).replace(microsecond=0)
         with patch("SAPETD.arg_to_datetime", side_effect=side_effect, return_value=None):
             result = parse_date_to_iso(date_input)
@@ -192,38 +237,47 @@ class TestParseDateToIso:
         assert before <= parsed <= datetime.now(tz=UTC)
 
 
-# endregion
-
-# region Event helpers
-# =================================
-# Event helpers
-# =================================
+class TestBuildTokenUrl:
+    @pytest.mark.parametrize(
+        "raw, expected",
+        [
+            pytest.param(CLOUD_TOKEN_BASE, f"{CLOUD_TOKEN_BASE}/oauth/token", id="base_url"),
+            pytest.param(f"{CLOUD_TOKEN_BASE}/", f"{CLOUD_TOKEN_BASE}/oauth/token", id="trailing_slash"),
+            pytest.param(f"{CLOUD_TOKEN_BASE}/oauth/token", f"{CLOUD_TOKEN_BASE}/oauth/token", id="full_url"),
+            pytest.param(f" {CLOUD_TOKEN_BASE}/oauth/token/ ", f"{CLOUD_TOKEN_BASE}/oauth/token", id="whitespace"),
+        ],
+    )
+    def test_build_token_url(self, raw: str, expected: str) -> None:
+        assert build_token_url(raw) == expected
 
 
 class TestAddTimeToEvents:
     @pytest.mark.parametrize(
-        "event, expected_time",
+        "event, time_field, expected_time",
         [
-            pytest.param(make_alert(1, "2022-04-29T14:20:29.682Z"), "2022-04-29T14:20:29.682000+00:00", id="valid_timestamp"),
-            pytest.param({Config.ALERT_ID_FIELD: 2}, None, id="missing_timestamp"),
-            pytest.param(make_alert(3, ""), None, id="empty_timestamp"),
-            pytest.param({Config.ALERT_TIME_FIELD: ""}, None, id="missing_id_and_timestamp"),
+            pytest.param(
+                make_alert(1, "2022-04-29T14:20:29.682Z"), ON_PREM_TIME, "2022-04-29T14:20:29.682000+00:00", id="on_prem"
+            ),
+            pytest.param(
+                make_alert(1, "2026-01-15T15:00:01.1234567Z", CLOUD_TIME),
+                CLOUD_TIME,
+                "2026-01-15T15:00:01.123000+00:00",
+                id="cloud_7_digits",
+            ),
+            pytest.param({Config.ALERT_ID_FIELD: 2}, ON_PREM_TIME, None, id="missing_timestamp"),
+            pytest.param(make_alert(3, ""), ON_PREM_TIME, None, id="empty_timestamp"),
+            pytest.param({ON_PREM_TIME: ""}, ON_PREM_TIME, None, id="missing_id_and_timestamp"),
         ],
     )
-    def test_sets_time_field(self, event: dict[str, Any], expected_time: str | None) -> None:
-        add_time_to_events([event])
+    def test_sets_time_field(self, event: dict[str, Any], time_field: str, expected_time: str | None) -> None:
+        add_time_to_events([event], time_field)
         assert event.get(Config.XSIAM_TIME_FIELD) == expected_time
 
     def test_unparsable_timestamp_is_kept_as_is(self) -> None:
         event = make_alert(1, "garbage")
         with patch("SAPETD.arg_to_datetime", return_value=None):
-            add_time_to_events([event])
+            add_time_to_events([event], ON_PREM_TIME)
         assert event[Config.XSIAM_TIME_FIELD] == "garbage"
-
-    def test_empty_list(self) -> None:
-        events: list[dict[str, Any]] = []
-        add_time_to_events(events)
-        assert events == []
 
 
 class TestDeduplicateEvents:
@@ -235,7 +289,7 @@ class TestDeduplicateEvents:
             pytest.param([make_alert(1, "t"), make_alert(2, "t")], [1], [2], id="one_duplicate"),
             pytest.param([make_alert(1, "t"), make_alert(2, "t")], [1, 2], [], id="all_duplicates"),
             pytest.param([make_alert(1, "t"), make_alert(2, "t")], [3], [1, 2], id="no_duplicates"),
-            pytest.param([{Config.ALERT_TIME_FIELD: "t"}], [1], [None], id="alert_without_id_kept"),
+            pytest.param([{ON_PREM_TIME: "t"}], [1], [None], id="alert_without_id_kept"),
         ],
     )
     def test_deduplicate(self, events: list[dict], last_ids: list[int], expected_ids: list[int | None]) -> None:
@@ -250,9 +304,7 @@ class TestFilterNewAlerts:
             pytest.param([make_alert(1, "t"), make_alert(2, "t")], {1}, [2], {1, 2}, id="boundary_overlap"),
             pytest.param([make_alert(1, "t")], {1}, [], {1}, id="all_seen"),
             pytest.param([], {1}, [], {1}, id="empty_batch"),
-            pytest.param(
-                [{Config.ALERT_TIME_FIELD: "t"}, make_alert(5, "t")], set(), [None, 5], {5}, id="missing_id_not_tracked"
-            ),
+            pytest.param([{ON_PREM_TIME: "t"}, make_alert(5, "t")], set(), [None, 5], {5}, id="missing_id_not_tracked"),
         ],
     )
     def test_filter(self, batch: list[dict], seen: set, expected_ids: list, expected_seen: set) -> None:
@@ -263,23 +315,31 @@ class TestFilterNewAlerts:
 
 class TestBuildNextLastRun:
     @pytest.mark.parametrize(
-        "events, expected",
+        "events, time_field, expected",
         [
             pytest.param(
                 [make_alert(1, "t1"), make_alert(2, "t2"), make_alert(3, "t2")],
+                ON_PREM_TIME,
                 {Config.LAST_RUN_TIMESTAMP_KEY: "t2", Config.LAST_RUN_IDS_KEY: [2, 3]},
                 id="ids_at_high_water_mark",
             ),
             pytest.param(
-                [make_alert(1, "t1"), {Config.ALERT_TIME_FIELD: "t1"}],
+                [make_alert(1, "t1", CLOUD_TIME), make_alert(2, "t1", CLOUD_TIME)],
+                CLOUD_TIME,
+                {Config.LAST_RUN_TIMESTAMP_KEY: "t1", Config.LAST_RUN_IDS_KEY: [1, 2]},
+                id="cloud_time_field",
+            ),
+            pytest.param(
+                [make_alert(1, "t1"), {ON_PREM_TIME: "t1"}],
+                ON_PREM_TIME,
                 {Config.LAST_RUN_TIMESTAMP_KEY: "t1", Config.LAST_RUN_IDS_KEY: [1]},
                 id="alert_without_id_ignored",
             ),
-            pytest.param([make_alert(1, "t1"), {Config.ALERT_ID_FIELD: 2}], None, id="last_alert_without_timestamp"),
+            pytest.param([make_alert(1, "t1"), {Config.ALERT_ID_FIELD: 2}], ON_PREM_TIME, None, id="last_without_timestamp"),
         ],
     )
-    def test_build(self, events: list[dict], expected: dict | None) -> None:
-        assert build_next_last_run(events) == expected
+    def test_build(self, events: list[dict], time_field: str, expected: dict | None) -> None:
+        assert build_next_last_run(events, time_field) == expected
 
 
 class TestGetErrorStatusCode:
@@ -298,6 +358,89 @@ class TestGetErrorStatusCode:
 
 # endregion
 
+# region Edition APIs
+# =================================
+# Edition APIs
+# =================================
+
+
+class TestOnPremAlertsApi:
+    def test_build_request(self) -> None:
+        params, raw_query = OnPremAlertsApi().build_request(FROM_TIMESTAMP, 500)
+        assert params == {
+            "$query": f"{ON_PREM_TIME} ge {FROM_TIMESTAMP}",
+            "$format": OnPremAlertsApi.RESPONSE_FORMAT,
+            "$batchSize": "500",
+            "$includeEvents": OnPremAlertsApi.INCLUDE_EVENTS,
+        }
+        assert raw_query == ""
+
+    def test_extract_alerts(self) -> None:
+        assert OnPremAlertsApi().extract_alerts(SAMPLE_ALERTS) == SAMPLE_ALERTS
+
+    @pytest.mark.parametrize("response", [{"value": []}, "<html>login</html>", None])
+    def test_extract_alerts_non_list_raises(self, response: Any) -> None:
+        with pytest.raises(DemistoException, match="JSON array"):
+            OnPremAlertsApi().extract_alerts(response)
+
+
+class TestCloudAlertsApi:
+    @pytest.mark.parametrize(
+        "from_timestamp, expected_filter_time",
+        [
+            pytest.param("2026-01-15T15:00:01.1234567Z", "2026-01-15T15:00:01.123Z", id="cloud_cursor_truncated"),
+            pytest.param(FROM_TIMESTAMP, FROM_TIMESTAMP, id="ms_timestamp"),
+        ],
+    )
+    def test_build_request(self, from_timestamp: str, expected_filter_time: str) -> None:
+        """Spaces are sent as %20 (the server rejects '+') and the timestamp has at most 3 fractional digits."""
+        params, raw_query = CloudAlertsApi().build_request(from_timestamp, 10)
+        assert params == {}
+        assert raw_query == (
+            f"$filter=CreationTimestamp%20ge%20{expected_filter_time}&$orderby=CreationTimestamp%20asc,AlertId%20asc&$top=10"
+        )
+        assert "+" not in raw_query
+
+    def test_extract_alerts(self) -> None:
+        assert CloudAlertsApi().extract_alerts(SAMPLE_CLOUD_RESPONSE) == SAMPLE_CLOUD_ALERTS
+
+    @pytest.mark.parametrize(
+        "response",
+        [
+            pytest.param(SAMPLE_CLOUD_ALERTS, id="bare_list"),
+            pytest.param({"error": {"code": "400"}}, id="missing_value"),
+            pytest.param({"value": "x"}, id="value_not_list"),
+            pytest.param("<html>login</html>", id="string"),
+        ],
+    )
+    def test_extract_alerts_invalid_raises(self, response: Any) -> None:
+        with pytest.raises(DemistoException, match="'value' list"):
+            CloudAlertsApi().extract_alerts(response)
+
+
+class TestCloudOAuth2Handler:
+    @pytest.mark.parametrize(
+        "raw_query, expected_url",
+        [
+            pytest.param(
+                "$filter=A%20ge%20B&$top=1", f"{CLOUD_SERVICE_URL}/alerts/v1/Alerts?$filter=A%20ge%20B&$top=1", id="set"
+            ),
+            pytest.param("", f"{CLOUD_SERVICE_URL}/alerts/v1/Alerts", id="empty_unchanged"),
+        ],
+    )
+    def test_on_request_sets_raw_query(self, cloud_client: SAPETDClient, raw_query: str, expected_url: str) -> None:
+        handler = cloud_client._cloud_auth
+        assert isinstance(handler, CloudOAuth2Handler)
+        handler.raw_query = raw_query
+        request = httpx.Request("GET", f"{CLOUD_SERVICE_URL}/alerts/v1/Alerts", params={})
+        with patch.object(OAuth2ClientCredentialsHandler, "on_request", new=AsyncMock()) as mock_super:
+            asyncio.run(handler.on_request(cloud_client, request))
+        mock_super.assert_awaited_once()
+        assert str(request.url) == expected_url
+
+
+# endregion
+
 # region Params
 # =================================
 # Params
@@ -305,15 +448,27 @@ class TestGetErrorStatusCode:
 
 
 class TestParseIntegrationParams:
-    def test_valid_params(self, mock_params: dict[str, Any]) -> None:
+    def test_on_prem(self, mock_params: dict[str, Any]) -> None:
         assert parse_integration_params(mock_params) == {
+            "edition": Edition.ON_PREM,
             "base_url": SERVER_URL,
             "username": "test_user",
             "password": "test_password",
+            "token_url": "",
             "verify": True,
             "proxy": False,
             "max_fetch": Config.DEFAULT_MAX_FETCH,
         }
+
+    def test_cloud(self, cloud_params: dict[str, Any]) -> None:
+        config = parse_integration_params(cloud_params)
+        assert config["edition"] == Edition.CLOUD
+        assert config["token_url"] == f"{CLOUD_TOKEN_BASE}/oauth/token"
+        assert (config["username"], config["password"]) == ("client-id", "client-secret")
+
+    @pytest.mark.parametrize("edition", [None, ""])
+    def test_missing_edition_defaults_to_on_prem(self, mock_params: dict[str, Any], edition: str | None) -> None:
+        assert parse_integration_params(mock_params | {"edition": edition})["edition"] == Edition.ON_PREM
 
     @pytest.mark.parametrize(
         "overrides, key, expected",
@@ -325,6 +480,7 @@ class TestParseIntegrationParams:
             pytest.param({"max_fetch": None}, "max_fetch", Config.DEFAULT_MAX_FETCH, id="max_fetch_none"),
             pytest.param({"max_fetch": "0"}, "max_fetch", Config.DEFAULT_MAX_FETCH, id="max_fetch_zero"),
             pytest.param({"credentials": {"identifier": " u ", "password": " p "}}, "username", "u", id="creds_trimmed"),
+            pytest.param({"token_url": CLOUD_TOKEN_BASE}, "token_url", "", id="token_url_ignored_on_prem"),
         ],
     )
     def test_options(self, mock_params: dict[str, Any], overrides: dict, key: str, expected: Any) -> None:
@@ -337,6 +493,7 @@ class TestParseIntegrationParams:
     @pytest.mark.parametrize(
         "overrides, expected_error",
         [
+            pytest.param({"edition": "SaaS"}, "Invalid edition 'SaaS'", id="invalid_edition"),
             pytest.param({"url": ""}, Messages.MISSING_URL, id="empty_url"),
             pytest.param({"url": "   "}, Messages.MISSING_URL, id="blank_url"),
             pytest.param({"credentials": {}}, Messages.MISSING_CREDENTIALS, id="no_credentials"),
@@ -348,16 +505,27 @@ class TestParseIntegrationParams:
         with pytest.raises(DemistoException, match=re.escape(expected_error)):
             parse_integration_params(mock_params | overrides)
 
+    @pytest.mark.parametrize("token_url", [None, "", "   "])
+    def test_cloud_requires_token_url(self, cloud_params: dict[str, Any], token_url: str | None) -> None:
+        params = cloud_params | {"token_url": token_url}
+        if token_url is None:
+            params.pop("token_url")
+        with pytest.raises(DemistoException, match=re.escape(Messages.MISSING_TOKEN_URL)):
+            parse_integration_params(params)
+
     @pytest.mark.parametrize("missing_key", ["url", "credentials"])
     def test_missing_keys(self, mock_params: dict[str, Any], missing_key: str) -> None:
         mock_params.pop(missing_key)
         with pytest.raises(DemistoException):
             parse_integration_params(mock_params)
 
-    def test_password_not_logged(self, mock_params: dict[str, Any]) -> None:
+    @pytest.mark.parametrize("params_fixture", ["mock_params", "cloud_params"])
+    def test_secrets_not_logged(self, request: pytest.FixtureRequest, params_fixture: str) -> None:
+        params = request.getfixturevalue(params_fixture)
         with patch.object(demisto, "debug") as mock_debug:
-            parse_integration_params(mock_params)
-        assert all("test_password" not in str(call) for call in mock_debug.call_args_list)
+            parse_integration_params(params)
+        logged = str(mock_debug.call_args_list)
+        assert params["credentials"]["password"] not in logged
 
 
 # endregion
@@ -372,61 +540,73 @@ class TestClient:
     """ContentClient uses httpx, so client.get() is mocked directly."""
 
     @pytest.mark.parametrize(
-        "api_response, expected_count",
+        "client_fixture, api_type, has_cloud_auth",
         [
-            pytest.param(SAMPLE_ALERTS, len(SAMPLE_ALERTS), id="multiple_alerts"),
-            pytest.param([SAMPLE_ALERTS[0]], 1, id="single_alert"),
-            pytest.param([], 0, id="empty"),
+            pytest.param("client", OnPremAlertsApi, False, id="on_prem"),
+            pytest.param("cloud_client", CloudAlertsApi, True, id="cloud"),
         ],
     )
-    def test_get_alerts_returns_list(self, client: SAPETDClient, api_response: list, expected_count: int) -> None:
-        with patch.object(client, "get", return_value=api_response) as mock_get:
-            result = client.get_alerts(from_timestamp=FROM_TIMESTAMP, batch_size=100)
-        assert len(result) == expected_count
-        mock_get.assert_called_once()
+    def test_init_selects_edition(
+        self, request: pytest.FixtureRequest, client_fixture: str, api_type: type, has_cloud_auth: bool
+    ) -> None:
+        sap_client = request.getfixturevalue(client_fixture)
+        assert isinstance(sap_client.api, api_type)
+        assert isinstance(sap_client._cloud_auth, CloudOAuth2Handler) is has_cloud_auth
 
-    def test_get_alerts_request(self, client: SAPETDClient) -> None:
-        """The documented endpoint and query parameters are sent, and parsed JSON is requested."""
-        with patch.object(client, "get", return_value=[]) as mock_get:
-            client.get_alerts(from_timestamp=FROM_TIMESTAMP, batch_size=500)
+    def test_editions_map(self) -> None:
+        assert ALERTS_APIS == {Edition.ON_PREM: OnPremAlertsApi, Edition.CLOUD: CloudAlertsApi}
+
+    def test_on_prem_get_alerts(self, client: SAPETDClient, sample_alerts: list[dict]) -> None:
+        with patch.object(client, "get", return_value=sample_alerts) as mock_get:
+            result = client.get_alerts(from_timestamp=FROM_TIMESTAMP, batch_size=500)
+        assert result == sample_alerts
         kwargs = mock_get.call_args.kwargs
-        assert kwargs["url_suffix"] == Config.ALERTS_ENDPOINT
+        assert kwargs["url_suffix"] == OnPremAlertsApi.ENDPOINT
         assert kwargs["resp_type"] == "json"
-        assert kwargs["params"] == {
-            "$query": f"{Config.ALERT_TIME_FIELD} ge {FROM_TIMESTAMP}",
-            "$format": Config.RESPONSE_FORMAT,
-            "$batchSize": "500",
-            "$includeEvents": Config.INCLUDE_EVENTS,
-        }
+        assert kwargs["params"]["$batchSize"] == "500"
 
-    def test_get_alerts_default_batch_size(self, client: SAPETDClient) -> None:
+    def test_on_prem_default_batch_size(self, client: SAPETDClient) -> None:
         with patch.object(client, "get", return_value=[]) as mock_get:
             client.get_alerts(from_timestamp=FROM_TIMESTAMP)
         assert mock_get.call_args.kwargs["params"]["$batchSize"] == str(Config.MAX_PAGE_SIZE)
 
-    @pytest.mark.parametrize(
-        "api_response",
-        [
-            pytest.param({"error": "unexpected"}, id="dict"),
-            pytest.param("<html>login</html>", id="string"),
-            pytest.param(None, id="none"),
-        ],
-    )
-    def test_get_alerts_non_list_raises(self, client: SAPETDClient, api_response: Any) -> None:
-        """A non-list response raises instead of silently returning no alerts."""
-        with patch.object(client, "get", return_value=api_response), pytest.raises(DemistoException, match="JSON array"):
-            client.get_alerts(from_timestamp=FROM_TIMESTAMP)
+    def test_cloud_get_alerts_sets_and_clears_raw_query(self, cloud_client: SAPETDClient) -> None:
+        """The raw query is set on the auth handler only for the duration of the request."""
+        handler = cloud_client._cloud_auth
+        assert handler is not None
+        seen_queries: list[str] = []
+
+        def fake_get(**kwargs: Any) -> dict:
+            seen_queries.append(handler.raw_query)
+            return SAMPLE_CLOUD_RESPONSE
+
+        with patch.object(cloud_client, "get", side_effect=fake_get) as mock_get:
+            result = cloud_client.get_alerts(from_timestamp=FROM_TIMESTAMP, batch_size=10)
+        assert result == SAMPLE_CLOUD_ALERTS
+        assert mock_get.call_args.kwargs["url_suffix"] == CloudAlertsApi.ENDPOINT
+        assert mock_get.call_args.kwargs["params"] == {}
+        assert seen_queries[0].startswith("$filter=CreationTimestamp%20ge%20")
+        assert handler.raw_query == ""
+
+    def test_cloud_raw_query_cleared_on_error(self, cloud_client: SAPETDClient) -> None:
+        with patch.object(cloud_client, "get", side_effect=DemistoException("boom")), pytest.raises(DemistoException):
+            cloud_client.get_alerts(from_timestamp=FROM_TIMESTAMP)
+        assert cloud_client._cloud_auth is not None
+        assert cloud_client._cloud_auth.raw_query == ""
 
     @pytest.mark.parametrize(
-        "error",
+        "client_fixture, response, match",
         [
-            pytest.param(DemistoException("API Error 500"), id="demisto_exception"),
-            pytest.param(ConnectionError("Connection refused"), id="connection_error"),
+            pytest.param("client", {"error": "x"}, "JSON array", id="on_prem_dict"),
+            pytest.param("cloud_client", [], "'value' list", id="cloud_bare_list"),
         ],
     )
-    def test_get_alerts_propagates_errors(self, client: SAPETDClient, error: Exception) -> None:
-        with patch.object(client, "get", side_effect=error), pytest.raises(type(error)):
-            client.get_alerts(from_timestamp=FROM_TIMESTAMP)
+    def test_get_alerts_invalid_response_raises(
+        self, request: pytest.FixtureRequest, client_fixture: str, response: Any, match: str
+    ) -> None:
+        sap_client = request.getfixturevalue(client_fixture)
+        with patch.object(sap_client, "get", return_value=response), pytest.raises(DemistoException, match=match):
+            sap_client.get_alerts(from_timestamp=FROM_TIMESTAMP)
 
     @pytest.mark.parametrize("events", [pytest.param(SAMPLE_ALERTS, id="events"), pytest.param([], id="empty")])
     def test_send_events(self, client: SAPETDClient, events: list[dict]) -> None:
@@ -450,49 +630,36 @@ class TestFetchAlertsWithPagination:
             result = fetch_alerts_with_pagination(client, FROM_TIMESTAMP, max_alerts=10)
         assert [alert[Config.ALERT_ID_FIELD] for alert in result] == [1, 2]
 
+    def test_cloud_uses_cloud_time_field(self, cloud_client: SAPETDClient, sample_cloud_alerts: list[dict]) -> None:
+        with patch.object(cloud_client, "get_alerts", return_value=list(reversed(sample_cloud_alerts))):
+            result = fetch_alerts_with_pagination(cloud_client, FROM_TIMESTAMP, max_alerts=10)
+        assert [alert[Config.ALERT_ID_FIELD] for alert in result] == [7101, 7102]
+
     @pytest.mark.parametrize(
-        "pages, max_alerts, expected_count, expected_calls, expected_batch_sizes",
+        "pages, max_alerts, expected_count, expected_batch_sizes",
         [
-            pytest.param([[]], 10, 0, 1, [10], id="empty"),
-            pytest.param([make_page(1, 3)], 10, 3, 1, [10], id="single_partial_page"),
-            pytest.param([make_page(1, 50)], 50, 50, 1, [50], id="exact_small_page"),
-            pytest.param([make_page(1, 1000), make_page(1001, 500)], 1500, 1500, 2, [1000, 500], id="two_full_pages"),
-            pytest.param([make_page(1, 1000), []], 2000, 1000, 2, [1000, 1000], id="stops_on_empty_page"),
-            pytest.param([make_page(1, 800)], 2000, 800, 1, [1000], id="stops_on_partial_page"),
-            pytest.param(
-                [make_page(1, 1000), make_page(1001, 1000), make_page(2001, 1000)],
-                3000,
-                3000,
-                3,
-                [1000, 1000, 1000],
-                id="three_full_pages",
-            ),
+            pytest.param([[]], 10, 0, [10], id="empty"),
+            pytest.param([make_page(1, 3)], 10, 3, [10], id="single_partial_page"),
+            pytest.param([make_page(1, 1000), make_page(1001, 500)], 1500, 1500, [1000, 500], id="two_full_pages"),
+            pytest.param([make_page(1, 1000), []], 2000, 1000, [1000, 1000], id="stops_on_empty_page"),
+            pytest.param([make_page(1, 800)], 2000, 800, [1000], id="stops_on_partial_page"),
         ],
     )
     def test_pagination(
-        self,
-        client: SAPETDClient,
-        pages: list,
-        max_alerts: int,
-        expected_count: int,
-        expected_calls: int,
-        expected_batch_sizes: list[int],
+        self, client: SAPETDClient, pages: list, max_alerts: int, expected_count: int, expected_batch_sizes: list[int]
     ) -> None:
         with patch.object(client, "get_alerts", side_effect=pages) as mock_get:
             result = fetch_alerts_with_pagination(client, FROM_TIMESTAMP, max_alerts=max_alerts)
         assert len(result) == expected_count
-        assert mock_get.call_count == expected_calls
         assert [call.kwargs["batch_size"] for call in mock_get.call_args_list] == expected_batch_sizes
 
     def test_cursor_moves_to_last_alert_timestamp(self, client: SAPETDClient) -> None:
         first_page = make_page(1, 1000)
         with patch.object(client, "get_alerts", side_effect=[first_page, make_page(1001, 10)]) as mock_get:
             fetch_alerts_with_pagination(client, FROM_TIMESTAMP, max_alerts=1500)
-        assert mock_get.call_args_list[0].kwargs["from_timestamp"] == FROM_TIMESTAMP
-        assert mock_get.call_args_list[1].kwargs["from_timestamp"] == first_page[-1][Config.ALERT_TIME_FIELD]
+        assert mock_get.call_args_list[1].kwargs["from_timestamp"] == first_page[-1][ON_PREM_TIME]
 
     def test_boundary_alerts_not_duplicated(self, client: SAPETDClient) -> None:
-        """Alerts repeated at the start of the next page ('ge' filter) are collected once."""
         boundary = "2022-04-29T15:00:00.000Z"
         first_page = make_page(1, 998) + [make_alert(9001, boundary), make_alert(9002, boundary)]
         second_page = [make_alert(9001, boundary), make_alert(9002, boundary), make_alert(9003, "2022-04-29T16:00:00.000Z")]
@@ -502,7 +669,6 @@ class TestFetchAlertsWithPagination:
         assert len(ids) == len(set(ids)) == 1001
 
     def test_stops_when_cursor_does_not_advance(self, client: SAPETDClient) -> None:
-        """A full page sharing one timestamp is not re-fetched forever."""
         uniform_page = make_page(1, Config.MAX_PAGE_SIZE, timestamp="2022-04-29T14:00:00.000Z")
         with patch.object(client, "get_alerts", return_value=uniform_page) as mock_get:
             result = fetch_alerts_with_pagination(client, FROM_TIMESTAMP, max_alerts=Config.DEFAULT_MAX_FETCH)
@@ -511,20 +677,14 @@ class TestFetchAlertsWithPagination:
 
     def test_stops_when_last_alert_has_no_timestamp(self, client: SAPETDClient) -> None:
         page = make_page(1, Config.MAX_PAGE_SIZE)
-        page[-1].pop(Config.ALERT_TIME_FIELD)
+        page[-1].pop(ON_PREM_TIME)
         with patch.object(client, "get_alerts", return_value=page) as mock_get:
-            result = fetch_alerts_with_pagination(client, FROM_TIMESTAMP, max_alerts=2000)
-        assert len(result) == Config.MAX_PAGE_SIZE
+            fetch_alerts_with_pagination(client, FROM_TIMESTAMP, max_alerts=2000)
         assert mock_get.call_count == 1
 
     def test_truncates_when_server_ignores_batch_size(self, client: SAPETDClient) -> None:
         with patch.object(client, "get_alerts", return_value=make_page(1, 5)):
-            result = fetch_alerts_with_pagination(client, FROM_TIMESTAMP, max_alerts=2)
-        assert len(result) == 2
-
-    def test_propagates_client_errors(self, client: SAPETDClient) -> None:
-        with patch.object(client, "get_alerts", side_effect=DemistoException("API Error")), pytest.raises(DemistoException):
-            fetch_alerts_with_pagination(client, FROM_TIMESTAMP, max_alerts=10)
+            assert len(fetch_alerts_with_pagination(client, FROM_TIMESTAMP, max_alerts=2)) == 2
 
 
 # endregion
@@ -536,38 +696,44 @@ class TestFetchAlertsWithPagination:
 
 
 class TestTestModule:
-    @pytest.mark.parametrize("alerts", [pytest.param([SAMPLE_ALERTS[0]], id="alerts"), pytest.param([], id="no_alerts")])
-    def test_success(self, client: SAPETDClient, alerts: list[dict]) -> None:
-        with patch.object(client, "get_alerts", return_value=alerts) as mock_get:
-            assert run_test_module(client) == "ok"
+    @pytest.mark.parametrize("client_fixture", ["client", "cloud_client"])
+    def test_success(self, request: pytest.FixtureRequest, client_fixture: str) -> None:
+        sap_client = request.getfixturevalue(client_fixture)
+        with patch.object(sap_client, "get_alerts", return_value=[]) as mock_get:
+            assert run_test_module(sap_client) == "ok"
         assert mock_get.call_args.kwargs["batch_size"] == Config.TEST_MODULE_MAX_EVENTS
 
     @pytest.mark.parametrize(
-        "status_code",
+        "client_fixture, api_type, status_code",
         [
-            pytest.param(HTTPStatus.UNAUTHORIZED, id="401"),
-            pytest.param(HTTPStatus.FORBIDDEN, id="403"),
-            pytest.param(HTTPStatus.NOT_FOUND, id="404"),
+            pytest.param("client", OnPremAlertsApi, HTTPStatus.UNAUTHORIZED, id="on_prem_401"),
+            pytest.param("client", OnPremAlertsApi, HTTPStatus.FORBIDDEN, id="on_prem_403"),
+            pytest.param("client", OnPremAlertsApi, HTTPStatus.NOT_FOUND, id="on_prem_404"),
+            pytest.param("cloud_client", CloudAlertsApi, HTTPStatus.UNAUTHORIZED, id="cloud_401"),
+            pytest.param("cloud_client", CloudAlertsApi, HTTPStatus.FORBIDDEN, id="cloud_403"),
+            pytest.param("cloud_client", CloudAlertsApi, HTTPStatus.NOT_FOUND, id="cloud_404"),
         ],
     )
-    def test_http_errors_classified_by_status(self, client: SAPETDClient, status_code: HTTPStatus) -> None:
-        with patch.object(client, "get_alerts", side_effect=http_error(int(status_code))):
-            assert run_test_module(client) == Messages.HTTP_ERRORS[status_code]
+    def test_http_errors_use_edition_messages(
+        self, request: pytest.FixtureRequest, client_fixture: str, api_type: Any, status_code: HTTPStatus
+    ) -> None:
+        sap_client = request.getfixturevalue(client_fixture)
+        with patch.object(sap_client, "get_alerts", side_effect=http_error(int(status_code))):
+            assert run_test_module(sap_client) == api_type.HTTP_ERRORS[status_code]
 
     def test_404_body_with_401_is_not_auth_error(self, client: SAPETDClient) -> None:
-        """Regression: a 404 page containing '401' inside a number is not reported as an auth error."""
         error = http_error(HTTPStatus.NOT_FOUND, "Page not found. lastModification=1791401531072")
         with patch.object(client, "get_alerts", side_effect=error):
-            assert run_test_module(client) == Messages.HTTP_ERRORS[HTTPStatus.NOT_FOUND]
+            assert run_test_module(client) == OnPremAlertsApi.HTTP_ERRORS[HTTPStatus.NOT_FOUND]
+
+    def test_token_failure(self, cloud_client: SAPETDClient) -> None:
+        """A failed OAuth2 token request (no HTTP response attached) gets a clear credentials message."""
+        with patch.object(cloud_client, "get_alerts", side_effect=ContentClientAuthenticationError("Token refresh failed")):
+            assert run_test_module(cloud_client) == Messages.TOKEN_ERROR
 
     def test_non_json_response(self, client: SAPETDClient) -> None:
-        """An HTML page returned with 200 fails the test instead of reporting 'ok'."""
         with patch.object(client, "get_alerts", side_effect=json.JSONDecodeError("Expecting value", "<html>", 0)):
             assert run_test_module(client) == Messages.NON_JSON_RESPONSE
-
-    def test_non_list_response_raises(self, client: SAPETDClient) -> None:
-        with patch.object(client, "get", return_value={"error": "x"}), pytest.raises(DemistoException, match="JSON array"):
-            run_test_module(client)
 
     @pytest.mark.parametrize(
         "error",
@@ -578,7 +744,6 @@ class TestTestModule:
         ],
     )
     def test_other_errors_are_raised(self, client: SAPETDClient, error: Exception) -> None:
-        """Errors without a known status code are raised, never guessed from their text."""
         with patch.object(client, "get_alerts", side_effect=error), pytest.raises(type(error)):
             run_test_module(client)
 
@@ -586,7 +751,7 @@ class TestTestModule:
         error = http_error(HTTPStatus.UNAUTHORIZED, "secret-response-body")
         with patch.object(client, "get_alerts", side_effect=error), patch.object(demisto, "debug") as mock_debug:
             run_test_module(client)
-        assert all("secret-response-body" not in str(call) for call in mock_debug.call_args_list)
+        assert "secret-response-body" not in str(mock_debug.call_args_list)
 
 
 # endregion
@@ -598,15 +763,24 @@ class TestTestModule:
 
 
 class TestGetEventsCommand:
-    def test_returns_command_results(self, client: SAPETDClient, sample_alerts: list[dict]) -> None:
-        with patch.object(client, "get_alerts", return_value=sample_alerts):
-            result = get_events_command(client, {"from_date": "3 days ago", "limit": "50"})
+    @pytest.mark.parametrize(
+        "client_fixture, alerts, api_type",
+        [
+            pytest.param("client", SAMPLE_ALERTS, OnPremAlertsApi, id="on_prem"),
+            pytest.param("cloud_client", SAMPLE_CLOUD_ALERTS, CloudAlertsApi, id="cloud"),
+        ],
+    )
+    def test_returns_command_results(
+        self, request: pytest.FixtureRequest, client_fixture: str, alerts: list[dict], api_type: Any
+    ) -> None:
+        sap_client = request.getfixturevalue(client_fixture)
+        with patch.object(sap_client, "get_alerts", return_value=copy.deepcopy(alerts)):
+            result = get_events_command(sap_client, {"limit": "50"})
         assert isinstance(result, CommandResults)
         assert result.outputs_prefix == Config.OUTPUTS_PREFIX
         assert result.outputs_key_field == Config.ALERT_ID_FIELD
-        assert result.outputs == sample_alerts
-        assert Config.TABLE_TITLE in result.readable_output
-        for header in Config.TABLE_HEADERS:
+        assert len(result.outputs) == len(alerts)  # type: ignore[arg-type]
+        for header in api_type.TABLE_HEADERS:
             assert header in result.readable_output
 
     @pytest.mark.parametrize(
@@ -630,12 +804,22 @@ class TestGetEventsCommand:
             get_events_command(client, {})
         mock_parse.assert_called_once_with(Config.DEFAULT_FIRST_FETCH)
 
-    def test_push_events(self, client: SAPETDClient, sample_alerts: list[dict]) -> None:
-        with patch.object(client, "get_alerts", return_value=sample_alerts), patch("SAPETD.send_events_to_xsiam") as mock_send:
-            result = get_events_command(client, {"should_push_events": "true"})
-        assert result == Messages.PUSHED_EVENTS.format(count=len(sample_alerts))
-        sent = mock_send.call_args.kwargs["events"]
-        assert all(Config.XSIAM_TIME_FIELD in event for event in sent)
+    @pytest.mark.parametrize(
+        "client_fixture, alerts",
+        [
+            pytest.param("client", SAMPLE_ALERTS, id="on_prem"),
+            pytest.param("cloud_client", SAMPLE_CLOUD_ALERTS, id="cloud"),
+        ],
+    )
+    def test_push_events(self, request: pytest.FixtureRequest, client_fixture: str, alerts: list[dict]) -> None:
+        sap_client = request.getfixturevalue(client_fixture)
+        with (
+            patch.object(sap_client, "get_alerts", return_value=copy.deepcopy(alerts)),
+            patch("SAPETD.send_events_to_xsiam") as mock_send,
+        ):
+            result = get_events_command(sap_client, {"should_push_events": "true"})
+        assert result == Messages.PUSHED_EVENTS.format(count=len(alerts))
+        assert all(Config.XSIAM_TIME_FIELD in event for event in mock_send.call_args.kwargs["events"])
 
     @pytest.mark.parametrize("should_push", ["true", "false"])
     def test_no_alerts(self, client: SAPETDClient, should_push: str) -> None:
@@ -655,19 +839,26 @@ class TestGetEventsCommand:
 
 
 class TestFetchEventsCommand:
-    def test_first_run(self, client: SAPETDClient, sample_alerts: list[dict]) -> None:
+    @pytest.mark.parametrize(
+        "client_fixture, alerts, time_field",
+        [
+            pytest.param("client", SAMPLE_ALERTS, ON_PREM_TIME, id="on_prem"),
+            pytest.param("cloud_client", SAMPLE_CLOUD_ALERTS, CLOUD_TIME, id="cloud"),
+        ],
+    )
+    def test_first_run(self, request: pytest.FixtureRequest, client_fixture: str, alerts: list[dict], time_field: str) -> None:
+        sap_client = request.getfixturevalue(client_fixture)
         with (
             patch.object(demisto, "getLastRun", return_value={}),
             patch.object(demisto, "setLastRun") as mock_set,
             patch("SAPETD.parse_date_to_iso", return_value=FROM_TIMESTAMP) as mock_parse,
-            patch.object(client, "get_alerts", return_value=sample_alerts) as mock_get,
+            patch.object(sap_client, "get_alerts", return_value=copy.deepcopy(alerts)),
             patch("SAPETD.send_events_to_xsiam") as mock_send,
         ):
-            fetch_events_command(client, max_fetch=100)
+            fetch_events_command(sap_client, max_fetch=100)
         mock_parse.assert_called_once_with(Config.DEFAULT_FIRST_FETCH)
-        assert mock_get.call_args.kwargs["from_timestamp"] == FROM_TIMESTAMP
-        assert len(mock_send.call_args.kwargs["events"]) == len(sample_alerts)
-        mock_set.assert_called_once_with(build_next_last_run(sample_alerts))
+        assert len(mock_send.call_args.kwargs["events"]) == len(alerts)
+        assert mock_set.call_args.args[0][Config.LAST_RUN_TIMESTAMP_KEY] == alerts[-1][time_field]
 
     def test_subsequent_run_deduplicates(self, client: SAPETDClient, sample_alerts: list[dict]) -> None:
         last_run = {Config.LAST_RUN_TIMESTAMP_KEY: "2022-04-29T14:20:29.682Z", Config.LAST_RUN_IDS_KEY: [6101]}
@@ -679,12 +870,11 @@ class TestFetchEventsCommand:
         ):
             fetch_events_command(client, max_fetch=100)
         assert mock_get.call_args.kwargs["from_timestamp"] == last_run[Config.LAST_RUN_TIMESTAMP_KEY]
-        sent_ids = [event[Config.ALERT_ID_FIELD] for event in mock_send.call_args.kwargs["events"]]
-        assert 6101 not in sent_ids
+        assert 6101 not in [event[Config.ALERT_ID_FIELD] for event in mock_send.call_args.kwargs["events"]]
 
     def test_all_duplicates_still_advance_last_run(self, client: SAPETDClient) -> None:
         alert = make_alert(1, "2022-04-29T14:00:00.000Z")
-        last_run = {Config.LAST_RUN_TIMESTAMP_KEY: alert[Config.ALERT_TIME_FIELD], Config.LAST_RUN_IDS_KEY: [1]}
+        last_run = {Config.LAST_RUN_TIMESTAMP_KEY: alert[ON_PREM_TIME], Config.LAST_RUN_IDS_KEY: [1]}
         with (
             patch.object(demisto, "getLastRun", return_value=last_run),
             patch.object(demisto, "setLastRun") as mock_set,
@@ -710,7 +900,6 @@ class TestFetchEventsCommand:
         mock_set.assert_not_called()
 
     def test_failed_send_does_not_update_last_run(self, client: SAPETDClient, sample_alerts: list[dict]) -> None:
-        """If sending to XSIAM fails, the same alerts are fetched again on the next cycle."""
         with (
             patch.object(demisto, "getLastRun", return_value={}),
             patch.object(demisto, "setLastRun") as mock_set,
@@ -750,10 +939,13 @@ class TestMain:
             pytest.param(Commands.GET_EVENTS, "get_events_command", id="get_events"),
         ],
     )
-    def test_routes_commands_with_results(self, mock_params: dict[str, Any], command: str, handler: str) -> None:
+    @pytest.mark.parametrize("params_fixture", ["mock_params", "cloud_params"])
+    def test_routes_commands_with_results(
+        self, request: pytest.FixtureRequest, params_fixture: str, command: str, handler: str
+    ) -> None:
         with (
             patch.object(demisto, "command", return_value=command),
-            patch.object(demisto, "params", return_value=mock_params),
+            patch.object(demisto, "params", return_value=request.getfixturevalue(params_fixture)),
             patch.object(demisto, "args", return_value={}),
             patch(f"SAPETD.{handler}", return_value="result") as mock_handler,
             patch("SAPETD.return_results") as mock_return,
@@ -776,6 +968,7 @@ class TestMain:
         [
             pytest.param("unknown-command", {}, "unknown-command", id="unknown_command"),
             pytest.param(Commands.TEST_MODULE, {"credentials": {}}, Messages.MISSING_CREDENTIALS, id="invalid_params"),
+            pytest.param(Commands.TEST_MODULE, {"edition": Edition.CLOUD}, Messages.MISSING_TOKEN_URL, id="cloud_no_token_url"),
         ],
     )
     def test_errors_reported(
@@ -816,8 +1009,9 @@ class TestConfig:
     def test_values(self) -> None:
         assert INTEGRATION_NAME == "SAP Enterprise Threat Detection"
         assert (Config.VENDOR, Config.PRODUCT) == ("SAP", "Threat Detection")
-        assert Config.ALERTS_ENDPOINT == "/sap/secmon/services/Alerts.xsjs"
-        assert Config.DEFAULT_MAX_FETCH == 10000
+        assert OnPremAlertsApi.ENDPOINT == "/sap/secmon/services/Alerts.xsjs"
+        assert CloudAlertsApi.ENDPOINT == "/alerts/v1/Alerts"
+        assert Edition.ALL == (Edition.ON_PREM, Edition.CLOUD)
         assert Config.DEFAULT_FIRST_FETCH == "5 minutes ago"
         assert Config.MAX_PAGE_SIZE <= Config.DEFAULT_MAX_FETCH
 

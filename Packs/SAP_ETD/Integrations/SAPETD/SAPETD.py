@@ -1,7 +1,9 @@
 # ruff: noqa: F401
+import re
 import traceback
 from http import HTTPStatus
 from typing import Any
+from urllib.parse import quote
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -16,29 +18,33 @@ from ContentClientApiModule import *
 INTEGRATION_NAME = "SAP Enterprise Threat Detection"
 
 
+class Edition:
+    """Supported SAP ETD editions (values of the 'edition' integration parameter)."""
+
+    ON_PREM = "On-Premise"
+    CLOUD = "Cloud Edition"
+    ALL = (ON_PREM, CLOUD)
+
+
 class Config:
-    """Global static configuration."""
+    """Global static configuration shared by both editions."""
 
     VENDOR = "SAP"
     PRODUCT = "Threat Detection"
     CLIENT_NAME = "SAPETDClient"
 
-    # Path of the SAP ETD Alerts API, appended to the Server URL.
-    ALERTS_ENDPOINT = "/sap/secmon/services/Alerts.xsjs"
-    # Alert creation time: used in the $query filter, as the fetch cursor, for sorting, and as the source of _time.
-    ALERT_TIME_FIELD = "AlertCreationTimestamp"
-    # Unique alert identifier: used to deduplicate alerts that share the cursor timestamp across pages and fetch cycles.
+    # Unique alert identifier in both editions: used to deduplicate alerts that share the cursor timestamp.
     ALERT_ID_FIELD = "AlertId"
     # Field read by XSIAM as the event time.
     XSIAM_TIME_FIELD = "_time"
 
-    # Alerts API query parameters (see the SAP ETD Alert Pull API documentation).
-    QUERY_TEMPLATE = "{field} ge {timestamp}"
-    RESPONSE_FORMAT = "JSON"
-    INCLUDE_EVENTS = "true"
-
     # Seconds format; milliseconds are appended separately (see format_timestamp).
     DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
+    # Matches fractional seconds longer than milliseconds (Cloud Edition returns 7 digits).
+    SUB_MILLISECOND_PATTERN = re.compile(r"(\.\d{3})\d+")
+
+    # Path appended to the Cloud Edition token URL (the 'uaa.url' of the service binding) when missing.
+    TOKEN_PATH = "/oauth/token"
 
     DEFAULT_MAX_FETCH = 10000
     MAX_PAGE_SIZE = 1000
@@ -52,16 +58,6 @@ class Config:
     # Command outputs
     OUTPUTS_PREFIX = "SAPETD.Alert"
     TABLE_TITLE = f"{INTEGRATION_NAME} Alerts"
-    TABLE_HEADERS = [
-        ALERT_ID_FIELD,
-        "AlertSeverity",
-        "AlertStatus",
-        "Category",
-        "PatternName",
-        ALERT_TIME_FIELD,
-        "Text",
-        "Score",
-    ]
 
     # Test module settings
     TEST_MODULE_LOOKBACK = "1 minute ago"
@@ -69,24 +65,17 @@ class Config:
 
 
 class Messages:
-    """User-facing messages."""
+    """User-facing messages shared by both editions."""
 
+    INVALID_EDITION = "Invalid edition '{edition}'. Choose one of: {options}."
     MISSING_URL = "Server URL is required. Please provide the SAP ETD server URL."
-    MISSING_CREDENTIALS = "Username and Password are required for Basic Auth."
-    UNEXPECTED_RESPONSE = (
-        "Unexpected response from the SAP ETD Alerts API: expected a JSON array of alerts, "
-        "received {type_name}. Verify the Server URL points to the SAP ETD server."
-    )
+    MISSING_CREDENTIALS = "Both the Username / Client ID and the Password / Client Secret are required."
+    MISSING_TOKEN_URL = "Token URL is required for SAP ETD Cloud Edition (the 'uaa.url' value of the service binding)."
     NON_JSON_RESPONSE = "Connection Error: The server did not return JSON. Verify the Server URL points to the SAP ETD server."
+    TOKEN_ERROR = "Authorization Error: Failed to get an access token. Verify the Token URL, Client ID, and Client Secret."
     PUSHED_EVENTS = "Successfully retrieved and pushed {count} events to XSIAM."
     UNKNOWN_COMMAND = "Command '{command}' is not implemented."
     COMMAND_FAILED = "Failed to execute {command}. Error: {error}"
-    # test-module messages, by HTTP status code
-    HTTP_ERRORS = {
-        HTTPStatus.UNAUTHORIZED: "Authorization Error: Verify username and password are correct.",
-        HTTPStatus.FORBIDDEN: "Authorization Error: User lacks required application privileges (e.g. sap.secmon::AlertRead).",
-        HTTPStatus.NOT_FOUND: f"Connection Error: {Config.ALERTS_ENDPOINT} was not found. Verify the Server URL.",
-    }
 
 
 class Commands:
@@ -97,11 +86,139 @@ class Commands:
     GET_EVENTS = "sap-etd-get-events"
 
 
+class OnPremAlertsApi:
+    """SAP ETD on-premise Alert Pull API: GET Alerts.xsjs with Basic auth, returns a JSON array."""
+
+    EDITION = Edition.ON_PREM
+    ENDPOINT = "/sap/secmon/services/Alerts.xsjs"
+    # Alert creation time: used in the query filter, as the fetch cursor, for sorting, and as the source of _time.
+    TIME_FIELD = "AlertCreationTimestamp"
+    QUERY_TEMPLATE = "{field} ge {timestamp}"
+    RESPONSE_FORMAT = "JSON"
+    INCLUDE_EVENTS = "true"
+    TABLE_HEADERS = [
+        Config.ALERT_ID_FIELD,
+        "AlertSeverity",
+        "AlertStatus",
+        "Category",
+        "PatternName",
+        TIME_FIELD,
+        "Text",
+        "Score",
+    ]
+    UNEXPECTED_RESPONSE = (
+        "Unexpected response from the SAP ETD Alerts API: expected a JSON array of alerts, "
+        "received {type_name}. Verify the Server URL points to the SAP ETD server."
+    )
+    HTTP_ERRORS = {
+        HTTPStatus.UNAUTHORIZED: "Authorization Error: Verify username and password are correct.",
+        HTTPStatus.FORBIDDEN: "Authorization Error: User lacks required application privileges (e.g. sap.secmon::AlertRead).",
+        HTTPStatus.NOT_FOUND: f"Connection Error: {ENDPOINT} was not found. Verify the Server URL.",
+    }
+
+    def build_request(self, from_timestamp: str, batch_size: int) -> tuple[dict[str, str], str]:
+        """Build the query parameters for one page of alerts.
+
+        Args:
+            from_timestamp: ISO 8601 timestamp to fetch alerts from.
+            batch_size: Maximum number of alerts to retrieve.
+
+        Returns:
+            The query parameters dict, and an empty raw query (not used by this edition).
+        """
+        params = {
+            "$query": self.QUERY_TEMPLATE.format(field=self.TIME_FIELD, timestamp=from_timestamp),
+            "$format": self.RESPONSE_FORMAT,
+            "$batchSize": str(batch_size),
+            "$includeEvents": self.INCLUDE_EVENTS,
+        }
+        return params, ""
+
+    def extract_alerts(self, response: Any) -> list[dict]:
+        """Return the alerts from the response, which must be a JSON array.
+
+        Raises:
+            DemistoException: If the response is not a JSON array.
+        """
+        if not isinstance(response, list):
+            raise DemistoException(self.UNEXPECTED_RESPONSE.format(type_name=type(response).__name__))
+        return response
+
+
+class CloudAlertsApi:
+    """SAP ETD Cloud Edition Data Retriever API: OData V4, OAuth2 client credentials, returns {"value": [...]}."""
+
+    EDITION = Edition.CLOUD
+    ENDPOINT = "/alerts/v1/Alerts"
+    # Alert creation time: used in $filter/$orderby, as the fetch cursor, for sorting, and as the source of _time.
+    TIME_FIELD = "CreationTimestamp"
+    # Characters left unescaped so the filter stays readable; spaces must be sent as %20 (the server rejects '+').
+    FILTER_SAFE_CHARS = ":.-"
+    ORDER_BY_SAFE_CHARS = ","
+    FILTER_TEMPLATE = "{field} ge {timestamp}"
+    ORDER_BY_TEMPLATE = "{time_field} asc,{id_field} asc"
+    RESPONSE_ITEMS_KEY = "value"
+    TABLE_HEADERS = [
+        Config.ALERT_ID_FIELD,
+        "Status",
+        "PatternName",
+        TIME_FIELD,
+        "Score",
+        "MinTimestamp",
+        "MaxTimestamp",
+    ]
+    UNEXPECTED_RESPONSE = (
+        "Unexpected response from the SAP ETD Cloud Edition Alerts API: expected an object with a 'value' list, "
+        "received {type_name}. Verify the Server URL is the 'url' value of the Data Retriever service binding."
+    )
+    HTTP_ERRORS = {
+        HTTPStatus.UNAUTHORIZED: "Authorization Error: The access token was rejected. Verify the Client ID and Client Secret.",
+        HTTPStatus.FORBIDDEN: "Authorization Error: The service binding lacks the AlertsInformationRead scope.",
+        HTTPStatus.NOT_FOUND: f"Connection Error: {ENDPOINT} was not found. Verify the Server URL is the service binding 'url'.",
+    }
+
+    def build_request(self, from_timestamp: str, batch_size: int) -> tuple[dict[str, str], str]:
+        """Build the raw OData query string for one page of alerts.
+
+        The query is returned pre-encoded because the HTTP client would encode spaces as '+',
+        which the Cloud Edition server rejects with HTTP 400.
+
+        Args:
+            from_timestamp: ISO 8601 timestamp to fetch alerts from.
+            batch_size: Maximum number of alerts to retrieve.
+
+        Returns:
+            An empty params dict, and the raw query string.
+        """
+        timestamp = truncate_to_milliseconds(from_timestamp)
+        filter_value = quote(self.FILTER_TEMPLATE.format(field=self.TIME_FIELD, timestamp=timestamp), safe=self.FILTER_SAFE_CHARS)
+        order_by = quote(
+            self.ORDER_BY_TEMPLATE.format(time_field=self.TIME_FIELD, id_field=Config.ALERT_ID_FIELD),
+            safe=self.ORDER_BY_SAFE_CHARS,
+        )
+        return {}, f"$filter={filter_value}&$orderby={order_by}&$top={batch_size}"
+
+    def extract_alerts(self, response: Any) -> list[dict]:
+        """Return the alerts from the 'value' list of the OData response.
+
+        Raises:
+            DemistoException: If the response is not an object with a 'value' list.
+        """
+        alerts = response.get(self.RESPONSE_ITEMS_KEY) if isinstance(response, dict) else None
+        if not isinstance(alerts, list):
+            raise DemistoException(self.UNEXPECTED_RESPONSE.format(type_name=type(response).__name__))
+        return alerts
+
+
+AlertsApi = OnPremAlertsApi | CloudAlertsApi
+ALERTS_APIS: dict[str, type[OnPremAlertsApi] | type[CloudAlertsApi]] = {
+    Edition.ON_PREM: OnPremAlertsApi,
+    Edition.CLOUD: CloudAlertsApi,
+}
+
+
 def format_timestamp(value: datetime) -> str:
     """Format a datetime as an ISO 8601 UTC string with millisecond precision.
-
-    The Alerts API documents fractional seconds (e.g. '2026-01-15T15:00:00.00Z') and returns
-    timestamps with milliseconds (e.g. '2022-04-29T14:20:29.682Z'), so microseconds are not sent.
 
     Args:
         value: Timezone-aware or naive (assumed UTC) datetime.
@@ -110,6 +227,18 @@ def format_timestamp(value: datetime) -> str:
         Timestamp string such as '2026-01-15T15:00:00.000Z'.
     """
     return f"{value.strftime(Config.DATE_FORMAT)}.{value.microsecond // 1000:03d}Z"
+
+
+def truncate_to_milliseconds(timestamp: str) -> str:
+    """Drop fractional-second digits beyond milliseconds (e.g. Cloud Edition's 7-digit precision).
+
+    Args:
+        timestamp: ISO 8601 timestamp string.
+
+    Returns:
+        The timestamp with at most 3 fractional digits.
+    """
+    return Config.SUB_MILLISECOND_PATTERN.sub(r"\1", timestamp)
 
 
 def parse_date_to_iso(date_input: str | None) -> str:
@@ -141,21 +270,35 @@ def parse_date_to_iso(date_input: str | None) -> str:
     return result
 
 
-def add_time_to_events(events: list[dict[str, Any]]) -> None:
+def build_token_url(raw_token_url: str) -> str:
+    """Return the OAuth2 token endpoint, appending the token path when only the base URL is given.
+
+    Args:
+        raw_token_url: The 'uaa.url' value of the service binding, with or without the token path.
+
+    Returns:
+        The full token endpoint URL.
+    """
+    token_url = raw_token_url.strip().rstrip("/")
+    return token_url if token_url.endswith(Config.TOKEN_PATH) else f"{token_url}{Config.TOKEN_PATH}"
+
+
+def add_time_to_events(events: list[dict[str, Any]], time_field: str) -> None:
     """Set the XSIAM time field on each event from its creation timestamp.
 
     Args:
         events: Alert dicts, updated in place.
+        time_field: Name of the creation time field for the configured edition.
     """
     for event in events:
-        raw_timestamp = event.get(Config.ALERT_TIME_FIELD)
+        raw_timestamp = event.get(time_field)
         if not raw_timestamp:
             demisto.debug(
-                f"[Event Time] Alert {event.get(Config.ALERT_ID_FIELD, 'unknown')} has no "
-                f"{Config.ALERT_TIME_FIELD}. Skipping {Config.XSIAM_TIME_FIELD}."
+                f"[Event Time] Alert {event.get(Config.ALERT_ID_FIELD, 'unknown')} has no {time_field}. "
+                f"Skipping {Config.XSIAM_TIME_FIELD}."
             )
             continue
-        parsed_time = arg_to_datetime(raw_timestamp)
+        parsed_time = arg_to_datetime(truncate_to_milliseconds(raw_timestamp))
         event[Config.XSIAM_TIME_FIELD] = parsed_time.isoformat() if parsed_time else raw_timestamp
 
 
@@ -181,7 +324,7 @@ def deduplicate_events(events: list[dict[str, Any]], last_fetched_ids: list[int]
 def filter_new_alerts(batch: list[dict[str, Any]], seen_ids: set[Any]) -> list[dict[str, Any]]:
     """Return only the alerts from a page that have not been collected yet in this fetch cycle.
 
-    The Alerts API filters with 'ge' and the next page starts from the last alert's timestamp,
+    The 'ge' filter makes the next page start from the last alert's timestamp,
     so alerts on the page boundary are returned again. This drops those already-collected alerts.
 
     Args:
@@ -196,25 +339,26 @@ def filter_new_alerts(batch: list[dict[str, Any]], seen_ids: set[Any]) -> list[d
     return new_alerts
 
 
-def build_next_last_run(events: list[dict[str, Any]]) -> dict[str, Any] | None:
+def build_next_last_run(events: list[dict[str, Any]], time_field: str) -> dict[str, Any] | None:
     """Build the next last run from the alerts of the current cycle.
 
     Uses all fetched alerts (not only the new ones) so the high-water mark always advances.
 
     Args:
         events: Alerts of the current cycle, sorted by creation time.
+        time_field: Name of the creation time field for the configured edition.
 
     Returns:
         The last run dict, or None when the last alert has no creation timestamp.
     """
-    high_water_mark = events[-1].get(Config.ALERT_TIME_FIELD)
+    high_water_mark = events[-1].get(time_field)
     if not high_water_mark:
         return None
 
     ids_at_high_water_mark = [
         event[Config.ALERT_ID_FIELD]
         for event in events
-        if event.get(Config.ALERT_TIME_FIELD) == high_water_mark and event.get(Config.ALERT_ID_FIELD) is not None
+        if event.get(time_field) == high_water_mark and event.get(Config.ALERT_ID_FIELD) is not None
     ]
     return {Config.LAST_RUN_TIMESTAMP_KEY: high_water_mark, Config.LAST_RUN_IDS_KEY: ids_at_high_water_mark}
 
@@ -247,11 +391,16 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         params: Raw parameters dict from demisto.params().
 
     Returns:
-        Validated configuration dict with keys: base_url, username, password, verify, proxy, max_fetch.
+        Validated configuration dict with keys: edition, base_url, username, password, token_url,
+        verify, proxy, max_fetch. For Cloud Edition, username and password hold the client ID and secret.
 
     Raises:
-        DemistoException: If required parameters are missing.
+        DemistoException: If required parameters are missing or invalid.
     """
+    edition = params.get("edition") or Edition.ON_PREM
+    if edition not in Edition.ALL:
+        raise DemistoException(Messages.INVALID_EDITION.format(edition=edition, options=", ".join(Edition.ALL)))
+
     base_url = params.get("url", "").strip().rstrip("/")
     if not base_url:
         raise DemistoException(Messages.MISSING_URL)
@@ -262,17 +411,29 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     if not username or not password:
         raise DemistoException(Messages.MISSING_CREDENTIALS)
 
+    token_url = ""
+    if edition == Edition.CLOUD:
+        raw_token_url = params.get("token_url", "").strip()
+        if not raw_token_url:
+            raise DemistoException(Messages.MISSING_TOKEN_URL)
+        token_url = build_token_url(raw_token_url)
+
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
     max_fetch = arg_to_number(params.get("max_fetch", Config.DEFAULT_MAX_FETCH)) or Config.DEFAULT_MAX_FETCH
 
     # Credentials are intentionally not logged.
-    demisto.debug(f"[Config] URL: {base_url} | Verify: {verify_certificate} | Proxy: {proxy} | Max fetch: {max_fetch}")
+    demisto.debug(
+        f"[Config] Edition: {edition} | URL: {base_url} | Token URL: {token_url or 'n/a'} | "
+        f"Verify: {verify_certificate} | Proxy: {proxy} | Max fetch: {max_fetch}"
+    )
 
     return {
+        "edition": edition,
         "base_url": base_url,
         "username": username,
         "password": password,
+        "token_url": token_url,
         "verify": verify_certificate,
         "proxy": proxy,
         "max_fetch": max_fetch,
@@ -287,24 +448,57 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
 # =================================
 
 
+class CloudOAuth2Handler(OAuth2ClientCredentialsHandler):
+    """OAuth2 client credentials handler that also sets a pre-encoded query string on each request.
+
+    ContentClient encodes query parameters with '+' for spaces, which the Cloud Edition OData
+    server rejects with HTTP 400. The client sets raw_query before each call, and this handler
+    writes it onto the request after the HTTP client has built it.
+    """
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.raw_query = ""
+
+    async def on_request(self, client: "ContentClient", request: httpx.Request) -> None:
+        await super().on_request(client, request)
+        if self.raw_query:
+            request.url = request.url.copy_with(query=self.raw_query.encode("ascii"))
+
+
 class SAPETDClient(ContentClient):
-    """SAP Enterprise Threat Detection API client.
+    """SAP Enterprise Threat Detection API client for the on-premise and Cloud editions.
 
     Extends ContentClient for built-in retry logic, rate limit handling,
     authentication, and thread safety.
     """
 
     def __init__(self, config: dict[str, Any]):
-        """Initialize the client with Basic authentication.
+        """Initialize the client with the authentication of the configured edition.
 
         Args:
             config: Validated configuration dict from parse_integration_params.
         """
+        self.api: AlertsApi = ALERTS_APIS[config["edition"]]()
+        self._cloud_auth: CloudOAuth2Handler | None = None
+        auth_handler: AuthHandler
+
+        if config["edition"] == Edition.CLOUD:
+            self._cloud_auth = CloudOAuth2Handler(
+                token_url=config["token_url"],
+                client_id=config["username"],
+                client_secret=config["password"],
+                context_store=ContentClientContextStore(namespace=Config.CLIENT_NAME),
+            )
+            auth_handler = self._cloud_auth
+        else:
+            auth_handler = BasicAuthHandler(username=config["username"], password=config["password"])
+
         super().__init__(
             base_url=config["base_url"],
             verify=config["verify"],
             proxy=config["proxy"],
-            auth_handler=BasicAuthHandler(username=config["username"], password=config["password"]),
+            auth_handler=auth_handler,
             client_name=Config.CLIENT_NAME,
         )
 
@@ -329,24 +523,26 @@ class SAPETDClient(ContentClient):
             List of alert dictionaries.
 
         Raises:
-            DemistoException: If the API does not return a JSON array of alerts.
+            DemistoException: If the API response does not have the expected shape.
         """
-        params = {
-            "$query": Config.QUERY_TEMPLATE.format(field=Config.ALERT_TIME_FIELD, timestamp=from_timestamp),
-            "$format": Config.RESPONSE_FORMAT,
-            "$batchSize": str(batch_size),
-            "$includeEvents": Config.INCLUDE_EVENTS,
-        }
-        demisto.debug(f"[API] GET {Config.ALERTS_ENDPOINT} | from: {from_timestamp} | batch size: {batch_size}")
+        params, raw_query = self.api.build_request(from_timestamp, batch_size)
+        demisto.debug(f"[API] GET {self.api.ENDPOINT} ({self.api.EDITION}) | from: {from_timestamp} | batch size: {batch_size}")
 
-        # ContentClient.get() returns the raw response object unless resp_type="json" is passed.
-        response = self.get(url_suffix=Config.ALERTS_ENDPOINT, params=params, resp_type="json")
+        self._set_raw_query(raw_query)
+        try:
+            # ContentClient.get() returns the raw response object unless resp_type="json" is passed.
+            response = self.get(url_suffix=self.api.ENDPOINT, params=params, resp_type="json")
+        finally:
+            self._set_raw_query("")
 
-        if not isinstance(response, list):
-            raise DemistoException(Messages.UNEXPECTED_RESPONSE.format(type_name=type(response).__name__))
+        alerts = self.api.extract_alerts(response)
+        demisto.debug(f"[API] Retrieved {len(alerts)} alerts")
+        return alerts
 
-        demisto.debug(f"[API] Retrieved {len(response)} alerts")
-        return response
+    def _set_raw_query(self, raw_query: str) -> None:
+        """Set the pre-encoded query string used by the Cloud Edition auth handler, if any."""
+        if self._cloud_auth:
+            self._cloud_auth.raw_query = raw_query
 
 
 # endregion
@@ -372,6 +568,7 @@ def fetch_alerts_with_pagination(
     Returns:
         Alerts sorted by creation time ascending, limited to max_alerts.
     """
+    time_field = client.api.TIME_FIELD
     events: list[dict[str, Any]] = []
     seen_ids: set[Any] = set()
     previous_cursor: str | None = None
@@ -397,7 +594,7 @@ def fetch_alerts_with_pagination(
             demisto.debug("[Pagination] Last page reached. Stopping.")
             break
 
-        cursor = batch[-1].get(Config.ALERT_TIME_FIELD)
+        cursor = batch[-1].get(time_field)
         if not cursor:
             demisto.debug(f"[Pagination] Page {page}: last alert has no timestamp. Stopping.")
             break
@@ -408,9 +605,9 @@ def fetch_alerts_with_pagination(
             break
         previous_cursor = from_timestamp = cursor
 
-    events.sort(key=lambda event: event.get(Config.ALERT_TIME_FIELD, ""))
+    events.sort(key=lambda event: event.get(time_field, ""))
     demisto.debug(f"[Pagination] Done after {page} pages: {len(events)} alerts")
-    # Guards against a server that ignores $batchSize and returns more alerts than requested.
+    # Guards against a server that ignores the page size and returns more alerts than requested.
     return events[:max_alerts]
 
 
@@ -440,8 +637,11 @@ def test_module(client: SAPETDClient) -> str:
         status_code = get_error_status_code(error)
         # Only the status and error type are logged; the response body may contain server data.
         demisto.debug(f"[Test Module] Failed with status {status_code} ({type(error).__name__})")
-        if status_code in Messages.HTTP_ERRORS:
-            return Messages.HTTP_ERRORS[HTTPStatus(status_code)]
+        if status_code in client.api.HTTP_ERRORS:
+            return client.api.HTTP_ERRORS[HTTPStatus(status_code)]
+        if status_code is None and isinstance(error, ContentClientAuthenticationError):
+            # Raised without a response when the OAuth2 token request fails.
+            return Messages.TOKEN_ERROR
         raise
 
 
@@ -463,12 +663,12 @@ def get_events_command(client: SAPETDClient, args: dict[str, Any]) -> CommandRes
     events = fetch_alerts_with_pagination(client, from_timestamp=from_timestamp, max_alerts=limit)
 
     if should_push_events and events:
-        add_time_to_events(events)
+        add_time_to_events(events, client.api.TIME_FIELD)
         client.send_events(events)
         return Messages.PUSHED_EVENTS.format(count=len(events))
 
     return CommandResults(
-        readable_output=tableToMarkdown(Config.TABLE_TITLE, events, headers=Config.TABLE_HEADERS, removeNull=True),
+        readable_output=tableToMarkdown(Config.TABLE_TITLE, events, headers=client.api.TABLE_HEADERS, removeNull=True),
         outputs_prefix=Config.OUTPUTS_PREFIX,
         outputs_key_field=Config.ALERT_ID_FIELD,
         outputs=events,
@@ -482,6 +682,7 @@ def fetch_events_command(client: SAPETDClient, max_fetch: int) -> None:
         client: SAP ETD API client instance.
         max_fetch: Maximum number of alerts to fetch per cycle.
     """
+    time_field = client.api.TIME_FIELD
     last_run = demisto.getLastRun()
     raw_ids = last_run.get(Config.LAST_RUN_IDS_KEY)
     last_fetched_ids: list[int] = raw_ids if isinstance(raw_ids, list) else []
@@ -495,13 +696,13 @@ def fetch_events_command(client: SAPETDClient, max_fetch: int) -> None:
 
     new_events = deduplicate_events(events, last_fetched_ids)
     if new_events:
-        add_time_to_events(new_events)
+        add_time_to_events(new_events, time_field)
         client.send_events(new_events)
 
     # Saved only after a successful send, so a failed send is retried on the next cycle.
-    next_run = build_next_last_run(events)
+    next_run = build_next_last_run(events, time_field)
     if next_run is None:
-        demisto.debug(f"[Fetch] Last alert has no {Config.ALERT_TIME_FIELD}. Last run not updated.")
+        demisto.debug(f"[Fetch] Last alert has no {time_field}. Last run not updated.")
         return
     demisto.setLastRun(next_run)
     demisto.debug(

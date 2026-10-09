@@ -10,18 +10,35 @@ sectionorder:
 - Connect
 - Collect
 configuration:
+- name: edition
+  display: SAP ETD Edition
+  required: true
+  type: 15
+  section: Connect
+  defaultvalue: On-Premise
+  options:
+  - On-Premise
+  - Cloud Edition
+  additionalinfo: On-Premise uses Basic authentication against Alerts.xsjs. Cloud Edition uses OAuth2 client credentials against the Data Retriever service.
 - name: url
   display: Server URL
   required: true
   type: 0
   section: Connect
-  additionalinfo: The SAP ETD server URL (e.g., https://<Server_Host>:<Port>).
+  additionalinfo: 'On-Premise: the SAP ETD server URL (e.g., https://<Server_Host>:<Port>). Cloud Edition: the "url" value of the Data Retriever service binding.'
 - name: credentials
-  display: Username
+  display: Username / Client ID
+  displaypassword: Password / Client Secret
   required: true
   type: 9
   section: Connect
-  additionalinfo: Basic authentication credentials for the SAP ETD API.
+  additionalinfo: 'On-Premise: the user name and password. Cloud Edition: the "uaa.clientid" and "uaa.clientsecret" values of the service binding.'
+- name: token_url
+  display: Token URL (Cloud Edition only)
+  required: false
+  type: 0
+  section: Connect
+  additionalinfo: The "uaa.url" value of the service binding. /oauth/token is appended when missing. Required for Cloud Edition.
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
@@ -66,9 +83,9 @@ script:
     - name: from_date
       description: >-
         The start date/time to fetch alerts from.
-        Supports relative time (e.g., "3 days ago", "2 hours ago")
+        Supports relative time (e.g., "5 minutes ago", "2 hours ago")
         or specific ISO 8601 dates (e.g., "2026-01-15T15:00:00.00Z").
-      defaultValue: "3 days ago"
+      defaultValue: "5 minutes ago"
     - name: limit
       description: The maximum number of alerts to retrieve.
       defaultValue: "50"
@@ -84,26 +101,38 @@ script:
       description: The unique identifier of the alert.
       type: Number
     - contextPath: SAPETD.Alert.AlertSeverity
-      description: The severity level of the alert. Can be LOW, MEDIUM, or HIGH.
+      description: 'On-Premise only: the severity level of the alert. Can be LOW, MEDIUM, or HIGH.'
       type: String
     - contextPath: SAPETD.Alert.AlertStatus
-      description: The current status of the alert. Can be OPEN or CLOSED.
+      description: 'On-Premise only: the current status of the alert. Can be OPEN or CLOSED.'
       type: String
     - contextPath: SAPETD.Alert.Category
-      description: The category of the alert, such as Brute Force Attack.
+      description: 'On-Premise only: the category of the alert, such as Brute Force Attack.'
       type: String
     - contextPath: SAPETD.Alert.PatternName
       description: The name of the detection pattern that triggered the alert.
       type: String
     - contextPath: SAPETD.Alert.AlertCreationTimestamp
-      description: The date and time the alert was created (ISO 8601).
+      description: 'On-Premise only: the date and time the alert was created (ISO 8601).'
       type: String
     - contextPath: SAPETD.Alert.Text
-      description: A human-readable description of the alert.
+      description: 'On-Premise only: a human-readable description of the alert.'
       type: String
     - contextPath: SAPETD.Alert.Score
       description: The alert score value.
       type: Number
+    - contextPath: SAPETD.Alert.Status
+      description: 'Cloud Edition only: the current status of the alert, such as OPEN, NO_REACTION_NEEDED_T, INVESTIG_TRIGGERED, or EXEMPTED.'
+      type: String
+    - contextPath: SAPETD.Alert.CreationTimestamp
+      description: 'Cloud Edition only: the date and time the alert was created (ISO 8601).'
+      type: String
+    - contextPath: SAPETD.Alert.MinTimestamp
+      description: The time of the first event that triggered the alert (ISO 8601).
+      type: String
+    - contextPath: SAPETD.Alert.MaxTimestamp
+      description: The time of the last event that triggered the alert (ISO 8601).
+      type: String
   isfetchevents: true
   runonce: false
   script: ''
