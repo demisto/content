@@ -3978,7 +3978,7 @@ def list_agents_command(client: Client, args: dict) -> CommandResults:
         for field_value in param_list:
             f = field_value.split("=")[0]
             v = field_value.split("=")[1]
-        query_params.update({f: v})
+            query_params.update({f: v})
     query_params.update(
         assign_params(
             active_threats=args.get("min_active_threats"),
