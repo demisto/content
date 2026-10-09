@@ -1,3 +1,10 @@
+### **Integration Author: CSC**
+
+- **Email:** [domain_api_support@cscglobal.com](mailto:domain_api_support@cscglobal.com)
+- **Website:** [https://www.cscdbs.com](https://www.cscdbs.com)
+
+## Auto generated integration
+
 1. Name: Give a name to the integration instance.
 2. Base URL: Enter the endpoint URL.
 3. Token: Enter the token.

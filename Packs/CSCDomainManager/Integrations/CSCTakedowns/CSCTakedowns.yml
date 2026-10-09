@@ -1,0 +1,165 @@
+commonfields:
+  id: CSCTakedowns
+  version: -1
+name: CSCTakedowns
+display: CSCTakedowns
+category: IT Services
+supportlevelheader: developer
+description: CSCTakedowns is an integration that enables rapid submission, management, and remediation of takedown requests for malicious domains, phishing, vishing, smishing, fraud, and brand impersonation threats.
+configuration:
+- name: url
+  display: Server URL
+  defaultvalue: https://apis.cscglobal.com/dbs/fraud-protection/v1/fraud-protection-api/external/v3
+  type: 0
+  required: true
+- name: api_key
+  display: API Key
+  defaultvalue: ''
+  type: 4
+  required: true
+- name: insecure
+  display: Trust any certificate (not secure)
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  defaultvalue: 'false'
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.13.8428455
+  isfetch: false
+  commands:
+  - name: csctakedowns-fetchthephishkitdatawithticketid
+    description: Fetch the phishkit data with ticketId
+    arguments:
+    - name: ticketId
+      description: Ticket Id to fetch phishkit
+      required: true
+      isArray: false
+  - name: csctakedowns-fetchthescreenshotdatawithticketid
+    description: Fetch the screenshot data with ticketId
+    arguments:
+    - name: ticketId
+      description: Ticket Id to fetch screenshot
+      required: true
+      isArray: false
+  - name: csctakedowns-gethtmlsourcecodeforaticket
+    description: Get HTML Source Code for a Ticket
+    arguments:
+    - name: ticketId
+      description: Ticket ID to fetch HTML source
+      required: true
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: CSCTakedowns.message
+      description: ''
+    - type: String
+      contextPath: CSCTakedowns.status
+      description: ''
+  - name: csctakedowns-listofworklogsforticketid
+    description: List of work logs for ticket id
+    arguments:
+    - name: ticketId
+      description: Ticket ID to fetch work log details
+      required: true
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: CSCTakedowns.message
+      description: ''
+    - type: String
+      contextPath: CSCTakedowns.status
+      description: ''
+  - name: csctakedowns-listtakedownevents
+    description: List Takedown Events
+    arguments:
+    - name: fromDate
+      description: Start date in YYYY-MM-DD format
+      required: true
+      isArray: false
+    - name: toDate
+      description: End date in YYYY--MM--DD format
+      required: true
+      isArray: false
+    - name: page
+      description: page size
+      required: false
+      isArray: false
+    - name: limit
+      description: Limit between 100 and 500, default = 100
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: CSCTakedowns.message
+      description: ''
+    - type: String
+      contextPath: CSCTakedowns.status
+      description: ''
+  - name: csctakedowns-listtakedowneventswithfilters
+    description: List Takedown events with filters
+    arguments:
+    - name: fromDate
+      description: Start date in YYYY-MM-DD format
+      required: true
+      isArray: false
+    - name: toDate
+      description: End date in YYYY--MM--DD format
+      required: true
+      isArray: false
+    - name: brandId
+      description: Filter by Brand Id
+      required: false
+      isArray: false
+    - name: fraudType
+      description: Type of the Fraud
+      required: false
+      isArray: false
+    - name: ticketStatus
+      description: Ticket Status
+      required: false
+      isArray: false
+    - name: DetectionDate
+      description: Filter by Detection date
+      required: false
+      isArray: false
+    - name: AuthorizationDate
+      description: Filter by Authorization date
+      required: false
+      isArray: false
+    - name: CompletedDate
+      description: Filter by Closed date
+      required: false
+      isArray: false
+    - name: page
+      description: page size
+      required: false
+      isArray: false
+    - name: limit
+      description: Limit between 100 and 500, default = 100
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: CSCTakedowns.message
+      description: ''
+    - type: String
+      contextPath: CSCTakedowns.status
+      description: ''
+  - name: csctakedowns-updatetheactionwithticketid
+    description: Update the action with ticketId
+    arguments:
+    - name: action
+      description: Ticket action
+      required: true
+      isArray: false
+    - name: body
+      description: The raw JSON request body payload
+      required: true
+fromversion: 5.0.0

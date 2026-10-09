@@ -1,0 +1,17 @@
+{
+    "data": [
+        {
+            "data": {
+                "ip": "34.205.231.173",
+                "isp": "Amazon AES",
+                "records": [
+                    {
+                        "recVersion": 2,
+                        "recordType": "A",
+                        "recordValue": "0.0.0.0"
+                    }
+                ]
+            }
+        }
+    ]
+}

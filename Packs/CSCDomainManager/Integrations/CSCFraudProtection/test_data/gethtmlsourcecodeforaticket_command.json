@@ -1,0 +1,10 @@
+{
+    "CSCFraudProtection": {
+        "status": "200",
+        "message": "Updated Successfully",
+        "data": {
+            "ticketId": 62406,
+            "action": "OPEN"
+        }
+    }
+}
