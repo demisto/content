@@ -3377,10 +3377,10 @@ def fetch_security_alerts(proxies: dict) -> List[Dict[str, Any]]:
 
         time_val = get_alert_source_value(source, "@timestamp") or get_alert_source_value(source, str(TIME_FIELD))
         occurred = format_to_iso(parse(str(time_val)).isoformat()) if time_val else None
-        if occurred:
-            occurred_dt = parse_to_utc(occurred)
-            if occurred_dt and (new_last_fetch_dt is None or occurred_dt > new_last_fetch_dt):
-                new_last_fetch_dt = occurred_dt
+
+        occurred_dt = parse_to_utc(time_val)
+        if occurred_dt and (new_last_fetch_dt is None or occurred_dt > new_last_fetch_dt):
+            new_last_fetch_dt = occurred_dt
 
         if alert_uuid and alert_uuid in fetched_alert_ids:
             demisto.debug(f"Skipping already-fetched alert ID: {alert_uuid}")
