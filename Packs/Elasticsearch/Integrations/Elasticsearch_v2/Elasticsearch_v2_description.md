@@ -47,6 +47,7 @@ This integration includes a set of **`es-kibana-*` commands** that let you inter
 - **Case Management** — Create, update, delete, and list Kibana cases; add comments, attach files, and link alerts to cases.
 - **Alerting & Rules** — List rule types, retrieve rules, enable/disable rules, mute/unmute alerts.
 - **Detection Alerts** — Bulk-update the status of security detection alerts (open, acknowledged, closed).
+- **Endpoint Management** — Run commands on endpoints, retrieve response-action details and endpoint metadata, list Fleet agents, and isolate endpoints.
 - **Exception Lists & Items** — Manage Kibana exception lists and their items, including Elastic Endpoint exceptions.
 - **Value Lists** — Create, update, delete, and import/export value lists used in detection rules.
 
