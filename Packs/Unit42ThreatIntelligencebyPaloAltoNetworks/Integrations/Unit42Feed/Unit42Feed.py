@@ -1071,14 +1071,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
 
     cycle_start_time = last_run.get("cycle_start_time") or current_time.strftime(DATE_FORMAT)
 
-    # Parse the indicators fetch limit.
-    indicators_limit = arg_to_number(params.get("limit"))  # noqa: ucp-param-default
-    if indicators_limit is None or indicators_limit <= 0:
-        indicators_limit = TOTAL_INDICATOR_LIMIT
-
-    demisto.debug(
-        f"UNIT42FEED: Starting fetch with {indicators_limit=}, threat_objects_limit={THREAT_OBJECTS_LIMIT}, {feed_types=}"
-    )
+    demisto.debug(f"UNIT42FEED: Starting fetch with {TOTAL_INDICATOR_LIMIT=}, {THREAT_OBJECTS_LIMIT=}, {feed_types=}")
     demisto.debug(f"UNIT42FEED: {indicator_types=}, {start_time=}, {cycle_in_progress=}")
 
     # Incoming per-feed resume tokens from an interrupted fetch.
@@ -1100,7 +1093,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
 
     demisto.debug(
         f"UNIT42FEED: {threat_objects_due=}, threat_objects_token={'set' if threat_objects_token else 'none'}, "
-        f"last_threat_objects_fetch={prev_threat_objects_fetch}"
+        f"{prev_threat_objects_fetch=}"
     )
 
     if cycle_in_progress:
@@ -1127,7 +1120,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
         THREAT_OBJECTS_TYPE in feed_types, cycle_in_progress, threat_objects_token, threat_objects_due
     )
     if should_fetch_threat_objects:
-        demisto.debug(f"UNIT42FEED: Fetching threat objects (limit={THREAT_OBJECTS_LIMIT}, page_token={threat_objects_token})")
+        demisto.debug(f"UNIT42FEED: Fetching threat objects ({THREAT_OBJECTS_LIMIT=}, {threat_objects_token=})")
         threat_objects_fetched, next_page_token = fetch_threat_objects_with_limit(
             client=client,
             limit=THREAT_OBJECTS_LIMIT,
@@ -1140,17 +1133,17 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
         else:
             # TOs fully fetched this run -> reset the 24h window from now.
             threat_objects_completed_at = current_time.strftime(DATE_FORMAT)
-        demisto.debug(f"UNIT42FEED: Fetched {threat_objects_fetched} threat objects (limit {THREAT_OBJECTS_LIMIT}).")
+        demisto.debug(f"UNIT42FEED: Fetched {threat_objects_fetched} threat objects ({THREAT_OBJECTS_LIMIT=}).")
 
     # Then all configured indicator types together in one combined query.
     # On a resumed run only if indicators still had a pending token.
     should_fetch_indicators = _should_fetch_indicators(INDICATORS_TYPE in feed_types, cycle_in_progress, indicators_token)
     if should_fetch_indicators:
-        demisto.debug(f"UNIT42FEED: Fetching indicators (limit={indicators_limit}, page_token={indicators_token})")
+        demisto.debug(f"UNIT42FEED: Fetching indicators ({TOTAL_INDICATOR_LIMIT=}, {indicators_token=})")
         indicators_fetched, next_page_token = fetch_indicator_type(
             client=client,
             indicator_types=indicator_types,
-            limit=indicators_limit,
+            limit=TOTAL_INDICATOR_LIMIT,
             start_time=start_time,
             feed_tags=feed_tags,
             tlp_color=tlp_color,
@@ -1158,7 +1151,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
         )
         if next_page_token:
             page_tokens["indicators"] = next_page_token
-        demisto.debug(f"UNIT42FEED: Fetched {indicators_fetched} indicators (limit {indicators_limit}).")
+        demisto.debug(f"UNIT42FEED: Fetched {indicators_fetched} indicators ({TOTAL_INDICATOR_LIMIT=}).")
 
     if page_tokens:
         next_run = {"start_time": start_time, "cycle_start_time": cycle_start_time, "page_tokens": page_tokens}
