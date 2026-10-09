@@ -8,6 +8,9 @@ from ZscalerZIdentity import (
     Client,
     _filter_and_limit,
     _dbot_score_for_url,
+    _is_html_content_error,
+    _sanitize_url_entry,
+    _sanitize_url_list,
     zia_denylist_list_command,
     zia_denylist_update_command,
     zia_allowlist_list_command,
@@ -476,6 +479,227 @@ class TestCategoryCommands:
         mocker.patch.object(mock_client, "api_request", side_effect=[current_cat, None])
         result = zia_category_update_command(mock_client, {"category_id": "MUSIC", "url": "spotify.com", "action": "ADD_TO_LIST"})
         assert "successfully updated" in result.readable_output
+
+    def test_update_does_not_mutate_payload_when_put_succeeds(self, mock_client, mocker):
+        """
+        Given: A category whose stored URLs contain an HTML entity (e.g. '&amp;')
+            AND the Zscaler API currently accepts the payload (older API version
+            or entry that happens not to trigger the new validation).
+        When: zia_category_update_command is called with ADD_TO_LIST.
+        Then: The PUT is made exactly once with the entity-encoded value sent
+            as-is - we do NOT eagerly rewrite stored data. This preserves
+            backward compatibility for customers whose updates currently work.
+        """
+        current_cat = {
+            "id": "CUSTOM_52",
+            "configuredName": "XSOAR_BLOCK_URL",
+            "superCategory": "USER_DEFINED",
+            "customCategory": True,
+            "urls": [
+                ".docs.google.com/uc?export=download&amp;id=1rurGpZk9RePT7V1iQJfK1la41MuyBTYK",
+            ],
+            "ipRanges": [],
+        }
+        api_request_mock = mocker.patch.object(mock_client, "api_request", side_effect=[current_cat, None])
+        zia_category_update_command(
+            mock_client,
+            {"category_id": "CUSTOM_52", "url": "arunkumar1.com", "action": "ADD_TO_LIST"},
+        )
+        # Exactly 2 calls: GET (fetch current) + PUT (update). No retry.
+        assert api_request_mock.call_count == 2
+        put_call = api_request_mock.call_args_list[1]
+        payload = put_call.kwargs.get("data") or put_call.args[2]
+        urls_sent = payload["urls"]
+        # Original entity-encoded value is preserved exactly - no silent mutation.
+        assert ".docs.google.com/uc?export=download&amp;id=1rurGpZk9RePT7V1iQJfK1la41MuyBTYK" in urls_sent
+        assert "arunkumar1.com" in urls_sent
+
+    def test_update_retries_with_decoded_urls_on_html_content_error(self, mock_client, mocker):
+        """
+        Given: A category whose stored URLs contain HTML-encoded entities
+            (e.g. '&amp;') and Zscaler rejects the first PUT with
+            INVALID_INPUT_ARGUMENT "URLs must not contain HTML content".
+        When: zia_category_update_command is called with ADD_TO_LIST.
+        Then: The command does NOT propagate the error; it retries the PUT
+            with HTML entities decoded in the URL list only. The ipRanges
+            list is sent back untouched because Zscaler's error is explicitly
+            scoped to URLs.
+        """
+        current_cat = {
+            "id": "CUSTOM_52",
+            "configuredName": "XSOAR_BLOCK_URL",
+            "superCategory": "USER_DEFINED",
+            "customCategory": True,
+            "urls": [
+                ".docs.google.com/uc?export=download&amp;id=1rurGpZk9RePT7V1iQJfK1la41MuyBTYK",
+                ".clean.example.com",
+            ],
+            "ipRanges": [],
+        }
+        html_err = DemistoException(
+            "The request failed with error 400.\nMessage: "
+            '{"code":"INVALID_INPUT_ARGUMENT","message":"URLs must not contain HTML content"}'
+        )
+        api_request_mock = mocker.patch.object(
+            mock_client,
+            "api_request",
+            side_effect=[current_cat, html_err, None],
+        )
+        zia_category_update_command(
+            mock_client,
+            {"category_id": "CUSTOM_52", "url": "arunkumar1.com", "action": "ADD_TO_LIST"},
+        )
+        # 3 calls: GET, first PUT (fails), second PUT (succeeds with decoded urls).
+        assert api_request_mock.call_count == 3
+        retry_call = api_request_mock.call_args_list[2]
+        retry_payload = retry_call.kwargs.get("data") or retry_call.args[2]
+        urls_sent = retry_payload["urls"]
+        assert ".docs.google.com/uc?export=download&id=1rurGpZk9RePT7V1iQJfK1la41MuyBTYK" in urls_sent
+        assert all("&amp;" not in u for u in urls_sent)
+        assert "arunkumar1.com" in urls_sent
+
+    def test_update_does_not_retry_on_unrelated_400(self, mock_client, mocker):
+        """
+        Given: Zscaler rejects the PUT with a 400 that is NOT the HTML-content
+            validation error (e.g. quota exceeded).
+        When: zia_category_update_command is called.
+        Then: The original exception is re-raised and the retry path is NOT
+            triggered. This guarantees the retry-on-error logic is strictly
+            additive.
+        """
+        current_cat = {
+            "id": "MUSIC",
+            "configuredName": "Music",
+            "superCategory": "ENTERTAINMENT",
+            "customCategory": False,
+            "urls": [],
+            "ipRanges": [],
+        }
+        unrelated_err = DemistoException(
+            "The request failed with error 400.\nMessage: " '{"code":"QUOTA_EXCEEDED","message":"URL quota exceeded"}'
+        )
+        api_request_mock = mocker.patch.object(
+            mock_client,
+            "api_request",
+            side_effect=[current_cat, unrelated_err],
+        )
+        with pytest.raises(DemistoException, match="QUOTA_EXCEEDED"):
+            zia_category_update_command(
+                mock_client,
+                {"category_id": "MUSIC", "url": "spotify.com", "action": "ADD_TO_LIST"},
+            )
+        # Only 2 calls: GET + 1 failed PUT. No retry.
+        assert api_request_mock.call_count == 2
+
+
+class TestUrlSanitization:
+    @pytest.mark.parametrize(
+        "value,expected",
+        [
+            # Plain URL - unchanged.
+            ("example.com", "example.com"),
+            # Named entity (&amp;).
+            (
+                ".docs.google.com/uc?export=download&amp;id=abc",
+                ".docs.google.com/uc?export=download&id=abc",
+            ),
+            # Numeric entity decodes to the same character.
+            ("foo.com?q=a&#38;b", "foo.com?q=a&b"),
+            # Multiple entities in a single value.
+            ("a.com?x=1&amp;y=2&amp;z=3", "a.com?x=1&y=2&z=3"),
+            # Empty string.
+            ("", ""),
+        ],
+    )
+    def test_sanitize_url_entry(self, value, expected):
+        """
+        Given: Various URL inputs ranging from plain to HTML-entity-encoded.
+        When: _sanitize_url_entry is called.
+        Then: HTML entities are decoded to their literal characters; plain URLs
+            are returned unchanged.
+        """
+        assert _sanitize_url_entry(value) == expected
+
+    def test_sanitize_url_entry_non_string_returned_unchanged(self):
+        """
+        Given: A non-string value (e.g. None).
+        When: _sanitize_url_entry is called.
+        Then: The value is returned unchanged.
+        """
+        assert _sanitize_url_entry(None) is None
+        assert _sanitize_url_entry(123) == 123
+
+    def test_sanitize_url_list_handles_empty_and_none(self):
+        """
+        Given: Empty list and None inputs.
+        When: _sanitize_url_list is called.
+        Then: An empty list is returned without errors.
+        """
+        assert _sanitize_url_list(None) == []
+        assert _sanitize_url_list([]) == []
+
+    def test_sanitize_url_list_applies_to_each_entry(self):
+        """
+        Given: A list containing mixed clean and HTML-encoded entries.
+        When: _sanitize_url_list is called.
+        Then: Each entry is sanitized and order is preserved (no deduplication).
+        """
+        values = [
+            "clean.com",
+            "a.com?x=1&amp;y=2",
+            "clean.com",  # duplicate preserved
+        ]
+        assert _sanitize_url_list(values) == [
+            "clean.com",
+            "a.com?x=1&y=2",
+            "clean.com",
+        ]
+
+    @pytest.mark.parametrize(
+        "message,expected",
+        [
+            # Exact Zscaler error.
+            (
+                "The request failed with error 400.\nMessage: "
+                '{"code":"INVALID_INPUT_ARGUMENT","message":"URLs must not contain HTML content"}',
+                True,
+            ),
+            # Both markers present even without surrounding context.
+            (
+                '{"code":"INVALID_INPUT_ARGUMENT","message":"URLs must not contain HTML content"}',
+                True,
+            ),
+            # Different INVALID_INPUT_ARGUMENT - must NOT match.
+            (
+                '{"code":"INVALID_INPUT_ARGUMENT","message":"Invalid category id"}',
+                False,
+            ),
+            # Different error code but same message - must NOT match.
+            (
+                '{"code":"QUOTA_EXCEEDED","message":"URLs must not contain HTML content"}',
+                False,
+            ),
+            # Unrelated 400.
+            (
+                '{"code":"QUOTA_EXCEEDED","message":"URL quota exceeded"}',
+                False,
+            ),
+            # Empty / generic errors.
+            ("", False),
+            ("Some random error", False),
+        ],
+    )
+    def test_is_html_content_error(self, message, expected):
+        """
+        Given: Various exception messages (some matching Zscaler's HTML-content
+            error signature, some not).
+        When: _is_html_content_error is called.
+        Then: Only exceptions whose message contains BOTH the
+            INVALID_INPUT_ARGUMENT code and the "URLs must not contain HTML
+            content" message are recognized. This guarantees the retry path
+            never activates for unrelated 400s.
+        """
+        assert _is_html_content_error(DemistoException(message)) is expected
 
 
 # ---- Unit tests: URL quota ----
