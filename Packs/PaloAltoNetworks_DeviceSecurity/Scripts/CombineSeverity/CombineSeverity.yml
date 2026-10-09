@@ -1,0 +1,19 @@
+commonfields:
+  id: CombineSeverity
+  version: -1
+name: CombineSeverity
+script: '-'
+type: python
+tags:
+- transformer
+enabled: true
+args:
+- name: value
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.14.13495286
+runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
