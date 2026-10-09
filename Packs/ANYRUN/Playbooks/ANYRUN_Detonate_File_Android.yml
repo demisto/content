@@ -20,7 +20,7 @@ tasks:
       description: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "20"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -28,6 +28,170 @@ tasks:
         "position": {
           "x": 50,
           "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: bcb7ce0f-60a4-4797-b492-2d83595993d1
+    type: condition
+    task:
+      id: bcb7ce0f-60a4-4797-b492-2d83595993d1
+      version: -1
+      name: Is a specific ANY.RUN instance provided?
+      description: Checks whether the "Using" playbook input was provided, to
+        determine which ANY.RUN Cloud Sandbox instance to run commands
+        against.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Using
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: a15b376c-8a9c-4ef3-9809-816ed237f8e2
+    type: regular
+    task:
+      id: a15b376c-8a9c-4ef3-9809-816ed237f8e2
+      version: -1
+      name: Set instance to use (from input)
+      description: Sets the selected ANY.RUN integration instance in playbook context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: ANYRUNInstance
+      value:
+        simple: ${inputs.Using}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 699f4715-1d13-4e0e-8c67-c6cebcdbe4ce
+    type: regular
+    task:
+      id: 699f4715-1d13-4e0e-8c67-c6cebcdbe4ce
+      version: -1
+      name: Get active ANY.RUN Cloud Sandbox instances
+      description: Returns active ANY.RUN Cloud Sandbox integration instances.
+      scriptName: GetInstances
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      brand:
+        simple: ANY.RUN Cloud Sandbox
+      instance_status:
+        simple: active
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 38f45aa6-533f-4810-81b3-fb595877813f
+    type: regular
+    task:
+      id: 38f45aa6-533f-4810-81b3-fb595877813f
+      version: -1
+      name: Set instance to use (first active instance)
+      description: Sets the first active ANY.RUN integration instance in playbook context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: ANYRUNInstance
+      value:
+        complex:
+          root: Modules
+          accessor: name
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 495
         }
       }
     note: false
@@ -54,6 +218,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
       env_locale:
         simple: ${inputs.env_locale}
       file:
@@ -84,7 +250,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 560
+          "y": 1000
         }
       }
     note: false
@@ -111,6 +277,8 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
       report_format:
         simple: html
       task_uuid:
@@ -121,7 +289,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1085
+          "y": 1525
         }
       }
     note: false
@@ -149,7 +317,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1785
+          "y": 2225
         }
       }
     note: false
@@ -192,7 +360,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 385
+          "y": 825
         }
       }
     note: false
@@ -230,7 +398,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 210
+          "y": 650
         }
       }
     note: false
@@ -275,7 +443,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 910
+          "y": 1350
         }
       }
     note: false
@@ -303,6 +471,8 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
       task_uuid:
         simple: ${ANYRUN_DetonateFileAndroid.TaskID}
     separatecontext: false
@@ -311,7 +481,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 735
+          "y": 1175
         }
       }
     note: false
@@ -338,6 +508,8 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
       report_format:
         simple: ioc
       task_uuid:
@@ -348,7 +520,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1260
+          "y": 1700
         }
       }
     note: false
@@ -394,7 +566,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1435
+          "y": 1875
         }
       }
     note: false
@@ -427,13 +599,17 @@ tasks:
           accessor: id
       indicatorsValues:
         simple: ${ANYRUN.IOCs}
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 630,
-          "y": 1610
+          "y": 2050
         }
       }
     note: false
@@ -451,89 +627,96 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1795,
-        "width": 960,
+        "height": 2235,
+        "width": 1260,
         "x": 50,
         "y": 50
       }
     }
   }
 inputs:
+- key: Using
+  value: {}
+  required: false
+  description: |-
+    The name of the ANY.RUN Cloud Sandbox integration instance to use for running commands in this playbook.
+    If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
+  playbookInputQuery:
 - key: file
   value:
     simple: ${File.EntryID}
   required: false
-  description: XSOAR Entry ID
+  description: The existing War Room file EntryID to submit for analysis.
   playbookInputQuery:
 - key: env_locale
   value:
     simple: en-US
   required: false
-  description: 'Operation system language. Use locale identifier or country name (Ex:
-    "en-US" or "Brazil"). Case insensitive.'
+  description: 'The operating system language. Use locale identifier or country name (for example, "en-US" or "Brazil"). Case insensitive.'
   playbookInputQuery:
 - key: opt_network_connect
   value:
-    simple: "True"
+    simple: "true"
   required: false
-  description: Network connection state.
+  description: Whether to enable network connection.
   playbookInputQuery:
 - key: opt_network_fakenet
   value:
-    simple: "False"
+    simple: "false"
   required: false
-  description: FakeNet feature status.
+  description: Whether to enable the FakeNet feature.
   playbookInputQuery:
 - key: opt_network_tor
   value:
-    simple: "False"
+    simple: "false"
   required: false
-  description: TOR using.
+  description: Whether to use TOR.
   playbookInputQuery:
 - key: opt_network_geo
   value:
     simple: fastest
   required: false
-  description: 'Tor geo location option. Example: US, AU.'
+  description: 'The TOR geo location option, for example US, AU.'
   playbookInputQuery:
 - key: opt_network_mitm
   value:
-    simple: "False"
+    simple: "false"
   required: false
-  description: HTTPS MITM proxy option.
+  description: Whether to use the HTTPS MITM proxy.
   playbookInputQuery:
 - key: opt_network_residential_proxy
   value:
-    simple: "False"
+    simple: "false"
   required: false
-  description: Residential proxy using.
+  description: Whether to use a residential proxy.
   playbookInputQuery:
 - key: opt_network_residential_proxy_geo
   value:
     simple: fastest
   required: false
-  description: 'Residential proxy geo location option. Example: US, AU.'
+  description: 'The residential proxy geo location option, for example US, AU.'
   playbookInputQuery:
 - key: opt_privacy_type
   value:
     simple: bylink
   required: false
-  description: 'Privacy settings. Supports: public, bylink, owner, byteam.'
+  description: 'The privacy settings. Supports: public, bylink, owner, byteam.'
   playbookInputQuery:
 - key: opt_timeout
   value:
     simple: "240"
   required: false
-  description: 'Timeout option. Size range: 10-660.'
+  description: 'The timeout value. Size range: 10-660.'
   playbookInputQuery:
 - key: obj_ext_cmd
   value: {}
   required: false
-  description: Optional command line
+  description: The optional command line.
   playbookInputQuery:
 inputSections:
 - inputs:
   - file
+  - Using
   name: General (Inputs group)
   description: Generic group for inputs
 - inputs:
@@ -560,7 +743,28 @@ outputSections:
 - outputs: []
   name: General (Outputs group)
   description: Generic group for outputs
-outputs: []
+outputs:
+- contextPath: ANYRUN_DetonateFileAndroid.TaskID
+  description: The ANY.RUN task UUID.
+  type: String
+- contextPath: ANYRUN.SandboxAnalysisReportVerdict
+  description: The ANY.RUN verdict.
+  type: String
+- contextPath: ANYRUN.IOCs
+  description: The IOCs extracted from the ANY.RUN report.
+  type: Unknown
 quiet: true
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- platform
+- xpanse
+- xsoar_saas
+- marketplacev2
+supportedModules:
+- agentix
+- xsiam
+- edr
+- cloud
+- cloud_runtime_security
