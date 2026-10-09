@@ -1,0 +1,17 @@
+commonfields:
+  id: DeviceSecurityThreatFrameworkMappings
+  version: -1
+name: DeviceSecurityThreatFrameworkMappings
+script: '-'
+type: python
+tags:
+- dynamic-section
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.14.13495286
+runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
