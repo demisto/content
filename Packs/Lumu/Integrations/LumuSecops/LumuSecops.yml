@@ -1,0 +1,1147 @@
+commonfields:
+  id: LumuSecops
+  version: -1
+name: LumuSecops
+display: Lumu Secops
+category: Utilities
+provider: Lumu
+description: SecOps operations for the new Lumu Defender API. Fetch, investigate, and manage Lumu incidents from Cortex XSOAR with bidirectional mirroring.
+detaileddescription: NA
+configuration:
+- defaultvalue: https://defender.lumu.io
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: "50"
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: "0"
+  display: Incident Offset
+  name: fetch_offset
+  required: false
+  type: 0
+- defaultvalue: "30"
+  display: Total incidents per fetch
+  name: total_items_per_lumu_fetch
+  required: false
+  type: 0
+- defaultvalue: "4"
+  display: Max time in seconds per fetch
+  name: max_time_fetching_lumu_incident
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: LumuSecops
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- additionalinfo: Comments and files tagged with this value are mirrored to Lumu.
+  defaultvalue: mirror
+  display: Mirror tags
+  name: mirror_tags
+  required: false
+  type: 0
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SentinelOne to Cortex XSOAR), Outgoing (from Cortex XSOAR to SentinelOne), or Incoming and Outgoing (from/to Cortex XSOAR and SentinelOne). Cortex XSOAR only parameter.'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  type: 15
+  required: false
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  name: mirror_direction
+script:
+  script: ''
+  type: python
+  dockerimage: demisto/python3:3.12.8.3296088
+  subtype: python3
+  isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+  commands:
+  - name: lumusecops-retrieve-labels
+    arguments:
+    - name: page
+      description: "page requested."
+    - name: limit
+      defaultValue: 10
+      description: "items limit requested."
+    outputs:
+    - contextPath: LumuSecops.RetrieveLabels.labels.id
+      description: "label id."
+      type: Number
+    - contextPath: LumuSecops.RetrieveLabels.labels.name
+      description: "label name."
+      type: String
+    - contextPath: LumuSecops.RetrieveLabels.labels.relevance
+      description: "label relevance."
+      type: Number
+    - contextPath: LumuSecops.RetrieveLabels.paginationInfo.page
+      description: "current page."
+      type: Number
+    - contextPath: LumuSecops.RetrieveLabels.paginationInfo.items
+      description: "current items."
+      type: Number
+    - contextPath: LumuSecops.RetrieveLabels.paginationInfo.next
+      description: "next page."
+      type: Number
+    - contextPath: LumuSecops.RetrieveLabels.paginationInfo.prev
+      description: "previous page."
+      type: Number
+    description: Get a paginated list of all the labels created for the company and its details such as id, name and business relevance. The items are sorted by the label id in ascending order.
+  - name: lumusecops-retrieve-a-specific-label
+    arguments:
+    - name: label_id
+      description: "label id requested."
+      required: true
+    outputs:
+    - contextPath: LumuSecops.RetrieveASpecificLabel.id
+      description: "label id."
+      type: Number
+    - contextPath: LumuSecops.RetrieveASpecificLabel.name
+      description: "label name."
+      type: String
+    - contextPath: LumuSecops.RetrieveASpecificLabel.relevance
+      description: "label relevance."
+      type: Number
+    description: |-
+      Get details such as id, name and business relevance from a specific label.
+
+      | `{label-id}` | ID of the specific label |
+      |---|---|.
+
+  - name: lumusecops-get-all-incidents
+    description: Get a paginated list of all incidents.
+    arguments:
+    - name: page
+      description: Page number.
+    - name: items
+      description: Number of incidents per page.
+    - name: status
+      isArray: true
+      description: "Filter by incident status values: open,muted,closed."
+    - name: adversary_types
+      isArray: true
+      description: Filter by adversary type values.
+    - name: labels
+      isArray: true
+      description: Filter by label IDs.
+    - name: from_date
+      description: Filter incidents from this date/time (ISO 8601).
+    - name: to_date
+      description: Filter incidents up to this date/time (ISO 8601).
+    outputs:
+    - contextPath: LumuSecops.GetAllIncidents.id
+      type: String
+      description: Incident ID.
+    - contextPath: LumuSecops.GetAllIncidents.statusTimestamp
+      type: Date
+      description: Incident status update timestamp.
+    - contextPath: LumuSecops.GetAllIncidents.status
+      type: String
+      description: Incident status.
+    - contextPath: LumuSecops.GetAllIncidents.timestamp
+      type: Date
+      description: Incident creation time.
+    - contextPath: LumuSecops.GetAllIncidents.detectorType
+      type: String
+      description: Detector type.
+    - contextPath: LumuSecops.GetAllIncidents.incidentType
+      type: String
+      description: Incident type category.
+    - contextPath: LumuSecops.GetAllIncidents.totalEvents
+      type: Number
+      description: Total number of events.
+    - contextPath: LumuSecops.GetAllIncidents.firstEvent.timestamp
+      type: Date
+      description: First related event timestamp.
+    - contextPath: LumuSecops.GetAllIncidents.firstEvent.id
+      type: String
+      description: First related event ID.
+    - contextPath: LumuSecops.GetAllIncidents.lastEvent.timestamp
+      type: Date
+      description: Last related event timestamp.
+    - contextPath: LumuSecops.GetAllIncidents.lastEvent.id
+      type: String
+      description: Last related event ID.
+    - contextPath: LumuSecops.GetAllIncidents.adversaryTypes
+      type: String
+      description: Adversary types associated with the incident.
+    - contextPath: LumuSecops.GetAllIncidents.description
+      type: String
+      description: Incident description.
+    - contextPath: LumuSecops.GetAllIncidents.eventsGroupingsCount
+      type: Number
+      description: Number of event groupings.
+    - contextPath: LumuSecops.GetAllIncidents.incidentGroupingFields.adversary
+      type: String
+      description: Grouping adversary value.
+    - contextPath: LumuSecops.GetAllIncidents.incidentGroupingFields.src_ip
+      type: String
+      description: Source IP from grouping fields.
+    - contextPath: LumuSecops.GetAllIncidents.incidentGroupingFields.src_label
+      type: String
+      description: Source label from grouping fields.
+    - contextPath: LumuSecops.GetAllIncidents.incidentGroupingFields.domain
+      type: String
+      description: Domain from grouping fields.
+    - contextPath: LumuSecops.GetAllIncidents.incidentGroupingFields.user_name
+      type: String
+      description: Username from grouping fields.
+    - contextPath: LumuSecops.GetAllIncidents.counts.totalTargetsCount
+      type: Number
+      description: Total number of targets.
+    - contextPath: LumuSecops.GetAllIncidents.counts.endpointTargetsCount
+      type: Number
+      description: Total endpoint targets.
+    - contextPath: LumuSecops.GetAllIncidents.counts.userTargetsCount
+      type: Number
+      description: Total user targets.
+    - contextPath: LumuSecops.GetAllIncidents.counts.otherTargetsCount
+      type: Number
+      description: Total other targets.
+    - contextPath: LumuSecops.GetAllIncidents.counts.offendersCount
+      type: Number
+      description: Total number of offenders.
+    - contextPath: LumuSecops.GetAllIncidents.environmentStats
+      type: Unknown
+      description: Environment stats collection.
+    - contextPath: LumuSecops.GetAllIncidents.environmentStats.environment.id
+      type: String
+      description: Environment ID.
+    - contextPath: LumuSecops.GetAllIncidents.environmentStats.environment.type
+      type: String
+      description: Environment type.
+    - contextPath: LumuSecops.GetAllIncidents.environmentStats.count
+      type: Number
+      description: Event count per environment.
+    - contextPath: LumuSecops.GetAllIncidents.offendersSamples._id
+      type: String
+      description: Offender sample identifier.
+    - contextPath: LumuSecops.GetAllIncidents.offendersSamples.type
+      type: String
+      description: Offender sample type.
+    - contextPath: LumuSecops.GetAllIncidents.offendersSamples.name
+      type: String
+      description: Offender sample name.
+    - contextPath: LumuSecops.GetAllIncidents.offendersSamples.value
+      type: String
+      description: Offender sample value.
+    - contextPath: LumuSecops.GetAllIncidents.offendersSamples.endpoint_ip
+      type: String
+      description: Offender sample endpoint IP.
+    - contextPath: LumuSecops.GetAllIncidents.offendersSamples.label
+      type: String
+      description: Offender sample label.
+    - contextPath: LumuSecops.GetAllIncidents.targetsSamples._id
+      type: String
+      description: Target sample identifier.
+    - contextPath: LumuSecops.GetAllIncidents.targetsSamples.type
+      type: String
+      description: Target sample type.
+    - contextPath: LumuSecops.GetAllIncidents.targetsSamples.name
+      type: String
+      description: Target sample name.
+    - contextPath: LumuSecops.GetAllIncidents.targetsSamples.value
+      type: String
+      description: Target sample value.
+    - contextPath: LumuSecops.GetAllIncidents.targetsSamples.endpoint_ip
+      type: String
+      description: Target sample endpoint IP.
+    - contextPath: LumuSecops.GetAllIncidents.targetsSamples.label
+      type: String
+      description: Target sample label.
+    - contextPath: LumuSecops.GetAllIncidents.targetsSamples.realm
+      type: String
+      description: Target sample realm.
+    - contextPath: LumuSecops.GetAllIncidents.lastAssignee
+      type: Number
+      description: Last assignee user ID.
+    - contextPath: LumuSecops.GetAllIncidents.autopilotOperation
+      type: Unknown
+      description: Autopilot operation metadata.
+    - contextPath: LumuSecops.GetAllIncidents.integrationsThatResponded
+      type: Unknown
+      description: Integrations that responded.
+    - contextPath: LumuSecops.GetAllIncidents.builtInResponseTypes
+      type: Unknown
+      description: Built-in response types.
+    - contextPath: LumuSecops.GetAllIncidents.accumulators
+      type: Unknown
+      description: Aggregation accumulator collection.
+    - contextPath: LumuSecops.GetAllIncidents.accumulators.type
+      type: String
+      description: Accumulator type.
+    - contextPath: LumuSecops.GetAllIncidents.accumulators.key
+      type: String
+      description: Accumulator key.
+    - contextPath: LumuSecops.GetAllIncidents.accumulators.value
+      type: Number
+      description: Accumulator value.
+    - contextPath: LumuSecops.GetAllIncidents.unread
+      type: Boolean
+      description: Whether the incident is unread.
+    - contextPath: LumuSecops.GetAllIncidents.hasPlaybackEvents
+      type: Boolean
+      description: Whether playback events exist.
+  - name: lumusecops-get-open-incidents
+    description: Get a paginated list of open incidents.
+    arguments:
+    - name: page
+      description: Page number.
+    - name: items
+      description: Number of incidents per page.
+    - name: adversary_types
+      isArray: true
+      description: Filter by adversary type values.
+    - name: labels
+      isArray: true
+      description: Filter by label IDs.
+    outputs:
+    - contextPath: LumuSecops.GetOpenIncidents.id
+      type: String
+      description: Incident ID.
+    - contextPath: LumuSecops.GetOpenIncidents.statusTimestamp
+      type: Date
+      description: Incident status update timestamp.
+    - contextPath: LumuSecops.GetOpenIncidents.status
+      type: String
+      description: Incident status.
+    - contextPath: LumuSecops.GetOpenIncidents.timestamp
+      type: Date
+      description: Incident creation time.
+    - contextPath: LumuSecops.GetOpenIncidents.detectorType
+      type: String
+      description: Detector type.
+    - contextPath: LumuSecops.GetOpenIncidents.incidentType
+      type: String
+      description: Incident type category.
+    - contextPath: LumuSecops.GetOpenIncidents.totalEvents
+      type: Number
+      description: Total number of events.
+    - contextPath: LumuSecops.GetOpenIncidents.firstEvent.timestamp
+      type: Date
+      description: First related event timestamp.
+    - contextPath: LumuSecops.GetOpenIncidents.firstEvent.id
+      type: String
+      description: First related event ID.
+    - contextPath: LumuSecops.GetOpenIncidents.lastEvent.timestamp
+      type: Date
+      description: Last related event timestamp.
+    - contextPath: LumuSecops.GetOpenIncidents.lastEvent.id
+      type: String
+      description: Last related event ID.
+    - contextPath: LumuSecops.GetOpenIncidents.description
+      type: String
+      description: Incident description.
+    - contextPath: LumuSecops.GetOpenIncidents.adversaryTypes
+      type: String
+      description: Adversary types associated with the incident.
+    - contextPath: LumuSecops.GetOpenIncidents.incidentGroupingFields.adversary
+      type: String
+      description: Grouping adversary value.
+    - contextPath: LumuSecops.GetOpenIncidents.environmentStats.environment.id
+      type: String
+      description: Environment ID.
+    - contextPath: LumuSecops.GetOpenIncidents.environmentStats.environment.type
+      type: String
+      description: Environment type.
+    - contextPath: LumuSecops.GetOpenIncidents.environmentStats.count
+      type: Number
+      description: Event count per environment.
+    - contextPath: LumuSecops.GetOpenIncidents.counts.endpointTargetsCount
+      type: Number
+      description: Total endpoint targets.
+    - contextPath: LumuSecops.GetOpenIncidents.counts.userTargetsCount
+      type: Number
+      description: Total user targets.
+    - contextPath: LumuSecops.GetOpenIncidents.counts.otherTargetsCount
+      type: Number
+      description: Total other targets.
+    - contextPath: LumuSecops.GetOpenIncidents.counts.totalTargetsCount
+      type: Number
+      description: Total number of targets.
+    - contextPath: LumuSecops.GetOpenIncidents.counts.offendersCount
+      type: Number
+      description: Total number of offenders.
+    - contextPath: LumuSecops.GetOpenIncidents.offendersSamples._id
+      type: String
+      description: Offender sample identifier.
+    - contextPath: LumuSecops.GetOpenIncidents.offendersSamples.type
+      type: String
+      description: Offender sample type.
+    - contextPath: LumuSecops.GetOpenIncidents.offendersSamples.value
+      type: String
+      description: Offender sample value.
+    - contextPath: LumuSecops.GetOpenIncidents.targetsSamples._id
+      type: String
+      description: Target sample identifier.
+    - contextPath: LumuSecops.GetOpenIncidents.targetsSamples.type
+      type: String
+      description: Target sample type.
+    - contextPath: LumuSecops.GetOpenIncidents.targetsSamples.label
+      type: String
+      description: Target sample label.
+    - contextPath: LumuSecops.GetOpenIncidents.targetsSamples.name
+      type: String
+      description: Target sample name.
+    - contextPath: LumuSecops.GetOpenIncidents.targetsSamples.endpoint_ip
+      type: String
+      description: Target sample endpoint IP.
+    - contextPath: LumuSecops.GetOpenIncidents.lastAssignee
+      type: Number
+      description: Last assignee user ID.
+    - contextPath: LumuSecops.GetOpenIncidents.autopilotOperation
+      type: Unknown
+      description: Autopilot operation metadata.
+    - contextPath: LumuSecops.GetOpenIncidents.integrationsThatResponded
+      type: Unknown
+      description: Integrations that responded.
+    - contextPath: LumuSecops.GetOpenIncidents.builtInResponseTypes
+      type: Unknown
+      description: Built-in response types.
+    - contextPath: LumuSecops.GetOpenIncidents.accumulators.type
+      type: String
+      description: Accumulator type.
+    - contextPath: LumuSecops.GetOpenIncidents.accumulators.key
+      type: String
+      description: Accumulator key.
+    - contextPath: LumuSecops.GetOpenIncidents.accumulators.value
+      type: Number
+      description: Accumulator value.
+    - contextPath: LumuSecops.GetOpenIncidents.eventsGroupingsCount
+      type: Number
+      description: Number of event groupings.
+    - contextPath: LumuSecops.GetOpenIncidents.unread
+      type: Boolean
+      description: Whether the incident is unread.
+    - contextPath: LumuSecops.GetOpenIncidents.hasPlaybackEvents
+      type: Boolean
+      description: Whether playback events exist.
+  - name: lumusecops-get-muted-incidents
+    description: Get a paginated list of muted incidents.
+    arguments:
+    - name: page
+      description: Page number.
+    - name: items
+      description: Number of incidents per page.
+    - name: adversary_types
+      isArray: true
+      description: Filter by adversary type values.
+    - name: labels
+      isArray: true
+      description: Filter by label IDs.
+    outputs:
+    - contextPath: LumuSecops.GetMutedIncidents.id
+      type: String
+      description: Incident ID.
+    - contextPath: LumuSecops.GetMutedIncidents.statusTimestamp
+      type: Date
+      description: Incident status update timestamp.
+    - contextPath: LumuSecops.GetMutedIncidents.status
+      type: String
+      description: Incident status.
+    - contextPath: LumuSecops.GetMutedIncidents.timestamp
+      type: Date
+      description: Incident creation time.
+    - contextPath: LumuSecops.GetMutedIncidents.detectorType
+      type: String
+      description: Detector type.
+    - contextPath: LumuSecops.GetMutedIncidents.incidentType
+      type: String
+      description: Incident type category.
+    - contextPath: LumuSecops.GetMutedIncidents.totalEvents
+      type: Number
+      description: Total number of events.
+    - contextPath: LumuSecops.GetMutedIncidents.firstEvent.timestamp
+      type: Date
+      description: First related event timestamp.
+    - contextPath: LumuSecops.GetMutedIncidents.firstEvent.id
+      type: String
+      description: First related event ID.
+    - contextPath: LumuSecops.GetMutedIncidents.lastEvent.timestamp
+      type: Date
+      description: Last related event timestamp.
+    - contextPath: LumuSecops.GetMutedIncidents.lastEvent.id
+      type: String
+      description: Last related event ID.
+    - contextPath: LumuSecops.GetMutedIncidents.description
+      type: String
+      description: Incident description.
+    - contextPath: LumuSecops.GetMutedIncidents.adversaryTypes
+      type: String
+      description: Adversary types associated with the incident.
+    - contextPath: LumuSecops.GetMutedIncidents.incidentGroupingFields.adversary
+      type: String
+      description: Grouping adversary value.
+    - contextPath: LumuSecops.GetMutedIncidents.environmentStats.environment.id
+      type: String
+      description: Environment ID.
+    - contextPath: LumuSecops.GetMutedIncidents.environmentStats.environment.type
+      type: String
+      description: Environment type.
+    - contextPath: LumuSecops.GetMutedIncidents.environmentStats.count
+      type: Number
+      description: Event count per environment.
+    - contextPath: LumuSecops.GetMutedIncidents.counts.endpointTargetsCount
+      type: Number
+      description: Total endpoint targets.
+    - contextPath: LumuSecops.GetMutedIncidents.counts.userTargetsCount
+      type: Number
+      description: Total user targets.
+    - contextPath: LumuSecops.GetMutedIncidents.counts.otherTargetsCount
+      type: Number
+      description: Total other targets.
+    - contextPath: LumuSecops.GetMutedIncidents.counts.totalTargetsCount
+      type: Number
+      description: Total number of targets.
+    - contextPath: LumuSecops.GetMutedIncidents.counts.offendersCount
+      type: Number
+      description: Total number of offenders.
+    - contextPath: LumuSecops.GetMutedIncidents.offendersSamples._id
+      type: String
+      description: Offender sample identifier.
+    - contextPath: LumuSecops.GetMutedIncidents.offendersSamples.type
+      type: String
+      description: Offender sample type.
+    - contextPath: LumuSecops.GetMutedIncidents.offendersSamples.value
+      type: String
+      description: Offender sample value.
+    - contextPath: LumuSecops.GetMutedIncidents.targetsSamples._id
+      type: String
+      description: Target sample identifier.
+    - contextPath: LumuSecops.GetMutedIncidents.targetsSamples.type
+      type: String
+      description: Target sample type.
+    - contextPath: LumuSecops.GetMutedIncidents.targetsSamples.label
+      type: String
+      description: Target sample label.
+    - contextPath: LumuSecops.GetMutedIncidents.targetsSamples.name
+      type: String
+      description: Target sample name.
+    - contextPath: LumuSecops.GetMutedIncidents.targetsSamples.endpoint_ip
+      type: String
+      description: Target sample endpoint IP.
+    - contextPath: LumuSecops.GetMutedIncidents.lastAssignee
+      type: Number
+      description: Last assignee user ID.
+    - contextPath: LumuSecops.GetMutedIncidents.autopilotOperation
+      type: Unknown
+      description: Autopilot operation metadata.
+    - contextPath: LumuSecops.GetMutedIncidents.integrationsThatResponded
+      type: Unknown
+      description: Integrations that responded.
+    - contextPath: LumuSecops.GetMutedIncidents.builtInResponseTypes
+      type: Unknown
+      description: Built-in response types.
+    - contextPath: LumuSecops.GetMutedIncidents.accumulators.type
+      type: String
+      description: Accumulator type.
+    - contextPath: LumuSecops.GetMutedIncidents.accumulators.key
+      type: String
+      description: Accumulator key.
+    - contextPath: LumuSecops.GetMutedIncidents.accumulators.value
+      type: Number
+      description: Accumulator value.
+    - contextPath: LumuSecops.GetMutedIncidents.eventsGroupingsCount
+      type: Number
+      description: Number of event groupings.
+    - contextPath: LumuSecops.GetMutedIncidents.unread
+      type: Boolean
+      description: Whether the incident is unread.
+    - contextPath: LumuSecops.GetMutedIncidents.hasPlaybackEvents
+      type: Boolean
+      description: Whether playback events exist.
+  - name: lumusecops-get-closed-incidents
+    description: Get a paginated list of closed incidents.
+    arguments:
+    - name: page
+      description: Page number.
+    - name: items
+      description: Number of incidents per page.
+    - name: adversary_types
+      isArray: true
+      description: Filter by adversary type values.
+    - name: labels
+      isArray: true
+      description: Filter by label IDs.
+    outputs:
+    - contextPath: LumuSecops.GetClosedIncidents.id
+      type: String
+      description: Incident ID.
+    - contextPath: LumuSecops.GetClosedIncidents.statusTimestamp
+      type: Date
+      description: Incident status update timestamp.
+    - contextPath: LumuSecops.GetClosedIncidents.status
+      type: String
+      description: Incident status.
+    - contextPath: LumuSecops.GetClosedIncidents.timestamp
+      type: Date
+      description: Incident creation time.
+    - contextPath: LumuSecops.GetClosedIncidents.detectorType
+      type: String
+      description: Detector type.
+    - contextPath: LumuSecops.GetClosedIncidents.incidentType
+      type: String
+      description: Incident type category.
+    - contextPath: LumuSecops.GetClosedIncidents.totalEvents
+      type: Number
+      description: Total number of events.
+    - contextPath: LumuSecops.GetClosedIncidents.firstEvent.timestamp
+      type: Date
+      description: First related event timestamp.
+    - contextPath: LumuSecops.GetClosedIncidents.firstEvent.id
+      type: String
+      description: First related event ID.
+    - contextPath: LumuSecops.GetClosedIncidents.lastEvent.timestamp
+      type: Date
+      description: Last related event timestamp.
+    - contextPath: LumuSecops.GetClosedIncidents.lastEvent.id
+      type: String
+      description: Last related event ID.
+    - contextPath: LumuSecops.GetClosedIncidents.description
+      type: String
+      description: Incident description.
+    - contextPath: LumuSecops.GetClosedIncidents.adversaryTypes
+      type: String
+      description: Adversary types associated with the incident.
+    - contextPath: LumuSecops.GetClosedIncidents.incidentGroupingFields.src_ip
+      type: String
+      description: Source IP from grouping fields.
+    - contextPath: LumuSecops.GetClosedIncidents.incidentGroupingFields.src_label
+      type: String
+      description: Source label from grouping fields.
+    - contextPath: LumuSecops.GetClosedIncidents.environmentStats.environment.id
+      type: String
+      description: Environment ID.
+    - contextPath: LumuSecops.GetClosedIncidents.environmentStats.environment.type
+      type: String
+      description: Environment type.
+    - contextPath: LumuSecops.GetClosedIncidents.environmentStats.count
+      type: Number
+      description: Event count per environment.
+    - contextPath: LumuSecops.GetClosedIncidents.counts.endpointTargetsCount
+      type: Number
+      description: Total endpoint targets.
+    - contextPath: LumuSecops.GetClosedIncidents.counts.userTargetsCount
+      type: Number
+      description: Total user targets.
+    - contextPath: LumuSecops.GetClosedIncidents.counts.otherTargetsCount
+      type: Number
+      description: Total other targets.
+    - contextPath: LumuSecops.GetClosedIncidents.counts.totalTargetsCount
+      type: Number
+      description: Total number of targets.
+    - contextPath: LumuSecops.GetClosedIncidents.counts.offendersCount
+      type: Number
+      description: Total number of offenders.
+    - contextPath: LumuSecops.GetClosedIncidents.offendersSamples.type
+      type: String
+      description: Offender sample type.
+    - contextPath: LumuSecops.GetClosedIncidents.offendersSamples.name
+      type: String
+      description: Offender sample name.
+    - contextPath: LumuSecops.GetClosedIncidents.offendersSamples.endpoint_ip
+      type: String
+      description: Offender sample endpoint IP.
+    - contextPath: LumuSecops.GetClosedIncidents.offendersSamples.label
+      type: String
+      description: Offender sample label.
+    - contextPath: LumuSecops.GetClosedIncidents.targetsSamples.type
+      type: String
+      description: Target sample type.
+    - contextPath: LumuSecops.GetClosedIncidents.targetsSamples.name
+      type: String
+      description: Target sample name.
+    - contextPath: LumuSecops.GetClosedIncidents.targetsSamples.endpoint_ip
+      type: String
+      description: Target sample endpoint IP.
+    - contextPath: LumuSecops.GetClosedIncidents.targetsSamples.label
+      type: String
+      description: Target sample label.
+    - contextPath: LumuSecops.GetClosedIncidents.lastAssignee
+      type: Number
+      description: Last assignee user ID.
+    - contextPath: LumuSecops.GetClosedIncidents.autopilotOperation
+      type: Unknown
+      description: Autopilot operation metadata.
+    - contextPath: LumuSecops.GetClosedIncidents.integrationsThatResponded
+      type: Unknown
+      description: Integrations that responded.
+    - contextPath: LumuSecops.GetClosedIncidents.builtInResponseTypes
+      type: Unknown
+      description: Built-in response types.
+    - contextPath: LumuSecops.GetClosedIncidents.accumulators.type
+      type: String
+      description: Accumulator type.
+    - contextPath: LumuSecops.GetClosedIncidents.accumulators.key
+      type: String
+      description: Accumulator key.
+    - contextPath: LumuSecops.GetClosedIncidents.accumulators.value
+      type: Number
+      description: Accumulator value.
+    - contextPath: LumuSecops.GetClosedIncidents.eventsGroupingsCount
+      type: Number
+      description: Number of event groupings.
+    - contextPath: LumuSecops.GetClosedIncidents.unread
+      type: Boolean
+      description: Whether the incident is unread.
+    - contextPath: LumuSecops.GetClosedIncidents.hasPlaybackEvents
+      type: Boolean
+      description: Whether playback events exist.
+  - name: lumusecops-get-incident-events-groupings
+    description: Retrieve event groupings for a specific incident.
+    arguments:
+    - name: incident_id
+      required: true
+      description: Lumu incident ID.
+    - name: page
+      description: Page number.
+    - name: items
+      description: Number of records per page.
+    - name: status
+      isArray: true
+      description: Filter by grouping status values.
+    outputs:
+    - contextPath: LumuSecops.GetIncidentEventsGroupings.incidentId
+      type: String
+      description: Incident ID.
+    - contextPath: LumuSecops.GetIncidentEventsGroupings.eventsGroupingId
+      type: String
+      description: Events grouping ID.
+    - contextPath: LumuSecops.GetIncidentEventsGroupings.eventsGroupingFields.label
+      type: String
+      description: Grouping label.
+    - contextPath: LumuSecops.GetIncidentEventsGroupings.eventsGroupingFields.endpoint
+      type: String
+      description: Grouping endpoint.
+    - contextPath: LumuSecops.GetIncidentEventsGroupings.totalEvents
+      type: Number
+      description: Total number of events in the grouping.
+    - contextPath: LumuSecops.GetIncidentEventsGroupings.firstEvent.timestamp
+      type: Date
+      description: First event timestamp.
+    - contextPath: LumuSecops.GetIncidentEventsGroupings.firstEvent.id
+      type: String
+      description: First event ID.
+    - contextPath: LumuSecops.GetIncidentEventsGroupings.lastEvent.timestamp
+      type: Date
+      description: Last event timestamp.
+    - contextPath: LumuSecops.GetIncidentEventsGroupings.lastEvent.id
+      type: String
+      description: Last event ID.
+    - contextPath: LumuSecops.GetIncidentEventsGroupings.targets
+      type: Number
+      description: Number of targets in grouping.
+    - contextPath: LumuSecops.GetIncidentEventsGroupings.offenders
+      type: Number
+      description: Number of offenders in grouping.
+    - contextPath: LumuSecops.GetIncidentEventsGroupings.environmentStats.environment.id
+      type: String
+      description: Environment ID.
+    - contextPath: LumuSecops.GetIncidentEventsGroupings.environmentStats.environment.type
+      type: String
+      description: Environment type.
+    - contextPath: LumuSecops.GetIncidentEventsGroupings.environmentStats.count
+      type: Number
+      description: Event count per environment.
+    - contextPath: LumuSecops.GetIncidentEventsGroupings.hasPlaybackEvents
+      type: Boolean
+      description: Whether playback events exist.
+    - contextPath: LumuSecops.GetIncidentEventsGroupings.accumulators.type
+      type: String
+      description: Accumulator type.
+    - contextPath: LumuSecops.GetIncidentEventsGroupings.accumulators.key
+      type: String
+      description: Accumulator key.
+    - contextPath: LumuSecops.GetIncidentEventsGroupings.accumulators.value
+      type: Number
+      description: Accumulator value.
+  - name: lumusecops-get-incident-details
+    description: Get details for a specific incident.
+    arguments:
+    - name: incident_id
+      required: true
+      description: Lumu incident ID.
+    outputs:
+    - contextPath: LumuSecops.GetIncidentDetails.id
+      type: String
+      description: Incident ID.
+    - contextPath: LumuSecops.GetIncidentDetails.timestamp
+      type: Date
+      description: Incident creation time.
+    - contextPath: LumuSecops.GetIncidentDetails.isUnread
+      type: Boolean
+      description: Whether the incident is unread.
+    - contextPath: LumuSecops.GetIncidentDetails.hasPlaybackEvents
+      type: Boolean
+      description: Whether playback events exist.
+    - contextPath: LumuSecops.GetIncidentDetails.status
+      type: String
+      description: Incident status.
+    - contextPath: LumuSecops.GetIncidentDetails.statusTimestamp
+      type: Date
+      description: Incident status update timestamp.
+    - contextPath: LumuSecops.GetIncidentDetails.description
+      type: String
+      description: Incident description.
+    - contextPath: LumuSecops.GetIncidentDetails.totalEvents
+      type: Number
+      description: Total number of events.
+    - contextPath: LumuSecops.GetIncidentDetails.eventsGroupingsCount
+      type: Number
+      description: Number of event groupings.
+    - contextPath: LumuSecops.GetIncidentDetails.incidentGroupingId
+      type: String
+      description: Incident grouping identifier.
+    - contextPath: LumuSecops.GetIncidentDetails.incidentGroupingFields.src_ip
+      type: String
+      description: Source IP from grouping fields.
+    - contextPath: LumuSecops.GetIncidentDetails.incidentGroupingFields.src_label
+      type: String
+      description: Source label from grouping fields.
+    - contextPath: LumuSecops.GetIncidentDetails.detectorType
+      type: String
+      description: Detector type.
+    - contextPath: LumuSecops.GetIncidentDetails.incidentType
+      type: String
+      description: Incident type category.
+    - contextPath: LumuSecops.GetIncidentDetails.offendersSamples.type
+      type: String
+      description: Offender sample type.
+    - contextPath: LumuSecops.GetIncidentDetails.offendersSamples.name
+      type: String
+      description: Offender sample name.
+    - contextPath: LumuSecops.GetIncidentDetails.offendersSamples.endpoint_ip
+      type: String
+      description: Offender sample endpoint IP.
+    - contextPath: LumuSecops.GetIncidentDetails.offendersSamples.label
+      type: String
+      description: Offender sample label.
+    - contextPath: LumuSecops.GetIncidentDetails.targetsSamples.type
+      type: String
+      description: Target sample type.
+    - contextPath: LumuSecops.GetIncidentDetails.targetsSamples.name
+      type: String
+      description: Target sample name.
+    - contextPath: LumuSecops.GetIncidentDetails.targetsSamples.endpoint_ip
+      type: String
+      description: Target sample endpoint IP.
+    - contextPath: LumuSecops.GetIncidentDetails.targetsSamples.label
+      type: String
+      description: Target sample label.
+    - contextPath: LumuSecops.GetIncidentDetails.adversaryTypes
+      type: String
+      description: Adversary types associated with the incident.
+    - contextPath: LumuSecops.GetIncidentDetails.environmentStats.environment.id
+      type: String
+      description: Environment ID.
+    - contextPath: LumuSecops.GetIncidentDetails.environmentStats.environment.type
+      type: String
+      description: Environment type.
+    - contextPath: LumuSecops.GetIncidentDetails.environmentStats.count
+      type: Number
+      description: Event count per environment.
+    - contextPath: LumuSecops.GetIncidentDetails.actions.datetime
+      type: Date
+      description: Action timestamp.
+    - contextPath: LumuSecops.GetIncidentDetails.actions.userId
+      type: Number
+      description: Action user ID.
+    - contextPath: LumuSecops.GetIncidentDetails.actions.action
+      type: String
+      description: Action name.
+    - contextPath: LumuSecops.GetIncidentDetails.actions.comment
+      type: String
+      description: Action comment.
+    - contextPath: LumuSecops.GetIncidentDetails.actions
+      type: Unknown
+      description: Incident actions.
+    - contextPath: LumuSecops.GetIncidentDetails.firstEvent.timestamp
+      type: Date
+      description: First event timestamp.
+    - contextPath: LumuSecops.GetIncidentDetails.firstEvent.id
+      type: String
+      description: First event ID.
+    - contextPath: LumuSecops.GetIncidentDetails.lastEvent.timestamp
+      type: Date
+      description: Last event timestamp.
+    - contextPath: LumuSecops.GetIncidentDetails.lastEvent.id
+      type: String
+      description: Last event ID.
+    - contextPath: LumuSecops.GetIncidentDetails.lastAssignee
+      type: Number
+      description: Last assignee user ID.
+    - contextPath: LumuSecops.GetIncidentDetails.autopilotOperation
+      type: Unknown
+      description: Autopilot operation metadata.
+    - contextPath: LumuSecops.GetIncidentDetails.integrationsThatResponded
+      type: Unknown
+      description: Integrations that responded.
+    - contextPath: LumuSecops.GetIncidentDetails.builtInResponseTypes
+      type: Unknown
+      description: Built-in response types.
+    - contextPath: LumuSecops.GetIncidentDetails.counts.endpointTargetsCount
+      type: Number
+      description: Total endpoint targets.
+    - contextPath: LumuSecops.GetIncidentDetails.counts.userTargetsCount
+      type: Number
+      description: Total user targets.
+    - contextPath: LumuSecops.GetIncidentDetails.counts.otherTargetsCount
+      type: Number
+      description: Total other targets.
+    - contextPath: LumuSecops.GetIncidentDetails.counts.totalTargetsCount
+      type: Number
+      description: Total number of targets.
+    - contextPath: LumuSecops.GetIncidentDetails.counts.offendersCount
+      type: Number
+      description: Total number of offenders.
+    - contextPath: LumuSecops.GetIncidentDetails.accumulators.type
+      type: String
+      description: Accumulator type.
+    - contextPath: LumuSecops.GetIncidentDetails.accumulators.key
+      type: String
+      description: Accumulator key.
+    - contextPath: LumuSecops.GetIncidentDetails.accumulators.value
+      type: Number
+      description: Accumulator value.
+  - name: lumusecops-mark-incident-as-read
+    description: Mark an incident as read.
+    arguments:
+    - name: incident_id
+      required: true
+      description: Lumu incident ID.
+    outputs:
+    - contextPath: LumuSecops.MarkIncidentAsRead.statusCode
+      type: Number
+      description: HTTP-like status code.
+    - contextPath: LumuSecops.MarkIncidentAsRead.message
+      type: String
+      description: Operation result message.
+  - name: lumusecops-begin-incident-work
+    description: Begin work on an incident.
+    arguments:
+    - name: incident_id
+      required: true
+      description: Lumu incident ID.
+    outputs:
+    - contextPath: LumuSecops.BeginIncidentWork.statusCode
+      type: Number
+      description: HTTP-like status code.
+    - contextPath: LumuSecops.BeginIncidentWork.message
+      type: String
+      description: Operation result message.
+  - name: lumusecops-comment-incident
+    description: Add a comment to an incident.
+    arguments:
+    - name: incident_id
+      required: true
+      description: Lumu incident ID.
+    - name: comment
+      required: true
+      description: Comment value.
+    outputs:
+    - contextPath: LumuSecops.CommentIncident.statusCode
+      type: Number
+      description: HTTP-like status code.
+    - contextPath: LumuSecops.CommentIncident.message
+      type: String
+      description: Operation result message.
+  - name: lumusecops-mute-incident
+    description: Mute an incident.
+    arguments:
+    - name: incident_id
+      required: true
+      description: Lumu incident ID.
+    - name: comment
+      required: true
+      description: Comment value.
+    outputs:
+    - contextPath: LumuSecops.MuteIncident.statusCode
+      type: Number
+      description: HTTP-like status code.
+    - contextPath: LumuSecops.MuteIncident.message
+      type: String
+      description: Operation result message.
+  - name: lumusecops-unmute-incident
+    description: Unmute an incident.
+    arguments:
+    - name: incident_id
+      required: true
+      description: Lumu incident ID.
+    - name: comment
+      required: true
+      description: Comment value.
+    outputs:
+    - contextPath: LumuSecops.UnmuteIncident.statusCode
+      type: Number
+      description: HTTP-like status code.
+    - contextPath: LumuSecops.UnmuteIncident.message
+      type: String
+      description: Operation result message.
+  - name: lumusecops-close-incident
+    description: Close an incident.
+    arguments:
+    - name: incident_id
+      required: true
+      description: Lumu incident ID.
+    - name: comment
+      required: true
+      description: Comment value.
+    outputs:
+    - contextPath: LumuSecops.CloseIncident.statusCode
+      type: Number
+      description: HTTP-like status code.
+    - contextPath: LumuSecops.CloseIncident.message
+      type: String
+      description: Operation result message.
+  - name: lumusecops-consult-incidents-updates
+    description: Obtain real-time updates on incident operations.
+    arguments:
+    - name: offset
+      description: Event stream offset.
+    - name: items
+      description: Number of records per page.
+    - name: time
+      description: Timeout in seconds.
+    outputs:
+    - contextPath: LumuSecops.ConsultIncidentsUpdates.updates
+      type: Unknown
+      description: Incident update events.
+    - contextPath: LumuSecops.ConsultIncidentsUpdates.offset
+      type: Number
+      description: Next stream offset.
+  - name: lumusecops-get-security-event-details
+    description: Retrieve raw data for one security event grouping in an incident.
+    arguments:
+    - name: incident_id
+      required: true
+      description: Lumu incident ID.
+    - name: event_id
+      required: true
+      description: Lumu event ID.
+    - name: page
+      description: Page number.
+    - name: items
+      description: Number of records per page.
+    outputs:
+    - contextPath: LumuSecops.GetSecurityEventDetails.items
+      type: Unknown
+      description: Event detail items.
+    - contextPath: LumuSecops.GetSecurityEventDetails.paginationInfo.page
+      type: Number
+      description: Requested page number.
+    - contextPath: LumuSecops.GetSecurityEventDetails.paginationInfo.items
+      type: Number
+      description: Requested items count.
+    - contextPath: LumuSecops.GetSecurityEventDetails.paginationInfo.count
+      type: Number
+      description: Total count of available records.
+  - name: lumusecops-get-incident-security-events-details
+    description: Retrieve raw data for all security event groups in an incident.
+    arguments:
+    - name: incident_id
+      required: true
+      description: Lumu incident ID.
+    - name: page
+      description: Page number.
+    - name: items
+      description: Number of records per page.
+    - name: events_grouping_id
+      description: Event grouping ID.
+    outputs:
+    - contextPath: LumuSecops.GetIncidentSecurityEventsDetails.items
+      type: Unknown
+      description: Event detail items.
+    - contextPath: LumuSecops.GetIncidentSecurityEventsDetails.paginationInfo.page
+      type: Number
+      description: Requested page number.
+    - contextPath: LumuSecops.GetIncidentSecurityEventsDetails.paginationInfo.items
+      type: Number
+      description: Requested items count.
+    - contextPath: LumuSecops.GetIncidentSecurityEventsDetails.paginationInfo.count
+      type: Number
+      description: Total count of available records.
+  - name: get-modified-remote-data
+    description: Mirror process command.
+    arguments:
+    - name: lastUpdate
+      description: Last update timestamp.
+  - name: get-remote-data
+    description: Mirror process command.
+    arguments:
+    - name: lastUpdate
+      required: true
+      description: Last update timestamp.
+    - name: id
+      required: true
+      description: Remote incident ID.
+  - name: get-mapping-fields
+    description: Mirror process command.
+    arguments: []
+  - name: update-remote-system
+    description: Mirror process command.
+    arguments:
+    - name: data
+      required: true
+      description: Incident delta payload.
+    - name: entries
+      description: Incident entries payload.
+    - name: incident_changed
+      description: Indicates if incident changed.
+    - name: remote_incident_id
+      description: Remote incident ID.
+  - name: lumusecops-get-cache
+    arguments: []
+    description: "Lumu get cache."
+    outputs:
+    - contextPath: LumuSecops.GetCache.users
+      type: string
+      description: "Lumu Users."
+    - contextPath: LumuSecops.GetCache.labels
+      type: string
+      description: "Lumu Labels."
+    - contextPath: LumuSecops.GetCache.cache
+      type: string
+      description: "Lumu cache."
+    - contextPath: LumuSecops.GetCache.lumu_secops_incident_ids
+      type: string
+      description: "Lumu Secops incident ids processed."
+defaultmapperin: LumuSecopsInMap
+defaultclassifier: LumuSecops
+fromversion: 6.14.0
+tests:
+- No tests (auto formatted)

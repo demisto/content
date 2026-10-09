@@ -1,0 +1,18 @@
+!lumusecops-retrieve-labels
+!lumusecops-retrieve-a-specific-label label_id=51
+!lumusecops-get-all-incidents page=1 items=10 status=open adversary_types=Malware labels=1580
+!lumusecops-get-open-incidents page=1 items=10 adversary_types=Spam labels=1791
+!lumusecops-get-muted-incidents page=1 items=10 adversary_types=Malware labels=1651
+!lumusecops-get-closed-incidents page=1 items=10 adversary_types=Mining,Spam labels=0
+!lumusecops-get-incident-events-groupings incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 page=1 items=10 status=open
+!lumusecops-get-incident-details incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6
+!lumusecops-get-security-event-details incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 event_id=6eddaf40-938c-11ed-b0f8-a7e340234a4e page=1 items=10
+!lumusecops-get-incident-security-events-details incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 page=1 items=10
+!lumusecops-consult-incidents-updates offset=1096305 items=4 time=4
+!lumusecops-mark-incident-as-read incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6
+!lumusecops-begin-incident-work incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6
+!lumusecops-comment-incident incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 comment="comment from cortex"
+!lumusecops-mute-incident incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 comment="mute from cortex"
+!lumusecops-unmute-incident incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 comment="unmute from cortex"
+!lumusecops-close-incident incident_id=7c40be00-a7cf-11ed-9fd0-e5fb50c818f6 comment="closed from cortex"
+!lumusecops-get-cache

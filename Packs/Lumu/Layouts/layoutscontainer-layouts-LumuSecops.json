@@ -1,0 +1,805 @@
+{
+    "close": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_closereason",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_closenotes",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Custom Fields",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "name": "Case Details",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "name": "Notes",
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "name": "Work Plan",
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 22,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 22,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 22,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "name": "Timeline Information",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-dbotClosed-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 22,
+                                "id": "incident-closeReason-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 22,
+                                "id": "incident-closeNotes-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "name": "Closing Information",
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 22,
+                                "id": "incident-details-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "name": "Investigation Data",
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+				"hidden": false,
+				"id": "8wpdlw4ktx",
+				"name": "Lumu SecOps",
+				"sections": [
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "8wpdlw4ktx-a41d62e8-ffb2-4cb8-92de-50eea397fb02",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "lumusecopscompanyid",
+								"height": 53,
+								"id": "3562bc9e-35a0-4aee-bf3b-b0a8bffd6dfc",
+								"index": 0,
+								"listId": "8wpdlw4ktx-a41d62e8-ffb2-4cb8-92de-50eea397fb02",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "lumusecopsincidentid",
+								"height": 53,
+								"id": "91165918-4cb4-4ddc-9512-a977de316629",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "lumusecopssourcename",
+								"height": 53,
+								"id": "b5a18bb8-4506-4441-801e-6060b163a476",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "sourcestatus",
+								"height": 53,
+								"id": "e01f5a1a-51f2-41fc-b814-550c01e7331f",
+								"index": 3,
+								"listId": "8wpdlw4ktx-a41d62e8-ffb2-4cb8-92de-50eea397fb02",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "lumusecopsincidenttype",
+								"height": 53,
+								"id": "c1fe7cc3-fe8a-4fdd-8491-8b2684f70cce",
+								"index": 0,
+								"listId": "8wpdlw4ktx-a41d62e8-ffb2-4cb8-92de-50eea397fb02",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "lumusecopsadversarytypes",
+								"height": 53,
+								"id": "3f69a216-c495-4ec2-b028-1a4320917ad0",
+								"index": 1,
+								"listId": "8wpdlw4ktx-a41d62e8-ffb2-4cb8-92de-50eea397fb02",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "lumusecopsdetectortype",
+								"height": 53,
+								"id": "a61bda03-0872-4d3d-b85b-df5df16fba97",
+								"index": 2,
+								"listId": "8wpdlw4ktx-a41d62e8-ffb2-4cb8-92de-50eea397fb02",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "lumusecopstakestatusaction",
+								"height": 53,
+								"id": "227b73cb-484a-4151-b30a-e8e71fb277c8",
+								"index": 4,
+								"listId": "8wpdlw4ktx-a41d62e8-ffb2-4cb8-92de-50eea397fb02",
+								"sectionItemType": "field",
+								"startCol": 2
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "SUMMARY",
+						"static": false,
+						"w": 2,
+						"wrapLabels": true,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideItemTitleOnlyOne": false,
+						"hideName": false,
+						"i": "8wpdlw4ktx-fae8b09e-f23d-4b9d-b091-80ef12014259",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "lumusecopsendpointtargetscount",
+								"height": 53,
+								"id": "679c5e23-1d1e-42c8-b6c6-6a4b0c03a43e",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "lumusecopsusertargetscount",
+								"height": 53,
+								"id": "9c66f102-5855-4ad9-a871-57378b530531",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "lumusecopsoffenderscount",
+								"height": 53,
+								"id": "9ffe676e-9de9-47fb-9a78-36d5c5a168a0",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "lumusecopsothertargetscount",
+								"height": 53,
+								"id": "0893c83c-e478-4b3b-9fa0-b173ddc7bc03",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "lumusecopstotaltargetscount",
+								"height": 53,
+								"id": "d3736b90-5ef9-4699-9d9d-36c03449d4da",
+								"index": 4,
+								"listId": "8wpdlw4ktx-fae8b09e-f23d-4b9d-b091-80ef12014259",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "TARGET COUNTS",
+						"static": false,
+						"w": 1,
+						"wrapLabels": true,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "8wpdlw4ktx-d83359ab-6070-4bd6-946d-56c789fb893c",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "lumusecopsincidentgroupingfields",
+								"height": 106,
+								"id": "e75b3ccd-ab9a-45d8-a6d2-995f787670ae",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 6,
+								"fieldId": "lumusecopsdescription",
+								"height": 106,
+								"id": "fd66f70d-b229-40e0-a40b-bc381ef5c81d",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 2
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "DETAILS",
+						"static": false,
+						"w": 3,
+						"wrapLabels": true,
+						"x": 0,
+						"y": 3
+					}
+				],
+				"type": "custom"
+			}
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_name",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_details",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_lumusecopsincidentid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopseventtype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsdetectortype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsincidenttype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsadversarytypes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopssourcename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopscompanyid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopstotalevents",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsendpointtargetscount",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsusertargetscount",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsothertargetscount",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopstotaltargetscount",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsoffenderscount",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsincidentgroupingfields",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsdescription",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_description",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopslastaction",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsactionscount",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopslastcomment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopslastactiontime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopslastactionuserid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_comment",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Lumu SecOps Fields",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "LumuSecops",
+    "name": "LumuSecops",
+    "quickView": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcebrand",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceinstance",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotcreated",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotmodified",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Timeline Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_lumusecopsincidentid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopseventtype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsdetectortype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsincidenttype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsadversarytypes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopstotalevents",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsendpointtargetscount",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsusertargetscount",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsothertargetscount",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopstotaltargetscount",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsoffenderscount",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsincidentgroupingfields",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsdescription",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopslastaction",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopslastactiontime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopslastactionuserid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopslastcomment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lumusecopsactionscount",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_description",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Lumu SecOps",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "system": false,
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "description": ""
+}
