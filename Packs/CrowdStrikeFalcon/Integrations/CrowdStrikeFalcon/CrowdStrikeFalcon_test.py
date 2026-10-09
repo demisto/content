@@ -10865,7 +10865,8 @@ class TestSpotlightSeverityBasedFetch:
         """
         from CrowdStrikeFalcon import finalize_severity_fetch, SPOTLIGHT_SEVERITIES
 
-        mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
+        # No stub for a global background-task wait: vulnerability send tasks are now drained
+        # per-severity, so finalize_severity_fetch has nothing left to await before the seal.
 
         def create_task_side_effect(*args, **kwargs):
             f = asyncio.Future()
@@ -10888,8 +10889,9 @@ class TestSpotlightSeverityBasedFetch:
         mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
 
         # Must not raise: the vulnerability data is already safe.
+        # No all_pending_tasks argument: send tasks are drained per-severity before this point,
+        # so finalize_severity_fetch no longer takes a global set of tasks to await.
         await finalize_severity_fetch(
-            all_pending_tasks=set(),
             current_completed_severities=list(SPOTLIGHT_SEVERITIES),
             total_vulnerabilities=1000,
             all_unique_aids={"aid1", "aid2"},
@@ -11708,7 +11710,7 @@ class TestAssetsDeviceHandler:
             - The batch is enriched and sent.
         Then:
             - The declared count is 1, leaving the snapshot open. Only the dedicated sealing
-              send may declare the real total (XSUP-77575).
+              send may declare the real total.
         """
         from CrowdStrikeFalcon import AssetsDeviceHandler
 
@@ -11818,7 +11820,7 @@ class TestAssetsDeviceHandler:
         Then:
             - The declared count counts only the rows that actually landed, not everything the
               Devices API resolved. Declaring the unstored rows would leave the snapshot claiming
-              more than exists, so it could never seal — the original XSUP-77575 symptom.
+              more than exists, so it could never seal.
         """
         from CrowdStrikeFalcon import AssetsDeviceHandler
 
@@ -11860,7 +11862,7 @@ class TestAssetsDeviceHandler:
         Then:
             - The declared count is 5, the cumulative number of asset rows stored across the whole
               cycle. Declaring only the final batch's 2 would seal the snapshot short and strand
-              the rows from earlier batches (XSUP-77575).
+              the rows from earlier batches.
         """
         from CrowdStrikeFalcon import AssetsDeviceHandler
 
@@ -11891,7 +11893,7 @@ class TestAssetsDeviceHandler:
     @pytest.mark.asyncio
     async def test_snapshot_still_seals_when_the_final_batch_resolves_nothing(self, mocker):
         """
-        Tests that an unresolvable trailing AID no longer blocks the seal (XSUP-77575).
+        Tests that an unresolvable trailing AID does not block the seal.
 
         The count is carried by a row withheld from the enriched output, not by whatever the last
         batch happens to resolve. A trailing AID that the Devices API rejects - an EASM or
@@ -12458,7 +12460,10 @@ class TestAssetsDeviceHandler:
 
         response = mocker.Mock()
         response.status_code = 200
-        response.json.return_value = {"resources": [{"device_id": "aid1"}], "errors": []}
+        # Two devices, because the first resolved row is withheld to carry the seal count. With a
+        # single device the batch withholds it and returns before creating a send task, so there
+        # would be no in-flight upload for the cancellation under test to race.
+        response.json.return_value = {"resources": [{"device_id": "aid1"}, {"device_id": "aid2"}], "errors": []}
         handler.client._request = mocker.AsyncMock(return_value=response)
         mocker.patch.object(handler, "_filter_asset_fields", side_effect=lambda devices: devices)
 
@@ -12484,8 +12489,10 @@ class TestAssetsDeviceHandler:
             side_effect=_spawn_send,
         )
 
-        batch_task = asyncio.create_task(handler.enrich_and_ingest_batch(["aid1"]))
-        await send_started.wait()
+        batch_task = asyncio.create_task(handler.enrich_and_ingest_batch(["aid1", "aid2"]))
+        # Bounded: if the batch stops creating a send task, this fails in seconds instead of
+        # hanging the whole suite on a wait that can never be satisfied.
+        await asyncio.wait_for(send_started.wait(), timeout=5)
         batch_task.cancel()
 
         results = await asyncio.gather(batch_task, return_exceptions=True)
@@ -12534,7 +12541,9 @@ class TestAssetsDeviceHandler:
 
         handler.running_tasks = {asyncio.create_task(_fails())}
 
-        await handler.flush_remaining(total_items_count=0)
+        # submitted_aids_count, not the old total_items_count: the declared total now comes from
+        # the rows XSIAM confirmed storing, and this argument is only logged.
+        await handler.flush_remaining(submitted_aids_count=0)
 
         logged = " ".join(str(call.args[0]) for call in mock_log.call_args_list)
         assert "completed successfully" not in logged, "a failed batch must not be reported as success"
@@ -12603,7 +12612,7 @@ class TestAssetsDeviceHandler:
     async def test_handler_enrichment_404_partial_success(self, mocker):
         """
         Tests that a CrowdStrike partial-success response returned with HTTP 404 still ingests the
-        resolved devices (XSUP-77575).
+        resolved devices.
 
         The Devices API answers this call with 404 while the body still contains fully populated
         device records (meta.powered_by == "device-api"). Before the fix, 404 was absent from
@@ -12666,7 +12675,7 @@ class TestAssetsDeviceHandler:
     @pytest.mark.asyncio
     async def test_handler_enrichment_404_through_real_content_client(self, mocker):
         """
-        End-to-end regression test for XSUP-77575 exercising the real ContentClient.
+        End-to-end regression test for the partial-success 404 path, exercising the real ContentClient.
 
         The other tests in this class mock client._request directly, so they verify the handler's
         behaviour given a response but never exercise the ok_codes gate in ContentClient._request -
