@@ -1,0 +1,11 @@
+[file:playbook-PaloAltoNetworks_Prisma_AIRs_AI_Gateway_API_Key_Expiration_Check.yml]
+ignore=PB106
+
+[file:playbook-PaloAltoNetworks_Prisma_AIRs_AI_Gateway_Status_Check.yml]
+ignore=PB106
+
+[file:playbook-PaloAltoNetworks_Prisma_AIRs_Red_Team_Network_Channel_Status_Check.yml]
+ignore=PB106
+
+[file:playbook-PaloAltoNetworks_Prisma_AIRs_Runtime_API_Key_Expiration_Check.yml]
+ignore=PB106
