@@ -181,7 +181,7 @@ tasks:
     task:
       id: 7799c889-cf98-4f20-ab9e-cf5993462fd5
       version: -1
-      name: 'Cisco Umbrella: add destination block'
+      name: 'Cisco Umbrella: add destination block '
       description: ''
       script: umbrella-add-destination
       type: regular
