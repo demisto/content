@@ -954,7 +954,7 @@ script:
     - contextPath: Axonius.GroupedVulnerabilities.average_cvss_score
       description: The average CVSS score across all instances of this CVE.
       type: Number
-  dockerimage: demisto/axonius:1.1.0.8767810
+  dockerimage: demisto/axonius:1.1.0.12826098
   runonce: false
   script: '-'
   subtype: python3
