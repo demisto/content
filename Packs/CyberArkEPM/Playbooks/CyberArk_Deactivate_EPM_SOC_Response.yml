@@ -59,8 +59,8 @@ tasks:
     scriptarguments:
       endpoint_name:
         simple: ${inputs.endpoint_name}
-      external_ip:
-        simple: ${inputs.endpoint_external_ip}
+      logged_in_user:
+        simple: ${inputs.logged_in_user}
       risk_plan:
         simple: ${inputs.risk_plan}
     separatecontext: false
@@ -161,22 +161,22 @@ inputs:
 - key: endpoint_name
   value: {}
   required: true
-  description: "The FQDN of the target endpoint."
+  description: "The Hostname of the target endpoint."
   playbookInputQuery: null
-- key: endpoint_external_ip
+- key: logged_in_user
   value: {}
   required: true
-  description: "The external IP of the target endpoint."
+  description: "The logged-in user of the target endpoint."
   playbookInputQuery: null
 - key: risk_plan
   value: {}
   required: true
-  description: "The name of the risk plan to remove (Medium_Risk_Plan or High_Risk_Plan)."
+  description: "The name of the risk plan to remove (i.e. Medium_Risk_Endpoint or High_Risk_Endpoint)."
   playbookInputQuery: null
 inputSections:
 - inputs:
   - endpoint_name
-  - endpoint_external_ip
+  - logged_in_user
   - risk_plan
   name: General (Inputs group)
   description: A generic group for inputs.

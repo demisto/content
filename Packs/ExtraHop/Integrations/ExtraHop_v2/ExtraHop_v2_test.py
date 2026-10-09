@@ -2470,3 +2470,41 @@ def test_test_module_failure(requests_mock):
     with pytest.raises(ValueError) as err:
         ExtraHop_v2.test_module(client)
     assert str(err.value) == "Failed to establish connection with provided credentials."
+
+
+def test_authenticate_uses_basic_auth(requests_mock) -> None:
+    """Test that authenticate sends client credentials via HTTP Basic Auth, not in the request body.
+
+    Given:
+        - A cloud ExtraHop client with client_id and client_secret.
+    When:
+        - authenticate is called to obtain an access token.
+    Then:
+        - The POST to /oauth2/token uses HTTP Basic Auth with client_id and client_secret.
+        - The request body does NOT contain client_id or client_secret.
+        - The returned token matches the mocked access_token.
+    """
+    auth_response = load_mock_response("auth_token.json")
+    token_request = requests_mock.post("/oauth2/token", json=auth_response)
+
+    client = ExtraHop_v2.ExtraHopClient(
+        base_url=BASE_URL,
+        api_key=API_KEY,
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        verify=False,
+        use_proxy=False,
+        ok_codes=(200, 201, 204),
+        on_cloud=True,
+    )
+
+    token, expires_in = client.authenticate(CLIENT_ID, CLIENT_SECRET)
+
+    assert token == auth_response["access_token"]
+    assert expires_in == auth_response["expires_in"]
+
+    last_request = token_request.last_request
+    assert last_request.headers.get("Authorization", "").startswith("Basic ")
+    body = last_request.text
+    assert "client_id" not in body
+    assert "client_secret" not in body

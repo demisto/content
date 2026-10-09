@@ -26,26 +26,39 @@ MAX_AWS_LIMIT = 10000  # Maximum limit to prevent excessive API calls
 
 def parse_aws_timestamp(timestamp_str: str) -> dt.datetime:
     """
-    Parse AWS timestamp with flexible format support.
-    The AWS API returns timestamps in two formats:
-    - With milliseconds: "2023-01-01T00:00:00.000Z"
-    - Without milliseconds: "2023-01-01T00:00:00Z"
+    Parse an AWS timestamp into a naive UTC datetime.
+
+    AWS returns 'CreatedAt' in several ISO-8601 shapes, e.g.:
+    - With milliseconds and 'Z':    "2023-01-01T00:00:00.000Z"
+    - Without milliseconds and 'Z': "2023-01-01T00:00:00Z"
+    - With a UTC/other offset:      "2026-08-08T19:55:21.905451+00:00"
+
+    The returned value feeds strftime() when building the AWS findings filter, which
+    expects a naive UTC value. A timezone-aware value would shift the fetch window,
+    so any offset is normalized to UTC and then dropped, yielding a naive datetime.
 
     Args:
-        timestamp_str (str): Timestamp string from AWS API
+        timestamp_str (str): Timestamp string from AWS API.
 
     Returns:
-        datetime: Parsed datetime object
+        datetime: Parsed naive UTC datetime object.
 
     Raises:
-        ValueError: If timestamp format is not supported
+        ValueError: If the timestamp cannot be parsed as ISO-8601.
     """
-    try:
-        # Try parsing with milliseconds first
-        return dt.datetime.strptime(timestamp_str, DATETIME_FORMAT)
-    except ValueError:
-        # Fallback to parsing without milliseconds
-        return dt.datetime.strptime(timestamp_str, DATETIME_FORMAT_NO_MS)
+    for fmt in (DATETIME_FORMAT, DATETIME_FORMAT_NO_MS):
+        try:
+            return dt.datetime.strptime(timestamp_str, fmt)
+        except ValueError:
+            continue
+
+    # Fallback: accept any ISO-8601 form (e.g. an offset-style "+00:00").
+    # 'Z' is normalized to "+00:00" for fromisoformat compatibility on older Python versions.
+    parsed = dt.datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
+    if parsed.tzinfo is not None:
+        # Normalize to UTC, then drop tzinfo so the value stays naive for strftime().
+        parsed = parsed.astimezone(dt.UTC).replace(tzinfo=None)
+    return parsed
 
 
 def generate_last_run(events: list["AwsSecurityFindingTypeDef"], previous_last_run: dict | None = None) -> dict[str, Any]:
@@ -239,8 +252,9 @@ def fetch_events(
     """
     demisto.debug(f"Fetching events with last_run: {last_run}")
     if last_run.get("last_update_date"):
+        # If the stored cursor cannot be parsed, let the ValueError propagate and fail the
+        # fetch loudly rather than silently resetting the fetch window.
         start_time = parse_aws_timestamp(last_run["last_update_date"])
-
     else:
         start_time = cast(dt.datetime, first_fetch_time)
 

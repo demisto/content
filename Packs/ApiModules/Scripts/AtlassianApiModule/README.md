@@ -7,6 +7,7 @@ This API module provides shared OAuth 2.0 authentication functionality for Atlas
 ### AtlassianOAuthClient (Abstract Base Class)
 
 Base class for Atlassian OAuth 2.0 authentication with the following features:
+
 - Access token management with automatic refresh
 - OAuth 2.0 authorization flow
 - Integration context storage for tokens
@@ -22,6 +23,7 @@ Base class for Atlassian OAuth 2.0 authentication with the following features:
 ### JiraCloudOAuthClient
 
 Concrete implementation for Jira Cloud with predefined scopes:
+
 - `read:audit-log:jira`
 - `read:jira-user`
 - `offline_access`
@@ -29,6 +31,7 @@ Concrete implementation for Jira Cloud with predefined scopes:
 ### JiraOnPremOAuthClient
 
 Concrete implementation for Jira On-Prem/Data Center with:
+
 - PKCE (Proof Key for Code Exchange) support for enhanced security
 - Scope: `ADMIN` (provides admin-level access required for audit log retrieval)
 - Server-specific OAuth endpoints
@@ -89,6 +92,7 @@ access_token = oauth_client.get_access_token()
 ## Integration with Atlassian Integrations
 
 This module is designed to be imported by Atlassian product integrations that need OAuth 2.0 support:
+
 - **Jira**: JiraEventCollector (supports both Cloud and On-Prem), JiraV3 (future refactoring)
 - **Confluence**: Future integrations
 

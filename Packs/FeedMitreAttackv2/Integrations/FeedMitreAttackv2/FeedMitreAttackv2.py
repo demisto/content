@@ -117,7 +117,14 @@ class Client:
             indicator_obj["fields"]["trafficlightprotocol"] = self.tlp_color
 
         if item_type.lower() == "tactic":
-            indicator_obj["value"] = f"{self.tactic_name_to_mitre_id[value]} - {value}"
+            tactic_mitre_id = self.tactic_name_to_mitre_id.get(value)
+            if tactic_mitre_id:
+                indicator_obj["value"] = f"{tactic_mitre_id} - {value}"
+            else:
+                demisto.debug(
+                    f"MA: Tactic '{value}' not found in tactic_name_to_mitre_id mapping, value will not include MITRE ID."
+                )
+                indicator_obj["value"] = value
 
         if item_type in ("Attack Pattern", "STIX Attack Pattern") and not mitre_item_json.get("x_mitre_is_subtechnique", None):
             tactics = []
@@ -127,14 +134,21 @@ class Client:
 
                 else:
                     tactic_name = tactic["phase_name"].title().replace("-", " ").replace("And", "and")
-                    tactic_mitre_id = self.tactic_name_to_mitre_id[tactic_name]
-                    tactic = f"{tactic_mitre_id} - {tactic_name}"
+                    tactic_mitre_id = self.tactic_name_to_mitre_id.get(tactic_name)
+                    if tactic_mitre_id:
+                        tactic_value = f"{tactic_mitre_id} - {tactic_name}"
+                    else:
+                        demisto.debug(
+                            f"MA: Tactic '{tactic_name}' not found in tactic_name_to_mitre_id mapping, "
+                            "creating relationship without MITRE ID prefix."
+                        )
+                        tactic_value = tactic_name
                     tactics.append(
                         EntityRelationship(
                             name=EntityRelationship.Relationships.PART_OF,
                             entity_a=indicator_obj["value"],
                             entity_a_type=indicator_obj["type"],
-                            entity_b=tactic,
+                            entity_b=tactic_value,
                             entity_b_type="Tactic",
                         ).to_indicator()
                     )
@@ -701,8 +715,8 @@ def get_mitre_value_from_id(client, args):
 
             attack_pattern_name = attack_pattern[0]["name"]
 
-            if attack_pattern_name and len(attack_id) > 5:  # sub-technique
-                sub_technique_attack_id = attack_id[:5]
+            if attack_pattern_name and "." in attack_id:  # sub-technique (e.g. T1059.001)
+                sub_technique_attack_id = attack_id.split(".")[0]
                 parent_object = list(
                     filter(
                         lambda attack_pattern_obj: filter_attack_pattern_object_by_attack_id(
@@ -711,9 +725,10 @@ def get_mitre_value_from_id(client, args):
                         attack_pattern_objects,
                     )
                 )
-                parent_name = parent_object[0]["name"]
-
-                attack_pattern_name = f"{parent_name}: {attack_pattern_name}"
+                if parent_object:
+                    attack_pattern_name = f"{parent_object[0]['name']}: {attack_pattern_name}"
+                else:
+                    demisto.debug(f"MA: Did not find parent attack pattern for sub-technique ID {attack_id}")
 
             if attack_pattern_name:
                 if not is_indicator_deprecated_or_revoked(attack_pattern[0]):

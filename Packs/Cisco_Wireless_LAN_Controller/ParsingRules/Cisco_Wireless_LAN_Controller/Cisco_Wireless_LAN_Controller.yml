@@ -4,3 +4,5 @@ fromversion: 8.3.0
 tags: []
 rules: ''
 samples: ''
+supportedModules:
+- xsiam

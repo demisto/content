@@ -15,7 +15,8 @@
         "GIB Suspicious IP Socks Proxy",
         "GIB Cybercriminal Threat Actor",
         "GIB Nation-State Cybercriminals Threat Actor",
-        "GIB Nation-State Cybercriminals Threat"
+        "GIB Nation-State Cybercriminals Threat",
+        "GIB SPD"
     ],
     "caseInsensitive": true,
     "cliName": "gibdatefirstseen",
@@ -50,7 +51,8 @@
         "GIB Suspicious IP Socks Proxy",
         "GIB Cybercriminal Threat Actor",
         "GIB Nation-State Cybercriminals Threat Actor",
-        "GIB Nation-State Cybercriminals Threat"
+        "GIB Nation-State Cybercriminals Threat",
+        "GIB SPD"
     ],
     "threshold": 72,
     "type": "date",

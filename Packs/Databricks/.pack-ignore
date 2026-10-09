@@ -1,0 +1,4 @@
+# Pack ignore rules for Databricks
+
+[file:Databricks.yml]
+ignore=BA129

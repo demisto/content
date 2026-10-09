@@ -27,7 +27,7 @@
     "caseInsensitive": true,
     "columns": [
         {
-            "key": "firstname",
+            "key": "FirstName",
             "displayName": "First Name",
             "type": "shortText",
             "orgType": "shortText",
@@ -40,7 +40,7 @@
             "selectValues": null
         },
         {
-            "key": "lastname",
+            "key": "LastName",
             "displayName": "Last Name",
             "type": "shortText",
             "orgType": "shortText",
@@ -53,7 +53,7 @@
             "selectValues": null
         },
         {
-            "key": "company",
+            "key": "Company",
             "displayName": "Company",
             "type": "shortText",
             "orgType": "shortText",
@@ -66,7 +66,7 @@
             "selectValues": null
         },
         {
-            "key": "organization",
+            "key": "Organization",
             "displayName": "Organization",
             "type": "shortText",
             "orgType": "shortText",
@@ -79,7 +79,7 @@
             "selectValues": null
         },
         {
-            "key": "department",
+            "key": "Department",
             "displayName": "Department",
             "type": "shortText",
             "orgType": "shortText",
@@ -92,8 +92,8 @@
             "selectValues": null
         },
         {
-            "key": "email",
-            "displayName": "E-Mail",
+            "key": "E-mail",
+            "displayName": "E-mail",
             "type": "shortText",
             "orgType": "shortText",
             "required": false,
@@ -105,7 +105,7 @@
             "selectValues": null
         },
         {
-            "key": "phonenumber",
+            "key": "PhoneNumber",
             "displayName": "Phone Number",
             "type": "shortText",
             "orgType": "shortText",

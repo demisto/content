@@ -27,3 +27,81 @@ alter tmp_src_ipv4 = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src),
     xdm.source.ipv6 = tmp_src_ipv6,
     xdm.target.ipv4 = tmp_dst_ipv4,
     xdm.target.ipv6 = tmp_dst_ipv6;
+
+[MODEL: dataset="ibm_guardium_dsc_raw"]
+alter
+    low_activity = lowercase(Activity),
+    low_action_taken = lowercase(Action_taken),
+    low_context = lowercase(Context)
+| alter
+    get_outcome = if(
+        low_activity = "failed", XDM_CONST.OUTCOME_FAILED, low_activity = "succeeded", XDM_CONST.OUTCOME_SUCCESS, low_action_taken = "create" and low_activity not contains "failed", XDM_CONST.OUTCOME_SUCCESS, low_action_taken = "delete" and low_activity not contains "failed", XDM_CONST.OUTCOME_SUCCESS, low_action_taken = "updateuser" and low_activity not contains "failed", XDM_CONST.OUTCOME_SUCCESS, low_action_taken = "run report" and low_activity not contains "failed", XDM_CONST.OUTCOME_SUCCESS,low_action_taken = "delete" and low_activity not contains "failed", XDM_CONST.OUTCOME_SUCCESS, low_action_taken = "login" and low_activity not contains "failed", XDM_CONST.OUTCOME_SUCCESS, low_action_taken = "Stop query" and low_activity not contains "failed", XDM_CONST.OUTCOME_SUCCESS, low_action_taken = "addmember" and low_activity not contains "failed", XDM_CONST.OUTCOME_SUCCESS, low_action_taken = "deletemember" and low_activity not contains "failed", XDM_CONST.OUTCOME_SUCCESS, low_action_taken = "createuser" and low_activity not contains "failed", XDM_CONST.OUTCOME_SUCCESS, low_action_taken = "update" and low_activity not contains "failed", XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_UNKNOWN
+        ), // Checks the event's outcome.
+    get_username = if(
+        Performed_by != "", Performed_by, null
+        ),
+    get_upn = if(
+        Audit_trail_ID ~= "[A-Za-z0-9_-]+?@[A-Za-z0-9_-]+?\.[\w+\.]+",Audit_trail_ID,null
+        ),
+    get_operation = if(
+        low_action_taken = "create", XDM_CONST.OPERATION_TYPE_CREATE, low_action_taken = "delete", XDM_CONST.OPERATION_TYPE_DELETE, low_action_taken = "updateuser", XDM_CONST.OPERATION_TYPE_UPDATE, low_action_taken = "run report", XDM_CONST.OPERATION_TYPE_READ,low_action_taken = "login", XDM_CONST.OPERATION_TYPE_AUTH_LOGIN, low_action_taken = "update", XDM_CONST.OPERATION_TYPE_UPDATE, low_action_taken = "createuser", XDM_CONST.OPERATION_TYPE_CREATE, low_action_taken = "deletemember", XDM_CONST.OPERATION_TYPE_DELETE, low_action_taken = "addmember", XDM_CONST.OPERATION_TYPE_CREATE,null
+        ),
+    check_report_status = if(
+        low_context = "reports runner",concat(Context," - ",Action_taken," ",Activity),null
+        ),
+    check_login_success_event = if(
+        low_action_taken = "login" AND low_activity = "succeeded" AND Context_description ~= "[A-Za-z0-9_-]+?@[A-Za-z0-9_-]+?\.[\w+\.]+", concat(Performed_by," ","(",Context_description,")"," ",Action_taken," ",Activity),null
+        ),
+    check_desc_api_keys = if(
+        low_context = "api keys", concat(Action_taken," ",Context," ",Activity),null
+        ),
+    check_activity_create_group = if(
+        low_context = "groups" AND low_action_taken = "create",arraycreate(arrayindex(regextract(Activity,"group\s([^\$]+)"),0)),null
+        ),
+    get_alert_rule_name = if(
+        low_action_taken = "Create" or low_action_taken = "delete" or low_action_taken = "update" AND low_context = "alert rule",arrayindex(regextract(Context_description, "Workflow\srule\:\s([^\$]+)"),0),null
+        ),
+    check_alert_rule_update_value = if(
+        low_action_taken = "update" AND low_context = "alert rule", Activity, null
+        ),
+    get_desc_workflow = if(
+        low_context = "alert rule" and Performed_by != null, concat(Performed_by, " ",Action_taken," ",Context_description),low_context = "alert rule" and Performed_by != null,concat(Action_taken," ",Context_description),null
+        ),
+    get_notification_upn = if(
+        low_context = "notifications" AND low_action_taken = "create", arrayindex(regextract(Activity,"\(([^\)]+)"),0),null
+        ),
+    get_notification_username = if(
+        low_context = "notifications" AND low_action_taken = "create", arrayindex(regextract(Activity,"Welcome\s([^\(]+)"),0),null
+        ),
+    get_desc_datasets = if(
+        low_context = "datasets" and Performed_by != null, concat(Performed_by, " ",Action_taken," ",Context,": ",Audit_trail_ID),low_context = "datasets" and Performed_by != null,concat(Action_taken," ",Context,": ",Audit_trail_ID),null
+        ),
+    get_datasets_resource_name = if(
+        low_context = "datasets" AND low_action_taken = "create" or low_context = "datasets" AND low_action_taken = "delete", Activity, null
+        ),
+    get_variant_resource_name = if(
+        low_context = "variants" AND low_action_taken = "create" or low_context = "variants" AND low_action_taken = "delete", arrayindex(regextract(Activity,"\S+\s\S+\s([^\$]+)"),0), null
+        ),
+    get_dashboard_name = if(
+        low_action_taken = "create" or low_action_taken = "delete" or low_action_taken = "update" AND low_context = "dashboards",arrayindex(regextract(Activity, "^Dashboard\s([^\$]+)"),0),null
+        )
+| alter
+    xdm.event.type = coalesce(uppercase(concat(Context," - ",Action_taken)),"GENERAL"),
+    xdm.target.resource.type = Context,
+    xdm.target.resource.id = if(Audit_trail_ID ~= "[A-Za-z0-9_-]+?@[A-Za-z0-9_-]+?\.[\w+\.]+",null,Audit_trail_ID), // Excluded source user upn.
+    xdm.target.resource.name = coalesce(get_alert_rule_name, get_datasets_resource_name,get_variant_resource_name, get_dashboard_name),
+    xdm.target.resource.value = check_alert_rule_update_value,
+    xdm.target.user.groups = check_activity_create_group,
+    xdm.event.operation = get_operation,
+    xdm.event.description = coalesce(check_report_status, check_desc_api_keys, check_login_success_event, get_desc_datasets, get_desc_workflow, Activity),
+    xdm.event.outcome = get_outcome,
+    xdm.database.name = Database_name,
+    xdm.source.application.name = Source_application,
+    xdm.source.user.username = coalesce(get_username, get_notification_username,DB_user),
+    xdm.source.user.upn = coalesce(get_upn, get_notification_upn),
+    // Checks weather the Source IP is IPv4 / IPv6
+    xdm.source.ipv4 = if(is_ipv4(Client_IP), Client_IP, null),
+    xdm.source.ipv6 = if(is_ipv6(Client_IP), Client_IP, null),
+    // Checks weather the Target IP is IPv4 / IPv6
+    xdm.target.ipv4 = if(is_ipv4(Server_IP), Server_IP, null),
+    xdm.target.ipv6 = if(is_ipv6(Server_IP), Server_IP, null);

@@ -28,5 +28,9 @@
  "required": false,
  "modified": "2019-07-29T10:37:51.866939952Z",
  "sla": 0,
- "fromVersion": "5.5.0"
+ "fromVersion": "5.5.0",
+ "supportedModules": [
+  "agentix",
+  "xsiam"
+ ]
 }

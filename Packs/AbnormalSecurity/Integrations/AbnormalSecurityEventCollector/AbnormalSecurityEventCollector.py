@@ -123,8 +123,8 @@ def main():  # pragma: no cover
     params = demisto.params()
 
     token = params["token"]["password"]
-    verify = params["verify"]
-    proxy = params["proxy"]
+    verify = params.get("verify", False)
+    proxy = params.get("proxy", False)
     after = arg_to_datetime(arg="1 minute").strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
     before: str = ""
     next_page_number = 1

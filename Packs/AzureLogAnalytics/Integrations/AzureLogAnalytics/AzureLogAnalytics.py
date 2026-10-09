@@ -645,7 +645,11 @@ def main():
     try:
         self_deployed = params.get("self_deployed", False)
         client_credentials = params.get("client_credentials", False)
-        auth_and_token_url = params.get("credentials", {}).get("identifier") or params.get("auth_id")  # client_id
+        auth_and_token_url = (
+            params.get("creds_client_id", {}).get("password")
+            or params.get("credentials", {}).get("identifier")
+            or params.get("auth_id")
+        )  # client_id
         enc_key = params.get("credentials", {}).get("password") or params.get("enc_key")  # client_secret
         subscription_id = args.get("subscription_id") or params.get("subscriptionID")
         resource_group_name = args.get("resource_group_name") or params.get("resourceGroupName")

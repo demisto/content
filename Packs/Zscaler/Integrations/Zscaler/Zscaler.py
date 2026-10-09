@@ -1251,8 +1251,12 @@ def edit_ip_destination_group(args: dict):
     payload["type"] = response_data.get("type", "")
 
     cmd_url = f"/ipDestinationGroups/{ip_group_id}"
+    # The override query parameter controls whether existing entries are replaced (true) or preserved (false). Default is true.
+    override: bool = argToBoolean(args.get("override", True))
+    if not override:
+        cmd_url = f"{cmd_url}?override=false"
     json_data = json.dumps(payload)
-    demisto.debug(f"Updating IP destination group {ip_group_id} with payload={payload}")
+    demisto.debug(f"Updating IP destination group {ip_group_id} with payload={payload}, override={override}")
     response = http_request("PUT", cmd_url, json_data, DEFAULT_HEADERS)
     content = {
         "ID": int(response.get("id", "")),

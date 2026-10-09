@@ -5,3 +5,5 @@ rules: ''
 schema: ''
 tags: jamf
 toversion: 6.9.9
+supportedModules:
+- xsiam

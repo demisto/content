@@ -1370,36 +1370,32 @@
             "search_id": "abcd-1234"
         }
     },
-    "search_cancel":{
-        "response":{
-            "cursor_id":"abcd-1234",
-            "status":"SORTING",
-            "compressed_data_file_count":0,
-            "compressed_data_total_size":0,
-            "data_file_count":8560,
-            "data_total_size":876521343,
-            "index_file_count":0,
-            "index_total_size":0,
-            "processed_record_count":0,
-            "desired_retention_time_msec":86400000,
-            "progress":8,
-            "progress_details":[
-               
-            ],
-            "query_execution_time":18767,
-            "query_string":"SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime FROM events WHERE INOFFENSE(210)  limit 20 START 1713099871139",
-            "record_count":0,
-            "size_on_disk":24,
-            "save_results":false,
-            "completed":true,
-            "subsearch_ids":[
-               
-            ],
-            "snapshot":"None",
-            "search_id":"abcd-1234"
-         },
-         "expected": {},
-         "args": {
+    "search_cancel": {
+        "response": {
+            "cursor_id": "abcd-1234",
+            "status": "SORTING",
+            "compressed_data_file_count": 0,
+            "compressed_data_total_size": 0,
+            "data_file_count": 8560,
+            "data_total_size": 876521343,
+            "index_file_count": 0,
+            "index_total_size": 0,
+            "processed_record_count": 0,
+            "desired_retention_time_msec": 86400000,
+            "progress": 8,
+            "progress_details": [],
+            "query_execution_time": 18767,
+            "query_string": "SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime FROM events WHERE INOFFENSE(210)  limit 20 START 1713099871139",
+            "record_count": 0,
+            "size_on_disk": 24,
+            "save_results": false,
+            "completed": true,
+            "subsearch_ids": [],
+            "snapshot": "None",
+            "search_id": "abcd-1234"
+        },
+        "expected": {},
+        "args": {
             "search_id": "abcd-1234"
         }
     },
@@ -1575,15 +1571,11 @@
         }
     },
     "indicators_upload": {
-        "response": {
-        },
+        "response": {},
         "expected": {
-            "outputs_prefix": {
-            },
-            "outputs_key_field": {
-            },
-            "outputs": {
-            }
+            "outputs_prefix": {},
+            "outputs_key_field": {},
+            "outputs": {}
         }
     },
     "geolocations_for_ip": {
@@ -2560,6 +2552,80 @@
         "expected_body": {
             "name": "test_update_log_source",
             "credibility": 3
+        }
+    },
+    "reference_maps_list": {
+        "response": [
+            {
+                "collection_id": 145,
+                "creation_time": 1748934904824,
+                "element_type": "ALN",
+                "name": "Monitoring Identifier Groups",
+                "namespace": "SHARED",
+                "number_of_elements": 6,
+                "timeout_type": "LAST_SEEN",
+                "value_label": "Log Source Group"
+            },
+            {
+                "collection_id": 136,
+                "creation_time": 1747235527932,
+                "element_type": "NUM",
+                "name": "Monitoring Identifier Gaps",
+                "namespace": "SHARED",
+                "number_of_elements": 2,
+                "timeout_type": "UNKNOWN"
+            }
+        ],
+        "expected": {
+            "outputs_prefix": "QRadar.ReferenceMaps",
+            "outputs_key_field": "Name",
+            "outputs": [
+                {
+                    "CollectionID": 145,
+                    "CreationTime": "2025-06-03T07:15:04.824000+00:00",
+                    "ElementType": "ALN",
+                    "Name": "Monitoring Identifier Groups",
+                    "Namespace": "SHARED",
+                    "NumberOfElements": 6,
+                    "TimeoutType": "LAST_SEEN",
+                    "ValueLabel": "Log Source Group"
+                },
+                {
+                    "CollectionID": 136,
+                    "CreationTime": "2025-05-14T15:12:07.932000+00:00",
+                    "ElementType": "NUM",
+                    "Name": "Monitoring Identifier Gaps",
+                    "Namespace": "SHARED",
+                    "NumberOfElements": 2,
+                    "TimeoutType": "UNKNOWN"
+                }
+            ]
+        }
+    },
+    "reference_map_value_upsert": {
+        "response": [
+            {
+                "collection_id": 136,
+                "creation_time": 1747235527932,
+                "element_type": "NUM",
+                "name": "Monitoring Identifier Gaps",
+                "namespace": "SHARED",
+                "number_of_elements": 3,
+                "timeout_type": "UNKNOWN"
+            }
+        ],
+        "expected": {            
+            "raw_response": [
+                {
+                    "collection_id": 136,
+                    "creation_time": 1747235527932,
+                    "element_type": "NUM",
+                    "name": "Monitoring Identifier Gaps",
+                    "namespace": "SHARED",
+                    "number_of_elements": 3,
+                    "timeout_type": "UNKNOWN"
+                }
+            ]
         }
     },
     "all_events_query": "SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM events WHERE INOFFENSE(16)  limit 20 START 1613399051536",

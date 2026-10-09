@@ -123,7 +123,44 @@ ADF_TEXT_CASES = [
     (
         "Hello there",
         {"type": "doc", "version": 1, "content": [{"type": "paragraph", "content": [{"text": "Hello there", "type": "text"}]}]},
-    )
+    ),
+    (
+        '{"type": "doc", "version": 1, "content": [{"type": "paragraph", "content": [{"text": "Hello there", "type": "text"}]}]}',
+        {"type": "doc", "version": 1, "content": [{"type": "paragraph", "content": [{"text": "Hello there", "type": "text"}]}]},
+    ),
+    (
+        {"type": "doc", "version": 1, "content": [{"type": "paragraph", "content": [{"text": "Hello there", "type": "text"}]}]},
+        {"type": "doc", "version": 1, "content": [{"type": "paragraph", "content": [{"text": "Hello there", "type": "text"}]}]},
+    ),
+    (
+        '{"invalid": "json"}',
+        {
+            "type": "doc",
+            "version": 1,
+            "content": [{"type": "paragraph", "content": [{"text": '{"invalid": "json"}', "type": "text"}]}],
+        },
+    ),
+    (
+        '{"type": "doc", "version": 1}',
+        {
+            "type": "doc",
+            "version": 1,
+            "content": [{"type": "paragraph", "content": [{"text": '{"type": "doc", "version": 1}', "type": "text"}]}],
+        },
+    ),
+    (
+        {"type": "doc", "version": 1, "content": ["invalid_node"]},
+        {
+            "type": "doc",
+            "version": 1,
+            "content": [
+                {
+                    "type": "paragraph",
+                    "content": [{"text": {"type": "doc", "version": 1, "content": ["invalid_node"]}, "type": "text"}],
+                }
+            ],
+        },
+    ),
 ]
 
 

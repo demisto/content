@@ -1,0 +1,9 @@
+{
+  "balance": 100,
+  "entries": [
+    {"id": "id_1", "email": ["a@b.co"], "database_name": "DB-A"},
+    {"id": "id_2", "email": ["c@d.co"], "phone": ["1", "2"], "database_name": "DB-B"}
+  ],
+  "took": "1ms",
+  "total": 2
+}

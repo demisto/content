@@ -2,8 +2,10 @@ import json
 
 import demistomock as demisto
 import pytest
+import requests
 from CommonServerPython import *
 from freezegun import freeze_time
+from unittest.mock import patch
 
 MOCK_PARAMS = {
     "access-key": "fake_access_key",
@@ -13,6 +15,51 @@ MOCK_PARAMS = {
     "proxy": True,
     "assetsFetchInterval": "1440",
 }
+
+# Tenable_io reads demisto.params() at import time, so the module is imported with the mocked params.
+with patch.object(demisto, "params", return_value=MOCK_PARAMS):
+    import Tenable_io
+    from Tenable_io import (
+        build_vpr_score,
+        Client,
+        export_assets_build_command_result,
+        export_assets_command,
+        export_scan_command,
+        export_vulnerabilities_build_command_result,
+        export_vulnerabilities_command,
+        fetch_events_command,
+        generate_assets_export_uuid,
+        generate_export_uuid,
+        get_asset_details_command,
+        get_asset_export_job_status,
+        get_audit_logs_command,
+        get_scan_history_command,
+        get_scan_status_command,
+        get_scans_command,
+        get_vulnerabilities_by_asset_command,
+        get_vulnerabilities_export_status,
+        get_vulnerability_details_command,
+        handle_assets_chunks,
+        handle_vulns_chunks,
+        initiate_export_scan,
+        is_retryable_xsiam_error,
+        launch_scan_command,
+        list_scan_filters_command,
+        pause_scan_command,
+        relational_date_to_epoch_date_format,
+        request_uuid_export_vulnerabilities,
+        resume_scan_command,
+        scan_history_pagination_params,
+        scan_history_params,
+        send_data_to_xsiam_with_retry,
+        set_index_audit_logs,
+        should_seal_empty_assets_snapshot,
+        validate_range,
+        XSIAMIngestionClient,
+        XSIAMSendConfig,
+        XSIAMSendError,
+    )
+    from Tenable_io import test_module as tenable_test_module
 
 MOCK_RAW_VULN_BY_ASSET = {
     "vulnerabilities": [
@@ -62,6 +109,26 @@ MOCK_CHUNK_CONTENT = util_load_json("test_data/mock_chunk_content.json")
 BASE_URL = "https://cloud.tenable.com"
 
 
+XSIAM_INGEST_URL = "https://api-bjs.xdr.us.paloaltonetworks.com/logs/v1/xsiam"
+XSIAM_OK_RESPONSE = {"status_code": 200, "json": {"error": "false"}}
+NGINX_502_BODY = "<html><head><title>502 Bad Gateway</title></head><body><center>nginx</center></body></html>"
+
+
+def mock_xsiam_ingestion(mocker):
+    """Mock the integration params, the license fields used by send_data_to_xsiam, and the demisto logs.
+
+    Returns:
+        The updateModuleHealth mock.
+    """
+    license_fields = {"Http_Connector.token": "token", "Http_Connector.url": "bjs.xdr.us.paloaltonetworks.com"}
+    mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
+    mocker.patch.object(demisto, "getLicenseCustomField", side_effect=lambda field: license_fields[field])
+    mocker.patch.object(demisto, "error")
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+    return mocker.patch.object(demisto, "updateModuleHealth")
+
+
 def mock_demisto(mocker, mock_args=None):
     mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
     mocker.patch.object(demisto, "args", return_value=mock_args)
@@ -74,8 +141,6 @@ def mock_demisto(mocker, mock_args=None):
 def test_get_scan_status(mocker, requests_mock):
     mock_demisto(mocker, {"scanId": "25"})
     requests_mock.get(MOCK_PARAMS["url"] + "scans/25", json={"info": {"status": "canceled"}})
-
-    from Tenable_io import get_scan_status_command
 
     results = get_scan_status_command()
 
@@ -91,8 +156,6 @@ def test_get_vuln_by_asset(mocker, requests_mock):
     requests_mock.get(MOCK_PARAMS["url"] + "workbenches/assets", json={"assets": [{"id": "fake_asset_id"}]})
     requests_mock.get(MOCK_PARAMS["url"] + "workbenches/assets/fake_asset_id/vulnerabilities/", json=MOCK_RAW_VULN_BY_ASSET)
 
-    from Tenable_io import get_vulnerabilities_by_asset_command
-
     results = get_vulnerabilities_by_asset_command()
 
     actual_result = results["EntryContext"]["TenableIO.Vulnerabilities"]
@@ -106,8 +169,6 @@ def test_pause_scan_command(mocker, requests_mock):
     requests_mock.get(MOCK_PARAMS["url"] + "scans/25", json={"info": {"status": "running"}})
     requests_mock.post(MOCK_PARAMS["url"] + "scans/25/pause", json={"info": {"status": "running"}})
 
-    from Tenable_io import pause_scan_command
-
     results = pause_scan_command()
     entry_context = results[0]["EntryContext"]["TenableIO.Scan(val.Id && val.Id === obj.Id)"]
 
@@ -120,8 +181,6 @@ def test_resume_scan_command(mocker, requests_mock):
     mock_demisto(mocker, {"scanId": "25"})
     requests_mock.get(MOCK_PARAMS["url"] + "scans/25", json={"info": {"status": "paused"}})
     requests_mock.post(MOCK_PARAMS["url"] + "scans/25/resume", json={"info": {"status": "paused"}})
-    from Tenable_io import resume_scan_command
-
     results = resume_scan_command()
     entry_context = results[0]["EntryContext"]["TenableIO.Scan(val.Id && val.Id === obj.Id)"]
 
@@ -133,8 +192,6 @@ def test_resume_scan_command(mocker, requests_mock):
 def test_get_vulnerability_details_command(mocker, requests_mock):
     mock_demisto(mocker, {"vulnerabilityId": "1", "dateRange": "3"})
     requests_mock.get(MOCK_PARAMS["url"] + "workbenches/vulnerabilities/1/info", json={"info": {"Id": "1"}})
-    from Tenable_io import get_vulnerability_details_command
-
     results = get_vulnerability_details_command()
     entry_context = results["EntryContext"]["TenableIO.Vulnerabilities"]
 
@@ -149,8 +206,6 @@ def test_get_scans_command(mocker, requests_mock):
     )
     requests_mock.get(MOCK_PARAMS["url"] + "scans/1", json={"info": {"status": "paused"}})
 
-    from Tenable_io import get_scans_command
-
     results = get_scans_command()
     entry_context = results[0]["EntryContext"]["TenableIO.Scan(val.Id && val.Id === obj.Id)"]
 
@@ -162,8 +217,6 @@ def test_launch_scan_command(mocker, requests_mock):
     mock_demisto(mocker, {"scanId": "1", "scanTargets": "target1,target2"})
     requests_mock.get(MOCK_PARAMS["url"] + "scans/1", json={"info": {"status": "paused"}})
     requests_mock.post(MOCK_PARAMS["url"] + "scans/1/launch", json={})
-
-    from Tenable_io import launch_scan_command
 
     results = launch_scan_command()
     entry_context = results["EntryContext"]["TenableIO.Scan(val.Id && val.Id === obj.Id)"]
@@ -179,8 +232,6 @@ def test_get_asset_details_command(mocker, requests_mock):
     requests_mock.get(f"{MOCK_PARAMS['url']}workbenches/assets", json={"assets": [{"id": "fake_asset_id"}]})
     requests_mock.get(f"{MOCK_PARAMS['url']}workbenches/assets/fake_asset_id/info", json=MOCK_RAW_ASSET_BY_IP)
     requests_mock.get(f"{MOCK_PARAMS['url']}api/v3/assets/fake_asset_id/attributes", json=MOCK_RAW_ASSET_ATTRIBUTES)
-
-    from Tenable_io import get_asset_details_command
 
     response = get_asset_details_command()
 
@@ -211,8 +262,6 @@ def test_validate_range(range_str, expected_lower_range_bound, expected_upper_ra
     Then:
         - Verify that validation range function works as expected.
     """
-    from Tenable_io import validate_range
-
     if expected_lower_range_bound == expected_upper_range_bound == "exception":
         err_msg = "Please specify a valid vprScoreRange. The VPR values range is 0.1-10.0."
         with pytest.raises(DemistoException, match=err_msg):
@@ -236,8 +285,6 @@ def test_relational_date_to_epoch_date_format(date_str, expected_date):
     Then:
         - Verify date returned as epoch time as expected.
     """
-    from Tenable_io import relational_date_to_epoch_date_format
-
     date = relational_date_to_epoch_date_format(date_str)
 
     assert date == expected_date
@@ -269,8 +316,6 @@ def test_build_vpr_score_validation(args, expected_exception):
     Then:
         - Verify that validation function works as expected.
     """
-    from Tenable_io import build_vpr_score
-
     with pytest.raises(DemistoException) as de:
         build_vpr_score(args)
 
@@ -316,8 +361,6 @@ def test_build_vpr_score(args, expected_vpr_score):
     Then:
         - Verify that build_vpr_score function works as expected.
     """
-    from Tenable_io import build_vpr_score
-
     vpr_score = build_vpr_score(args)
 
     assert vpr_score == expected_vpr_score
@@ -332,7 +375,6 @@ def test_export_assets_build_command_result():
     Then:
         - Verify command result values as expected.
     """
-    from Tenable_io import export_assets_build_command_result
     from test_data.response_and_results import export_assets_response
 
     command_result = export_assets_build_command_result(export_assets_response)
@@ -360,7 +402,6 @@ def test_export_vulnerabilities_build_command_result():
     Then:
         - Verify command result values as expected.
     """
-    from Tenable_io import export_vulnerabilities_build_command_result
     from test_data.response_and_results import export_vulnerabilities_response
 
     command_result = export_vulnerabilities_build_command_result(export_vulnerabilities_response)
@@ -401,8 +442,6 @@ def test_export_assets_command(mocker, args, return_value_export_request_with_ex
     Then:
         - Verify that tenable-io-export-assets command works as expected.
     """
-    import Tenable_io
-    from Tenable_io import export_assets_command
     from test_data.response_and_results import export_assets_response
 
     mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
@@ -449,8 +488,6 @@ def test_export_vulnerabilities_command(mocker, args, return_value_export_reques
     Then:
         - Verify that tenable-io-export-vulnerabilities command works as expected.
     """
-    import Tenable_io
-    from Tenable_io import export_vulnerabilities_command
     from test_data.response_and_results import export_vulnerabilities_response
 
     mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
@@ -530,8 +567,6 @@ def test_scan_history_params(args, expected_result):
         Case 2: Sort all sortFields by sortOrder.
         Case 3: Match sortFields and sortOrder's values by index.
     """
-    from Tenable_io import scan_history_params
-
     result = scan_history_params(args)
 
     assert result == expected_result
@@ -548,8 +583,6 @@ def test_list_scan_filters_command(mocker):
     Then:
         - Verify that tenable-io-list-scan-filters command works as expected.
     """
-    from Tenable_io import Client, list_scan_filters_command
-
     test_data = util_load_json("test_data/list_scan_filters.json")
 
     request = mocker.patch.object(BaseClient, "_http_request", return_value=test_data["response_json"])
@@ -576,8 +609,6 @@ def test_get_scan_history_command(mocker):
     Then:
         - Verify that tenable-io-get-scan-history command works as expected.
     """
-    from Tenable_io import Client, get_scan_history_command
-
     test_data = util_load_json("test_data/get_scan_history.json")
 
     request = mocker.patch.object(BaseClient, "_http_request", return_value=test_data["response_json"])
@@ -605,8 +636,6 @@ def test_initiate_export_scan(mocker):
         - Initiate an export scan request.
     """
 
-    from Tenable_io import Client, initiate_export_scan
-
     test_data = util_load_json("test_data/initiate_export_scan.json")
     mock_demisto(mocker)
     request = mocker.patch.object(BaseClient, "_http_request", return_value=test_data["response_json"])
@@ -627,8 +656,6 @@ def test_download_export_scan(mocker):
     Then:
         - Initiate an export scan request.
     """
-    from Tenable_io import Client
-
     mock_demisto(mocker)
     mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
     request = mocker.patch.object(BaseClient, "_http_request", return_value=b"")
@@ -674,8 +701,6 @@ def test_export_scan_command_errors(mocker, args, response_json, message):
         - Return an error.
     """
 
-    from Tenable_io import Client, export_scan_command
-
     mock_demisto(mocker)
     mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
     mocker.patch.object(BaseClient, "_http_request", return_value=response_json)
@@ -693,8 +718,6 @@ def test_export_scan_command_errors(mocker, args, response_json, message):
     ),
 )
 def test_scan_history_pagination_params(args, expected_result):
-    from Tenable_io import scan_history_pagination_params
-
     result = scan_history_pagination_params(args)
 
     assert result == expected_result
@@ -710,8 +733,6 @@ def test_get_audit_logs_command(mocker, requests_mock):
         - Verify that when a list of events exists, it will take the last timestamp
         - Verify that when there are no events yet (first fetch) the timestamp for all will be as the first fetch
     """
-    from Tenable_io import Client, get_audit_logs_command
-
     mock_demisto(mocker)
     client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
     requests_mock.get(f"{BASE_URL}/audit-log/v1/events?limit=2", json=MOCK_AUDIT_LOGS)
@@ -733,8 +754,6 @@ def test_vulnerabilities_process(mocker, requests_mock):
         - Verify vulnerabilities returned and finished flag is up.
     """
 
-    from Tenable_io import Client, generate_export_uuid, get_vulnerabilities_export_status, handle_vulns_chunks
-
     mock_demisto(mocker)
     client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
     requests_mock.post(f"{BASE_URL}/vulns/export", json=MOCK_UUID)
@@ -754,6 +773,42 @@ def test_vulnerabilities_process(mocker, requests_mock):
     assert len(vulnerabilities) == 1
 
 
+def test_handle_vulns_chunks_preserves_snapshot_state(mocker, requests_mock):
+    """
+    Given:
+        - A last_run dict with snapshot_id and total_assets set (from the assets fetch flow).
+        - Vulnerability chunks that are ready to be downloaded.
+    When:
+        - handle_vulns_chunks completes downloading all vuln chunks.
+    Then:
+        - Verify that snapshot_id and total_assets are NOT removed from last_run.
+        - These fields belong to the assets snapshot lifecycle and must only be cleaned up
+          in main() after the snapshot has been sealed, not in handle_vulns_chunks().
+    """
+    mock_demisto(mocker)
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.get(f"{BASE_URL}/vulns/export/123/chunks/1", json=MOCK_CHUNK_CONTENT)
+
+    original_snapshot_id = "1234567890"
+    original_total_assets = 50000
+    last_run = {
+        "vuln_export_uuid": "123",
+        "vulns_available_chunks": [1],
+        "snapshot_id": original_snapshot_id,
+        "total_assets": original_total_assets,
+    }
+
+    vulnerabilities, last_run = handle_vulns_chunks(client, last_run)
+
+    assert len(vulnerabilities) == 1
+    # Verify vuln state is cleaned up
+    assert "vuln_export_uuid" not in last_run
+    assert "vulns_available_chunks" not in last_run
+    # Verify snapshot state is PRESERVED (not popped)
+    assert last_run.get("snapshot_id") == original_snapshot_id
+    assert last_run.get("total_assets") == original_total_assets
+
+
 def test_fetch_audit_logs_no_duplications(mocker, requests_mock):
     """
 
@@ -765,8 +820,6 @@ def test_fetch_audit_logs_no_duplications(mocker, requests_mock):
         - Verify no duplicated audit logs are returned from the API.
 
     """
-    from Tenable_io import Client, fetch_events_command
-
     mock_demisto(mocker)
     client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
     requests_mock.get(f"{BASE_URL}/audit-log/v1/events?f=date.gt:2022-09-20&limit=5000", json=MOCK_AUDIT_LOGS)
@@ -803,8 +856,6 @@ def test_set_index_audit_logs(
     Then:
         - Verify the result is correct as expected by the logic which is written there.
     """
-    from Tenable_io import set_index_audit_logs
-
     result = set_index_audit_logs(dt_now, dt_start_date, audit_logs, last_index_fetched)
     assert new_last_index_fetched == result
 
@@ -818,12 +869,10 @@ def test_test_module(requests_mock, mocker):
     Then:
         - Verify the result is ok as expected.
     """
-    from Tenable_io import Client, test_module
-
     mock_demisto(mocker)
     client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
     requests_mock.get(f"{BASE_URL}/filters/scans/reports", json={})
-    result = test_module(client, demisto.params())
+    result = tenable_test_module(client, demisto.params())
 
     assert result == "ok"
 
@@ -842,8 +891,6 @@ def test_fetch_assets(requests_mock):
         - Note: total_assets counter is updated in main() after send_data_to_xsiam(),
           not in handle_assets_chunks(), to ensure counter only reflects successfully sent assets.
     """
-    from Tenable_io import Client, generate_assets_export_uuid, get_asset_export_job_status, handle_assets_chunks
-
     client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
     requests_mock.post(f"{BASE_URL}/assets/export", json={"export_uuid": "123"})
     requests_mock.get(f"{BASE_URL}/assets/export/123/status", json={"status": "FINISHED", "chunks_available": [1]})
@@ -899,8 +946,6 @@ def test_handle_assets_chunks(requests_mock, api_response, expected_assets, expe
         - Note: total_assets counter is updated in main() after send_data_to_xsiam(),
           not in handle_assets_chunks(), to ensure counter only reflects successfully sent assets.
     """
-    from Tenable_io import Client, handle_assets_chunks
-
     client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
     requests_mock.get(f"{BASE_URL}/assets/export/111/chunks/1", json=api_response)
     requests_mock.post(f"{BASE_URL}/assets/export", json={"export_uuid": "222"})
@@ -965,9 +1010,6 @@ def test_request_uuid_export_vulnerabilities_with_tags(mocker, args, expected_ta
         - Verify that tag filters are properly added to request parameters.
     """
     mock_demisto(mocker, args)
-    import Tenable_io
-    from Tenable_io import request_uuid_export_vulnerabilities
-
     mock_export_uuid = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
     mock_export_request = mocker.patch.object(Tenable_io, "export_request", return_value={"export_uuid": mock_export_uuid})
 
@@ -985,3 +1027,396 @@ def test_request_uuid_export_vulnerabilities_with_tags(mocker, args, expected_ta
     # Verify PollResult structure
     assert result.continue_to_poll is True
     assert result.args_for_next_run["exportUuid"] == mock_export_uuid
+
+
+def test_should_seal_empty_assets_snapshot_first_time_after_assets_complete():
+    """
+    Given:
+        - The assets export has finished (assets_fetch_in_progress=False).
+        - Assets were already sent this cycle (total_assets > 0) but the current
+          fetch returned no new assets (empty list).
+        - The snapshot has NOT yet been sealed with an empty payload.
+    When:
+        - Running should_seal_empty_assets_snapshot.
+    Then:
+        - Returns True: the snapshot should be sealed exactly once.
+    """
+    last_run = {"snapshot_id": "snap-1", "total_assets": 4323, "vuln_export_uuid": "v-1"}
+    assert should_seal_empty_assets_snapshot(assets=[], assets_fetch_in_progress=False, assets_last_run=last_run) is True
+
+
+def test_should_not_reseal_assets_snapshot_when_already_sealed():
+    """
+    Given:
+        - The assets export has finished and the snapshot was ALREADY sealed this
+          cycle (assets_snapshot_sealed=True), while the vulnerabilities export is
+          still in progress (vuln_export_uuid present).
+        - The current fetch returned no new assets.
+    When:
+        - Running should_seal_empty_assets_snapshot.
+    Then:
+        - Returns False: XSUP-71765 regression guard. Re-sealing an already-sealed
+          snapshot with an empty payload wipes the committed assets in XSIAM.
+    """
+    last_run = {
+        "snapshot_id": "snap-1",
+        "total_assets": 4323,
+        "vuln_export_uuid": "v-1",
+        "assets_snapshot_sealed": True,
+    }
+    assert should_seal_empty_assets_snapshot(assets=[], assets_fetch_in_progress=False, assets_last_run=last_run) is False
+
+
+def test_should_not_seal_assets_snapshot_while_assets_still_in_progress():
+    """
+    Given:
+        - The assets export is still in progress (more chunks/export pending).
+    When:
+        - Running should_seal_empty_assets_snapshot with an empty assets list.
+    Then:
+        - Returns False: the snapshot is not complete yet, so it must not be sealed.
+    """
+    last_run = {"snapshot_id": "snap-1", "total_assets": 0}
+    assert should_seal_empty_assets_snapshot(assets=[], assets_fetch_in_progress=True, assets_last_run=last_run) is False
+
+
+def test_should_not_seal_assets_snapshot_when_nothing_was_fetched():
+    """
+    Given:
+        - The assets fetch completed but cumulative total is 0 (nothing to seal).
+    When:
+        - Running should_seal_empty_assets_snapshot with an empty assets list.
+    Then:
+        - Returns False: there is no committed snapshot to seal.
+    """
+    last_run = {"snapshot_id": "snap-1", "total_assets": 0}
+    assert should_seal_empty_assets_snapshot(assets=[], assets_fetch_in_progress=False, assets_last_run=last_run) is False
+
+
+def test_should_not_empty_seal_when_assets_were_fetched_this_run():
+    """
+    Given:
+        - The current fetch returned assets (non-empty list).
+    When:
+        - Running should_seal_empty_assets_snapshot.
+    Then:
+        - Returns False: the data-send path handles sealing, not the empty-seal path.
+    """
+    last_run = {"snapshot_id": "snap-1", "total_assets": 100}
+    assert (
+        should_seal_empty_assets_snapshot(assets=[{"id": 1}], assets_fetch_in_progress=False, assets_last_run=last_run) is False
+    )
+
+
+def test_fetch_assets_sends_assets_before_fetching_vulnerabilities(mocker):
+    """
+    Given:
+        - A fetch-assets run where both assets and vulnerabilities are available.
+    When:
+        - Running main() for the 'fetch-assets' command.
+    Then:
+        - Assets are sent to XSIAM BEFORE vulnerabilities are fetched from the API, so the two
+          large datasets are never held in memory at the same time (XSUP-73037 OOM prevention).
+    """
+    mock_demisto(mocker, mock_args={})
+    mocker.patch.object(demisto, "command", return_value="fetch-assets")
+    mocker.patch.object(demisto, "getAssetsLastRun", return_value={})
+    mocker.patch.object(demisto, "setAssetsLastRun")
+    mocker.patch.object(demisto, "updateModuleHealth")
+    mocker.patch.object(Tenable_io, "is_xsiam", return_value=True)
+    mocker.patch.object(Tenable_io, "is_platform", return_value=True)
+
+    call_order: list = []
+
+    def fake_run_assets_fetch(client, last_run):
+        call_order.append("fetch_assets")
+        return [{"id": "asset-1"}]
+
+    def fake_run_vulnerabilities_fetch(client, last_run):
+        call_order.append("fetch_vulns")
+        return [{"id": "vuln-1"}]
+
+    def fake_send_data_to_xsiam(*args, **kwargs):
+        product = kwargs.get("product", "")
+        if "assets" in product:
+            call_order.append("send_assets")
+        elif "vulnerabilities" in product:
+            call_order.append("send_vulns")
+
+    mocker.patch.object(Tenable_io, "run_assets_fetch", side_effect=fake_run_assets_fetch)
+    mocker.patch.object(Tenable_io, "run_vulnerabilities_fetch", side_effect=fake_run_vulnerabilities_fetch)
+    mocker.patch.object(Tenable_io, "send_data_to_xsiam", side_effect=fake_send_data_to_xsiam)
+    mocker.patch.object(Tenable_io, "parse_vulnerabilities", side_effect=lambda vulns: vulns)
+
+    Tenable_io.main()
+
+    # Assets must be sent to XSIAM before vulnerabilities are fetched from the API.
+    assert "send_assets" in call_order
+    assert "fetch_vulns" in call_order
+    assert call_order.index("send_assets") < call_order.index("fetch_vulns")
+    # Sanity: assets are fetched first and vulnerabilities are sent last.
+    assert call_order.index("fetch_assets") < call_order.index("send_assets")
+    assert call_order.index("fetch_vulns") < call_order.index("send_vulns")
+
+
+@pytest.mark.parametrize(
+    "transient_response",
+    [
+        {"status_code": 502, "text": NGINX_502_BODY},
+        {"status_code": 500, "text": "Internal Server Error"},
+        {"status_code": 503, "text": "upstream connect error or disconnect/reset before headers"},
+        {"status_code": 504, "text": "Gateway Timeout"},
+        {"status_code": 408, "text": "Request Timeout"},
+        {"exc": requests.exceptions.ReadTimeout},
+        {"exc": requests.exceptions.ConnectionError},
+    ],
+    ids=["502_nginx", "500", "503_envoy_reset", "504", "408", "read_timeout", "connection_reset"],
+)
+def test_send_data_to_xsiam_with_retry_recovers_from_transient_error(mocker, requests_mock, transient_response):
+    """
+    Given:
+        - The XSIAM ingestion endpoint fails once with a transient error, then succeeds.
+    When:
+        - Sending vulnerabilities with send_data_to_xsiam_with_retry.
+    Then:
+        - The batch is retried after a backoff and the send succeeds (XSUP-77050).
+    """
+    mock_xsiam_ingestion(mocker)
+    sleep_mock = mocker.patch("Tenable_io.time.sleep")
+    requests_mock.post(XSIAM_INGEST_URL, [transient_response, XSIAM_OK_RESPONSE])
+
+    send_data_to_xsiam_with_retry([{"finding_id": "1"}], vendor="tenable", product="io_vulnerabilities")
+
+    assert requests_mock.call_count == 2
+    sleep_mock.assert_called_once_with(XSIAMSendConfig.BACKOFF_SECONDS)
+
+
+def test_send_data_to_xsiam_with_retry_raises_after_max_attempts(mocker, requests_mock):
+    """
+    Given:
+        - The XSIAM ingestion endpoint keeps answering 502.
+    When:
+        - Sending vulnerabilities with send_data_to_xsiam_with_retry.
+    Then:
+        - The send is attempted MAX_ATTEMPTS times with exponential backoff, then the error is raised.
+    """
+    mock_xsiam_ingestion(mocker)
+    sleep_mock = mocker.patch("Tenable_io.time.sleep")
+    requests_mock.post(XSIAM_INGEST_URL, status_code=502, text=NGINX_502_BODY)
+
+    with pytest.raises(XSIAMSendError) as error:
+        send_data_to_xsiam_with_retry([{"finding_id": "1"}], vendor="tenable", product="io_vulnerabilities")
+
+    assert error.value.status_code == 502
+    assert requests_mock.call_count == XSIAMSendConfig.MAX_ATTEMPTS
+    assert [call.args[0] for call in sleep_mock.call_args_list] == [
+        XSIAMSendConfig.BACKOFF_SECONDS * 2**attempt for attempt in range(XSIAMSendConfig.MAX_ATTEMPTS - 1)
+    ]
+
+
+@pytest.mark.parametrize("status_code", [400, 401, 403, 404, 413], ids=["400", "401", "403", "404", "413"])
+def test_send_data_to_xsiam_with_retry_does_not_retry_permanent_errors(mocker, requests_mock, status_code):
+    """
+    Given:
+        - The XSIAM ingestion endpoint answers with a permanent (non-transient) error.
+    When:
+        - Sending vulnerabilities with send_data_to_xsiam_with_retry.
+    Then:
+        - The error is raised immediately, without retrying or sleeping.
+    """
+    mock_xsiam_ingestion(mocker)
+    sleep_mock = mocker.patch("Tenable_io.time.sleep")
+    requests_mock.post(XSIAM_INGEST_URL, status_code=status_code, text="error")
+
+    with pytest.raises(XSIAMSendError):
+        send_data_to_xsiam_with_retry([{"finding_id": "1"}], vendor="tenable", product="io_vulnerabilities")
+
+    assert requests_mock.call_count == 1
+    sleep_mock.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "args, kwargs",
+    [
+        ([[{"id": "event-1"}]], {"vendor": "tenable", "product": "io"}),
+        ([], {"data": [{"id": "vuln-1"}], "vendor": "tenable", "product": "io_vulnerabilities"}),
+        (
+            [],
+            {
+                "data": [{"id": "asset-1"}, {"id": "asset-2"}],
+                "vendor": "tenable",
+                "product": "io_assets",
+                "data_type": "assets",
+                "snapshot_id": "123",
+                "items_count": "2",
+                "should_update_health_module": False,
+            },
+        ),
+        ([], {"data": [], "vendor": "tenable", "product": "io_assets", "data_type": "assets", "items_count": "5"}),
+    ],
+    ids=["events_positional", "vulnerabilities", "assets_snapshot", "empty_assets_seal"],
+)
+def test_send_data_to_xsiam_with_retry_forwards_arguments_unchanged(mocker, args, kwargs):
+    """
+    Given:
+        - Each of the argument shapes used by the integration's original send_data_to_xsiam calls.
+    When:
+        - Calling send_data_to_xsiam_with_retry and the send succeeds on the first attempt.
+    Then:
+        - send_data_to_xsiam is called exactly once, with the same arguments plus only the client_class,
+          so the original flow (payload, snapshot headers, module health) is unchanged.
+    """
+    mock_xsiam_ingestion(mocker)
+    sleep_mock = mocker.patch("Tenable_io.time.sleep")
+    send_mock = mocker.patch.object(Tenable_io, "send_data_to_xsiam")
+
+    send_data_to_xsiam_with_retry(*args, **kwargs)
+
+    send_mock.assert_called_once_with(*args, client_class=XSIAMIngestionClient, **kwargs)
+    sleep_mock.assert_not_called()
+
+
+def test_send_data_to_xsiam_with_retry_resends_the_identical_request(mocker, requests_mock):
+    """
+    Given:
+        - An assets snapshot send that fails once with a 502.
+    When:
+        - Sending it with send_data_to_xsiam_with_retry.
+    Then:
+        - The retry sends the exact same request body and headers, including the same snapshot-id
+          and total-items-count, so XSIAM receives one consistent snapshot.
+    """
+    mock_xsiam_ingestion(mocker)
+    mocker.patch("Tenable_io.time.sleep")
+    requests_mock.post(XSIAM_INGEST_URL, [{"status_code": 502, "text": NGINX_502_BODY}, XSIAM_OK_RESPONSE])
+
+    send_data_to_xsiam_with_retry(
+        data=[{"id": "asset-1"}],
+        vendor="tenable",
+        product="io_assets",
+        data_type="assets",
+        snapshot_id="123",
+        items_count="1",
+        should_update_health_module=False,
+    )
+
+    first_request, retried_request = requests_mock.request_history
+    assert retried_request.body == first_request.body
+    assert retried_request.headers["snapshot-id"] == first_request.headers["snapshot-id"]
+    assert retried_request.headers["total-items-count"] == first_request.headers["total-items-count"] == "1"
+
+
+def test_send_data_to_xsiam_with_retry_keeps_the_original_error_message(mocker, requests_mock):
+    """
+    Given:
+        - The XSIAM ingestion endpoint keeps answering 502.
+    When:
+        - All attempts of send_data_to_xsiam_with_retry are exhausted.
+    Then:
+        - The raised error carries the same message send_data_to_xsiam produced before the change,
+          so main() reports the failure exactly as it did originally.
+    """
+    mock_xsiam_ingestion(mocker)
+    mocker.patch("Tenable_io.time.sleep")
+    requests_mock.post(XSIAM_INGEST_URL, status_code=502, text=NGINX_502_BODY)
+
+    with pytest.raises(DemistoException) as error:
+        send_data_to_xsiam_with_retry([{"finding_id": "1"}], vendor="tenable", product="io_vulnerabilities")
+
+    assert str(error.value).startswith("Error sending new events into XSIAM.")
+    assert "502 Bad Gateway" in str(error.value)
+
+
+def test_send_data_to_xsiam_with_retry_logs_no_payload_or_secrets(mocker, requests_mock):
+    """
+    Given:
+        - A vulnerability payload with customer data, sent while XSIAM fails with 502 on every attempt.
+    When:
+        - send_data_to_xsiam_with_retry logs its retry attempts and the final failure.
+    Then:
+        - The retry logs contain the product, attempt and status code, but never the payload, the
+          authorization token or the response body.
+    """
+    mock_xsiam_ingestion(mocker)
+    mocker.patch("Tenable_io.time.sleep")
+    requests_mock.post(XSIAM_INGEST_URL, status_code=502, text=NGINX_502_BODY)
+
+    with pytest.raises(DemistoException):
+        send_data_to_xsiam_with_retry(
+            [{"hostname": "customer-host.corp.local", "serial": "SN-CUSTOMER-0001"}],
+            vendor="tenable",
+            product="io_vulnerabilities",
+        )
+
+    retry_logs = [
+        str(call.args[0])
+        for log_mock in (demisto.debug, demisto.info, demisto.error)
+        for call in log_mock.call_args_list  # type: ignore[attr-defined]
+        if "[XSIAM Send]" in str(call.args[0])
+    ]
+    assert retry_logs, "expected [XSIAM Send] retry logs"
+    assert any("status_code=502" in log for log in retry_logs)
+    for log in retry_logs:
+        assert "customer-host.corp.local" not in log
+        assert "SN-CUSTOMER-0001" not in log
+        assert "token" not in log
+        assert "Bad Gateway" not in log
+
+
+@pytest.mark.parametrize(
+    "status_code, expected",
+    [(408, True), (500, True), (502, True), (503, True), (504, True), (429, False), (400, False), (401, False), (403, False)],
+    ids=["408", "500", "502", "503", "504", "429", "400", "401", "403"],
+)
+def test_is_retryable_xsiam_error_by_status_code(mocker, status_code, expected):
+    """
+    Given:
+        - An XSIAMSendError carrying an HTTP status code.
+    When:
+        - Classifying it with is_retryable_xsiam_error.
+    Then:
+        - Only the transient status codes are retryable. 429 is not, because send_data_to_xsiam
+          already retries it internally and the original 429 behavior must stay unchanged.
+    """
+    mock_xsiam_ingestion(mocker)
+    assert is_retryable_xsiam_error(XSIAMSendError("error", status_code=status_code)) is expected
+
+
+@pytest.mark.parametrize(
+    "error, expected",
+    [
+        (requests.exceptions.ReadTimeout(), True),
+        (requests.exceptions.ConnectTimeout(), True),
+        (requests.exceptions.ConnectionError(), True),
+        (requests.exceptions.ChunkedEncodingError(), True),
+        (requests.exceptions.SSLError(), False),
+        (requests.exceptions.ProxyError(), False),
+        (DemistoException("wrapped", requests.exceptions.ConnectionError()), True),
+        (DemistoException("wrapped", requests.exceptions.SSLError()), False),
+        (DemistoException("no status code"), False),
+        (ValueError("unexpected"), False),
+    ],
+    ids=[
+        "read_timeout",
+        "connect_timeout",
+        "connection_error",
+        "chunked_encoding",
+        "ssl",
+        "proxy",
+        "wrapped_connection_error",
+        "wrapped_ssl",
+        "plain_demisto_exception",
+        "value_error",
+    ],
+)
+def test_is_retryable_xsiam_error(mocker, error, expected):
+    """
+    Given:
+        - An exception raised while sending data to XSIAM.
+    When:
+        - Classifying it with is_retryable_xsiam_error.
+    Then:
+        - Transient network errors are retryable; configuration and unknown errors are not.
+    """
+    mock_xsiam_ingestion(mocker)
+    assert is_retryable_xsiam_error(error) is expected

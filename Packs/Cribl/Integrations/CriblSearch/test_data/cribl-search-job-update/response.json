@@ -1,0 +1,430 @@
+{
+  "query": "dataset=\"cribl_search_sample\" | summarize cnt=count() by srcaddr",
+  "isPrivate": false,
+  "user": "EXAMPLECLIENTID0000000000000000@clients",
+  "displayUsername": "example.user@example.com",
+  "userDetails": {
+    "username": "EXAMPLECLIENTID0000000000000000@clients",
+    "displayUsername": "example.user@example.com",
+    "email": "example.user@example.com",
+    "roles": [
+      "search_user",
+      "org_user",
+      "ws_user"
+    ],
+    "ssoGroups": [],
+    "type": "apiCredential",
+    "apiCredential": {
+      "clientId": "EXAMPLECLIENTID0000000000000000@clients",
+      "name": "example.user@example.com",
+      "createdBy": "example.user@example.com"
+    }
+  },
+  "earliest": "-1h",
+  "latest": "now",
+  "group": "default_search",
+  "id": "1777207075060.cCPnVx",
+  "timeCreated": 1777207075060,
+  "setOptions": {},
+  "stages": [
+    {
+      "id": "root",
+      "subQueryText": "dataset=\"cribl_search_sample\" | summarize cnt=count() by srcaddr",
+      "dependencies": [],
+      "filter": "(dataset == 'cribl_search_sample')",
+      "resolvedDatasetIds": [
+        "cribl_search_sample"
+      ],
+      "searchConfig": {
+        "pipelines": {
+          "Federated": {
+            "id": "root",
+            "conf": {
+              "asyncFuncTimeout": 1000,
+              "description": "Pipeline, generated from Kalipso query",
+              "functions": [
+                {
+                  "id": "drop",
+                  "conf": {},
+                  "description": "dataset=\"cribl_search_sample\"",
+                  "filter": "!(dataset == 'cribl_search_sample')",
+                  "disabled": false,
+                  "final": false,
+                  "canFullyPushToFederated": true,
+                  "functionInstanceId": "root:0:LV1C"
+                },
+                {
+                  "id": "aggregation",
+                  "filter": "true",
+                  "conf": {
+                    "preserveGroupBys": true,
+                    "metricsMode": false,
+                    "timeWindow": "1s",
+                    "aggregations": [
+                      "count().as(cnt)"
+                    ],
+                    "groupbys": [
+                      "srcaddr"
+                    ],
+                    "cumulative": true,
+                    "flushOnInputClose": false,
+                    "sufficientStatsOnly": true,
+                    "searchAggMode": "Federated",
+                    "printUndefineds": true
+                  },
+                  "description": "summarize cnt=count() by srcaddr",
+                  "disabled": false,
+                  "final": false,
+                  "canFullyPushToFederated": false,
+                  "functionInstanceId": "root:1:4e6u"
+                }
+              ]
+            }
+          },
+          "Coordinated": {
+            "id": "root",
+            "conf": {
+              "asyncFuncTimeout": 1000,
+              "description": "Pipeline, generated from Kalipso query",
+              "functions": [
+                {
+                  "id": "aggregation",
+                  "filter": "true",
+                  "conf": {
+                    "preserveGroupBys": true,
+                    "metricsMode": false,
+                    "timeWindow": "1s",
+                    "aggregations": [
+                      "count().as(cnt)"
+                    ],
+                    "groupbys": [
+                      "srcaddr"
+                    ],
+                    "cumulative": true,
+                    "flushOnInputClose": false,
+                    "sufficientStatsOnly": false,
+                    "searchAggMode": "DistributedCoordinated",
+                    "printUndefineds": true
+                  },
+                  "description": "summarize cnt=count() by srcaddr",
+                  "disabled": false,
+                  "final": false,
+                  "canFullyPushToFederated": false,
+                  "functionInstanceId": "root:2:cN9e"
+                },
+                {
+                  "id": "eval",
+                  "filter": "true",
+                  "conf": {
+                    "printUndefineds": true,
+                    "remove": [
+                      "*"
+                    ],
+                    "keep": [
+                      "cnt",
+                      "cnt.*",
+                      "srcaddr",
+                      "srcaddr.*"
+                    ]
+                  },
+                  "description": "summarize cnt=count() by srcaddr",
+                  "disabled": false,
+                  "final": false,
+                  "canFullyPushToFederated": true,
+                  "functionInstanceId": "root:3:1Df0"
+                }
+              ]
+            }
+          },
+          "Combined": {
+            "id": "root",
+            "conf": {
+              "asyncFuncTimeout": 1000,
+              "description": "Pipeline, generated from Kalipso query",
+              "functions": [
+                {
+                  "id": "drop",
+                  "conf": {},
+                  "description": "dataset=\"cribl_search_sample\"",
+                  "filter": "!(dataset == 'cribl_search_sample')",
+                  "disabled": false,
+                  "final": false,
+                  "canFullyPushToFederated": true,
+                  "functionInstanceId": "root:0:LV1C"
+                },
+                {
+                  "id": "aggregation",
+                  "filter": "true",
+                  "conf": {
+                    "preserveGroupBys": true,
+                    "metricsMode": false,
+                    "timeWindow": "1s",
+                    "aggregations": [
+                      "count().as(cnt)"
+                    ],
+                    "groupbys": [
+                      "srcaddr"
+                    ],
+                    "cumulative": true,
+                    "flushOnInputClose": false,
+                    "sufficientStatsOnly": false,
+                    "searchAggMode": "Coordinated",
+                    "printUndefineds": true
+                  },
+                  "description": "summarize cnt=count() by srcaddr",
+                  "disabled": false,
+                  "final": false,
+                  "canFullyPushToFederated": false,
+                  "functionInstanceId": "root:1:4e6u"
+                },
+                {
+                  "id": "eval",
+                  "filter": "true",
+                  "conf": {
+                    "printUndefineds": true,
+                    "remove": [
+                      "*"
+                    ],
+                    "keep": [
+                      "cnt",
+                      "cnt.*",
+                      "srcaddr",
+                      "srcaddr.*"
+                    ]
+                  },
+                  "description": "summarize cnt=count() by srcaddr",
+                  "disabled": false,
+                  "final": false,
+                  "canFullyPushToFederated": true,
+                  "functionInstanceId": "root:3:1Df0"
+                }
+              ]
+            }
+          }
+        },
+        "logicalPlans": {
+          "Federated": {
+            "root:0:LV1C": [
+              {
+                "condition": {
+                  "operator": "==",
+                  "lhs": {
+                    "columnPath": [
+                      "dataset"
+                    ],
+                    "type": "identifier"
+                  },
+                  "rhs": {
+                    "literal": "cribl_search_sample",
+                    "type": "literal"
+                  },
+                  "caseSensitive": false,
+                  "type": "binaryOperation"
+                },
+                "type": "filter"
+              }
+            ],
+            "root:1:4e6u": [
+              {
+                "aggregates": [
+                  {
+                    "assignee": {
+                      "columnPath": [
+                        "cnt"
+                      ],
+                      "type": "identifier"
+                    },
+                    "operation": {
+                      "name": "count",
+                      "parameters": [],
+                      "type": "function",
+                      "functionType": "aggregation"
+                    },
+                    "type": "assign"
+                  }
+                ],
+                "groupBy": [
+                  {
+                    "columnPath": [
+                      "srcaddr"
+                    ],
+                    "type": "identifier"
+                  }
+                ],
+                "type": "aggregate",
+                "isPreviewableOperation": true,
+                "aggregationType": "summarize",
+                "location": "federated",
+                "canDistributeAggregation": true
+              }
+            ]
+          },
+          "Coordinated": {
+            "root:2:cN9e": [
+              {
+                "aggregates": [
+                  {
+                    "assignee": {
+                      "columnPath": [
+                        "cnt"
+                      ],
+                      "type": "identifier"
+                    },
+                    "operation": {
+                      "name": "count",
+                      "parameters": [],
+                      "type": "function",
+                      "functionType": "aggregation"
+                    },
+                    "type": "assign"
+                  }
+                ],
+                "groupBy": [
+                  {
+                    "columnPath": [
+                      "srcaddr"
+                    ],
+                    "type": "identifier"
+                  }
+                ],
+                "type": "aggregate",
+                "isPreviewableOperation": true,
+                "aggregationType": "summarize",
+                "location": "coordinated",
+                "canDistributeAggregation": true
+              }
+            ],
+            "root:3:1Df0": [
+              {
+                "type": "noop"
+              }
+            ]
+          },
+          "Combined": {
+            "root:0:LV1C": [
+              {
+                "condition": {
+                  "operator": "==",
+                  "lhs": {
+                    "columnPath": [
+                      "dataset"
+                    ],
+                    "type": "identifier"
+                  },
+                  "rhs": {
+                    "literal": "cribl_search_sample",
+                    "type": "literal"
+                  },
+                  "caseSensitive": false,
+                  "type": "binaryOperation"
+                },
+                "type": "filter"
+              }
+            ],
+            "root:1:4e6u": [
+              {
+                "aggregates": [
+                  {
+                    "assignee": {
+                      "columnPath": [
+                        "cnt"
+                      ],
+                      "type": "identifier"
+                    },
+                    "operation": {
+                      "name": "count",
+                      "parameters": [],
+                      "type": "function",
+                      "functionType": "aggregation"
+                    },
+                    "type": "assign"
+                  }
+                ],
+                "groupBy": [
+                  {
+                    "columnPath": [
+                      "srcaddr"
+                    ],
+                    "type": "identifier"
+                  }
+                ],
+                "type": "aggregate",
+                "isPreviewableOperation": true,
+                "aggregationType": "summarize",
+                "location": "coordinated",
+                "canDistributeAggregation": false
+              }
+            ],
+            "root:3:1Df0": [
+              {
+                "type": "noop"
+              }
+            ]
+          }
+        },
+        "datasets": [
+          "cribl_search_sample"
+        ],
+        "searchTerms": [],
+        "useFormattedVisualization": true,
+        "orderedFieldNames": [
+          "srcaddr",
+          "cnt"
+        ],
+        "referencedColumnPaths": [
+          [
+            "cnt"
+          ],
+          [
+            "srcaddr"
+          ]
+        ],
+        "hasSendOperator": false,
+        "canComputeMetadataDistributively": false
+      },
+      "status": "completed",
+      "searchVersionByDatasetId": {},
+      "cacheStatusByDatasetId": {
+        "cribl_search_sample": {
+          "usedCache": false,
+          "cacheStatus": "miss",
+          "reason": "Not a Lake Dataset",
+          "computeType": "v1"
+        }
+      }
+    }
+  ],
+  "accelerated": false,
+  "metadata": {
+    "datasets": {
+      "cribl_search_sample": 1
+    },
+    "providers": {
+      "cribl_s3sample_provider": 1
+    },
+    "providerTypes": {
+      "s3": 1
+    },
+    "computeTypes": {
+      "v1": 1
+    },
+    "cloudProvider": "aws",
+    "operators": {
+      "dataset=\"cribl_search_sample\"": 1,
+      "summarize": 1
+    },
+    "arguments": {},
+    "functions": {
+      "count": 1
+    }
+  },
+  "compatibilityChecks": {
+    "datatypes": false
+  },
+  "type": "standard",
+  "timeStarted": 1777207075512,
+  "timeCompleted": 1777207082580,
+  "status": "completed",
+  "earliestEpoch": 1777203475060,
+  "latestEpoch": 1777207075060
+}

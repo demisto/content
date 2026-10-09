@@ -9,12 +9,15 @@
       "INBOX"
     ],
     "payload": {
+      "headers": [
+        {"name": "Message-ID", "value": "<message_id>"}
+      ],
       "body": {
         "size": 0
-      },
+      }
+    },
     "sizeEstimate": 7502,
     "snippet": "",
     "threadId": "17f8886f87a78d38"
-  }
   }
 ]

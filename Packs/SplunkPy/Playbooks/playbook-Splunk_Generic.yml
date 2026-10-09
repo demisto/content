@@ -473,7 +473,7 @@ tasks:
           accessor: id
           root: incident
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: ""
       description: |-
@@ -1018,7 +1018,3 @@ fromversion: 6.0.0
 supportedModules:
 - agentix
 - xsiam
-- X1
-- X3
-- X5
-- ENT_PLUS

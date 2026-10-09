@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The 'Cyberint Alerts' integration display name has been renamed to 'Check Point EM Alerts'.\n\nThe 'Cyberint Feed' integration display name has been renamed to 'Check Point EM Feed'.\n\nThe 'Cyberint Takedowns' integration display name has been renamed to 'Check Point EM Takedowns'.\n\nIf you have any playbooks, scripts, or automations that reference the old integration names, please update them accordingly."
+}

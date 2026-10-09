@@ -12,6 +12,8 @@ from typing import Any, TypeVar
 
 import pytmv1
 import urllib3
+from pytmv1.client import Client
+from pytmv1.core import Core
 from pytmv1 import (  # noqa: E402
     AccountRequest,
     AlertStatus,
@@ -279,8 +281,6 @@ table_name = {
     GET_ENDPOINT_ACTIVITY_DATA_COUNT_COMMAND: TABLE_GET_ENDPOINT_ACTIVITY_DATA_COUNT,
     DOWNLOAD_COLLECTED_FILE_COMMAND: TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION,
 }
-# disable insecure warnings
-urllib3.disable_warnings()
 
 _T = TypeVar("_T")
 
@@ -526,7 +526,17 @@ def incident_severity_to_dbot_score(severity: str) -> int:
 
 # returns initialized pytmv1 client used to make rest calls
 def _get_client(name: str, api_key: str, base_url: str) -> pytmv1.Client:
-    return pytmv1.init(name, api_key, base_url)
+    return Client(
+        Core(
+            appname=name,
+            token=api_key,
+            url=base_url,
+            pool_connections=1,
+            pool_maxsize=1,
+            connect_timeout=10,
+            read_timeout=30,
+        )
+    )
 
 
 # Checks the api response for error
@@ -611,9 +621,12 @@ def test_module(v1_client: pytmv1.Client) -> str:
     """
 
     # Make rest call
+    demisto.debug("test_module: checking connectivity")
     resp = v1_client.system.check_connectivity()
     if _is_pytmv1_error(resp.result_code):
+        demisto.debug(f"test_module: connectivity check failed, error={resp.error}")
         return FAILED_CONNECTIVITY
+    demisto.debug("test_module: connectivity check passed")
     return "ok"
 
 
@@ -1207,27 +1220,28 @@ def fetch_incidents(v1_client: pytmv1.Client):
     else:
         start = end + timedelta(days=-days)
     # Fetch alerts
+    demisto.debug(f"fetch_incidents: querying alerts from {start.isoformat()} to {end.isoformat()}")
     alerts: list[Any] = get_workbench_histories(v1_client, start, end)
-    # list to store incidents that will be sent to the UI
+    # Sort by created_date_time ascending so oldest alerts are processed first
+    alerts.sort(key=lambda a: a.created_date_time)
     incidents: list[dict[str, Any]] = []
-    if alerts:
-        for record in alerts:
-            alert_data = record.model_dump()
+    for record in alerts:
+        alert_data = record.model_dump()
 
-            mirroring_fields = get_mirroring()
-            mirroring_fields["mirror_id"] = record.id
-            alert_data.update(mirroring_fields)
+        mirroring_fields = get_mirroring()
+        mirroring_fields["mirror_id"] = record.id
+        alert_data.update(mirroring_fields)
 
-            incident = {
-                "name": record.model,
-                "occurred": record.created_date_time,
-                "severity": incident_severity_to_dbot_score(record.severity),
-                "rawJSON": json.dumps(alert_data),
-            }
-            incidents.append(incident)
+        incident = {
+            "name": record.model,
+            "occurred": record.created_date_time,
+            "severity": incident_severity_to_dbot_score(record.severity),
+            "rawJSON": json.dumps(alert_data),
+        }
+        incidents.append(incident)
+    demisto.debug(f"fetch_incidents: {len(incidents)} incidents created, next start_time={end.isoformat()}")
     demisto.setLastRun({"start_time": end.isoformat()})
     demisto.incidents(incidents)
-    return incidents
 
 
 def quarantine_or_delete_email_message(v1_client: pytmv1.Client, command: str, args: dict[str, Any]) -> str | CommandResults:
@@ -3102,18 +3116,30 @@ def main():  # pragma: no cover
         base_url: str = params.get(URL, "")
         api_key: str = params.get(API_TOKEN, {}).get("password")
 
+        handle_proxy()
+        if params.get("insecure", False):
+            urllib3.disable_warnings()
+
+        proxy_enabled = params.get("proxy", False)
+        demisto.debug(
+            f"Initializing client: base_url={base_url}, proxy_enabled={proxy_enabled}, "
+            f"insecure={params.get('insecure', False)}"
+        )
+
         if base_url == "":
             raise RuntimeError("The base_url cannot be empty, please provide a valid value.")
         v1_client = _get_client(VENDOR_NAME, api_key, base_url)
+        demisto.debug(f"Client initialized: proxies={v1_client._core._proxies}")
 
         command = demisto.command()
         args = demisto.args()
+        demisto.debug(f"Executing command: {command}")
 
         if command == TEST_MODULE:
             return_results(test_module(v1_client))
 
         elif command == FETCH_INCIDENTS:
-            return_results(fetch_incidents(v1_client))
+            fetch_incidents(v1_client)
 
         elif command in (ENABLE_USER_ACCOUNT_COMMAND, DISABLE_USER_ACCOUNT_COMMAND):
             return_results(enable_or_disable_user_account(v1_client, command, args))

@@ -19,5 +19,9 @@
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
     "layout": "Carbon Black EDR Incidents",
-    "fromVersion": "5.5.0"
+    "fromVersion": "5.5.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

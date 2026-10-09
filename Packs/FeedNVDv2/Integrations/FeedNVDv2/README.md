@@ -10,20 +10,24 @@ This integration supports the latest CVSS - Common Vulnerability Scoring System 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| API Key | API Key from the NIST NVD Website (see above). | True |
-| Start_date | Start date for the integration to begin fetching CVEs from (YYYY-MM-DD). | True |
-| Return only CVEs that have a KEV | Check this box to only retrieve CVEs in the given date range that have a known exploited vulnerability (KEV) associated with them. Default: FALSE. | False |
-| CVSS Severity Filter | Filters CVEs by their CVSS Score, Supporting the latest CVSS Common Vulnerability Scoring System standard. | False |
-| Source Reliability | Reliability of the source providing the intelligence data. | True |
-| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | True |
-| Indicator Expiration Method | The method to be used to expire indicators from this feed. Default: Never. | True |
-| Feed Fetch Interval | Interval at which this feed will check for new CVE data. Default: 4 Hours. | True |
-| Bypass exclusion list | Allow this feed to bypass the Cortex XSOAR integrated exclusion list. | False |
-| Trust any certificate (not secure) | Should the feed trust self-signed certificates. | False |
-| Use system proxy settings | Use the proxy settings configured on the Cortex XSOAR server. | False |
-| Tags | Tag CVE indicators from this instance of the feed with the provided tag. | False |
+| Fetch indicators |  | False |
+| API Key |  | False |
+| Keyword Search | Returns only the CVEs where the word or phrase is found in the description. | False |
+| CVSS Severity Filter | Filter CVEs by severity. Queries each CVSS version selected in 'CVSS Versions'. | False |
+| CVSS Versions | CVSS versions to query when the severity filter is set. By default, covers most modern CVEs. | False |
+| Max Indicators Per Fetch | The maximum number of indicators to fetch per interval. A lower value prevents timeouts during initial syncs with large lookback windows. The fetch will automatically resume from where it left off in the next interval. Without an API key, the recommended maximum is 40000. With an API key, the recommended maximum is 200000. | True |
+| First fetch time | How far back should the integration fetch in its first run \(1 day, 2 weeks, 3 months, etc.\) | False |
+| Return Known Exploited Vulnerabilities (KEV) only. | See the following for more information: https://nvd.nist.gov/developers/vulnerabilities#cves-hasKev | False |
+| Source Reliability | Reliability of the source providing the intelligence data | True |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+|  |  | False |
+| Feed Fetch Interval |  | False |
+|  |  | False |
+| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Tags | Supports CSV values. | False |
 | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
-| Log Level | **IMPORTANT** When performing a long initial fetch, it is recommended to set this to **DEBUG**. This will append output to /var/log/demisto/integration_instance.log so you can verify the feed is fetching data from NIST NVD. It is recommended to leave this log setting to **OFF** after the initial fetch. See **NOTE ONE** below for a sample of the debug output. | False |
 
 ### NOTE ONE - Sample Debug Output - /var/log/demisto/integration_instance.log
 
@@ -50,7 +54,7 @@ You can execute these commands from the CLI, as part of an automation, or in a p
 ### nvd-get-indicators
 
 ***
-Manually retrieve CVEs from NVD using the history parameter for the duration back to fetch.
+Manually retrieve CVEs from NVD using the history parameter for the duration back to fetch. CVSS severity and version filters can be overridden for this command.
 
 #### Base Command
 
@@ -58,6 +62,22 @@ Manually retrieve CVEs from NVD using the history parameter for the duration bac
 
 #### Input
 
-|**Argument Name**|**Description**|**Required**|
-|---|---|---|
-| History | Time back to retrieve CVEs, e.g. `7 days` | True |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| history | Time back to retrieve CVEs, e.g. `7 days`. Possible values are: 7 days. | Required |
+| keyword | Keywords to query CVEs by. | Optional |
+| limit | The maximum number of CVEs to return. Use a lower value to avoid timeouts due to large lookback windows. Default is 50. | Optional |
+| cvss_severity | A comma-separated list of CVSS severities to use for this command. This overrides the instance-level CVSS Severity Filter. If left blank, the instance-level filter is used. Possible values are: CRITICAL, HIGH, MEDIUM, LOW. | Optional |
+| cvss_versions | Override the instance-level CVSS Versions for this command. Comma-separated list. Possible values are: CVSS v4, CVSS v3, CVSS v2. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CVE.ID | String | The ID of the CVE. |
+| CVE.CVSS | Number | The CVSS score of the CVE. |
+| CVE.Published | Date | The date the CVE was published. |
+| CVE.Modified | Date | The date that the CVE was last modified. |
+| CVE.Description | String | The description of the CVE. |
+| CVE.CVSSVersion | String | The CVSS version used for scoring (e.g. 4.0, 3.1, 2.0). |
+| CVE.Severity | String | The CVSS severity level \(e.g. CRITICAL, HIGH, MEDIUM, LOW\). |

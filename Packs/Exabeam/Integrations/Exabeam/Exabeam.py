@@ -1227,11 +1227,11 @@ def test_module(client: Client, args: dict[str, str], params: dict[str, str]):
     if is_fetch:
         fetch_type = params.get("fetch_type", DEFAULT_FETCH_TYPE)
         if "Exabeam Notable User" in fetch_type:
-            fetch_interval = arg_to_number(params.get("notable_users_fetch_interval")) or 60
+            fetch_interval = arg_to_number(params.get("notable_users_fetch_interval", 60)) or 60
             if fetch_interval % 60 != 0:
                 raise ValueError("The Notable Users Fetch Interval must be specified in whole hours")
 
-            max_fetch_users = arg_to_number(params.get("max_fetch_users")) or DEFAULT_LIMIT
+            max_fetch_users = arg_to_number(params.get("max_fetch_users", DEFAULT_LIMIT)) or DEFAULT_LIMIT
             if max_fetch_users <= 0 or max_fetch_users > MAX_LIMIT_FETCH_USERS:
                 raise ValueError("The Max Users Per Fetch must be between 1 and 200")
 

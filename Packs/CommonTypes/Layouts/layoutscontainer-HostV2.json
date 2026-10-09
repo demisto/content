@@ -816,5 +816,9 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.10.0",
-    "description": "Host indicator layout"
+    "description": "Host indicator layout",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

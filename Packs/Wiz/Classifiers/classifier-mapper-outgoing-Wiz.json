@@ -1,0 +1,31 @@
+{
+    "id": "Wiz - Outgoing Mapper",
+    "name": "Wiz - Outgoing Mapper",
+    "description": "Maps outgoing Wiz Issue incident fields for bidirectional mirroring.",
+    "type": "mapping-outgoing",
+    "mapping": {
+        "Wiz Issue": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "status": {
+                    "complex": null,
+                    "simple": "status"
+                },
+                "dueAt": {
+                    "complex": null,
+                    "simple": "wizissueduedate"
+                },
+                "resolutionReason": {
+                    "complex": null,
+                    "simple": "resolutionReason"
+                },
+                "closeReason": {
+                    "complex": null,
+                    "simple": "closeReason"
+                }
+            }
+        }
+    },
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

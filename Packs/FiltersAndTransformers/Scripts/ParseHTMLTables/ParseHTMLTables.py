@@ -23,13 +23,13 @@ class Table:
         rowspan_labels: list[tuple[int, str]] = []
         for col in columns:
             try:
-                rowspan = int(col.attrs.get("rowspan") or 1)
+                rowspan = int(col.attrs.get("rowspan") or 1)  # type: ignore[arg-type]
             except Exception:
                 rowspan = 1
             rowspan = max(1, rowspan)
 
             try:
-                colspan = int(col.attrs.get("colspan") or 1)
+                colspan = int(col.attrs.get("colspan") or 1)  # type: ignore[arg-type]
             except Exception:
                 colspan = 1
             colspan = max(1, colspan)
@@ -68,7 +68,7 @@ class Table:
 
             for label in labels:
                 try:
-                    colspan = int(label.attrs.get("colspan") or 1)
+                    colspan = int(label.attrs.get("colspan") or 1)  # type: ignore[arg-type]
                 except Exception:
                     colspan = 1
                 normalized_labels += [label.text.strip()] * max(1, colspan)
@@ -78,19 +78,19 @@ class Table:
             self.__set_rowspan_labels(columns)
 
         normalized_columns = []
-        for i, (count, label) in enumerate(rowspan_labels):
+        for i, (count, label) in enumerate(rowspan_labels):  # type: ignore[assignment]
             if count >= 2:
                 normalized_columns.append(label)
-                rowspan_labels[i] = count - 1, label
+                rowspan_labels[i] = count - 1, label  # type: ignore[assignment]
 
         for col in columns:
             try:
-                colspan = int(col.attrs.get("colspan") or 1)
+                colspan = int(col.attrs.get("colspan") or 1)  # type: ignore[arg-type]
             except Exception:
                 colspan = 1
-            normalized_columns += [col.text.strip()] * max(1, colspan)
+            normalized_columns += [col.text.strip()] * max(1, colspan)  # type: ignore[list-item]
 
-        self.__rows.append((normalized_labels, normalized_columns))
+        self.__rows.append((normalized_labels, normalized_columns))  # type: ignore[arg-type]
 
     def get_rows(self) -> list[tuple[list[str], list[str]]]:
         return self.__rows
@@ -189,7 +189,7 @@ def find_table_title(
     orig = node
     prev = node.previous_element
     while prev and node is not base:
-        node = prev
+        node = prev  # type: ignore[assignment]
         if isinstance(node, Tag) and node.name in ("h1", "h2", "h3", "h4", "h5", "h6"):
             title = " ".join(node.text.strip().split())
             break
@@ -201,7 +201,7 @@ def find_table_title(
         node = orig
         prev = node.previous_element
         while prev and node is not base:
-            node = prev
+            node = prev  # type: ignore[assignment]
             if isinstance(node, NavigableString):
                 message = (str(node) if message else str(node).rstrip()) + message
                 if message.lstrip() and any(c in message for c in ("\n", "\r")):
@@ -226,18 +226,18 @@ def list_columns(node: BeautifulSoup | Tag | NavigableString, name: str) -> list
     vals = []
     ancestor = node
     name_list = ["table", "td", "th", name]
-    node = node.find(name_list)
-    while node and is_descendant(ancestor, node):
-        if node.name in name_list:
-            if node.name == name:
+    node = node.find(name_list)  # type: ignore[arg-type]
+    while node and is_descendant(ancestor, node):  # type: ignore[arg-type]
+        if node.name in name_list:  # type: ignore[union-attr]
+            if node.name == name:  # type: ignore[union-attr]
                 tnode = copy.copy(node)
-                for t in tnode.find_all("table"):
+                for t in tnode.find_all("table"):  # type: ignore[union-attr]
                     t.decompose()
                 vals.append(tnode)
-            node = node.find_next_sibling(True)
+            node = node.find_next_sibling(True)  # type: ignore[union-attr]
         else:
-            node = node.find_next(name_list)
-    return vals
+            node = node.find_next(name_list)  # type: ignore[union-attr]
+    return vals  # type: ignore[return-value]
 
 
 def is_descendant(
@@ -266,26 +266,26 @@ def parse_table(
     table = Table(title=find_table_title(base, table_node) or "No Title")
     has_nested_tables = False
 
-    node = table_node.find(["table", "tr"])
-    while node and is_descendant(table_node, node):
-        if node.name == "tr":
-            ths = list_columns(node, "th")
-            tds = list_columns(node, "td")
+    node = table_node.find(["table", "tr"])  # type: ignore[arg-type]
+    while node and is_descendant(table_node, node):  # type: ignore[arg-type]
+        if node.name == "tr":  # type: ignore[union-attr]
+            ths = list_columns(node, "th")  # type: ignore[arg-type]
+            tds = list_columns(node, "td")  # type: ignore[arg-type]
             if tds:
                 table.add_row(columns=tds, labels=ths)
             if ths and not table.get_header_labels():
                 table.set_header_labels(ths)
 
-            node = node.find_next(["table", "tr"])
+            node = node.find_next(["table", "tr"])  # type: ignore[union-attr]
 
-        elif node.name == "table":
+        elif node.name == "table":  # type: ignore[union-attr]
             has_nested_tables = True
-            yield from parse_table(base, node)
+            yield from parse_table(base, node)  # type: ignore[arg-type]
 
-            base = node.previous_element
-            node = node.find_next_sibling(True)
+            base = node.previous_element  # type: ignore[union-attr, assignment]
+            node = node.find_next_sibling(True)  # type: ignore[union-attr]
         else:
-            node = node.find_next(["table", "tr"])
+            node = node.find_next(["table", "tr"])  # type: ignore[union-attr]
 
     # Not to make a table if tr only has tables
     has_table = True
@@ -310,11 +310,11 @@ def parse_tables(node: BeautifulSoup | Tag | NavigableString) -> Generator[Table
     base = None
     node = node.find("table")
     while node:
-        yield from parse_table(base, node)
-        base = node.next_sibling
+        yield from parse_table(base, node)  # type: ignore[arg-type]
+        base = node.next_sibling  # type: ignore[union-attr]
 
         while node:
-            next = node.find_next_sibling(True)
+            next = node.find_next_sibling(True)  # type: ignore[union-attr]
             if next:
                 if next.name == "table":
                     break
@@ -322,7 +322,7 @@ def parse_tables(node: BeautifulSoup | Tag | NavigableString) -> Generator[Table
                 next = next.find_next("table")
                 if next:
                     break
-            node = node.parent
+            node = node.parent  # type: ignore[union-attr]
         node = next
 
 

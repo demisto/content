@@ -1,0 +1,605 @@
+id: AWS - EC2 Instance Security Group Remediation
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: AWS - EC2 Instance Security Group Remediation
+description: "This playbook identifies the security groups used on an EC2 interface with a specific public IP. It determines which rules allow access via the given port and protocol, creates a copy of the security groups with those rules removed, and updates the interface to use the modified security groups. The original security groups are left unmodified, and the remediated copy is applied to the exposed EC2 instance.\n"
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: e45da205-5f8c-448e-8eda-020ef46a16cd
+    type: start
+    task:
+      id: e45da205-5f8c-448e-8eda-020ef46a16cd
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -540\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 7ce15ff3-2f9e-47c4-8198-314a20199f91
+    type: regular
+    task:
+      id: 7ce15ff3-2f9e-47c4-8198-314a20199f91
+      version: -1
+      name: Identify Affected EC2 Interface and Security Groups
+      description: Determines which interface on an EC2 instance has a specific public IP and identify its associated security groups.
+      scriptName: AWSIdentifySGPublicExposure
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      account_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      instance_id:
+        simple: ${Core.CoreAsset.xdm__asset__strong_id}
+      integration_instance:
+        simple: ${inputs.IntegrationInstance}
+      public_ip:
+        simple: ${inputs.PublicIP}
+      region:
+        simple: ${Core.CoreAsset.xdm__asset__cloud__region}
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 40\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 850bd4f2-e424-49ea-8e19-1cc4f2f67dce
+    type: regular
+    task:
+      id: 850bd4f2-e424-49ea-8e19-1cc4f2f67dce
+      version: -1
+      name: Remediate Security Group Exposure(s)
+      description: Duplicates security groups whose rules were modified to remove public exposure of the specified port. The list of duplicate security groups can then be used to remediate public exposure of an AWS resource by replacing the current list.
+      scriptName: AWSRemediateSG
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      account_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      integration_instance:
+        simple: ${inputs.IntegrationInstance}
+      port:
+        simple: ${inputs.RemotePort}
+      protocol:
+        simple: ${inputs.RemoteProtocol}
+      region:
+        simple: ${Core.CoreAsset.xdm__asset__cloud__region}
+      remediation_allow_ranges:
+        simple: ${inputs.RemediationAllowRanges}
+      resource_id:
+        simple: ${Core.CoreAsset.xdm__asset__strong_id}
+      sg_list:
+        complex:
+          root: AWSPublicExposure.SGAssociations
+          accessor: SecurityGroups
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      tags:
+        simple: key=remediation:tool,value=Cortex by Palo Alto Networks;key=remediation:issue,value=${issue.id};key=remediation:date,value=${CurrentDateTimeNow}
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 420\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: b44e79cd-68e8-411d-8ba1-2d56479f69b2
+    type: regular
+    task:
+      id: b44e79cd-68e8-411d-8ba1-2d56479f69b2
+      version: -1
+      name: Update Security Groups on EC2 Network Interface
+      description: Modifies a specified network interface attribute. You can specify only one attribute at a time. You can use this script to attach and detach security groups from an existing EC2 instance.
+      script: AWS|||aws-ec2-network-interface-attribute-modify
+      type: regular
+      iscommand: true
+      brand: AWS
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      account_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      groups:
+        complex:
+          root: AWSPublicExposure.SGReplacements
+          accessor: UpdatedSGList
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      network_interface_id:
+        simple: ${AWSPublicExposure.SGAssociations.NetworkInterfaceID}
+      region:
+        simple: ${Core.CoreAsset.xdm__asset__cloud__region}
+      using:
+        simple: ${inputs.IntegrationInstance}
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 940\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 876e1d98-a1d5-4174-880a-5a639255b3a4
+    type: title
+    task:
+      id: 876e1d98-a1d5-4174-880a-5a639255b3a4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1430\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: e88cf9ea-1952-4cdd-8076-2d019cf23078
+    type: condition
+    task:
+      id: e88cf9ea-1952-4cdd-8076-2d019cf23078
+      version: -1
+      name: Is AWS Integration Enabled?
+      description: Verify the required AWS integration is configured and enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '10'
+      yes:
+      - '13'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -360.625\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: 6b703256-0ef4-49a5-817c-7ed41c4d72be
+    type: condition
+    task:
+      id: 6b703256-0ef4-49a5-817c-7ed41c4d72be
+      version: -1
+      name: Is there a list of replacement SGs to apply to the VM?
+      description: Check that new security group(s) have been created and are ready to be assigned to the EC2 instance.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '18'
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWSPublicExposure.SGReplacements.UpdatedSGList
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isTrue
+          left:
+            value:
+              simple: AWSPublicExposure.SGReplacements.RemediationRequired
+            iscontext: true
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 590\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 76b18da4-82aa-4ec4-87b1-dfda90e531d8
+    type: regular
+    task:
+      id: 76b18da4-82aa-4ec4-87b1-dfda90e531d8
+      version: -1
+      name: Post That No Remediation Was Needed to War Room
+      description: Prints text to the War Room (Markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      value:
+        simple: "## Remediation not needed\nNo rules allowing access from the internet to ${inputs.RemoteProtocol} port ${inputs.RemotePort} on EC2 Instance ${Core.CoreAsset.xdm__asset__strong_id} were identified in the security groups assigned to the analyzed network interface.\n\nAWS Account ID: ${Core.CoreAsset.xdm__asset__realm}\nAWS region: ${Core.CoreAsset.xdm__asset__cloud__region}\n\n**Network interface analyzed**\n${AWSPublicExposure.SGAssociations.NetworkInterfaceID}"
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 1110\n  }\n}"
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: 0f66fec7-135d-401d-82d4-125d4c4880ec
+    type: regular
+    task:
+      id: 0f66fec7-135d-401d-82d4-125d4c4880ec
+      version: -1
+      name: Set remediatedFlag to false
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      key:
+        simple: remediatedFlag
+      stringify:
+        simple: 'false'
+      value:
+        simple: 'false'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": -83.75,\n    \"y\": 1270\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: bff92343-ca0e-4140-823d-dbe7f270e365
+    type: regular
+    task:
+      id: bff92343-ca0e-4140-823d-dbe7f270e365
+      version: -1
+      name: Set remediatedFlag to true
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      key:
+        simple: remediatedFlag
+      stringify:
+        simple: 'false'
+      value:
+        simple: 'true'
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1270\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: 46aade93-43e9-433b-b4a8-e27343a29ebf
+    type: regular
+    task:
+      id: 46aade93-43e9-433b-b4a8-e27343a29ebf
+      version: -1
+      name: Add SG Info to Remediation Action Details
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      append:
+        simple: 'false'
+      key:
+        simple: remediation_action
+      value:
+        complex:
+          root: AWSPublicExposure
+          accessor: SGReplacements
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: ".=(val.ReplacementSet.map(s => '  - Original SG: ' + s['old-sg'] + ' -> New SG: ' + s['new-sg']).join('\\n'))"
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 770\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: dc74f4c5-a5d1-4c36-817d-7913b43fd1f6
+    type: regular
+    task:
+      id: dc74f4c5-a5d1-4c36-817d-7913b43fd1f6
+      version: -1
+      name: Fetch VM Asset Details
+      description: Get asset information.
+      script: Cortex Core - Platform|||core-get-asset-details
+      type: regular
+      iscommand: true
+      brand: Cortex Core - Platform
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      asset_id:
+        simple: ${inputs.AssetID}
+      using:
+        simple: ${inputs.IntegrationInstance}
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -140.625\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '15':
+    id: '15'
+    taskid: 6aa045e0-7d2f-4518-8f94-a5056d9b889f
+    type: regular
+    task:
+      id: 6aa045e0-7d2f-4518-8f94-a5056d9b889f
+      version: -1
+      name: Post Remediation Summary to War Room
+      description: Prints text to the War Room (Markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      value:
+        simple: "## Remediation complete\nThis exposure has been remediated by modifying the AWS EC2 security groups causing the exposure in order to block access from the internet to ${inputs.RemoteProtocol} port ${inputs.RemotePort} on EC2 Instance ${Core.CoreAsset.xdm__asset__strong_id}.\n\nAWS Account ID: ${Core.CoreAsset.xdm__asset__realm}\nAWS region: ${Core.CoreAsset.xdm__asset__cloud__region}\n\n**Remediation steps taken**\n- Created fixed copies of the security groups shown in the table below\n- Updated EC2 network interface ${AWSPublicExposure.SGAssociations.NetworkInterfaceID} to use the newly modified security groups.  Any assigned security groups that did not contain rules causing this exposure are still assigned to the interface.\n\n${remediation_action}"
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1110\n  }\n}"
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '17':
+    id: '17'
+    taskid: 06a02603-7403-4b1c-8b95-b7e85b86b333
+    type: regular
+    task:
+      id: 06a02603-7403-4b1c-8b95-b7e85b86b333
+      version: -1
+      name: Store Current Date and Time
+      description: "Retrieves the current date and time.\n"
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      contextKey:
+        simple: CurrentDate
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '18':
+    id: '18'
+    taskid: 6bd8c099-4882-4800-9060-28d1ebda9fdf
+    type: regular
+    task:
+      id: 6bd8c099-4882-4800-9060-28d1ebda9fdf
+      version: -1
+      name: Set Remediation Action Details - No Action Needed
+      description: Sets a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      append:
+        simple: 'false'
+      key:
+        simple: remediation_action
+      value:
+        simple: No rules allowing access from the internet to ${inputs.RemoteProtocol} port ${inputs.RemotePort} on EC2 Instance ${Core.CoreAsset.xdm__asset__strong_id} were identified in the security groups assigned to the analyzed network interface.
+    separatecontext: false
+    continueonerrortype: ''
+    view: "{\n  \"position\": {\n    \"x\": 940,\n    \"y\": 770\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: "{\n  \"linkLabelsPosition\": {\n    \"6_10_#default#\": 0.21\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 2030,\n      \"width\": 1403.75,\n      \"x\": -83.75,\n      \"y\": -540\n    }\n  }\n}"
+inputs:
+- key: AssetID
+  value: {}
+  required: true
+  description: The asset ID of the VM Instance.
+  playbookInputQuery:
+- key: PublicIP
+  value: {}
+  required: true
+  description: The public IP address to remediate for public exposure.
+  playbookInputQuery:
+- key: RemotePort
+  value: {}
+  required: true
+  description: The TCP/UDP port number to be restricted.
+  playbookInputQuery:
+- key: RemoteProtocol
+  value: {}
+  required: true
+  description: The protocol to be restricted (tcp/udp).
+  playbookInputQuery:
+- key: RemediationAllowRanges
+  value:
+    simple: 10.0.0.0/16,172.16.0.0/12,192.168.0.0/16
+  required: false
+  description: A comma-separated list of IPv4 network ranges to be used as source addresses for the `cortex-remediation-allow-port-<port#>-<tcp|udp>` rule to be created.  Typically these are private IP ranges (to allow access within the VPC and bastion hosts), but other networks can be added as needed.
+  playbookInputQuery:
+- key: IntegrationInstance
+  value: {}
+  required: false
+  description: The AWS integration instance to use if multiple instances are configured (optional).
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - AssetID
+  - PublicIP
+  - RemotePort
+  - RemoteProtocol
+  - RemediationAllowRanges
+  - IntegrationInstance
+  name: General (Inputs group)
+  description: The generic group for inputs.
+outputSections:
+- outputs:
+  - remediatedFlag
+  - remediation_action
+  name: General (Outputs group)
+  description: The generic group for outputs.
+outputs:
+- contextPath: remediatedFlag
+  description: Whether remediation was successfully done.
+  type: boolean
+- contextPath: remediation_action
+  description: The summary of remediation actions that were performed.
+  type: string
+adopted: true
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

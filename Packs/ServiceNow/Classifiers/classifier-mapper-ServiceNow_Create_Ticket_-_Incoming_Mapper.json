@@ -612,6 +612,10 @@
                     "complex": null,
                     "simple": "sys_id"
                 },
+                "ServiceNow Ticket ID": {
+                    "complex": null,
+                    "simple": "sys_id"
+                },
                 "dbotMirrorInstance": {
                     "complex": null,
                     "simple": ".='ServiceNow v2_instance_1'"
@@ -1180,6 +1184,10 @@
                     },
                     "simple": ""
                 },
+                "ServiceNow Ticket ID": {
+                    "complex": null,
+                    "simple": "sys_id"
+                },
                 "ServiceNow State": {
                     "complex": {
                         "accessor": "",
@@ -1465,10 +1473,6 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix",
         "xsiam"
     ]

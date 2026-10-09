@@ -1,13 +1,19 @@
 ## Palo Alto Networks Enterprise DLP
+
 Palo Alto Networks Enterprise DLP discovers and protects company data across every data channel and repository. Integrated Enterprise DLP enables data protection and compliance everywhere without complexity.
 
+**Note**:  
+This integration currently supports fetching DLP incidents from "NGFW" and "Prisma Access" channels only.
+
 ### Setup
+
 Go to the `Settings` tab on the DLP web interface. 
 Choose `Alerts` on the left menu. Follow all the steps under `Setup Instructions`.
 Make sure the toggle at the bottom is switched on.
 
 ### Authentication
 There are 2 methods to authenticate.
+
 1. Use Enterprise DLP API **Access Token** and **Refresh Token**.
 2. Use Cortex XSOAR's credentials store with a **Client ID** and **Client Secret** as the `username` and `password` in case you are using Enterprise DLP through a SASE platform.
 

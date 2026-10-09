@@ -647,6 +647,68 @@ def test_client_get_folder_by_path(mocker, mock_account):
     assert account.root.tois.__floordiv__.call_args_list == expected_calls  # type: ignore
 
 
+def test_get_folder_by_path_propagates_transient_error(mock_account):
+    """
+    Given:
+        - Exchange raises a transient error (HTTP 503) while resolving a folder path segment
+    When:
+        - client.get_folder_by_path is called
+    Then:
+        - The transient error is propagated unchanged (not masked as a "No such folder" ValueError),
+          so the caller can back off and retry
+    """
+    from exchangelib.errors import ErrorServerBusy
+
+    client = EWSClient(
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        access_type=ACCESS_TYPE,
+        default_target_mailbox=DEFAULT_TARGET_MAILBOX,
+        ews_server=EWS_SERVER,
+        max_fetch=MAX_FETCH,
+        auth_type=AUTH_TYPE,
+        version=VERSION_STR,
+        folder=FOLDER,
+        is_public_folder=True,
+    )
+    account = client.get_account()
+    account.root.tois.__floordiv__.side_effect = ErrorServerBusy("Reraised from ErrorInternalServerTransientError")
+
+    with pytest.raises(ErrorServerBusy):
+        client.get_folder_by_path("Inbox/Phishing", account)
+
+
+def test_get_folder_by_path_wraps_non_transient_error(mock_account):
+    """
+    Given:
+        - A non-transient error is raised while resolving a folder path segment
+    When:
+        - client.get_folder_by_path is called
+    Then:
+        - It is wrapped in a "No such folder" ValueError, preserving the original cause via exception chaining
+    """
+    client = EWSClient(
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        access_type=ACCESS_TYPE,
+        default_target_mailbox=DEFAULT_TARGET_MAILBOX,
+        ews_server=EWS_SERVER,
+        max_fetch=MAX_FETCH,
+        auth_type=AUTH_TYPE,
+        version=VERSION_STR,
+        folder=FOLDER,
+        is_public_folder=True,
+    )
+    account = client.get_account()
+    original_error = KeyError("root")
+    account.root.tois.__floordiv__.side_effect = original_error
+
+    with pytest.raises(ValueError, match="No such folder") as exc_info:
+        client.get_folder_by_path("Inbox/Phishing", account)
+
+    assert exc_info.value.__cause__ is original_error
+
+
 def test_client_send_email(mocker, mock_account):
     """
     Given:
@@ -1021,7 +1083,7 @@ def test_delete_attachments_for_message(mocker, client):
         {"attachmentId": "attach2", "action": "deleted"},
     ]
 
-    result = delete_attachments_for_message(client, "itemid_1")
+    result = delete_attachments_for_message(client, {"item_id": "itemid_1"})
 
     assert result[0].outputs == expected_output
     assert attachment_detach_mock.call_count == len(expected_output)
@@ -1092,7 +1154,7 @@ def test_get_searchable_mailboxes(mocker, client):
 
     mocker.patch.object(GetSearchableMailboxes, "_get_elements", return_value=mock_elements)
 
-    results = get_searchable_mailboxes(client)
+    results = get_searchable_mailboxes(client, {})
 
     assert results.outputs == expected_output
 
@@ -1114,7 +1176,7 @@ def test_move_item_between_mailboxes(mocker, client, mock_account):
     bulk_delete_mock = mocker.patch.object(MockAccount, "bulk_delete")
 
     move_item_between_mailboxes(
-        src_client=client, item_id="item_id", destination_mailbox="dest_mailbox", destination_folder_path="dest_folder"
+        client, {"item_id": "item_id", "destination_mailbox": "dest_mailbox", "destination_folder_path": "dest_folder"}
     )
 
     export_mock.assert_called_once_with(["item_to_move"])
@@ -1135,7 +1197,7 @@ def test_move_item(mocker, client, mock_account):
     get_item_mock = mocker.patch.object(EWSClient, "get_item_from_mailbox", return_value=message_mock)
     mocker.patch.object(EWSClient, "get_folder_by_path", side_effect=lambda path, is_public: f"folder-{path}")
 
-    move_item(client, "item1", "dest_folder")
+    move_item(client, {"item_id": "item1", "target_folder_path": "dest_folder"})
 
     assert get_item_mock.call_args[0][1] == "item1"
     message_mock.move.assert_called_once_with("folder-dest_folder")
@@ -1170,7 +1232,7 @@ def test_delete_items(mocker, client, delete_type):
         "hard": "delete",
     }
 
-    delete_items(client, item_ids, delete_type)
+    delete_items(client, {"item_ids": item_ids, "delete_type": delete_type})
 
     # Ensure only the expected delete function was called and the others were not
     for item_id, item in mock_items.items():
@@ -1202,7 +1264,7 @@ def test_get_out_of_office_state(client, mock_account):
         "mailbox": "test@default_target_mailbox.com",
     }
 
-    result = get_out_of_office_state(client)
+    result = get_out_of_office_state(client, {})
 
     assert result.outputs == expected_output
 
@@ -1219,7 +1281,7 @@ def test_recover_soft_delete_item(client, mock_account):
     ids_to_recover = "message1, message3"
     target_folder = "target"
     expected_recovered_ids = {"message1", "message3"}
-    result = recover_soft_delete_item(client, ids_to_recover, target_folder)
+    result = recover_soft_delete_item(client, {"message_ids": ids_to_recover, "target_folder_path": target_folder})
 
     assert isinstance(result.outputs, list)
     assert {entry["messageId"] for entry in result.outputs} == expected_recovered_ids
@@ -1256,7 +1318,7 @@ def test_create_folder(mocker, client, mock_account):
     mocker.patch.object(EWSClient, "get_folder_by_path", side_effect=lambda path, _account: mock_folders[path])
     mocker.patch("EWSApiModule.Folder", MockFolder)
 
-    create_folder(client, folder_name, parent_folder_name)
+    create_folder(client, {"new_folder_name": folder_name, "folder_path": parent_folder_name})
 
     assert full_path in mock_folders
 
@@ -1285,7 +1347,7 @@ def test_get_folder(mocker, client, mock_account):
         "unreadCount": 5,
     }
 
-    result = get_folder(client, "target_folder")
+    result = get_folder(client, {"folder_path": "target_folder"})
 
     assert result.outputs == expected_output
 
@@ -1337,7 +1399,7 @@ def test_get_expanded_group(mocker, client):
 
     mocker.patch.object(EWSApiModule.ExpandGroup, "_get_elements", return_value=mock_elements)
 
-    results = get_expanded_group(client, "group@example.com")
+    results = get_expanded_group(client, {"email_address": "group@example.com"})
 
     assert isinstance(results.outputs, dict)
     assert results.outputs["members"] == expected_output
@@ -1364,7 +1426,7 @@ def test_mark_item_as_read(mocker, client):
 
     item_ids = "item1, item3"
 
-    result = mark_item_as_read(client, item_ids, "read")
+    result = mark_item_as_read(client, {"item_ids": item_ids, "operation": "read"})
 
     expected_read_items = ["item1", "item3"]
     expected_output = [
@@ -1376,3 +1438,141 @@ def test_mark_item_as_read(mocker, client):
         assert item.is_read == (item.id in expected_read_items)
 
     assert result.outputs == expected_output
+
+
+def test_mark_item_as_read_retries_on_change_key_conflict(mocker, client):
+    """
+    Given:
+        - An item with a stale change key, so save() keeps failing with ErrorIrresolvableConflict
+          until the item is refreshed (as exchangelib re-sends the cached change key on every save)
+    When:
+        - Calling mark_item_as_read
+    Then:
+        - The item is refreshed and save() is retried after a short delay, and the item is reported as marked
+        - is_read is re-applied after the refresh, which overwrites all fields with the server values
+    """
+    from exchangelib.errors import ErrorIrresolvableConflict
+
+    item = MagicMock(spec=Message, id="item1", is_read=False, message_id="msg1", changekey="stale")
+
+    def save():
+        # exchangelib sends the currently cached change key, so the conflict persists until refresh().
+        if item.changekey == "stale":
+            raise ErrorIrresolvableConflict("stale change key")
+
+    def refresh():
+        # refresh() overwrites all fields with the server state, including is_read.
+        item.changekey = "fresh"
+        item.is_read = False
+
+    item.save.side_effect = save
+    item.refresh.side_effect = refresh
+    mocker.patch.object(EWSClient, "get_items_from_mailbox", return_value=[item])
+    sleep_mock = mocker.patch.object(EWSApiModule.time, "sleep")
+
+    result = mark_item_as_read(client, {"item_ids": "item1", "operation": "read"})
+
+    assert item.save.call_count == 2
+    item.refresh.assert_called_once()
+    assert item.is_read is True
+    sleep_mock.assert_called_once_with(EWSApiModule.MARK_AS_READ_RETRY_DELAY)
+    assert result.outputs == [{"itemId": "item1", "messageId": "msg1", "action": "marked-as-read"}]
+
+
+def test_mark_item_as_read_skips_item_on_persistent_conflict(mocker, client):
+    """
+    Given:
+        - An item whose save() raises ErrorIrresolvableConflict on both the initial call and the retry,
+          even after being refreshed
+    When:
+        - Calling mark_item_as_read
+    Then:
+        - The item is skipped (not included in the outputs) instead of failing the whole command
+    """
+    from exchangelib.errors import ErrorIrresolvableConflict
+
+    conflicting = MagicMock(spec=Message, id="item1", is_read=False, message_id="msg1", changekey="stale")
+    conflicting.save.side_effect = ErrorIrresolvableConflict("stale change key")
+    ok_item = MagicMock(spec=Message, id="item2", is_read=False, message_id="msg2", changekey="ck2")
+    ok_item.save.return_value = None
+    mock_items = [conflicting, ok_item]
+    mocker.patch.object(
+        EWSClient, "get_items_from_mailbox", side_effect=lambda _target, ids: [item for item in mock_items if item.id in ids]
+    )
+    mocker.patch.object(EWSApiModule.time, "sleep")
+
+    result = mark_item_as_read(client, {"item_ids": "item1, item2", "operation": "read"})
+
+    assert conflicting.save.call_count == 2
+    conflicting.refresh.assert_called_once()
+    assert result.outputs == [{"itemId": "item2", "messageId": "msg2", "action": "marked-as-read"}]
+
+
+def test_escape_hr_item_ids():
+    """
+    Given:
+        - A list of dicts containing itemId values with '+' characters
+    When:
+        - Calling escape_hr_item_ids on a copy of the data
+    Then:
+        - The '+' characters in itemId are escaped to '\\+' in the returned data
+        - The original data is not mutated
+    """
+    import copy
+
+    from EWSApiModule import escape_hr_item_ids
+
+    items = [
+        {"itemId": "AAA+BBB+CCC", "messageId": "msg1", "action": "moved"},
+        {"itemId": "no_plus_here", "messageId": "msg2", "action": "moved"},
+    ]
+    original_items = copy.deepcopy(items)
+
+    result = escape_hr_item_ids(copy.deepcopy(items))
+
+    assert result[0]["itemId"] == "AAA\\+BBB\\+CCC"
+    assert result[1]["itemId"] == "no_plus_here"
+    assert items == original_items
+
+
+def test_escape_hr_item_ids_single_dict():
+    """
+    Given:
+        - A single dict containing an itemId value with '+' characters
+    When:
+        - Calling escape_hr_item_ids with a single dict
+    Then:
+        - The '+' characters in itemId are escaped to '\\+'
+    """
+    from EWSApiModule import escape_hr_item_ids
+
+    item = {"itemId": "FDSFSFS+FSFSDFSD+FSFSD", "action": "deleted"}
+    result = escape_hr_item_ids(item)
+    assert result["itemId"] == "FDSFSFS\\+FSFSDFSD\\+FSFSD"
+
+
+def test_mark_item_as_read_hr_escapes_plus(mocker, client):
+    """
+    Given:
+        - Item IDs that contain '+' characters
+    When:
+        - Calling mark_item_as_read with item IDs containing '+'
+    Then:
+        - The '+' characters in itemId are escaped in the human readable output
+        - The context output retains the original unescaped itemId
+    """
+    mock_items = [
+        MagicMock(spec=Message, id="AAA+BBB+CCC", is_read=False, message_id="msg1"),
+    ]
+    mocker.patch.object(
+        EWSClient, "get_items_from_mailbox", side_effect=lambda _target, ids: [item for item in mock_items if item.id in ids]
+    )
+
+    result = mark_item_as_read(client, {"item_ids": "AAA+BBB+CCC", "operation": "read"})
+
+    # Context output should have the original unescaped itemId
+    assert result.outputs == [
+        {"itemId": "AAA+BBB+CCC", "messageId": "msg1", "action": "marked-as-read"},
+    ]
+    # Human readable should have escaped '+'
+    assert "AAA\\+BBB\\+CCC" in result.readable_output

@@ -1,69 +1,1540 @@
 {
-    "code": 200,
-    "status": "OK",
     "result": {
-      "ip": "8.8.8.8",
-      "services": [
-        
-      ],
-      "location": {
-        "continent": "North America",
-        "country": "United States",
-        "country_code": "US",
-        "city": "Ashburn",
-        "postal_code": "20147",
-        "timezone": "America/New_York",
-        "province": "Virginia",
-        "coordinates": {
-          "latitude": 39.04372,
-          "longitude": -77.48749
-        }
-      },
-      "location_updated_at": "2024-04-04T15:53:55.455881270Z",
-      "autonomous_system": {
-        "asn": 14618,
-        "description": "AMAZON-AES",
-        "bgp_prefix": "1.1.1.1",
-        "name": "AMAZON-AES",
-        "country_code": "US"
-      },
-      "autonomous_system_updated_at": "2024-04-04T15:53:55.455881270Z",
-      "whois": {
-        "network": {
-          "handle": "AMAZON",
-          "name": "Amazon Technologies Inc."
+        "resource": {
+            "ip": "127.0.0.1",
+            "location": {
+                "continent": "North America",
+                "country": "United States",
+                "country_code": "US",
+                "city": "Mountain View",
+                "postal_code": "94043",
+                "timezone": "America/Los_Angeles",
+                "province": "California",
+                "coordinates": {
+                    "latitude": 38.00881,
+                    "longitude": -122.11746
+                }
+            },
+            "autonomous_system": {
+                "asn": 15169,
+                "description": "GOOGLE",
+                "bgp_prefix": "127.0.0.1/24",
+                "name": "GOOGLE",
+                "country_code": "US"
+            },
+            "whois": {
+                "network": {
+                    "handle": "GOGL",
+                    "name": "Google LLC",
+                    "cidrs": [
+                        "127.0.0.1/24"
+                    ],
+                    "created": "2023-12-28T00:00:00Z",
+                    "updated": "2023-12-28T00:00:00Z",
+                    "allocation_type": "ALLOCATION"
+                },
+                "organization": {
+                    "handle": "GOGL",
+                    "name": "Google LLC",
+                    "street": "1600 Amphitheatre Parkway",
+                    "city": "Mountain View",
+                    "state": "CA",
+                    "postal_code": "94043",
+                    "country": "US",
+                    "abuse_contacts": [
+                        {
+                            "handle": "ABUSE5250-ARIN",
+                            "name": "Abuse",
+                            "email": "admin@example.com"
+                        }
+                    ],
+                    "admin_contacts": [
+                        {
+                            "handle": "ZG39-ARIN",
+                            "name": "Google LLC",
+                            "email": "admin@example.com"
+                        }
+                    ],
+                    "tech_contacts": [
+                        {
+                            "handle": "ZG39-ARIN",
+                            "name": "Google LLC",
+                            "email": "admin@example.com"
+                        }
+                    ]
+                }
+            },
+            "services": [
+                {
+                    "port": 53,
+                    "protocol": "DNS",
+                    "transport_protocol": "udp",
+                    "ip": "127.0.0.1",
+                    "scan_time": "2026-01-15T00:29:02Z",
+                    "dns": {
+                        "server_type": "forwarding",
+                        "resolves_correctly": true,
+                        "answers": [
+                            {
+                                "name": "ip.parrotdns.com.",
+                                "response": "127.0.0.1",
+                                "type": "a"
+                            },
+                            {
+                                "name": "ip.parrotdns.com.",
+                                "response": "127.0.0.1",
+                                "type": "a"
+                            }
+                        ],
+                        "questions": [
+                            {
+                                "name": "ip.parrotdns.com.",
+                                "response": ";ip.parrotdns.com.\tIN\t A",
+                                "type": "a"
+                            }
+                        ],
+                        "edns": {
+                            "do": true,
+                            "udp": 512
+                        },
+                        "r_code": "success"
+                    }
+                },
+                {
+                    "port": 443,
+                    "protocol": "UNKNOWN",
+                    "transport_protocol": "quic",
+                    "ip": "127.0.0.1",
+                    "scan_time": "2026-01-14T13:32:45Z"
+                },
+                {
+                    "port": 443,
+                    "protocol": "HTTP",
+                    "transport_protocol": "tcp",
+                    "cert": {
+                        "fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                        "fingerprint_sha1": "0123456789abcdef0123456789abcdef01234567",
+                        "fingerprint_md5": "0123456789abcdef0123456789abcdef",
+                        "tbs_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                        "tbs_no_ct_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                        "spki_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                        "parent_spki_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                        "parsed": {
+                            "version": 3,
+                            "serial_number": "297829282537652065275067809548101200481",
+                            "issuer_dn": "C=US, O=Google Trust Services, CN=WR2",
+                            "issuer": {
+                                "common_name": [
+                                    "WR2"
+                                ],
+                                "country": [
+                                    "US"
+                                ],
+                                "organization": [
+                                    "Google Trust Services"
+                                ]
+                            },
+                            "subject_dn": "CN=dns.google",
+                            "subject": {
+                                "common_name": [
+                                    "dns.google"
+                                ]
+                            },
+                            "subject_key_info": {
+                                "key_algorithm": {
+                                    "name": "RSA",
+                                    "oid": "1.2.840.113549.1.1.1"
+                                },
+                                "rsa": {
+                                    "exponent": 65537,
+                                    "modulus": "dc43d1c5739099f4332741d036e2ebe592a5caa5a867d68369e58646824d5cdcd6cc6aef0ecc83ebe45bac546dbabb626416578eece94041c42068bf65ca2e163f7b98d70c37d765364073beaf58e22a608078b7bba4dac387f6cfdd6587f8f408130b05c2f0eae226e4d8523a76c5d52c8d29dbb32bdde1ebe5f023e47f3281132ecd8afd2328331a0a35960ba59cde13b4a73788a78792164020d481fed199197899d9714a2c64ab9ba2cfd459fa9f7a74b2be649368dffd002831e7a478da8323f1f7d24dd86c29fbb276c84bbf3a2895209a6761da45075e1b25f2522f84cc64fb26c68d488ebd1b973234833c1471b5669d89a17ad465c333cc17051fab",
+                                    "length": 2048
+                                },
+                                "fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                            },
+                            "validity_period": {
+                                "not_before": "2025-12-03T15:57:26Z",
+                                "not_after": "2026-02-25T15:57:25Z",
+                                "length_seconds": 7257600
+                            },
+                            "signature": {
+                                "signature_algorithm": {
+                                    "name": "SHA256-RSA",
+                                    "oid": "1.2.840.113549.1.1.11"
+                                },
+                                "value": "69abf55f93b2a00df9438db1f1af1a5763dadfde263f1f578dc5552b281903e1acab53833806adc43e4c5ae46295805881a08744cb4dd6f6ab0860e8ca04949b5eba8feaeb3d0eecf4776c54d952fc1afb41d5e24e36daa95ff740ac623b2b8762b892008713b0acaad593ea0c5cc3c89efa0563ab7dfe39d8fc72d3c87f0d26824b8d5453534cd675f65a36977c8f7a201f7185bfc97f20fd6f1eeb1d783d59ca7614a762056e6c71ce746109d4a40f0c42532d9f731290baba9475ae44e96ad68f1ee9961436e1417746e912835f1cd8802e0ee198c7df88fe86aa04172925c7784ba27cfc66dce22aac3dcc7f3c0fcb80563c4f71fe701b14349309ee6d8f",
+                                "valid": true
+                            },
+                            "extensions": {
+                                "key_usage": {
+                                    "digital_signature": true,
+                                    "key_encipherment": true,
+                                    "value": 5
+                                },
+                                "basic_constraints": {},
+                                "subject_alt_name": {
+                                    "dns_names": [
+                                        "dns.google",
+                                        "dns.google.com",
+                                        "*.dns.google.com",
+                                        "8888.google",
+                                        "dns64.dns.google"
+                                    ],
+                                    "ip_addresses": [
+                                        "127.0.0.1",
+                                        "127.0.0.1",
+                                        "::1:1",
+                                        "::1:1",
+                                        "::1:1",
+                                        "::1:1"
+                                    ]
+                                },
+                                "crl_distribution_points": [
+                                    "https://example.com"
+                                ],
+                                "authority_key_id": "0123456789abcdef0123456789abcdef01234567",
+                                "subject_key_id": "0123456789abcdef0123456789abcdef01234567",
+                                "extended_key_usage": {
+                                    "server_auth": true
+                                },
+                                "certificate_policies": [
+                                    {
+                                        "id": "127.0.0.1.2.1"
+                                    }
+                                ],
+                                "authority_info_access": {
+                                    "ocsp_urls": [
+                                        "https://example.com"
+                                    ],
+                                    "issuer_urls": [
+                                        "https://example.com"
+                                    ]
+                                },
+                                "signed_certificate_timestamps": [
+                                    {
+                                        "log_id": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                        "timestamp": "2025-12-03T16:57:33Z",
+                                        "signature": {
+                                            "hash_algorithm": "SHA256",
+                                            "signature_algorithm": "ECDSA",
+                                            "signature": "3046022100bb37106dadad91e56b044a6f6d19a2d4dfbfd374335ab62b6f5855adf760a435022100a9c289311a0ba688c77971f8ee59f15ca55912b1ced0864b3d4d6fa1455203e6"
+                                        }
+                                    },
+                                    {
+                                        "log_id": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                        "timestamp": "2025-12-03T16:57:33Z",
+                                        "signature": {
+                                            "hash_algorithm": "SHA256",
+                                            "signature_algorithm": "ECDSA",
+                                            "signature": "3045022100b869e6ff8021e9cc8037fdd4eeb6d4cdc62836e0650378865bdff67b587545dc022044e6bd151802cbbfe5853a0da62705354efe7d83acd4d075da830bd05cd1be89"
+                                        }
+                                    }
+                                ]
+                            },
+                            "serial_number_hex": "0123456789abcdef0123456789abcdef",
+                            "ja4x": "a373a9f83c6b_7022c563de38_2e3757343cb0"
+                        },
+                        "names": [
+                            "*.dns.google.com",
+                            "127.0.0.1",
+                            "127.0.0.1",
+                            "8888.google",
+                            "dns.google",
+                            "dns.google.com",
+                            "dns64.dns.google"
+                        ],
+                        "validation_level": "dv",
+                        "validation": {
+                            "nss": {
+                                "is_valid": true,
+                                "ever_valid": true,
+                                "has_trusted_path": true,
+                                "had_trusted_path": true,
+                                "chains": [
+                                    {
+                                        "sha256fp": [
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                        ]
+                                    },
+                                    {
+                                        "sha256fp": [
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                        ]
+                                    }
+                                ],
+                                "parents": [
+                                    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                ],
+                                "type": "leaf"
+                            },
+                            "microsoft": {
+                                "is_valid": true,
+                                "ever_valid": true,
+                                "has_trusted_path": true,
+                                "had_trusted_path": true,
+                                "chains": [
+                                    {
+                                        "sha256fp": [
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                        ]
+                                    },
+                                    {
+                                        "sha256fp": [
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                        ]
+                                    },
+                                    {
+                                        "sha256fp": [
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                        ]
+                                    }
+                                ],
+                                "parents": [
+                                    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                ],
+                                "type": "leaf"
+                            },
+                            "apple": {
+                                "is_valid": true,
+                                "ever_valid": true,
+                                "has_trusted_path": true,
+                                "had_trusted_path": true,
+                                "chains": [
+                                    {
+                                        "sha256fp": [
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                        ]
+                                    },
+                                    {
+                                        "sha256fp": [
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                        ]
+                                    }
+                                ],
+                                "parents": [
+                                    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                ],
+                                "type": "leaf"
+                            },
+                            "chrome": {
+                                "is_valid": true,
+                                "ever_valid": true,
+                                "has_trusted_path": true,
+                                "had_trusted_path": true,
+                                "chains": [
+                                    {
+                                        "sha256fp": [
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                        ]
+                                    }
+                                ],
+                                "parents": [
+                                    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                ],
+                                "type": "leaf"
+                            }
+                        },
+                        "revocation": {
+                            "ocsp": {
+                                "reason": "unspecified"
+                            },
+                            "crl": {
+                                "reason": "unspecified"
+                            }
+                        },
+                        "ct": {
+                            "entries": {
+                                "cloudflare_nimbus_2026": {
+                                    "index": 2042607884,
+                                    "added_to_ct_at": "2026-01-13T00:48:07Z",
+                                    "ct_to_censys_at": "2026-01-13T01:59:14Z"
+                                },
+                                "google_argon_2026_h1": {
+                                    "index": 1350611560,
+                                    "added_to_ct_at": "2025-12-16T18:27:54Z",
+                                    "ct_to_censys_at": "2025-12-16T18:33:47Z"
+                                },
+                                "google_xenon_2026_h1": {
+                                    "index": 1289666897,
+                                    "added_to_ct_at": "2025-12-16T18:27:54Z",
+                                    "ct_to_censys_at": "2025-12-16T18:36:21Z"
+                                },
+                                "letsencrypt_ct_sycamore_2026_h1": {
+                                    "index": 736050146,
+                                    "added_to_ct_at": "2025-12-16T22:44:38Z",
+                                    "ct_to_censys_at": "2025-12-17T03:23:07Z"
+                                },
+                                "letsencrypt_ct_willow_2026_h1": {
+                                    "index": 743797026,
+                                    "added_to_ct_at": "2025-12-16T22:44:55Z",
+                                    "ct_to_censys_at": "2025-12-19T19:48:06Z"
+                                },
+                                "sectigo_elephant_2026_h1": {
+                                    "index": 859497468,
+                                    "added_to_ct_at": "2025-12-16T18:27:55Z",
+                                    "ct_to_censys_at": "2025-12-16T18:35:07Z"
+                                },
+                                "sectigo_tiger_2026_h1": {
+                                    "index": 757756923,
+                                    "added_to_ct_at": "2025-12-16T18:27:55Z",
+                                    "ct_to_censys_at": "2025-12-16T18:33:56Z"
+                                },
+                                "trustasia_log_2026_a": {
+                                    "index": 305722791,
+                                    "added_to_ct_at": "2025-12-17T00:04:25Z",
+                                    "ct_to_censys_at": "2025-12-18T05:17:51Z"
+                                },
+                                "trustasia_log_2026_b": {
+                                    "index": 315288174,
+                                    "added_to_ct_at": "2025-12-17T00:40:30Z",
+                                    "ct_to_censys_at": "2025-12-18T16:03:25Z"
+                                }
+                            }
+                        },
+                        "ever_seen_in_scan": true,
+                        "added_at": "2025-12-14T06:07:34Z",
+                        "modified_at": "2026-01-13T01:59:14Z",
+                        "validated_at": "2026-01-15T04:32:32Z",
+                        "parse_status": "success",
+                        "zlint": {
+                            "version": 3,
+                            "timestamp": "2025-12-14T06:07:34Z",
+                            "notices_present": true,
+                            "failed_lints": [
+                                "n_subject_common_name_included"
+                            ]
+                        },
+                        "spki_subject_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                        "parent_spki_subject_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                    },
+                    "ip": "127.0.0.1",
+                    "scan_time": "2026-01-15T12:32:21Z",
+                    "tls": {
+                        "version_selected": "tlsv1_3",
+                        "cipher_selected": "TLS_CHACHA20_POLY1305_SHA256",
+                        "fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                        "ja3s": "0123456789abcdef0123456789abcdef",
+                        "presented_chain": [
+                            {
+                                "fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                "subject_dn": "C=US, O=Google Trust Services, CN=WR2",
+                                "issuer_dn": "C=US, O=Google Trust Services LLC, CN=GTS Root R1"
+                            },
+                            {
+                                "fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                "subject_dn": "C=US, O=Google Trust Services LLC, CN=GTS Root R1",
+                                "issuer_dn": "C=BE, O=GlobalSign nv-sa, OU=Root CA, CN=GlobalSign Root CA"
+                            }
+                        ],
+                        "ja4s": "t130200_1303_234ea6891581",
+                        "versions": [
+                            {
+                                "version": "tlsv1_3",
+                                "ja3s": "0123456789abcdef0123456789abcdef",
+                                "ja4s": "t130200_1303_234ea6891581"
+                            },
+                            {
+                                "version": "tlsv1_2",
+                                "ja3s": "0123456789abcdef0123456789abcdef",
+                                "ja4s": "t120200_cca8_344b4dce5a52"
+                            }
+                        ]
+                    },
+                    "banner": "HTTP/1.1 302 Found\r\nX-Content-Type-Options: nosniff\r\nAccess-Control-Allow-Origin: *\r\nLocation: https://example.com\r\nDate:  <REDACTED>\r\nContent-Type: text/html; charset=UTF-8\r\nServer: HTTP server (unknown)\r\nContent-Length: 216\r\nX-XSS-Protection: 0\r\nX-Frame-Options: SAMEORIGIN\r\nAlt-Svc: h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000\r\n",
+                    "banner_hash_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                    "jarm": {
+                        "ip": "127.0.0.1",
+                        "port": 443,
+                        "transport_protocol": "tcp",
+                        "is_success": true,
+                        "fingerprint": "29d3fd00029d29d00042d43d00041d8f924f5255cbc229bc55efa16391dad6",
+                        "cipher_and_version_fingerprint": "29d3fd00029d29d00042d43d00041d",
+                        "tls_extensions_sha256": "0123456789abcdef0123456789abcdef",
+                        "scan_time": "2026-01-10T10:15:21Z"
+                    },
+                    "ja4tscan": {
+                        "scan_time": "2026-01-14T19:33:05Z",
+                        "fingerprint": "65535_2-4-8-1-3_1412_8_0-2-4-8-16"
+                    },
+                    "endpoints": [
+                        {
+                            "hostname": "127.0.0.1",
+                            "port": 443,
+                            "path": "/",
+                            "endpoint_type": "HTTP",
+                            "transport_protocol": "tcp",
+                            "scan_time": "2026-01-15T12:32:21Z",
+                            "banner": "HTTP/1.1 302 Found\r\nX-Content-Type-Options: nosniff\r\nAccess-Control-Allow-Origin: *\r\nLocation: https://example.com\r\nDate:  <REDACTED>\r\nContent-Type: text/html; charset=UTF-8\r\nServer: HTTP server (unknown)\r\nContent-Length: 216\r\nX-XSS-Protection: 0\r\nX-Frame-Options: SAMEORIGIN\r\nAlt-Svc: h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000\r\n",
+                            "banner_hash_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                            "http": {
+                                "uri": "https://example.com",
+                                "protocol": "HTTP/1.1",
+                                "status_code": 302,
+                                "status_reason": "Found",
+                                "headers": {
+                                    "Access-Control-Allow-Origin": {
+                                        "headers": [
+                                            "*"
+                                        ]
+                                    },
+                                    "Alt-Svc": {
+                                        "headers": [
+                                            "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+                                        ]
+                                    },
+                                    "Content-Length": {
+                                        "headers": [
+                                            "216"
+                                        ]
+                                    },
+                                    "Content-Type": {
+                                        "headers": [
+                                            "text/html; charset=UTF-8"
+                                        ]
+                                    },
+                                    "Date": {
+                                        "headers": [
+                                            "<REDACTED>"
+                                        ]
+                                    },
+                                    "Location": {
+                                        "headers": [
+                                            "https://example.com"
+                                        ]
+                                    },
+                                    "Server": {
+                                        "headers": [
+                                            "HTTP server (unknown)"
+                                        ]
+                                    },
+                                    "X-Content-Type-Options": {
+                                        "headers": [
+                                            "nosniff"
+                                        ]
+                                    },
+                                    "X-Frame-Options": {
+                                        "headers": [
+                                            "SAMEORIGIN"
+                                        ]
+                                    },
+                                    "X-XSS-Protection": {
+                                        "headers": [
+                                            "0"
+                                        ]
+                                    }
+                                },
+                                "html_tags": [
+                                    "<TITLE>302 Moved</TITLE>",
+                                    "<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">"
+                                ],
+                                "body_size": 216,
+                                "body": "<HTML><HEAD><meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">\n<TITLE>302 Moved</TITLE></HEAD><BODY>\n<H1>302 Moved</H1>\nThe document has moved\n<A HREF=\"https://example.com\">here</A>.\r\n</BODY></HTML>\r\n",
+                                "html_title": "302 Moved",
+                                "body_hash_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                "body_hash_sha1": "0123456789abcdef0123456789abcdef01234567",
+                                "supported_versions": [
+                                    "HTTP/1.1",
+                                    "HTTP/2"
+                                ],
+                                "redirect_chain": [
+                                    {
+                                        "hostname": "dns.google",
+                                        "port": 443,
+                                        "transport_protocol": "tcp",
+                                        "path": "/",
+                                        "reason": "HTTP_3XX"
+                                    }
+                                ]
+                            },
+                            "ip": "127.0.0.1"
+                        }
+                    ]
+                },
+                {
+                    "port": 853,
+                    "protocol": "UNKNOWN",
+                    "transport_protocol": "tcp",
+                    "cert": {
+                        "fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                        "fingerprint_sha1": "0123456789abcdef0123456789abcdef01234567",
+                        "fingerprint_md5": "0123456789abcdef0123456789abcdef",
+                        "tbs_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                        "tbs_no_ct_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                        "spki_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                        "parent_spki_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                        "parsed": {
+                            "version": 3,
+                            "serial_number": "297829282537652065275067809548101200481",
+                            "issuer_dn": "C=US, O=Google Trust Services, CN=WR2",
+                            "issuer": {
+                                "common_name": [
+                                    "WR2"
+                                ],
+                                "country": [
+                                    "US"
+                                ],
+                                "organization": [
+                                    "Google Trust Services"
+                                ]
+                            },
+                            "subject_dn": "CN=dns.google",
+                            "subject": {
+                                "common_name": [
+                                    "dns.google"
+                                ]
+                            },
+                            "subject_key_info": {
+                                "key_algorithm": {
+                                    "name": "RSA",
+                                    "oid": "1.2.840.113549.1.1.1"
+                                },
+                                "rsa": {
+                                    "exponent": 65537,
+                                    "modulus": "dc43d1c5739099f4332741d036e2ebe592a5caa5a867d68369e58646824d5cdcd6cc6aef0ecc83ebe45bac546dbabb626416578eece94041c42068bf65ca2e163f7b98d70c37d765364073beaf58e22a608078b7bba4dac387f6cfdd6587f8f408130b05c2f0eae226e4d8523a76c5d52c8d29dbb32bdde1ebe5f023e47f3281132ecd8afd2328331a0a35960ba59cde13b4a73788a78792164020d481fed199197899d9714a2c64ab9ba2cfd459fa9f7a74b2be649368dffd002831e7a478da8323f1f7d24dd86c29fbb276c84bbf3a2895209a6761da45075e1b25f2522f84cc64fb26c68d488ebd1b973234833c1471b5669d89a17ad465c333cc17051fab",
+                                    "length": 2048
+                                },
+                                "fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                            },
+                            "validity_period": {
+                                "not_before": "2025-12-03T15:57:26Z",
+                                "not_after": "2026-02-25T15:57:25Z",
+                                "length_seconds": 7257600
+                            },
+                            "signature": {
+                                "signature_algorithm": {
+                                    "name": "SHA256-RSA",
+                                    "oid": "1.2.840.113549.1.1.11"
+                                },
+                                "value": "69abf55f93b2a00df9438db1f1af1a5763dadfde263f1f578dc5552b281903e1acab53833806adc43e4c5ae46295805881a08744cb4dd6f6ab0860e8ca04949b5eba8feaeb3d0eecf4776c54d952fc1afb41d5e24e36daa95ff740ac623b2b8762b892008713b0acaad593ea0c5cc3c89efa0563ab7dfe39d8fc72d3c87f0d26824b8d5453534cd675f65a36977c8f7a201f7185bfc97f20fd6f1eeb1d783d59ca7614a762056e6c71ce746109d4a40f0c42532d9f731290baba9475ae44e96ad68f1ee9961436e1417746e912835f1cd8802e0ee198c7df88fe86aa04172925c7784ba27cfc66dce22aac3dcc7f3c0fcb80563c4f71fe701b14349309ee6d8f",
+                                "valid": true
+                            },
+                            "extensions": {
+                                "key_usage": {
+                                    "digital_signature": true,
+                                    "key_encipherment": true,
+                                    "value": 5
+                                },
+                                "basic_constraints": {},
+                                "subject_alt_name": {
+                                    "dns_names": [
+                                        "dns.google",
+                                        "dns.google.com",
+                                        "*.dns.google.com",
+                                        "8888.google",
+                                        "dns64.dns.google"
+                                    ],
+                                    "ip_addresses": [
+                                        "127.0.0.1",
+                                        "127.0.0.1",
+                                        "::1:1",
+                                        "::1:1",
+                                        "::1:1",
+                                        "::1:1"
+                                    ]
+                                },
+                                "crl_distribution_points": [
+                                    "https://example.com"
+                                ],
+                                "authority_key_id": "0123456789abcdef0123456789abcdef01234567",
+                                "subject_key_id": "0123456789abcdef0123456789abcdef01234567",
+                                "extended_key_usage": {
+                                    "server_auth": true
+                                },
+                                "certificate_policies": [
+                                    {
+                                        "id": "127.0.0.1.2.1"
+                                    }
+                                ],
+                                "authority_info_access": {
+                                    "ocsp_urls": [
+                                        "https://example.com"
+                                    ],
+                                    "issuer_urls": [
+                                        "https://example.com"
+                                    ]
+                                },
+                                "signed_certificate_timestamps": [
+                                    {
+                                        "log_id": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                        "timestamp": "2025-12-03T16:57:33Z",
+                                        "signature": {
+                                            "hash_algorithm": "SHA256",
+                                            "signature_algorithm": "ECDSA",
+                                            "signature": "3046022100bb37106dadad91e56b044a6f6d19a2d4dfbfd374335ab62b6f5855adf760a435022100a9c289311a0ba688c77971f8ee59f15ca55912b1ced0864b3d4d6fa1455203e6"
+                                        }
+                                    },
+                                    {
+                                        "log_id": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                        "timestamp": "2025-12-03T16:57:33Z",
+                                        "signature": {
+                                            "hash_algorithm": "SHA256",
+                                            "signature_algorithm": "ECDSA",
+                                            "signature": "3045022100b869e6ff8021e9cc8037fdd4eeb6d4cdc62836e0650378865bdff67b587545dc022044e6bd151802cbbfe5853a0da62705354efe7d83acd4d075da830bd05cd1be89"
+                                        }
+                                    }
+                                ]
+                            },
+                            "serial_number_hex": "0123456789abcdef0123456789abcdef",
+                            "ja4x": "a373a9f83c6b_7022c563de38_2e3757343cb0"
+                        },
+                        "names": [
+                            "*.dns.google.com",
+                            "127.0.0.1",
+                            "127.0.0.1",
+                            "8888.google",
+                            "dns.google",
+                            "dns.google.com",
+                            "dns64.dns.google"
+                        ],
+                        "validation_level": "dv",
+                        "validation": {
+                            "nss": {
+                                "is_valid": true,
+                                "ever_valid": true,
+                                "has_trusted_path": true,
+                                "had_trusted_path": true,
+                                "chains": [
+                                    {
+                                        "sha256fp": [
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                        ]
+                                    },
+                                    {
+                                        "sha256fp": [
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                        ]
+                                    }
+                                ],
+                                "parents": [
+                                    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                ],
+                                "type": "leaf"
+                            },
+                            "microsoft": {
+                                "is_valid": true,
+                                "ever_valid": true,
+                                "has_trusted_path": true,
+                                "had_trusted_path": true,
+                                "chains": [
+                                    {
+                                        "sha256fp": [
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                        ]
+                                    },
+                                    {
+                                        "sha256fp": [
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                        ]
+                                    },
+                                    {
+                                        "sha256fp": [
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                        ]
+                                    }
+                                ],
+                                "parents": [
+                                    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                ],
+                                "type": "leaf"
+                            },
+                            "apple": {
+                                "is_valid": true,
+                                "ever_valid": true,
+                                "has_trusted_path": true,
+                                "had_trusted_path": true,
+                                "chains": [
+                                    {
+                                        "sha256fp": [
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                        ]
+                                    },
+                                    {
+                                        "sha256fp": [
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                        ]
+                                    }
+                                ],
+                                "parents": [
+                                    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                ],
+                                "type": "leaf"
+                            },
+                            "chrome": {
+                                "is_valid": true,
+                                "ever_valid": true,
+                                "has_trusted_path": true,
+                                "had_trusted_path": true,
+                                "chains": [
+                                    {
+                                        "sha256fp": [
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                        ]
+                                    }
+                                ],
+                                "parents": [
+                                    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                                ],
+                                "type": "leaf"
+                            }
+                        },
+                        "revocation": {
+                            "ocsp": {
+                                "reason": "unspecified"
+                            },
+                            "crl": {
+                                "reason": "unspecified"
+                            }
+                        },
+                        "ct": {
+                            "entries": {
+                                "cloudflare_nimbus_2026": {
+                                    "index": 2042607884,
+                                    "added_to_ct_at": "2026-01-13T00:48:07Z",
+                                    "ct_to_censys_at": "2026-01-13T01:59:14Z"
+                                },
+                                "google_argon_2026_h1": {
+                                    "index": 1350611560,
+                                    "added_to_ct_at": "2025-12-16T18:27:54Z",
+                                    "ct_to_censys_at": "2025-12-16T18:33:47Z"
+                                },
+                                "google_xenon_2026_h1": {
+                                    "index": 1289666897,
+                                    "added_to_ct_at": "2025-12-16T18:27:54Z",
+                                    "ct_to_censys_at": "2025-12-16T18:36:21Z"
+                                },
+                                "letsencrypt_ct_sycamore_2026_h1": {
+                                    "index": 736050146,
+                                    "added_to_ct_at": "2025-12-16T22:44:38Z",
+                                    "ct_to_censys_at": "2025-12-17T03:23:07Z"
+                                },
+                                "letsencrypt_ct_willow_2026_h1": {
+                                    "index": 743797026,
+                                    "added_to_ct_at": "2025-12-16T22:44:55Z",
+                                    "ct_to_censys_at": "2025-12-19T19:48:06Z"
+                                },
+                                "sectigo_elephant_2026_h1": {
+                                    "index": 859497468,
+                                    "added_to_ct_at": "2025-12-16T18:27:55Z",
+                                    "ct_to_censys_at": "2025-12-16T18:35:07Z"
+                                },
+                                "sectigo_tiger_2026_h1": {
+                                    "index": 757756923,
+                                    "added_to_ct_at": "2025-12-16T18:27:55Z",
+                                    "ct_to_censys_at": "2025-12-16T18:33:56Z"
+                                },
+                                "trustasia_log_2026_a": {
+                                    "index": 305722791,
+                                    "added_to_ct_at": "2025-12-17T00:04:25Z",
+                                    "ct_to_censys_at": "2025-12-18T05:17:51Z"
+                                },
+                                "trustasia_log_2026_b": {
+                                    "index": 315288174,
+                                    "added_to_ct_at": "2025-12-17T00:40:30Z",
+                                    "ct_to_censys_at": "2025-12-18T16:03:25Z"
+                                }
+                            }
+                        },
+                        "ever_seen_in_scan": true,
+                        "added_at": "2025-12-14T06:07:34Z",
+                        "modified_at": "2026-01-13T01:59:14Z",
+                        "validated_at": "2026-01-15T04:32:32Z",
+                        "parse_status": "success",
+                        "zlint": {
+                            "version": 3,
+                            "timestamp": "2025-12-14T06:07:34Z",
+                            "notices_present": true,
+                            "failed_lints": [
+                                "n_subject_common_name_included"
+                            ]
+                        },
+                        "spki_subject_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                        "parent_spki_subject_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                    },
+                    "ip": "127.0.0.1",
+                    "scan_time": "2026-01-14T13:14:09Z",
+                    "tls": {
+                        "version_selected": "tlsv1_3",
+                        "cipher_selected": "TLS_CHACHA20_POLY1305_SHA256",
+                        "fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                        "ja3s": "0123456789abcdef0123456789abcdef",
+                        "presented_chain": [
+                            {
+                                "fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                "subject_dn": "C=US, O=Google Trust Services, CN=WR2",
+                                "issuer_dn": "C=US, O=Google Trust Services LLC, CN=GTS Root R1"
+                            },
+                            {
+                                "fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                "subject_dn": "C=US, O=Google Trust Services LLC, CN=GTS Root R1",
+                                "issuer_dn": "C=BE, O=GlobalSign nv-sa, OU=Root CA, CN=GlobalSign Root CA"
+                            }
+                        ],
+                        "ja4s": "t130200_1303_234ea6891581",
+                        "versions": [
+                            {
+                                "version": "tlsv1_3",
+                                "ja3s": "0123456789abcdef0123456789abcdef",
+                                "ja4s": "t130200_1303_234ea6891581"
+                            },
+                            {
+                                "version": "tlsv1_2",
+                                "ja3s": "0123456789abcdef0123456789abcdef",
+                                "ja4s": "t120200_cca8_344b4dce5a52"
+                            }
+                        ]
+                    },
+                    "jarm": {
+                        "ip": "127.0.0.1",
+                        "port": 853,
+                        "transport_protocol": "tcp",
+                        "is_success": true,
+                        "fingerprint": "29d3fd00029d29d00042d43d00041df6ab62833359bd21fbf27287504787f8",
+                        "cipher_and_version_fingerprint": "29d3fd00029d29d00042d43d00041d",
+                        "tls_extensions_sha256": "0123456789abcdef0123456789abcdef",
+                        "scan_time": "2026-01-11T13:15:28Z"
+                    },
+                    "ja4tscan": {
+                        "scan_time": "2026-01-12T12:54:43Z",
+                        "fingerprint": "65535_2-4-8-1-3_1412_8_0-2-4-8-16"
+                    }
+                }
+            ],
+            "service_count": 4,
+            "dns": {
+                "reverse_dns": {
+                    "resolve_time": "2025-12-24T15:52:57Z",
+                    "names": [
+                        "dns.google"
+                    ]
+                },
+                "names": [
+                    "rabbitsgames.com",
+                    "pattersontx.com",
+                    "secure3.insiderintelligence.com",
+                    "kdfb.us.to",
+                    "hml.yazo.app.br",
+                    "soniavalerio.adv.br",
+                    "m.cexcoin.net",
+                    "beautifulyou.boutique",
+                    "central-office.net",
+                    "www.btairobotd.com",
+                    "ieiozmebbtb.trevans.pl",
+                    "geratest63.brownbearcentral.com",
+                    "gera-adam-g2o.brownbearcentral.com",
+                    "vela.brownbearcentral.com",
+                    "gera-adam-g2o1.brownbearcentral.com",
+                    "deadlock-builds.gg",
+                    "canghaxp.bond",
+                    "models.coolios.net",
+                    "temp.prodigital.pl",
+                    "www.poprawie.pl",
+                    "mipblogarticlenews.blog",
+                    "po-drodze.pl",
+                    "www.po-drodze.pl",
+                    "mysnack.top",
+                    "www.miyawari.top",
+                    "www.mikazuki.top",
+                    "www.maystar9527.top",
+                    "www.llb8208.top",
+                    "klsjjdf.top",
+                    "cyx.juliangqingchuang.top",
+                    "www.shuangyu89.net",
+                    "www.beqyy.com",
+                    "n8n.truemarlon.de",
+                    "devapi.bridge.redilco-hub.it",
+                    "auth.prometeiasaas.it",
+                    "gb-insurance.com",
+                    "italo.nextadv.it",
+                    "fabio.nextadv.it",
+                    "catalogo.nextadv.it",
+                    "cdoapp.nextadv.it",
+                    "www.nobanco.info",
+                    "gaibianfunnel.com",
+                    "www.segwayninebots.com",
+                    "server.segusistemas.com",
+                    "www.nobanco.org",
+                    "nghz0088.org",
+                    "etc-eu1.nanopool.org",
+                    "etc-au1.nanopool.org",
+                    "eth-au1.nanopool.org",
+                    "eth-asia1.nanopool.org",
+                    "intelligentcreation.info",
+                    "zero.sky0102.mywire.org",
+                    "vl.jnto.mywire.org",
+                    "www.morsmordre.org",
+                    "montanasp.org",
+                    "www.sdcgroups.com",
+                    "pupik.myhealthsight.com",
+                    "sd.via.freemyip.com",
+                    "mail.freedomlearning.com",
+                    "freecadrms.com",
+                    "www.securelogin.lpzoo.org",
+                    "www.actonpalestine.today",
+                    "mail-officesecurity.com",
+                    "hdfry.tk",
+                    "smtp.mol-sin.com",
+                    "astor-school.com",
+                    "auth.cupix.com",
+                    "cty-smartcity.com",
+                    "asertecqa.com",
+                    "vipmail.eu.org",
+                    "www.luvd-dns.com",
+                    "www.dinozavrikgugl.store",
+                    "seaser.eu.org",
+                    "qzpmy786.eu.org",
+                    "csmconnector.com",
+                    "anna-tayurskaya.store",
+                    "www.rasmnout.tech",
+                    "ns5.isbln.de",
+                    "i18n.iq-agrar.de",
+                    "dtpnk.tech",
+                    "ddd.caijisuan.space",
+                    "avp.tech",
+                    "nickvannelli.com",
+                    "hnup.de",
+                    "ngbrella.com",
+                    "mbm.software",
+                    "www.nfcservers.com",
+                    "www.jordansforall.com",
+                    "grosskop-transporte.de",
+                    "kliky.pe",
+                    "j.pe",
+                    "xcctt.nyc.mn",
+                    "www.globalbackend.de",
+                    "globalbackend.de",
+                    "sourireconcept.paris",
+                    "www.hetwijnpakhuis.nl",
+                    "bfqhl01.com",
+                    "bfqcl01.com",
+                    "johntest.ovh",
+                    "www.devroede.ovh"
+                ],
+                "forward_dns": {
+                    "anna-tayurskaya.store": {
+                        "resolve_time": "2026-01-14T22:00:30Z",
+                        "name": "anna-tayurskaya.store",
+                        "record_type": "a"
+                    },
+                    "asertecqa.com": {
+                        "resolve_time": "2026-01-14T22:02:52Z",
+                        "name": "asertecqa.com",
+                        "record_type": "a"
+                    },
+                    "astor-school.com": {
+                        "resolve_time": "2026-01-14T22:05:25Z",
+                        "name": "astor-school.com",
+                        "record_type": "a"
+                    },
+                    "auth.cupix.com": {
+                        "resolve_time": "2026-01-14T22:04:49Z",
+                        "name": "auth.cupix.com",
+                        "record_type": "a"
+                    },
+                    "auth.prometeiasaas.it": {
+                        "resolve_time": "2026-01-14T22:21:30Z",
+                        "name": "auth.prometeiasaas.it",
+                        "record_type": "a"
+                    },
+                    "avp.tech": {
+                        "resolve_time": "2026-01-14T21:52:07Z",
+                        "name": "avp.tech",
+                        "record_type": "a"
+                    },
+                    "beautifulyou.boutique": {
+                        "resolve_time": "2026-01-15T12:26:28Z",
+                        "name": "beautifulyou.boutique",
+                        "record_type": "a"
+                    },
+                    "bfqcl01.com": {
+                        "resolve_time": "2026-01-14T21:41:07Z",
+                        "name": "bfqcl01.com",
+                        "record_type": "a"
+                    },
+                    "bfqhl01.com": {
+                        "resolve_time": "2026-01-14T21:41:07Z",
+                        "name": "bfqhl01.com",
+                        "record_type": "a"
+                    },
+                    "canghaxp.bond": {
+                        "resolve_time": "2026-01-15T12:16:17Z",
+                        "name": "canghaxp.bond",
+                        "record_type": "a"
+                    },
+                    "catalogo.nextadv.it": {
+                        "resolve_time": "2026-01-14T22:20:49Z",
+                        "name": "catalogo.nextadv.it",
+                        "record_type": "a"
+                    },
+                    "cdoapp.nextadv.it": {
+                        "resolve_time": "2026-01-14T22:20:48Z",
+                        "name": "cdoapp.nextadv.it",
+                        "record_type": "a"
+                    },
+                    "central-office.net": {
+                        "resolve_time": "2026-01-15T12:23:05Z",
+                        "name": "central-office.net",
+                        "record_type": "a"
+                    },
+                    "csmconnector.com": {
+                        "resolve_time": "2026-01-14T22:01:48Z",
+                        "name": "csmconnector.com",
+                        "record_type": "a"
+                    },
+                    "cty-smartcity.com": {
+                        "resolve_time": "2026-01-14T22:04:16Z",
+                        "name": "cty-smartcity.com",
+                        "record_type": "a"
+                    },
+                    "cyx.juliangqingchuang.top": {
+                        "resolve_time": "2026-01-15T12:03:14Z",
+                        "name": "cyx.juliangqingchuang.top",
+                        "record_type": "a"
+                    },
+                    "ddd.caijisuan.space": {
+                        "resolve_time": "2026-01-14T21:52:50Z",
+                        "name": "ddd.caijisuan.space",
+                        "record_type": "a"
+                    },
+                    "deadlock-builds.gg": {
+                        "resolve_time": "2026-01-15T12:16:36Z",
+                        "name": "deadlock-builds.gg",
+                        "record_type": "a"
+                    },
+                    "devapi.bridge.redilco-hub.it": {
+                        "resolve_time": "2026-01-14T22:21:36Z",
+                        "name": "devapi.bridge.redilco-hub.it",
+                        "record_type": "a"
+                    },
+                    "dtpnk.tech": {
+                        "resolve_time": "2026-01-14T21:53:01Z",
+                        "name": "dtpnk.tech",
+                        "record_type": "a"
+                    },
+                    "etc-au1.nanopool.org": {
+                        "resolve_time": "2026-01-14T22:15:42Z",
+                        "name": "etc-au1.nanopool.org",
+                        "record_type": "a"
+                    },
+                    "etc-eu1.nanopool.org": {
+                        "resolve_time": "2026-01-14T22:15:42Z",
+                        "name": "etc-eu1.nanopool.org",
+                        "record_type": "a"
+                    },
+                    "eth-asia1.nanopool.org": {
+                        "resolve_time": "2026-01-14T22:15:38Z",
+                        "name": "eth-asia1.nanopool.org",
+                        "record_type": "a"
+                    },
+                    "eth-au1.nanopool.org": {
+                        "resolve_time": "2026-01-14T22:15:38Z",
+                        "name": "eth-au1.nanopool.org",
+                        "record_type": "a"
+                    },
+                    "fabio.nextadv.it": {
+                        "resolve_time": "2026-01-14T22:20:49Z",
+                        "name": "fabio.nextadv.it",
+                        "record_type": "a"
+                    },
+                    "freecadrms.com": {
+                        "resolve_time": "2026-01-14T22:10:19Z",
+                        "name": "freecadrms.com",
+                        "record_type": "a"
+                    },
+                    "gaibianfunnel.com": {
+                        "resolve_time": "2026-01-14T22:18:52Z",
+                        "name": "gaibianfunnel.com",
+                        "record_type": "a"
+                    },
+                    "gb-insurance.com": {
+                        "resolve_time": "2026-01-14T22:21:19Z",
+                        "name": "gb-insurance.com",
+                        "record_type": "a"
+                    },
+                    "gera-adam-g2o.brownbearcentral.com": {
+                        "resolve_time": "2026-01-15T12:18:13Z",
+                        "name": "gera-adam-g2o.brownbearcentral.com",
+                        "record_type": "a"
+                    },
+                    "gera-adam-g2o1.brownbearcentral.com": {
+                        "resolve_time": "2026-01-15T12:18:13Z",
+                        "name": "gera-adam-g2o1.brownbearcentral.com",
+                        "record_type": "a"
+                    },
+                    "geratest63.brownbearcentral.com": {
+                        "resolve_time": "2026-01-15T12:18:13Z",
+                        "name": "geratest63.brownbearcentral.com",
+                        "record_type": "a"
+                    },
+                    "globalbackend.de": {
+                        "resolve_time": "2026-01-14T21:45:23Z",
+                        "name": "globalbackend.de",
+                        "record_type": "a"
+                    },
+                    "grosskop-transporte.de": {
+                        "resolve_time": "2026-01-14T21:46:41Z",
+                        "name": "grosskop-transporte.de",
+                        "record_type": "a"
+                    },
+                    "hdfry.tk": {
+                        "resolve_time": "2026-01-14T22:07:14Z",
+                        "name": "hdfry.tk",
+                        "record_type": "a"
+                    },
+                    "hml.yazo.app.br": {
+                        "resolve_time": "2026-01-15T12:27:05Z",
+                        "name": "hml.yazo.app.br",
+                        "record_type": "a"
+                    },
+                    "hnup.de": {
+                        "resolve_time": "2026-01-14T21:50:20Z",
+                        "name": "hnup.de",
+                        "record_type": "a"
+                    },
+                    "i18n.iq-agrar.de": {
+                        "resolve_time": "2026-01-14T21:54:48Z",
+                        "name": "i18n.iq-agrar.de",
+                        "record_type": "a"
+                    },
+                    "ieiozmebbtb.trevans.pl": {
+                        "resolve_time": "2026-01-15T12:20:05Z",
+                        "name": "ieiozmebbtb.trevans.pl",
+                        "record_type": "a"
+                    },
+                    "intelligentcreation.info": {
+                        "resolve_time": "2026-01-14T22:15:38Z",
+                        "name": "intelligentcreation.info",
+                        "record_type": "a"
+                    },
+                    "italo.nextadv.it": {
+                        "resolve_time": "2026-01-14T22:20:49Z",
+                        "name": "italo.nextadv.it",
+                        "record_type": "a"
+                    },
+                    "j.pe": {
+                        "resolve_time": "2026-01-14T21:46:09Z",
+                        "name": "j.pe",
+                        "record_type": "a"
+                    },
+                    "johntest.ovh": {
+                        "resolve_time": "2026-01-14T21:39:38Z",
+                        "name": "johntest.ovh",
+                        "record_type": "a"
+                    },
+                    "kdfb.us.to": {
+                        "resolve_time": "2026-01-15T12:29:27Z",
+                        "name": "kdfb.us.to",
+                        "record_type": "a"
+                    },
+                    "kliky.pe": {
+                        "resolve_time": "2026-01-14T21:46:11Z",
+                        "name": "kliky.pe",
+                        "record_type": "a"
+                    },
+                    "klsjjdf.top": {
+                        "resolve_time": "2026-01-15T12:03:56Z",
+                        "name": "klsjjdf.top",
+                        "record_type": "a"
+                    },
+                    "m.cexcoin.net": {
+                        "resolve_time": "2026-01-15T12:26:47Z",
+                        "name": "m.cexcoin.net",
+                        "record_type": "a"
+                    },
+                    "mail-officesecurity.com": {
+                        "resolve_time": "2026-01-14T22:07:54Z",
+                        "name": "mail-officesecurity.com",
+                        "record_type": "a"
+                    },
+                    "mail.freedomlearning.com": {
+                        "resolve_time": "2026-01-14T22:10:26Z",
+                        "name": "mail.freedomlearning.com",
+                        "record_type": "a"
+                    },
+                    "mbm.software": {
+                        "resolve_time": "2026-01-14T21:49:37Z",
+                        "name": "mbm.software",
+                        "record_type": "a"
+                    },
+                    "mipblogarticlenews.blog": {
+                        "resolve_time": "2026-01-15T12:11:11Z",
+                        "name": "mipblogarticlenews.blog",
+                        "record_type": "a"
+                    },
+                    "models.coolios.net": {
+                        "resolve_time": "2026-01-15T12:11:39Z",
+                        "name": "models.coolios.net",
+                        "record_type": "a"
+                    },
+                    "montanasp.org": {
+                        "resolve_time": "2026-01-14T22:14:01Z",
+                        "name": "montanasp.org",
+                        "record_type": "a"
+                    },
+                    "mysnack.top": {
+                        "resolve_time": "2026-01-15T12:07:30Z",
+                        "name": "mysnack.top",
+                        "record_type": "a"
+                    },
+                    "n8n.truemarlon.de": {
+                        "resolve_time": "2026-01-14T23:01:03Z",
+                        "name": "n8n.truemarlon.de",
+                        "record_type": "a"
+                    },
+                    "ngbrella.com": {
+                        "resolve_time": "2026-01-14T21:49:40Z",
+                        "name": "ngbrella.com",
+                        "record_type": "a"
+                    },
+                    "nghz0088.org": {
+                        "resolve_time": "2026-01-14T22:17:05Z",
+                        "name": "nghz0088.org",
+                        "record_type": "a"
+                    },
+                    "nickvannelli.com": {
+                        "resolve_time": "2026-01-14T21:51:10Z",
+                        "name": "nickvannelli.com",
+                        "record_type": "a"
+                    },
+                    "ns5.isbln.de": {
+                        "resolve_time": "2026-01-14T21:54:51Z",
+                        "name": "ns5.isbln.de",
+                        "record_type": "a"
+                    },
+                    "pattersontx.com": {
+                        "resolve_time": "2026-01-15T12:34:17Z",
+                        "name": "pattersontx.com",
+                        "record_type": "a"
+                    },
+                    "po-drodze.pl": {
+                        "resolve_time": "2026-01-15T12:11:09Z",
+                        "name": "po-drodze.pl",
+                        "record_type": "a"
+                    },
+                    "pupik.myhealthsight.com": {
+                        "resolve_time": "2026-01-14T22:11:40Z",
+                        "name": "pupik.myhealthsight.com",
+                        "record_type": "a"
+                    },
+                    "qzpmy786.eu.org": {
+                        "resolve_time": "2026-01-14T22:02:29Z",
+                        "name": "qzpmy786.eu.org",
+                        "record_type": "a"
+                    },
+                    "rabbitsgames.com": {
+                        "resolve_time": "2026-01-15T12:35:56Z",
+                        "name": "rabbitsgames.com",
+                        "record_type": "a"
+                    },
+                    "sd.via.freemyip.com": {
+                        "resolve_time": "2026-01-14T22:11:00Z",
+                        "name": "sd.via.freemyip.com",
+                        "record_type": "a"
+                    },
+                    "seaser.eu.org": {
+                        "resolve_time": "2026-01-14T22:02:31Z",
+                        "name": "seaser.eu.org",
+                        "record_type": "a"
+                    },
+                    "secure3.insiderintelligence.com": {
+                        "resolve_time": "2026-01-15T12:32:38Z",
+                        "name": "secure3.insiderintelligence.com",
+                        "record_type": "a"
+                    },
+                    "server.segusistemas.com": {
+                        "resolve_time": "2026-01-14T22:18:22Z",
+                        "name": "server.segusistemas.com",
+                        "record_type": "a"
+                    },
+                    "smtp.mol-sin.com": {
+                        "resolve_time": "2026-01-14T22:06:19Z",
+                        "name": "smtp.mol-sin.com",
+                        "record_type": "a"
+                    },
+                    "soniavalerio.adv.br": {
+                        "resolve_time": "2026-01-15T12:26:52Z",
+                        "name": "soniavalerio.adv.br",
+                        "record_type": "a"
+                    },
+                    "sourireconcept.paris": {
+                        "resolve_time": "2026-01-14T21:44:32Z",
+                        "name": "sourireconcept.paris",
+                        "record_type": "a"
+                    },
+                    "temp.prodigital.pl": {
+                        "resolve_time": "2026-01-15T12:11:37Z",
+                        "name": "temp.prodigital.pl",
+                        "record_type": "a"
+                    },
+                    "vela.brownbearcentral.com": {
+                        "resolve_time": "2026-01-15T12:18:13Z",
+                        "name": "vela.brownbearcentral.com",
+                        "record_type": "a"
+                    },
+                    "vipmail.eu.org": {
+                        "resolve_time": "2026-01-14T22:02:42Z",
+                        "name": "vipmail.eu.org",
+                        "record_type": "a"
+                    },
+                    "vl.jnto.mywire.org": {
+                        "resolve_time": "2026-01-14T22:15:27Z",
+                        "name": "vl.jnto.mywire.org",
+                        "record_type": "a"
+                    },
+                    "www.actonpalestine.today": {
+                        "resolve_time": "2026-01-14T22:09:38Z",
+                        "name": "www.actonpalestine.today",
+                        "record_type": "a"
+                    },
+                    "www.beqyy.com": {
+                        "resolve_time": "2026-01-15T08:31:12Z",
+                        "name": "www.beqyy.com",
+                        "record_type": "a"
+                    },
+                    "www.btairobotd.com": {
+                        "resolve_time": "2026-01-15T12:20:21Z",
+                        "name": "www.btairobotd.com",
+                        "record_type": "a"
+                    },
+                    "www.devroede.ovh": {
+                        "resolve_time": "2026-01-14T21:39:32Z",
+                        "name": "www.devroede.ovh",
+                        "record_type": "a"
+                    },
+                    "www.dinozavrikgugl.store": {
+                        "resolve_time": "2026-01-14T22:02:31Z",
+                        "name": "www.dinozavrikgugl.store",
+                        "record_type": "a"
+                    },
+                    "www.globalbackend.de": {
+                        "resolve_time": "2026-01-14T21:45:23Z",
+                        "name": "www.globalbackend.de",
+                        "record_type": "a"
+                    },
+                    "www.hetwijnpakhuis.nl": {
+                        "resolve_time": "2026-01-14T21:44:26Z",
+                        "name": "www.hetwijnpakhuis.nl",
+                        "record_type": "a"
+                    },
+                    "www.jordansforall.com": {
+                        "resolve_time": "2026-01-14T21:47:01Z",
+                        "name": "www.jordansforall.com",
+                        "record_type": "a"
+                    },
+                    "www.llb8208.top": {
+                        "resolve_time": "2026-01-15T12:05:03Z",
+                        "name": "www.llb8208.top",
+                        "record_type": "a"
+                    },
+                    "www.luvd-dns.com": {
+                        "resolve_time": "2026-01-14T22:02:35Z",
+                        "name": "www.luvd-dns.com",
+                        "record_type": "a"
+                    },
+                    "www.maystar9527.top": {
+                        "resolve_time": "2026-01-15T12:06:15Z",
+                        "name": "www.maystar9527.top",
+                        "record_type": "a"
+                    },
+                    "www.mikazuki.top": {
+                        "resolve_time": "2026-01-15T12:06:41Z",
+                        "name": "www.mikazuki.top",
+                        "record_type": "a"
+                    },
+                    "www.miyawari.top": {
+                        "resolve_time": "2026-01-15T12:06:49Z",
+                        "name": "www.miyawari.top",
+                        "record_type": "a"
+                    },
+                    "www.morsmordre.org": {
+                        "resolve_time": "2026-01-14T22:14:06Z",
+                        "name": "www.morsmordre.org",
+                        "record_type": "a"
+                    },
+                    "www.nfcservers.com": {
+                        "resolve_time": "2026-01-14T21:49:14Z",
+                        "name": "www.nfcservers.com",
+                        "record_type": "a"
+                    },
+                    "www.nobanco.info": {
+                        "resolve_time": "2026-01-14T22:19:36Z",
+                        "name": "www.nobanco.info",
+                        "record_type": "a"
+                    },
+                    "www.nobanco.org": {
+                        "resolve_time": "2026-01-14T22:17:30Z",
+                        "name": "www.nobanco.org",
+                        "record_type": "a"
+                    },
+                    "www.po-drodze.pl": {
+                        "resolve_time": "2026-01-15T12:11:06Z",
+                        "name": "www.po-drodze.pl",
+                        "record_type": "a"
+                    },
+                    "www.poprawie.pl": {
+                        "resolve_time": "2026-01-15T12:11:20Z",
+                        "name": "www.poprawie.pl",
+                        "record_type": "a"
+                    },
+                    "www.rasmnout.tech": {
+                        "resolve_time": "2026-01-14T21:56:27Z",
+                        "name": "www.rasmnout.tech",
+                        "record_type": "a"
+                    },
+                    "www.sdcgroups.com": {
+                        "resolve_time": "2026-01-14T22:14:00Z",
+                        "name": "www.sdcgroups.com",
+                        "record_type": "a"
+                    },
+                    "www.securelogin.lpzoo.org": {
+                        "resolve_time": "2026-01-14T22:09:57Z",
+                        "name": "www.securelogin.lpzoo.org",
+                        "record_type": "a"
+                    },
+                    "www.segwayninebots.com": {
+                        "resolve_time": "2026-01-14T22:18:36Z",
+                        "name": "www.segwayninebots.com",
+                        "record_type": "a"
+                    },
+                    "www.shuangyu89.net": {
+                        "resolve_time": "2026-01-15T09:24:14Z",
+                        "name": "www.shuangyu89.net",
+                        "record_type": "a"
+                    },
+                    "xcctt.nyc.mn": {
+                        "resolve_time": "2026-01-14T21:45:23Z",
+                        "name": "xcctt.nyc.mn",
+                        "record_type": "a"
+                    },
+                    "zero.sky0102.mywire.org": {
+                        "resolve_time": "2026-01-14T22:15:27Z",
+                        "name": "zero.sky0102.mywire.org",
+                        "record_type": "a"
+                    }
+                }
+            }
         },
-        "organization": {
-          "handle": "AT-88-Z",
-          "name": "Amazon Technologies Inc.",
-          "street": "410 Terry Ave N.",
-          "city": "Seattle",
-          "state": "WA",
-          "postal_code": "98109",
-          "country": "US",
-          "abuse_contacts": [
-            {
-              "handle": "AEA8-ARIN",
-              "name": "Amazon EC2 Abuse",
-              "email": ""
-            }
-          ],
-          "admin_contacts": [
-            {
-              "handle": "IPMAN40-ARIN",
-              "name": "IP Management",
-              "email": ""
-            }
-          ],
-          "tech_contacts": [
-            {
-              "handle": "ANO24-ARIN",
-              "name": "Amazon EC2 Network Operations",
-              "email": ""
-            }
-          ]
-        }
-      },
-      "last_updated_at": "2022-10-02T14:42:17.327Z"
+        "extensions": {}
     }
-  }
+}

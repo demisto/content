@@ -1,0 +1,17 @@
+{
+    "timestamp": "2024-01-15T10:00:00.000Z",
+    "result": {
+        "events": [
+            {
+                "event": {
+                    "event_time": "2024-01-15T10:00:00",
+                    "name": "url-rewrite",
+                    "domain": "cnn.com",
+                    "product": "MSIP",
+                    "vendor": "Menlo Security"
+                }
+            }
+        ],
+        "pagingIdentifiers": {}
+    }
+}

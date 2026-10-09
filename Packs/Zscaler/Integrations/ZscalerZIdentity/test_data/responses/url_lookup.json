@@ -1,0 +1,12 @@
+[
+    {
+        "url": "malicious-site.com",
+        "urlClassifications": ["MALWARE_SITE"],
+        "urlClassificationsWithSecurityAlert": ["MALWARE_SITE"]
+    },
+    {
+        "url": "safe-site.com",
+        "urlClassifications": ["BUSINESS_AND_ECONOMY"],
+        "urlClassificationsWithSecurityAlert": []
+    }
+]
