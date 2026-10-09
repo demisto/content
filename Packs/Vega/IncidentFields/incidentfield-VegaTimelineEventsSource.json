@@ -1,11 +1,11 @@
 {
-    "id": "incident_vegalastupdated",
+    "id": "incident_vegatimelineeventssource",
     "version": -1,
-    "name": "Vega Last Updated",
+    "name": "Vega Timeline Events Source",
     "ownerOnly": false,
-    "description": "The timestamp of the last update to this alert or incident in Vega (e.g. 2023-10-25T14:30:00Z). Alerts use updatedAt. Incidents use lastUpdated.",
-    "cliName": "vegalastupdated",
-    "type": "date",
+    "description": "Unmodified Vega incident timeline events, stored as JSON.",
+    "cliName": "vegatimelineeventssource",
+    "type": "longText",
     "closeForm": false,
     "editForm": false,
     "required": false,
@@ -18,7 +18,6 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "Vega Alert",
         "Vega Incident"
     ],
     "associatedToAll": false,

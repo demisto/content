@@ -50,7 +50,7 @@ configuration:
     section: Collect
     required: true
     additionalinfo: >-
-      The Maximum number of Vega alerts and incidents to fetch per cycle, combined.
+      The maximum number of Vega alerts and incidents to fetch per cycle, combined.
       Valid range is 1-50. Invalid values default to 50 during fetch.
   - display: Fetch Lookback (minutes)
     name: lookback_minutes
@@ -60,8 +60,8 @@ configuration:
     defaultvalue: "5"
     additionalinfo: >-
       The number of minutes the query window is shifted backwards on each fetch cycle to catch 
-      alerts and incidents that were indexed late on the Vega side. Deduplication prevents re-
-      ingestion. Valid range is 1-60.
+      alerts and incidents that were indexed late on the Vega side. Deduplication prevents 
+      re-ingestion. Valid range is 1-60.
   - display: Vega Entities to fetch
     additionalinfo: The Vega entities to fetch as Cortex XSOAR incidents.
     name: vega_entities
@@ -81,18 +81,22 @@ configuration:
     section: Collect
     required: true
     defaultvalue: "30"
-  - display: Enable Cortex XSOAR to Vega mirroring
-    additionalinfo: >-
-      Whether to enable Cortex XSOAR to Vega mirroring. When enabled, changes made in Cortex 
-      XSOAR investigations are mirrored to Vega for status, verdict,
-      verdict reasoning, severity, and comments. Requires the Vega Outgoing Mapper on this 
-      instance.
-      When disabled, Vega to Cortex XSOAR mirroring remains enabled.
-    name: autoclosure
-    type: 8
+  - additionalinfo: >-
+      Choose the direction to mirror the incident: Incoming (from Vega to Cortex XSOAR),
+      Outgoing (from Cortex XSOAR to Vega), or Incoming and Outgoing (from/to Cortex XSOAR and Vega).
+      None turns mirroring off. The direction is stored on each incident when it is fetched.
+      Changing this setting later does not change incidents already pulled.
+    defaultvalue: Incoming
+    display: Incident Mirroring Direction
+    name: mirror_direction
+    options:
+    - None
+    - Incoming
+    - Outgoing
+    - Incoming And Outgoing
+    type: 15
     section: Mirroring
-    required: false
-    defaultvalue: "true"
+    required: true
   - display: Outgoing fields to mirror
     additionalinfo: >-
       The investigation fields that are mirrored from Cortex XSOAR to Vega when outgoing 
@@ -159,9 +163,6 @@ configuration:
     defaultvalue: MALICIOUS,SUSPICIOUS,BENIGN,INCONCLUSIVE,NA
   - display: Has related incidents
     additionalinfo: >-
-      The filter for alerts based on whether they have related incidents. Select Yes to fetch alerts with related incidents,
-      No to fetch alerts without related incidents, or both to fetch all alerts.
-      At least one option must be selected.
       Filter alerts by whether they have related incidents. Select Yes to fetch alerts with related incidents,
       No to fetch alerts without related incidents, or both to fetch all alerts.
       At least one option must be selected.
@@ -175,8 +176,6 @@ configuration:
     defaultvalue: "Yes,No"
   - display: Incident Severities to fetch
     additionalinfo: >-
-      The severities by which to filter incidents. If empty, all severities are fetched.
-      Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
       Filter incidents by severity. If empty, all severities are fetched.
       Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
     name: incident_severities
@@ -189,31 +188,37 @@ configuration:
       - HIGH
       - CRITICAL
     defaultvalue: LOW,MEDIUM,HIGH,CRITICAL
-  - display: Incident Statuses to fetch
+  - display: Incident User Statuses to fetch
     additionalinfo: >-
-      The statuses by which to filter incidents. If empty, all statuses are fetched.
-      Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
-      Filter incidents by status. If empty, all statuses are fetched.
+      The analyst user statuses by which to filter incidents. If empty, all user statuses are fetched.
       Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
     name: incident_statuses
     type: 16
     section: Collect
     required: false
     options:
+      - OPEN
+      - IN REVIEW
+      - ON HOLD
+      - RESOLVED
+    defaultvalue: OPEN,IN REVIEW,ON HOLD,RESOLVED
+  - display: Incident Investigation Statuses to fetch
+    additionalinfo: >-
+      The Vega investigation statuses by which to filter incidents. If empty, all investigation statuses are fetched.
+      NEW is shown as Pending in Vega. Any custom values entered outside the available options are ignored
+      and will not affect the fetch cycle.
+    name: incident_investigation_statuses
+    type: 16
+    section: Collect
+    required: false
+    options:
       - NEW
       - INVESTIGATING
-      - ON HOLD
-      - EXTERNAL ESCALATION
-      - RESOLVED
-      - REOPENED
-      - REVIEW RECOMMENDED
-      - RESPONSE REQUIRED
-      - UNDER REVIEW
-    defaultvalue: NEW,INVESTIGATING,ON HOLD,EXTERNAL ESCALATION,RESOLVED,REOPENED,REVIEW RECOMMENDED,RESPONSE REQUIRED,UNDER REVIEW
+      - COMPLETED
+      - FAILED
+    defaultvalue: NEW,INVESTIGATING,COMPLETED,FAILED
   - display: Incident Verdicts to fetch
     additionalinfo: >-
-      The verdicts by which to filter incidents. If empty, all verdicts are fetched.
-      Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
       Filter incidents by verdict. If empty, all verdicts are fetched.
       Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
     name: incident_verdicts
@@ -227,6 +232,43 @@ configuration:
       - INCONCLUSIVE
       - NA
     defaultvalue: MALICIOUS,SUSPICIOUS,BENIGN,INCONCLUSIVE,NA
+  - display: Include alert metadata on incidents
+    additionalinfo: >-
+      Stores full related-alert metadata on each incident. This can make incidents large.
+    name: include_incident_alert_metadata
+    type: 8
+    section: Collect
+    required: false
+    defaultvalue: "false"
+    advanced: true
+  - display: Fetch alerts and incidents by ID
+    additionalinfo: >-
+      When selected, other Collect filters are ignored and only the IDs below are fetched.
+      An ID already in Cortex XSOAR is created again.
+    name: incident_reconciliation
+    type: 8
+    section: Collect
+    required: false
+    defaultvalue: "false"
+    advanced: true
+  - display: Alert IDs to fetch
+    additionalinfo: >-
+      Comma-separated alert UUIDs (id-1,id-2) to re-fetch missed records.
+      Used only when Fetch alerts and incidents by ID is selected.
+    name: reconciliation_alert_ids
+    type: 12
+    section: Collect
+    required: false
+    advanced: true
+  - display: Incident IDs to fetch
+    additionalinfo: >-
+      Comma-separated incident UUIDs (id-1,id-2) to re-fetch missed records.
+      Used only when Fetch alerts and incidents by ID is selected.
+    name: reconciliation_incident_ids
+    type: 12
+    section: Collect
+    required: false
+    advanced: true
   - display: Incident type
     name: incidentType
     type: 13
@@ -253,8 +295,15 @@ script:
   commands:
     - name: vega-get-alert-events
       arguments:
+        - name: alert_ids
+          description: >-
+            Comma-separated Vega alert API ids (UUIDs). A maximum of 10 IDs can be requested in one call.
+            When omitted, alert_id is used, or the alert id is resolved from the current Vega Alert incident.
+          required: false
         - name: alert_id
-          description: The Vega alert API id (UUID). When omitted, resolves the alert id from the current Vega Alert incident.
+          description: >-
+            The Vega alert API id (UUID). When omitted, resolves the alert id from the current Vega Alert incident.
+            Combined with alert_ids when both are provided.
           required: false
         - name: limit
           description: The number of alert events to display per page. Also used as the Vega API batch size when fetching all events.
@@ -263,7 +312,7 @@ script:
           description: The pagination offset for alert events.
           defaultValue: "0"
       description: >-
-        Fetch all aggregated alert events for a Vega alert using internal API pagination,
+        Fetch aggregated alert events for up to 10 Vega alerts using internal API pagination,
         then return the requested display page as a markdown table and CustomFields for the Alert Events layout section.
       outputs:
         - contextPath: Vega.AlertEvents.AlertId
@@ -282,7 +331,7 @@ script:
           description: Number of alert events returned in the current page.
           type: Number
         - contextPath: Vega.AlertEvents.HasAlertEvents
-          description: Whether the alert returned real alert events instead of aggregated parse-field summary rows.
+          description: Whether alert events were returned for display.
           type: Boolean
         - contextPath: Vega.AlertEvents.Cached
           description: Whether the response was served from cached incident data.
@@ -292,6 +341,52 @@ script:
           type: Unknown
         - contextPath: Vega.AlertEvents.CustomFields
           description: Incident custom fields to persist for the Alert Events layout section.
+          type: Unknown
+    - name: vega-get-alert-metadata
+      arguments:
+        - name: incident_id
+          description: >-
+            A single Vega incident ID. Returns metadata for the alerts related to that incident.
+            When omitted, a Vega Incident investigation uses its related alert IDs, and a Vega Alert
+            investigation uses its own alert ID.
+          required: false
+      description: >-
+        Return Vega alert metadata to the War Room. Pass one incident_id to load the alerts related
+        to that Vega incident. When run from a Vega Incident without incident_id, the investigation's
+        related alert IDs are used. When run from a Vega Alert, that alert ID is used.
+        The War Room entry is a direct JSON object for one alert or an array for multiple alerts.
+        Each alert contains the ten highest-priority metadata fields.
+        The result is not written onto the incident.
+      outputs:
+        - contextPath: Vega.AlertMetadata.id
+          description: Vega alert API ID.
+          type: String
+        - contextPath: Vega.AlertMetadata.vegaAlertId
+          description: Vega display alert ID.
+          type: String
+        - contextPath: Vega.AlertMetadata.detectionId
+          description: Vega detection ID for the alert.
+          type: String
+        - contextPath: Vega.AlertMetadata.name
+          description: Vega alert name.
+          type: String
+        - contextPath: Vega.AlertMetadata.severity
+          description: Vega alert severity.
+          type: String
+        - contextPath: Vega.AlertMetadata.status
+          description: Vega alert status.
+          type: String
+        - contextPath: Vega.AlertMetadata.verdict
+          description: Vega alert verdict.
+          type: String
+        - contextPath: Vega.AlertMetadata.createdAt
+          description: Vega alert creation time.
+          type: String
+        - contextPath: Vega.AlertMetadata.dataSources
+          description: Vega alert data source names.
+          type: Unknown
+        - contextPath: Vega.AlertMetadata.labels
+          description: Vega alert labels.
           type: Unknown
     - name: vega-set-detections-state
       arguments:
@@ -451,18 +546,13 @@ script:
           isArray: true
           hidden: true
         - name: status
-          description: The target Vega incident status.
+          description: The target Vega incident user status.
           auto: PREDEFINED
           predefined:
-            - NEW
-            - INVESTIGATING
+            - OPEN
+            - IN REVIEW
             - ON HOLD
-            - EXTERNAL ESCALATION
             - RESOLVED
-            - REOPENED
-            - REVIEW RECOMMENDED
-            - RESPONSE REQUIRED
-            - UNDER REVIEW
         - name: verdict
           description: The target Vega incident verdict.
           auto: PREDEFINED
@@ -488,14 +578,17 @@ script:
           description: A comma-separated list of email addresses to assign to the Vega incident.
           isArray: true
       description: >-
-        Immediately update Vega incident status, verdict, verdict reasoning, severity, assignee emails,
+        Immediately update Vega incident user status, verdict, verdict reasoning, severity, assignee emails,
         and/or comment on the Vega platform and sync the open Cortex XSOAR investigation when run from a Vega Incident investigation.
       outputs:
         - contextPath: Vega.Incident.id
           description: Updated Vega incident ID.
           type: String
         - contextPath: Vega.Incident.status
-          description: Updated Vega incident status.
+          description: Updated Vega incident user status.
+          type: String
+        - contextPath: Vega.Incident.investigationStatus
+          description: Vega investigation status returned by the update.
           type: String
         - contextPath: Vega.Incident.verdict
           description: Updated Vega incident verdict.
@@ -505,6 +598,121 @@ script:
           type: String
         - contextPath: Vega.Incident.assignee
           description: Updated Vega incident assignee email, display name, or user ID.
+          type: String
+    - name: vega-reconcile-incidents
+      arguments:
+        - name: start_date
+          description: >-
+            Created-time start (Vega from). UTC date (YYYY-MM-DD) or UTC date and time (YYYY-MM-DDTHH:MM:SSZ).
+          required: true
+        - name: end_date
+          description: >-
+            Created-time end (Vega to). A UTC date (YYYY-MM-DD) includes that whole day.
+            A UTC date and time (YYYY-MM-DDTHH:MM:SSZ) is used as given.
+          required: true
+        - name: vega_entities
+          description: >-
+            Entities to compare. Select Alerts, Incidents, or both.
+            An entity that is not selected is not queried in Vega or Cortex XSOAR, even if its filters are set.
+          required: true
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - Alerts
+            - Incidents
+        - name: alert_severities
+          description: Alert severities to include. Leave empty to include all severities.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - LOW
+            - MEDIUM
+            - HIGH
+            - CRITICAL
+        - name: alert_statuses
+          description: Alert statuses to include. Leave empty to include all statuses.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - OPEN
+            - IN PROGRESS
+            - PEER REVIEW
+            - RESOLVED
+        - name: alert_verdicts
+          description: Alert verdicts to include. Leave empty to include all verdicts.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - MALICIOUS
+            - SUSPICIOUS
+            - BENIGN
+            - INCONCLUSIVE
+            - NA
+        - name: incident_severities
+          description: Incident severities to include. Leave empty to include all severities.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - LOW
+            - MEDIUM
+            - HIGH
+            - CRITICAL
+        - name: incident_statuses
+          description: Incident user statuses to include. Leave empty to include all user statuses.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - OPEN
+            - IN REVIEW
+            - ON HOLD
+            - RESOLVED
+        - name: incident_investigation_statuses
+          description: Incident investigation statuses to include. Leave empty to include all investigation statuses.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - NEW
+            - INVESTIGATING
+            - COMPLETED
+            - FAILED
+        - name: incident_verdicts
+          description: Incident verdicts to include. Leave empty to include all verdicts.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - MALICIOUS
+            - SUSPICIOUS
+            - BENIGN
+            - INCONCLUSIVE
+            - NA
+      description: >-
+        Compare selected Vega alert and incident UUIDs with Cortex XSOAR in a created-time window
+        and return the IDs missing from Cortex XSOAR. Only selected entities are queried.
+        Paste the lists into a Vega instance that has Fetch alerts and incidents by ID selected.
+      outputs:
+        - contextPath: Vega.Reconciliation.MissingIncidentIds
+          description: Vega incident UUIDs that have no matching Cortex XSOAR investigation.
+          type: String
+        - contextPath: Vega.Reconciliation.VegaIncidentCount
+          description: Number of Vega incident UUIDs found in the window.
+          type: Number
+        - contextPath: Vega.Reconciliation.XsoarIncidentCount
+          description: Number of matching Vega Incident investigations found in Cortex XSOAR.
+          type: Number
+        - contextPath: Vega.Reconciliation.MissingAlertIds
+          description: Vega alert UUIDs that have no matching Cortex XSOAR investigation.
+          type: String
+        - contextPath: Vega.Reconciliation.VegaAlertCount
+          description: Number of Vega alert UUIDs found in the window.
+          type: Number
+        - contextPath: Vega.Reconciliation.XsoarAlertCount
+          description: Number of matching Vega Alert investigations found in Cortex XSOAR.
+          type: Number
+        - contextPath: Vega.Reconciliation.StartDate
+          description: Vega from time used for the scan.
+          type: String
+        - contextPath: Vega.Reconciliation.EndDate
+          description: Vega to time used for the scan.
           type: String
     - name: get-remote-data
       arguments:

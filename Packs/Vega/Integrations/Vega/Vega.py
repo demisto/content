@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import html as html_module
 import http.client as http_client
+import logging
 import math
 import re
 import time
@@ -15,11 +16,13 @@ from typing import Any
 
 
 def _suppress_noisy_http_integration_logs() -> None:
-    """Suppress http.client wire logs such as CloudFront response headers from integration logs."""
+    """Suppress http.client wire logs and urllib3 request lines from integration logs."""
     try:
         http_client.HTTPConnection.debuglevel = 0
     except Exception as exc:
         demisto.debug(f"Vega: unable to disable HTTP wire logging: {exc}")
+
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
 
     if not is_debug_mode():
         return
@@ -57,14 +60,60 @@ VALID_DETECTION_SEVERITIES = frozenset({"LOW", "MEDIUM", "HIGH", "CRITICAL"})
 
 MIRROR_ENTITY_SUFFIX_ALERT = "alert"
 MIRROR_ENTITY_SUFFIX_INCIDENT = "incident"
+MIRROR_DIRECTION_NONE = "None"
+MIRROR_DIRECTION_INCOMING = "Incoming"
+MIRROR_DIRECTION_OUTGOING = "Outgoing"
+MIRROR_DIRECTION_BOTH = "Incoming And Outgoing"
+MIRROR_DIRECTION_BY_PARAM = {
+    MIRROR_DIRECTION_NONE: None,
+    MIRROR_DIRECTION_INCOMING: "In",
+    MIRROR_DIRECTION_OUTGOING: "Out",
+    MIRROR_DIRECTION_BOTH: "Both",
+}
 VEGA_ALERT_STATUS_FIELD = "vegastatus"
 VEGA_ALERT_SEVERITY_FIELD = "vegaalertseverity"
 VEGA_INCIDENT_STATUS_FIELD = "vegaincidentstatus"
+VEGA_INVESTIGATION_STATUS_FIELD = "vegainvestigationstatus"
 VEGA_SEVERITY_FIELD = "vegaseverity"
 VEGA_VERDICT_FIELD = "vegaverdict"
 VEGA_VERDICT_REASONING_FIELD = "vegaverdictreasoning"
 VEGA_NEW_COMMENT_FIELD = "veganewcomment"
 VEGA_NEW_COMMENT_LAYOUT_DEFAULT = "comment"
+VEGA_COMMENTS_SOURCE_FIELD = "vegacommentssource"
+VEGA_COMMENTS_SOURCE_KEY = "VegaCommentsSource"
+VEGA_ALERTS_FIELD = "vegaalerts"
+_INCIDENT_ALERT_SCALAR_FIELDS = (
+    "id",
+    "vegaAlertId",
+    "detectionId",
+    "name",
+    "description",
+    "severity",
+    "status",
+    "createdAt",
+    "updatedAt",
+    "detectionSource",
+    "detectionDescription",
+    "detectionQuery",
+    "eventCount",
+    "isTestMode",
+    "verdict",
+    "verdictReasoning",
+    "dedupCount",
+    "href",
+)
+_INCIDENT_ALERT_LIST_FIELDS = (
+    "dataSources",
+    "assignees",
+    "relatedIncidents",
+    "comments",
+    "labels",
+    "skills",
+    "actors",
+    "targets",
+)
+_INCIDENT_ALERT_OBJECT_FIELDS = ("assignee", "mitre", "escalation")
+INCIDENT_ALERT_LOOKUP_BATCH_SIZE = 1000
 VEGA_MIRROR_TAG_FROM_VEGA = "From Vega"
 VEGA_MIRROR_TAG_TO_VEGA = "To Vega"
 GET_MODIFIED_REMOTE_DATA_LIMIT = 100
@@ -113,34 +162,41 @@ OUTGOING_MIRROR_FIELD_LABELS: tuple[str, ...] = (
 VALID_OUTGOING_MIRROR_FIELD_LABELS = frozenset(OUTGOING_MIRROR_FIELD_LABELS)
 VEGA_CLOSE_STATUSES = frozenset({"RESOLVED"})
 VEGA_ALERT_OPEN_STATUSES = frozenset({"REOPENED", "OPEN", "NEW", "INVESTIGATING", "IN_PROGRESS", "PEER_REVIEW"})
-VEGA_INCIDENT_OPEN_STATUSES = frozenset(
-    {
-        "REOPENED",
-        "OPEN",
-        "NEW",
-        "INVESTIGATING",
-        "IN_PROGRESS",
-        "ON_HOLD",
-        "EXTERNAL_ESCALATION",
-        "REVIEW_RECOMMENDED",
-        "RESPONSE_REQUIRED",
-        "UNDER_REVIEW",
-    }
-)
+VEGA_INCIDENT_OPEN_STATUSES = frozenset({"OPEN", "IN_REVIEW", "ON_HOLD"})
 
 RATE_LIMIT_MAX_RETRIES = 10
 RATE_LIMIT_INITIAL_WAIT_SECONDS = 2
 RATE_LIMIT_WAIT_INCREMENT_SECONDS = 2
 FETCH_ENTITIES_PAGE_SIZE = 100
+RECONCILE_PAGE_SIZE = FETCH_ENTITIES_PAGE_SIZE
+RECONCILE_COMPLETED_ALERTS_KEY = "reconciliation_completed_alert_ids"
+RECONCILE_COMPLETED_INCIDENTS_KEY = "reconciliation_completed_incident_ids"
+RECONCILE_NOT_FOUND_ALERTS_KEY = "reconciliation_not_found_alert_ids"
+RECONCILE_NOT_FOUND_INCIDENTS_KEY = "reconciliation_not_found_incident_ids"
 _RETRYABLE_HTTP_STATUS_CODES = frozenset({429, 502, 503, 504})
 DEFAULT_ALERT_EVENTS_PAGE_SIZE = 200
+MAX_ALERT_EVENTS_IDS = 10
 ALERT_EVENT_JSON_MERGE_KEYS = frozenset({"fields"})
 ALERT_EVENT_JSON_TRUNCATE_KEYS = frozenset({"raw", "_raw"})
 ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN = "### Alert Events\n\nNo alert events found."
 ALERT_EVENT_MAX_FLATTEN_DEPTH = 3
 ALERT_EVENT_MAX_COLUMNS = 20
 ALERT_EVENT_MAX_CELL_LENGTH = 300
+VENDOR_ALERT_EVENT_TIMESTAMP_COLUMN = "Timestamp"
+VENDOR_ALERT_EVENT_SOURCE_COLUMN = "Source"
+VENDOR_ALERT_EVENT_LOG_COLUMN = "Log"
+VENDOR_ALERT_EVENT_COLUMNS = frozenset(
+    {
+        VENDOR_ALERT_EVENT_TIMESTAMP_COLUMN,
+        VENDOR_ALERT_EVENT_SOURCE_COLUMN,
+        VENDOR_ALERT_EVENT_LOG_COLUMN,
+    }
+)
+VENDOR_ALERT_EVENT_PROMOTED_KEYS = frozenset({"timestamp", "SourceVendors"})
 ALERT_EVENT_PREFERRED_COLUMNS: tuple[str, ...] = (
+    VENDOR_ALERT_EVENT_TIMESTAMP_COLUMN,
+    VENDOR_ALERT_EVENT_SOURCE_COLUMN,
+    VENDOR_ALERT_EVENT_LOG_COLUMN,
     "timestamp",
     "index_timestamp",
     "timeframe",
@@ -206,29 +262,20 @@ ALERT_STATUS_DISPLAY_TO_API: dict[str, str] = {
     "RESOLVED": "RESOLVED",
 }
 
-VALID_INCIDENT_STATUSES = frozenset(
-    {
-        "NEW",
-        "INVESTIGATING",
-        "ON_HOLD",
-        "EXTERNAL_ESCALATION",
-        "RESOLVED",
-        "REOPENED",
-        "REVIEW_RECOMMENDED",
-        "RESPONSE_REQUIRED",
-        "UNDER_REVIEW",
-    }
-)
+VALID_INCIDENT_STATUSES = frozenset({"OPEN", "IN_REVIEW", "ON_HOLD", "RESOLVED"})
 INCIDENT_STATUS_DISPLAY_TO_API: dict[str, str] = {
-    "NEW": "NEW",
-    "INVESTIGATING": "INVESTIGATING",
+    "OPEN": "OPEN",
+    "IN REVIEW": "IN_REVIEW",
     "ON HOLD": "ON_HOLD",
-    "EXTERNAL ESCALATION": "EXTERNAL_ESCALATION",
     "RESOLVED": "RESOLVED",
-    "REOPENED": "REOPENED",
-    "REVIEW RECOMMENDED": "REVIEW_RECOMMENDED",
-    "RESPONSE REQUIRED": "RESPONSE_REQUIRED",
-    "UNDER REVIEW": "UNDER_REVIEW",
+}
+VALID_INCIDENT_INVESTIGATION_STATUSES = frozenset({"NEW", "INVESTIGATING", "COMPLETED", "FAILED"})
+INCIDENT_INVESTIGATION_STATUS_DISPLAY_TO_API: dict[str, str] = {
+    "NEW": "NEW",
+    "PENDING": "NEW",
+    "INVESTIGATING": "INVESTIGATING",
+    "COMPLETED": "COMPLETED",
+    "FAILED": "FAILED",
 }
 
 VALID_SEVERITIES = frozenset({"LOW", "MEDIUM", "HIGH", "CRITICAL"})
@@ -258,7 +305,7 @@ _CONNECTION_ERROR_MARKERS = (
 _URL_UNREACHABLE_STATUS_CODES = frozenset({404, 405, 502, 503, 504})
 _AUTH_FAILURE_STATUS_CODES = frozenset({401, 403})
 TEST_CONNECTION_URL_ERROR = (
-    "Unable to connect to the Vega API. Please verify the Base URL is correct " "and reachable from the Cortex XSOAR engine."
+    "Unable to connect to the Vega API. Please verify the Base URL is correct and reachable from the Cortex XSOAR engine."
 )
 TEST_CONNECTION_BASE_URL_ERROR = "Unable to reach the Vega API at the configured Base URL. Please verify the Base URL is correct."
 TEST_CONNECTION_ACCESS_KEY_ERROR = "Incorrect Access Key. Please check your credentials."
@@ -269,22 +316,32 @@ TEST_CONNECTION_ACCESS_KEY_ID_ERROR = "Incorrect Access Key ID. Please check you
 
 # ? ---------------------------- GRAPHQL QUERIES --------------------------------------
 GET_ALERTS_QUERY = (
-    "query GetAlerts($alertNames: [String!], $alertIds: [ID!], $alertSeverities: [AlertSeverity!], "
-    "$statuses: [AlertStatus!], $detectionIds: [ID!], $dataSourceNames: [String!], "
-    "$alertVerdicts: [AlertVerdict!], $hasRelatedIncidents: Boolean, $from: Time, "
-    "$updatedFrom: Time, $updatedTo: Time, $limit: Int, $offset: Int) { "
-    " getAlerts(alertNames: $alertNames, alertIds: $alertIds, alertSeverities: $alertSeverities, "
-    "statuses: $statuses, detectionIds: $detectionIds, dataSourceNames: $dataSourceNames, "
-    "alertVerdicts: $alertVerdicts, hasRelatedIncidents: $hasRelatedIncidents, from: $from, "
-    "updatedFrom: $updatedFrom, updatedTo: $updatedTo, limit: $limit, offset: $offset) { "
+    "query GetAlerts($alertNames: [String!], $alertIds: [ID!], $vegaAlertIds: [String!], "
+    "$alertSeverities: [AlertSeverity!], $statuses: [AlertStatus!], $detectionIds: [ID!], "
+    "$dataSourceNames: [String!], $alertVerdicts: [AlertVerdict!], $hasRelatedIncidents: Boolean, "
+    "$from: Time, $to: Time, $updatedFrom: Time, $updatedTo: Time, $originType: AlertOriginType, "
+    "$sortBy: AlertSortFieldPublic, $sortOrder: SortOrderPublic, $limit: Int, $offset: Int) { "
+    " getAlerts(alertNames: $alertNames, alertIds: $alertIds, vegaAlertIds: $vegaAlertIds, "
+    "alertSeverities: $alertSeverities, statuses: $statuses, detectionIds: $detectionIds, "
+    "dataSourceNames: $dataSourceNames, alertVerdicts: $alertVerdicts, "
+    "hasRelatedIncidents: $hasRelatedIncidents, from: $from, to: $to, updatedFrom: $updatedFrom, "
+    "updatedTo: $updatedTo, originType: $originType, sortBy: $sortBy, sortOrder: $sortOrder, "
+    "limit: $limit, offset: $offset) { "
     "  alerts { id vegaAlertId detectionId name description severity status "
     "   assignee { userId displayName email } "
     "   assignees { userId displayName email } "
     "   dataSources createdAt updatedAt "
     "   mitre { mitreTactics mitreTechniques } "
     "   relatedIncidents { incidentId name } "
-    "   detectionSource detectionDescription detectionQuery eventCount isTestMode verdict verdictReasoning dedupCount "
-    "   comments { text addedBy addedAt } } "
+    "   detectionSource detectionDescription detectionQuery eventCount isTestMode verdict verdictReasoning "
+    "   escalation { status reasoning determinedAt incident { incidentId name } } "
+    "   dedupCount "
+    "   comments { text addedBy addedAt } "
+    "   labels { id categoryId name color usageCount } "
+    "   skills { id name version } "
+    "   actors { field values } "
+    "   targets { field values } "
+    "   href } "
     "  total limit offset "
     "  error { code message } } }"
 )
@@ -301,28 +358,59 @@ GET_ALERT_MIRROR_QUERY = (
 GET_INCIDENT_MIRROR_QUERY = (
     "query GetIncidents($incidentIds: [ID!], $from: Time, $limit: Int, $offset: Int) { "
     " getIncidents(incidentIds: $incidentIds, from: $from, limit: $limit, offset: $offset) { "
-    "  incidents { id status severity verdict verdictReasoning lastUpdated "
-    "   comments { text addedBy addedAt } } "
+    "  incidents { id userStatus investigationStatus severity verdict verdictReasoning lastUpdated "
+    "   comments { text addedBy addedAt } "
+    "   alerts { alertId name createdAt } } "
     "  total limit offset "
     "  error { code message } } }"
 )
 
 GET_INCIDENTS_QUERY = (
-    "query GetIncidents($incidentNames: [String!], $incidentIds: [ID!], $severities: [IncidentSeverity!], "
-    "$statuses: [IncidentStatusPublic!], $verdicts: [IncidentVerdictPublic!], "
-    "$from: Time, $updatedFrom: Time, $updatedTo: Time, $limit: Int, $offset: Int) { "
-    " getIncidents(incidentNames: $incidentNames, incidentIds: $incidentIds, severities: $severities, "
-    "statuses: $statuses, verdicts: $verdicts, from: $from, updatedFrom: $updatedFrom, "
-    "updatedTo: $updatedTo, limit: $limit, offset: $offset) { "
-    "  incidents { id name createdBy createdAt lastUpdated severity status dataSources verdict verdictReasoning "
+    "query GetIncidents($incidentNames: [String!], $nameContains: String, $incidentIds: [ID!], "
+    "$vegaIncidentIds: [String!], $severities: [IncidentSeverity!], "
+    "$investigationStatuses: [IncidentInvestigationStatusPublic!], $userStatuses: [IncidentUserStatusPublic!], "
+    "$verdicts: [IncidentVerdictPublic!], $assets: [String!], $from: Time, $to: Time, "
+    "$updatedFrom: Time, $updatedTo: Time, $sortBy: IncidentSortFieldPublic, $sortOrder: SortOrderPublic, "
+    "$limit: Int, $offset: Int) { "
+    " getIncidents(incidentNames: $incidentNames, nameContains: $nameContains, incidentIds: $incidentIds, "
+    "vegaIncidentIds: $vegaIncidentIds, severities: $severities, investigationStatuses: $investigationStatuses, "
+    "userStatuses: $userStatuses, verdicts: $verdicts, assets: $assets, from: $from, to: $to, "
+    "updatedFrom: $updatedFrom, updatedTo: $updatedTo, sortBy: $sortBy, sortOrder: $sortOrder, "
+    "limit: $limit, offset: $offset) { "
+    "  incidents { id vegaUniqueIncidentId name createdBy createdAt lastUpdated severity "
+    "   investigationStatus userStatus dataSources verdict verdictReasoning "
     "   assignee { userId displayName email } "
     "   assignees { userId displayName email } "
     "   comments { text addedBy addedAt } "
-    "   incidentSummary incidentFindings assets observables alertsCount "
+    "   incidentSummary incidentFindings assets typedAssets { value type } observables alertsCount "
     "   alerts { alertId name createdAt } "
     "   recommendedActions { name description actionKey targetParams } "
     "   investigationPlan { stepName stepConclusion cells { cellName query queryId } } "
-    "   link } "
+    "   labels { id categoryId name color usageCount } "
+    "   skills { id name version } "
+    "   link href } "
+    "  total limit offset "
+    "  error { code message } } }"
+)
+
+GET_ALERT_IDS_QUERY = (
+    "query GetAlertIds($alertSeverities: [AlertSeverity!], $statuses: [AlertStatus!], "
+    "$alertVerdicts: [AlertVerdict!], $hasRelatedIncidents: Boolean, $from: Time, $to: Time, "
+    "$limit: Int, $offset: Int) { "
+    " getAlerts(alertSeverities: $alertSeverities, statuses: $statuses, alertVerdicts: $alertVerdicts, "
+    "hasRelatedIncidents: $hasRelatedIncidents, from: $from, to: $to, limit: $limit, offset: $offset) { "
+    "  alerts { id } "
+    "  total limit offset "
+    "  error { code message } } }"
+)
+
+GET_INCIDENT_IDS_QUERY = (
+    "query GetIncidentIds($severities: [IncidentSeverity!], "
+    "$investigationStatuses: [IncidentInvestigationStatusPublic!], $userStatuses: [IncidentUserStatusPublic!], "
+    "$verdicts: [IncidentVerdictPublic!], $from: Time, $to: Time, $limit: Int, $offset: Int) { "
+    " getIncidents(severities: $severities, investigationStatuses: $investigationStatuses, "
+    "userStatuses: $userStatuses, verdicts: $verdicts, from: $from, to: $to, limit: $limit, offset: $offset) { "
+    "  incidents { id } "
     "  total limit offset "
     "  error { code message } } }"
 )
@@ -356,7 +444,7 @@ UPDATE_ALERTS_MUTATION = (
 UPDATE_INCIDENTS_MUTATION = (
     "mutation UpdateIncidents($input: UpdateIncidentsInput!) { "
     " updateIncidents(input: $input) { "
-    "  incidents { incidentId incidentName status "
+    "  incidents { incidentId incidentName investigationStatus userStatus "
     "   assignee { userId displayName email } "
     "   assignees { userId displayName email } "
     "   verdict verdictReasoning updatedAt } "
@@ -364,7 +452,7 @@ UPDATE_INCIDENTS_MUTATION = (
 )
 
 SET_DETECTIONS_STATE_MUTATION = (
-    "mutation SetDetectionsState($input: SetDetectionsStateInput!) { " " setDetectionsState(input: $input) { " "  ids } }"
+    "mutation SetDetectionsState($input: SetDetectionsStateInput!) {  setDetectionsState(input: $input) {   ids } }"
 )
 
 UPDATE_DETECTIONS_MUTATION = (
@@ -380,10 +468,13 @@ UPDATE_DETECTIONS_MUTATION = (
 )
 
 GET_ALERTS_EVENTS_QUERY = (
-    "query GetAlertsEvents($alertId: ID!, $limit: Int, $offset: Int) { "
-    " getAlertsEvents(alertId: $alertId, limit: $limit, offset: $offset) { "
+    "query GetAlertsEvents($alertId: ID, $alertIds: [ID!], $limit: Int, $offset: Int) { "
+    " getAlertsEvents(alertId: $alertId, alertIds: $alertIds, limit: $limit, offset: $offset) { "
     "  total limit offset results "
-    "  error { code message } } }"
+    "  error { code message } "
+    "  alerts { "
+    "   alertId total results "
+    "   error { code message } } } }"
 )
 # ? ---------------------------- GRAPHQL QUERIES --------------------------------------
 
@@ -499,8 +590,16 @@ def filter_alert_statuses(values: list[str] | None) -> list[str] | None:
 
 
 def filter_incident_statuses(values: list[str] | None) -> list[str] | None:
-    """Validate incident status filters and return Vega API status values."""
+    """Validate incident user-status filters and return Vega API userStatus values."""
     return _filter_fetch_values(values, VALID_INCIDENT_STATUSES, INCIDENT_STATUS_DISPLAY_TO_API)
+
+
+def filter_incident_investigation_statuses(values: list[str] | None) -> list[str] | None:
+    """Validate incident investigation-status filters and return Vega API values.
+
+    An empty selection returns None so the fetch omits the filter and Vega returns every status.
+    """
+    return _filter_fetch_values(values, VALID_INCIDENT_INVESTIGATION_STATUSES, INCIDENT_INVESTIGATION_STATUS_DISPLAY_TO_API)
 
 
 def filter_alert_severities(values: list[str] | None) -> list[str] | None:
@@ -572,21 +671,68 @@ def _is_retryable_http_error(exc: Exception) -> bool:
     return any(marker in message for marker in _CONNECTION_ERROR_MARKERS)
 
 
+def _text_indicates_rate_limit(value: Any) -> bool:
+    """Return True when text describes an API rate-limit response."""
+    if not isinstance(value, str) or not value.strip():
+        return False
+    compact = "".join(ch for ch in value.lower() if ch.isalnum())
+    return "ratelimit" in compact or "toomanyrequest" in compact
+
+
+def _api_error_indicates_rate_limit(error: Any) -> bool:
+    """Return True when an API error object or message is a rate limit."""
+    if isinstance(error, str):
+        return _text_indicates_rate_limit(error)
+    if not isinstance(error, dict):
+        return False
+    if _text_indicates_rate_limit(error.get("message")) or _text_indicates_rate_limit(error.get("code")):
+        return True
+
+    extensions = error.get("extensions")
+    if not isinstance(extensions, dict):
+        return False
+    return (
+        extensions.get("error_code_name") == "REQUEST_RATE_LIMITED"
+        or extensions.get("code") == "TooManyRequests"
+        or _text_indicates_rate_limit(extensions.get("error_code_name"))
+        or _text_indicates_rate_limit(extensions.get("code"))
+    )
+
+
 def _is_graphql_rate_limited(errors: Any) -> bool:
     """Return True when GraphQL errors indicate rate limiting."""
+    if isinstance(errors, dict):
+        return _api_error_indicates_rate_limit(errors)
     if not isinstance(errors, list):
         return False
+    return any(_api_error_indicates_rate_limit(err) for err in errors)
 
-    for err in errors:
-        if not isinstance(err, dict):
+
+def _payload_has_rate_limit_error(node: Any) -> bool:
+    """Return True when a GraphQL data payload contains a rate-limit error object."""
+    if isinstance(node, list):
+        return any(_payload_has_rate_limit_error(item) for item in node)
+    if not isinstance(node, dict):
+        return False
+    if _api_error_indicates_rate_limit(node.get("error")) or _is_graphql_rate_limited(node.get("errors")):
+        return True
+    for key, value in node.items():
+        if key in {"error", "errors", "results"}:
             continue
-        extensions = err.get("extensions") or {}
-        error_code_name = extensions.get("error_code_name")
-        code = extensions.get("code")
-        if error_code_name == "REQUEST_RATE_LIMITED" or code == "TooManyRequests":
+        if isinstance(value, dict | list) and _payload_has_rate_limit_error(value):
             return True
-
     return False
+
+
+def _graphql_response_is_rate_limited(response: Any) -> bool:
+    """Return True when an HTTP 200 GraphQL body reports a rate limit."""
+    if not isinstance(response, dict):
+        return _text_indicates_rate_limit(response)
+    if _text_indicates_rate_limit(response.get("message")) or _api_error_indicates_rate_limit(response.get("error")):
+        return True
+    if _is_graphql_rate_limited(response.get("errors")):
+        return True
+    return _payload_has_rate_limit_error(response.get("data"))
 
 
 def _is_connection_or_url_error(exc: Exception) -> bool:
@@ -612,6 +758,7 @@ def _build_alerts_query_variables(
     verdicts: list[str] | None = None,
     has_related_incidents: bool | None = None,
     from_time: str | None = None,
+    to_time: str | None = None,
     updated_from: str | None = None,
     updated_to: str | None = None,
     alert_ids: list[str] | None = None,
@@ -632,6 +779,8 @@ def _build_alerts_query_variables(
         variables["hasRelatedIncidents"] = has_related_incidents
     if from_time:
         variables["from"] = from_time
+    if to_time:
+        variables["to"] = to_time
     if updated_from:
         variables["updatedFrom"] = updated_from
     if updated_to:
@@ -645,26 +794,35 @@ def _build_incidents_query_variables(
     *,
     severities: list[str] | None = None,
     statuses: list[str] | None = None,
+    investigation_statuses: list[str] | None = None,
     verdicts: list[str] | None = None,
     from_time: str | None = None,
+    to_time: str | None = None,
     updated_from: str | None = None,
     updated_to: str | None = None,
     incident_ids: list[str] | None = None,
     limit: int | None = None,
     offset: int = 0,
 ) -> dict[str, Any]:
-    """Build GraphQL variables for the getIncidents query."""
+    """Build GraphQL variables for the getIncidents query.
+
+    Empty user-status and investigation-status filters are omitted so Vega returns all values.
+    """
     variables: dict[str, Any] = {"offset": offset}
     if limit is not None:
         variables["limit"] = limit
     if severities:
         variables["severities"] = severities
     if statuses:
-        variables["statuses"] = statuses
+        variables["userStatuses"] = statuses
+    if investigation_statuses:
+        variables["investigationStatuses"] = investigation_statuses
     if verdicts:
         variables["verdicts"] = verdicts
     if from_time:
         variables["from"] = from_time
+    if to_time:
+        variables["to"] = to_time
     if updated_from:
         variables["updatedFrom"] = updated_from
     if updated_to:
@@ -672,6 +830,21 @@ def _build_incidents_query_variables(
     if incident_ids:
         variables["incidentIds"] = incident_ids
     return variables
+
+
+def _normalize_alert_event_ids(alert_id: str | None = None, alert_ids: list[str] | None = None) -> list[str]:
+    """Return unique alert IDs for getAlertsEvents, capped at MAX_ALERT_EVENTS_IDS."""
+    collected: list[str] = []
+    if alert_ids:
+        collected.extend(str(item).strip() for item in alert_ids if str(item).strip())
+    if alert_id is not None and str(alert_id).strip():
+        collected.append(str(alert_id).strip())
+    unique_ids = list(dict.fromkeys(collected))
+    if not unique_ids:
+        raise DemistoException("At least one alert ID is required to fetch alert events.")
+    if len(unique_ids) > MAX_ALERT_EVENTS_IDS:
+        raise DemistoException(f"A maximum of {MAX_ALERT_EVENTS_IDS} alert IDs can be requested per getAlertsEvents call.")
+    return unique_ids
 
 
 def _validate_test_connection_roles(get_access_key: dict[str, Any]) -> None:
@@ -777,24 +950,25 @@ class Client(BaseClient):
 
     def _graphql_request(self, query: str, variables: dict | None = None) -> dict:
         """Execute a GraphQL query against the Vega API."""
-        last_rate_limit_errors: list[Any] | None = None
+        last_rate_limit_detail: Any = None
 
         for attempt in range(RATE_LIMIT_MAX_RETRIES):
             response = self._post_graphql_query(query, variables)
-            errors = response.get("errors")
-            if not errors:
-                self._reset_rate_limit_wait()
-                return response
+            if _graphql_response_is_rate_limited(response):
+                last_rate_limit_detail = response.get("errors") or response.get("data") or response.get("message")
+                if attempt < RATE_LIMIT_MAX_RETRIES - 1:
+                    self._sleep_before_rate_limit_retry("GraphQL REQUEST_RATE_LIMITED", attempt)
+                continue
 
-            if not _is_graphql_rate_limited(errors):
+            errors = response.get("errors")
+            if errors:
                 raise DemistoException(f"GraphQL error: {errors}")
 
-            last_rate_limit_errors = errors
-            if attempt < RATE_LIMIT_MAX_RETRIES - 1:
-                self._sleep_before_rate_limit_retry("GraphQL REQUEST_RATE_LIMITED", attempt)
+            self._reset_rate_limit_wait()
+            return response
 
         raise DemistoException(
-            f"API rate limit exceeded after maximum retries. GraphQL error: {last_rate_limit_errors}. "
+            f"API rate limit exceeded after maximum retries. GraphQL error: {last_rate_limit_detail}. "
             f"Next wait interval would be {self._rate_limit_wait_seconds}s."
         )
 
@@ -834,7 +1008,7 @@ class Client(BaseClient):
 
         session_jwt: str = login_res.get("session_jwt", "") if login_res else ""
         if not session_jwt:
-            raise ValueError("Authentication failed: no session token received. " "Please verify the Access Key and Base URL.")
+            raise ValueError("Authentication failed: no session token received. Please verify the Access Key and Base URL.")
         return session_jwt
 
     def _query_access_key_for_test_connection(self, session_jwt: str) -> dict:
@@ -927,6 +1101,7 @@ class Client(BaseClient):
         self,
         severities: list[str] | None = None,
         statuses: list[str] | None = None,
+        investigation_statuses: list[str] | None = None,
         verdicts: list[str] | None = None,
         from_time: str | None = None,
         updated_from: str | None = None,
@@ -939,6 +1114,7 @@ class Client(BaseClient):
         variables = _build_incidents_query_variables(
             severities=severities,
             statuses=statuses,
+            investigation_statuses=investigation_statuses,
             verdicts=verdicts,
             from_time=from_time,
             updated_from=updated_from,
@@ -987,6 +1163,60 @@ class Client(BaseClient):
         get_incidents = (response.get("data") or {}).get("getIncidents") or {}
         incidents = get_incidents.get("incidents") or []
         return incidents[0] if incidents else {}
+
+    def get_alert_ids(
+        self,
+        severities: list[str] | None = None,
+        statuses: list[str] | None = None,
+        verdicts: list[str] | None = None,
+        has_related_incidents: bool | None = None,
+        from_time: str | None = None,
+        to_time: str | None = None,
+        limit: int | None = None,
+        offset: int = 0,
+    ) -> dict:
+        """Fetch Vega alert UUIDs only."""
+        variables = _build_alerts_query_variables(
+            severities=severities,
+            statuses=statuses,
+            verdicts=verdicts,
+            has_related_incidents=has_related_incidents,
+            from_time=from_time,
+            to_time=to_time,
+            limit=limit,
+            offset=offset,
+        )
+        response = self._graphql_request(GET_ALERT_IDS_QUERY, variables)
+        raw_data = response.get("data")
+        data: dict[str, Any] = raw_data if isinstance(raw_data, dict) else {}
+        return data.get("getAlerts") or {}
+
+    def get_incident_ids(
+        self,
+        severities: list[str] | None = None,
+        statuses: list[str] | None = None,
+        investigation_statuses: list[str] | None = None,
+        verdicts: list[str] | None = None,
+        from_time: str | None = None,
+        to_time: str | None = None,
+        limit: int | None = None,
+        offset: int = 0,
+    ) -> dict:
+        """Fetch Vega incident UUIDs only."""
+        variables = _build_incidents_query_variables(
+            severities=severities,
+            statuses=statuses,
+            investigation_statuses=investigation_statuses,
+            verdicts=verdicts,
+            from_time=from_time,
+            to_time=to_time,
+            limit=limit,
+            offset=offset,
+        )
+        response = self._graphql_request(GET_INCIDENT_IDS_QUERY, variables)
+        raw_data = response.get("data")
+        data: dict[str, Any] = raw_data if isinstance(raw_data, dict) else {}
+        return data.get("getIncidents") or {}
 
     def update_alerts(self, update_input: dict[str, Any]) -> dict:
         """Update one or more Vega alerts."""
@@ -1040,24 +1270,33 @@ class Client(BaseClient):
         result = data.get("getIncidentTimeline") or {}
         return result if isinstance(result, dict) else {}
 
-    def get_alert_events(self, alert_id: str, limit: int | None = None, offset: int = 0) -> dict:
-        """Fetch aggregated alert events for a Vega alert.
+    def get_alert_events(
+        self,
+        alert_id: str | None = None,
+        limit: int | None = None,
+        offset: int = 0,
+        alert_ids: list[str] | None = None,
+    ) -> dict:
+        """Fetch aggregated alert events for one or more Vega alerts.
 
         Args:
-            alert_id: Vega alert ID.
+            alert_id: Single Vega alert ID. Combined with alert_ids when both are set.
             limit: Maximum number of events per request.
-            offset: Pagination offset.
+            offset: Pagination offset applied to the request.
+            alert_ids: Vega alert IDs. At most MAX_ALERT_EVENTS_IDS (10) IDs are accepted.
 
         Returns:
-            The getAlertsEvents response data.
+            The getAlertsEvents response data, including per-alert results under alerts.
         """
-        variables: dict[str, Any] = {"alertId": alert_id, "offset": offset}
+        ids = _normalize_alert_event_ids(alert_id, alert_ids)
+        variables: dict[str, Any] = {"alertIds": ids, "offset": offset}
         if limit is not None:
             variables["limit"] = limit
 
         response = self._graphql_request(GET_ALERTS_EVENTS_QUERY, variables)
         data = response.get("data") or {}
-        return data.get("getAlertsEvents") or {}
+        result = data.get("getAlertsEvents") or {}
+        return result if isinstance(result, dict) else {}
 
     def set_detections_state(self, detection_ids: list[str], state: str) -> dict:
         """Set the state for one or more Vega detections."""
@@ -1092,8 +1331,57 @@ def _event_has_bad_alert_events_shape(event: dict) -> bool:
 
 
 def _events_have_bad_alert_events_shape(events: list[dict]) -> bool:
-    """Return True when getAlertsEvents results contain vendor raw rows instead of alert events."""
+    """Return True when getAlertsEvents results contain vendor raw rows identified by cid/eid."""
     return any(_event_has_bad_alert_events_shape(event) for event in events)
+
+
+def _format_vendor_alert_event_timestamp(value: Any) -> str:
+    """Format a vendor alert-event timestamp for the Timestamp column."""
+    if isinstance(value, bool) or value is None:
+        return ""
+    if isinstance(value, int | float):
+        numeric = float(value)
+    else:
+        text = str(value).strip()
+        if not text:
+            return ""
+        try:
+            numeric = float(text)
+        except ValueError:
+            return text
+    if abs(numeric) >= 1_000_000_000_000:
+        numeric = numeric / 1000.0
+    try:
+        parsed = datetime.fromtimestamp(numeric, tz=UTC)
+    except (OverflowError, OSError, ValueError):
+        return str(value).strip()
+    return parsed.strftime("%m/%d/%y %H:%M:%S")
+
+
+def _format_vendor_alert_event_source(value: Any) -> str:
+    """Format SourceVendors for the Source column."""
+    if value is None:
+        return ""
+    if isinstance(value, list):
+        return ", ".join(str(item).strip() for item in value if str(item).strip())
+    return str(value).strip()
+
+
+def _vendor_alert_event_log(event: dict[str, Any]) -> str:
+    """Serialize every vendor-row field except the Timestamp and Source columns."""
+    log_fields = {key: value for key, value in event.items() if key not in VENDOR_ALERT_EVENT_PROMOTED_KEYS}
+    return json.dumps(log_fields, ensure_ascii=False, default=str, separators=(",", ":"))
+
+
+def _reshape_vendor_raw_alert_event(event: dict[str, Any]) -> dict[str, Any]:
+    """Map a cid/eid vendor row to Timestamp, Source, and Log columns."""
+    if not _event_has_bad_alert_events_shape(event):
+        return event
+    return {
+        VENDOR_ALERT_EVENT_TIMESTAMP_COLUMN: _format_vendor_alert_event_timestamp(event.get("timestamp")),
+        VENDOR_ALERT_EVENT_SOURCE_COLUMN: _format_vendor_alert_event_source(event.get("SourceVendors")),
+        VENDOR_ALERT_EVENT_LOG_COLUMN: _vendor_alert_event_log(event),
+    }
 
 
 def _parse_alert_events_results(results: Any) -> list[dict]:
@@ -1175,7 +1463,7 @@ def _merge_alert_event_object_lists(
     *,
     prefer_existing: bool = True,
 ) -> list[Any]:
-    """Merge list values by index so Splunk multivalue object fields combine cleanly."""
+    """Merge list values by index so dotted-array multivalue object fields combine cleanly."""
     length = max(len(left), len(right))
     merged: list[Any] = []
     for index in range(length):
@@ -1192,9 +1480,9 @@ def _merge_alert_event_object_lists(
     return merged
 
 
-def _parse_splunk_style_field_path(key: str) -> list[tuple[str, bool]]:
+def _parse_dotted_array_field_path(key: str) -> list[tuple[str, bool]]:
     """
-    Parse Splunk-style field names into path segments.
+    Parse dotted-array field names into path segments.
 
     Examples:
         vendorInformation.provider -> [("vendorInformation", False), ("provider", False)]
@@ -1213,12 +1501,12 @@ def _parse_splunk_style_field_path(key: str) -> list[tuple[str, bool]]:
     return segments
 
 
-def _assign_splunk_style_segments(
+def _assign_dotted_array_segments(
     current: dict[str, Any],
     segments: list[tuple[str, bool]],
     value: Any,
 ) -> None:
-    """Assign a value into current using parsed Splunk path segments."""
+    """Assign a value into current using parsed dotted-array path segments."""
     if not segments:
         return
 
@@ -1249,7 +1537,7 @@ def _assign_splunk_style_segments(
                 if not _is_empty_alert_event_field_value(arr[item_index]):
                     continue
                 arr[item_index] = {}
-            _assign_splunk_style_segments(arr[item_index], rest, item_value)
+            _assign_dotted_array_segments(arr[item_index], rest, item_value)
         return
 
     if is_last:
@@ -1266,19 +1554,19 @@ def _assign_splunk_style_segments(
             return
         nested = {}
         current[name] = nested
-    _assign_splunk_style_segments(nested, rest, value)
+    _assign_dotted_array_segments(nested, rest, value)
 
 
-def _assign_splunk_style_path(root: dict[str, Any], key: str, value: Any) -> None:
-    """Assign a value into root using Splunk dotted / {}-array field naming."""
-    segments = _parse_splunk_style_field_path(key)
+def _assign_dotted_array_path(root: dict[str, Any], key: str, value: Any) -> None:
+    """Assign a value into root using dotted / {}-array field naming."""
+    segments = _parse_dotted_array_field_path(key)
     if segments:
-        _assign_splunk_style_segments(root, segments, value)
+        _assign_dotted_array_segments(root, segments, value)
 
 
 def _expand_flat_raw_fields(raw_fields: dict[str, Any]) -> dict[str, Any]:
     """
-    Expand flat Splunk-style keys into nested objects/arrays.
+    Expand flat dotted-array keys into nested objects/arrays.
 
     Keys without '.' or '{}' are copied as-is. Already-nested values are preserved.
     """
@@ -1288,7 +1576,7 @@ def _expand_flat_raw_fields(raw_fields: dict[str, Any]) -> dict[str, Any]:
         if key_name in ALERT_EVENT_JSON_TRUNCATE_KEYS:
             continue
         if "{}" in key_name or "." in key_name:
-            _assign_splunk_style_path(expanded, key_name, value)
+            _assign_dotted_array_path(expanded, key_name, value)
             continue
         if key_name not in expanded or _is_empty_alert_event_field_value(expanded.get(key_name)):
             expanded[key_name] = value
@@ -1344,7 +1632,7 @@ def _enrich_alert_events(events: list[dict]) -> list[dict]:
     return [_enrich_alert_event(event) for event in events]
 
 
-def _format_alert_events_cell_value(value: Any) -> str:
+def _format_alert_events_cell_value(value: Any, *, max_length: int | None = ALERT_EVENT_MAX_CELL_LENGTH) -> str:
     """Format a single alert-event table cell for markdown display."""
     if value is None:
         return "—"
@@ -1354,8 +1642,8 @@ def _format_alert_events_cell_value(value: Any) -> str:
         text = str(value).strip()
     if not text:
         return "—"
-    if len(text) > ALERT_EVENT_MAX_CELL_LENGTH:
-        return f"{text[: ALERT_EVENT_MAX_CELL_LENGTH - 3]}..."
+    if max_length is not None and len(text) > max_length:
+        return f"{text[: max_length - 3]}..."
     return text
 
 
@@ -1400,6 +1688,9 @@ def _normalize_alert_event_for_display(event: dict) -> dict[str, Any]:
     flattened: dict[str, Any] = {}
     for key, value in event.items():
         key_name = str(key)
+        if key_name == VENDOR_ALERT_EVENT_LOG_COLUMN:
+            flattened[key_name] = value
+            continue
         parsed_value = _try_parse_json_value(value)
 
         if key_name in ALERT_EVENT_JSON_TRUNCATE_KEYS:
@@ -1429,7 +1720,7 @@ def _collect_alert_event_columns(normalized_events: list[dict[str, Any]]) -> lis
     discovered: set[str] = set()
     for event in normalized_events:
         for key, value in event.items():
-            if _format_alert_events_cell_value(value) != "—":
+            if key in VENDOR_ALERT_EVENT_COLUMNS or _format_alert_events_cell_value(value) != "—":
                 discovered.add(key)
 
     if not discovered:
@@ -1448,7 +1739,13 @@ def _alert_events_table_rows(events: list[dict]) -> tuple[list[str], list[dict[s
 
     rows: list[dict[str, str]] = []
     for normalized_event in normalized_events:
-        row = {header: _format_alert_events_cell_value(normalized_event.get(header)) for header in headers}
+        row = {
+            header: _format_alert_events_cell_value(
+                normalized_event.get(header),
+                max_length=None if header == VENDOR_ALERT_EVENT_LOG_COLUMN else ALERT_EVENT_MAX_CELL_LENGTH,
+            )
+            for header in headers
+        }
         rows.append(row)
     return headers, rows
 
@@ -1463,7 +1760,8 @@ def _format_alert_events_markdown(
     if not events:
         return f"### Alert Events ({total})\n\nNo alert events are available for this alert."
 
-    headers, rows = _alert_events_table_rows(events)
+    display_events = [_reshape_vendor_raw_alert_event(event) for event in events]
+    headers, rows = _alert_events_table_rows(display_events)
     if not headers:
         return f"### Alert Events ({total})\n\nNo displayable alert event fields were found in the Vega response."
 
@@ -1476,7 +1774,7 @@ def _format_alert_events_markdown(
     if page_size and total > page_size:
         current_page = (offset // page_size) + 1
         total_pages = max(1, math.ceil(total / page_size))
-        table_md += f"\n\nPage {current_page} of {total_pages} " f"(showing {len(events)} of {total} events)"
+        table_md += f"\n\nPage {current_page} of {total_pages} (showing {len(events)} of {total} events)"
     return table_md
 
 
@@ -1510,6 +1808,39 @@ def build_alert_events_custom_fields(
     return custom_fields
 
 
+def _select_alert_events_payload(response: dict[str, Any], alert_id: str) -> dict[str, Any]:
+    """Return the per-alert getAlertsEvents entry when the response includes alerts."""
+    alerts = response.get("alerts")
+    if not isinstance(alerts, list) or not alerts:
+        return response
+    wanted = str(alert_id).strip()
+    for item in alerts:
+        if isinstance(item, dict) and str(item.get("alertId") or "").strip() == wanted:
+            return item
+    return {"alertId": wanted, "total": 0, "results": []}
+
+
+def _raise_alert_events_api_error(payload: dict[str, Any]) -> None:
+    """Raise when a getAlertsEvents payload reports an API error message."""
+    api_error = payload.get("error")
+    if isinstance(api_error, dict) and api_error.get("message"):
+        raise DemistoException(f"Vega API error: {api_error.get('message')}")
+
+
+def _alert_events_page_from_payload(payload: dict[str, Any]) -> tuple[list[dict], int]:
+    """Parse one getAlertsEvents payload into enriched events and a total count."""
+    total_raw = payload.get("total")
+    try:
+        total = int(total_raw) if total_raw is not None else 0
+    except (TypeError, ValueError):
+        total = 0
+
+    events = _enrich_alert_events(_parse_alert_events_results(payload.get("results")))
+    if total == 0 and events:
+        total = len(events)
+    return events, total
+
+
 def fetch_alert_events_page(
     client: Client,
     alert_id: str,
@@ -1518,20 +1849,11 @@ def fetch_alert_events_page(
 ) -> tuple[list[dict], int]:
     """Fetch a single page of alert events from the Vega API."""
     response = client.get_alert_events(alert_id, limit=limit, offset=offset)
-    api_error = response.get("error")
-    if isinstance(api_error, dict) and api_error.get("message"):
-        raise DemistoException(f"Vega API error: {api_error.get('message')}")
-
-    total_raw = response.get("total")
-    try:
-        total = int(total_raw) if total_raw is not None else 0
-    except (TypeError, ValueError):
-        total = 0
-
-    events = _enrich_alert_events(_parse_alert_events_results(response.get("results")))
-    if total == 0 and events:
-        total = len(events)
-    return events, total
+    if not isinstance(response, dict):
+        response = {}
+    payload = _select_alert_events_payload(response, alert_id)
+    _raise_alert_events_api_error(payload)
+    return _alert_events_page_from_payload(payload)
 
 
 def fetch_all_alert_events(
@@ -1546,8 +1868,6 @@ def fetch_all_alert_events(
 
     while True:
         page_events, page_total = fetch_alert_events_page(client, alert_id, limit=page_limit, offset=offset)
-        if page_events and _events_have_bad_alert_events_shape(page_events):
-            return [], 0
         if page_total > 0:
             total = page_total
         if not page_events:
@@ -1565,22 +1885,128 @@ def fetch_all_alert_events(
     return events, total
 
 
+def _advance_alert_events_state(
+    state: dict[str, Any],
+    page_events: list[dict],
+    page_total: int,
+    page_limit: int,
+) -> None:
+    """Merge one page into an in-progress alert-events fetch state."""
+    if page_total > 0:
+        state["total"] = page_total
+    if not page_events:
+        state["done"] = True
+        return
+
+    state["events"].extend(page_events)
+    offset = int(state["offset"])
+    total = int(state["total"] or 0)
+    if total and offset + len(page_events) >= total:
+        state["done"] = True
+        return
+    if len(page_events) < page_limit:
+        state["done"] = True
+        return
+    state["offset"] = offset + len(page_events)
+
+
+def fetch_all_alert_events_by_ids(
+    client: Client,
+    alert_ids: list[str],
+    page_limit: int = DEFAULT_ALERT_EVENTS_PAGE_SIZE,
+) -> dict[str, tuple[list[dict], int]]:
+    """Fetch all alert events for up to 10 alert IDs per getAlertsEvents request."""
+    ids = _normalize_alert_event_ids(alert_ids=alert_ids)
+    states: dict[str, dict[str, Any]] = {alert_id: {"events": [], "offset": 0, "total": 0, "done": False} for alert_id in ids}
+
+    while True:
+        active = [alert_id for alert_id, state in states.items() if not state["done"]]
+        if not active:
+            break
+
+        offset_groups: dict[int, list[str]] = {}
+        for alert_id in active:
+            offset_groups.setdefault(int(states[alert_id]["offset"]), []).append(alert_id)
+
+        offset = min(offset_groups)
+        group = offset_groups[offset][:MAX_ALERT_EVENTS_IDS]
+        response = client.get_alert_events(alert_ids=group, limit=page_limit, offset=offset)
+        if not isinstance(response, dict):
+            response = {}
+
+        for alert_id in group:
+            payload = _select_alert_events_payload(response, alert_id)
+            try:
+                _raise_alert_events_api_error(payload)
+            except DemistoException as exc:
+                demisto.debug(f"Vega: skipped alert events fetch for {alert_id}: {exc}")
+                states[alert_id]["events"] = []
+                states[alert_id]["total"] = 0
+                states[alert_id]["done"] = True
+                continue
+            page_events, page_total = _alert_events_page_from_payload(payload)
+            _advance_alert_events_state(states[alert_id], page_events, page_total, page_limit)
+
+    fetched: dict[str, tuple[list[dict], int]] = {}
+    for alert_id, state in states.items():
+        events = state["events"]
+        total = int(state["total"] or 0)
+        if total == 0:
+            total = len(events)
+        fetched[alert_id] = (events, total)
+    return fetched
+
+
 def _fetch_alert_events_for_ingest(client: Client, alert_id: str) -> tuple[list[dict], dict[str, Any]]:
     """Fetch alert events for a Vega alert during incident ingest."""
     alert_id = str(alert_id).strip()
     try:
         all_events, total = fetch_all_alert_events(client, alert_id, page_limit=DEFAULT_ALERT_EVENTS_PAGE_SIZE)
-        events_markdown, offset, _, has_alert_events = _resolve_alert_events_page(
-            all_events,
-            total,
-            offset=0,
-            page_limit=DEFAULT_ALERT_EVENTS_PAGE_SIZE,
-        )
-        custom_fields = build_alert_events_custom_fields(alert_id, events_markdown, total, offset)
-        return (all_events if has_alert_events else []), custom_fields
+        return _alert_events_ingest_result(alert_id, all_events, total)
     except Exception as exc:
         demisto.debug(f"Vega: skipped alert events fetch for {alert_id}: {exc}")
         return [], build_alert_events_custom_fields(alert_id, ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN, 0, 0)
+
+
+def _alert_events_ingest_result(alert_id: str, all_events: list[dict], total: int) -> tuple[list[dict], dict[str, Any]]:
+    """Build the ingest event list and custom fields for one alert."""
+    events_markdown, offset, _, has_alert_events = _resolve_alert_events_page(
+        all_events,
+        total,
+        offset=0,
+        page_limit=DEFAULT_ALERT_EVENTS_PAGE_SIZE,
+    )
+    custom_fields = build_alert_events_custom_fields(alert_id, events_markdown, total, offset)
+    return (all_events if has_alert_events else []), custom_fields
+
+
+def _fetch_alert_events_for_ids(client: Client, alert_ids: list[str]) -> dict[str, tuple[list[dict], dict[str, Any]]]:
+    """Fetch alert events for ingest in batches of at most 10 alert IDs."""
+    results: dict[str, tuple[list[dict], dict[str, Any]]] = {}
+    unique_ids = list(dict.fromkeys(str(alert_id).strip() for alert_id in alert_ids if str(alert_id).strip()))
+    for start in range(0, len(unique_ids), MAX_ALERT_EVENTS_IDS):
+        chunk = unique_ids[start : start + MAX_ALERT_EVENTS_IDS]
+        try:
+            fetched = fetch_all_alert_events_by_ids(client, chunk, page_limit=DEFAULT_ALERT_EVENTS_PAGE_SIZE)
+        except Exception as exc:
+            demisto.debug(f"Vega: skipped alert events fetch for {', '.join(chunk)}: {exc}")
+            for alert_id in chunk:
+                results[alert_id] = (
+                    [],
+                    build_alert_events_custom_fields(alert_id, ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN, 0, 0),
+                )
+            continue
+        for alert_id in chunk:
+            all_events, total = fetched.get(alert_id, ([], 0))
+            try:
+                results[alert_id] = _alert_events_ingest_result(alert_id, all_events, total)
+            except Exception as exc:
+                demisto.debug(f"Vega: skipped alert events fetch for {alert_id}: {exc}")
+                results[alert_id] = (
+                    [],
+                    build_alert_events_custom_fields(alert_id, ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN, 0, 0),
+                )
+    return results
 
 
 def _collect_incident_custom_fields(incident: dict[str, Any]) -> dict[str, Any]:
@@ -1597,9 +2023,12 @@ def _collect_incident_custom_fields(incident: dict[str, Any]) -> dict[str, Any]:
         VEGA_ALERT_STATUS_FIELD,
         VEGA_ALERT_SEVERITY_FIELD,
         VEGA_INCIDENT_STATUS_FIELD,
+        VEGA_INVESTIGATION_STATUS_FIELD,
         "vegaverdict",
         "vegaverdictreasoning",
         VEGA_SEVERITY_FIELD,
+        "vegacreatedat",
+        VEGA_ALERTS_FIELD,
     ):
         if field_name not in custom_fields and incident.get(field_name) is not None:
             custom_fields[field_name] = incident.get(field_name)
@@ -1607,20 +2036,16 @@ def _collect_incident_custom_fields(incident: dict[str, Any]) -> dict[str, Any]:
 
 
 def load_current_incident() -> dict[str, Any]:
-    """Load the current investigation incident from the integration runtime context."""
-    incident: dict[str, Any] = {}
+    """Load the current investigation incident from the integration runtime context.
+
+    Fetch and other commands that are not running inside an incident have no incident
+    context. demisto.incidents() submits incidents and cannot be used to read one.
+    """
     try:
         incident = demisto.incident() or {}
-    except (TypeError, AttributeError, KeyError) as exc:
-        demisto.debug(f"Vega: demisto.incident() unavailable: {exc}")
-    if not incident.get("id"):
-        try:
-            incidents = demisto.incidents()
-            if incidents:
-                incident = incidents[0] or {}
-        except Exception as exc:
-            demisto.debug(f"Vega: demisto.incidents() failed: {exc}")
-    return incident
+    except (TypeError, AttributeError, KeyError):
+        return {}
+    return incident if isinstance(incident, dict) else {}
 
 
 def resolve_alert_id_from_incident(args: dict[str, Any], incident: dict[str, Any]) -> str | None:
@@ -1665,8 +2090,7 @@ def _resolve_alert_events_page(
     page_limit: int,
 ) -> tuple[str, int, list[dict], bool]:
     """Resolve pagination state and markdown for alert events."""
-    has_alert_events = bool(all_events) and not _events_have_bad_alert_events_shape(all_events)
-    if not has_alert_events:
+    if not all_events:
         return ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN, 0, [], False
 
     if offset >= total and total > 0:
@@ -1677,13 +2101,17 @@ def _resolve_alert_events_page(
     return events_markdown, offset, page_events, True
 
 
-def fetch_alert_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Fetch alert events for a Vega alert and return a markdown table for the layout section."""
+def fetch_alert_events_command(client: Client, args: dict[str, Any]) -> CommandResults | list[CommandResults]:
+    """Fetch alert events for up to 10 Vega alerts and return markdown tables for the layout section."""
     incident = load_current_incident()
     custom_fields = _collect_incident_custom_fields(incident)
 
-    alert_id = resolve_alert_id_from_incident(args, incident)
-    if not alert_id:
+    alert_ids = _collect_alert_ids_from_args(args)
+    if not alert_ids:
+        resolved_alert_id = resolve_alert_id_from_incident(args, incident)
+        if resolved_alert_id:
+            alert_ids = [resolved_alert_id]
+    if not alert_ids:
         incident_type = str(incident.get("type") or incident.get("Type") or "unknown")
         incident_id = incident.get("id") or "none"
         raise DemistoException(
@@ -1691,8 +2119,9 @@ def fetch_alert_events_command(client: Client, args: dict[str, Any]) -> CommandR
             f"Could not resolve alert ID from incident id={incident_id}, type={incident_type}. "
             "Open a Vega Alert investigation or pass alert_id explicitly."
         )
+    if len(alert_ids) > MAX_ALERT_EVENTS_IDS:
+        raise DemistoException(f"A maximum of {MAX_ALERT_EVENTS_IDS} alert IDs can be requested.")
 
-    alert_id = str(alert_id).strip()
     offset = arg_to_number(args.get("offset"))
     if offset is None:
         offset = arg_to_number(custom_fields.get("vegaalerteventsoffset")) or 0
@@ -1701,9 +2130,30 @@ def fetch_alert_events_command(client: Client, args: dict[str, Any]) -> CommandR
     page_limit = arg_to_number(args.get("limit")) or DEFAULT_ALERT_EVENTS_PAGE_SIZE
     page_limit = max(1, int(page_limit))
 
-    all_events, total = fetch_all_alert_events(client, alert_id, page_limit=page_limit)
-    events_markdown, offset, page_events, has_alert_events = _resolve_alert_events_page(all_events, total, offset, page_limit)
+    if len(alert_ids) == 1:
+        return _alert_events_command_for_id(client, alert_ids[0], offset, page_limit)
 
+    fetched = fetch_all_alert_events_by_ids(client, alert_ids, page_limit=page_limit)
+    return [
+        _alert_events_command_for_fetched(alert_id, fetched.get(alert_id, ([], 0)), offset, page_limit) for alert_id in alert_ids
+    ]
+
+
+def _alert_events_command_for_id(client: Client, alert_id: str, offset: int, page_limit: int) -> CommandResults:
+    """Fetch and format alert events for a single Vega alert."""
+    all_events, total = fetch_all_alert_events(client, alert_id, page_limit=page_limit)
+    return _alert_events_command_for_fetched(alert_id, (all_events, total), offset, page_limit)
+
+
+def _alert_events_command_for_fetched(
+    alert_id: str,
+    fetched: tuple[list[dict], int],
+    offset: int,
+    page_limit: int,
+) -> CommandResults:
+    """Format one alert's fetched events as a command result."""
+    all_events, total = fetched
+    events_markdown, offset, page_events, has_alert_events = _resolve_alert_events_page(all_events, total, offset, page_limit)
     persisted_fields = build_alert_events_custom_fields(alert_id, events_markdown, total, offset)
     return _alert_events_command_results(
         events_markdown,
@@ -1719,6 +2169,165 @@ def fetch_alert_events_command(client: Client, args: dict[str, Any]) -> CommandR
             "CustomFields": persisted_fields,
         },
     )
+
+
+def _single_incident_id_argument(args: dict[str, Any]) -> str | None:
+    """Return one Vega incident ID, or None when incident_id was omitted."""
+    raw_value = args.get("incident_id")
+    if raw_value is None or not str(raw_value).strip():
+        return None
+    incident_ids = [str(item).strip() for item in argToList(raw_value) if str(item).strip()]
+    if len(incident_ids) != 1:
+        raise DemistoException("incident_id accepts a single Vega incident ID.")
+    return incident_ids[0]
+
+
+def _investigation_raw_entity(incident: dict[str, Any]) -> dict[str, Any]:
+    """Parse the raw Vega entity stored on the current investigation."""
+    raw_json = incident.get("rawJSON") or incident.get("rawJson")
+    if not raw_json:
+        return {}
+    try:
+        raw = json.loads(raw_json) if isinstance(raw_json, str) else raw_json
+    except (json.JSONDecodeError, TypeError, ValueError):
+        return {}
+    return raw if isinstance(raw, dict) else {}
+
+
+def _created_at_from_investigation(incident: dict[str, Any]) -> Any:
+    """Return the Vega created time stored on the current investigation."""
+    custom_fields = _collect_incident_custom_fields(incident)
+    created_at = custom_fields.get("vegacreatedat")
+    if created_at is not None and str(created_at).strip():
+        return created_at
+    return _investigation_raw_entity(incident).get("createdAt")
+
+
+def _related_alert_stubs_from_investigation(incident: dict[str, Any]) -> list[dict[str, Any]] | None:
+    """Return related alert references from the investigation, or None when no alert list is stored."""
+    custom_fields = _collect_incident_custom_fields(incident)
+    alerts = custom_fields.get(VEGA_ALERTS_FIELD)
+    if not isinstance(alerts, list):
+        alerts = _investigation_raw_entity(incident).get("alerts")
+    if not isinstance(alerts, list):
+        return None
+    return [alert for alert in alerts if isinstance(alert, dict) and _incident_alert_id(alert)]
+
+
+INCIDENT_ID_LOOKUP_FROM_TIME = "2024-01-01T00:00:00Z"
+
+
+def _alert_stubs_for_incident_id(client: Client, incident_id: str) -> list[dict[str, Any]]:
+    """Load the alert references stored on one Vega incident."""
+    incident = client.get_incident_by_id(incident_id, from_time=INCIDENT_ID_LOOKUP_FROM_TIME)
+    if not incident:
+        raise DemistoException(f"Vega incident '{incident_id}' was not found.")
+    alerts = incident.get("alerts")
+    if not isinstance(alerts, list):
+        return []
+    return [alert for alert in alerts if isinstance(alert, dict) and _incident_alert_id(alert)]
+
+
+def _alert_stubs_for_current_investigation(client: Client, investigation: dict[str, Any]) -> list[dict[str, Any]]:
+    """Resolve alert references from the open Vega Incident or Vega Alert investigation."""
+    entity_type = _entity_type_from_mirror_payload(investigation)
+    if entity_type == "Vega Alert":
+        alert_id = resolve_alert_id_from_incident({}, investigation)
+        if not alert_id:
+            raise DemistoException("Could not resolve the Vega alert ID from the current investigation.")
+        return [{"alertId": alert_id, "createdAt": _created_at_from_investigation(investigation)}]
+
+    if entity_type == "Vega Incident":
+        stubs = _related_alert_stubs_from_investigation(investigation)
+        if stubs is not None:
+            return stubs
+        resolved_incident_id = resolve_incident_id_from_incident({}, investigation)
+        if resolved_incident_id:
+            return _alert_stubs_for_incident_id(client, resolved_incident_id)
+        raise DemistoException("Could not resolve related alert IDs from the current Vega Incident. Pass incident_id explicitly.")
+
+    raise DemistoException(
+        "incident_id is required when the command is not run from a Vega Incident or Vega Alert investigation."
+    )
+
+
+ALERT_METADATA_RESPONSE_FIELDS = (
+    "id",
+    "vegaAlertId",
+    "detectionId",
+    "name",
+    "severity",
+    "status",
+    "verdict",
+    "createdAt",
+    "dataSources",
+    "labels",
+)
+
+
+def _select_alert_metadata_fields(alert: dict[str, Any], alert_id: str) -> dict[str, Any]:
+    """Return the ten highest-priority alert metadata fields."""
+    selected = {field: alert.get(field) for field in ALERT_METADATA_RESPONSE_FIELDS}
+    selected["id"] = selected["id"] or alert_id
+    return selected
+
+
+def _alert_metadata_api_records(client: Client, stubs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Fetch related alerts and return only the ten highest-priority metadata fields."""
+    ordered_stubs: list[dict[str, Any]] = []
+    ordered_ids: list[str] = []
+    created_at_by_id: dict[str, Any] = {}
+    for stub in stubs:
+        if not isinstance(stub, dict):
+            continue
+        alert_id = _incident_alert_id(stub)
+        if not alert_id:
+            continue
+        ordered_stubs.append(stub)
+        if alert_id not in created_at_by_id:
+            ordered_ids.append(alert_id)
+            created_at_by_id[alert_id] = stub.get("createdAt")
+    details = _fetch_incident_alerts_by_ids(client, ordered_ids, created_at_by_id) if ordered_ids else []
+    alerts_by_id = {_incident_alert_id(alert): alert for alert in details if _incident_alert_id(alert)}
+
+    records: list[dict[str, Any]] = []
+    for stub in ordered_stubs:
+        alert_id = _incident_alert_id(stub)
+        full_alert = alerts_by_id.get(alert_id)
+        records.append(_select_alert_metadata_fields(full_alert or stub, alert_id))
+    return records
+
+
+def _alert_metadata_command_results(rows: list[dict[str, Any]]) -> CommandResults:
+    """Return alert metadata as a JSON object or array without updating the incident."""
+    if not rows:
+        readable_output = "No related alert metadata was found."
+    else:
+        response: dict[str, Any] | list[dict[str, Any]] = rows[0] if len(rows) == 1 else rows
+        readable_output = json.dumps(response, indent=2, ensure_ascii=False)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Vega.AlertMetadata",
+        outputs_key_field="id",
+        outputs=rows,
+        ignore_auto_extract=True,
+    )
+
+
+def get_alert_metadata_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Return related Vega alert metadata to the War Room.
+
+    An explicit incident_id loads that Vega incident's related alerts. Without it, a Vega Incident
+    investigation uses its related alert IDs, and a Vega Alert investigation uses its own alert ID.
+    The War Room entry and context contain ten high-priority fields as direct JSON.
+    """
+    incident_id = _single_incident_id_argument(args)
+    if incident_id:
+        stubs = _alert_stubs_for_incident_id(client, incident_id)
+    else:
+        stubs = _alert_stubs_for_current_investigation(client, load_current_incident())
+    rows = _alert_metadata_api_records(client, stubs) if stubs else []
+    return _alert_metadata_command_results(rows)
 
 
 def set_detections_state_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1928,16 +2537,6 @@ def _normalize_list_items(value: Any) -> list[str]:
     return items
 
 
-def _format_bullet_list(value: Any, empty_display: str | None = None) -> Any:
-    """Format a list field as newline-separated bullet points."""
-    if value is None or not isinstance(value, list) or not value:
-        return empty_display if empty_display is not None else value
-    items = _normalize_list_items(value)
-    if not items:
-        return empty_display if empty_display is not None else value
-    return "\n".join(f"• {item}" for item in items)
-
-
 def _ensure_recommended_action_description_newline(description: Any) -> str:
     """Ensure a recommended-action description ends with a newline for XSOAR grid wrapping."""
     text = str(description or "")
@@ -1947,9 +2546,34 @@ def _ensure_recommended_action_description_newline(description: Any) -> str:
 
 
 VEGA_EMPTY_FIELD_DISPLAY = "N/A"
-VEGA_NO_ASSETS_DISPLAY = "No assets present."
-VEGA_NO_OBSERVABLES_DISPLAY = "No observables present."
 VEGA_NO_RECOMMENDED_ACTIONS_DISPLAY = "No recommended Actions found"
+
+
+def _format_typed_assets_for_grid(typed_assets: Any) -> list[dict[str, str]]:
+    """Map Vega typedAssets objects to Vega Assets grid rows."""
+    if not isinstance(typed_assets, list):
+        return []
+
+    rows: list[dict[str, str]] = []
+    for item in typed_assets:
+        if not isinstance(item, dict):
+            continue
+        asset_type = str(item.get("type") or "").strip()
+        value = str(item.get("value") or "").strip()
+        if not asset_type and not value:
+            continue
+        rows.append({"type": asset_type, "value": value})
+    return rows
+
+
+def _format_string_list_for_grid(values: Any) -> list[dict[str, str]]:
+    """Map a list of strings to single-column grid rows keyed by value."""
+    return [{"value": item} for item in _normalize_list_items(values)]
+
+
+def _format_observables_for_grid(observables: Any) -> list[dict[str, str]]:
+    """Map a list of observable strings to Vega Observables grid rows."""
+    return _format_string_list_for_grid(observables)
 
 
 def _format_recommended_actions_for_grid(actions: Any) -> Any:
@@ -2026,8 +2650,8 @@ def _get_first_mitre_value(mitre: dict, keys: tuple[str, ...]) -> Any:
     return None
 
 
-def _format_mitre_attack(mitre: Any) -> str | None:
-    """Merge MITRE tactics and techniques into a newline-separated bullet list."""
+def _format_mitre_attack(mitre: Any) -> list[str] | None:
+    """Merge MITRE tactics and techniques into a raw list of labels."""
     if not isinstance(mitre, dict):
         return None
     tactics = _get_first_mitre_value(mitre, MITRE_TACTIC_KEYS)
@@ -2035,7 +2659,7 @@ def _format_mitre_attack(mitre: Any) -> str | None:
     items = _normalize_list_items(tactics) + _normalize_list_items(techniques)
     if not items:
         return None
-    return "\n".join(f"• {item}" for item in items)
+    return items
 
 
 def _apply_vega_mitre_attack_format(raw: dict) -> None:
@@ -2053,7 +2677,7 @@ def _apply_vega_mitre_attack_format(raw: dict) -> None:
 
     mitre_attack = _format_mitre_attack(mitre_payload)
     if mitre_attack:
-        raw["vegaMitreAttack"] = mitre_attack
+        raw["vegaMitreAttack"] = _format_string_list_for_grid(mitre_attack)
 
 
 def _build_vega_alert_custom_fields(raw: dict) -> dict[str, Any]:
@@ -2064,13 +2688,16 @@ def _build_vega_alert_custom_fields(raw: dict) -> dict[str, Any]:
         custom_fields["alertid"] = str(alert_uuid).strip()
     mitre_attack = raw.get("vegaMitreAttack")
     if mitre_attack:
-        custom_fields["vegamitreattack"] = str(mitre_attack)
+        custom_fields["vegamitreattack"] = mitre_attack if isinstance(mitre_attack, list) else str(mitre_attack)
     created_at = raw.get("createdAt")
     if created_at:
         custom_fields["vegacreatedat"] = str(created_at)
     alert_event_fields = raw.get("_alertEventsCustomFields")
     if isinstance(alert_event_fields, dict):
         custom_fields.update(alert_event_fields)
+    comments_source = raw.get(VEGA_COMMENTS_SOURCE_KEY)
+    if isinstance(comments_source, list):
+        custom_fields[VEGA_COMMENTS_SOURCE_FIELD] = comments_source
     custom_fields[VEGA_NEW_COMMENT_FIELD] = VEGA_NEW_COMMENT_LAYOUT_DEFAULT
     return custom_fields
 
@@ -2307,7 +2934,7 @@ def _timeline_footer_html(event: dict) -> str:
     if not parts:
         return ""
 
-    return f"<div style='display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;'>" f"{''.join(parts)}</div>"
+    return f"<div style='display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;'>{''.join(parts)}</div>"
 
 
 def _timeline_axis_html(is_last: bool) -> str:
@@ -2381,23 +3008,35 @@ def _format_timeline_events_html(timeline_events: list[dict]) -> str:
     )
 
 
-def _build_vega_incident_custom_fields(raw: dict) -> dict[str, str]:
+def _build_vega_incident_custom_fields(raw: dict) -> dict[str, Any]:
     """Build CustomFields for Vega incidents (set directly on ingest, not via mapper)."""
-    custom_fields: dict[str, str] = {}
+    custom_fields: dict[str, Any] = {}
     # Populate vegaincidentid so outgoing mirroring and vega-update-incident can reliably
     # resolve the Vega entity without falling back to fragile rawJSON parsing.
     incident_id = _normalize_entity_id(raw)
     if incident_id:
         custom_fields["vegaincidentid"] = incident_id
+    status = raw.get("status")
+    if status is not None and str(status).strip():
+        custom_fields[VEGA_INCIDENT_STATUS_FIELD] = str(status)
+    investigation_status = raw.get("investigationStatus")
+    if investigation_status is not None and str(investigation_status).strip():
+        custom_fields[VEGA_INVESTIGATION_STATUS_FIELD] = str(investigation_status)
     created_at = raw.get("createdAt")
     if created_at:
         custom_fields["vegacreatedat"] = str(created_at)
     timeline_html = raw.get("vegaTimelineEvents")
     if timeline_html:
         custom_fields["vegatimelineevents"] = str(timeline_html)
+    comments_source = raw.get(VEGA_COMMENTS_SOURCE_KEY)
+    if isinstance(comments_source, list):
+        custom_fields[VEGA_COMMENTS_SOURCE_FIELD] = comments_source
     findings_html = raw.get("vegaIncidentFindings")
     if findings_html:
         custom_fields["vegaincidentfindings"] = str(findings_html)
+    alerts = raw.get("alerts")
+    if isinstance(alerts, list):
+        custom_fields[VEGA_ALERTS_FIELD] = alerts
     custom_fields[VEGA_NEW_COMMENT_FIELD] = VEGA_NEW_COMMENT_LAYOUT_DEFAULT
     return custom_fields
 
@@ -2447,8 +3086,8 @@ def _format_key_findings_html(findings: Any, assets: Any, observables: Any) -> s
     """Render Vega key findings as HTML (black background, numbered list, entity pills)."""
     finding_texts = _normalize_findings_list(findings)
     highlight_values = set(_normalize_list_items(assets) + _normalize_list_items(observables))
-    header = "<div style='font-size:15px;font-weight:600;margin-bottom:4px;color:#ffffff;'>" "Key findings</div>"
-    container_style = f"background:#000000;color:#ffffff;padding:16px;" f"font-family:{_VEGA_DARK_UI_FONT};"
+    header = "<div style='font-size:15px;font-weight:600;margin-bottom:4px;color:#ffffff;'>Key findings</div>"
+    container_style = f"background:#000000;color:#ffffff;padding:16px;font-family:{_VEGA_DARK_UI_FONT};"
 
     if not finding_texts:
         return (
@@ -2502,8 +3141,13 @@ def _format_raw_entity_for_xsoar(raw: dict) -> None:
     entity_type = raw.get("vegaEntityType")
     if entity_type == "Vega Alert" and raw.get("status") is not None:
         raw["status"] = _normalize_vega_status_for_display(str(raw["status"]), MIRROR_ENTITY_SUFFIX_ALERT)
-    elif entity_type == "Vega Incident" and raw.get("status") is not None:
-        raw["status"] = _normalize_vega_status_for_display(str(raw["status"]), MIRROR_ENTITY_SUFFIX_INCIDENT)
+    elif entity_type == "Vega Incident":
+        _apply_incident_user_status(raw)
+        if raw.get("status") is not None:
+            raw["status"] = _normalize_vega_status_for_display(str(raw["status"]), MIRROR_ENTITY_SUFFIX_INCIDENT)
+        investigation_status = raw.get("investigationStatus")
+        if investigation_status is not None and str(investigation_status).strip():
+            raw["investigationStatus"] = _normalize_investigation_status_for_display(str(investigation_status))
 
     if raw.get("verdict") is not None or raw.get("userVerdict") is not None:
         raw["verdict"] = _normalize_vega_verdict_for_display(_extract_vega_verdict_from_entity(raw))
@@ -2520,20 +3164,20 @@ def _format_raw_entity_for_xsoar(raw: dict) -> None:
         raw["detectionDescription"] = _empty_to_na(raw.get("detectionDescription"))
         raw["detectionQuery"] = _format_vega_detection_query_for_display(raw.get("detectionQuery"))
 
-    if "dataSources" in raw:
-        raw["dataSources"] = _format_bullet_list(raw.get("dataSources"))
-
     assets = raw.get("assets")
     observables = raw.get("observables")
-
-    if "assets" in raw:
-        raw["assets"] = _format_bullet_list(assets, VEGA_NO_ASSETS_DISPLAY)
+    if "typedAssets" in raw:
+        raw["typedAssets"] = _format_typed_assets_for_grid(raw.get("typedAssets"))
+    if "dataSources" in raw:
+        raw["dataSources"] = _format_string_list_for_grid(raw.get("dataSources"))
     if "observables" in raw:
-        raw["observables"] = _format_bullet_list(observables, VEGA_NO_OBSERVABLES_DISPLAY)
+        raw["observables"] = _format_observables_for_grid(observables)
+
     findings_source = raw.get("keyFindings") or raw.get("incidentFindings")
     if findings_source is not None:
         raw["vegaIncidentFindings"] = _format_key_findings_html(findings_source, assets, observables)
     if entity_type in ("Vega Incident", "Vega Alert") and "comments" in raw:
+        raw[VEGA_COMMENTS_SOURCE_KEY] = raw.get("comments") if isinstance(raw.get("comments"), list) else []
         raw["vegaComments"] = _format_vega_comments_html(raw.get("comments"))
     if "recommendedActions" in raw:
         raw["recommendedActions"] = _format_recommended_actions_for_grid(raw.get("recommendedActions"))
@@ -2578,6 +3222,36 @@ def _normalize_vega_severity_for_display(severity: Any) -> str:
     return normalized if normalized in VALID_SEVERITIES else normalized
 
 
+def _apply_incident_user_status(entity: dict[str, Any]) -> None:
+    """Copy userStatus onto status so incident status handling uses the analyst status."""
+    user_status = entity.get("userStatus")
+    if user_status is not None and str(user_status).strip():
+        entity["status"] = user_status
+
+
+def _incident_mirror_status(entity: dict[str, Any]) -> str:
+    """Return the incident user status used for close, reopen, and field sync."""
+    user_status = entity.get("userStatus")
+    if user_status is not None and str(user_status).strip():
+        return str(user_status)
+    return str(entity.get("status") or "")
+
+
+def _normalize_investigation_status_for_api(status: str) -> str:
+    """Map an investigation status label to the GraphQL API enum."""
+    normalized = str(status or "").strip().upper()
+    return INCIDENT_INVESTIGATION_STATUS_DISPLAY_TO_API.get(normalized, normalized.replace(" ", "_"))
+
+
+def _normalize_investigation_status_for_display(status: str) -> str:
+    """Map a Vega investigation status to the incident-field dropdown value."""
+    normalized = _normalize_investigation_status_for_api(status)
+    api_to_display: dict[str, str] = {}
+    for display, api_value in INCIDENT_INVESTIGATION_STATUS_DISPLAY_TO_API.items():
+        api_to_display.setdefault(api_value, display)
+    return api_to_display.get(normalized, normalized.replace("_", " "))
+
+
 def _normalize_vega_status_for_api(status: str, entity_type: str) -> str:
     """Map a Vega status value to the GraphQL API enum format."""
     normalized = str(status or "").strip().upper()
@@ -2619,7 +3293,7 @@ def _build_close_reopen_sync_entries(status: str, entity_type_suffix: str) -> li
                 "Note": True,
             }
         )
-    elif api_status in {"REOPENED", "OPEN", "NEW", "INVESTIGATING", "IN_PROGRESS"}:
+    elif api_status in {"REOPENED", "OPEN", "NEW", "INVESTIGATING", "IN_PROGRESS", "IN_REVIEW", "ON_HOLD"}:
         entries.append(
             {
                 "Type": EntryType.NOTE,
@@ -2727,7 +3401,7 @@ def _build_direct_incident_update_payload(args: dict[str, Any]) -> dict[str, Any
     update_input: dict[str, Any] = {}
     status = args.get("status") or args.get("incident_status")
     if status is not None and str(status).strip():
-        update_input["status"] = _validate_incident_status_value(str(status))
+        update_input["userStatus"] = _validate_incident_status_value(str(status))
     verdict = args.get("verdict")
     verdict_reasoning = args.get("verdict_reasoning")
     if verdict is not None and str(verdict).strip():
@@ -2791,9 +3465,12 @@ def _format_push_incident_output(
         severity_value = requested_severity
     output: dict[str, str] = {
         "id": str(incident.get("incidentId") or incident.get("id") or ""),
-        "status": _normalize_vega_status_for_display(str(incident.get("status") or ""), MIRROR_ENTITY_SUFFIX_INCIDENT),
+        "status": _normalize_vega_status_for_display(_incident_mirror_status(incident), MIRROR_ENTITY_SUFFIX_INCIDENT),
         "verdict": _normalize_vega_verdict_for_display(incident.get("verdict")),
     }
+    investigation_status = incident.get("investigationStatus")
+    if investigation_status is not None and str(investigation_status).strip():
+        output["investigationStatus"] = _normalize_investigation_status_for_display(str(investigation_status))
     if severity_value is not None:
         output["severity"] = _normalize_vega_severity_for_display(severity_value)
     assignee = _format_assignee_output(incident.get("assignee"))
@@ -3313,7 +3990,7 @@ def _build_xsoar_incident_dict(
     raw: dict[str, Any],
     entity_type: str,
     entity_type_suffix: str,
-    custom_fields_builder: Callable[[dict], dict[str, str]],
+    custom_fields_builder: Callable[[dict], dict[str, Any]],
 ) -> dict[str, Any]:
     """Build a common XSOAR incident dict from prepared raw entity data."""
     severity = VEGA_SEVERITY_TO_XSOAR.get(raw.get("severity", "").upper(), IncidentSeverity.UNKNOWN)
@@ -3340,6 +4017,7 @@ def alert_to_incident(
     alert: dict,
     integration_url: str | None = None,
     client: Client | None = None,
+    prefetched_alert_events: tuple[list[dict], dict[str, Any]] | None = None,
 ) -> dict:
     """Convert a Vega alert to an XSOAR incident."""
     raw = dict(alert)
@@ -3347,7 +4025,11 @@ def alert_to_incident(
     raw.update(_get_mirroring_fields())
     _apply_mirror_metadata(raw, MIRROR_ENTITY_SUFFIX_ALERT)
     _apply_vega_entity_link(raw, integration_url=integration_url)
-    if client is not None:
+    if prefetched_alert_events is not None:
+        alert_events, event_custom_fields = prefetched_alert_events
+        raw["alertEvents"] = alert_events
+        raw["_alertEventsCustomFields"] = event_custom_fields
+    elif client is not None:
         alert_id = _normalize_entity_id(raw)
         if alert_id:
             alert_events, event_custom_fields = _fetch_alert_events_for_ingest(client, alert_id)
@@ -3357,9 +4039,154 @@ def alert_to_incident(
     return _build_xsoar_incident_dict(raw, "Vega Alert", MIRROR_ENTITY_SUFFIX_ALERT, _build_vega_alert_custom_fields)
 
 
+def _incident_alert_id(alert: dict[str, Any]) -> str:
+    """Return the Vega alert UUID from an incident alert stub or a getAlerts record."""
+    for key in ("alertId", "id"):
+        value = alert.get(key)
+        if value is not None and str(value).strip():
+            return str(value).strip()
+    return ""
+
+
+def _grid_scalar_text(value: Any) -> str:
+    """Convert a scalar alert field to a grid cell string."""
+    if value is None:
+        return ""
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, str):
+        return value
+    return str(value)
+
+
+def _format_incident_alert_stub_row(stub: dict[str, Any]) -> dict[str, str]:
+    """Build a Vega Alerts row from the short incident alert reference."""
+    return {
+        "alertId": _incident_alert_id(stub),
+        "name": _grid_scalar_text(stub.get("name")),
+        "createdAt": _grid_scalar_text(stub.get("createdAt")),
+    }
+
+
+def _incident_alert_reference_rows(alerts: Any) -> list[dict[str, str]]:
+    """Keep only the alert ID, name, and created time so the incident stays small."""
+    stubs = [alert for alert in alerts if isinstance(alert, dict)] if isinstance(alerts, list) else []
+    return [_format_incident_alert_stub_row(stub) for stub in stubs if _incident_alert_id(stub)]
+
+
+def _include_incident_alert_metadata(params: dict[str, Any] | None = None) -> bool:
+    """Return True when fetched incidents should store full related-alert metadata."""
+    params = demisto.params() if params is None else params
+    return argToBoolean(params.get("include_incident_alert_metadata", False))
+
+
+def _format_incident_alert_grid_row(alert: dict[str, Any]) -> dict[str, Any]:
+    """Build a Vega Alerts row from a full getAlerts record.
+
+    Lists and objects stay in their API shape. Scalar fields are stored as text for the grid columns.
+    """
+    row: dict[str, Any] = {"alertId": _incident_alert_id(alert)}
+    for key in _INCIDENT_ALERT_SCALAR_FIELDS:
+        row[key] = _grid_scalar_text(alert.get(key))
+    for key in _INCIDENT_ALERT_LIST_FIELDS:
+        value = alert.get(key)
+        row[key] = value if isinstance(value, list) else []
+    for key in _INCIDENT_ALERT_OBJECT_FIELDS:
+        value = alert.get(key)
+        row[key] = value if isinstance(value, dict) else None
+    if not row["id"]:
+        row["id"] = row["alertId"]
+    return row
+
+
+def _incident_alert_lookup_from_time(created_at_values: list[Any]) -> str | None:
+    """Return a getAlerts from time that includes the oldest alert in the batch."""
+    parsed_times: list[datetime] = []
+    for value in created_at_values:
+        parsed = _parse_entity_created_at(value)
+        if parsed:
+            parsed_times.append(parsed)
+    if not parsed_times:
+        return None
+    return _format_fetch_timestamp(min(parsed_times) - timedelta(days=1))
+
+
+def _fetch_incident_alert_batch(client: Client, alert_ids: list[str], from_time: str | None) -> list[dict[str, Any]]:
+    """Fetch one batch of full alert records by UUID."""
+    response = client.get_alerts(alert_ids=alert_ids, from_time=from_time, limit=len(alert_ids), offset=0) or {}
+    api_error = response.get("error")
+    if isinstance(api_error, dict) and api_error.get("message"):
+        raise DemistoException(f"Vega API error fetching incident alerts: {api_error.get('message')}")
+    return [alert for alert in (response.get("alerts") or []) if isinstance(alert, dict)]
+
+
+def _fetch_incident_alerts_by_ids(
+    client: Client,
+    alert_ids: list[str],
+    created_at_by_id: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """Fetch full alert records for the given alert UUIDs.
+
+    IDs are sent in one request until the count exceeds 1,000, then in batches of 1,000. Each request sends a
+    from time based on that batch's oldest alert so a default API window does not drop older alerts. A failed
+    batch leaves those alerts unresolved.
+    """
+    collected: list[dict[str, Any]] = []
+    for start in range(0, len(alert_ids), INCIDENT_ALERT_LOOKUP_BATCH_SIZE):
+        chunk = alert_ids[start : start + INCIDENT_ALERT_LOOKUP_BATCH_SIZE]
+        from_time = _incident_alert_lookup_from_time([created_at_by_id.get(alert_id) for alert_id in chunk])
+        try:
+            collected.extend(_fetch_incident_alert_batch(client, chunk, from_time))
+        except Exception as exc:
+            demisto.info(f"Failed to fetch incident alert metadata for {len(chunk)} alerts: error={exc}")
+    return collected
+
+
+def _enrich_incident_alerts(client: Client, alerts: Any) -> list[dict[str, Any]]:
+    """Replace incident alert stubs with full getAlerts rows.
+
+    Rate-limit retries run inside the GraphQL client. If those retries are exhausted, or an alert is missing
+    from the response, the original alertId, name, and createdAt row is kept.
+    """
+    stubs = [alert for alert in alerts if isinstance(alert, dict)] if isinstance(alerts, list) else []
+    ordered_ids: list[str] = []
+    created_at_by_id: dict[str, Any] = {}
+    for stub in stubs:
+        alert_id = _incident_alert_id(stub)
+        if alert_id and alert_id not in created_at_by_id:
+            ordered_ids.append(alert_id)
+            created_at_by_id[alert_id] = stub.get("createdAt")
+    if not ordered_ids:
+        return []
+
+    details = _fetch_incident_alerts_by_ids(client, ordered_ids, created_at_by_id)
+    alerts_by_id = {_incident_alert_id(alert): alert for alert in details if _incident_alert_id(alert)}
+    if len(alerts_by_id) < len(ordered_ids):
+        demisto.info(f"Incident alert metadata resolved {len(alerts_by_id)} of {len(ordered_ids)} alerts.")
+
+    rows: list[dict[str, Any]] = []
+    for stub in stubs:
+        alert_id = _incident_alert_id(stub)
+        if not alert_id:
+            continue
+        full_alert = alerts_by_id.get(alert_id)
+        if not full_alert:
+            rows.append(_format_incident_alert_stub_row(stub))
+            continue
+        row = _format_incident_alert_grid_row(full_alert)
+        if not row["name"]:
+            row["name"] = _grid_scalar_text(stub.get("name"))
+        if not row["createdAt"]:
+            row["createdAt"] = _grid_scalar_text(stub.get("createdAt"))
+        rows.append(row)
+    return rows
+
+
 def incident_to_xsoar_incident(
     incident: dict,
     timeline_events: list[dict] | None = None,
+    client: Client | None = None,
+    include_alert_metadata: bool = False,
 ) -> dict:
     """Convert a Vega incident to an XSOAR incident."""
     raw = dict(incident)
@@ -3369,6 +4196,11 @@ def incident_to_xsoar_incident(
     if timeline_events is not None:
         raw["timelineEvents"] = timeline_events
         raw["vegaTimelineEvents"] = _format_timeline_events_html(timeline_events)
+    if isinstance(raw.get("alerts"), list):
+        if include_alert_metadata and client is not None:
+            raw["alerts"] = _enrich_incident_alerts(client, raw.get("alerts"))
+        else:
+            raw["alerts"] = _incident_alert_reference_rows(raw.get("alerts"))
     _apply_vega_entity_link(raw)
     _format_raw_entity_for_xsoar(raw)
     return _build_xsoar_incident_dict(raw, "Vega Incident", MIRROR_ENTITY_SUFFIX_INCIDENT, _build_vega_incident_custom_fields)
@@ -3381,10 +4213,11 @@ def _apply_mirror_metadata(raw: dict[str, Any], entity_type_suffix: str) -> None
         raw["mirror_id"] = _format_dbot_mirror_id(entity_type_suffix, str(entity_id).strip())
 
 
-def _is_xsoar_to_vega_mirroring_enabled(params: dict[str, Any] | None = None) -> bool:
-    """Return True when outgoing XSOAR to Vega mirroring is enabled."""
+def _configured_mirror_direction(params: dict[str, Any] | None = None) -> str | None:
+    """Return the XSOAR mirror direction stamped on incidents fetched with the current setting."""
     params = params or demisto.params()
-    return argToBoolean(params.get("autoclosure", True))
+    selected = str(params.get("mirror_direction") or MIRROR_DIRECTION_NONE).strip()
+    return MIRROR_DIRECTION_BY_PARAM.get(selected)
 
 
 def _get_mirroring_fields(
@@ -3411,7 +4244,9 @@ def _get_mirroring_fields(
     if instance:
         fields["mirror_instance"] = instance
 
-    fields["mirror_direction"] = "Both" if _is_xsoar_to_vega_mirroring_enabled(params) else "In"
+    direction = _configured_mirror_direction(params)
+    if direction:
+        fields["mirror_direction"] = direction
     return fields
 
 
@@ -3431,8 +4266,9 @@ def _apply_mirror_metadata_fields(
     mirror_context: dict[str, Any] | None = None,
     *,
     mirror_id: str | None = None,
+    include_direction: bool = True,
 ) -> None:
-    """Attach mirror direction and instance to an ingest or get-remote-data payload."""
+    """Attach mirror id and instance. Direction is included only when an incident is first fetched."""
     effective_mirror_id = mirror_id or payload.get("dbotMirrorId") or payload.get("mirror_id")
     if not effective_mirror_id:
         return
@@ -3442,7 +4278,7 @@ def _apply_mirror_metadata_fields(
     payload["mirror_id"] = mirror_id_text
 
     mirror_fields = _get_mirroring_fields(mirror_context=mirror_context or payload)
-    if mirror_fields.get("mirror_direction"):
+    if include_direction and mirror_fields.get("mirror_direction"):
         direction = mirror_fields["mirror_direction"]
         payload["dbotMirrorDirection"] = direction
         payload["mirror_direction"] = direction
@@ -3456,8 +4292,8 @@ def _apply_mirror_sync_metadata(
     sync_object: dict[str, Any],
     mirror_context: dict[str, Any] | None = None,
 ) -> None:
-    """Refresh top-level mirror metadata on every incoming mirror sync cycle."""
-    _apply_mirror_metadata_fields(sync_object, mirror_context=mirror_context)
+    """Refresh mirror id and instance. Leave dbotMirrorDirection as it was stamped at fetch."""
+    _apply_mirror_metadata_fields(sync_object, mirror_context=mirror_context, include_direction=False)
 
 
 def _normalize_entity_id(entity: dict, id_key: str = "id") -> str:
@@ -3486,6 +4322,7 @@ def _normalize_incident_api_entity(entity: dict[str, Any]) -> dict[str, Any]:
         normalized["lastUpdated"] = normalized["lastUpdate"]
     if normalized.get("alertCount") is not None and normalized.get("alertsCount") is None:
         normalized["alertsCount"] = normalized["alertCount"]
+    _apply_incident_user_status(normalized)
     return normalized
 
 
@@ -3528,14 +4365,15 @@ def _fetch_paginated_entities(
     max_entities: int | None = None,
     start_offset: int = 0,
     **fetch_kwargs: Any,
-) -> tuple[list[dict], int | None]:
+) -> tuple[list[dict], int | None, int | None]:
     """Fetch entities from the Vega API.
 
-    Returns the entity list and an optional next offset when max_entities stops
-    the fetch before all matching records are retrieved.
+    Returns the entity list, an optional next offset when max_entities stops
+    the fetch before all matching records are retrieved, and the API total.
     """
     entities: list[dict] = []
     offset = start_offset
+    api_total: int | None = None
 
     while True:
         request_kwargs = dict(fetch_kwargs)
@@ -3548,6 +4386,9 @@ def _fetch_paginated_entities(
         request_kwargs["limit"] = page_limit
 
         response = fetch_func(offset=offset, **request_kwargs)
+        page_total = _optional_int(response.get("total"))
+        if page_total is not None:
+            api_total = page_total
 
         page = response.get(entities_key) or []
         if not page:
@@ -3556,20 +4397,18 @@ def _fetch_paginated_entities(
         entities.extend(page)
         if max_entities is not None and len(entities) >= max_entities:
             entities = entities[:max_entities]
-            total = response.get("total")
-            if total is not None:
+            if api_total is not None:
                 next_offset = start_offset + len(entities)
-                if next_offset < total:
-                    return entities, next_offset
+                if next_offset < api_total:
+                    return entities, next_offset, api_total
             break
 
-        total = response.get("total")
-        if total is not None and offset + len(page) >= total:
+        if api_total is not None and offset + len(page) >= api_total:
             break
 
         offset += len(page)
 
-    return entities, None
+    return entities, None, api_total
 
 
 def _build_fetch_filter_fingerprint(
@@ -3577,6 +4416,7 @@ def _build_fetch_filter_fingerprint(
     statuses: list[str] | None,
     verdicts: list[str] | None,
     has_related_incidents: bool | None = None,
+    investigation_statuses: list[str] | None = None,
 ) -> str:
     """Build a stable fingerprint for fetch filter parameters."""
     payload: dict[str, Any] = {
@@ -3586,6 +4426,8 @@ def _build_fetch_filter_fingerprint(
     }
     if has_related_incidents is not None:
         payload["hasRelatedIncidents"] = has_related_incidents
+    if investigation_statuses is not None:
+        payload["investigationStatuses"] = sorted(investigation_statuses)
     return json.dumps(payload, sort_keys=True)
 
 
@@ -3684,8 +4526,12 @@ def _append_modified_remote_entity_id(
 
 
 def _resolve_mirror_entity_lookup_filters() -> dict[str, str]:
-    """Build a wide ``from`` filter for direct mirror entity ID lookups during get-remote-data."""
-    return {"from_time": parse_backfill_days(demisto.params().get("backfill_days"))}
+    """Build the ``from`` filter for a mirror lookup of one known Vega UUID.
+
+    Uses the same start time as fetch-by-ID so an incident or alert created before the
+    backfill window can still be loaded during incoming and outgoing mirroring.
+    """
+    return {"from_time": INCIDENT_ID_LOOKUP_FROM_TIME}
 
 
 def _resolve_mirror_incident_lookup_filters(last_update: str | None) -> dict[str, str]:
@@ -4087,9 +4933,9 @@ def _normalize_mirror_entity(entity: dict[str, Any], entity_type_suffix: str) ->
 
 
 #! ---------------------------- MIRROR VEGA TO XSOAR--------------------------------------
-def _build_mirror_entity_custom_fields(entity: dict[str, Any], entity_type_suffix: str) -> dict[str, str]:
+def _build_mirror_entity_custom_fields(entity: dict[str, Any], entity_type_suffix: str) -> dict[str, Any]:
     """Build custom fields for a mirrored Vega entity."""
-    custom_fields: dict[str, str] = {}
+    custom_fields: dict[str, Any] = {}
     entity_id = _normalize_entity_id(entity)
     if entity_id:
         if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
@@ -4100,10 +4946,21 @@ def _build_mirror_entity_custom_fields(entity: dict[str, Any], entity_type_suffi
             if vega_alert_id and str(vega_alert_id).strip():
                 custom_fields["vegaalertid"] = str(vega_alert_id).strip()
 
-    status = entity.get("status")
-    if status is not None and str(status).strip():
+    status = (
+        _incident_mirror_status(entity)
+        if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT
+        else str(entity.get("status") or "")
+    )
+    if status.strip():
         status_field = VEGA_ALERT_STATUS_FIELD if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT else VEGA_INCIDENT_STATUS_FIELD
-        custom_fields[status_field] = _normalize_vega_status_for_display(str(status), entity_type_suffix)
+        custom_fields[status_field] = _normalize_vega_status_for_display(status, entity_type_suffix)
+
+    if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
+        investigation_status = entity.get("investigationStatus")
+        if investigation_status is not None and str(investigation_status).strip():
+            custom_fields[VEGA_INVESTIGATION_STATUS_FIELD] = _normalize_investigation_status_for_display(
+                str(investigation_status)
+            )
 
     if entity.get("severity") is not None:
         severity_field = VEGA_ALERT_SEVERITY_FIELD if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT else VEGA_SEVERITY_FIELD
@@ -4119,6 +4976,10 @@ def _build_mirror_entity_custom_fields(entity: dict[str, Any], entity_type_suffi
 
     if "comments" in entity:
         custom_fields["vegacomments"] = _format_vega_comments_html(entity.get("comments"))
+        comments = entity.get("comments")
+        custom_fields[VEGA_COMMENTS_SOURCE_FIELD] = comments if isinstance(comments, list) else []
+    if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT and isinstance(entity.get("alerts"), list):
+        custom_fields[VEGA_ALERTS_FIELD] = entity["alerts"]
     return custom_fields
 
 
@@ -4154,13 +5015,17 @@ def _build_mirror_sync_object(
         "vegaEntityType": vega_entity_type,
         "CustomFields": custom_fields,
     }
-    for key in ("status", "severity", "verdict", "verdictReasoning"):
+    for key in ("status", "severity", "verdict", "verdictReasoning", "investigationStatus", "updatedAt", "lastUpdated"):
         value = raw.get(key)
         if value is not None and str(value).strip() != "":
             sync_object[key] = value
 
     if "vegaComments" in raw:
         sync_object["vegaComments"] = raw["vegaComments"]
+    if VEGA_COMMENTS_SOURCE_KEY in raw:
+        sync_object[VEGA_COMMENTS_SOURCE_KEY] = raw[VEGA_COMMENTS_SOURCE_KEY]
+    if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT and isinstance(entity.get("alerts"), list):
+        sync_object["alerts"] = entity["alerts"]
 
     _apply_mirror_sync_metadata(sync_object, mirror_context=mirror_context)
 
@@ -4176,7 +5041,20 @@ def _build_incoming_status_sync_entries(
     if not _entity_updated_after(entity, entity_type_suffix, last_update):
         return []
 
-    api_status = _normalize_vega_status_for_api(str(entity.get("status") or ""), entity_type_suffix)
+    raw_status = (
+        _incident_mirror_status(entity)
+        if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT
+        else str(entity.get("status") or "")
+    )
+    api_status = _normalize_vega_status_for_api(raw_status, entity_type_suffix)
+    if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT and api_status in VEGA_INCIDENT_OPEN_STATUSES:
+        return [
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {"dbotIncidentReopen": True},
+                "ContentsFormat": EntryFormat.JSON,
+            }
+        ]
     if api_status in VEGA_CLOSE_STATUSES:
         return [
             {
@@ -4371,8 +5249,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     fetch_incidents = "Incidents" in vega_entities
 
     demisto.info(
-        f"Command started: fetch_alerts={fetch_alerts}, fetch_incidents={fetch_incidents}, "
-        f"last_update={remote_args.last_update}"
+        f"Command started: fetch_alerts={fetch_alerts}, fetch_incidents={fetch_incidents}, last_update={remote_args.last_update}"
     )
 
     modified_ids: list[str] = []
@@ -4468,7 +5345,23 @@ def _build_not_found_mirror_response(
     return GetRemoteDataResponse(mirrored_object=not_found, entries=[])
 
 
-def _enrich_mirror_incident_entity(client: Client, entity: dict[str, Any], last_update: str | None) -> dict[str, Any]:
+def _mirror_incident_alert_stubs(entity: dict[str, Any], details: dict[str, Any]) -> list[dict[str, Any]] | None:
+    """Return the incident alert references used to load full alert metadata."""
+    details_alerts = details.get("alerts")
+    if isinstance(details_alerts, list):
+        return details_alerts
+    entity_alerts = entity.get("alerts")
+    if isinstance(entity_alerts, list):
+        return entity_alerts
+    return None
+
+
+def _enrich_mirror_incident_entity(
+    client: Client,
+    entity: dict[str, Any],
+    last_update: str | None,
+    include_alert_metadata: bool = False,
+) -> dict[str, Any]:
     """Fetch additional incident details needed for incoming mirror sync."""
     entity_id = _normalize_entity_id(entity)
     if not entity_id:
@@ -4476,13 +5369,32 @@ def _enrich_mirror_incident_entity(client: Client, entity: dict[str, Any], last_
 
     incident_lookup_filters = _resolve_mirror_incident_lookup_filters(last_update)
     details = client.get_incident_by_id(entity_id, **incident_lookup_filters)
-    if not isinstance(details, dict) or not details:
-        return entity
+    if not isinstance(details, dict):
+        details = {}
 
-    for key in ("verdictReasoning", "verdict", "comments", "status", "severity", "lastUpdated", "userVerdict"):
-        if key in details and details[key] is not None:
-            entity[key] = details[key]
-    return _normalize_incident_api_entity(entity)
+    if details:
+        for key in (
+            "verdictReasoning",
+            "verdict",
+            "comments",
+            "status",
+            "userStatus",
+            "investigationStatus",
+            "severity",
+            "lastUpdated",
+            "userVerdict",
+        ):
+            if key in details and details[key] is not None:
+                entity[key] = details[key]
+        entity = _normalize_incident_api_entity(entity)
+
+    alert_stubs = _mirror_incident_alert_stubs(entity, details)
+    if alert_stubs is not None:
+        if include_alert_metadata:
+            entity["alerts"] = _enrich_incident_alerts(client, alert_stubs)
+        else:
+            entity["alerts"] = _incident_alert_reference_rows(alert_stubs)
+    return entity
 
 
 def _build_incoming_mirror_comment_entries(entity: dict[str, Any], last_update_dt: datetime) -> list[dict[str, Any]]:
@@ -4530,6 +5442,7 @@ def get_remote_data_command(
     client: Client,
     args: dict[str, Any],
     integration_url: str | None = None,
+    include_alert_metadata: bool = False,
 ) -> GetRemoteDataResponse:
     """Fetch updated Vega alert or incident data and incoming mirror entries."""
     del integration_url
@@ -4551,7 +5464,12 @@ def get_remote_data_command(
             return _build_not_found_mirror_response(remote_id, preferred_entity_type, context_entity_type)
 
         if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
-            entity = _enrich_mirror_incident_entity(client, entity, remote_args.last_update)
+            entity = _enrich_mirror_incident_entity(
+                client,
+                entity,
+                remote_args.last_update,
+                include_alert_metadata=include_alert_metadata,
+            )
 
         mirror_context = (
             _mirror_dict(args.get("data")) or _mirror_dict(args.get("remoteIncidentData")) or _mirror_dict(args.get("incident"))
@@ -4640,13 +5558,13 @@ def _build_outgoing_incident_mirror_update(
 
     if OUTGOING_MIRROR_FIELD_STATUS in active_fields:
         if inc_status == IncidentStatus.DONE:
-            update_input["status"] = "RESOLVED"
+            update_input["userStatus"] = "RESOLVED"
         else:
             status = _mirror_delta_changed_value(VEGA_INCIDENT_STATUS_FIELD, delta, entity_type_suffix)
             if status is None or not str(status).strip():
                 status = _mirror_delta_changed_value(VEGA_ALERT_STATUS_FIELD, delta, entity_type_suffix)
             if status is not None and str(status).strip():
-                update_input["status"] = _validate_incident_status_value(str(status))
+                update_input["userStatus"] = _validate_incident_status_value(str(status))
 
     if OUTGOING_MIRROR_FIELD_SEVERITY in active_fields:
         severity = _mirror_delta_changed_value(VEGA_SEVERITY_FIELD, delta, entity_type_suffix)
@@ -4770,10 +5688,6 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
         f"Command started: remote_id={remote_id}, incident_changed={parsed_args.incident_changed}, "
         f"entry_count={len(parsed_args.entries or [])}"
     )
-
-    if not _is_xsoar_to_vega_mirroring_enabled():
-        demisto.info(f"Outgoing mirroring disabled; skipping: remote_id={remote_id}")
-        return remote_id
 
     if not _mirror_bool(parsed_args.incident_changed) and not parsed_args.entries:
         demisto.info(f"No changes to mirror; skipping: remote_id={remote_id}")
@@ -4904,6 +5818,27 @@ def _resolve_max_fetch(max_fetch: int | str | None) -> int:
     return int(arg_to_number(max_fetch, arg_name="max_fetch", required=False))  # type: ignore[arg-type]
 
 
+def _log_vega_collection_total(entities_key: str, api_total: int | None) -> None:
+    """Log the total returned by getAlerts or getIncidents."""
+    query_name = "getIncidents" if entities_key == "incidents" else "getAlerts"
+    total_text = api_total if api_total is not None else "unknown"
+    demisto.info(f"Vega {query_name} total={total_text}.")
+
+
+def _log_fetch_cycle_status(created: int, incidents_total: int | None, alerts_total: int | None) -> None:
+    """Log how many XSOAR incidents this fetch cycle created against the Vega totals."""
+    incidents_text = str(incidents_total) if incidents_total is not None else "not fetched"
+    alerts_text = str(alerts_total) if alerts_total is not None else "not fetched"
+    if incidents_total is None and alerts_total is None:
+        combined: int | str = "unknown"
+    else:
+        combined = (incidents_total or 0) + (alerts_total or 0)
+    demisto.info(
+        f"Vega fetch cycle finished: {created} incidents created out of {combined} "
+        f"(incidents total {incidents_text} + alerts total {alerts_text})."
+    )
+
+
 def _fetch_vega_entity_batch(
     last_run: dict,
     next_run: dict,
@@ -4915,13 +5850,13 @@ def _fetch_vega_entity_batch(
     fetch_func: Callable[..., dict],
     entities_key: str,
     **fetch_kwargs: Any,
-) -> list[dict]:
+) -> tuple[list[dict], int | None]:
     """Fetch up to `limit` Vega entities and store offset state when more remain."""
     saved_offset = last_run.get(offset_key)
     offset = int(saved_offset) if saved_offset is not None else 0
     from_time = str(last_run.get(pagination_from_key) or default_from_time) if offset > 0 else default_from_time
 
-    entities, next_offset = _fetch_paginated_entities(
+    entities, next_offset, api_total = _fetch_paginated_entities(
         fetch_func,
         entities_key=entities_key,
         max_entities=limit,
@@ -4937,7 +5872,8 @@ def _fetch_vega_entity_batch(
         next_run.pop(offset_key, None)
         next_run.pop(pagination_from_key, None)
 
-    return entities
+    _log_vega_collection_total(entities_key, api_total)
+    return entities, api_total
 
 
 def _fetch_incident_timeline_events(client: Client, incident_id: str) -> list[dict]:
@@ -4964,11 +5900,13 @@ def _ingest_fetched_incidents(
     incidents_fetch_config: str,
     incident_severities: list[str] | None,
     incident_statuses: list[str] | None,
+    incident_investigation_statuses: list[str] | None,
     incident_verdicts: list[str] | None,
     limit: int,
     backfill_days: str | int | None = None,
     lookback_minutes: int = DEFAULT_LOOKBACK_MINUTES,
-) -> int:
+    include_alert_metadata: bool = False,
+) -> tuple[int, int | None]:
     try:
         batch_last_run = _batch_fetch_last_run(
             last_run,
@@ -4978,7 +5916,7 @@ def _ingest_fetched_incidents(
             fetch_config_key="incidents_fetch_config",
             fetch_config=incidents_fetch_config,
         )
-        incidents = _fetch_vega_entity_batch(
+        incidents, incidents_total = _fetch_vega_entity_batch(
             batch_last_run,
             next_run,
             offset_key=INCIDENTS_OFFSET_KEY,
@@ -4989,6 +5927,7 @@ def _ingest_fetched_incidents(
             entities_key="incidents",
             severities=incident_severities,
             statuses=incident_statuses,
+            investigation_statuses=incident_investigation_statuses,
             verdicts=incident_verdicts,
         )
 
@@ -5020,7 +5959,14 @@ def _ingest_fetched_incidents(
 
             new_ids.append(incident_id)
             timeline_events = _fetch_incident_timeline_events(client, incident_id) if incident_id else []
-            xsoar_incidents.append(incident_to_xsoar_incident(incident, timeline_events=timeline_events))
+            xsoar_incidents.append(
+                incident_to_xsoar_incident(
+                    incident,
+                    timeline_events=timeline_events,
+                    client=client,
+                    include_alert_metadata=include_alert_metadata,
+                )
+            )
             ingested.append(incident)
 
         next_run["incidents_last_ids"] = list(set(current_cycle_ids))
@@ -5030,10 +5976,10 @@ def _ingest_fetched_incidents(
             next_run["incidents_last_fetch"] = _current_fetch_timestamp()
 
         next_run["incidents_fetch_config"] = incidents_fetch_config
-        return len(ingested)
+        return len(ingested), incidents_total
     except Exception as exc:
         _handle_fetch_entity_error("incidents", exc)
-        return 0
+        return 0, None
 
 
 def _ingest_fetched_alerts(
@@ -5054,7 +6000,7 @@ def _ingest_fetched_alerts(
     limit: int,
     backfill_days: str | int | None = None,
     lookback_minutes: int = DEFAULT_LOOKBACK_MINUTES,
-) -> int:
+) -> tuple[int, int | None]:
     try:
         batch_last_run = _batch_fetch_last_run(
             last_run,
@@ -5064,7 +6010,7 @@ def _ingest_fetched_alerts(
             fetch_config_key="alerts_fetch_config",
             fetch_config=alerts_fetch_config,
         )
-        alerts = _fetch_vega_entity_batch(
+        alerts, alerts_total = _fetch_vega_entity_batch(
             batch_last_run,
             next_run,
             offset_key=ALERTS_OFFSET_KEY,
@@ -5088,6 +6034,7 @@ def _ingest_fetched_alerts(
 
         current_cycle_ids = list(next_run.get("alerts_last_ids", []))
 
+        pending_alerts: list[tuple[str, dict]] = []
         for alert in alerts:
             alert_id = _normalize_entity_id(alert)
             if not alert_id:
@@ -5106,7 +6053,17 @@ def _ingest_fetched_alerts(
                 continue
 
             new_ids.append(alert_id)
-            xsoar_incidents.append(alert_to_incident(alert, integration_url=integration_url, client=client))
+            pending_alerts.append((alert_id, alert))
+
+        prefetched_events = _fetch_alert_events_for_ids(client, new_ids)
+        for alert_id, alert in pending_alerts:
+            xsoar_incidents.append(
+                alert_to_incident(
+                    alert,
+                    integration_url=integration_url,
+                    prefetched_alert_events=prefetched_events.get(alert_id),
+                )
+            )
             ingested.append(alert)
 
         next_run["alerts_last_ids"] = list(set(current_cycle_ids))
@@ -5116,10 +6073,627 @@ def _ingest_fetched_alerts(
             next_run["alerts_last_fetch"] = _current_fetch_timestamp()
 
         next_run["alerts_fetch_config"] = alerts_fetch_config
-        return len(ingested)
+        return len(ingested), alerts_total
     except Exception as exc:
         _handle_fetch_entity_error("alerts", exc)
-        return 0
+        return 0, None
+
+
+def _parse_comma_separated_ids(value: Any) -> list[str]:
+    """Split a comma-separated ID list and drop blanks and duplicates."""
+    if value is None:
+        return []
+    text = str(value).replace("\r", ",").replace("\n", ",")
+    parsed: list[str] = []
+    seen: set[str] = set()
+    for part in text.split(","):
+        item = part.strip()
+        if item and item not in seen:
+            seen.add(item)
+            parsed.append(item)
+    return parsed
+
+
+def _page_reached_end(fetched_count: int, page_count: int, total: int | None) -> bool:
+    """Return True when a page has consumed the result set.
+
+    A short page ends the scan only when the API does not report a larger total.
+    """
+    if total is not None:
+        return fetched_count >= total
+    return page_count < RECONCILE_PAGE_SIZE
+
+
+def _optional_int(value: Any) -> int | None:
+    """Return an int when the value can be parsed, otherwise None."""
+    if value is None or value == "":
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _raise_vega_collection_error(payload: dict[str, Any], label: str) -> None:
+    """Raise when a Vega list payload contains an API error message."""
+    api_error = payload.get("error")
+    if isinstance(api_error, dict) and api_error.get("message"):
+        raise DemistoException(f"Vega API error fetching {label}: {api_error.get('message')}")
+
+
+def _parse_reconcile_boundary(value: Any, *, end_of_day: bool) -> str:
+    """Parse a reconciliation date argument into a Vega Time value."""
+    text = str(value or "").strip()
+    if not text:
+        raise DemistoException("start_date and end_date are required. They map to the Vega API from and to filters.")
+    date_only = len(text) == 10 and text[4] == "-" and text[7] == "-"
+    if date_only:
+        text = f"{text}T23:59:59Z" if end_of_day else f"{text}T00:00:00Z"
+    parsed = _parse_entity_created_at(text)
+    if parsed is None:
+        raise DemistoException(f"Invalid date '{value}'. Use YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ.")
+    return _format_fetch_timestamp(parsed)
+
+
+def _parse_reconcile_window(args: dict[str, Any]) -> tuple[str, str]:
+    """Return the Vega from/to window for a reconciliation scan."""
+    if not str(args.get("start_date") or "").strip() or not str(args.get("end_date") or "").strip():
+        raise DemistoException("start_date and end_date are required. They map to the Vega API from and to filters.")
+    start_time = _parse_reconcile_boundary(args.get("start_date"), end_of_day=False)
+    end_time = _parse_reconcile_boundary(args.get("end_date"), end_of_day=True)
+    if start_time > end_time:
+        raise DemistoException("start_date must be before or equal to end_date.")
+    return start_time, end_time
+
+
+def _collect_paged_ids(
+    fetch_page: Callable[[int], dict[str, Any]],
+    entities_key: str,
+    id_from_item: Callable[[dict[str, Any]], str],
+) -> list[str]:
+    """Page a Vega ID query at RECONCILE_PAGE_SIZE until every matching ID is collected."""
+    collected: list[str] = []
+    seen: set[str] = set()
+    offset = 0
+    while True:
+        response = fetch_page(offset) or {}
+        _raise_vega_collection_error(response, entities_key)
+        page_items = [item for item in (response.get(entities_key) or []) if isinstance(item, dict)]
+        if not page_items:
+            break
+        for item in page_items:
+            entity_id = id_from_item(item)
+            if entity_id and entity_id not in seen:
+                seen.add(entity_id)
+                collected.append(entity_id)
+        total = _optional_int(response.get("total"))
+        offset += len(page_items)
+        if _page_reached_end(offset, len(page_items), total):
+            break
+    return collected
+
+
+def _xsoar_query_timestamp(iso_time: str) -> str:
+    """Convert a Vega ISO timestamp to a Cortex XSOAR occurred-query timestamp."""
+    text = iso_time.strip()
+    if text.endswith("Z"):
+        text = text[:-1]
+    return f"{text} +0000"
+
+
+def _xsoar_reconciliation_query(entity_type: str, start_time: str, end_time: str) -> str:
+    """Build an incident-search query for one Vega entity type and time window."""
+    start = _xsoar_query_timestamp(start_time)
+    end = _xsoar_query_timestamp(end_time)
+    return f'type:"{entity_type}" and occurred:>="{start}" and occurred:<="{end}"'
+
+
+def _parse_xsoar_search_response(response: Any) -> dict[str, Any]:
+    """Normalize a demisto.internalHttpRequest incidents/search response."""
+    if not isinstance(response, dict):
+        raise DemistoException("Cortex XSOAR incident search returned an unexpected response.")
+    status_code = response.get("statusCode")
+    if status_code not in (None, 200, "200"):
+        raise DemistoException(f"Cortex XSOAR incident search failed with status {status_code}.")
+    body = response.get("body", response)
+    if isinstance(body, str):
+        if not body.strip():
+            return {}
+        try:
+            body = json.loads(body)
+        except json.JSONDecodeError as exc:
+            raise DemistoException("Cortex XSOAR incident search returned invalid JSON.") from exc
+    if not isinstance(body, dict):
+        raise DemistoException("Cortex XSOAR incident search returned an unexpected body.")
+    return body
+
+
+def _search_xsoar_incidents_page(query: str, page: int) -> tuple[list[dict[str, Any]], int | None]:
+    """Return one page of Cortex XSOAR incidents and the reported total."""
+    request_body = json.dumps({"filter": {"query": query, "page": page, "size": RECONCILE_PAGE_SIZE}})
+    try:
+        response = demisto.internalHttpRequest("POST", "/incidents/search", body=request_body)
+    except Exception as exc:
+        raise DemistoException(f"Cortex XSOAR incident search failed: {exc}") from exc
+    payload = _parse_xsoar_search_response(response)
+    data = payload.get("data")
+    total = payload.get("total")
+    if isinstance(data, dict):
+        total = data.get("total", total)
+        data = data.get("data")
+    incidents = [item for item in data if isinstance(item, dict)] if isinstance(data, list) else []
+    return incidents, _optional_int(total)
+
+
+def _custom_field_text(incident: dict[str, Any], field_name: str) -> str:
+    """Read one custom field without depending on the field being searchable."""
+    custom_fields = incident.get("CustomFields") or incident.get("customFields") or {}
+    if not isinstance(custom_fields, dict):
+        return ""
+    for key, value in custom_fields.items():
+        if str(key).lower() == field_name and value is not None and str(value).strip():
+            return str(value).strip()
+    return ""
+
+
+def _xsoar_vega_entity_id(incident: dict[str, Any], entity_suffix: str) -> str:
+    """Resolve the Vega UUID stored on an XSOAR investigation."""
+    mirror_id = str(incident.get("dbotMirrorId") or incident.get("dbotmirrorid") or "").strip()
+    parsed_id, parsed_suffix = _parse_mirror_id(mirror_id)
+    if parsed_suffix == entity_suffix and parsed_id:
+        return parsed_id
+    field_name = "vegaincidentid" if entity_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT else "alertid"
+    return _custom_field_text(incident, field_name)
+
+
+def _collect_xsoar_entity_ids(
+    entity_type: str,
+    entity_suffix: str,
+    start_time: str,
+    end_time: str,
+) -> set[str]:
+    """Page every Cortex XSOAR investigation of this type and collect its Vega UUIDs."""
+    query = _xsoar_reconciliation_query(entity_type, start_time, end_time)
+    found: set[str] = set()
+    scanned = 0
+    page = 0
+    while True:
+        incidents, total = _search_xsoar_incidents_page(query, page)
+        if not incidents:
+            break
+        for incident in incidents:
+            entity_id = _xsoar_vega_entity_id(incident, entity_suffix)
+            if entity_id:
+                found.add(entity_id)
+        scanned += len(incidents)
+        if _page_reached_end(scanned, len(incidents), total):
+            break
+        page += 1
+    return found
+
+
+def _missing_ids(source_ids: list[str], present_ids: set[str]) -> list[str]:
+    """Return source IDs that are absent from the comparison set, in source order."""
+    return [entity_id for entity_id in source_ids if entity_id not in present_ids]
+
+
+def _reconcile_selected_entities(args: dict[str, Any]) -> tuple[bool, bool]:
+    """Return which entity types the command should compare. At least one is required."""
+    selected = {str(value).strip().lower() for value in argToList(args.get("vega_entities")) if str(value).strip()}
+    include_alerts = "alerts" in selected
+    include_incidents = "incidents" in selected
+    if not include_alerts and not include_incidents:
+        raise DemistoException("vega_entities must include Alerts, Incidents, or both.")
+    return include_alerts, include_incidents
+
+
+def _reconcile_alert_filters(args: dict[str, Any]) -> dict[str, Any]:
+    """Map command arguments to Vega alert ID-query filters. Empty means all values."""
+    return {
+        "severities": filter_alert_severities(argToList(args.get("alert_severities")) or None),
+        "statuses": filter_alert_statuses(argToList(args.get("alert_statuses")) or None),
+        "verdicts": filter_alert_verdicts(argToList(args.get("alert_verdicts")) or None),
+    }
+
+
+def _reconcile_incident_filters(args: dict[str, Any]) -> dict[str, Any]:
+    """Map command arguments to Vega incident ID-query filters. Empty means all values."""
+    return {
+        "severities": filter_incident_severities(argToList(args.get("incident_severities")) or None),
+        "statuses": filter_incident_statuses(argToList(args.get("incident_statuses")) or None),
+        "investigation_statuses": filter_incident_investigation_statuses(
+            argToList(args.get("incident_investigation_statuses")) or None
+        ),
+        "verdicts": filter_incident_verdicts(argToList(args.get("incident_verdicts")) or None),
+    }
+
+
+def _comma_id_text(entity_ids: list[str]) -> str:
+    """Format IDs for pasting into the reconciliation instance fields."""
+    return ", ".join(entity_ids) if entity_ids else "None"
+
+
+def _reconciliation_readable_output(
+    start_time: str,
+    end_time: str,
+    missing_incident_ids: list[str] | None,
+    missing_alert_ids: list[str] | None,
+    vega_incident_count: int | None,
+    xsoar_incident_count: int | None,
+    vega_alert_count: int | None,
+    xsoar_alert_count: int | None,
+) -> str:
+    """Build the War Room summary with incident IDs listed before alert IDs."""
+    row: dict[str, Any] = {"Start": start_time, "End": end_time}
+    if missing_incident_ids is not None:
+        row["Vega incidents"] = vega_incident_count
+        row["XSOAR incidents"] = xsoar_incident_count
+        row["Missing incidents"] = len(missing_incident_ids)
+    if missing_alert_ids is not None:
+        row["Vega alerts"] = vega_alert_count
+        row["XSOAR alerts"] = xsoar_alert_count
+        row["Missing alerts"] = len(missing_alert_ids)
+    sections = [tableToMarkdown("Vega reconciliation", [row])]
+    if missing_incident_ids is not None:
+        sections.extend(["### Missing Vega incident IDs", _comma_id_text(missing_incident_ids)])
+    if missing_alert_ids is not None:
+        sections.extend(["### Missing Vega alert IDs", _comma_id_text(missing_alert_ids)])
+    return "\n".join(sections)
+
+
+def reconcile_incidents_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Return Vega UUIDs for the selected entity types that are missing from Cortex XSOAR."""
+    start_time, end_time = _parse_reconcile_window(args)
+    include_alerts, include_incidents = _reconcile_selected_entities(args)
+    missing_alert_ids: list[str] | None = None
+    missing_incident_ids: list[str] | None = None
+    vega_alert_count = xsoar_alert_count = None
+    vega_incident_count = xsoar_incident_count = None
+    outputs: dict[str, Any] = {}
+
+    if include_incidents:
+        incident_filters = _reconcile_incident_filters(args)
+        vega_incident_ids = _collect_paged_ids(
+            lambda offset: client.get_incident_ids(
+                from_time=start_time,
+                to_time=end_time,
+                limit=RECONCILE_PAGE_SIZE,
+                offset=offset,
+                **incident_filters,
+            )
+            or {},
+            "incidents",
+            _normalize_entity_id,
+        )
+        xsoar_incident_ids = _collect_xsoar_entity_ids(
+            "Vega Incident",
+            MIRROR_ENTITY_SUFFIX_INCIDENT,
+            start_time,
+            end_time,
+        )
+        missing_incident_ids = _missing_ids(vega_incident_ids, xsoar_incident_ids)
+        vega_incident_count = len(vega_incident_ids)
+        xsoar_incident_count = len(xsoar_incident_ids)
+        outputs["MissingIncidentIds"] = missing_incident_ids
+        outputs["VegaIncidentCount"] = vega_incident_count
+        outputs["XsoarIncidentCount"] = xsoar_incident_count
+
+    if include_alerts:
+        alert_filters = _reconcile_alert_filters(args)
+        vega_alert_ids = _collect_paged_ids(
+            lambda offset: client.get_alert_ids(
+                from_time=start_time,
+                to_time=end_time,
+                limit=RECONCILE_PAGE_SIZE,
+                offset=offset,
+                **alert_filters,
+            )
+            or {},
+            "alerts",
+            _normalize_entity_id,
+        )
+        xsoar_alert_ids = _collect_xsoar_entity_ids(
+            "Vega Alert",
+            MIRROR_ENTITY_SUFFIX_ALERT,
+            start_time,
+            end_time,
+        )
+        missing_alert_ids = _missing_ids(vega_alert_ids, xsoar_alert_ids)
+        vega_alert_count = len(vega_alert_ids)
+        xsoar_alert_count = len(xsoar_alert_ids)
+        outputs["MissingAlertIds"] = missing_alert_ids
+        outputs["VegaAlertCount"] = vega_alert_count
+        outputs["XsoarAlertCount"] = xsoar_alert_count
+
+    outputs["StartDate"] = start_time
+    outputs["EndDate"] = end_time
+    return CommandResults(
+        outputs_prefix="Vega.Reconciliation",
+        outputs=outputs,
+        readable_output=_reconciliation_readable_output(
+            start_time,
+            end_time,
+            missing_incident_ids,
+            missing_alert_ids,
+            vega_incident_count,
+            xsoar_incident_count,
+            vega_alert_count,
+            xsoar_alert_count,
+        ),
+    )
+
+
+def _stored_id_list(last_run: dict[str, Any], key: str) -> list[str]:
+    """Return a string ID list stored in last run."""
+    value = last_run.get(key) or []
+    if not isinstance(value, list):
+        return []
+    return [str(item).strip() for item in value if str(item).strip()]
+
+
+def _extend_unique_ids(existing: list[str], extra: list[str]) -> list[str]:
+    """Append IDs that are not already present."""
+    seen = set(existing)
+    updated = list(existing)
+    for item in extra:
+        if item not in seen:
+            seen.add(item)
+            updated.append(item)
+    return updated
+
+
+def _pending_reconciliation_ids(desired: list[str], completed: list[str], not_found: list[str]) -> list[str]:
+    """Return configured IDs that this instance has not finished."""
+    done = set(completed) | set(not_found)
+    return [entity_id for entity_id in desired if entity_id not in done]
+
+
+def _vega_entities_or_raise(payload: dict[str, Any], entities_key: str, label: str) -> list[dict[str, Any]]:
+    """Return entity dicts from a Vega list payload, or raise on an API error."""
+    _raise_vega_collection_error(payload, label)
+    return [item for item in (payload.get(entities_key) or []) if isinstance(item, dict)]
+
+
+def _fetch_reconciliation_records(client: Client, entity_ids: list[str], *, incidents: bool) -> list[dict[str, Any]]:
+    """Fetch full Vega records for an explicit ID list using the static lookup time."""
+    if incidents:
+        response = (
+            client.get_incidents(
+                incident_ids=entity_ids,
+                from_time=INCIDENT_ID_LOOKUP_FROM_TIME,
+                limit=len(entity_ids),
+                offset=0,
+            )
+            or {}
+        )
+        return _vega_entities_or_raise(response, "incidents", "incidents")
+    response = (
+        client.get_alerts(
+            alert_ids=entity_ids,
+            from_time=INCIDENT_ID_LOOKUP_FROM_TIME,
+            limit=len(entity_ids),
+            offset=0,
+        )
+        or {}
+    )
+    return _vega_entities_or_raise(response, "alerts", "alerts")
+
+
+_INVALID_UUID_ID_PATTERN = re.compile(
+    r"""(?P<label>alertIds|incidentIds|alerts|incidents)(?:\s+entry)?\s+["'](?P<entity_id>.*?)["']"""
+    r"""\s+is not (?:a )?valid UUID""",
+    re.IGNORECASE,
+)
+
+
+def _invalid_uuid_error(exc: Exception) -> tuple[bool, str | None]:
+    """Return whether Vega rejected a UUID, and the ID from the error when it is present."""
+    message = str(exc)
+    lowered = message.lower()
+    if "invalid_request_fields" not in lowered and "not a valid uuid" not in lowered and "not valid uuid" not in lowered:
+        return False, None
+    match = _INVALID_UUID_ID_PATTERN.search(message)
+    if match is None:
+        return True, None
+    return True, match.group("entity_id")
+
+
+def _pending_id_named_in_error(pending: list[str], bad_id: str | None) -> str | None:
+    """Return the configured ID that matches the ID Vega rejected."""
+    if not bad_id:
+        return None
+    if bad_id in pending:
+        return bad_id
+    stripped = bad_id.strip()
+    for entity_id in pending:
+        if entity_id.strip() == stripped:
+            return entity_id
+    return None
+
+
+def _log_skipped_invalid_uuid(entity_id: str, *, incidents: bool) -> None:
+    """Write a connector log line for one ID Vega rejected as an invalid UUID."""
+    kind = "incident" if incidents else "alert"
+    demisto.error(
+        f"Skipped {kind} ID '{entity_id}' because it is not a valid UUID. The other IDs in this fetch will still be processed."
+    )
+
+
+def _remember_invalid_uuid(pending: list[str], invalid: list[str], entity_id: str) -> list[str]:
+    """Record one rejected ID and remove it from the IDs still to fetch."""
+    invalid.append(entity_id)
+    return [item for item in pending if item != entity_id]
+
+
+def _fetch_ids_one_by_one(
+    client: Client,
+    entity_ids: list[str],
+    *,
+    incidents: bool,
+) -> tuple[list[dict[str, Any]] | None, list[str]]:
+    """Fetch each ID alone so one invalid UUID does not reject the rest of the list."""
+    records: list[dict[str, Any]] = []
+    invalid: list[str] = []
+    for entity_id in entity_ids:
+        one_records, one_invalid = _fetch_ids_skipping_invalid_uuids(client, [entity_id], incidents=incidents)
+        invalid.extend(one_invalid)
+        if one_records is None:
+            return None, invalid
+        records.extend(one_records)
+    return records, invalid
+
+
+def _fetch_ids_skipping_invalid_uuids(
+    client: Client,
+    entity_ids: list[str],
+    *,
+    incidents: bool,
+) -> tuple[list[dict[str, Any]] | None, list[str]]:
+    """Fetch records and drop IDs Vega rejects as invalid UUIDs.
+
+    None means a transient API error. Invalid IDs are still returned so they are not sent again.
+    """
+    pending = list(entity_ids)
+    invalid: list[str] = []
+    label = "reconciliation incidents" if incidents else "reconciliation alerts"
+    while pending:
+        try:
+            return _fetch_reconciliation_records(client, pending, incidents=incidents), invalid
+        except Exception as exc:
+            is_invalid_uuid, bad_id = _invalid_uuid_error(exc)
+            if not is_invalid_uuid:
+                _handle_fetch_entity_error(label, exc)
+                return None, invalid
+            matched = _pending_id_named_in_error(pending, bad_id)
+            if matched:
+                _log_skipped_invalid_uuid(matched, incidents=incidents)
+                pending = _remember_invalid_uuid(pending, invalid, matched)
+                continue
+            if len(pending) == 1:
+                _log_skipped_invalid_uuid(pending[0], incidents=incidents)
+                pending = _remember_invalid_uuid(pending, invalid, pending[0])
+                continue
+            one_records, one_invalid = _fetch_ids_one_by_one(client, pending, incidents=incidents)
+            return one_records, invalid + one_invalid
+    return [], invalid
+
+
+def _log_id_fetch_result(incident_count: int, alert_count: int) -> None:
+    """Log a short fetch result for the integration connector."""
+    if incident_count == 0 and alert_count == 0:
+        demisto.info("No Vega incidents or alerts were fetched.")
+        return
+    parts: list[str] = []
+    if incident_count:
+        noun = "incident" if incident_count == 1 else "incidents"
+        parts.append(f"{incident_count} Vega {noun}")
+    if alert_count:
+        noun = "alert" if alert_count == 1 else "alerts"
+        parts.append(f"{alert_count} Vega {noun}")
+    demisto.info(f"Fetched {' and '.join(parts)}.")
+
+
+def _partition_reconciliation_ids(requested: list[str], entities: list[dict[str, Any]]) -> tuple[list[str], list[str]]:
+    """Split requested IDs into those Vega returned and those it did not."""
+    returned = {_normalize_entity_id(entity) for entity in entities}
+    returned.discard("")
+    found = [entity_id for entity_id in requested if entity_id in returned]
+    missing = [entity_id for entity_id in requested if entity_id not in returned]
+    return found, missing
+
+
+def _xsoar_incidents_for_reconciliation_alerts(
+    client: Client,
+    alerts: list[dict[str, Any]],
+    integration_url: str | None,
+) -> list[dict[str, Any]]:
+    """Convert reconciliation alerts into XSOAR incidents, including alert events."""
+    pending = [(alert_id, alert) for alert in alerts if (alert_id := _normalize_entity_id(alert))]
+    prefetched = _fetch_alert_events_for_ids(client, [alert_id for alert_id, _alert in pending])
+    return [
+        alert_to_incident(
+            alert,
+            integration_url=integration_url,
+            prefetched_alert_events=prefetched.get(alert_id),
+        )
+        for alert_id, alert in pending
+    ]
+
+
+def _xsoar_incidents_for_reconciliation_incidents(
+    client: Client,
+    incidents: list[dict[str, Any]],
+    include_alert_metadata: bool,
+) -> list[dict[str, Any]]:
+    """Convert reconciliation incidents into XSOAR incidents, including timeline events."""
+    created: list[dict[str, Any]] = []
+    for incident in incidents:
+        incident_id = _normalize_entity_id(incident)
+        if not incident_id:
+            continue
+        timeline_events = _fetch_incident_timeline_events(client, incident_id)
+        created.append(
+            incident_to_xsoar_incident(
+                incident,
+                timeline_events=timeline_events,
+                client=client,
+                include_alert_metadata=include_alert_metadata,
+            )
+        )
+    return created
+
+
+def fetch_reconciliation_incidents_command(
+    client: Client,
+    last_run: dict[str, Any],
+    alert_ids: list[str],
+    incident_ids: list[str],
+    max_fetch: int,
+    integration_url: str | None = None,
+    include_alert_metadata: bool = False,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Create investigations for explicit Vega IDs and ignore Collect filters and backfill."""
+    next_run = dict(last_run)
+    completed_incidents = _stored_id_list(last_run, RECONCILE_COMPLETED_INCIDENTS_KEY)
+    not_found_incidents = _stored_id_list(last_run, RECONCILE_NOT_FOUND_INCIDENTS_KEY)
+    completed_alerts = _stored_id_list(last_run, RECONCILE_COMPLETED_ALERTS_KEY)
+    not_found_alerts = _stored_id_list(last_run, RECONCILE_NOT_FOUND_ALERTS_KEY)
+    pending_incidents = _pending_reconciliation_ids(incident_ids, completed_incidents, not_found_incidents)
+    pending_alerts = _pending_reconciliation_ids(alert_ids, completed_alerts, not_found_alerts)
+    incident_batch = pending_incidents[:max_fetch]
+    alert_batch = pending_alerts[: max(max_fetch - len(incident_batch), 0)]
+    xsoar_incidents: list[dict[str, Any]] = []
+    created_incidents: list[dict[str, Any]] = []
+    created_alerts: list[dict[str, Any]] = []
+
+    if incident_batch:
+        incident_records, invalid_incidents = _fetch_ids_skipping_invalid_uuids(client, incident_batch, incidents=True)
+        not_found_incidents = _extend_unique_ids(not_found_incidents, invalid_incidents)
+        if incident_records is not None:
+            requested = [entity_id for entity_id in incident_batch if entity_id not in invalid_incidents]
+            found, missing = _partition_reconciliation_ids(requested, incident_records)
+            completed_incidents = _extend_unique_ids(completed_incidents, found)
+            not_found_incidents = _extend_unique_ids(not_found_incidents, missing)
+            created_incidents = _xsoar_incidents_for_reconciliation_incidents(client, incident_records, include_alert_metadata)
+            xsoar_incidents.extend(created_incidents)
+
+    if alert_batch:
+        alert_records, invalid_alerts = _fetch_ids_skipping_invalid_uuids(client, alert_batch, incidents=False)
+        not_found_alerts = _extend_unique_ids(not_found_alerts, invalid_alerts)
+        if alert_records is not None:
+            requested = [entity_id for entity_id in alert_batch if entity_id not in invalid_alerts]
+            found, missing = _partition_reconciliation_ids(requested, alert_records)
+            completed_alerts = _extend_unique_ids(completed_alerts, found)
+            not_found_alerts = _extend_unique_ids(not_found_alerts, missing)
+            created_alerts = _xsoar_incidents_for_reconciliation_alerts(client, alert_records, integration_url)
+            xsoar_incidents.extend(created_alerts)
+
+    next_run[RECONCILE_COMPLETED_INCIDENTS_KEY] = completed_incidents
+    next_run[RECONCILE_NOT_FOUND_INCIDENTS_KEY] = not_found_incidents
+    next_run[RECONCILE_COMPLETED_ALERTS_KEY] = completed_alerts
+    next_run[RECONCILE_NOT_FOUND_ALERTS_KEY] = not_found_alerts
+    _log_id_fetch_result(len(created_incidents), len(created_alerts))
+    return next_run, xsoar_incidents
 
 
 def fetch_incidents_command(
@@ -5139,6 +6713,8 @@ def fetch_incidents_command(
     integration_url: str | None = None,
     max_fetch: int = DEFAULT_MAX_FETCH,
     lookback_minutes: int = DEFAULT_LOOKBACK_MINUTES,
+    incident_investigation_statuses: list[str] | None = None,
+    include_incident_alert_metadata: bool = False,
 ) -> tuple[dict, list[dict]]:
     xsoar_incidents: list[dict] = []
     next_run: dict = dict(last_run)
@@ -5152,12 +6728,19 @@ def fetch_incidents_command(
         alert_verdicts,
         has_related_incidents,
     )
-    incidents_fetch_config = _build_fetch_filter_fingerprint(incident_severities, incident_statuses, incident_verdicts)
+    incidents_fetch_config = _build_fetch_filter_fingerprint(
+        incident_severities,
+        incident_statuses,
+        incident_verdicts,
+        investigation_statuses=incident_investigation_statuses,
+    )
 
     remaining = max_fetch
     working_run = last_run
     incidents_touched = False
     alerts_touched = False
+    cycle_incidents_total: int | None = None
+    cycle_alerts_total: int | None = None
 
     def _get_from_time(last_fetch_key: str) -> str:
         last_fetch = working_run.get(last_fetch_key)
@@ -5170,7 +6753,7 @@ def fetch_incidents_command(
 
     if fetch_incidents and remaining > 0 and working_run.get(INCIDENTS_OFFSET_KEY) is not None:
         incidents_from_time = _get_from_time("incidents_last_fetch")
-        ingested_incidents = _ingest_fetched_incidents(
+        ingested_incidents, incidents_total = _ingest_fetched_incidents(
             client,
             working_run,
             next_run,
@@ -5181,11 +6764,15 @@ def fetch_incidents_command(
             incidents_fetch_config=incidents_fetch_config,
             incident_severities=incident_severities,
             incident_statuses=incident_statuses,
+            incident_investigation_statuses=incident_investigation_statuses,
             incident_verdicts=incident_verdicts,
             limit=remaining,
             backfill_days=backfill_days,
             lookback_minutes=lookback_minutes,
+            include_alert_metadata=include_incident_alert_metadata,
         )
+        if incidents_total is not None:
+            cycle_incidents_total = incidents_total
         remaining -= ingested_incidents
         working_run = next_run
         incidents_touched = True
@@ -5197,7 +6784,7 @@ def fetch_incidents_command(
         and working_run.get(ALERTS_OFFSET_KEY) is not None
     ):
         alerts_from_time = _get_from_time("alerts_last_fetch")
-        ingested_alerts = _ingest_fetched_alerts(
+        ingested_alerts, alerts_total = _ingest_fetched_alerts(
             client,
             working_run,
             next_run,
@@ -5215,13 +6802,15 @@ def fetch_incidents_command(
             backfill_days=backfill_days,
             lookback_minutes=lookback_minutes,
         )
+        if alerts_total is not None:
+            cycle_alerts_total = alerts_total
         remaining -= ingested_alerts
         working_run = next_run
         alerts_touched = True
 
     if fetch_incidents and remaining > 0 and not incidents_touched and next_run.get(INCIDENTS_OFFSET_KEY) is None:
         incidents_from_time = _get_from_time("incidents_last_fetch")
-        ingested_incidents = _ingest_fetched_incidents(
+        ingested_incidents, incidents_total = _ingest_fetched_incidents(
             client,
             working_run,
             next_run,
@@ -5232,11 +6821,15 @@ def fetch_incidents_command(
             incidents_fetch_config=incidents_fetch_config,
             incident_severities=incident_severities,
             incident_statuses=incident_statuses,
+            incident_investigation_statuses=incident_investigation_statuses,
             incident_verdicts=incident_verdicts,
             limit=remaining,
             backfill_days=backfill_days,
             lookback_minutes=lookback_minutes,
+            include_alert_metadata=include_incident_alert_metadata,
         )
+        if incidents_total is not None:
+            cycle_incidents_total = incidents_total
         remaining -= ingested_incidents
         working_run = next_run
 
@@ -5248,7 +6841,7 @@ def fetch_incidents_command(
         and next_run.get(ALERTS_OFFSET_KEY) is None
     ):
         alerts_from_time = _get_from_time("alerts_last_fetch")
-        _ingest_fetched_alerts(
+        _, alerts_total = _ingest_fetched_alerts(
             client,
             working_run,
             next_run,
@@ -5266,7 +6859,10 @@ def fetch_incidents_command(
             backfill_days=backfill_days,
             lookback_minutes=lookback_minutes,
         )
+        if alerts_total is not None:
+            cycle_alerts_total = alerts_total
 
+    _log_fetch_cycle_status(len(xsoar_incidents), cycle_incidents_total, cycle_alerts_total)
     return next_run, xsoar_incidents
 
 
@@ -5303,11 +6899,18 @@ def _parse_vega_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         "has_related_incidents": resolve_has_related_incidents(argToList(params.get("alert_has_related_incidents"))),
         "incident_severities": filter_incident_severities(argToList(params.get("incident_severities")) or None),
         "incident_statuses": filter_incident_statuses(argToList(params.get("incident_statuses")) or None),
+        "incident_investigation_statuses": filter_incident_investigation_statuses(
+            argToList(params.get("incident_investigation_statuses")) or None
+        ),
         "incident_verdicts": filter_incident_verdicts(argToList(params.get("incident_verdicts")) or None),
         "backfill_days": backfill_days,
         "first_fetch_time": parse_backfill_days(backfill_days),
         "max_fetch": _resolve_max_fetch(params.get("max_fetch")),
         "lookback_minutes": _parse_lookback_minutes(params.get("lookback_minutes")),
+        "include_incident_alert_metadata": _include_incident_alert_metadata(params),
+        "incident_reconciliation": argToBoolean(params.get("incident_reconciliation", False)),
+        "reconciliation_alert_ids": _parse_comma_separated_ids(params.get("reconciliation_alert_ids")),
+        "reconciliation_incident_ids": _parse_comma_separated_ids(params.get("reconciliation_incident_ids")),
     }
 
 
@@ -5331,12 +6934,19 @@ def _dispatch_vega_command(client: Client, command: str, config: dict[str, Any])
             )
         ),
         "vega-get-alert-events": lambda: return_results(fetch_alert_events_command(client, demisto.args())),
+        "vega-get-alert-metadata": lambda: return_results(get_alert_metadata_command(client, demisto.args())),
         "vega-set-detections-state": lambda: return_results(set_detections_state_command(client, demisto.args())),
         "vega-update-detections": lambda: return_results(update_detections_command(client, demisto.args())),
         "vega-update-alert": lambda: return_results(update_alert_command(client, demisto.args())),
         "vega-update-incident": lambda: return_results(update_incident_command(client, demisto.args())),
+        "vega-reconcile-incidents": lambda: return_results(reconcile_incidents_command(client, demisto.args())),
         "get-remote-data": lambda: return_results(
-            get_remote_data_command(client, demisto.args(), integration_url=config["base_url"])
+            get_remote_data_command(
+                client,
+                demisto.args(),
+                integration_url=config["base_url"],
+                include_alert_metadata=config["include_incident_alert_metadata"],
+            )
         ),
         "get-modified-remote-data": lambda: return_results(get_modified_remote_data_command(client, demisto.args())),
         "update-remote-system": lambda: return_results(update_remote_system_command(client, demisto.args())),
@@ -5345,24 +6955,37 @@ def _dispatch_vega_command(client: Client, command: str, config: dict[str, Any])
 
     if command == "fetch-incidents":
         last_run = demisto.getLastRun()
-        next_run, xsoar_incidents = fetch_incidents_command(
-            client=client,
-            last_run=last_run,
-            fetch_alerts=config["fetch_alerts"],
-            fetch_incidents=config["fetch_incidents"],
-            alert_severities=config["alert_severities"],
-            alert_statuses=config["alert_statuses"],
-            alert_verdicts=config["alert_verdicts"],
-            has_related_incidents=config["has_related_incidents"],
-            incident_severities=config["incident_severities"],
-            incident_statuses=config["incident_statuses"],
-            incident_verdicts=config["incident_verdicts"],
-            first_fetch_time=config["first_fetch_time"],
-            backfill_days=config["backfill_days"],
-            integration_url=config["base_url"],
-            max_fetch=config["max_fetch"],
-            lookback_minutes=config["lookback_minutes"],
-        )
+        if config["incident_reconciliation"]:
+            next_run, xsoar_incidents = fetch_reconciliation_incidents_command(
+                client=client,
+                last_run=last_run,
+                alert_ids=config["reconciliation_alert_ids"],
+                incident_ids=config["reconciliation_incident_ids"],
+                max_fetch=config["max_fetch"],
+                integration_url=config["base_url"],
+                include_alert_metadata=config["include_incident_alert_metadata"],
+            )
+        else:
+            next_run, xsoar_incidents = fetch_incidents_command(
+                client=client,
+                last_run=last_run,
+                fetch_alerts=config["fetch_alerts"],
+                fetch_incidents=config["fetch_incidents"],
+                alert_severities=config["alert_severities"],
+                alert_statuses=config["alert_statuses"],
+                alert_verdicts=config["alert_verdicts"],
+                has_related_incidents=config["has_related_incidents"],
+                incident_severities=config["incident_severities"],
+                incident_statuses=config["incident_statuses"],
+                incident_investigation_statuses=config["incident_investigation_statuses"],
+                incident_verdicts=config["incident_verdicts"],
+                first_fetch_time=config["first_fetch_time"],
+                backfill_days=config["backfill_days"],
+                integration_url=config["base_url"],
+                max_fetch=config["max_fetch"],
+                lookback_minutes=config["lookback_minutes"],
+                include_incident_alert_metadata=config["include_incident_alert_metadata"],
+            )
         demisto.setLastRun(next_run)
         demisto.incidents(xsoar_incidents)
         return
