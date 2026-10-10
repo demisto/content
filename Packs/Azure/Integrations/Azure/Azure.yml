@@ -1263,25 +1263,37 @@ script:
       name: subscription_id
       required: false
       required:platform: true
-    - description: Filters the results to return only Containers whose names begin with the specified prefix.
+    - description: Filters the results to return only containers whose names begin with the specified prefix.
       name: prefix
-    - description: The maximum number of Containers to retrieve. Valid range 1-5000.
+    - description: The maximum number of containers to retrieve. Accepted range is 1 to 5000.
       name: limit
       defaultValue: '50'
-    - description: The token for the next set of items to return, used for pagination.
+    - description: The continuation token returned by a previous call (Azure.Storage.ContainersNextToken), used to retrieve the next page of results.
       name: next_token
     outputs:
     - contextPath: Azure.Storage.Container.name
-      description: Container name.
+      description: The container name.
+      type: String
+    - contextPath: Azure.Storage.Container.Property.Last-Modified
+      description: The date and time the container was last modified, in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: Azure.Storage.Container.Property.Etag
+      description: The entity tag for the container.
+      type: String
+    - contextPath: Azure.Storage.Container.Property.LeaseStatus
+      description: The lease status of the container.
+      type: String
+    - contextPath: Azure.Storage.Container.Property.LeaseState
+      description: The lease state of the container.
       type: String
     - contextPath: Azure.Storage.ContainersNextToken
-      description: The token to use when requesting the next set of Containers.
+      description: The continuation token to use when requesting the next set of containers.
       type: String
 
   - name: azure-storage-blob-list
     description: "Lists Blobs under the specified container. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read."
     arguments:
-    - description: The name of the Blob Container.
+    - description: The name of the blob container.
       name: container_name
       required: true
     - description: The storage account name.
@@ -1291,34 +1303,37 @@ script:
       name: subscription_id
       required: false
       required:platform: true
-    - description: Filters the results to return only Blobs whose names begin with the specified prefix.
+    - description: Filters the results to return only blobs whose names begin with the specified prefix.
       name: prefix
-    - description: The maximum number of Blobs to retrieve. Valid range 1-5000.
+    - description: The maximum number of blobs to retrieve. Accepted range is 1 to 5000.
       name: limit
       defaultValue: '50'
-    - description: The token for the next set of items to return, used for pagination.
+    - description: The continuation token returned by a previous call (Azure.Storage.BlobsNextToken), used to retrieve the next page of results.
       name: next_token
     outputs:
     - contextPath: Azure.Storage.Blob.ContainerName
-      description: Container name.
+      description: The container name.
       type: String
     - contextPath: Azure.Storage.Blob.Blob.name
-      description: Blob name.
+      description: The blob name.
       type: String
+    - contextPath: Azure.Storage.Blob.Blob.Property
+      description: 'The blob system properties, including: Last-Modified, Etag, Content-Length, Content-Type, Content-Encoding, Content-Language, Content-MD5, Cache-Control, Content-Disposition, BlobType, LeaseStatus, LeaseState, and ServerEncrypted.'
+      type: Unknown
     - contextPath: Azure.Storage.BlobsNextToken
-      description: The token to use when requesting the next set of Blobs.
+      description: The continuation token to use when requesting the next set of blobs.
       type: String
 
   - name: azure-storage-blob-update
-    description: "Updates the content of an existing Blob. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
+    description: "Updates the content of an existing blob. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
     arguments:
-    - description: The name of the Blob Container.
+    - description: The name of the blob container.
       name: container_name
       required: true
-    - description: The entry ID of the file to upload as the Blob content. Available from the war room while the context data contains file output.
+    - description: The entry ID of the file to upload as the blob content. Available from the war room while the context data contains file output.
       name: file_entry_id
       required: true
-    - description: The name of the Blob to update.
+    - description: The name of the blob to update.
       name: blob_name
       required: true
     - description: The storage account name.
@@ -1330,13 +1345,13 @@ script:
       required:platform: true
 
   - name: azure-storage-blob-delete
-    description: "Marks a specific Blob for deletion. The Blob will be deleted during garbage collection. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete."
+    description: "Marks a specific blob for deletion. The blob is deleted during garbage collection. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete."
     execution: true
     arguments:
-    - description: The name of the Blob Container.
+    - description: The name of the blob container.
       name: container_name
       required: true
-    - description: The name of the Blob to delete.
+    - description: The name of the blob to delete.
       name: blob_name
       required: true
     - description: The storage account name.
@@ -1348,9 +1363,9 @@ script:
       required:platform: true
 
   - name: azure-storage-container-sas-create
-    description: "Creates a SAS token for a Container."
+    description: "Creates a shared access signature (SAS) token for a container."
     arguments:
-    - description: The name of the Container.
+    - description: The name of the container.
       name: container_name
       required: true
     - description: The storage account name.
@@ -1361,12 +1376,12 @@ script:
       required: false
       required:platform: true
     - defaultValue: '1'
-      description: Expiry time for the SAS token (in hours).
+      description: The expiry time for the SAS token, in hours.
       name: expiry_time
       required: true
     - auto: PREDEFINED
       defaultValue: c
-      description: Specifies which resources are accessible via the shared access signature. Options available c(container), b(blob), bv(blob version), bs(blob snapshot), d(directory).
+      description: The resources that are accessible via the shared access signature. Options available c(container), b(blob), bv(blob version), bs(blob snapshot), d(directory).
       name: signed_resources
       predefined:
       - c
@@ -1379,13 +1394,13 @@ script:
       description: 'The permissions that are associated with the shared access signature. The user is restricted to operations that are allowed by the permissions. Possible permissions: r = Read, a = Add, c = Create, w = Write. The permissions must follow this order "racwdxltmeop". Example: r, c, a, w, rac, racw.'
       name: signed_permissions
       required: true
-    - description: Specifies a public IP address or a range of public IP addresses from which to accept requests.
+    - description: The public IP address or range of public IP addresses from which to accept requests.
       name: signed_ip
     - description: The account key to create the SAS token with. If not provided, the account key from the integration configuration is used.
       name: account_key
     outputs:
     - contextPath: Azure.Storage.Container.SAS.name
-      description: Container name.
+      description: The container name.
       type: String
     - contextPath: Azure.Storage.Container.SAS.SASURL
       description: The generated SAS URL for the container.

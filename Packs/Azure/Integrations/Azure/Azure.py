@@ -110,7 +110,7 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Storage/storageAccounts/blobServices/containers/read": [
         "azure-storage-container-property-get",
         "azure-storage-blob-containers-list",
-                "azure-storage-container-list",
+        "azure-storage-container-list",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/delete": ["azure-storage-container-delete"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": [
@@ -1551,7 +1551,7 @@ class AzureClient:
 
         return response
 
-    def storage_containers_list_request(self, account_name: str, args: dict) -> str:
+    def storage_containers_list_request(self, account_name: str, args: dict):
         """
         List Containers under the specified storage account.
 
@@ -1582,7 +1582,7 @@ class AzureClient:
 
         return response
 
-    def storage_container_blobs_list_request(self, account_name: str, container_name: str, args: dict) -> str:
+    def storage_container_blobs_list_request(self, account_name: str, container_name: str, args: dict):
         """
         List Blobs under the specified container.
 
@@ -1614,7 +1614,7 @@ class AzureClient:
 
         return response
 
-    def storage_container_blob_delete_request(self, container_name: str, blob_name: str, account_name: str) -> requests.Response:
+    def storage_container_blob_delete_request(self, container_name: str, blob_name: str, account_name: str):
         """
         Delete Blob from the specified Container.
 
