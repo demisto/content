@@ -26,7 +26,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "SaaS Security Event Collector",
     "supportedModules": [
         "agentix",
         "xsiam",

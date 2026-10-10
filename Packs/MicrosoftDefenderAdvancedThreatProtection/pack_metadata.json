@@ -67,7 +67,6 @@
         "CommonPlaybooks",
         "CommonTypes"
     ],
-    "defaultDataSource": "Microsoft Defender Advanced Threat Protection",
     "supportedModules": [
         "agentix",
         "xsiam",

@@ -3,8 +3,6 @@ By configuring this collector, you can gather data from various systems and brin
 
 Note: This pack is currently in **Beta**, and as such, it may be subject to future changes and may not work on all types of APIs and Authentication.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
-
 ## Configure Generic API Event Collector (Beta) in Cortex
 
 | **Parameter** | **Description** | **Required** |

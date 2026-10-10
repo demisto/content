@@ -35,7 +35,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "Cofense Triage v3",
     "supportedModules": [
         "agentix",
         "xsiam"
