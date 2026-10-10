@@ -1821,7 +1821,7 @@ script:
     - name: limit
       description: The maximum number of tables to return. Accepted values are 1 to 1000. Default is 50.
       required: false
-      defaultvalue: '50'
+      defaultValue: '50'
     - name: filter
       description: The OData query expression used to filter the returned tables.
       required: false
@@ -1940,7 +1940,7 @@ script:
     - name: limit
       description: The maximum number of entities to return. Accepted range is 1 to 1000. Default is 50.
       required: false
-      defaultvalue: '50'
+      defaultValue: '50'
     - name: next_token
       description: The continuation token returned by a previous call (Azure.Storage.EntitiesNextToken), used to retrieve the next page of results. Ignored when partition_key and row_key are provided.
     outputs:
