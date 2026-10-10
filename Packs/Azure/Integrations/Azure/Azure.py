@@ -465,7 +465,7 @@ API_FUNCTION_TO_PERMISSIONS = {
         "Microsoft.Network/azureFirewalls/write",
         "Microsoft.Network/firewallPolicies/join/action",
     ],
-    "resource_graph_list_operations": ["Microsoft.ResourceGraph/operations/read"],
+        "resource_graph_list_operations": ["Microsoft.ResourceGraph/operations/read"],
     "resource_graph_query_resources": ["Microsoft.ResourceGraph/resources/read"],
 }
 
