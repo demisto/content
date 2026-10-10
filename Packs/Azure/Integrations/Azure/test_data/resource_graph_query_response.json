@@ -1,0 +1,50 @@
+{
+    "count": 6,
+    "data": [
+        {
+            "id": "/subscriptions/mock-subscription-id/resourceGroups/MOCK-RESOURCE-GROUP/providers/Microsoft.Network/networkSecurityGroups/test-ssh-nsg",
+            "location": "eastus",
+            "name": "test-ssh-nsg",
+            "tags": "dev",
+            "type": "microsoft.network/networksecuritygroups"
+        },
+        {
+            "id": "/subscriptions/mock-subscription-id/resourceGroups/MOCK-RESOURCE-GROUP/providers/Microsoft.Network/virtualNetworks/test-ssh-vnet",
+            "location": "eastus",
+            "name": "test-ssh-vnet",
+            "tags": "dev",
+            "type": "microsoft.network/virtualnetworks"
+        },
+        {
+            "id": "/subscriptions/mock-subscription-id/resourceGroups/MOCK-RESOURCE-GROUP/providers/Microsoft.Compute/disks/test-ssh-disk1",
+            "location": "eastus",
+            "name": "test-ssh-disk1",
+            "tags": "dev",
+            "type": "microsoft.compute/disks"
+        },
+        {
+            "id": "/subscriptions/mock-subscription-id/resourceGroups/MOCK-RESOURCE-GROUP-2/providers/Microsoft.Network/networkSecurityGroups/test-ssh-nsg-2",
+            "location": "eastus",
+            "name": "test-ssh-nsg-2",
+            "tags": "dev",
+            "type": "microsoft.network/networksecuritygroups"
+        },
+        {
+            "id": "/subscriptions/mock-subscription-id/resourceGroups/MOCK-RESOURCE-GROUP-2/providers/Microsoft.Network/virtualNetworks/test-ssh-vnet-2",
+            "location": "eastus",
+            "name": "test-ssh-vnet-2",
+            "tags": "dev",
+            "type": "microsoft.network/virtualnetworks"
+        },
+        {
+            "id": "/subscriptions/mock-subscription-id/resourceGroups/MOCK-RESOURCE-GROUP-2/providers/Microsoft.Compute/disks/test-ssh-disk3",
+            "location": "eastus",
+            "name": "test-ssh-disk3",
+            "tags": "dev",
+            "type": "microsoft.compute/disks"
+        }
+    ],
+    "facets": [],
+    "resultTruncated": "false",
+    "totalRecords": 6
+}

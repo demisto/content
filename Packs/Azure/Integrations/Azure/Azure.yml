@@ -12303,6 +12303,88 @@ script:
       - contextPath: Azure.Firewall.Firewalls.properties.additionalProperties
         description: The additional properties used to further configure the firewall resource.
         type: Unknown
+  - name: azure-rg-list-operations
+    description: "Gets all Azure Resource Graph operations permissions and descriptions. Required permission: Microsoft.ResourceGraph/operations/read."
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: limit
+        description: 'The maximum number of operations to return. Note: Do not use with "page" and "page_size".'
+        required: false
+        type: Number
+      - name: page_size
+        description: The maximum number of operations to return per page.
+        required: false
+        type: Number
+      - name: page
+        description: The page number to return.
+        required: false
+        type: Number
+    outputs:
+      - contextPath: Azure.ResourceGraph.Operations.Name
+        description: The name of the Azure Resource Graph operation.
+        type: String
+      - contextPath: Azure.ResourceGraph.Operations.Display
+        description: The display information of the Azure Resource Graph operation, including provider, resource, operation, and description.
+        type: Unknown
+  - name: azure-rg-query
+    description: 'Executes a given Azure Resource Graph query. The query is based on Kusto Query Language (KQL). For example: query="Resources | project name, type | limit 5 | order by name asc". Required permission: Microsoft.ResourceGraph/resources/read.'
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: query
+        required: true
+        description: |-
+          The query for the Azure Resource Graph to execute.
+          For example: `resources | where (resourceGroup =~ ('demisto-sentinel2'))`.
+          The query is based on Kusto Query Language (KQL). Reference: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/.
+      - name: limit
+        description: 'The maximum number of resources to return. Note: Do not use with "page" and "page_size".'
+        required: false
+        defaultValue: "50"
+        type: Number
+      - name: page_size
+        description: The maximum number of resources to return per page.
+        required: false
+        type: Number
+      - name: page
+        description: The page number to return.
+        required: false
+        type: Number
+      - name: management_groups
+        description: "A comma-separated list of Azure management groups against which to execute the query. Example: 'mg1, mg2'."
+        required: false
+        isArray: true
+      - name: subscriptions
+        description: "A comma-separated list of Azure subscriptions against which to execute the query. Example: 'sub1, sub2'."
+        required: false
+        isArray: true
+      - name: next_token
+        description: The token for the next set of results to return, used for pagination. Retrieved from the Azure.ResourceGraph.QueryNextToken output of a previous run.
+        required: false
+    outputs:
+      - contextPath: Azure.ResourceGraph.Query.id
+        description: The resource ID of the resource returned by the query.
+        type: String
+      - contextPath: Azure.ResourceGraph.Query.name
+        description: The name of the resource returned by the query.
+        type: String
+      - contextPath: Azure.ResourceGraph.Query.type
+        description: The type of the resource returned by the query.
+        type: String
+      - contextPath: Azure.ResourceGraph.Query.location
+        description: The location of the resource returned by the query.
+        type: String
+      - contextPath: Azure.ResourceGraph.Query.tags
+        description: The tags of the resource returned by the query.
+        type: Unknown
+      - contextPath: Azure.ResourceGraph.QueryNextToken
+        description: The token to pass as the next_token argument to retrieve the next set of query results.
+        type: String
   isfetch: false
   runonce: false
   script: '-'
