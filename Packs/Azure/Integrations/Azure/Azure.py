@@ -6357,6 +6357,9 @@ def resource_graph_list_operations_command(client: AzureClient, params: dict, ar
     for operation in operations_list[:limit]:
         operations.append({"Name": operation.get("name"), "Display": operation.get("display")})
 
+    if not operations:
+        return CommandResults(readable_output="No Azure Resource Graph operations were found.", raw_response=response)
+
     title = "List of Azure Resource Graph Operations\n\n" + md_output_notes
     readable_output = tableToMarkdown(
         title,
@@ -6418,6 +6421,8 @@ def resource_graph_query_resources_command(client: AzureClient, params: dict, ar
         list_of_query_results = response.get("data", [])
         response_skip_token = response.get("$skipToken", "")
     else:
+        # No explicit paging: bound the unbounded fetch with the documented default limit.
+        limit = limit or RESOURCE_GRAPH_MAX_PAGE_SIZE
         query_results: list = []
         skip_token = next_token or ""
         counter = 0
@@ -6446,6 +6451,9 @@ def resource_graph_query_resources_command(client: AzureClient, params: dict, ar
 
     if limit:
         list_of_query_results = list_of_query_results[:limit]
+
+    if not list_of_query_results:
+        return CommandResults(readable_output="No resources were found for the given query.", raw_response=response)
 
     metadata = (
         "Run the following command to retrieve the next batch of results:\n"

@@ -9500,7 +9500,7 @@ def test_resource_graph_list_operations_command_no_results(mocker):
     """
     Given: An Azure client mock returning an empty operations list.
     When: resource_graph_list_operations_command is called.
-    Then: It returns CommandResults with an empty outputs list.
+    Then: It returns CommandResults with a "no operations found" readable output and no context.
     """
     from Azure import resource_graph_list_operations_command
 
@@ -9509,8 +9509,8 @@ def test_resource_graph_list_operations_command_no_results(mocker):
 
     result = resource_graph_list_operations_command(mock_client, {}, {})
 
-    assert result.outputs == []
-    assert "List of Azure Resource Graph Operations" in result.readable_output
+    assert result.outputs is None
+    assert result.readable_output == "No Azure Resource Graph operations were found."
 
 
 @pytest.mark.parametrize(
@@ -9584,7 +9584,7 @@ def test_resource_graph_query_resources_command_no_results(mocker):
     """
     Given: An Azure client mock returning no data for a Resource Graph query.
     When: resource_graph_query_resources_command is called.
-    Then: It returns CommandResults with an empty query results list and no next token.
+    Then: It returns CommandResults with a "no resources found" readable output and no context.
     """
     from Azure import resource_graph_query_resources_command
 
@@ -9593,8 +9593,8 @@ def test_resource_graph_query_resources_command_no_results(mocker):
 
     result = resource_graph_query_resources_command(mock_client, {}, {"query": "Resources | limit 1"})
 
-    assert result.outputs[QUERY_RESULTS_PATH] == []
-    assert result.outputs[QUERY_NEXT_TOKEN_PATH]["QueryNextToken"] is None
+    assert result.outputs is None
+    assert result.readable_output == "No resources were found for the given query."
 
 
 def test_resource_graph_query_resources_command_surfaces_next_token(mocker):
