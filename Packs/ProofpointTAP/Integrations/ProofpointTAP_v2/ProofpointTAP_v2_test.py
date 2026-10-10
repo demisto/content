@@ -1,9 +1,19 @@
 import json
 from datetime import datetime
 
+import demistomock as demisto
 import pytest
 from freezegun import freeze_time
-from ProofpointTAP_v2 import ALL_EVENTS, ISSUES_EVENTS, Client, fetch_incidents, get_events_command
+from ProofpointTAP_v2 import (
+    ALL_EVENTS,
+    ISSUES_EVENTS,
+    MAX_REMAINED_INCIDENTS,
+    MAX_REMAINED_INCIDENTS_BYTES,
+    Client,
+    bound_remained_incidents,
+    fetch_incidents,
+    get_events_command,
+)
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MOCK_URL = "http://123-fake-api.com"
@@ -255,7 +265,10 @@ def test_fetch_limit(requests_mock, mocker):
     assert next_run["last_fetch"] == "2010-01-01T00:31:00Z"
     assert len(incidents) == 3
     assert len(remained) == 1
-    # test another run
+    carried_over = remained[0]
+    # Second run: the carried-over backlog is drained alongside a live fetch.
+    # `last_fetch` must keep advancing (it used to be frozen for the whole drain,
+    # which stopped ingestion entirely).
     next_run, incidents, remained = fetch_incidents(
         client=client,
         last_run=this_run,
@@ -267,9 +280,10 @@ def test_fetch_limit(requests_mock, mocker):
         integration_context={"incidents": remained},
         look_back_minutes=0,
     )
-    assert next_run["last_fetch"] == "2010-01-01T00:00:00Z"
-    assert len(incidents) == 1
-    assert not remained
+    assert next_run["last_fetch"] == "2010-01-01T00:31:00Z"
+    # The single carried-over incident is served first, then new incidents fill the limit.
+    assert len(incidents) == 3
+    assert incidents[0] == carried_over
 
 
 @freeze_time("2010-01-01T00:01:00Z", tz_offset=0)
@@ -1558,6 +1572,176 @@ def test_lookback_steady_state_uses_full_lookback(requests_mock, mocker):
     passed_look_back = spy.call_args.args[1] if len(spy.call_args.args) >= 2 else spy.call_args.kwargs.get("look_back_minutes")
     assert passed_look_back == 30
     assert "look_back_enabled_from" not in next_run
+
+
+# ---------------------------------------------------------------------------
+# Integration-context backlog bounding
+#
+# The overflow backlog is persisted via `demisto.setIntegrationContext`, which is a
+# single Elasticsearch document. Writes above `http.max_content_length` (100 MB by
+# default) are rejected with "request to elasticsearch exceeded maximum size (29005)",
+# which wedges the instance permanently. These tests pin the bounds that prevent it.
+# ---------------------------------------------------------------------------
+
+
+def _incident(index: int, payload_size: int = 10) -> dict:
+    """Build a minimal incident whose rawJSON has a predictable byte size."""
+    return {"name": f"incident-{index}", "rawJSON": "x" * payload_size, "occurred": "2010-01-01T00:00:00Z"}
+
+
+def test_bound_remained_incidents_under_limits_is_unchanged():
+    """
+    Given:
+        - A backlog comfortably below both the count and the byte bound.
+    When:
+        - Bounding it before it is written to the integration context.
+    Then:
+        - It is returned untouched (no incidents are dropped).
+    """
+    backlog = [_incident(i) for i in range(10)]
+
+    assert bound_remained_incidents(backlog) == backlog
+
+
+def test_bound_remained_incidents_empty_backlog():
+    """
+    Given:
+        - An empty backlog.
+    When:
+        - Bounding it.
+    Then:
+        - An empty list is returned and nothing raises.
+    """
+    assert bound_remained_incidents([]) == []
+
+
+def test_bound_remained_incidents_enforces_count_cap(mocker):
+    """
+    Given:
+        - A backlog larger than MAX_REMAINED_INCIDENTS.
+    When:
+        - Bounding it.
+    Then:
+        - It is truncated to the cap, the NEWEST incidents are kept (the drain serves
+          from the front, so the oldest are the ones sacrificed), and the drop is logged
+          as an error so it is visible in the war room.
+    """
+    error_log = mocker.patch.object(demisto, "error")
+    overflow = 5
+    backlog = [_incident(i) for i in range(MAX_REMAINED_INCIDENTS + overflow)]
+
+    bounded = bound_remained_incidents(backlog)
+
+    assert len(bounded) == MAX_REMAINED_INCIDENTS
+    assert bounded[-1]["name"] == f"incident-{MAX_REMAINED_INCIDENTS + overflow - 1}"
+    assert bounded[0]["name"] == f"incident-{overflow}"
+    assert error_log.call_count == 1
+
+
+def test_bound_remained_incidents_enforces_byte_cap(mocker):
+    """
+    Given:
+        - A backlog with few incidents but very large rawJSON payloads, exceeding the
+          byte bound while staying under the count cap.
+    When:
+        - Bounding it.
+    Then:
+        - It is trimmed by size (the count cap alone would not have caught this), the
+          result fits within the byte bound, and the drop is logged as an error.
+    """
+    error_log = mocker.patch.object(demisto, "error")
+    one_mb = 1024 * 1024
+    # 15 MB total vs a 10 MB bound, with only 15 incidents (well under the count cap).
+    backlog = [_incident(i, payload_size=one_mb) for i in range(15)]
+
+    bounded = bound_remained_incidents(backlog)
+
+    total_bytes = sum(len(incident["rawJSON"]) for incident in bounded)
+    assert total_bytes <= MAX_REMAINED_INCIDENTS_BYTES
+    assert len(bounded) < len(backlog)
+    # Newest are retained.
+    assert bounded[-1]["name"] == "incident-14"
+    assert error_log.call_count == 1
+
+
+@freeze_time("2010-01-01T00:31:00Z")
+def test_fetch_advances_last_fetch_while_draining_backlog(requests_mock, mocker):
+    """
+    Given:
+        - An instance with a carried-over backlog in the integration context.
+    When:
+        - A fetch runs.
+    Then:
+        - `last_fetch` ADVANCES rather than staying frozen, and the API is still queried.
+
+    This is the core regression: the old code returned early on a non-empty
+    backlog, freezing `last_fetch` and halting ingestion for the entire drain. Because
+    Proofpoint only retains 7 days, a long enough freeze made events unrecoverable.
+    """
+    current_date = "2010-01-01T00:31:00Z"
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_date, DATE_FORMAT))
+    api_mock = requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+    backlog = [_incident(i) for i in range(2)]
+
+    next_run, incidents, remained = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": "2010-01-01T00:00:00Z"},
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status=["active", "cleared"],
+        threat_type="",
+        limit=3,
+        integration_context={"incidents": backlog},
+        look_back_minutes=0,
+    )
+
+    # The API was queried - ingestion did not stall while the backlog drained.
+    assert api_mock.called
+    assert next_run["last_fetch"] == current_date
+    # Backlog is served first, then newly fetched incidents fill the remaining slots.
+    assert incidents[0]["name"] == "incident-0"
+    assert incidents[1]["name"] == "incident-1"
+    assert len(incidents) == 3
+    # The 4 freshly fetched incidents minus the single slot left = 3 carried forward.
+    assert len(remained) == 3
+
+
+@freeze_time("2010-01-01T00:31:00Z")
+def test_fetch_drains_backlog_when_no_intervals(requests_mock, mocker):
+    """
+    Given:
+        - A carried-over backlog, and a last_fetch so recent that no valid fetch
+          interval can be generated (<30s of elapsed time).
+    When:
+        - A fetch runs.
+    Then:
+        - The backlog is still drained and bounded, instead of being stranded.
+    """
+    current_date = "2010-01-01T00:31:00Z"
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_date, DATE_FORMAT))
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+    backlog = [_incident(i) for i in range(5)]
+
+    _, incidents, remained = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": current_date},  # no elapsed time -> no intervals
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status=["active", "cleared"],
+        threat_type="",
+        limit=2,
+        integration_context={"incidents": backlog},
+        look_back_minutes=0,
+    )
+
+    assert [incident["name"] for incident in incidents] == ["incident-0", "incident-1"]
+    assert len(remained) == 3
 
 
 def test_lookback_first_fetch_uses_full_lookback(requests_mock, mocker):
