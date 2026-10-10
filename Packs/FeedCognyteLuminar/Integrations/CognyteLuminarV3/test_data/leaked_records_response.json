@@ -1,0 +1,158 @@
+{
+ "more": false,
+ "objects": [
+  {
+   "type": "incident",
+   "spec_version": "2.1",
+   "id": "incident--4daf4333-8684-5158-82ba-8fc11a88fb93",
+   "created": "2025-04-01T00:00:00.000Z",
+   "modified": "2026-09-09T04:19:40.838Z",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff",
+     "luminar_threat_score": 71,
+     "collection_date": "2025-04-02T19:01:00.498Z"
+    }
+   },
+   "name": "STARLINK[ULP]_13_kk.zip",
+   "description": "The following credentials were shared on Telegram, channel id: 1935880746, on 2025-04-01. They were extracted from a file named \"STARLINK[ULP] 13 kk.zip\" with a size of 442.0 MB.",
+   "created_by_ref": "identity--5bf1ac35-8d08-509e-b31a-044cb09b4199"
+  },
+  {
+   "type": "relationship",
+   "spec_version": "2.1",
+   "id": "relationship--f179f1d6-17b3-5f13-8237-a5edfe382e0e",
+   "created": "2025-04-01T00:00:00.000Z",
+   "modified": "2026-09-09T04:19:40.838Z",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+    }
+   },
+   "relationship_type": "related-to",
+   "source_ref": "user-account--72bf90c1-9e95-55b9-afda-e6042d40a9f6",
+   "target_ref": "incident--4daf4333-8684-5158-82ba-8fc11a88fb93"
+  },
+  {
+   "type": "user-account",
+   "spec_version": "2.1",
+   "id": "user-account--72bf90c1-9e95-55b9-afda-e6042d40a9f6",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "url": "www.7-eleven.com/register",
+     "source": "telegram",
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff",
+     "monitoring_plan_terms": [
+      "7-eleven.com"
+     ],
+     "credential_is_fresh": false
+    }
+   },
+   "credential": "Tobylove16",
+   "account_login": "aaransenpai21@gmail.com",
+   "display_name": "aaransenpai21@gmail.com"
+  },
+  {
+   "type": "identity",
+   "spec_version": "2.1",
+   "id": "identity--5bf1ac35-8d08-509e-b31a-044cb09b4199",
+   "created": "2026-09-22T21:28:01.705Z",
+   "modified": "2026-09-22T21:28:01.705Z",
+   "name": "Luminar"
+  },
+  {
+   "type": "malware",
+   "spec_version": "2.1",
+   "id": "malware--a03b2013-b535-5e7c-b224-d481e00f778b",
+   "created": "2024-10-18T09:59:29.544Z",
+   "modified": "2026-09-09T04:19:40.836Z",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+    }
+   },
+   "name": "Lumma",
+   "capabilities": [
+    "steals-authentication-credentials"
+   ],
+   "malware_types": [
+    "spyware"
+   ],
+   "is_family": true,
+   "sample_refs": [
+    "file--29587941-9b41-59f9-b67e-e84296db8ce1"
+   ]
+  },
+  {
+   "type": "directory",
+   "spec_version": "2.1",
+   "id": "directory--703cae6a-593c-58f5-9d1d-091737a9158f",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+    }
+   },
+   "path": "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\"
+  },
+  {
+   "type": "file",
+   "spec_version": "2.1",
+   "id": "file--29587941-9b41-59f9-b67e-e84296db8ce1",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+    }
+   },
+   "name": "MSBuild.exe",
+   "parent_directory_ref": "directory--703cae6a-593c-58f5-9d1d-091737a9158f"
+  },
+  {
+   "type": "ipv4-addr",
+   "spec_version": "2.1",
+   "id": "ipv4-addr--2b4cb789-81b2-5b6e-8738-60a66c1d6fe5",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+    }
+   },
+   "value": "150.220.55.143"
+  },
+  {
+   "type": "extension-definition",
+   "spec_version": "2.1",
+   "id": "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3",
+   "created": "2026-09-22T21:28:01.705Z",
+   "modified": "2026-09-22T21:28:01.705Z",
+   "name": "Luminar Extension Definition",
+   "schema": "https://www.cyberluminar.com/stix/schemas/schema-luminar-meta/v1/",
+   "version": "1.0.0",
+   "created_by_ref": "identity--5bf1ac35-8d08-509e-b31a-044cb09b4199",
+   "extension_types": [
+    "property-extension"
+   ]
+  },
+  {
+   "type": "relationship",
+   "spec_version": "2.1",
+   "id": "relationship--debf2984-03ff-5ccb-869c-9e1bb22d4431",
+   "created": "2024-10-18T09:59:29.544Z",
+   "modified": "2026-09-09T04:19:40.836Z",
+   "extensions": {
+    "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
+     "extension_type": "property-extension",
+     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+    }
+   },
+   "relationship_type": "related-to",
+   "source_ref": "malware--a03b2013-b535-5e7c-b224-d481e00f778b",
+   "target_ref": "incident--d704604d-69c1-5976-a40b-6c05dd6a1c74"
+  }
+ ]
+}

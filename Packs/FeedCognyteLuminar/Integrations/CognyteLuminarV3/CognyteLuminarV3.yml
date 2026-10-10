@@ -1,0 +1,227 @@
+category: Data Enrichment & Threat Intelligence
+provider: Cognyte
+commonfields:
+  id: CognyteLuminarV3
+  version: -1
+configuration:
+- additionalinfo: Luminar Base URL
+  defaultvalue: https://www.cyberluminar.com
+  display: Luminar Base URL
+  name: luminar_base_url
+  required: true
+  type: 0
+- additionalinfo: Luminar API Account ID (TAXII realm name)
+  display: Luminar API Account ID
+  name: luminar_account_id
+  required: true
+  type: 0
+- additionalinfo: Luminar API Client ID
+  display: Luminar API Client ID
+  name: luminar_client_id
+  required: true
+  type: 0
+- additionalinfo: Luminar API Secret
+  display: Luminar API Client Secret
+  name: luminar_client_secret
+  required: true
+  type: 4
+- additionalinfo: 'First fetch time range or date for incremental fetching (e.g. "7 days", "2026-01-01T00:00:00Z"). On the first fetch, indicators added to the collections after this time are ingested.'
+  defaultvalue: 7 days
+  display: First Fetch Time
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: Trust any certificate (not secure)
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- additionalinfo: Use system proxy settings
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- defaultvalue: 'true'
+  display: Fetch indicators
+  type: 8
+  name: feed
+  required: false
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  defaultvalue: feedInstanceReputationNotSet
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  type: 18
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- display: ''
+  type: 17
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  name: feedExpirationPolicy
+  required: false
+- display: ''
+  type: 1
+  name: feedExpirationInterval
+  required: false
+- display: Feed Fetch Interval
+  defaultvalue: "480"
+  type: 19
+  name: feedFetchInterval
+  required: false
+- display: Tags
+  type: 0
+  additionalinfo: Supports CSV values.
+  name: feedTags
+  required: false
+- display: Traffic Light Protocol Color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  type: 15
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  name: tlp_color
+  required: false
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  required: false
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
+  display: Incremental Feed
+  name: feedIncremental
+  defaultvalue: 'true'
+  type: 8
+  hidden: true
+  required: false
+description: Fetches intelligence-based IOCs and customer-related leaked records identified by Luminar, using the Luminar TAXII 2.1 external API.
+display: Cognyte Luminar V3 Feed
+name: CognyteLuminarV3
+script:
+  commands:
+  - arguments:
+    - description: The maximum number of indicators to return. Default is 50.
+      name: limit
+    - description: 'Only return objects added to the collection after this date (used as the TAXII "added_after" filter). Accepts a date range (e.g. "7 days") or an ISO date (e.g. "2026-01-01T00:00:00Z").'
+      name: from_date
+    description: Gets Luminar indicators from the IOCs collection. Related objects' fields are appended as '<stix-type>-<field>' columns (e.g. malware-Value, threat-actor-aliases).
+    name: get-luminar-indicators
+    outputs:
+    - contextPath: LuminarV3.Indicators.Type
+      description: The indicator type.
+      type: String
+    - contextPath: LuminarV3.Indicators.Value
+      description: The indicator value.
+      type: String
+    - contextPath: LuminarV3.Indicators.Occurred
+      description: The date the indicator occurred.
+      type: Date
+    - contextPath: LuminarV3.Indicators.stixid
+      description: The STIX ID of the indicator object.
+      type: String
+    - contextPath: LuminarV3.Indicators.tags
+      description: The indicator tags.
+      type: Unknown
+    - contextPath: LuminarV3.Indicators.luminarscore
+      description: The Luminar score of the indicator.
+      type: Number
+    - contextPath: LuminarV3.Indicators.description
+      description: The indicator description.
+      type: String
+    - contextPath: LuminarV3.Indicators.confidence
+      description: The indicator confidence.
+      type: String
+    - contextPath: LuminarV3.Indicators.malwarefamily
+      description: The malware family associated with the indicator.
+      type: Unknown
+    - contextPath: LuminarV3.Indicators.actor
+      description: The threat actors associated with the indicator.
+      type: Unknown
+  - arguments:
+    - description: The maximum number of leaked records to return. Default is 50.
+      name: limit
+    - description: 'Only return objects added to the collection after this date (used as the TAXII "added_after" filter). Accepts a date range (e.g. "7 days") or an ISO date (e.g. "2026-01-01T00:00:00Z").'
+      name: from_date
+    description: Gets Luminar leaked records (leaked credentials) from the Leaked Records collection. Related objects' fields are appended as '<stix-type>-<field>' columns (e.g. incident-name, incident-luminarthreatscore).
+    name: luminar-v3-get-leaked-records
+    outputs:
+    - contextPath: LuminarV3.LeakedCredentials.Type
+      description: The indicator type (Account).
+      type: String
+    - contextPath: LuminarV3.LeakedCredentials.Value
+      description: The account login of the leaked credential.
+      type: String
+    - contextPath: LuminarV3.LeakedCredentials.Occurred
+      description: The date the record occurred.
+      type: Date
+    - contextPath: LuminarV3.LeakedCredentials.stixid
+      description: The STIX ID of the user-account object.
+      type: String
+    - contextPath: LuminarV3.LeakedCredentials.accounttype
+      description: The account type (LEAKED CREDENTIAL).
+      type: String
+    - contextPath: LuminarV3.LeakedCredentials.username
+      description: The account login.
+      type: String
+    - contextPath: LuminarV3.LeakedCredentials.emailaddress
+      description: The email address associated with the leaked account.
+      type: String
+    - contextPath: LuminarV3.LeakedCredentials.luminarleakedcredential
+      description: The leaked credential.
+      type: String
+    - contextPath: LuminarV3.LeakedCredentials.luminarleaksource
+      description: The source where the credential was leaked.
+      type: String
+    - contextPath: LuminarV3.LeakedCredentials.luminarleakurl
+      description: The URL associated with the leaked credential.
+      type: String
+    - contextPath: LuminarV3.LeakedCredentials.luminarincidentname
+      description: The name of the related Luminar incident.
+      type: String
+    - contextPath: LuminarV3.LeakedCredentials.luminarincidentdescription
+      description: The description of the related Luminar incident.
+      type: String
+    - contextPath: LuminarV3.LeakedCredentials.luminarthreatscore
+      description: The Luminar threat score of the related incident.
+      type: Number
+    - contextPath: LuminarV3.LeakedCredentials.luminarcomputername
+      description: The computer name associated with the leaked record.
+      type: String
+    - contextPath: LuminarV3.LeakedCredentials.luminarcollectiondate
+      description: The date the record was collected by Luminar.
+      type: Date
+    - contextPath: LuminarV3.LeakedCredentials.tags
+      description: The record tags.
+      type: Unknown
+  - description: This command will reset your fetch history.
+    name: luminar-v3-reset-fetch-indicators
+  dockerimage: demisto/python3:3.12.13.10116658
+  feed: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
