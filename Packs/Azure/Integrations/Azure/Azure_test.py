@@ -9461,3 +9461,263 @@ def test_storage_blob_container_list_command_surfaces_next_token(mocker):
     result: CommandResults = storage_blob_container_list_command(mock_client, params, args)
 
     assert result.outputs["Azure.Storage(true)"]["BlobContainersNextToken"] == "https://management.azure.com/next-containers-page"
+
+
+def util_load_text(path):
+    with open(path, encoding="utf-8") as f:
+        return f.read()
+
+
+def test_storage_container_list_command_success(mocker):
+    """
+    Given: An Azure client whose storage_containers_list_request returns a containers XML response.
+    When: storage_container_list_command is called with valid snake_case args.
+    Then: It returns CommandResults with the parsed containers and the ContainersNextToken.
+    """
+    from Azure import storage_container_list_command
+
+    mock_response = util_load_text("test_data/storage_containers_list_response.xml")
+    mock_client = mocker.Mock()
+    mock_client.storage_containers_list_request.return_value = mock_response
+
+    args = {"account_name": "mock_account_name", "subscription_id": "mock_subscription_id"}
+    result = storage_container_list_command(mock_client, {}, args)
+
+    containers = result.outputs["Azure.Storage.Container(val.name && val.name == obj.name)"]
+    assert isinstance(result, CommandResults)
+    assert len(containers) == 2
+    assert containers[0]["name"] == "mock-container-1"
+    assert result.outputs["Azure.Storage(true)"]["ContainersNextToken"] == "mock-next-marker"
+
+
+def test_storage_container_list_command_no_results(mocker):
+    """
+    Given: An Azure client whose storage_containers_list_request returns an empty containers XML response.
+    When: storage_container_list_command is called.
+    Then: It returns a CommandResults with a "No containers were found." readable output.
+    """
+    from Azure import storage_container_list_command
+
+    empty_response = '<?xml version="1.0" encoding="utf-8"?><EnumerationResults></EnumerationResults>'
+    mock_client = mocker.Mock()
+    mock_client.storage_containers_list_request.return_value = empty_response
+
+    args = {"account_name": "mock_account_name"}
+    result = storage_container_list_command(mock_client, {}, args)
+
+    assert result.readable_output == "No containers were found."
+
+
+def test_storage_container_list_command_error(mocker):
+    """
+    Given: An Azure client whose storage_containers_list_request raises a DemistoException.
+    When: storage_container_list_command is called.
+    Then: The exception is propagated.
+    """
+    from Azure import storage_container_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.storage_containers_list_request.side_effect = DemistoException("Access denied")
+
+    with pytest.raises(DemistoException, match="Access denied"):
+        storage_container_list_command(mock_client, {}, {"account_name": "mock_account_name"})
+
+
+def test_storage_container_blob_list_command_success(mocker):
+    """
+    Given: An Azure client whose storage_container_blobs_list_request returns a blobs XML response.
+    When: storage_container_blob_list_command is called with valid snake_case args.
+    Then: It returns CommandResults with the parsed blobs and the BlobsNextToken.
+    """
+    from Azure import storage_container_blob_list_command
+
+    mock_response = util_load_text("test_data/storage_container_blobs_list_response.xml")
+    mock_client = mocker.Mock()
+    mock_client.storage_container_blobs_list_request.return_value = mock_response
+
+    args = {
+        "account_name": "mock_account_name",
+        "container_name": "mock-container-1",
+        "subscription_id": "mock_subscription_id",
+    }
+    result = storage_container_blob_list_command(mock_client, {}, args)
+
+    outputs = result.outputs["Azure.Storage.Blob(val.ContainerName && val.ContainerName == obj.ContainerName)"]
+    assert isinstance(result, CommandResults)
+    assert outputs["ContainerName"] == "mock-container-1"
+    assert len(outputs["Blob"]) == 2
+    assert outputs["Blob"][0]["name"] == "mock-blob-1.txt"
+    assert result.outputs["Azure.Storage(true)"]["BlobsNextToken"] == "mock-next-marker"
+
+
+def test_storage_container_blob_list_command_no_results(mocker):
+    """
+    Given: An Azure client whose storage_container_blobs_list_request returns an empty blobs XML response.
+    When: storage_container_blob_list_command is called.
+    Then: It returns a CommandResults with a "No blobs were found" readable output.
+    """
+    from Azure import storage_container_blob_list_command
+
+    empty_response = '<?xml version="1.0" encoding="utf-8"?><EnumerationResults></EnumerationResults>'
+    mock_client = mocker.Mock()
+    mock_client.storage_container_blobs_list_request.return_value = empty_response
+
+    args = {"account_name": "mock_account_name", "container_name": "mock-container-1"}
+    result = storage_container_blob_list_command(mock_client, {}, args)
+
+    assert result.readable_output == "No blobs were found in container mock-container-1."
+
+
+def test_storage_container_blob_update_command_success(mocker):
+    """
+    Given: An Azure client and a request to update an existing blob's content.
+    When: storage_container_blob_update_command is called with valid snake_case args.
+    Then: It calls storage_container_create_blob_request and returns a success message.
+    """
+    from Azure import storage_container_blob_update_command
+
+    mock_client = mocker.Mock()
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "/tmp/mock_file.txt", "name": "mock_file.txt"})
+
+    args = {
+        "account_name": "mock_account_name",
+        "container_name": "mock-container-1",
+        "file_entry_id": "mock_file_entry_id",
+        "blob_name": "mock-blob-1.txt",
+    }
+    result = storage_container_blob_update_command(mock_client, {}, args)
+
+    mock_client.storage_container_create_blob_request.assert_called_once_with(
+        "mock-container-1", "mock_account_name", "mock_file_entry_id", "mock-blob-1.txt", "/tmp/mock_file.txt"
+    )
+    assert result.readable_output == "Blob mock-blob-1.txt successfully updated."
+
+
+def test_storage_container_blob_update_command_error(mocker):
+    """
+    Given: An Azure client whose storage_container_create_blob_request raises a DemistoException.
+    When: storage_container_blob_update_command is called.
+    Then: The exception is propagated.
+    """
+    from Azure import storage_container_blob_update_command
+
+    mock_client = mocker.Mock()
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "/tmp/mock_file.txt", "name": "mock_file.txt"})
+    mock_client.storage_container_create_blob_request.side_effect = DemistoException("Unable to read file")
+
+    args = {
+        "account_name": "mock_account_name",
+        "container_name": "mock-container-1",
+        "file_entry_id": "mock_file_entry_id",
+        "blob_name": "mock-blob-1.txt",
+    }
+    with pytest.raises(DemistoException, match="Unable to read file"):
+        storage_container_blob_update_command(mock_client, {}, args)
+
+
+def test_storage_container_blob_delete_command_success(mocker):
+    """
+    Given: An Azure client and a request to delete a blob.
+    When: storage_container_blob_delete_command is called with valid snake_case args.
+    Then: It calls storage_container_blob_delete_request and returns a success message.
+    """
+    from Azure import storage_container_blob_delete_command
+
+    mock_client = mocker.Mock()
+
+    args = {
+        "account_name": "mock_account_name",
+        "container_name": "mock-container-1",
+        "blob_name": "mock-blob-1.txt",
+    }
+    result = storage_container_blob_delete_command(mock_client, {}, args)
+
+    mock_client.storage_container_blob_delete_request.assert_called_once_with(
+        "mock-container-1", "mock-blob-1.txt", "mock_account_name"
+    )
+    assert result.readable_output == "Blob mock-blob-1.txt successfully deleted."
+
+
+def test_storage_container_blob_delete_command_error(mocker):
+    """
+    Given: An Azure client whose storage_container_blob_delete_request raises a DemistoException.
+    When: storage_container_blob_delete_command is called.
+    Then: The exception is propagated.
+    """
+    from Azure import storage_container_blob_delete_command
+
+    mock_client = mocker.Mock()
+    mock_client.storage_container_blob_delete_request.side_effect = DemistoException("Blob not found")
+
+    args = {"account_name": "mock_account_name", "container_name": "mock-container-1", "blob_name": "mock-blob-1.txt"}
+    with pytest.raises(DemistoException, match="Blob not found"):
+        storage_container_blob_delete_command(mock_client, {}, args)
+
+
+def test_generate_sas_token_command_success(mocker):
+    """
+    Given: An Azure client, a params dict with an account key, and valid SAS args.
+    When: generate_sas_token_command is called.
+    Then: It returns CommandResults with a signed SAS URL for the container.
+    """
+    from Azure import generate_sas_token_command
+
+    mock_client = mocker.Mock()
+    params = {"credentials": {"password": "bW9ja19hY2NvdW50X2tleQ=="}}  # base64 of "mock_account_key"
+    args = {
+        "account_name": "mock_account_name",
+        "container_name": "mock-container-1",
+        "expiry_time": "1",
+        "signed_resources": "c",
+        "signed_permissions": "r",
+    }
+
+    result = generate_sas_token_command(mock_client, params, args)
+
+    assert result.outputs_prefix == "Azure.Storage.Container.SAS"
+    assert result.outputs["name"] == "mock-container-1"
+    assert result.outputs["SASURL"].startswith("https://mock_account_name.blob.core.windows.net/mock-container-1?")
+    assert "sig=" in result.outputs["SASURL"]
+
+
+def test_generate_sas_token_command_invalid_permissions(mocker):
+    """
+    Given: SAS args with permissions in an invalid order.
+    When: generate_sas_token_command is called.
+    Then: It raises a DemistoException about invalid permissions.
+    """
+    from Azure import generate_sas_token_command
+
+    mock_client = mocker.Mock()
+    params = {"credentials": {"password": "bW9ja19hY2NvdW50X2tleQ=="}}
+    args = {
+        "account_name": "mock_account_name",
+        "container_name": "mock-container-1",
+        "expiry_time": "1",
+        "signed_resources": "c",
+        "signed_permissions": "wr",  # invalid order
+    }
+
+    with pytest.raises(DemistoException, match="Permissions are invalid or in the wrong order"):
+        generate_sas_token_command(mock_client, params, args)
+
+
+def test_generate_sas_token_command_missing_account_key(mocker):
+    """
+    Given: SAS args and params without an account key.
+    When: generate_sas_token_command is called.
+    Then: It raises a DemistoException about the missing account key.
+    """
+    from Azure import generate_sas_token_command
+
+    mock_client = mocker.Mock()
+    args = {
+        "account_name": "mock_account_name",
+        "container_name": "mock-container-1",
+        "expiry_time": "1",
+        "signed_resources": "c",
+        "signed_permissions": "r",
+    }
+
+    with pytest.raises(DemistoException, match="An account key must be given"):
+        generate_sas_token_command(mock_client, {}, args)
