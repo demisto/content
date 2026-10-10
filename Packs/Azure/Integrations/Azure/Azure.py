@@ -6412,7 +6412,7 @@ def resource_graph_query_resources_command(client: AzureClient, params: dict, ar
     response_skip_token = ""
 
     if page_number and page_size:
-        skip = (page_number - 1) * page_size + 1
+        skip = (page_number - 1) * page_size
         paging_options: dict[str, Any] = {"$skip": skip, "$top": page_size}
         response = client.resource_graph_query_resources(
             query=query, paging_options=paging_options, management_groups=management_groups, subscriptions=subscriptions
