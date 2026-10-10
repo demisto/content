@@ -411,7 +411,7 @@ API_FUNCTION_TO_PERMISSIONS = {
         "Microsoft.Storage/storageAccounts/blobServices/read",
         "Microsoft.Storage/storageAccounts/blobServices/write",
     ],
-        "aks_clusters_list": ["Microsoft.ContainerService/managedClusters/read"],
+    "aks_clusters_list": ["Microsoft.ContainerService/managedClusters/read"],
     "aks_cluster_get": ["Microsoft.ContainerService/managedClusters/read"],
     "aks_cluster_addon_update": [
         "Microsoft.ContainerService/managedClusters/read",
