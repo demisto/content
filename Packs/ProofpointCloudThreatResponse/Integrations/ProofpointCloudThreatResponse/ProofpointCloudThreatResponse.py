@@ -50,7 +50,50 @@ DISPOSITION_ALLOWED = {
     "vendor",
 }
 CONFIDENCE_FILTERS_ALLOWED = {"confidence_high", "confidence_medium", "confidence_low"}
+PRIORITY_FILTERS_ALLOWED = {"high", "medium", "low"}
 OUTPUT_PREFIX = "ProofPointCloud.Incident"
+
+# ----------------------------------------------------------------------------- #
+# New-command constants (CIAC-16956)
+# ----------------------------------------------------------------------------- #
+WORKFLOW_OUTPUT_PREFIX = "ProofPointCloud.Workflow"
+MESSAGE_OUTPUT_PREFIX = "ProofPointCloud.Message"
+INCIDENT_MESSAGE_OUTPUT_PREFIX = "ProofPointCloud.Incident.Message"
+SAFELIST_OUTPUT_PREFIX = "ProofPointCloud.SafeList"
+BLOCKLIST_OUTPUT_PREFIX = "ProofPointCloud.BlockList"
+
+DEFAULT_LIST_LIMIT = 50
+WORKFLOW_TYPE_ALLOWED = {"incident", "message"}
+WORKFLOW_TERMINAL_STATES = {"SUCCESS", "FAILED", "CANCELLED"}
+DEFAULT_POLL_INTERVAL = 30
+DEFAULT_POLL_TIMEOUT = 600
+
+# Message list filters
+MESSAGE_SOURCE_FILTERS_ALLOWED = {
+    "abuse_mailbox",
+    "tap",
+    "smart_search",
+    "message_csv_upload",
+    "mail_bomb",
+}
+MESSAGE_STATUS_FILTERS_ALLOWED = {
+    "message_delivered",
+    "message_unread",
+    "message_read",
+    "permitted_click",
+}
+CONFIDENCE_FILTERS_ALLOWED_MSG = CONFIDENCE_FILTERS_ALLOWED
+TAP_THREAT_TYPE_FILTERS_ALLOWED = {
+    "tap_threat_type_delivered_attachment_threat",
+    "tap_threat_type_delivered_message_threat",
+    "tap_threat_type_delivered_url_threat",
+    "tap_threat_type_unprotected_url_threat",
+}
+
+# Safe/Block list entry attributes and operators
+LIST_ATTRIBUTE_ALLOWED = {"from", "hfrom", "ip", "host", "helo", "rcpt"}
+SAFELIST_OPERATOR_ALLOWED = {"equal", "contain", "is_in_list"}
+BLOCKLIST_OPERATOR_ALLOWED = {"equal", "not_equal", "contain", "not_contain", "is_in_list"}
 
 
 # ----------------------------------------------------------------------------- #
@@ -221,6 +264,100 @@ class Client(ContentClient):  # type: ignore[misc]  # noqa: F405
             url_suffix=f"/api/v1/tric/incidents/{incident_id}",
         )
 
+    # ------------------------------------------------------------ workflows
+    def list_workflows(self, params: dict[str, Any]) -> Any:
+        """Call ``GET /api/v1/tric/workflows`` with the supplied query params."""
+        return self._http_request(
+            method="GET",
+            url_suffix="/api/v1/tric/workflows",
+            params=params,
+        )
+
+    def run_workflow(self, workflow_id: str, target_ids: list[str]) -> dict[str, Any]:
+        """Call ``POST /api/v1/tric/workflows/{workflow_id}/run``."""
+        return self._http_request(
+            method="POST",
+            url_suffix=f"/api/v1/tric/workflows/{workflow_id}/run",
+            json_data={"targetIds": target_ids},
+        )
+
+    def get_workflow_run(self, run_id: str) -> dict[str, Any]:
+        """Call ``GET /api/v1/tric/workflows/run/{run_id}``."""
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/api/v1/tric/workflows/run/{run_id}",
+        )
+
+    # ------------------------------------------------------------ messages
+    def get_message(self, message_id: str) -> dict[str, Any]:
+        """Call ``GET /api/v1/tric/messages/{message_id}``."""
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/api/v1/tric/messages/{message_id}",
+        )
+
+    def list_messages(self, body: dict[str, Any]) -> dict[str, Any]:
+        """Call ``POST /api/v1/tric/messages`` with the supplied body."""
+        return self._http_request(
+            method="POST",
+            url_suffix="/api/v1/tric/messages",
+            json_data=body,
+        )
+
+    def download_message(self, message_id: str) -> bytes:
+        """Call ``GET /api/v1/tric/messages/{message_id}/download`` for raw EML bytes."""
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/api/v1/tric/messages/{message_id}/download",
+            resp_type="content",
+        )
+
+    # ------------------------------------------------------------ incidents
+    def upload_message(self, body: dict[str, Any]) -> dict[str, Any]:
+        """Call ``POST /api/v1/tric/incidents/uploadMessage`` with the supplied body."""
+        return self._http_request(
+            method="POST",
+            url_suffix="/api/v1/tric/incidents/uploadMessage",
+            json_data=body,
+        )
+
+    # ------------------------------------------------------------ safe/block lists
+    def get_org_safelist(self, cluster_id: str) -> dict[str, Any]:
+        """Call ``GET /api/v1/emailProtection/modules/spam/orgSafeList``."""
+        return self._http_request(
+            method="GET",
+            url_suffix="/api/v1/emailProtection/modules/spam/orgSafeList",
+            params={"clusterId": cluster_id},
+        )
+
+    def modify_org_safelist(self, cluster_id: str, body: dict[str, Any]) -> Any:
+        """Call ``POST /api/v1/emailProtection/modules/spam/orgSafeList``."""
+        return self._http_request(
+            method="POST",
+            url_suffix="/api/v1/emailProtection/modules/spam/orgSafeList",
+            params={"clusterId": cluster_id},
+            json_data=body,
+            resp_type="response",
+        )
+
+    def get_org_blocklist(self, cluster_id: str) -> dict[str, Any]:
+        """Call ``GET /api/v1/emailProtection/modules/spam/orgBlockList``."""
+        return self._http_request(
+            method="GET",
+            url_suffix="/api/v1/emailProtection/modules/spam/orgBlockList",
+            params={"clusterId": cluster_id},
+        )
+
+    def modify_org_blocklist(self, cluster_id: str, body: dict[str, Any]) -> Any:
+        """Call ``POST /api/v1/emailProtection/modules/spam/orgBlockList``."""
+        return self._http_request(
+            method="POST",
+            url_suffix="/api/v1/emailProtection/modules/spam/orgBlockList",
+            params={"clusterId": cluster_id},
+            json_data=body,
+            resp_type="response",
+        )
+
 
 # ----------------------------------------------------------------------------- #
 # Helpers
@@ -265,6 +402,7 @@ def build_filters_body(
     verdict_filters: "list[str] | None" = None,
     disposition: "list[str] | None" = None,
     confidence_filters: "list[str] | None" = None,
+    priority_filters: "list[str] | None" = None,
     start_row: int = 0,
     end_row: int = DEFAULT_FETCH_LIMIT,
     sort_col: str = "createdAt",
@@ -294,6 +432,8 @@ def build_filters_body(
         filters["confidence_filters"] = _validate_allowed(
             list(confidence_filters), CONFIDENCE_FILTERS_ALLOWED, "confidence_filters"
         )
+    if priority_filters:
+        filters["priority_filters"] = _validate_allowed(list(priority_filters), PRIORITY_FILTERS_ALLOWED, "priority_filters")
 
     return {
         "filters": filters,
@@ -352,6 +492,10 @@ def proofpoint_ctr_incidents_list_command(client: Client, args: dict[str, Any]) 
         raise DemistoException("Argument 'limit' must be a positive integer.")  # noqa: F405
     end_row = limit
 
+    sort_dir = (args.get("sort") or "desc").lower()
+    if sort_dir not in {"asc", "desc"}:
+        raise DemistoException("Argument 'sort' must be one of 'asc' or 'desc'.")  # noqa: F405
+
     body = build_filters_body(
         start_time=start_dt,
         end_time=end_dt,
@@ -361,8 +505,10 @@ def proofpoint_ctr_incidents_list_command(client: Client, args: dict[str, Any]) 
         verdict_filters=argToList(args.get("verdict_filters")),  # noqa: F405
         disposition=argToList(args.get("disposition")),  # noqa: F405
         confidence_filters=argToList(args.get("confidence_filters")),  # noqa: F405
+        priority_filters=argToList(args.get("priority_filters")),  # noqa: F405
         start_row=0,
         end_row=end_row,
+        sort_dir=sort_dir,
     )
 
     response = client.list_incidents(body)
@@ -467,6 +613,451 @@ def proofpoint_ctr_incident_get_command(client: Client, args: dict[str, Any]) ->
         outputs=results,
         readable_output=readable,
         raw_response=results,
+    )
+
+
+# ----------------------------------------------------------------------------- #
+# Workflows commands
+# ----------------------------------------------------------------------------- #
+
+
+def proofpoint_ctr_workflows_list_command(client: Client, args: dict[str, Any]) -> "CommandResults":  # noqa: F405,F821
+    """List Proofpoint CTR manual workflows."""
+    query_params: dict[str, Any] = {}
+    enabled = args.get("enabled")
+    if enabled is not None and enabled != "":
+        query_params["enabled"] = argToBoolean(enabled)  # noqa: F405
+    wf_type = args.get("type")
+    if wf_type:
+        _validate_allowed([wf_type], WORKFLOW_TYPE_ALLOWED, "type")
+        query_params["type"] = wf_type
+
+    all_results = argToBoolean(args.get("all_results", False))  # noqa: F405
+    limit = _coerce_int_arg(args.get("limit"), DEFAULT_LIST_LIMIT, "limit")
+
+    response = client.list_workflows(query_params)
+    workflows = response if isinstance(response, list) else (response.get("workflows") or response.get("data") or [])
+    if not all_results:
+        workflows = workflows[:limit]
+
+    hr_rows = [
+        {
+            "ID": wf.get("id"),
+            "Name": wf.get("name"),
+            "Enabled": wf.get("enabled"),
+            "Type": wf.get("type"),
+            "Created At": wf.get("createdAt"),
+        }
+        for wf in workflows
+    ]
+    readable = tableToMarkdown(  # noqa: F405
+        f"{INTEGRATION_NAME} Workflows",
+        hr_rows,
+        headers=["ID", "Name", "Enabled", "Type", "Created At"],
+        removeNull=True,
+    )
+    return CommandResults(  # noqa: F405
+        outputs_prefix=WORKFLOW_OUTPUT_PREFIX,
+        outputs_key_field="id",
+        outputs=workflows,
+        readable_output=readable,
+        raw_response=response,
+    )
+
+
+def _workflow_run_readable(run: dict[str, Any]) -> str:
+    return tableToMarkdown(  # noqa: F405
+        f"{INTEGRATION_NAME} Workflow Run",
+        [
+            {
+                "Run ID": run.get("id"),
+                "State": run.get("state"),
+                "Workflow ID": run.get("workflowId"),
+                "Created At": run.get("createdAt"),
+                "Updated At": run.get("updatedAt"),
+            }
+        ],
+        headers=["Run ID", "State", "Workflow ID", "Created At", "Updated At"],
+        removeNull=True,
+    )
+
+
+@polling_function(  # noqa: F405
+    name="proofpoint-ctr-run-workflow",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_POLL_INTERVAL,  # noqa: F405
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds")) or DEFAULT_POLL_TIMEOUT,  # noqa: F405
+    requires_polling_arg=False,  # means it will always default to poll
+)
+def proofpoint_ctr_run_workflow_command(args: dict[str, Any], client: Client) -> "PollResult":  # noqa: F405,F821
+    """Run a manual workflow and poll for the terminal state.
+
+    Uses the Cortex XSOAR generic polling mechanism: the first invocation
+    initiates the run (POST) and, when polling is enabled, schedules follow-up
+    polls (GET) until ``state`` reaches a terminal value.
+    """
+    run_id = args.get("run_id")
+    if not run_id:
+        workflow_id = args.get("workflow_id")
+        if not workflow_id:
+            raise DemistoException("Argument 'workflow_id' is required.")  # noqa: F405
+        target_ids = argToList(args.get("target_ids"))  # noqa: F405
+        if not target_ids:
+            raise DemistoException("Argument 'target_ids' is required.")  # noqa: F405
+        run = client.run_workflow(workflow_id, target_ids)
+        run_id = run.get("id")
+        if not run_id:
+            raise DemistoException(  # noqa: F405
+                "The workflow run response did not contain a run 'id'."
+            )
+    else:
+        run = client.get_workflow_run(run_id)
+
+    state = run.get("state")
+    command_results = CommandResults(  # noqa: F405
+        outputs_prefix=WORKFLOW_OUTPUT_PREFIX,
+        outputs_key_field="id",
+        outputs=run,
+        readable_output=_workflow_run_readable(run),
+        raw_response=run,
+    )
+
+    continue_to_poll = state not in WORKFLOW_TERMINAL_STATES
+    return PollResult(  # noqa: F405
+        response=command_results,
+        continue_to_poll=continue_to_poll,
+        partial_result=command_results,
+        args_for_next_run={**args, "run_id": run_id},
+    )
+
+
+# ----------------------------------------------------------------------------- #
+# Messages commands
+# ----------------------------------------------------------------------------- #
+
+
+def _normalize_single_message(response: dict[str, Any]) -> dict[str, Any]:
+    """Normalize the single ``GET /messages/{id}`` response to the flat snake_case
+    shape used by the list endpoint and documented in the YAML outputs.
+
+    The single-message endpoint nests the message fields under a ``details`` object
+    with camelCase keys (e.g. ``emailSubject``), whereas the list endpoint returns
+    flat snake_case items. This maps the former to the latter so the human-readable
+    table and context outputs are consistent across both branches.
+    """
+    if not isinstance(response, dict):
+        return response
+
+    details = response.get("details")
+    if not isinstance(details, dict):
+        # Already flat (e.g. list-style item) - return as-is.
+        return response
+
+    camel_to_snake = {
+        "id": "id",
+        "emailSubject": "email_subject",
+        "senderAddress": "sender_address",
+        "recipientAddress": "recipient_address",
+        "receivedAt": "received_at",
+        "disposition": "disposition",
+        "remediationStatus": "remediation_status",
+    }
+    return {snake: details.get(camel) for camel, snake in camel_to_snake.items()}
+
+
+def _message_hr_rows(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [
+        {
+            "ID": msg.get("id"),
+            "Subject": msg.get("email_subject"),
+            "From": msg.get("sender_address"),
+            "To": msg.get("recipient_address"),
+            "Received": msg.get("received_at"),
+            "Disposition": msg.get("disposition"),
+            "Remediation Status": msg.get("remediation_status"),
+        }
+        for msg in messages
+    ]
+
+
+def build_messages_body(args: dict[str, Any]) -> dict[str, Any]:
+    """Build a request body for ``POST /api/v1/tric/messages``."""
+    filters: dict[str, Any] = {}
+    start_dt = parse_ctr_date(args.get("start_time"))
+    end_dt = parse_ctr_date(args.get("end_time"))
+    if end_dt and not start_dt:
+        raise DemistoException("Argument 'start_time' is required when 'end_time' is provided.")  # noqa: F405
+    if start_dt and not end_dt:
+        end_dt = datetime.now(tz=UTC)  # noqa: F405
+    if start_dt and end_dt:
+        filters["time_range_filter"] = {
+            "start": format_ctr_date(start_dt),
+            "end": format_ctr_date(end_dt),
+        }
+
+    if rfc := argToList(args.get("rfc_message_id")):  # noqa: F405
+        filters["rfc_message_id_filters"] = rfc
+    if recipients := argToList(args.get("recipient_address")):  # noqa: F405
+        filters["recipient_filters"] = recipients
+    if senders := argToList(args.get("sender_address")):  # noqa: F405
+        filters["sender_filters"] = senders
+    if subject := args.get("subject"):
+        filters["subject_filter"] = subject
+    if sources := argToList(args.get("source_filters")):  # noqa: F405
+        filters["source_filters"] = _validate_allowed(sources, MESSAGE_SOURCE_FILTERS_ALLOWED, "source_filters")
+    if statuses := argToList(args.get("status_filters")):  # noqa: F405
+        filters["status_filters"] = _validate_allowed(statuses, MESSAGE_STATUS_FILTERS_ALLOWED, "status_filters")
+    if quarantine := argToList(args.get("quarantine_filters")):  # noqa: F405
+        filters["quarantine_filters"] = quarantine
+    if disposition := argToList(args.get("disposition_filters")):  # noqa: F405
+        filters["disposition_filters"] = _validate_allowed(disposition, DISPOSITION_ALLOWED, "disposition_filters")
+    if confidence := argToList(args.get("confidence_filters")):  # noqa: F405
+        filters["confidence_filters"] = _validate_allowed(confidence, CONFIDENCE_FILTERS_ALLOWED, "confidence_filters")
+    if verdict := argToList(args.get("verdict_filters")):  # noqa: F405
+        filters["verdict_filters"] = _validate_allowed(verdict, VERDICT_FILTERS_ALLOWED, "verdict_filters")
+    if tap_threat := argToList(args.get("tap_threat_id")):  # noqa: F405
+        filters["tap_threat_filters"] = tap_threat
+    if tap_type := argToList(args.get("tap_threat_type_filters")):  # noqa: F405
+        filters["tap_threat_type_filters"] = _validate_allowed(
+            tap_type, TAP_THREAT_TYPE_FILTERS_ALLOWED, "tap_threat_type_filters"
+        )
+
+    limit = _coerce_int_arg(args.get("limit"), DEFAULT_LIST_LIMIT, "limit")
+    return {
+        "filters": filters,
+        "startRow": 0,
+        "endRow": limit,
+        "sortParams": [],
+    }
+
+
+def proofpoint_ctr_message_list_command(client: Client, args: dict[str, Any]) -> "CommandResults":  # noqa: F405,F821
+    """Retrieve one message by UUID, or list messages by filters."""
+    message_id = args.get("message_id")
+    if message_id:
+        response = client.get_message(message_id)
+        messages = [_normalize_single_message(response)] if isinstance(response, dict) else (response or [])
+    else:
+        body = build_messages_body(args)
+        response = client.list_messages(body)
+        messages = response.get("messages") or response.get("data") or []
+
+    readable = tableToMarkdown(  # noqa: F405
+        f"{INTEGRATION_NAME} Messages",
+        _message_hr_rows(messages),
+        headers=["ID", "Subject", "From", "To", "Received", "Disposition", "Remediation Status"],
+        removeNull=True,
+    )
+    return CommandResults(  # noqa: F405
+        outputs_prefix=MESSAGE_OUTPUT_PREFIX,
+        outputs_key_field="id",
+        outputs=messages,
+        readable_output=readable,
+        raw_response=response,
+    )
+
+
+def proofpoint_ctr_message_download_command(client: Client, args: dict[str, Any]) -> dict[str, Any]:
+    """Download a message as an EML file into the War Room.
+
+    Note: this feature is currently functional only for CTR instances hosted
+    in the US region.
+    """
+    message_id = args.get("message_id")
+    if not message_id:
+        raise DemistoException("Argument 'message_id' is required.")  # noqa: F405
+
+    content = client.download_message(message_id)
+    return fileResult(f"{message_id}.eml", content, file_type=EntryType.ENTRY_INFO_FILE)  # noqa: F405
+
+
+# ----------------------------------------------------------------------------- #
+# Incident message-upload command
+# ----------------------------------------------------------------------------- #
+
+
+def proofpoint_ctr_incident_upload_message_command(client: Client, args: dict[str, Any]) -> "CommandResults":  # noqa: F405,F821
+    """Associate an email message with an existing CTR incident."""
+    incident_id = args.get("incident_id")
+    if not incident_id:
+        raise DemistoException("Argument 'incident_id' is required.")  # noqa: F405
+    rfc_message_id = args.get("rfc_message_id")
+    if not rfc_message_id:
+        raise DemistoException("Argument 'rfc_message_id' is required.")  # noqa: F405
+    recipient_addresses = argToList(args.get("recipient_addresses"))  # noqa: F405
+    if not recipient_addresses:
+        raise DemistoException("Argument 'recipient_addresses' is required.")  # noqa: F405
+
+    message: dict[str, Any] = {
+        "rfcMessageId": rfc_message_id,
+        "recipient_addresses": recipient_addresses,
+    }
+    if sender := args.get("sender"):
+        message["sender"] = sender
+    if subject := args.get("subject"):
+        message["subject"] = subject
+    if disposition := args.get("disposition"):
+        _validate_allowed([disposition], DISPOSITION_ALLOWED, "disposition")
+        message["disposition"] = disposition
+
+    body = {"incident_id": incident_id, "message": message}
+    response = client.upload_message(body)
+
+    readable = tableToMarkdown(  # noqa: F405
+        f"{INTEGRATION_NAME} Uploaded Message",
+        [
+            {
+                "RFC Message ID": response.get("rfcMessageId") or rfc_message_id,
+                "Incident ID": response.get("incident_id") or incident_id,
+                "Incident Display ID": response.get("incidentDisplayId"),
+                "Uploaded Recipients Count": response.get("uploadedRecipientsCount"),
+            }
+        ],
+        headers=["RFC Message ID", "Incident ID", "Incident Display ID", "Uploaded Recipients Count"],
+        removeNull=True,
+    )
+    return CommandResults(  # noqa: F405
+        outputs_prefix=INCIDENT_MESSAGE_OUTPUT_PREFIX,
+        outputs_key_field="rfcMessageId",
+        outputs=response,
+        readable_output=readable,
+        raw_response=response,
+    )
+
+
+# ----------------------------------------------------------------------------- #
+# Safe/Block list commands
+# ----------------------------------------------------------------------------- #
+
+
+def _list_entries_readable(title: str, entries: list[dict[str, Any]]) -> str:
+    rows = [
+        {
+            "Attribute": entry.get("attribute"),
+            "Operator": entry.get("operator"),
+            "Value": entry.get("value"),
+            "Comment": entry.get("comment"),
+        }
+        for entry in entries
+    ]
+    return tableToMarkdown(  # noqa: F405
+        title,
+        rows,
+        headers=["Attribute", "Operator", "Value", "Comment"],
+        removeNull=True,
+    )
+
+
+def _build_list_modify_body(action: str, args: dict[str, Any], operator_allowed: set[str]) -> dict[str, Any]:
+    attribute = args.get("attribute")
+    operator = args.get("operator")
+    value = args.get("value")
+    if not attribute or not operator or not value:
+        raise DemistoException(  # noqa: F405
+            "Arguments 'attribute', 'operator', and 'value' are required."
+        )
+    _validate_allowed([attribute], LIST_ATTRIBUTE_ALLOWED, "attribute")
+    _validate_allowed([operator], operator_allowed, "operator")
+
+    body: dict[str, Any] = {
+        "action": action,
+        "attribute": f"${attribute}",
+        "operator": operator,
+        "value": value,
+    }
+    if action == "add" and (comment := args.get("comment")):
+        body["comment"] = comment
+    return body
+
+
+def proofpoint_ctr_safelist_list_command(client: Client, args: dict[str, Any]) -> "CommandResults":  # noqa: F405,F821
+    """List the organizational Safe List entries."""
+    cluster_id = args.get("cluster_id")
+    if not cluster_id:
+        raise DemistoException("Argument 'cluster_id' is required.")  # noqa: F405
+    all_results = argToBoolean(args.get("all_results", False))  # noqa: F405
+    limit = _coerce_int_arg(args.get("limit"), DEFAULT_LIST_LIMIT, "limit")
+
+    response = client.get_org_safelist(cluster_id)
+    entries = response.get("entries") or []
+    if not all_results:
+        entries = entries[:limit]
+
+    return CommandResults(  # noqa: F405
+        outputs_prefix=SAFELIST_OUTPUT_PREFIX,
+        outputs_key_field="value",
+        outputs=entries,
+        readable_output=_list_entries_readable(f"{INTEGRATION_NAME} Safe List", entries),
+        raw_response=response,
+    )
+
+
+def proofpoint_ctr_safelist_add_entry_command(client: Client, args: dict[str, Any]) -> "CommandResults":  # noqa: F405,F821
+    """Add an entry to the organizational Safe List."""
+    cluster_id = args.get("cluster_id")
+    if not cluster_id:
+        raise DemistoException("Argument 'cluster_id' is required.")  # noqa: F405
+    body = _build_list_modify_body("add", args, SAFELIST_OPERATOR_ALLOWED)
+    client.modify_org_safelist(cluster_id, body)
+    return CommandResults(  # noqa: F405
+        readable_output=f"The entry {args.get('value')!r} has been added to the Organizational Safe List.",
+    )
+
+
+def proofpoint_ctr_safelist_remove_entry_command(client: Client, args: dict[str, Any]) -> "CommandResults":  # noqa: F405,F821
+    """Remove an entry from the organizational Safe List."""
+    cluster_id = args.get("cluster_id")
+    if not cluster_id:
+        raise DemistoException("Argument 'cluster_id' is required.")  # noqa: F405
+    body = _build_list_modify_body("delete", args, SAFELIST_OPERATOR_ALLOWED)
+    client.modify_org_safelist(cluster_id, body)
+    return CommandResults(  # noqa: F405
+        readable_output=f"The entry {args.get('value')!r} has been removed from the Organizational Safe List.",
+    )
+
+
+def proofpoint_ctr_blocklist_list_command(client: Client, args: dict[str, Any]) -> "CommandResults":  # noqa: F405,F821
+    """List the organizational Block List entries."""
+    cluster_id = args.get("cluster_id")
+    if not cluster_id:
+        raise DemistoException("Argument 'cluster_id' is required.")  # noqa: F405
+    all_results = argToBoolean(args.get("all_results", False))  # noqa: F405
+    limit = _coerce_int_arg(args.get("limit"), DEFAULT_LIST_LIMIT, "limit")
+
+    response = client.get_org_blocklist(cluster_id)
+    entries = response.get("entries") or []
+    if not all_results:
+        entries = entries[:limit]
+
+    return CommandResults(  # noqa: F405
+        outputs_prefix=BLOCKLIST_OUTPUT_PREFIX,
+        outputs_key_field="value",
+        outputs=entries,
+        readable_output=_list_entries_readable(f"{INTEGRATION_NAME} Block List", entries),
+        raw_response=response,
+    )
+
+
+def proofpoint_ctr_blocklist_add_entry_command(client: Client, args: dict[str, Any]) -> "CommandResults":  # noqa: F405,F821
+    """Add an entry to the organizational Block List."""
+    cluster_id = args.get("cluster_id")
+    if not cluster_id:
+        raise DemistoException("Argument 'cluster_id' is required.")  # noqa: F405
+    body = _build_list_modify_body("add", args, BLOCKLIST_OPERATOR_ALLOWED)
+    client.modify_org_blocklist(cluster_id, body)
+    return CommandResults(  # noqa: F405
+        readable_output=f"The entry {args.get('value')!r} has been added to the Organizational Block List.",
+    )
+
+
+def proofpoint_ctr_blocklist_remove_entry_command(client: Client, args: dict[str, Any]) -> "CommandResults":  # noqa: F405,F821
+    """Remove an entry from the organizational Block List."""
+    cluster_id = args.get("cluster_id")
+    if not cluster_id:
+        raise DemistoException("Argument 'cluster_id' is required.")  # noqa: F405
+    body = _build_list_modify_body("delete", args, BLOCKLIST_OPERATOR_ALLOWED)
+    client.modify_org_blocklist(cluster_id, body)
+    return CommandResults(  # noqa: F405
+        readable_output=f"The entry {args.get('value')!r} has been removed from the Organizational Block List.",
     )
 
 
@@ -714,6 +1305,28 @@ def main() -> None:  # pragma: no cover - exercised indirectly by tests
             return_results(proofpoint_ctr_incidents_list_command(client, args))  # noqa: F405
         elif command == "proofpoint-ctr-incident-get":
             return_results(proofpoint_ctr_incident_get_command(client, args))  # noqa: F405
+        elif command == "proofpoint-ctr-workflows-list":
+            return_results(proofpoint_ctr_workflows_list_command(client, args))  # noqa: F405
+        elif command == "proofpoint-ctr-run-workflow":
+            return_results(proofpoint_ctr_run_workflow_command(args, client=client))  # noqa: F405
+        elif command == "proofpoint-ctr-message-list":
+            return_results(proofpoint_ctr_message_list_command(client, args))  # noqa: F405
+        elif command == "proofpoint-ctr-message-download":
+            return_results(proofpoint_ctr_message_download_command(client, args))  # noqa: F405
+        elif command == "proofpoint-ctr-incident-upload-message":
+            return_results(proofpoint_ctr_incident_upload_message_command(client, args))  # noqa: F405
+        elif command == "proofpoint-ctr-safelist-list":
+            return_results(proofpoint_ctr_safelist_list_command(client, args))  # noqa: F405
+        elif command == "proofpoint-ctr-safelist-add-entry":
+            return_results(proofpoint_ctr_safelist_add_entry_command(client, args))  # noqa: F405
+        elif command == "proofpoint-ctr-safelist-remove-entry":
+            return_results(proofpoint_ctr_safelist_remove_entry_command(client, args))  # noqa: F405
+        elif command == "proofpoint-ctr-blocklist-list":
+            return_results(proofpoint_ctr_blocklist_list_command(client, args))  # noqa: F405
+        elif command == "proofpoint-ctr-blocklist-add-entry":
+            return_results(proofpoint_ctr_blocklist_add_entry_command(client, args))  # noqa: F405
+        elif command == "proofpoint-ctr-blocklist-remove-entry":
+            return_results(proofpoint_ctr_blocklist_remove_entry_command(client, args))  # noqa: F405
         else:
             raise NotImplementedError(f"Command {command!r} is not implemented.")
     except Exception as exc:  # noqa: BLE001
