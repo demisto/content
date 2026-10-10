@@ -25,7 +25,7 @@ STORAGE_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
 API_VERSION = "2022-09-01"
 NEW_API_VERSION_PARAMS = {"api-version": "2024-05-01"}
 BLOB_CONTAINERS_MAX_PAGE_SIZE = 5000
-RESOURCE_GRAPH_API_VERSION = "2022-10-01"
+RESOURCE_GRAPH_API_VERSION = "2024-04-01"
 RESOURCE_GRAPH_MAX_PAGE_SIZE = 50
 
 GRANT_BY_CONNECTION = {
@@ -465,7 +465,7 @@ API_FUNCTION_TO_PERMISSIONS = {
         "Microsoft.Network/azureFirewalls/write",
         "Microsoft.Network/firewallPolicies/join/action",
     ],
-        "resource_graph_list_operations": ["Microsoft.ResourceGraph/operations/read"],
+    "resource_graph_list_operations": ["Microsoft.ResourceGraph/operations/read"],
     "resource_graph_query_resources": ["Microsoft.ResourceGraph/resources/read"],
 }
 
@@ -3465,6 +3465,7 @@ class AzureClient:
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
+
     def resource_graph_list_operations(self):
         """
         Send the list Azure Resource Graph operations request to the API.
@@ -3526,6 +3527,7 @@ class AzureClient:
                 resource_type="Resource Graph Query",
                 api_function_name="resource_graph_query_resources",
             )
+
 
 """ HELPER FUNCTIONS """
 
@@ -6329,6 +6331,9 @@ def resource_graph_list_operations_command(client: AzureClient, params: dict, ar
     limit = arg_to_number(args.get("limit"))
     page_size = arg_to_number(args.get("page_size"))
     page = arg_to_number(args.get("page"))
+    validate_limit(limit, max_limit=RESOURCE_GRAPH_MAX_PAGE_SIZE)
+    validate_limit(page_size, max_limit=RESOURCE_GRAPH_MAX_PAGE_SIZE)
+    validate_limit(page)
 
     if page and not page_size:
         raise DemistoException('Please enter a value for "page_size" when using "page".')
@@ -6353,7 +6358,13 @@ def resource_graph_list_operations_command(client: AzureClient, params: dict, ar
         operations.append({"Name": operation.get("name"), "Display": operation.get("display")})
 
     title = "List of Azure Resource Graph Operations\n\n" + md_output_notes
-    readable_output = tableToMarkdown(title, operations, removeNull=True)
+    readable_output = tableToMarkdown(
+        title,
+        operations,
+        headers=["Name", "Display"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
 
     return CommandResults(
         readable_output=readable_output,
@@ -6380,8 +6391,12 @@ def resource_graph_query_resources_command(client: AzureClient, params: dict, ar
     limit = arg_to_number(args.get("limit"))
     page_size = arg_to_number(args.get("page_size"))
     page_number = arg_to_number(args.get("page"))
+    validate_limit(limit, max_limit=RESOURCE_GRAPH_MAX_PAGE_SIZE)
+    validate_limit(page_size, max_limit=RESOURCE_GRAPH_MAX_PAGE_SIZE)
+    validate_limit(page_number)
     management_groups = argToList(args.get("management_groups"))
     subscriptions = argToList(args.get("subscriptions"))
+    next_token = args.get("next_token")
     query = args.get("query", "")
 
     if page_number and not page_size:
@@ -6391,6 +6406,7 @@ def resource_graph_query_resources_command(client: AzureClient, params: dict, ar
 
     list_of_query_results: list = []
     total_records = 0
+    response_skip_token = ""
 
     if page_number and page_size:
         skip = (page_number - 1) * page_size + 1
@@ -6400,9 +6416,10 @@ def resource_graph_query_resources_command(client: AzureClient, params: dict, ar
         )
         total_records = response.get("totalRecords", 0)
         list_of_query_results = response.get("data", [])
+        response_skip_token = response.get("$skipToken", "")
     else:
         query_results: list = []
-        skip_token = ""
+        skip_token = next_token or ""
         counter = 0
 
         while True:
@@ -6416,10 +6433,11 @@ def resource_graph_query_resources_command(client: AzureClient, params: dict, ar
             current_results = response.get("data", [])
             query_results.extend(current_results)
             counter += len(current_results)
+            response_skip_token = response.get("$skipToken", "")
             if limit and counter >= limit:
                 break
-            if "$skipToken" in response and (not limit or counter < limit):
-                skip_token = response.get("$skipToken")
+            if response_skip_token and (not limit or counter < limit):
+                skip_token = response_skip_token
             else:
                 break
 
@@ -6429,14 +6447,29 @@ def resource_graph_query_resources_command(client: AzureClient, params: dict, ar
     if limit:
         list_of_query_results = list_of_query_results[:limit]
 
+    metadata = (
+        "Run the following command to retrieve the next batch of results:\n"
+        f'!azure-rg-query query="{query}" next_token={response_skip_token}'
+        if response_skip_token
+        else None
+    )
     title = f"Results of query:\n```{query}```\n\n Total Number of Possible Records: {total_records} \n"
-    readable_output = tableToMarkdown(title, list_of_query_results, removeNull=True)
+    readable_output = tableToMarkdown(
+        title,
+        list_of_query_results,
+        headers=["id", "name", "type"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+        metadata=metadata,
+    )
 
+    outputs: dict[str, Any] = {
+        "Azure.ResourceGraph.Query(val.id && val.id == obj.id)": list_of_query_results,
+        "Azure.ResourceGraph(true)": {"QueryNextToken": response_skip_token or None},
+    }
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Azure.ResourceGraph.Query",
-        outputs_key_field="id",
-        outputs=list_of_query_results,
+        outputs=outputs,
         raw_response=response,
     )
 

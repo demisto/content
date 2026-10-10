@@ -9536,11 +9536,15 @@ def test_resource_graph_list_operations_command_validation_error(mocker, limit, 
         resource_graph_list_operations_command(mock_client, {}, args)
 
 
+QUERY_RESULTS_PATH = "Azure.ResourceGraph.Query(val.id && val.id == obj.id)"
+QUERY_NEXT_TOKEN_PATH = "Azure.ResourceGraph(true)"
+
+
 def test_resource_graph_query_resources_command_success(mocker):
     """
     Given: An Azure client mock returning resources from a Resource Graph query.
     When: resource_graph_query_resources_command is called with a query and a limit.
-    Then: It returns CommandResults limited to the requested number of resources.
+    Then: It returns CommandResults limited to the requested number of resources, keyed by id.
     """
     from Azure import resource_graph_query_resources_command
 
@@ -9551,9 +9555,9 @@ def test_resource_graph_query_resources_command_success(mocker):
     args = {"query": "Resources | project id, name, type, location, tags | limit 3", "limit": 1}
     result = resource_graph_query_resources_command(mock_client, {}, args)
 
-    assert result.outputs_prefix == "Azure.ResourceGraph.Query"
-    assert len(result.outputs) == 1
-    assert result.outputs[0]["name"] == "test-ssh-nsg"
+    query_results = result.outputs[QUERY_RESULTS_PATH]
+    assert len(query_results) == 1
+    assert query_results[0]["name"] == "test-ssh-nsg"
 
 
 def test_resource_graph_query_resources_command_paging(mocker):
@@ -9571,15 +9575,16 @@ def test_resource_graph_query_resources_command_paging(mocker):
     args = {"query": "Resources | project id, name, type, location, tags", "page": 1, "page_size": 3}
     result = resource_graph_query_resources_command(mock_client, {}, args)
 
-    assert len(result.outputs) == 3
-    assert result.outputs[0]["name"] == "test-ssh-nsg-2"
+    query_results = result.outputs[QUERY_RESULTS_PATH]
+    assert len(query_results) == 3
+    assert query_results[0]["name"] == "test-ssh-nsg-2"
 
 
 def test_resource_graph_query_resources_command_no_results(mocker):
     """
     Given: An Azure client mock returning no data for a Resource Graph query.
     When: resource_graph_query_resources_command is called.
-    Then: It returns CommandResults with an empty outputs list.
+    Then: It returns CommandResults with an empty query results list and no next token.
     """
     from Azure import resource_graph_query_resources_command
 
@@ -9588,7 +9593,47 @@ def test_resource_graph_query_resources_command_no_results(mocker):
 
     result = resource_graph_query_resources_command(mock_client, {}, {"query": "Resources | limit 1"})
 
-    assert result.outputs == []
+    assert result.outputs[QUERY_RESULTS_PATH] == []
+    assert result.outputs[QUERY_NEXT_TOKEN_PATH]["QueryNextToken"] is None
+
+
+def test_resource_graph_query_resources_command_surfaces_next_token(mocker):
+    """
+    Given: An Azure client mock returning a page of resources along with a $skipToken.
+    When: resource_graph_query_resources_command is called with page and page_size arguments.
+    Then: The $skipToken is surfaced as QueryNextToken in the context and in the readable output.
+    """
+    from Azure import resource_graph_query_resources_command
+
+    mock_client = mocker.Mock()
+    mock_client.resource_graph_query_resources.return_value = {
+        "data": [{"id": "/sub/1", "name": "res-1", "type": "t", "location": "eastus"}],
+        "totalRecords": 100,
+        "$skipToken": "next-page-token",
+    }
+
+    args = {"query": "Resources | project id, name", "page": 1, "page_size": 1}
+    result = resource_graph_query_resources_command(mock_client, {}, args)
+
+    assert result.outputs[QUERY_NEXT_TOKEN_PATH]["QueryNextToken"] == "next-page-token"
+    assert "next_token=next-page-token" in result.readable_output
+
+
+def test_resource_graph_query_resources_command_accepts_next_token(mocker):
+    """
+    Given: A next_token argument to continue a previous Resource Graph query.
+    When: resource_graph_query_resources_command is called with next_token.
+    Then: The token is passed to the client as the $skipToken paging option.
+    """
+    from Azure import resource_graph_query_resources_command
+
+    mock_client = mocker.Mock()
+    mock_client.resource_graph_query_resources.return_value = {"data": [], "totalRecords": 0}
+
+    resource_graph_query_resources_command(mock_client, {}, {"query": "Resources | limit 1", "next_token": "prev-token"})
+
+    call_kwargs = mock_client.resource_graph_query_resources.call_args[1]
+    assert call_kwargs["paging_options"] == {"$skipToken": "prev-token"}
 
 
 @pytest.mark.parametrize(

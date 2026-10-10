@@ -12356,6 +12356,9 @@ script:
         description: "Azure subscriptions against which to execute the query. Example: 'sub1, sub2'."
         required: false
         isArray: true
+      - name: next_token
+        description: The token for the next set of results to return, used for pagination. Retrieved from the Azure.ResourceGraph.QueryNextToken output of a previous run.
+        required: false
     outputs:
       - contextPath: Azure.ResourceGraph.Query.id
         description: The resource ID of the resource returned by the query.
@@ -12372,6 +12375,9 @@ script:
       - contextPath: Azure.ResourceGraph.Query.tags
         description: The tags of the resource returned by the query.
         type: Unknown
+      - contextPath: Azure.ResourceGraph.QueryNextToken
+        description: The token to pass as the next_token argument to retrieve the next set of query results.
+        type: String
   isfetch: false
   runonce: false
   script: '-'
