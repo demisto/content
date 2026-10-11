@@ -7,6 +7,7 @@ import time
 import urllib.parse
 from collections import OrderedDict
 from enum import Enum
+from html import escape as html_escape
 from re import Match
 from ssl import PROTOCOL_TLSv1_2, SSLContext, SSLError
 from tempfile import NamedTemporaryFile
@@ -52,6 +53,7 @@ URL_REGEX = r"(?<!\]\()https?://[^\s]*"
 XSOAR_ENGINE_URL_REGEX = r"\bhttps?://(?:\w+[\w.-]*\w+|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d+(?:/(?:\w+/)*\w+)?"
 ENTITLEMENT_REGEX: str = r"(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}"
 MENTION_REGEX = r"^@([^@;]+);| @([^@;]+);"
+GRAPH_MENTION_REGEX = re.compile(r"(?:^|(?<= ))@(?P<name>[^@;\r\n]+);")
 ENTRY_FOOTER: str = "From Microsoft Teams"
 INCIDENT_NOTIFICATIONS_CHANNEL = "incidentNotificationChannel"
 
@@ -1660,17 +1662,20 @@ def create_meeting(user_id: str, subject: str, start_date_time: str, end_date_ti
     return channel_data
 
 
-def send_message_in_chat(content: str, chat_id: str, content_type: str) -> dict:
+def send_message_in_chat(content: str, chat_id: str, content_type: str, mentions: list[dict[str, Any]] | None = None) -> dict:
     """
-    Sends an HTTP request to send message in chat to Microsoft Teams
+    Send a message in a Microsoft Teams chat.
+
     :param content: The content of the chat message.
-    :param message_type: The type of chat message.
-    :param chat_id: The chat id
-    :param content_type: The content type: html/text
-    :return: dict of the chatMessage object
+    :param chat_id: The ID of the destination chat.
+    :param content_type: The content type, either "html" or "text".
+    :param mentions: Microsoft Graph mention objects referenced by the message content.
+    :return: The created chatMessage object.
     """
     url = f"{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/messages"
-    request_json = {"body": {"content": content, "contentType": content_type}, "messageType": "message"}
+    request_json: dict[str, Any] = {"body": {"content": content, "contentType": content_type}, "messageType": "message"}
+    if mentions:
+        request_json["mentions"] = mentions
 
     response: dict = cast(dict[Any, Any], http_request("POST", url, json_=request_json))
     return response
@@ -1766,14 +1771,20 @@ def get_channel_messages_list(team_id: str, channel_id: str, odata_params: dict,
 
 def get_chat_members(chat_id: str) -> list[dict[str, Any]]:
     """
-    Retrieves chat members given a chat
-    :param chat_id: ID of the chat
-    :return: List of chat members
-    """
+    Retrieve all members of a chat, following Graph pagination.
 
+    :param chat_id: The ID of the chat.
+    :return: All conversation members in the chat.
+    """
     url = f"{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/members"
-    response: dict = cast(dict[Any, Any], http_request("GET", url))
-    return response.get("value", [])
+    response = cast(dict[str, Any], http_request("GET", url))
+    members = response.get("value", [])
+
+    while next_link := response.get("@odata.nextLink"):
+        response = cast(dict[str, Any], http_request("GET", next_link))
+        members.extend(response.get("value", []))
+
+    return members
 
 
 def get_signed_in_user() -> dict[str, str]:
@@ -2019,9 +2030,127 @@ def chat_create_command():
     return_results(result)
 
 
+def text_to_html(content: str) -> str:
+    """
+    Escape plain text for an HTML message while preserving line breaks.
+
+    :param content: The plain-text message content.
+    :return: HTML-safe message content with line breaks converted to ``<br>`` tags.
+    """
+    return html_escape(content).replace("\r\n", "\n").replace("\r", "\n").replace("\n", "<br>")
+
+
+def is_inside_html_tag(content: str, position: int) -> bool:
+    """
+    Determine whether a position is inside an HTML tag, accounting for quoted attributes.
+
+    :param content: The HTML content to inspect.
+    :param position: The zero-based position in the content.
+    :return: Whether the position is inside an HTML tag.
+    """
+    is_inside_tag = False
+    attribute_quote = ""
+
+    for character in content[:position]:
+        if not is_inside_tag:
+            if character == "<":
+                is_inside_tag = True
+        elif attribute_quote:
+            if character == attribute_quote:
+                attribute_quote = ""
+        elif character in {'"', "'"}:
+            attribute_quote = character
+        elif character == ">":
+            is_inside_tag = False
+
+    return is_inside_tag
+
+
+def find_graph_mention_matches(content: str, content_type: str) -> list[re.Match[str]]:
+    """
+    Find mention tokens that are message content rather than HTML tag attributes.
+
+    :param content: The chat message content.
+    :param content_type: The content type, either "html" or "text".
+    :return: Mention regex matches that should be resolved for the message.
+    """
+    return [
+        match
+        for match in GRAPH_MENTION_REGEX.finditer(content)
+        if content_type != "html" or not is_inside_html_tag(content, match.start())
+    ]
+
+
+def format_graph_chat_mentions(
+    content: str,
+    content_type: str,
+    mention_matches: list[re.Match[str]],
+    chat_members: list[dict[str, Any]],
+    chat: str,
+) -> tuple[str, str, list[dict[str, Any]]]:
+    """
+    Format ``@Display Name;`` tokens as Microsoft Graph chat mentions.
+
+    :param content: The chat message content.
+    :param content_type: The content type, either "html" or "text".
+    :param mention_matches: The mention matches found in the content by ``find_graph_mention_matches``.
+    :param chat_members: The members of the destination chat.
+    :param chat: The chat identifier or name supplied to the command, used in error messages.
+    :return: The formatted HTML content, its content type, and the Microsoft Graph mention objects.
+    """
+    members_by_name: dict[str, list[dict[str, Any]]] = {}
+    for member in chat_members:
+        if display_name := member.get("displayName"):
+            members_by_name.setdefault(display_name.casefold(), []).append(member)
+
+    resolved_mentions: list[tuple[re.Match[str], dict[str, Any]]] = []
+    for match in mention_matches:
+        requested_name = match.group("name")
+        matching_members = members_by_name.get(requested_name.casefold(), [])
+        if not matching_members:
+            raise ValueError(f"Mentioned user '{requested_name}' is not a member of chat '{chat}'.")
+        if len(matching_members) > 1:
+            raise ValueError(
+                f"Mentioned user '{requested_name}' is ambiguous in chat '{chat}'. Use a unique member display name."
+            )
+        if not matching_members[0].get("userId"):
+            raise ValueError(f"Mentioned user '{requested_name}' cannot be mentioned because an Entra user ID is unavailable.")
+        resolved_mentions.append((match, matching_members[0]))
+
+    formatted_parts: list[str] = []
+    graph_mentions: list[dict[str, Any]] = []
+    previous_end = 0
+    for mention_id, (match, member) in enumerate(resolved_mentions):
+        preceding_content = content[previous_end : match.start()]
+        formatted_parts.append(text_to_html(preceding_content) if content_type == "text" else preceding_content)
+
+        display_name = member["displayName"]
+        formatted_parts.append(f'<at id="{mention_id}">{html_escape(display_name)}</at>')
+        graph_mentions.append(
+            {
+                "id": mention_id,
+                "mentionText": display_name,
+                "mentioned": {
+                    "user": {
+                        "id": member["userId"],
+                        "displayName": display_name,
+                        "userIdentityType": "aadUser",
+                    }
+                },
+            }
+        )
+        previous_end = match.end()
+
+    trailing_content = content[previous_end:]
+    formatted_parts.append(text_to_html(trailing_content) if content_type == "text" else trailing_content)
+    return "".join(formatted_parts), "html", graph_mentions
+
+
 def message_send_to_chat_command():
     """
     Send a new chatMessage in the specified chat.
+
+    :return: None.
     """
     args = demisto.args()
     content: str = args.get("content", "")
@@ -2029,9 +2158,15 @@ def message_send_to_chat_command():
     chat: str = args.get("chat", "")
     chat_id, _ = get_chat_id_and_type(chat)
 
+    mentions: list[dict[str, Any]] = []
+    if mention_matches := find_graph_mention_matches(content, content_type):
+        content, content_type, mentions = format_graph_chat_mentions(
+            content, content_type, mention_matches, get_chat_members(chat_id), chat
+        )
+
     add_bot_to_chat(chat_id)
 
-    message_data: dict = send_message_in_chat(content, chat_id, content_type)
+    message_data: dict = send_message_in_chat(content, chat_id, content_type, mentions)
     message_data.pop("@odata.context", "")
     hr = get_message_human_readable(message_data)
     result = CommandResults(
