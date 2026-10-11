@@ -1,5 +1,6 @@
 category: IT Services
 provider: WMB Holdings Inc
+supportlevelheader: developer
 commonfields:
   id: CSCDomainManager
   version: -1
@@ -44,7 +45,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: CSCDomainManager is an integration that supports querying and enriching domains through CSCDomainManager API.
+description: CSCDomainManager is an integration that supports querying and enriching domains across CSC-managed domain portfolios.
 display: CSCDomainManager
 name: CSCDomainManager
 script:
