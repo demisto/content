@@ -840,9 +840,9 @@ class TestSDKContract:
         """
         fields = InitializeResult.model_fields
 
-        assert "server_info" in fields, (
-            f"InitializeResult no longer exposes 'server_info' (has: {sorted(fields)}). Client._get_session must be updated."
-        )
+        assert (
+            "server_info" in fields
+        ), f"InitializeResult no longer exposes 'server_info' (has: {sorted(fields)}). Client._get_session must be updated."
 
     def test_call_tool_result_exposes_is_error(self):
         """
@@ -852,9 +852,9 @@ class TestSDKContract:
         """
         fields = CallToolResult.model_fields
 
-        assert "is_error" in fields, (
-            f"CallToolResult no longer exposes 'is_error' (has: {sorted(fields)}). Client.call_tool must be updated."
-        )
+        assert (
+            "is_error" in fields
+        ), f"CallToolResult no longer exposes 'is_error' (has: {sorted(fields)}). Client.call_tool must be updated."
 
     def test_call_tool_result_serializes_to_camel_case_wire_names(self):
         """
@@ -921,9 +921,7 @@ class TestConnection:
         mock_session.initialize.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_test_connection_auth_test_returns_command_results(
-        self, mocker: MockerFixture, mock_client_instance: Client
-    ):
+    async def test_test_connection_auth_test_returns_command_results(self, mocker: MockerFixture, mock_client_instance: Client):
         """
         Given: A client that can establish an MCP session.
         When: test_connection is called with auth_test=True.
@@ -954,9 +952,7 @@ class TestConnection:
             await mock_client_instance.test_connection()
 
     @pytest.mark.asyncio
-    async def test_get_session_yields_server_name_from_init_result(
-        self, mocker: MockerFixture, mock_client_instance: Client
-    ):
+    async def test_get_session_yields_server_name_from_init_result(self, mocker: MockerFixture, mock_client_instance: Client):
         """
         Given: An MCP server reporting its name during initialization.
         When: _get_session is entered.
