@@ -796,6 +796,58 @@ class TestFutureDatedEvents:
         assert [e["alertId"] for e in events] == ["alert-future"]
 
 
+class TestEventsLogging:
+    """The events flow logs enough to verify the lookback on a customer tenant."""
+
+    def test_summary_reports_late_indexed_event(self, mock_client, mocker):
+        import demistomock as demisto
+
+        info = mocker.patch.object(demisto, "info")
+        api = FakeHalcyonEventsApi()
+        api.add("on-time", "2026-10-05T07:00:30Z")
+        api.add("late", "2026-10-05T07:00:10Z", indexed_at="2026-10-05T07:01:30Z")
+
+        run_cycles(mock_client, mocker, api, ["2026-10-05T07:01:00.000000Z", "2026-10-05T07:02:00.000000Z"])
+
+        logs = [str(call.args[0]) for call in info.call_args_list]
+        assert any("HALCYON-EVENTS LATE-INDEXED" in line and "late@2026-10-05T07:00:10.000000Z" in line for line in logs)
+        summaries = [line for line in logs if line.startswith("HALCYON-EVENTS SUMMARY")]
+        assert len(summaries) == 2
+        assert "new=1" in summaries[1] and "late_indexed=1" in summaries[1] and "duplicates=1" in summaries[1]
+
+    def test_summary_reports_future_dated_event(self, mock_client, mocker):
+        import demistomock as demisto
+
+        info = mocker.patch.object(demisto, "info")
+        api = FakeHalcyonEventsApi()
+        api.add("future", "2026-10-05T07:03:00Z", indexed_at="2026-10-05T07:00:00Z")
+
+        run_cycles(mock_client, mocker, api, ["2026-10-05T07:01:00.000000Z"])
+
+        logs = [str(call.args[0]) for call in info.call_args_list]
+        assert any("HALCYON-EVENTS FUTURE-DATED" in line and "future@2026-10-05T07:03:00.000000Z(+120s)" in line for line in logs)
+        assert any("future_held_back=1" in line for line in logs if line.startswith("HALCYON-EVENTS SUMMARY"))
+
+    def test_logging_failure_does_not_fail_fetch(self, mock_client, mocker):
+        import demistomock as demisto
+
+        mocker.patch.object(demisto, "info", side_effect=Exception("log failure"))
+        api = FakeHalcyonEventsApi()
+        api.add("evt", "2026-10-05T07:00:30Z")
+
+        sent, last_run = run_cycles(mock_client, mocker, api, ["2026-10-05T07:01:00.000000Z"])
+
+        assert sent == {"evt": 1}
+        assert last_run["last_fetch_events"] == "2026-10-05T07:01:00.000000Z"
+
+    def test_summarize_last_run_hides_dedup_cache(self):
+        from Halcyon import summarize_last_run
+
+        last_run = {"last_fetch_events": "t", "events_dedup_cache": {"a": "t", "b": "t"}}
+
+        assert summarize_last_run(last_run) == {"last_fetch_events": "t", "events_dedup_cache": "<2 keys>"}
+
+
 class TestEventsLastRunMigration:
     """A last run written by the previous version is converted without losing or re-sending events."""
 
