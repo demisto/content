@@ -2794,6 +2794,18 @@ def test_reject_issue_retries_with_legacy_note_when_tenant_requires_it(retry_res
     assert retry_variables["patch"]["note"] == "rejecting_for_e2e"
 
 
+def test_resolve_issue_does_not_retry_with_legacy_note():
+    from Wiz import reject_or_resolve_issue
+
+    note_required = Exception("Wiz API error details: A note is required for rejection\n")
+    with (
+        patch("Wiz.checkAPIerrors", side_effect=[note_required]) as mock_check_api,
+        pytest.raises(Exception, match="A note is required"),
+    ):
+        reject_or_resolve_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "THREAT_FIXED", "resolving", "RESOLVED")
+    assert mock_check_api.call_count == 1
+
+
 @patch("Wiz.checkAPIerrors", return_value=test_reject_issue_response)
 def test_reject_issue_sends_rejected_status_and_reason(mock_check_api):
     """Reject path must send status=REJECTED with resolutionReason, then the note as a comment."""
@@ -2861,7 +2873,6 @@ def format_as_note(text: str, time: str, author: str) -> dict[str, Any]:
     "comments,last_update,expected_count,expected_content",
     [
         pytest.param([], LAST_UPDATE, 0, None, id="comments_empty"),
-        pytest.param([format_as_note("x", "2025-06-01T10:00:00Z", "A")], None, 0, None, id="no_last_update"),
         pytest.param(
             [
                 format_as_note("old", "2024-01-01T00:00:00Z", "Alice"),
@@ -2992,6 +3003,10 @@ def test_get_remote_data_command_mirrors_issue_when_comments_unreadable(
     get_remote_data_command({"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": ""})
     mock_get_comments.assert_not_called()
 
+    mock_get_comments.side_effect = Exception("Wiz API error: 503 Service Unavailable")
+    with pytest.raises(Exception, match="503"):
+        get_remote_data_command({"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": "2025-01-01T00:00:00Z"})
+
 
 @pytest.mark.parametrize(
     "comments,expected_deleted_ids",
@@ -3038,6 +3053,10 @@ def test_get_issue_comments_paginates(mock_check_api):
     mock_check_api.side_effect = None
     mock_check_api.return_value = {"data": {"issue": {"commentThread": None}}}
     assert get_issue_comments("12345678-1111-2222-3333-444444444444") == []
+
+    mock_check_api.return_value = {"data": {"issue": None}}
+    with pytest.raises(Exception, match="was not found"):
+        get_issue_comments("12345678-1111-2222-3333-444444444444")
 
 
 def test_retired_notes_api_not_referenced():

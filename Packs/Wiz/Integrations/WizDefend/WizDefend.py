@@ -3655,7 +3655,6 @@ def set_issue_note(issue_id, comment, raise_errors=False):
 
 
 def _note_warning(issue_id, note):
-    """Call only after a successful status update; a note failure must not fail it."""
     try:
         set_issue_note(issue_id, note, raise_errors=True)
     except Exception as e:
@@ -3749,7 +3748,9 @@ def clear_threat_comments():
     demisto.debug(f"clear_threat_note called with issue_id: {issue_id}")
 
     threat = get_filtered_threats(issue_id=issue_id)
-    if isinstance(threat, str) or not threat:
+    if isinstance(threat, str):
+        return log_and_return_error(f"Error: {threat}")
+    if not threat:
         return log_and_return_error(f"Error: Threat with ID {issue_id} was not found.")
 
     for comment in get_issue_comments(issue_id):
@@ -3763,7 +3764,7 @@ def clear_threat_comments():
     return_results(
         CommandResults(
             outputs_prefix=OutputPrefix.THREAT,
-            outputs=f"Successfully cleared all the comments from the threat with ID {issue_id}.",
+            outputs=f"Successfully cleared the comments from the threat with ID {issue_id}.",
         )
     )
     return None

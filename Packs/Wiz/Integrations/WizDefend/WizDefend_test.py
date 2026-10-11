@@ -2912,7 +2912,7 @@ def test_clear_threat_comments(
             mock_return_results.assert_called_once()
             call_args = mock_return_results.call_args[0][0]
             assert call_args.outputs_prefix == OutputPrefix.THREAT
-            assert "Successfully cleared all the comments" in call_args.outputs
+            assert "Successfully cleared the comments" in call_args.outputs
             assert not mock_return_error.called
         elif threat_notes:  # Only expect error if there were notes to delete
             mock_return_error.assert_called_once()
@@ -2938,6 +2938,45 @@ def test_clear_threat_comments_threat_not_found(
     assert not mock_get_issue_comments.called
     assert not mock_get_entries.called
     assert not mock_return_results.called
+
+
+@patch.object(demisto, "args", return_value={"issue_id": "not-a-uuid"})
+@patch(
+    "Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_threats",
+    return_value="Wrong format: The Issue ID should be in UUID format.",
+)
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_issue_comments")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_error")
+def test_clear_threat_comments_reports_validation_error(
+    mock_return_error, mock_get_issue_comments, mock_get_filtered_threats, mock_args
+):
+    clear_threat_comments()
+
+    assert "Wrong format" in mock_return_error.call_args[0][0]
+    assert not mock_get_issue_comments.called
+
+
+@pytest.mark.parametrize(
+    "reopen_note, note_result, expected_warning, expected_calls",
+    [
+        pytest.param("", None, "", 1, id="no_note"),
+        pytest.param("Reopening", ({"id": "c"}, None), "", 2, id="note_added"),
+        pytest.param("Reopening", Exception("access denied: [write:comments]"), "write:comments", 2, id="note_failed"),
+    ],
+)
+@patch.object(demisto, "error")
+def test_reopen_issue_returns_note_warning(mock_error, reopen_note, note_result, expected_warning, expected_calls):
+    side_effect = [({"id": "threat-123", "status": "OPEN"}, None), note_result]
+    with patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries", side_effect=side_effect) as mock_get_entries:
+        response, warning = WizDefend._reopen_issue(str(uuid.uuid4()), reopen_note)
+
+    assert response == ({"id": "threat-123", "status": "OPEN"}, None)
+    assert mock_get_entries.call_count == expected_calls
+    assert mock_get_entries.call_args_list[0][0][0] == UPDATE_ISSUE_QUERY
+    if expected_warning:
+        assert expected_warning in warning
+    else:
+        assert warning == ""
 
 
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_results")
@@ -3035,6 +3074,9 @@ def test_get_issue_comments_paginates(mock_get_entries):
         {"id": issue_id, "after": "cursor-1"},
         WizApiResponse.ISSUE,
     )
+
+    mock_get_entries.side_effect = [({"commentThread": None}, None)]
+    assert get_issue_comments(issue_id) == []
 
 
 def test_retired_notes_api_not_referenced():

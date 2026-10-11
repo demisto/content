@@ -2480,16 +2480,15 @@ def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolv
             return checkAPIerrors(query, variables)
         except Exception as retry_error:
             raise Exception(
-                "This Wiz tenant requires a note to reject issues, which the Wiz API no longer accepts. "
-                "Disable 'Require note on rejection' in Wiz Issue settings, or reject the issue in Wiz. "
-                f"Wiz API error: {retry_error}"
-            )
+                "This Wiz tenant requires a note to reject issues, and the note could not be added. "
+                "If the Wiz Issue Notes API is retired, disable 'Require note on rejection' in Wiz Issue settings "
+                f"or reject the issue in Wiz. Wiz API error: {retry_error}"
+            ) from retry_error
 
     return _add_note_after_status_update(issue_id, reject_or_resolve_comment, response)
 
 
 def _add_note_after_status_update(issue_id, note, response):
-    """Call only after a successful status update; a note failure must not fail it."""
     try:
         set_issue_comment(issue_id, note)
     except Exception as e:
@@ -2571,8 +2570,10 @@ def get_issue_comments(issue_id):
     after = None
     while True:
         data = checkAPIerrors(ISSUE_COMMENTS_QUERY, {"id": issue_id, "after": after})
-        thread = ((data.get("data") or {}).get("issue") or {}).get("commentThread") or {}
-        page = thread.get("comments") or {}
+        issue = (data.get("data") or {}).get("issue")
+        if issue is None:
+            raise Exception(f"Issue {issue_id} was not found.")
+        page = (issue.get("commentThread") or {}).get("comments") or {}
         comments.extend(page.get("nodes") or [])
         if not (page.get("pageInfo") or {}).get("hasNextPage"):
             return comments
@@ -2955,11 +2956,13 @@ def get_remote_data_command(args):
     _attach_mirror_metadata(issue)
 
     entries: list[dict] = []
-    if last_update:
-        # Missing read:comments must not block issue-field mirroring.
+    if last_update:  # first sync: don't back-fill the comment history
         try:
             comments = get_issue_comments(issue_id)
         except Exception as e:
+            # Only a missing scope is skipped; other errors must keep lastUpdate unadvanced.
+            if "read:comments" not in str(e):
+                raise
             demisto.info(f"get_remote_data: skipping comments for issue {issue_id}: {e}")
         else:
             entries = _build_new_note_entries(comments, last_update)
@@ -2994,16 +2997,7 @@ def _parse_iso_timestamp(value):
 
 
 def _build_new_note_entries(comments, last_update):
-    """Build war room entries for comments added since last_update.
-
-    First sync (no last_update) returns []: we intentionally avoid back-filling
-    the entire pre-existing comment history into a fresh war room. Subsequent
-    syncs surface only comments newer than the previous sync.
-    """
     entries: list[dict] = []
-    if not last_update:
-        return entries
-
     last_update_dt = _parse_iso_timestamp(last_update)
     for note in comments:
         if XSOAR_MIRROR_MARKER in note.get("body", ""):
