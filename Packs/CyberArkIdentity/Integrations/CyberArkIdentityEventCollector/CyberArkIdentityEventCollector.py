@@ -99,6 +99,10 @@ EVENT_FIELDS = [
 ]
 PRODUCT = "identity"
 VENDOR = "cyberark"
+# The maximum number of events to request from RedRock in a single page.
+# RedRock queries time out after two minutes, so we page through the results
+# instead of requesting everything at once.
+PAGE_SIZE = 1000
 
 
 class CyberArkIdentityEventsOptions(IntegrationOptions):
@@ -164,15 +168,43 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
     def get_last_run(self, events: list) -> dict:  # type: ignore
         return {"from": self.get_last_run_time(events), "ids": self.get_last_run_ids(events)}
 
+    def _set_page_number(self, page_number: int) -> None:
+        """Update the PageNumber in the request body so the next call fetches the given page."""
+        body = json.loads(self.client.request.data)  # type: ignore[arg-type]
+        body["args"]["PageNumber"] = page_number
+        self.client.request.data = json.dumps(body)
+
     def _iter_events(self):
         self.client.authenticate()
 
-        result = self.client.call(self.client.request).json()["Result"]
+        fetched_events_ids = demisto.getLastRun().get("ids", [])
+        page_number = 1
+        collected = 0
 
-        events = result.get("Results")
-        if events:
-            fetched_events_ids = demisto.getLastRun().get("ids", [])
+        # RedRock returns at most PageSize rows per call and reports the total number of
+        # matching rows in "FullCount". We page through the result set (ordered ascending by
+        # WhenOccurred) until we have collected every matching row, so no events are dropped
+        # when a single fetch window contains more than one page of events.
+        while True:
+            self._set_page_number(page_number)
+            result = self.client.call(self.client.request).json().get("Result") or {}
+
+            events = result.get("Results") or []
+            page_count = len(events)
+            if not page_count:
+                break
+
+            full_count = result.get("FullCount", page_count)
+            collected += page_count
+            demisto.debug(f"CyberArk RedRock page {page_number}: got {page_count} events (collected {collected}/{full_count})")
+
             yield [event.get("Row") for event in events if event.get("Row", {}).get("ID") not in fetched_events_ids]
+
+            # Stop once we've drained every matching row, or the page was not full (last page).
+            if collected >= full_count or page_count < PAGE_SIZE:
+                break
+
+            page_number += 1
 
 
 def get_request_params(**kwargs: dict) -> dict:
@@ -184,8 +216,11 @@ def get_request_params(**kwargs: dict) -> dict:
         "url": f"{str(kwargs.get('url', '')).removesuffix('/')}/RedRock/Query",
         "data": json.dumps(
             {
-                "Script": f"Select {', '.join(EVENT_FIELDS)} from Event where WhenOccurred > '{from_time}'",
-                "args": {"PageNumber": 1, "PageSize": kwargs.get("limit", 1000)},
+                # Order ascending by WhenOccurred so pagination is deterministic and the last-run
+                # cursor (max WhenOccurred) is safe. Caching=-1 requests live (non-cached) data.
+                "Script": f"Select {', '.join(EVENT_FIELDS)} from Event where WhenOccurred > '{from_time}' "
+                f"ORDER BY WhenOccurred ASC",
+                "args": {"PageNumber": 1, "PageSize": PAGE_SIZE, "Caching": -1},
             }
         ),
         "verify": not kwargs.get("insecure"),
@@ -196,6 +231,12 @@ def get_request_params(**kwargs: dict) -> dict:
 def main(command: str, demisto_params: dict):
     credentials = Credentials(**demisto_params.get("credentials", {}))
     options = CyberArkIdentityEventsOptions(**demisto_params)
+    # On fetch-events we must drain the full backlog, so the configured "limit" must not
+    # truncate the collected events (otherwise events beyond the limit are silently dropped
+    # and the cursor advances past them). "limit" is only meant to cap the manual
+    # cyberarkidentity-get-events command.
+    if command == "fetch-events":
+        options.limit = 0
     request_params = get_request_params(**demisto_params)
     request = CyberArkIdentityEventsRequest(**request_params)
     client = CyberArkIdentityEventsClient(request, options, credentials)
