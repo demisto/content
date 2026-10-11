@@ -1,0 +1,24 @@
+{
+    "id": "VMwareESXiTestListRegion",
+    "version": -1,
+    "name": "VMwareESXiTestListRegion",
+    "description": "VMware ESXi region-disjoint duplicate-id test list 2 (harness_v2).",
+    "type": "plain_text",
+    "fromVersion": "6.8.0",
+    "itemVersion": "",
+    "locked": false,
+    "nameLocked": false,
+    "packID": "VMwareESXi",
+    "system": false,
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam"
+    ],
+    "supportedFeatures": [
+        "harness_v2"
+    ]
+}
