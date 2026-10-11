@@ -2,7 +2,7 @@
 
 import copy
 import json
-from datetime import datetime, UTC
+from datetime import UTC, datetime, timedelta
 
 import pytest
 from freezegun import freeze_time
@@ -622,16 +622,40 @@ class TestEventsLookback:
 
         assert "too-late" not in sent
 
-    def test_dedup_cache_keeps_only_lookback_window(self, mock_client, mocker):
+    def test_dedup_cache_keeps_only_lookback_window_plus_margin(self, mock_client, mocker):
         api = FakeHalcyonEventsApi()
         for minute in range(10):
             api.add(f"evt-{minute}", f"2026-10-05T07:{minute:02d}:30Z")
 
         _, last_run = run_cycles(mock_client, mocker, api, minute_cycles(1, 10))
 
-        # Last cycle 07:10 -> window starts 07:05:00, so only events from 07:05 on are kept.
-        assert sorted(last_run["events_dedup_cache"]) == ["evt-5", "evt-6", "evt-7", "evt-8", "evt-9"]
+        # Last cycle 07:10 -> next window starts 07:05:00, minus the 1-minute margin = 07:04:00.
+        assert sorted(last_run["events_dedup_cache"]) == ["evt-4", "evt-5", "evt-6", "evt-7", "evt-8", "evt-9"]
         assert last_run["last_fetch_events"] == "2026-10-05T07:10:00.000000Z"
+
+    def test_margin_prevents_duplicates_when_next_query_starts_early(self, mock_client, mocker):
+        """If a query starts a bit earlier than expected (API rounding or clock skew), events just
+        before the window are still recognized as sent and are not sent again.
+
+        Without the margin, the 07:09:55 cycle trims the cache at 07:04:55 and drops "edge"
+        (07:04:50). The 07:10:00 cycle's query, starting 30 seconds early at 07:04:30, then
+        returns "edge" again and it would be sent twice.
+        """
+        api = FakeHalcyonEventsApi()
+        api.add("edge", "2026-10-05T07:04:50Z")
+        original_get_events = api.get_events
+
+        def get_events_starting_early(occurred_after: str, **kwargs):
+            early_start = (datetime.strptime(occurred_after, "%Y-%m-%dT%H:%M:%S.%fZ") - timedelta(seconds=30)).strftime(
+                "%Y-%m-%dT%H:%M:%S.%fZ"
+            )
+            return original_get_events(occurred_after=early_start, **kwargs)
+
+        api.get_events = get_events_starting_early  # type: ignore[method-assign]
+        cycles = ["2026-10-05T07:05:00.000000Z", "2026-10-05T07:09:55.000000Z", "2026-10-05T07:10:00.000000Z"]
+        sent, _ = run_cycles(mock_client, mocker, api, cycles)
+
+        assert dict(sent) == {"edge": 1}
 
     def test_events_without_id_are_skipped(self, mock_client, mocker):
         """Events without an ID cannot be deduplicated, so they are skipped (same as the previous version)."""
@@ -687,6 +711,38 @@ class TestEventsLookback:
 
         assert len(sent) == 300
         assert set(sent.values()) == {1}
+
+
+class TestEventsNextTrigger:
+    """When a fetch reaches max_fetch, the next fetch runs right away so a burst drains quickly."""
+
+    def test_next_trigger_set_when_max_fetch_reached(self, mock_client, mocker):
+        api = FakeHalcyonEventsApi()
+        for i in range(150):
+            api.add(f"evt-{i:03d}", f"2026-10-05T07:00:{i % 60:02d}.{i:03d}Z")
+
+        _, last_run = run_cycles(mock_client, mocker, api, ["2026-10-05T07:01:00.000000Z"], max_fetch=100)
+
+        assert last_run["nextTrigger"] == "1"
+
+    def test_next_trigger_cleared_once_backlog_drained(self, mock_client, mocker):
+        api = FakeHalcyonEventsApi()
+        for i in range(150):
+            api.add(f"evt-{i:03d}", f"2026-10-05T07:00:{i % 60:02d}.{i:03d}Z")
+
+        _, last_run = run_cycles(
+            mock_client, mocker, api, ["2026-10-05T07:01:00.000000Z", "2026-10-05T07:01:01.000000Z"], max_fetch=100
+        )
+
+        assert "nextTrigger" not in last_run
+
+    def test_next_trigger_not_set_below_max_fetch(self, mock_client, mocker):
+        api = FakeHalcyonEventsApi()
+        api.add("only", "2026-10-05T07:00:30Z")
+
+        _, last_run = run_cycles(mock_client, mocker, api, ["2026-10-05T07:01:00.000000Z"], max_fetch=100)
+
+        assert "nextTrigger" not in last_run
 
 
 class TestFutureDatedEvents:
