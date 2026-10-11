@@ -2450,3 +2450,50 @@ Deletes unified exclusion items by their IDs and types. Relevant for API version
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SentinelOne.UnifiedExclusions.Deleted.Affected | Number | Number of exclusion items successfully deleted. |
+
+### sentinelone-get-alert-with-raw-indicators
+
+***
+Retrieves a UAM alert enriched with raw SDL event indicators using the v2.1 unifiedalerts GraphQL endpoint. Relevant for API version 2.1.
+
+#### Base Command
+
+`sentinelone-get-alert-with-raw-indicators`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The alert ID to retrieve raw indicators for. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.AlertWithRawIndicators.ID | String | The alert ID. |
+| SentinelOne.AlertWithRawIndicators.Name | String | The alert name. |
+| SentinelOne.AlertWithRawIndicators.Severity | String | The alert severity. |
+| SentinelOne.AlertWithRawIndicators.Classification | String | The alert classification. |
+| SentinelOne.AlertWithRawIndicators.Description | String | The alert description. |
+| SentinelOne.AlertWithRawIndicators.Status | String | The alert status. |
+| SentinelOne.AlertWithRawIndicators.AnalystVerdict | String | The analyst verdict for the alert. |
+| SentinelOne.AlertWithRawIndicators.ConfidenceLevel | String | The confidence level of the alert. |
+| SentinelOne.AlertWithRawIndicators.PrimaryIndicatorType | String | The primary indicator type of the alert. |
+| SentinelOne.AlertWithRawIndicators.Result | String | The mitigation result of the alert. |
+| SentinelOne.AlertWithRawIndicators.StorylineId | String | The storyline ID associated with the alert. |
+| SentinelOne.AlertWithRawIndicators.AttackSurfaces | String | The attack surfaces of the alert. |
+| SentinelOne.AlertWithRawIndicators.CreatedAt | Date | Timestamp when the alert was created. |
+| SentinelOne.AlertWithRawIndicators.DetectedAt | Date | Timestamp when the alert was detected. |
+| SentinelOne.AlertWithRawIndicators.FirstSeenAt | Date | Timestamp when the alert was first seen. |
+| SentinelOne.AlertWithRawIndicators.LastSeenAt | Date | Timestamp when the alert was last seen. |
+| SentinelOne.AlertWithRawIndicators.UpdatedAt | Date | Timestamp when the alert was last updated. |
+| SentinelOne.AlertWithRawIndicators.ExternalId | String | The external ID of the alert. |
+| SentinelOne.AlertWithRawIndicators.Indicators | Unknown | List of structured indicators associated with the alert. |
+| SentinelOne.AlertWithRawIndicators.RawIndicators | Unknown | List of raw SDL telemetry events that triggered the alert indicators. |
+| SentinelOne.AlertWithRawIndicators.RawData | Unknown | Full OCSF-formatted raw data object for the alert. |
+| SentinelOne.AlertWithRawIndicators.EventSearchParams | Unknown | Pre-built Power Query search parameters for Deep Visibility investigation. |
+| SentinelOne.AlertWithRawIndicators.Asset | Unknown | Asset information for the endpoint associated with the alert. |
+| SentinelOne.AlertWithRawIndicators.DetectionSource | Unknown | Detection source product and vendor information. |
+| SentinelOne.AlertWithRawIndicators.Process | Unknown | Process information associated with the alert. |
+| SentinelOne.AlertWithRawIndicators.Observables | Unknown | Observable indicators such as process name or IP associated with the alert. |
+| SentinelOne.AlertWithRawIndicators.DetectionTime | Unknown | Scope information at the time of detection. |
