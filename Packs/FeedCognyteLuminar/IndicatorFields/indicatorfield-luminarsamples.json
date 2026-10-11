@@ -1,0 +1,33 @@
+{
+    "id": "indicator_luminarsamples",
+    "version": -1,
+    "name": "Luminar Samples",
+    "ownerOnly": false,
+    "description": "The comma-separated paths of the malware sample files (parent directory path followed by the file name) resolved from the STIX sample_refs.",
+    "cliName": "luminarsamples",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Malware"
+    ],
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "shouldCommit": false,
+    "shouldCommitSys": false,
+    "inUse": true,
+    "fromVersion": "6.0.0"
+}

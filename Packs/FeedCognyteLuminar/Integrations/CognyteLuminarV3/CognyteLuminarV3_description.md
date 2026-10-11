@@ -1,18 +1,20 @@
 ## Cognyte Luminar V3 Feed
 
-Cognyte is a global leader in security analytics software that empowers governments and enterprises with Actionable
-Intelligence for a safer world. Our open software fuses, analyzes and visualizes disparate data sets at scale to help
-security organizations find the needles in the haystacks. Over 1,000 government and enterprise customers in more than
-100 countries rely on Cognyte’s solutions to accelerate security investigations and connect the dots to successfully
-identify, neutralize, and prevent threats to national security, business continuity and cyber security.
+Use this feed integration to fetch intelligence-based IOCs and customer-related leaked records identified by Luminar,
+using the Luminar TAXII 2.1 external API (STIX 2.1).
 
-Luminar is an asset-based cybersecurity intelligence platform that empowers enterprise organizations to build and
-maintain a proactive threat intelligence operation that enables to anticipate and mitigate cyber threats, reduce risk
-and enhance security resilience. Luminar enables security teams to define a customized, dynamic monitoring plan to
-uncover malicious activity in its earliest stages on all layers of the Web.
+## How to get Luminar credentials
 
-This connector fetches intelligence-based IOC data and customer-related leaked records identified by Luminar,
-using the Luminar TAXII 2.1 external API.
+1. Contact Cognyte at luminar@cognyte.com to register for Luminar API access.
+2. Cognyte provisions an API account (TAXII realm), a Client ID, and a Client Secret for your tenant.
+3. In the integration instance, enter the **Luminar API Account ID**, the **Client ID** in the credentials identifier field, and the **Client Secret** in the credentials password field.
 
-## How to get Luminar Credentials
-For registration and more details please contact luminar@cognyte.com
+## Permissions
+
+The provided credentials must have the `externalAPI/stix.readonly` scope (granted by default to Luminar API accounts).
+
+## Troubleshooting
+
+- **"Luminar realm does not exist"**: verify the Luminar API Account ID and Luminar Base URL parameters.
+- **"Authentication with the Luminar API failed"**: verify the Client ID and Client Secret.
+- **406 errors from the TAXII endpoints**: the Luminar API accepts only the Authorization header on TAXII requests - this is handled by the integration.

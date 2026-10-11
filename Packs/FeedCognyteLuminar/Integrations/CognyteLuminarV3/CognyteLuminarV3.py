@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from collections import OrderedDict
+from collections.abc import Callable, Iterator
 
 """ CONSTANTS """
 
@@ -19,6 +20,11 @@ MATCH_ID_BATCH_SIZE = 100
 # Abort stale-cursor recovery after this many consecutive rebuilds that fail
 # to advance X-TAXII-Date-Added-Last (guards against a no-progress loop).
 MAX_STALE_REBUILDS_WITHOUT_PROGRESS = 5
+# Safety bounds so no fetch loop can run forever: at TAXII_PAGE_LIMIT objects
+# per page this allows ~100M objects per collection - far beyond any real
+# collection - and aborts only pathological pagination loops.
+MAX_TAXII_PAGES = 10000
+MAX_COLLECTION_BATCHES = MAX_TAXII_PAGES // PAGES_PER_BATCH + 2
 # Effectively no request timeout - fetches of old data can take a long
 # time; a request runs until it succeeds or errors out.
 REQUESTS_TIMEOUT_SEC = 86400
@@ -29,6 +35,12 @@ LEAKED_CREDENTIAL = "LEAKED CREDENTIAL"
 IOCS_COLLECTION = "IOCs"
 LEAKED_RECORDS_COLLECTION = "Leaked Records"
 COLLECTION_TITLES = [IOCS_COLLECTION, LEAKED_RECORDS_COLLECTION]
+# Value written to the 'luminardatatype' indicator field so customers can
+# differentiate feed sources in the TIM UI.
+COLLECTION_TO_DATA_TYPE = {
+    IOCS_COLLECTION: "Luminar IOC",
+    LEAKED_RECORDS_COLLECTION: "Luminar Leaked Record",
+}
 
 # Every field this integration can populate, mapped to its empty value.
 # XSOAR merges fields on re-create, so a field absent from the latest STIX
@@ -80,6 +92,8 @@ LUMINAR_FIELD_DEFAULTS = {
     "luminartargetedsystems": "",
     "luminarthreattypes": "",
     "luminarvaliduntil": "",
+    "luminarsamples": "",
+    "luminardatatype": "",
     "tags": [],
     "aliases": [],
     "identityclass": [],
@@ -313,9 +327,20 @@ class Client(BaseClient):
         self.hydrated_objects: OrderedDict = OrderedDict()
 
     def fetch_access_token(self) -> str:
-        """Fetch (and cache) an OAuth2 access token using client credentials."""
+        """Fetch (and cache) an OAuth2 access token using client credentials.
+
+        The token is cached on the instance for the current execution and in
+        the integration context so it persists across executions until expiry.
+        """
         if self._access_token and time.time() < self._token_expiry - TOKEN_REFRESH_MARGIN_SEC:
             return self._access_token
+
+        cached = (demisto.getIntegrationContext() or {}).get("auth_token") or {}
+        cached_token = cached.get("token")
+        if cached_token and time.time() < cached.get("expires_at", 0) - TOKEN_REFRESH_MARGIN_SEC:
+            self._access_token = cached_token
+            self._token_expiry = cached["expires_at"]
+            return cached_token
 
         url_suffix = TOKEN_URL_SUFFIX.format(account_id=self.account_id)
         data = {
@@ -346,6 +371,9 @@ class Client(BaseClient):
         self._access_token = token
         expires_in = arg_to_number(response.get("expires_in"), "expires_in") or 3600
         self._token_expiry = time.time() + expires_in
+        context = demisto.getIntegrationContext() or {}
+        context["auth_token"] = {"token": token, "expires_at": self._token_expiry}
+        demisto.setIntegrationContext(context)
         return token
 
     def _taxii_headers(self) -> dict:
@@ -456,7 +484,7 @@ class Client(BaseClient):
         self,
         collection_id: str,
         added_after: Optional[str] = None,
-    ):
+    ) -> Iterator[tuple[list, Optional[str]]]:
         """
         Iterate over all pages of STIX objects of a collection.
 
@@ -465,7 +493,8 @@ class Client(BaseClient):
         from `added_after = last_seen - 1s` instead of restarting from the
         original checkpoint, so already-fetched pages are not re-downloaded.
         A stall guard aborts after MAX_STALE_REBUILDS_WITHOUT_PROGRESS
-        consecutive rebuilds that fail to advance the last-seen timestamp.
+        consecutive rebuilds that fail to advance the last-seen timestamp,
+        and the loop is bounded by MAX_TAXII_PAGES so it can never hang.
         """
         next_token = None
         current_added_after = added_after
@@ -473,7 +502,7 @@ class Client(BaseClient):
         last_added_at_prev_rebuild: Optional[str] = None
         rebuilds_without_progress = 0
 
-        while True:
+        for _ in range(MAX_TAXII_PAGES):
             try:
                 objects, next_token, date_added_last = self.get_objects(
                     collection_id,
@@ -514,8 +543,12 @@ class Client(BaseClient):
 
             if not next_token:
                 break
+        else:
+            raise DemistoException(
+                f"Pagination did not terminate within {MAX_TAXII_PAGES} pages for collection {collection_id} - aborting."
+            )
 
-    def iter_page_batches(self, collection_id: str, added_after: Optional[str]):
+    def iter_page_batches(self, collection_id: str, added_after: Optional[str]) -> Iterator[tuple[list, Optional[str]]]:
         """
         Group pages into batches of PAGES_PER_BATCH pages.
 
@@ -527,24 +560,20 @@ class Client(BaseClient):
         batch: list = []
         pages_in_batch = 0
         last_added_seen: Optional[str] = None
-        page_iter = self.iter_collection_objects(collection_id, added_after)
-        while True:
-            try:
-                page_objects, last_added = next(page_iter)
-            except StopIteration:
-                break
-            except Exception:
-                if batch:
+        try:
+            for page_objects, last_added in self.iter_collection_objects(collection_id, added_after):
+                batch.extend(page_objects)
+                pages_in_batch += 1
+                if last_added:
+                    last_added_seen = last_added
+                if pages_in_batch >= PAGES_PER_BATCH:
                     yield batch, (last_added_seen or added_after)
-                raise
-            batch.extend(page_objects)
-            pages_in_batch += 1
-            if last_added:
-                last_added_seen = last_added
-            if pages_in_batch >= PAGES_PER_BATCH:
+                    batch = []
+                    pages_in_batch = 0
+        except Exception:
+            if batch:
                 yield batch, (last_added_seen or added_after)
-                batch = []
-                pages_in_batch = 0
+            raise
         if batch:
             yield batch, (last_added_seen or added_after)
 
@@ -589,25 +618,38 @@ class Client(BaseClient):
         for record in target_batch:
             if record.get("type") == "report":
                 needed.update(record.get("object_refs") or [])
+            needed.update(record.get("sample_refs") or [])
         needed -= target_ids
 
-        resolved: dict = {}
-        missing = []
-        for oid in needed:
-            if oid in window_lookup:
-                resolved[oid] = window_lookup[oid]
-            elif oid in self.hydrated_objects:
-                self.hydrated_objects.move_to_end(oid)
-                resolved[oid] = self.hydrated_objects[oid]
-            else:
-                missing.append(oid)
+        def resolve_ids(ids: set) -> dict:
+            """Look up ids in the window and hydrated LRU; fetch the rest via match[id]."""
+            found: dict = {}
+            missing = []
+            for oid in ids:
+                if oid in window_lookup:
+                    found[oid] = window_lookup[oid]
+                elif oid in self.hydrated_objects:
+                    self.hydrated_objects.move_to_end(oid)
+                    found[oid] = self.hydrated_objects.get(oid)
+                else:
+                    missing.append(oid)
+            if missing:
+                demisto.debug(f"Hydrating {len(missing)} referenced ids via match[id] for collection {collection_id}.")
+                for obj in self.get_objects_by_match_id(collection_id, missing):
+                    oid = obj.get("id")
+                    if oid:
+                        found[oid] = obj
+            return found
 
-        if missing:
-            demisto.debug(f"Hydrating {len(missing)} referenced ids via match[id] for collection {collection_id}.")
-            for obj in self.get_objects_by_match_id(collection_id, missing):
-                oid = obj.get("id")
-                if oid:
-                    resolved[oid] = obj
+        resolved = resolve_ids(needed)
+
+        # Second pass: malware sample_refs on resolved objects and the parent
+        # directories of resolved file objects, so 'Luminar Samples' can show
+        # full '<directory path><file name>' values.
+        sample_refs = {ref for o in resolved.values() for ref in (o.get("sample_refs") or [])}
+        resolved.update(resolve_ids(sample_refs - target_ids - set(resolved)))
+        dir_refs = {o["parent_directory_ref"] for o in resolved.values() if o.get("parent_directory_ref")}
+        resolved.update(resolve_ids(dir_refs - target_ids - set(resolved)))
 
         for oid, obj in resolved.items():
             if oid in self.hydrated_objects:
@@ -621,7 +663,7 @@ class Client(BaseClient):
         context += [o for o in window if o.get("type") == "relationship"]
         return context
 
-    def iter_resolved_batches(self, collection_id: str, added_after: Optional[str]):
+    def iter_resolved_batches(self, collection_id: str, added_after: Optional[str]) -> Iterator[tuple[list, list, Optional[str]]]:
         """
         Sliding-window fetch of a collection, bounded memory.
 
@@ -678,29 +720,34 @@ class Client(BaseClient):
         yield prev, self.resolve_context(collection_id, prev, None, center + nxt), lasts[0]
 
         # Steady state: yield each center batch once, with prev+next context.
-        idx = 1
-        while True:
+        # Bounded by MAX_COLLECTION_BATCHES (batch_iter is itself bounded by
+        # MAX_TAXII_PAGES) so the loop can never run forever.
+        for idx in range(1, MAX_COLLECTION_BATCHES):
             yield center, self.resolve_context(collection_id, center, prev, nxt), lasts[idx]
             prev = center
             center = nxt
-            idx += 1
             try:
                 nxt, last_added = next(batch_iter)
                 lasts.append(last_added)
             except StopIteration:
                 # Tail: the last batch still needs yielding, with prev context.
-                yield center, self.resolve_context(collection_id, center, prev, None), lasts[idx]
+                yield center, self.resolve_context(collection_id, center, prev, None), lasts[idx + 1]
                 break
             except Exception:
                 # Flush the last in-memory batch, then propagate the error.
-                yield center, self.resolve_context(collection_id, center, prev, None), lasts[idx]
+                yield center, self.resolve_context(collection_id, center, prev, None), lasts[idx + 1]
                 raise
+        else:
+            raise DemistoException(
+                f"Batch iteration did not terminate within {MAX_COLLECTION_BATCHES} batches "
+                f"for collection {collection_id} - aborting."
+            )
 
 
 """ STIX HELPERS """
 
 
-def to_csv(value) -> Any:
+def to_csv(value: Any) -> Any:
     """Join list values into a comma-separated string for text-type fields."""
     if value is None:
         return None
@@ -906,7 +953,32 @@ def build_indicator_from_stix(stix_object: dict, feed_tags: list, tlp_color: Opt
     return indicator
 
 
-def build_sdo_indicator(stix_object: dict, feed_tags: list, tlp_color: Optional[str]) -> Optional[dict]:
+def resolve_sample_refs(sample_refs: Optional[list], raw_map: dict) -> Optional[str]:
+    """Resolve a malware object's sample_refs to readable sample paths.
+
+    File objects render as '<parent directory path><file name>' - the parent
+    directory_ref is resolved through the fetched/known object map. Other
+    objects fall back to their name or value. Multiple samples are joined
+    comma-separated."""
+    samples = []
+    for ref in sample_refs or []:
+        obj = raw_map.get(ref)
+        if not obj:
+            continue
+        name = obj.get("name") or obj.get("value") or obj.get("path")
+        if obj.get("type") == "file" and name:
+            directory = raw_map.get(obj.get("parent_directory_ref") or "") or {}
+            name = f"{directory.get('path', '')}{name}"
+        if name:
+            samples.append(name)
+    if not samples:
+        return None
+    return ", ".join(dict.fromkeys(samples))
+
+
+def build_sdo_indicator(
+    stix_object: dict, feed_tags: list, tlp_color: Optional[str], raw_map: Optional[dict] = None
+) -> Optional[dict]:
     """Create an indicator from a STIX domain object (malware, threat-actor,
     identity, location, software, tool, incident, ...)."""
     stix_type = stix_object.get("type", "")
@@ -926,6 +998,9 @@ def build_sdo_indicator(stix_object: dict, feed_tags: list, tlp_color: Optional[
             fields["tags"] = list(dict.fromkeys((fields.get("tags") or []) + malware_tags))
         if stix_object.get("aliases"):
             fields["aliases"] = stix_object["aliases"]
+        samples = resolve_sample_refs(stix_object.get("sample_refs"), raw_map or {})
+        if samples:
+            fields["luminarsamples"] = samples
     elif stix_type == "threat-actor":
         if stix_object.get("aliases"):
             fields["aliases"] = stix_object["aliases"]
@@ -1000,7 +1075,14 @@ def index_object(obj: dict, light_map: dict, incident_map: dict, rel_records: li
     if obj_type == "incident":
         incident_map[obj_id] = obj
     xvalue, xtype = get_entity_value_and_type(obj)
-    name = obj.get("name") or obj.get("value") or obj.get("account_login") or obj.get("country") or obj.get("city")
+    name = (
+        obj.get("name")
+        or obj.get("value")
+        or obj.get("account_login")
+        or obj.get("country")
+        or obj.get("city")
+        or obj.get("path")
+    )
     light_map[obj_id] = (obj_type, name, xvalue, xtype)
 
 
@@ -1245,19 +1327,26 @@ def stix_objects_to_indicators(
     light_map: Optional[dict] = None,
     rel_records: Optional[list] = None,
     incident_map: Optional[dict] = None,
+    data_type: Optional[str] = None,
+    raw_map: Optional[dict] = None,
 ) -> tuple[list, list]:
     """
     Transform a page of STIX objects into XSOAR indicator dicts.
 
     When light_map/rel_records/incident_map are not supplied they are built
     from the given objects; during fetch-indicators the batch's index
-    (target + resolved context) is passed in.
+    (target + resolved context) is passed in. raw_map (id -> object) is used
+    to resolve reference properties like malware sample_refs; when omitted
+    it is built from the given objects. data_type is written to the
+    'luminardatatype' field of every created indicator.
 
     Returns:
         (indicators, rel_records)
     """
     if light_map is None or rel_records is None or incident_map is None:
         light_map, incident_map, rel_records = index_objects(objects)
+    if raw_map is None:
+        raw_map = {obj.get("id"): obj for obj in objects if obj.get("id")}
     indicators: list = []
 
     for obj in objects:
@@ -1269,12 +1358,14 @@ def stix_objects_to_indicators(
             incident = find_related_incident(obj.get("id", ""), rel_records, incident_map)
             indicator = build_account_indicator(obj, incident, feed_tags, tlp_color)
         elif stix_is_sdo(obj_type):
-            indicator = build_sdo_indicator(obj, feed_tags, tlp_color)
+            indicator = build_sdo_indicator(obj, feed_tags, tlp_color, raw_map=raw_map)
         else:
             # 'indicator' objects and SCOs (ipv4-addr, url, file, ...)
             indicator = build_indicator_from_stix(obj, feed_tags, tlp_color)
 
         if indicator:
+            if data_type:
+                indicator["fields"]["luminardatatype"] = data_type
             indicators.append(indicator)
 
     # Attach a single comment listing all related objects to each indicator.
@@ -1307,9 +1398,12 @@ def save_checkpoint(collection_title: str, checkpoint: str) -> None:
 def normalize_taxii_timestamp(value: str) -> str:
     """Normalize a date string/datetime to TAXII format with exactly 6
     fractional digits, e.g. 2026-08-11T00:43:16.307000Z."""
-    dt = arg_to_datetime(value)
+    try:
+        dt = arg_to_datetime(value)
+    except ValueError:
+        dt = None
     if not dt:
-        raise DemistoException(f"Could not parse '{value}' as a date for the 'First Fetch Time' parameter.")
+        raise DemistoException(f"Could not parse '{value}' as a date.")
     return dt.strftime("%Y-%m-%dT%H:%M:%S.%f") + "Z"
 
 
@@ -1406,6 +1500,8 @@ def fetch_indicators_command(client: Client, first_fetch: Optional[str]) -> None
                     light_map=light_map,
                     rel_records=comment_rels,
                     incident_map=incident_map,
+                    data_type=COLLECTION_TO_DATA_TYPE.get(title),
+                    raw_map={o.get("id"): o for o in (target + context) if o.get("id")},
                 )
                 batch_created, batch_rels = create_batch(indicators, target_rels, light_map)
                 created += batch_created
@@ -1428,6 +1524,16 @@ def resolve_from_date(args: dict) -> Optional[str]:
     return normalize_taxii_timestamp(from_date) if from_date else None
 
 
+def resolve_limit(args: dict) -> int:
+    """Validate the 'limit' command argument: a positive integer, default 50."""
+    limit = arg_to_number(args.get("limit", 50), arg_name="limit")
+    if limit is None:
+        limit = 50
+    if limit < 1:
+        raise DemistoException("The 'limit' argument must be a positive integer.")
+    return limit
+
+
 def flatten_indicator(indicator: dict) -> dict:
     """Flatten an indicator (value/type/occurred + all fields) into a
     single dict so every mapped field is available in context output."""
@@ -1435,18 +1541,21 @@ def flatten_indicator(indicator: dict) -> dict:
     if indicator.get("occurred"):
         flat["Occurred"] = indicator["occurred"]
     flat.update(indicator.get("fields", {}))
+    flat.pop("luminardatatype", None)
     if indicator.get("comments"):
         flat["comment"] = " | ".join(c.get("content", "").replace("\n", "; ") for c in indicator["comments"])
     return {k: v for k, v in flat.items() if v not in (None, "", [])}
 
 
-def flatten_stix_object(stix_object: dict, feed_tags: list, tlp_color: Optional[str]) -> Optional[dict]:
+def flatten_stix_object(
+    stix_object: dict, feed_tags: list, tlp_color: Optional[str], raw_map: Optional[dict] = None
+) -> Optional[dict]:
     """Flatten any STIX object into a field dict - reuses the indicator
     builders when possible and falls back to the raw object fields."""
     obj_type = stix_object.get("type", "")
     indicator = None
     if stix_is_sdo(obj_type):
-        indicator = build_sdo_indicator(stix_object, feed_tags, tlp_color)
+        indicator = build_sdo_indicator(stix_object, feed_tags, tlp_color, raw_map=raw_map)
     elif obj_type == "user-account":
         indicator = build_account_indicator(stix_object, None, feed_tags, tlp_color)
     elif obj_type not in NON_INDICATOR_TYPES:
@@ -1472,6 +1581,7 @@ def get_related_objects_fields(
     feed_tags: list,
     tlp_color: Optional[str],
     expand_incident: bool = False,
+    raw_map: Optional[dict] = None,
 ) -> list:
     """Resolve objects related to a STIX object via the collection's
     relationships and return each related object's flattened field set.
@@ -1489,7 +1599,7 @@ def get_related_objects_fields(
         if relation_key in seen_relations:
             continue
         seen_relations.add(relation_key)
-        flat = flatten_stix_object(candidate, feed_tags, tlp_color)
+        flat = flatten_stix_object(candidate, feed_tags, tlp_color, raw_map=raw_map)
         if not flat:
             continue
         flat["_stixtype"] = candidate.get("type", "object")
@@ -1505,7 +1615,7 @@ def get_related_objects_fields(
                 seen_relations.add(relation_key)
                 if neighbor.get("type") in ("user-account", "incident"):
                     continue
-                flat = flatten_stix_object(neighbor, feed_tags, tlp_color)
+                flat = flatten_stix_object(neighbor, feed_tags, tlp_color, raw_map=raw_map)
                 if not flat:
                     continue
                 flat["_stixtype"] = neighbor.get("type", "object")
@@ -1557,7 +1667,7 @@ def indicators_to_readable(title: str, flat_indicators: list, related_columns: l
 
 
 def stream_persist_collect(
-    client: Client, collection_title: str, added_after: Optional[str], limit: int, row_filter
+    client: Client, collection_title: str, added_after: Optional[str], limit: int, row_filter: Callable
 ) -> tuple[list, list, int]:
     """Iterate resolved batches of a collection, persisting each batch's
     indicators and relationships to TIM as it arrives, and collect up to
@@ -1578,6 +1688,7 @@ def stream_persist_collect(
         comment_rels = list(target_rels)
         for obj in context:
             index_object(obj, light_map, incident_map, comment_rels)
+        id_map = {o["id"]: o for o in target + context if o.get("id")}
         indicators, _ = stix_objects_to_indicators(
             target,
             client.feed_tags,
@@ -1585,13 +1696,14 @@ def stream_persist_collect(
             light_map=light_map,
             rel_records=comment_rels,
             incident_map=incident_map,
+            data_type=COLLECTION_TO_DATA_TYPE.get(collection_title),
+            raw_map=id_map,
         )
         batch_created, _batch_rels = create_batch(indicators, target_rels, light_map)
         created += batch_created
 
         if len(rows) >= limit:
             continue
-        id_map = {o["id"]: o for o in target + context if o.get("id")}
         for indicator in indicators:
             if len(rows) >= limit or not row_filter(indicator):
                 continue
@@ -1604,6 +1716,7 @@ def stream_persist_collect(
                     client.feed_tags,
                     client.tlp_color,
                     expand_incident=indicator.get("type") == FeedIndicatorType.Account,
+                    raw_map=id_map,
                 )
             )
             flat.update(merged)
@@ -1615,10 +1728,10 @@ def stream_persist_collect(
     return rows, related_columns, created
 
 
-def cognyte_luminar_get_indicators(client: Client, args: dict) -> CommandResults:
-    """get-luminar-indicators - fetch the IOCs collection, persist the
+def luminar_v3_get_indicators_command(client: Client, args: dict) -> CommandResults:
+    """luminar-v3-get-indicators - fetch the IOCs collection, persist the
     fetched objects to TIM and show up to `limit` IOC rows."""
-    limit = arg_to_number(args.get("limit", 50), arg_name="limit") or 50
+    limit = resolve_limit(args)
     # Only real IOCs as rows - SDOs appear as related '<type>-<field>' columns.
     rows, related_columns, saved = stream_persist_collect(
         client,
@@ -1638,10 +1751,10 @@ def cognyte_luminar_get_indicators(client: Client, args: dict) -> CommandResults
     )
 
 
-def cognyte_luminar_get_leaked_records(client: Client, args: dict) -> CommandResults:
+def luminar_v3_get_leaked_records_command(client: Client, args: dict) -> CommandResults:
     """luminar-v3-get-leaked-records - fetch the Leaked Records collection,
     persist the fetched objects to TIM and show up to `limit` account rows."""
-    limit = arg_to_number(args.get("limit", 50), arg_name="limit") or 50
+    limit = resolve_limit(args)
     rows, related_columns, saved = stream_persist_collect(
         client,
         LEAKED_RECORDS_COLLECTION,
@@ -1668,10 +1781,12 @@ def reset_last_run() -> CommandResults:
 
 def main() -> None:
     params = demisto.params()
-    base_url = params.get("luminar_base_url", "").rstrip("/")
+    args = demisto.args()
+    base_url = params.get("luminar_base_url", "https://www.cyberluminar.com").rstrip("/")
     account_id = params.get("luminar_account_id")
-    client_id = params.get("luminar_client_id")
-    client_secret: str = params.get("luminar_client_secret") or (params.get("luminar_credentials") or {}).get("password") or ""
+    credentials = params.get("credentials") or {}
+    client_id = credentials.get("identifier") or ""
+    client_secret = credentials.get("password") or ""
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     tags = argToList(params.get("feedTags"))
@@ -1696,10 +1811,10 @@ def main() -> None:
             return_results(module_test(client))
         elif command == "fetch-indicators":
             fetch_indicators_command(client, first_fetch)
-        elif command == "get-luminar-indicators":
-            return_results(cognyte_luminar_get_indicators(client, demisto.args()))
+        elif command == "luminar-v3-get-indicators":
+            return_results(luminar_v3_get_indicators_command(client, args))
         elif command == "luminar-v3-get-leaked-records":
-            return_results(cognyte_luminar_get_leaked_records(client, demisto.args()))
+            return_results(luminar_v3_get_leaked_records_command(client, args))
         elif command == "luminar-v3-reset-fetch-indicators":
             return_results(reset_last_run())
         else:
@@ -1711,7 +1826,7 @@ def main() -> None:
             if isinstance(e, LuminarAuthError)
             else f"Failed to execute {command} command.\nError:\n{e!s}"
         )
-        return_error(message)
+        return_error(message, error=e)
 
 
 if __name__ in ("__builtin__", "builtins", "__main__"):

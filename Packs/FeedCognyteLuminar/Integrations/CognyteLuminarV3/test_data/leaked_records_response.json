@@ -10,13 +10,13 @@
    "extensions": {
     "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
      "extension_type": "property-extension",
-     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff",
+     "luminar_tenant_id": "00000000-0000-4000-8000-000000000001",
      "luminar_threat_score": 71,
      "collection_date": "2025-04-02T19:01:00.498Z"
     }
    },
-   "name": "STARLINK[ULP]_13_kk.zip",
-   "description": "The following credentials were shared on Telegram, channel id: 1935880746, on 2025-04-01. They were extracted from a file named \"STARLINK[ULP] 13 kk.zip\" with a size of 442.0 MB.",
+   "name": "Example_Leak_Bundle.zip",
+   "description": "The following credentials were shared on Telegram, channel id: 1234567890, on 2025-04-01. They were extracted from a file named \"Example Leak Bundle.zip\" with a size of 442.0 MB.",
    "created_by_ref": "identity--5bf1ac35-8d08-509e-b31a-044cb09b4199"
   },
   {
@@ -28,7 +28,7 @@
    "extensions": {
     "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
      "extension_type": "property-extension",
-     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+     "luminar_tenant_id": "00000000-0000-4000-8000-000000000001"
     }
    },
    "relationship_type": "related-to",
@@ -41,19 +41,19 @@
    "id": "user-account--72bf90c1-9e95-55b9-afda-e6042d40a9f6",
    "extensions": {
     "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
-     "url": "www.7-eleven.com/register",
+     "url": "www.example.com/register",
      "source": "telegram",
      "extension_type": "property-extension",
-     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff",
+     "luminar_tenant_id": "00000000-0000-4000-8000-000000000001",
      "monitoring_plan_terms": [
-      "7-eleven.com"
+      "example.com"
      ],
      "credential_is_fresh": false
     }
    },
-   "credential": "Tobylove16",
-   "account_login": "aaransenpai21@gmail.com",
-   "display_name": "aaransenpai21@gmail.com"
+   "credential": "P@ssw0rd!123",
+   "account_login": "john.doe@example.com",
+   "display_name": "john.doe@example.com"
   },
   {
    "type": "identity",
@@ -72,7 +72,7 @@
    "extensions": {
     "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
      "extension_type": "property-extension",
-     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+     "luminar_tenant_id": "00000000-0000-4000-8000-000000000001"
     }
    },
    "name": "Lumma",
@@ -94,7 +94,7 @@
    "extensions": {
     "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
      "extension_type": "property-extension",
-     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+     "luminar_tenant_id": "00000000-0000-4000-8000-000000000001"
     }
    },
    "path": "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\"
@@ -106,7 +106,7 @@
    "extensions": {
     "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
      "extension_type": "property-extension",
-     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+     "luminar_tenant_id": "00000000-0000-4000-8000-000000000001"
     }
    },
    "name": "MSBuild.exe",
@@ -119,7 +119,7 @@
    "extensions": {
     "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
      "extension_type": "property-extension",
-     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+     "luminar_tenant_id": "00000000-0000-4000-8000-000000000001"
     }
    },
    "value": "150.220.55.143"
@@ -147,7 +147,7 @@
    "extensions": {
     "extension-definition--ddd2bf71-3c91-5f4d-8251-10cd685737c3": {
      "extension_type": "property-extension",
-     "luminar_tenant_id": "00bed954-4b1a-4d52-97f7-2a2c51b824ff"
+     "luminar_tenant_id": "00000000-0000-4000-8000-000000000001"
     }
    },
    "relationship_type": "related-to",
