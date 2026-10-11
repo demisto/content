@@ -597,7 +597,9 @@ def migrate_events_last_run(last_run: dict) -> dict:
     last_run[EVENTS_WATERMARK_KEY] = watermark
     last_run[EVENTS_DEDUP_CACHE_KEY] = {str(event_id): watermark for event_id in legacy_ids}
     last_run[EVENTS_FLOOR_KEY] = watermark
-    demisto.debug(f"Migrated events last run: watermark/floor={watermark}, {len(legacy_ids)} legacy IDs moved to the dedup cache.")
+    demisto.debug(
+        f"Migrated events last run: watermark/floor={watermark}, {len(legacy_ids)} legacy IDs moved to the dedup cache."
+    )
     return last_run
 
 

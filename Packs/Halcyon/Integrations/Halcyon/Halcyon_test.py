@@ -2,7 +2,7 @@
 
 import copy
 import json
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import pytest
 from freezegun import freeze_time
@@ -578,7 +578,7 @@ def run_cycles(mock_client, mocker, api: FakeHalcyonEventsApi, cycle_starts: lis
             log_type=LogType.EVENTS,
             last_run=last_run,
             max_fetch=max_fetch,
-            cycle_start=datetime.strptime(cycle_start, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc),
+            cycle_start=datetime.strptime(cycle_start, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC),
         )
         sent.update(e.get("eventId", e["occurredAt"]) for e in events)
     return sent, last_run
@@ -717,7 +717,7 @@ class TestFutureDatedEvents:
             log_type=LogType.EVENTS,
             last_run={},
             max_fetch=1000,
-            cycle_start=datetime(2026, 10, 5, 7, 0, tzinfo=timezone.utc),
+            cycle_start=datetime(2026, 10, 5, 7, 0, tzinfo=UTC),
         )
 
         assert events == []
@@ -734,7 +734,7 @@ class TestFutureDatedEvents:
             log_type=LogType.ALERTS,
             last_run={"last_fetch_alerts": "2026-10-05T06:00:00.000Z"},
             max_fetch=1000,
-            cycle_start=datetime(2026, 10, 5, 7, 0, tzinfo=timezone.utc),
+            cycle_start=datetime(2026, 10, 5, 7, 0, tzinfo=UTC),
         )
 
         assert [e["alertId"] for e in events] == ["alert-future"]
@@ -766,7 +766,10 @@ class TestEventsLastRunMigration:
     def test_already_migrated_last_run_is_unchanged(self):
         from Halcyon import migrate_events_last_run
 
-        last_run = {"last_fetch_events": "2026-10-05T07:00:30.000000Z", "events_dedup_cache": {"a": "2026-10-05T07:00:30.000000Z"}}
+        last_run = {
+            "last_fetch_events": "2026-10-05T07:00:30.000000Z",
+            "events_dedup_cache": {"a": "2026-10-05T07:00:30.000000Z"},
+        }
 
         assert migrate_events_last_run(dict(last_run)) == last_run
 
