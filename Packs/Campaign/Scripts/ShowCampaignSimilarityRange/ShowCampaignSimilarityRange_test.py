@@ -28,8 +28,8 @@ def test_show_campaign_similarity_range(mocker, incident_similarities, expected_
     ShowCampaignSimilarityRange.main()
     res = demisto.results.call_args[0][0]["Contents"]
     expected_result = (
-        f"<div style='text-align:center; font-size:17px; padding: 15px;'>{expected_header}</br> "
-        f"<div style='font-size:{pixels}px;'> {expected_similarity} </div></div>"
+        f"<div style='text-align:center; font-size:17px; padding: 8px;'>{expected_header}"
+        f"<div style='font-size:{pixels}px;'>{expected_similarity}</div></div>"
     )
 
     assert expected_result == res
