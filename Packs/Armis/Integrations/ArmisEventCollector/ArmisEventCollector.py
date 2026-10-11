@@ -20,7 +20,14 @@ urllib3.disable_warnings()
 EVENT_TYPE_ALERTS = "alerts"
 EVENT_TYPE_ACTIVITIES = "activity"
 EVENT_TYPE_DEVICES = "devices"
-MAX_PAGINATION_DURATION_SECONDS = 90  # Per-type pagination time cap; breaks early and resumes next cycle to bound cycle length
+# Pagination time budget. The per-type pagination cap is computed dynamically from the
+# container time budget and how many types actually paginate this cycle (see
+# compute_pagination_budget), so a single-type instance uses far more of the window than a
+# fixed cap would allow, while a busy multi-type instance degrades gracefully to the floor.
+PAGINATION_BUDGET_SECONDS = 270  # Usable slice of the ~300s container limit (30s safety margin)
+ALERT_ENRICHMENT_RESERVE_SECONDS = 60  # Headroom kept for the no-timeout alert enrichment tail when alerts are present
+MAX_PAGINATION_DURATION_SECONDS = 180  # Per-type ceiling; leaves margin for send-latency variance
+MIN_PAGINATION_DURATION_SECONDS = 90  # Per-type floor; never drop below the previously proven behavior
 MAX_PAGE_SIZE = 10000  # Armis recommended max page size per request
 TOKEN_TTL_SECONDS = 30 * 60  # Armis token TTL is exactly 30 minutes (confirmed by Armis)
 TOKEN_REFRESH_BUFFER_SECONDS = 5 * 60  # Refresh 5 minutes before expiry (at 25 min mark)
@@ -448,6 +455,7 @@ class Client(BaseClient):
         before: datetime | None = None,
         event_type: str = "",
         on_page: Callable[[list[dict]], None] | None = None,
+        max_pagination_seconds: int = MIN_PAGINATION_DURATION_SECONDS,
     ):
         """Fetches events using AQL query.
 
@@ -523,9 +531,9 @@ class Client(BaseClient):
 
                 total_seconds = time.monotonic() - start_time
                 demisto.debug(f"total {total_seconds} seconds so far")
-                if next and total_seconds >= MAX_PAGINATION_DURATION_SECONDS:
+                if next and total_seconds >= max_pagination_seconds:
                     demisto.debug(
-                        f"Reached pagination time limit of {MAX_PAGINATION_DURATION_SECONDS}s for {event_type}, "
+                        f"Reached pagination time limit of {max_pagination_seconds}s for {event_type}, "
                         f"breaking early with {next=} to avoid timeout. Pagination will resume in the next fetch cycle."
                     )
                     break
@@ -741,6 +749,33 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
         return new_events, new_ids
 
 
+def compute_pagination_budget(
+    paginating_types: int,
+    alerts_elapsed_seconds: float = 0.0,
+    alerts_present: bool = False,
+) -> int:
+    """Compute the per-type pagination time cap from the shared container time budget.
+
+    The container runs each cycle under a hard ~300s limit. A fixed cap wastes most of
+    that window on single-type instances, so the cap is derived from how many types
+    actually paginate this cycle and the time the Alerts phase consumes:
+
+    - ``alerts_elapsed_seconds`` (already-measured, serial up-front alert fetch) is
+      subtracted, since it ran before pagination begins.
+    - ``ALERT_ENRICHMENT_RESERVE_SECONDS`` is subtracted only when alerts returned events,
+      leaving headroom for the no-timeout enrichment tail at the end of the cycle.
+
+    The remaining budget is split across the paginating types and clamped to
+    ``[MIN_PAGINATION_DURATION_SECONDS, MAX_PAGINATION_DURATION_SECONDS]``.
+    """
+    if paginating_types <= 0:
+        return MIN_PAGINATION_DURATION_SECONDS
+    reserve = ALERT_ENRICHMENT_RESERVE_SECONDS if alerts_present else 0
+    usable = PAGINATION_BUDGET_SECONDS - alerts_elapsed_seconds - reserve
+    per_type = int(usable // paginating_types)
+    return max(MIN_PAGINATION_DURATION_SECONDS, min(MAX_PAGINATION_DURATION_SECONDS, per_type))
+
+
 def compute_resume_state(
     response_events: list[dict],
     last_fetch_time: str | None,
@@ -885,6 +920,7 @@ def fetch_by_event_type(
     fetch_start_time: datetime | None,
     fetch_delay: int = DEFAULT_FETCH_DELAY,
     stream: bool = False,
+    max_pagination_seconds: int = MIN_PAGINATION_DURATION_SECONDS,
 ):
     """Fetch events by specific event type.
 
@@ -936,6 +972,7 @@ def fetch_by_event_type(
             before=before_time,
             event_type=event_type.type,
             on_page=on_page,
+            max_pagination_seconds=max_pagination_seconds,
         )
         next_run[last_fetch_ids] = running_state["last_fetch_ids"]
         total_secs = time.monotonic() - stream_start
@@ -971,6 +1008,7 @@ def fetch_by_event_type(
             from_param=last_fetch_next,
             before=before_time,
             event_type=event_type.type,
+            max_pagination_seconds=max_pagination_seconds,
         )
         new_events: list[dict] = []
         demisto.debug(f"fetched {len(response)} {event_type.type} from API")
@@ -1224,6 +1262,7 @@ def fetch_event_type_worker(
     fetch_delay: int,
     context_manager: IntegrationContextManager,
     stream: bool = False,
+    max_pagination_seconds: int = MIN_PAGINATION_DURATION_SECONDS,
 ) -> tuple[str, dict, dict]:
     """Worker function to fetch events for a specific event type in a thread.
 
@@ -1252,7 +1291,16 @@ def fetch_event_type_worker(
 
     try:
         fetch_by_event_type(
-            client, event_type, events, max_fetch, last_run, next_run, fetch_start_time, fetch_delay=fetch_delay, stream=stream
+            client,
+            event_type,
+            events,
+            max_fetch,
+            last_run,
+            next_run,
+            fetch_start_time,
+            fetch_delay=fetch_delay,
+            stream=stream,
+            max_pagination_seconds=max_pagination_seconds,
         )
 
         # Update context for this event type atomically
@@ -1344,6 +1392,8 @@ def fetch_events(
     # for armis-get-events we keep them collected so they render in CommandResults.
     enrichment_future = None
     enrichment_executor = None
+    alerts_elapsed_seconds = 0.0
+    alerts_present = False
     if "Alerts" in event_types_to_fetch:
         main_tname = threading.current_thread().name
         safe_debug(f"[{main_tname}] Fetching Alerts (enrichment will run in parallel with other workers)")
@@ -1353,7 +1403,9 @@ def fetch_events(
         )
         alerts_to_enrich = events.get(EVENT_TYPE_ALERTS, [])
         alerts_count = len(alerts_to_enrich)
-        safe_debug(f"[{main_tname}] Fetched {alerts_count} alerts in {time.monotonic() - alerts_start:.2f}s")
+        alerts_elapsed_seconds = time.monotonic() - alerts_start
+        alerts_present = bool(alerts_to_enrich)
+        safe_debug(f"[{main_tname}] Fetched {alerts_count} alerts in {alerts_elapsed_seconds:.2f}s")
 
         if alerts_to_enrich:
             enrichment_executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="ArmisEnrich")
@@ -1374,6 +1426,18 @@ def fetch_events(
         total_events = sum(len(event_list) for event_list in events.values())
         safe_debug(f"=== Fetch cycle completed in {fetch_duration:.2f}s - Total events: {total_events} ===")
         return events, next_run
+
+    # Derive the per-type pagination cap from the shared container budget: fewer paginating
+    # types (and no alert-enrichment tail) means each type may use more of the window.
+    max_pagination_seconds = compute_pagination_budget(
+        paginating_types=len(event_types_to_fetch),
+        alerts_elapsed_seconds=alerts_elapsed_seconds,
+        alerts_present=alerts_present,
+    )
+    safe_debug(
+        f"Pagination cap={max_pagination_seconds}s for {len(event_types_to_fetch)} paginating type(s) "
+        f"(alerts_present={alerts_present}, alerts_elapsed={alerts_elapsed_seconds:.2f}s)"
+    )
 
     # Use multithreading only if it's beneficial: more than one event type AND the caller is the
     # periodic ``fetch-events`` command (manual ``armis-get-events`` always passes False).
@@ -1396,6 +1460,7 @@ def fetch_events(
                 fetch_start_time,
                 fetch_delay=fetch_delay,
                 stream=stream_this,
+                max_pagination_seconds=max_pagination_seconds,
             )
 
             type_duration = time.monotonic() - type_start
@@ -1434,6 +1499,7 @@ def fetch_events(
                     fetch_delay,
                     context_manager,
                     stream_this,
+                    max_pagination_seconds,
                 )
                 submitted_tasks[task] = event_type_name
 

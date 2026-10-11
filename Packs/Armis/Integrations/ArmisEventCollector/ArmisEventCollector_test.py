@@ -8,6 +8,8 @@ from ArmisEventCollector import (
     BULK_ENRICHMENT_BATCH_SIZE,
     EVENT_TYPE,
     EVENT_TYPES,
+    MAX_PAGINATION_DURATION_SECONDS,
+    MIN_PAGINATION_DURATION_SECONDS,
     Any,
     Client,
     DemistoException,
@@ -20,6 +22,7 @@ from ArmisEventCollector import (
     _wait_for_enrichment,
     arg_to_datetime,
     bulk_enrich_alerts,
+    compute_pagination_budget,
     datetime,
     fetch_by_event_type,
     fetch_events,
@@ -2126,3 +2129,145 @@ class TestEnrichAndShipInChunks:
 
         assert mock_send.call_count == 2  # first full chunk + remainder
         assert [len(c.args[0]) for c in mock_send.call_args_list] == [ALERT_ENRICHMENT_CHUNK_SIZE, 5]
+
+
+class TestComputePaginationBudget:
+    """Tests for compute_pagination_budget (v1.3.6 dynamic budget-aware pagination cap).
+
+    The cap is derived from the shared ~300s container budget:
+        usable = PAGINATION_BUDGET_SECONDS - alerts_elapsed_seconds - (reserve if alerts_present)
+        per_type = int(usable // paginating_types)
+        result = clamp(per_type, MIN_PAGINATION_DURATION_SECONDS, MAX_PAGINATION_DURATION_SECONDS)
+    """
+
+    def test_single_type_no_alerts_clamps_to_max(self):
+        """
+        Given: One paginating type, no alerts fetched this cycle.
+        When: Computing the budget.
+        Then: usable=270 // 1 = 270, clamped down to MAX (180). This is the customer's case
+              (Alerts=0, Devices skipped -> Activities only).
+        """
+        assert compute_pagination_budget(paginating_types=1) == MAX_PAGINATION_DURATION_SECONDS
+
+    def test_two_types_no_alerts_splits_budget(self):
+        """
+        Given: Two paginating types, no alerts.
+        When: Computing the budget.
+        Then: 270 // 2 = 135, within [90, 180] -> 135 each.
+        """
+        assert compute_pagination_budget(paginating_types=2) == 135
+
+    def test_three_types_no_alerts_clamps_to_floor(self):
+        """
+        Given: Three paginating types, no alerts.
+        When: Computing the budget.
+        Then: 270 // 3 = 90 -> exactly the floor.
+        """
+        assert compute_pagination_budget(paginating_types=3) == MIN_PAGINATION_DURATION_SECONDS
+
+    def test_many_types_never_drops_below_floor(self):
+        """
+        Given: More types than the budget can evenly fund (e.g. 5).
+        When: Computing the budget.
+        Then: 270 // 5 = 54, clamped UP to the floor (90) to preserve the proven behavior.
+        """
+        assert compute_pagination_budget(paginating_types=5) == MIN_PAGINATION_DURATION_SECONDS
+
+    def test_zero_types_returns_floor(self):
+        """
+        Given: No paginating types (defensive guard).
+        When: Computing the budget.
+        Then: The floor is returned without a division-by-zero.
+        """
+        assert compute_pagination_budget(paginating_types=0) == MIN_PAGINATION_DURATION_SECONDS
+
+    def test_negative_types_returns_floor(self):
+        """
+        Given: A negative count (defensive guard).
+        When: Computing the budget.
+        Then: The floor is returned.
+        """
+        assert compute_pagination_budget(paginating_types=-1) == MIN_PAGINATION_DURATION_SECONDS
+
+    def test_alerts_present_subtracts_reserve_and_elapsed(self):
+        """
+        Given: One paginating type, alerts present, 30s spent fetching alerts.
+        When: Computing the budget.
+        Then: usable = 270 - 30 - 60(reserve) = 180 // 1 = 180 -> clamped at MAX (180).
+        """
+        assert (
+            compute_pagination_budget(paginating_types=1, alerts_elapsed_seconds=30.0, alerts_present=True)
+            == MAX_PAGINATION_DURATION_SECONDS
+        )
+
+    def test_alerts_present_reserve_pushes_two_types_below_floor(self):
+        """
+        Given: Two paginating types, alerts present, 60s spent on alerts.
+        When: Computing the budget.
+        Then: usable = 270 - 60 - 60 = 150 // 2 = 75, clamped UP to the floor (90).
+        """
+        assert (
+            compute_pagination_budget(paginating_types=2, alerts_elapsed_seconds=60.0, alerts_present=True)
+            == MIN_PAGINATION_DURATION_SECONDS
+        )
+
+    def test_reserve_not_applied_when_alerts_absent(self):
+        """
+        Given: One type, alerts_elapsed is non-zero but alerts_present is False
+               (e.g. Alerts queried but returned nothing).
+        When: Computing the budget.
+        Then: Only elapsed is subtracted, NOT the reserve: usable = 270 - 20 = 250 // 1 = 250 -> MAX.
+        """
+        assert (
+            compute_pagination_budget(paginating_types=1, alerts_elapsed_seconds=20.0, alerts_present=False)
+            == MAX_PAGINATION_DURATION_SECONDS
+        )
+
+    def test_large_alerts_elapsed_floors_result(self):
+        """
+        Given: One type but alerts consumed almost the whole window (250s) plus reserve.
+        When: Computing the budget.
+        Then: usable = 270 - 250 - 60 = -40 // 1 = -40, clamped UP to the floor (90).
+        """
+        assert (
+            compute_pagination_budget(paginating_types=1, alerts_elapsed_seconds=250.0, alerts_present=True)
+            == MIN_PAGINATION_DURATION_SECONDS
+        )
+
+    def test_result_is_always_an_int(self):
+        """
+        Given: A fractional alerts_elapsed_seconds.
+        When: Computing the budget.
+        Then: The returned cap is an int (floor division), never a float.
+        """
+        result = compute_pagination_budget(paginating_types=2, alerts_elapsed_seconds=10.5, alerts_present=False)
+        assert isinstance(result, int)
+
+    @pytest.mark.parametrize(
+        "paginating_types, alerts_elapsed, alerts_present, expected",
+        [
+            (1, 0.0, False, 180),  # customer case -> MAX
+            (2, 0.0, False, 135),  # even split, in range
+            (3, 0.0, False, 90),  # even split hits the floor
+            (4, 0.0, False, 90),  # below floor -> clamped up
+            (1, 90.0, True, 120),  # 270-90-60=120 // 1
+            (2, 30.0, True, 90),  # (270-30-60)//2 = 90
+        ],
+    )
+    def test_parametrized_matrix(self, paginating_types, alerts_elapsed, alerts_present, expected):
+        assert (
+            compute_pagination_budget(
+                paginating_types=paginating_types,
+                alerts_elapsed_seconds=alerts_elapsed,
+                alerts_present=alerts_present,
+            )
+            == expected
+        )
+
+    def test_result_never_exceeds_max_or_below_min(self):
+        """Invariant sweep: for a wide range of inputs the result stays within [MIN, MAX]."""
+        for n in range(1, 10):
+            for elapsed in (0.0, 15.0, 60.0, 200.0):
+                for present in (True, False):
+                    result = compute_pagination_budget(n, elapsed, present)
+                    assert MIN_PAGINATION_DURATION_SECONDS <= result <= MAX_PAGINATION_DURATION_SECONDS
