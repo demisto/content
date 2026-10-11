@@ -10,7 +10,9 @@ This integration was integrated and tested with version 2 of CrowdStrike Falcon 
 | Password |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| Source Reliability | Reliability of the source providing the intelligence data |  |
+| Source Reliability | Reliability of the source providing the intelligence data | False |
+| Maximum relationships per file | The maximum number of relationships kept per file indicator \(from sandbox DNS requests and contacted hosts\). Lowering this value reduces context payload size, while raising it preserves more relationships. The full data remains available in the raw response. | False |
+| Maximum sandbox array entries in context | The maximum number of entries kept per large sandbox array \(processes, http_requests, dns_requests, contacted_hosts, extracted_files\) in the full report context outputs. Lowering this value reduces context payload size, while raising it preserves more entries. The full data remains available in the raw response. | False |
 
 ## Uploading a file to the sandbox
 
