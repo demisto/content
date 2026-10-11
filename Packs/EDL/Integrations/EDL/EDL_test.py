@@ -1487,8 +1487,8 @@ def test_store_log_data(mocker, wip_exist):
         pytest.param(FORMAT_PROXYSG, "", RequestArguments.FILTER_FIELDS_ON_FORMAT_PROXYSG, id="proxysg_default_fields"),
         # Case 6: Unknown format fallback to FILTER_FIELDS_ON_FORMAT_TEXT
         pytest.param("unknown_format", "", RequestArguments.FILTER_FIELDS_ON_FORMAT_TEXT, id="unknown_format_fallback"),
-        # Case 7: Empty string returns "" (fix for XSUP-67083 - legacy mode preservation)
-        pytest.param(FORMAT_TEXT, "", "", id="empty_string_returns_empty"),
+        # Case 7: Empty string on text format filters on name,type (XSUP-77883 - avoid loading full indicators)
+        pytest.param(FORMAT_TEXT, "", RequestArguments.FILTER_FIELDS_ON_FORMAT_TEXT, id="text_empty_string_default_fields"),
     ],
 )
 def test_get_fields_to_present(out_format, fields_to_present, expected):
@@ -1499,10 +1499,39 @@ def test_get_fields_to_present(out_format, fields_to_present, expected):
         - Creating RequestArguments with different field configurations
     Then:
         - Ensure get_fields_to_present returns the correct field list
-        - Ensure empty string is treated as legacy query mode (returns "")
+        - Ensure an empty value on text format falls back to "name,type" (not a full-document query)
     """
     args = RequestArguments(out_format=out_format, fields_to_present=fields_to_present)
     assert args.fields_to_present == expected
+
+
+@pytest.mark.parametrize(
+    "out_format, raw_fields_to_present, expected_fields_to_present",
+    [
+        pytest.param(FORMAT_TEXT, "use_legacy_query", "", id="text_legacy_query_mode"),
+        pytest.param(FORMAT_TEXT, "", RequestArguments.FILTER_FIELDS_ON_FORMAT_TEXT, id="text_default_fields"),
+        pytest.param(FORMAT_CSV, "all", "", id="csv_all_fields"),
+        pytest.param(FORMAT_CSV, "value,type,score", "name,type,score", id="csv_custom_fields"),
+    ],
+)
+def test_fields_to_present_survives_context_round_trip(out_format, raw_fields_to_present, expected_fields_to_present):
+    """
+    Given:
+        - RequestArguments created with a raw fields_to_present value (legacy mode, text default, CSV "all", CSV custom)
+    When:
+        - Serializing with to_context_json and restoring with from_context_json (as done on every EDL refresh)
+    Then:
+        - The raw value is what is stored in the integration context
+        - The restored instance resolves to the same fields_to_present as the original
+    """
+    original_args = RequestArguments(out_format=out_format, fields_to_present=raw_fields_to_present)
+    context_json = original_args.to_context_json()
+
+    restored_args = RequestArguments.from_context_json(context_json)
+
+    assert context_json[RequestArguments.CTX_FIELDS_TO_PRESENT] == raw_fields_to_present
+    assert original_args.fields_to_present == expected_fields_to_present
+    assert restored_args.fields_to_present == expected_fields_to_present
 
 
 @pytest.mark.parametrize(
