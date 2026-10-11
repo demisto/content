@@ -3801,15 +3801,15 @@ script:
       description: The resource location. Can be retrieved using the azure-aks-managed-clusters-list command.
       auto: PREDEFINED
       predefined:
-      - 'australiacentral'
-      - 'australiacentral2'
+      - australiacentral
+      - australiacentral2
       - australiaeast
       - australiasoutheast
-      - brazilse
       - brazilsouth
+      - brazilsoutheast
+      - brazilus
       - canadacentral
       - canadaeast
-      - centralfrance
       - centralindia
       - centralus
       - centraluseuap
@@ -3817,35 +3817,61 @@ script:
       - eastus
       - eastus2
       - eastus2euap
-      - germanyn
-      - germanywc
+      - francecentral
+      - francesouth
+      - germanynorth
+      - germanywestcentral
+      - israelcentral
+      - italynorth
       - japaneast
       - japanwest
+      - jioindiacentral
+      - jioindiawest
       - koreacentral
       - koreasouth
+      - malaysiasouth
+      - mexicocentral
+      - newzealandnorth
       - northcentralus
       - northeurope
-      - norwaye
-      - norwayw
+      - norwayeast
+      - norwaywest
+      - polandcentral
+      - qatarcentral
       - southafricanorth
       - southafricawest
       - southcentralus
       - southeastasia
-      - southfrance
       - southindia
-      - switzerlandn
-      - switzerlandw
+      - spaincentral
+      - swedencentral
+      - swedensouth
+      - switzerlandnorth
+      - switzerlandwest
       - uaecentral
       - uaenorth
-      - uknorth
       - uksouth
-      - uksouth2
       - ukwest
       - westcentralus
       - westeurope
       - westindia
       - westus
       - westus2
+      - westus3
+      - australiaeastfoundational
+      - austriaeast
+      - chilecentral
+      - eastusslv
+      - indonesiacentral
+      - israelnorthwest
+      - malaysiawest
+      - southcentralus2
+      - southeastus
+      - southeastus3
+      - southwestus
+      - usgovarizona
+      - usgovtexas
+      - usgovvirginia
       required: true
     - name: http_application_routing_enabled
       description: Whether to configure ingress with automatic public DNS name creation.

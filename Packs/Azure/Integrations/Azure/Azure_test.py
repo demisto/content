@@ -1054,11 +1054,17 @@ def test_azure_client_aks_cluster_get_error(mocker, client):
 
 def test_azure_client_aks_cluster_addon_update_http_routing(mocker, client):
     """
-    Given: An Azure client and an HTTP application routing update.
+    Given: An Azure client, an HTTP application routing update, and an existing cluster with other properties.
     When: The aks_cluster_addon_update method is called with http_application_routing_enabled.
-    Then: The PUT body contains the httpApplicationRouting addon profile and no omsagent profile.
+    Then: The cluster is fetched first (read-modify-write), the PUT body contains the httpApplicationRouting
+          addon profile, and the cluster's existing properties are preserved.
     """
     mocker.patch.object(client, "http_request", return_value={})
+    mocker.patch.object(
+        client,
+        "aks_cluster_get",
+        return_value={"properties": {"kubernetesVersion": "1.27.0", "addonProfiles": {"omsagent": {"enabled": True}}}},
+    )
 
     client.aks_cluster_addon_update(
         subscription_id="mock_subscription_id",
@@ -1068,23 +1074,28 @@ def test_azure_client_aks_cluster_addon_update_http_routing(mocker, client):
         http_application_routing_enabled=True,
     )
 
+    client.aks_cluster_get.assert_called_once_with("mock_subscription_id", "mock_resource_group", "mock_cluster")
     call_args = client.http_request.call_args
     assert call_args[0][0] == "PUT"
     json_data = call_args[1]["json_data"]
     assert json_data["location"] == "eastus"
+    # Existing, unmanaged properties must be preserved by the read-modify-write.
+    assert json_data["properties"]["kubernetesVersion"] == "1.27.0"
     addon_profiles = json_data["properties"]["addonProfiles"]
     assert addon_profiles["httpApplicationRouting"] == {"enabled": True}
-    assert "omsagent" not in addon_profiles
+    # The pre-existing omsagent addon must be preserved, not wiped.
+    assert addon_profiles["omsagent"] == {"enabled": True}
 
 
 def test_azure_client_aks_cluster_addon_update_monitoring_with_resource(mocker, client):
     """
     Given: An Azure client and a monitoring update that specifies a monitoring workspace name.
     When: The aks_cluster_addon_update method is called with monitoring_resource_name.
-    Then: The omsagent profile is built with a constructed Log Analytics workspace resource ID.
+    Then: The cluster is still fetched (read-modify-write) and the omsagent profile is built with the
+          constructed Log Analytics workspace resource ID derived from monitoring_resource_name.
     """
     mocker.patch.object(client, "http_request", return_value={})
-    mock_get = mocker.patch.object(client, "aks_cluster_get")
+    mock_get = mocker.patch.object(client, "aks_cluster_get", return_value={"properties": {}})
 
     client.aks_cluster_addon_update(
         subscription_id="mock_subscription_id",
@@ -1095,7 +1106,7 @@ def test_azure_client_aks_cluster_addon_update_monitoring_with_resource(mocker, 
         monitoring_resource_name="mock_workspace",
     )
 
-    mock_get.assert_not_called()
+    mock_get.assert_called_once_with("mock_subscription_id", "mock_resource_group", "mock_cluster")
     omsagent = client.http_request.call_args[1]["json_data"]["properties"]["addonProfiles"]["omsagent"]
     assert omsagent["enabled"] is True
     workspace_id = omsagent["config"]["logAnalyticsWorkspaceResourceID"]
@@ -1140,6 +1151,7 @@ def test_azure_client_aks_cluster_addon_update_error(mocker, client):
     Then: The error is routed through handle_azure_error.
     """
     mocker.patch.object(client, "http_request", side_effect=Exception("400 Bad Request"))
+    mocker.patch.object(client, "aks_cluster_get", return_value={"properties": {}})
     mock_handle = mocker.patch.object(client, "handle_azure_error")
 
     client.aks_cluster_addon_update(

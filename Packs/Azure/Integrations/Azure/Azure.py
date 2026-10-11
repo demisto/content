@@ -572,7 +572,7 @@ WAF_POLICY_JSON_ARGUMENTS = {"tags", "policy_settings", "custom_rules", "managed
 WAF_POLICY_HEADERS = ["name", "id", "type", "location", "etag", "tags"]
 FIREWALL_API_VERSION = "2025-09-01"
 STORAGE_ACCOUNT_API_VERSION = "2026-06-01"
-AKS_API_VERSION = "2023-02-01"
+AKS_API_VERSION = "2026-06-01"
 
 
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
@@ -2315,7 +2315,9 @@ class AzureClient:
         Docs:
             https://learn.microsoft.com/en-us/rest/api/aks/managed-clusters/create-or-update
         """
-        addon_profiles: dict[str, Any] = {}
+        cluster = self.aks_cluster_get(subscription_id, resource_group_name, resource_name)
+        properties = cluster.get("properties", {})
+        addon_profiles: dict[str, Any] = properties.get("addonProfiles") or {}
         if http_application_routing_enabled is not None:
             addon_profiles["httpApplicationRouting"] = {"enabled": http_application_routing_enabled}
         if monitoring_agent_enabled is not None:
@@ -2326,13 +2328,8 @@ class AzureClient:
                     f"/{monitoring_resource_name}"
                 )
             else:
-                cluster = self.aks_cluster_get(subscription_id, resource_group_name, resource_name)
                 workspace_resource_id = (
-                    cluster.get("properties", {})
-                    .get("addonProfiles", {})
-                    .get("omsagent", {})
-                    .get("config", {})
-                    .get("logAnalyticsWorkspaceResourceID")
+                    addon_profiles.get("omsagent", {}).get("config", {}).get("logAnalyticsWorkspaceResourceID")
                 )
             if monitoring_agent_enabled and not workspace_resource_id:
                 raise DemistoException(
@@ -2343,7 +2340,8 @@ class AzureClient:
                 "enabled": monitoring_agent_enabled,
                 "config": {"logAnalyticsWorkspaceResourceID": workspace_resource_id},
             }
-        data = {"location": location, "properties": {"addonProfiles": addon_profiles}}
+        properties["addonProfiles"] = addon_profiles
+        data = {"location": location, "properties": properties}
         params = {"api-version": AKS_API_VERSION}
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
