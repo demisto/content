@@ -654,23 +654,28 @@ def test_main_services_param_normalization(mocker, services_param: list | str):
        raising a 'Service unknown' error.
     """
     mocker.patch.object(
-        Client, "build_iterator",
+        Client,
+        "build_iterator",
     )
     mocker.patch.object(
-        Client, "get_batches_from_file",
+        Client,
+        "get_batches_from_file",
     )
-    mocker.patch("demistomock.params", return_value={
-        "credentials_api_token": {"password": "dummytoken"},
-        "indicator_type": "ip",
-        "services": services_param,
-        "polling_timeout": "20",
-        "insecure": False,
-        "proxy": False,
-        "threshold": "65",
-        "suspicious_threshold": "25",
-        "risk_score_threshold": "0",
-        "performance": True,
-    })
+    mocker.patch(
+        "demistomock.params",
+        return_value={
+            "credentials_api_token": {"password": "dummytoken"},
+            "indicator_type": "ip",
+            "services": services_param,
+            "polling_timeout": "20",
+            "insecure": False,
+            "proxy": False,
+            "threshold": "65",
+            "suspicious_threshold": "25",
+            "risk_score_threshold": "0",
+            "performance": True,
+        },
+    )
     mocker.patch("demistomock.command", return_value="test-module")
     mock_return_outputs = mocker.patch("FeedRecordedFuture.return_outputs")
 
