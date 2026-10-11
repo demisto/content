@@ -50,7 +50,8 @@ def test_incidents_info_md_happy_path(mocker):
     assert all(string_to_table_header(key) in hr for key in REQUIRED_KEYS)
     assert all(f"test_{key}_" in hr for key in STR_VAL_KEYS)
     assert all(status in hr for status in STATUS_DICT.values())
-    assert all(f"[{i}](#/Details/{i})" in hr for i in range(NUM_OF_INCIDENTS))  # linkable incident id
+    # linkable incident id - demistomock reports version 5.5.0, i.e. the XSOAR 6.x legacy format
+    assert all(f"[{i}](#/Details/{i})" in hr for i in range(NUM_OF_INCIDENTS))
 
     # validate the call to update empty fields
     args = demisto.executeCommand.call_args[0][1]
@@ -221,3 +222,33 @@ def test_update_incident_with_required_keys(mocker):
 
     assert len(incidents) == 1
     assert incidents[0].get("id") == "1"
+
+
+@pytest.mark.parametrize(
+    "is_platform_res, version_ge, incident_id, expected_link",
+    [
+        (True, True, "997329", "[997329](/issue-view/997329)"),
+        (True, False, "997329", "[997329](/issue-view/997329)"),
+        (False, True, "997329", "[997329](/Details/997329)"),
+        (False, False, "997329", "[997329](#/Details/997329)"),
+    ],
+)
+def test_get_incident_link_creator(mocker, is_platform_res, version_ge, incident_id, expected_link):
+    """
+    Given:
+        - An incident ID.
+        - Case 1: Unified Cortex platform (XSIAM v3 / XSOAR on platform) -> issue-view URL.
+        - Case 2: Unified Cortex platform takes precedence regardless of demisto version.
+        - Case 3: Cortex XSOAR 8.x (version >= 8.4.0) -> path-based URL.
+        - Case 4: Cortex XSOAR 6.x (version < 8.4.0) -> legacy hash-based URL.
+    When:
+        - Calling the incident link creator.
+    Then:
+        - Ensure the correct link format is produced for each platform (XSUP-78154).
+    """
+    import GetCampaignIncidentsInfo
+
+    mocker.patch.object(GetCampaignIncidentsInfo, "is_platform", return_value=is_platform_res)
+    mocker.patch.object(GetCampaignIncidentsInfo, "is_demisto_version_ge", return_value=version_ge)
+
+    assert GetCampaignIncidentsInfo.get_incident_link_creator()(incident_id) == expected_link
