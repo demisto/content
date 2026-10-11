@@ -53,3 +53,4 @@ supportedModules:
 tests:
 - ContentPackInstaller_Test
 fromversion: 6.0.0
+# touched for a CI control run - no functional change

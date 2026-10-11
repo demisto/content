@@ -23,3 +23,4 @@ runas: DBotWeakRole
 fromversion: 6.2.0
 tests:
 - TestGetErrorsFromEntry
+# touched for a CI control run - no functional change
