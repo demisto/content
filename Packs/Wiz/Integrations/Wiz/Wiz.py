@@ -2931,7 +2931,15 @@ def get_remote_data_command(args):
     issue = issues[0]
     _attach_mirror_metadata(issue)
 
-    entries = _build_new_note_entries(get_issue_comments(issue_id), last_update)
+    entries: list[dict] = []
+    if last_update:
+        # Missing read:comments must not block issue-field mirroring.
+        try:
+            comments = get_issue_comments(issue_id)
+        except Exception as e:
+            demisto.error(f"get_remote_data: skipping comments for issue {issue_id}: {e}")
+        else:
+            entries = _build_new_note_entries(comments, last_update)
     return GetRemoteDataResponse(issue, entries)
 
 

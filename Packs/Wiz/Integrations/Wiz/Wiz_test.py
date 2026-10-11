@@ -2923,6 +2923,26 @@ def test_get_remote_data_command_notes_none(mock_get_issue, mock_get_comments, m
     assert result.entries == []
 
 
+@patch.object(demisto, "error")
+@patch("Wiz.get_issue_comments", side_effect=Exception("access denied: [read:all read:comments]"))
+@patch("Wiz.get_issue")
+def test_get_remote_data_command_mirrors_issue_when_comments_unreadable(
+    mock_get_issue, mock_get_comments, mock_error, mock_mirror_params
+):
+    from Wiz import get_remote_data_command
+
+    mock_get_issue.return_value = [{"id": "11111111-1111-1111-1111-111111111111", "status": "RESOLVED"}]
+
+    result = get_remote_data_command({"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": "2025-01-01T00:00:00Z"})
+    assert result.mirrored_object["status"] == "RESOLVED"
+    assert result.entries == []
+    assert "read:comments" in mock_error.call_args[0][0]
+
+    mock_get_comments.reset_mock()
+    get_remote_data_command({"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": ""})
+    mock_get_comments.assert_not_called()
+
+
 @pytest.mark.parametrize(
     "comments,expected_deleted_ids",
     [
