@@ -171,7 +171,7 @@ def get_events_command(client: Client, args: dict, vendor: str, product: str) ->
             send_events_to_xsiam(events=events, vendor=vendor, product=product)
         return CommandResults(
             readable_output=tableToMarkdown(
-                "KnowBe4 KMSAT Logs",
+                "KnowBe4 KSAT Logs",
                 events,
                 # headers=['log_type', 'item_type', 'item_name', 'timestamp', 'serial'],
                 headerTransform=underscoreToCamelCase,
