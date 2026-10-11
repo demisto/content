@@ -154,7 +154,6 @@ Get HTML Source Code for a Ticket
 | CSCFraudProtection.message | String |  |
 | CSCFraudProtection.status | String |  |
 
-
 #### Context Example
 
 ```json
@@ -556,6 +555,7 @@ There is no context output for this command.
 }
 }
 ```
+
 ### csc-retrievelistofmonitoringresultswithinspecifiedtimeframe
 
 ***

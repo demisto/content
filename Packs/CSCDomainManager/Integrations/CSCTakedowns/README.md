@@ -43,7 +43,6 @@ Fetch the phishkit data with ticketId
 
 There is no context output for this command.
 
-
 #### Context Example
 
 ```json
@@ -98,6 +97,7 @@ There is no context output for this command.
     }
 }
 ```
+
 ### csctakedowns-gethtmlsourcecodeforaticket
 
 ***
@@ -154,7 +154,6 @@ List of work logs for ticket id
 | --- | --- | --- |
 | CSCTakedowns.message | String |  |
 | CSCTakedowns.status | String |  |
-
 
 #### Context Example
 
@@ -252,7 +251,6 @@ List Takedown events with filters
 | --- | --- | --- |
 | CSCTakedowns.message | String |  |
 | CSCTakedowns.status | String |  |
-
 
 #### Context Example
 
