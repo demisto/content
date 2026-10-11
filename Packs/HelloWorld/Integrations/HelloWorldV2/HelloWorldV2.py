@@ -406,7 +406,7 @@ class HelloWorldParams(BaseParams):
     @classmethod
     def clean_url(cls, v):  # pylint: disable=no-self-argument
         """Remove trailing forward slash from the 'URL' parameter"""
-        return str(v).rstrip("/")
+        return v.rstrip("/")
 
 
 # endregion
@@ -1530,7 +1530,7 @@ class HelloworldAlertListArgs(ContentBaseModel):
     limit: int = 10
     severity: HelloWorldSeverity | None = None
 
-    @root_validator(allow_reuse=True, skip_on_failure=True)
+    @root_validator(allow_reuse=True)
     @classmethod
     def check_alert_id_or_severity(cls, values: dict):  # pylint: disable=no-self-argument
         has_alert_id = bool(values.get("alert_id"))

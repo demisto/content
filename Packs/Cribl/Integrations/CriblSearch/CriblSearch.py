@@ -513,7 +513,7 @@ class SearchQueryArgs(ContentBaseModel):
     def validate_limit(cls, v):
         return arg_to_number(v)
 
-    @root_validator(allow_reuse=True, skip_on_failure=True)
+    @root_validator(allow_reuse=True)
     @classmethod
     def validate_oneof_combos(cls, values):
         query = values.get("query")
@@ -984,7 +984,7 @@ class SearchJobUpdateArgs(ContentBaseModel):
             return None
         return argToBoolean(v)
 
-    @root_validator(allow_reuse=True, skip_on_failure=True)
+    @root_validator(allow_reuse=True)
     @classmethod
     def validate_at_least_one_field(cls, values):
         status = values.get("status")

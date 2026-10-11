@@ -309,7 +309,7 @@ class DehashedSearchArgs(ContentBaseModel):
             raise ValueError('"results_to" expected to be greater than zero.')
         return result
 
-    @root_validator(allow_reuse=True, skip_on_failure=True)
+    @root_validator(allow_reuse=True)
     @classmethod
     def validate_range(cls, values):
         results_from = values.get("results_from")
