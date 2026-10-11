@@ -54,7 +54,7 @@ configuration:
   type: 15
   required: false
 - additionalinfo: Use legacy triggeringEvents Endpoint vs new triggeringEvents Endpoint. Set to True for versions 7.3.2 and earlier. Set to False for versions 7.3.3 and later.
-  defaultvalue: 'true'
+  defaultvalue: 'false'
   display: Legacy fetch mode
   name: legacy_fetch_mode
   section: Collect
