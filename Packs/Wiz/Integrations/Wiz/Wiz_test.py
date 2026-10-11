@@ -2744,6 +2744,32 @@ def test_reject_or_resolve_issue_no_comment_when_update_fails(mock_check_api):
     assert mock_check_api.call_count == 1
 
 
+@pytest.mark.parametrize(
+    "retry_result, expected_error",
+    [
+        pytest.param(test_reject_issue_response, None, id="legacy_note_accepted"),
+        pytest.param(Exception("Wiz API error: unknown field note"), "requires a note to reject", id="legacy_note_retired"),
+    ],
+)
+def test_reject_issue_retries_with_legacy_note_when_tenant_requires_it(retry_result, expected_error):
+    from Wiz import reject_issue, UPDATE_ISSUE_QUERY
+
+    note_required = Exception("Wiz API error details: A note is required for rejection\n")
+    with patch("Wiz.checkAPIerrors", side_effect=[note_required, retry_result]) as mock_check_api:
+        if expected_error:
+            with pytest.raises(Exception, match=expected_error):
+                reject_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "FALSE_POSITIVE", "rejecting_for_e2e")
+        else:
+            assert reject_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "FALSE_POSITIVE", "rejecting_for_e2e") == (
+                test_reject_issue_response
+            )
+
+    assert mock_check_api.call_count == 2
+    retry_query, retry_variables = mock_check_api.call_args_list[1][0]
+    assert retry_query == UPDATE_ISSUE_QUERY
+    assert retry_variables["patch"]["note"] == "rejecting_for_e2e"
+
+
 @patch("Wiz.checkAPIerrors", return_value=test_reject_issue_response)
 def test_reject_issue_sends_rejected_status_and_reason(mock_check_api):
     """Reject path must send status=REJECTED with resolutionReason, then the note as a comment."""

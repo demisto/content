@@ -2469,7 +2469,21 @@ def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolv
     }
     query = UPDATE_ISSUE_QUERY
 
-    response = checkAPIerrors(query, variables)
+    try:
+        response = checkAPIerrors(query, variables)
+    except Exception as e:
+        if status != "REJECTED" or "A note is required for rejection" not in str(e):
+            raise
+        # Only the legacy `note` field satisfies a required rejection note.
+        variables["patch"]["note"] = truncate_note(reject_or_resolve_comment)
+        try:
+            return checkAPIerrors(query, variables)
+        except Exception as retry_error:
+            raise Exception(
+                "This Wiz tenant requires a note to reject issues, which the Wiz API no longer accepts. "
+                "Disable 'Require note on rejection' in Wiz Issue settings, or reject the issue in Wiz. "
+                f"Wiz API error: {retry_error}"
+            )
 
     set_issue_comment(issue_id, reject_or_resolve_comment)
 
