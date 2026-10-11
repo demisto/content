@@ -149,8 +149,10 @@ class Client:
         :return: A dict representing the APIEntity object returned by the API.
         :rtype: dict
         """
+        if parent_id is None:
+            demisto.debug(f"No parent_id was provided, using the configuration ID {self.conf} as the parent ID")
         params = assign_params(
-            parentId=parent_id,
+            parentId=parent_id if parent_id is not None else self.conf,
             name=name,
             type=entity_type,
             includeHA=include_ha,
