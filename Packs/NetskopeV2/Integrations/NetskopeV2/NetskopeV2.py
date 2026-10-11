@@ -76,7 +76,7 @@ class Client(ContentClient):
             proxy=proxy,
             headers=headers,
             client_name="NetskopeV2",
-            retry_policy=RetryPolicy(max_attempts=1),
+            retry_policy=RetryPolicy(max_attempts=1, initial_delay=1.0, multiplier=2.0, max_delay=60.0, jitter=0.2),
         )
         self._api_key = api_key
         self._api_v1_token = api_v1_token
