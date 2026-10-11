@@ -10682,7 +10682,6 @@ class TestSendEventsToXSIAMTest:
             return
         import concurrent.futures
         import CommonServerPython as csp
-        from CommonServerPython import BaseClient
         from requests import Response
 
         chunk_size = 50
@@ -10699,7 +10698,7 @@ class TestSendEventsToXSIAMTest:
         events = [{'id': i, 'msg': 'event number {}'.format(i)} for i in range(25)]
 
         # legacy single-thread path (the reference payload)
-        legacy_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        legacy_mock = mocker.patch.object(csp.BaseClient, '_http_request', return_value=api_response)
         send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=chunk_size,
                            data_type='events', use_streaming_send=False)
         legacy_lines = []
@@ -10710,7 +10709,7 @@ class TestSendEventsToXSIAMTest:
         demisto.updateModuleHealth.reset_mock()
 
         # streaming + threaded path
-        threaded_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        threaded_mock = mocker.patch.object(csp.BaseClient, '_http_request', return_value=api_response)
         futures = send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=chunk_size,
                                      data_type='events', use_streaming_send=True, multiple_threads=True,
                                      should_update_health_module=False)
@@ -10741,7 +10740,6 @@ class TestSendEventsToXSIAMTest:
             return
         import concurrent.futures
         import CommonServerPython as csp
-        from CommonServerPython import BaseClient, MAX_ALLOWED_ENTRY_SIZE
         from requests import Response
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
@@ -10757,11 +10755,11 @@ class TestSendEventsToXSIAMTest:
 
         events = [
             {'id': 0, 'msg': 'first'},
-            {'id': 1, 'blob': 'x' * (MAX_ALLOWED_ENTRY_SIZE + 1000)},
+            {'id': 1, 'blob': 'x' * (csp.MAX_ALLOWED_ENTRY_SIZE + 1000)},
             {'id': 2, 'msg': 'second'},
         ]
 
-        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        http_mock = mocker.patch.object(csp.BaseClient, '_http_request', return_value=api_response)
         futures = send_data_to_xsiam(data=list(events), vendor='v', product='p',
                                      data_type='events', use_streaming_send=True, multiple_threads=True,
                                      should_update_health_module=False)
@@ -10781,13 +10779,12 @@ class TestSendEventsToXSIAMTest:
         if not IS_PY3:
             return
         import CommonServerPython as csp
-        from CommonServerPython import BaseClient
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
         mocker.patch.object(demisto, 'updateModuleHealth')
         mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
         mocker.patch('CommonServerPython.support_multithreading')
         mocker.patch.object(csp, 'NUM_OF_WORKERS', 2)  # cap pool: avoid oversubscription on the loaded nightly runner
-        http_mock = mocker.patch.object(BaseClient, '_http_request')
+        http_mock = mocker.patch.object(csp.BaseClient, '_http_request')
         result = send_data_to_xsiam(data=[], vendor='v', product='p', data_type='events',
                                     use_streaming_send=True, multiple_threads=True,
                                     should_update_health_module=False)
@@ -10806,7 +10803,6 @@ class TestSendEventsToXSIAMTest:
         import threading
         import concurrent.futures
         import CommonServerPython as csp
-        from CommonServerPython import BaseClient
         from requests import Response
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
@@ -10845,7 +10841,7 @@ class TestSendEventsToXSIAMTest:
                 resident['current'] -= 1
             return api_response
 
-        mocker.patch.object(BaseClient, '_http_request', side_effect=blocking_http_request)
+        mocker.patch.object(csp.BaseClient, '_http_request', side_effect=blocking_http_request)
 
         # tiny chunk_size => one event per chunk => far more chunks than the (patched) bound
         events = [{'id': i, 'msg': 'x'} for i in range(bound * 6)]
@@ -10869,7 +10865,6 @@ class TestSendEventsToXSIAMTest:
         import threading
         import concurrent.futures
         import CommonServerPython as csp
-        from CommonServerPython import BaseClient
         from requests import Response
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
@@ -10900,7 +10895,7 @@ class TestSendEventsToXSIAMTest:
                 state['delivered'] += 1
             return ok_response
 
-        mocker.patch.object(BaseClient, '_http_request', side_effect=flaky_http_request)
+        mocker.patch.object(csp.BaseClient, '_http_request', side_effect=flaky_http_request)
 
         events = [{'id': i, 'msg': 'x'} for i in range(8)]
         with pytest.raises(ValueError, match='boom on chunk') as exc_info:
