@@ -10677,10 +10677,6 @@ class TestSendEventsToXSIAMTest:
         When:  calling send_data_to_xsiam, forcing several chunks with a small chunk_size.
         Then:  the union of decompressed lines POSTed matches the legacy path (byte-equivalent payload), the
                function returns a list of futures, and awaiting them yields the correct total event count.
-
-        Note: a small chunk_size (forcing many chunks) is exercised here; the full chunk-size matrix is covered
-        by the non-threaded test_send_data_to_xsiam_streaming_matches_legacy. The worker pool is capped to 2
-        (CIAC-18422) so this threaded test does not oversubscribe the loaded nightly runner across interpreters.
         """
         if not IS_PY3:
             return
