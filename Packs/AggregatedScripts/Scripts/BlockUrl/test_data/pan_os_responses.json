@@ -1,0 +1,605 @@
+{
+    "object_not_found": [
+        {
+            "Type": 4,
+            "Contents": "Request Failed.\nObject not present - Object specified by the xpath is not present. For example, entry[@name=value] where no object with name value is present.",
+            "HumanReadable": null,
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "dirty_object_error": [
+        {
+            "Type": 4,
+            "Contents": "Please commit the instance prior to editing the Custom URL Category.",
+            "HumanReadable": null,
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "system_info_panorama": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": null,
+            "EntryContext": {
+                "Panorama.Command": {
+                    "response": {
+                        "result": {
+                            "system": {
+                                "model": "Panorama",
+                                "devicename": "panorama-test"
+                            }
+                        }
+                    }
+                }
+            },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "system_info_firewall": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": null,
+            "EntryContext": {
+                "Panorama.Command": {
+                    "response": {
+                        "result": {
+                            "system": {
+                                "model": "PA-VM",
+                                "devicename": "lab-firewall"
+                            }
+                        }
+                    }
+                }
+            },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "category_committed": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "### Custom URL Category:",
+            "EntryContext": {
+                "Panorama.CustomURLCategory(val.Name == obj.Name)": {
+                    "Name": "Blocked URLs - Cortex",
+                    "Type": "URL List",
+                    "Description": "Created by the Cortex block-url script.",
+                    "DeviceGroup": "Test-Device-Group",
+                    "Sites": [
+                        "already.example.com",
+                        "second.example.com"
+                    ]
+                }
+            },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "category_dirty": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "### Custom URL Category:",
+            "EntryContext": {
+                "Panorama.CustomURLCategory(val.Name == obj.Name)": {
+                    "Name": "Blocked URLs - Cortex",
+                    "Type": {
+                        "#text": "URL List",
+                        "@admin": "test-admin",
+                        "@dirtyId": "1074"
+                    },
+                    "Description": {
+                        "#text": "Created by the Cortex block-url script.",
+                        "@dirtyId": "1074"
+                    },
+                    "DeviceGroup": "Test-Device-Group",
+                    "Sites": [
+                        {
+                            "#text": "already.example.com",
+                            "@admin": "test-admin",
+                            "@dirtyId": "1074"
+                        },
+                        {
+                            "#text": "second.example.com",
+                            "@admin": "test-admin",
+                            "@dirtyId": "1074"
+                        }
+                    ]
+                }
+            },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "category_foreign_type": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "### Custom URL Category:",
+            "EntryContext": {
+                "Panorama.CustomURLCategory(val.Name == obj.Name)": {
+                    "Name": "Blocked URLs - Cortex",
+                    "Type": "Category Match",
+                    "DeviceGroup": "Test-Device-Group",
+                    "Categories": [
+                        "gambling",
+                        "hacking"
+                    ]
+                }
+            },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "category_created": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "### Created Custom URL Category:",
+            "EntryContext": {
+                "Panorama.CustomURLCategory(val.Name == obj.Name)": {
+                    "Name": "Blocked URLs - Cortex",
+                    "Type": {
+                        "#text": "URL List",
+                        "@dirtyId": "1090"
+                    },
+                    "DeviceGroup": "Test-Device-Group",
+                    "Sites": [
+                        {
+                            "#text": "new.example.com",
+                            "@dirtyId": "1090"
+                        }
+                    ]
+                }
+            },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "category_edited": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "### Updated Custom URL Category:",
+            "EntryContext": {
+                "Panorama.CustomURLCategory(val.Name == obj.Name)": {
+                    "Name": "Blocked URLs - Cortex",
+                    "Type": "URL List",
+                    "DeviceGroup": "Test-Device-Group",
+                    "Sites": [
+                        "second.example.com",
+                        "new.example.com",
+                        "already.example.com"
+                    ]
+                }
+            },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "url_filter_committed": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "### URL Filter:",
+            "EntryContext": {
+                "Panorama.URLFilter(val.Name == obj.Name)": {
+                    "Name": "Cortex - Block URL profile",
+                    "DeviceGroup": "Test-Device-Group",
+                    "Category": [
+                        {
+                            "Action": "block",
+                            "Name": "Blocked URLs - Cortex"
+                        }
+                    ]
+                }
+            },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "url_filter_dirty_other_category": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "### URL Filter:",
+            "EntryContext": {
+                "Panorama.URLFilter(val.Name == obj.Name)": {
+                    "Name": "Cortex - Block URL profile",
+                    "DeviceGroup": "Test-Device-Group",
+                    "Category": [
+                        {
+                            "Action": "block",
+                            "Name": {
+                                "#text": "Some other category",
+                                "@dirtyId": "1086"
+                            }
+                        }
+                    ]
+                }
+            },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "url_filter_created": [
+        {
+            "Type": 1,
+            "Contents": "URL Filter was created successfully.",
+            "HumanReadable": "URL Filter was created successfully.",
+            "EntryContext": {
+                "Panorama.URLFilter(val.Name == obj.Name)": {
+                    "Name": "Cortex - Block URL profile",
+                    "DeviceGroup": "Test-Device-Group"
+                }
+            },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "url_filter_edited": [
+        {
+            "Type": 1,
+            "Contents": "URL Filter was edited successfully.",
+            "HumanReadable": "URL Filter was edited successfully.",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "tag_created": [
+        {
+            "Type": 1,
+            "Contents": "",
+            "HumanReadable": "### Tag was created successfully.",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "list_rules_empty": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "### Security Rules:",
+            "EntryContext": {
+                "Panorama.SecurityRule(val.Name == obj.Name)": []
+            },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "list_rules_with_rule": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "### Security Rules:",
+            "EntryContext": {
+                "Panorama.SecurityRule(val.Name == obj.Name)": [
+                    {
+                        "Name": "Cortex - Block URLs",
+                        "Action": "allow",
+                        "DeviceGroup": "Test-Device-Group"
+                    }
+                ]
+            },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "list_rules_with_rule_tagged": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "### Security Rules:",
+            "EntryContext": {
+                "Panorama.SecurityRule(val.Name == obj.Name)": [
+                    {
+                        "Name": "Cortex - Block URLs",
+                        "Action": "allow",
+                        "DeviceGroup": "Test-Device-Group",
+                        "Tags": [
+                            "cortex-blocked-urls"
+                        ]
+                    }
+                ]
+            },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "rule_tag_added": [
+        {
+            "Type": 1,
+            "Contents": "Rule edited successfully.",
+            "HumanReadable": "Rule edited successfully.",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "rule_created": [
+        {
+            "Type": 1,
+            "Contents": "Rule already at the bottom",
+            "HumanReadable": "Rule already at the bottom",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "profile_applied": [
+        {
+            "Type": 1,
+            "Contents": "The profile url-filtering = Cortex - Block URL profile has been applied to the rule Cortex - Block URLs",
+            "HumanReadable": "The profile url-filtering = Cortex - Block URL profile has been applied to the rule Cortex - Block URLs",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "rule_moved": [
+        {
+            "Type": 1,
+            "Contents": "Rule Cortex - Block URLs moved successfully.",
+            "HumanReadable": "Rule Cortex - Block URLs moved successfully.",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "commit_started": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "Waiting for commit \"Block URL\" with job ID 56795 to finish...",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama",
+                "pollingArgs": {
+                    "commit_job_id": "56795"
+                }
+            }
+        }
+    ],
+    "commit_nothing_to_commit": [
+        {
+            "Type": 1,
+            "Contents": "There are no changes to commit.",
+            "HumanReadable": "There are no changes to commit.",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama",
+                "pollingArgs": {}
+            }
+        }
+    ],
+    "commit_status_pending": [
+        {
+            "Type": 1,
+            "Contents": {
+                "response": {
+                    "result": {
+                        "job": {
+                            "id": "56795",
+                            "status": "ACT",
+                            "result": "PEND"
+                        }
+                    }
+                }
+            },
+            "HumanReadable": "### Commit Status:",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "commit_status_done_with_warnings": [
+        {
+            "Type": 1,
+            "Contents": {
+                "response": {
+                    "result": {
+                        "job": {
+                            "id": "56795",
+                            "status": "FIN",
+                            "result": "OK",
+                            "warnings": {
+                                "line": [
+                                    "SSL-FWD-Cert has expired",
+                                    "Deprecated API keygen algorithm"
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "HumanReadable": "### Commit Status:",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "push_started": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "Waiting for Job-ID 56957 to finish push changes to device-group Test-Device-Group...",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama",
+                "pollingArgs": {
+                    "push_job_id": "56957",
+                    "device-group": "Test-Device-Group"
+                }
+            }
+        }
+    ],
+    "push_status_pending": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "|JobID|\n|---|\n| 56957 |",
+            "EntryContext": {
+                "Panorama.Push(val.JobID == obj.JobID)": {
+                    "JobID": "56957",
+                    "Status": "Pending",
+                    "DeviceGroup": "Test-Device-Group"
+                }
+            },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "push_status_completed_with_warnings": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "### Push to Device Group:",
+            "EntryContext": {
+                "Panorama.Push(val.JobID == obj.JobID)": {
+                    "JobID": "56957",
+                    "Status": "Completed",
+                    "Details": "commit succeeded with warnings",
+                    "DeviceGroup": "Test-Device-Group",
+                    "Errors": null,
+                    "Warnings": null
+                }
+            },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "commit_status_failed": [
+        {
+            "Type": 1,
+            "Contents": {
+                "response": {
+                    "result": {
+                        "job": {
+                            "id": "56795",
+                            "status": "FIN",
+                            "result": "FAIL",
+                            "details": {
+                                "line": [
+                                    "Validation Error:",
+                                    "url-filtering profile is invalid"
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "HumanReadable": "### Commit Status:",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "push_status_failed": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "### Push to Device Group:",
+            "EntryContext": {
+                "Panorama.Push(val.JobID == obj.JobID)": {
+                    "JobID": "56957",
+                    "Status": "FAIL",
+                    "Details": "commit failed on the managed firewall",
+                    "DeviceGroup": "Test-Device-Group",
+                    "Errors": null,
+                    "Warnings": null
+                }
+            },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "push_status_empty": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "|JobID|\n|---|\n| 56957 |",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "commit_status_job_not_found": [
+        {
+            "Type": 4,
+            "Contents": "Invalid Job ID error: job 57069 not found\n\nTraceback (most recent call last): ...",
+            "HumanReadable": null,
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        },
+        {
+            "Type": 16,
+            "File": "pan-os-commit-status.log",
+            "FileID": "abc-123",
+            "Contents": "",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "push_status_job_not_found": [
+        {
+            "Type": 4,
+            "Contents": "Invalid Job ID error: job 57069 not found\n\nTraceback (most recent call last): ...",
+            "HumanReadable": null,
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        },
+        {
+            "Type": 16,
+            "File": "pan-os-push-status.log",
+            "FileID": "abc-456",
+            "Contents": "",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ]
+}
