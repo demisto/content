@@ -8,6 +8,8 @@ from SlackUtilsApiModule import (
     parse_md_table_to_slack_table,
     process_md_text_part,
     format_md_to_slack_message,
+    split_blocks_into_chunks,
+    SLACK_MAX_BLOCKS_PER_MESSAGE,
     create_agent_selection_blocks,
     get_feedback_buttons_block,
     get_approval_buttons_block,
@@ -903,3 +905,47 @@ def test_process_text_part_complex_with_dividers():
     assert result[0]["text"]["text"] == "Case Details"
     assert result[1]["type"] == "divider"
     assert result[2]["type"] == "rich_text"
+
+
+def test_split_blocks_into_chunks_empty():
+    """
+    Given: An empty block list.
+    When: Splitting into chunks.
+    Then: Returns an empty list.
+    """
+    assert split_blocks_into_chunks([]) == []
+
+
+def test_split_blocks_into_chunks_respects_default_limit():
+    """
+    Given: More blocks than the default Slack limit.
+    When: Splitting into chunks.
+    Then: Each chunk holds at most SLACK_MAX_BLOCKS_PER_MESSAGE blocks and order is preserved.
+    """
+    blocks = [{"i": i} for i in range(SLACK_MAX_BLOCKS_PER_MESSAGE * 2 + 3)]
+    chunks = split_blocks_into_chunks(blocks)
+
+    assert [len(c) for c in chunks] == [SLACK_MAX_BLOCKS_PER_MESSAGE, SLACK_MAX_BLOCKS_PER_MESSAGE, 3]
+    assert [b for c in chunks for b in c] == blocks
+
+
+def test_split_blocks_into_chunks_single_chunk_when_under_limit():
+    """
+    Given: Fewer blocks than the limit.
+    When: Splitting into chunks.
+    Then: Returns a single chunk containing all blocks.
+    """
+    blocks = [{"i": 0}, {"i": 1}]
+    assert split_blocks_into_chunks(blocks, max_blocks=5) == [blocks]
+
+
+def test_split_blocks_into_chunks_custom_limit():
+    """
+    Given: A custom max_blocks value.
+    When: Splitting into chunks.
+    Then: Chunks respect the custom limit.
+    """
+    blocks = [{"i": i} for i in range(120)]
+    chunks = split_blocks_into_chunks(blocks, max_blocks=40)
+
+    assert [len(c) for c in chunks] == [40, 40, 40]
