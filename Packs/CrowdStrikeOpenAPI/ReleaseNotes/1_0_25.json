@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Deprecated the ***cs-query-devices-by-filter-scroll*** command, following its deprecation by CrowdStrike. Use the ***cs-query-devices-combined*** command instead. Deprecated the ***cs-query-behaviors*** command, following its deprecation by CrowdStrike. No available replacement."
+}
