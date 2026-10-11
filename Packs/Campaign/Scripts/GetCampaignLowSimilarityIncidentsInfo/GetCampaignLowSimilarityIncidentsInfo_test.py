@@ -1,3 +1,4 @@
+import pytest
 from CommonServerPython import *
 from GetCampaignLowSimilarityIncidentsInfo import *
 
@@ -164,3 +165,33 @@ def test_updated_status_and_severity(mocker):
     hr = demisto.results.call_args[0][0]["HumanReadable"]
     hr.count("| Archive |") == NUM_OF_INCIDENTS  # noqa: B015  # all incidents should have the 'Archive' status
     hr.count("| 3 |") == NUM_OF_INCIDENTS  # noqa: B015  # all incidents should have severity 3
+
+
+@pytest.mark.parametrize(
+    "is_platform_res, version_ge, incident_id, expected_link",
+    [
+        (True, True, "997329", "[997329](/issue-view/997329)"),
+        (True, False, "997329", "[997329](/issue-view/997329)"),
+        (False, True, "997329", "[997329](/Details/997329)"),
+        (False, False, "997329", "[997329](#/Details/997329)"),
+    ],
+)
+def test_get_incident_link_creator(mocker, is_platform_res, version_ge, incident_id, expected_link):
+    """
+    Given:
+        - An incident ID.
+        - Case 1: Unified Cortex platform (XSIAM v3 / XSOAR on platform) -> issue-view URL.
+        - Case 2: Unified Cortex platform takes precedence regardless of demisto version.
+        - Case 3: Cortex XSOAR 8.x (version >= 8.4.0) -> path-based URL.
+        - Case 4: Cortex XSOAR 6.x (version < 8.4.0) -> legacy hash-based URL.
+    When:
+        - Calling the incident link creator.
+    Then:
+        - Ensure the correct link format is produced for each platform (XSUP-78154).
+    """
+    import GetCampaignLowSimilarityIncidentsInfo
+
+    mocker.patch.object(GetCampaignLowSimilarityIncidentsInfo, "is_platform", return_value=is_platform_res)
+    mocker.patch.object(GetCampaignLowSimilarityIncidentsInfo, "is_demisto_version_ge", return_value=version_ge)
+
+    assert GetCampaignLowSimilarityIncidentsInfo.get_incident_link_creator()(incident_id) == expected_link

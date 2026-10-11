@@ -603,6 +603,35 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
         GCPServices.RESOURCE_MANAGER,
         ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
     ),
+    "gcp-resource-manager-project-create": (
+        GCPServices.RESOURCE_MANAGER,
+        ["resourcemanager.projects.create"],
+    ),
+    "gcp-resource-manager-project-get": (
+        GCPServices.RESOURCE_MANAGER,
+        ["resourcemanager.projects.get"],
+    ),
+    "gcp-resource-manager-project-search": (
+        GCPServices.RESOURCE_MANAGER,
+        ["resourcemanager.projects.get"],
+    ),
+    "gcp-resource-manager-project-update": (
+        GCPServices.RESOURCE_MANAGER,
+        ["resourcemanager.projects.update"],
+    ),
+    "gcp-resource-manager-project-delete": (
+        GCPServices.RESOURCE_MANAGER,
+        ["resourcemanager.projects.delete"],
+    ),
+    "gcp-resource-manager-project-undelete": (
+        GCPServices.RESOURCE_MANAGER,
+        ["resourcemanager.projects.undelete"],
+    ),
+    "gcp-resource-manager-organization-search": (
+        GCPServices.RESOURCE_MANAGER,
+        ["resourcemanager.organizations.get"],
+    ),
+    "gcp-resource-manager-organization-get": (GCPServices.RESOURCE_MANAGER, ["resourcemanager.organizations.get"]),
     # Cloud Run functions commands
     "gcp-cloudrun-functions-list": (
         GCPServices.CLOUD_FUNCTIONS,
@@ -3904,6 +3933,304 @@ def iam_project_policy_binding_remove(creds: Credentials, args: dict[str, Any]) 
     return CommandResults(readable_output=hr)
 
 
+# ---------------------------------------------------------------------------
+# Resource Manager (Projects & Organizations) commands
+# ---------------------------------------------------------------------------
+
+PROJECT_TABLE_HEADERS = ["displayName", "projectId", "name", "state", "createTime", "parent"]
+ORGANIZATION_TABLE_HEADERS = ["name", "displayName", "state", "directoryCustomerId", "createTime"]
+
+
+def resource_manager_project_create(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a new GCP project.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id' and 'parent'. May include 'display_name' and 'labels'.
+
+    Returns:
+        CommandResults: The long-running Operation resource tracking the project creation.
+    """
+    body = remove_empty_elements(
+        {
+            "projectId": args.get("project_id"),
+            "parent": args.get("parent"),
+            "displayName": args.get("display_name"),
+            "labels": parse_labels(args.get("labels", "")),
+        }
+    )
+
+    resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
+    demisto.debug(f"Creating GCP project with body keys: {list(body.keys())}")
+    operation = resource_manager.projects().create(body=body).execute()  # pylint: disable=E1101
+
+    readable_output = tableToMarkdown("The creation of the new project was initiated successfully", operation)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.ResourceManager.Operations",
+        outputs_key_field="name",
+        outputs=operation,
+        raw_response=operation,
+    )
+
+
+def resource_manager_project_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves a GCP project by its project ID.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id'.
+
+    Returns:
+        CommandResults: The requested Project resource.
+    """
+    project_id = args.get("project_id")
+
+    resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
+    project = resource_manager.projects().get(name=f"projects/{project_id}").execute()  # pylint: disable=E1101
+
+    readable_output = tableToMarkdown(
+        f"Google Cloud Project {project_id}",
+        project,
+        headers=PROJECT_TABLE_HEADERS,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.ResourceManager.Projects",
+        outputs_key_field="projectId",
+        outputs=project,
+        raw_response=project,
+    )
+
+
+def resource_manager_project_search(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Searches for GCP projects that are visible to the caller and match an optional query.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): May include 'identifier', 'query', 'limit', and 'next_token'.
+
+    Returns:
+        CommandResults: A list of matching Project resources and a token to continue pagination.
+    """
+    query = args.get("query")
+    next_token = args.get("next_token")
+    limit = arg_to_number(args.get("limit"))
+    validate_limit(limit)
+
+    resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
+    response = (
+        resource_manager.projects()  # pylint: disable=E1101
+        .search(query=query, pageSize=limit, pageToken=next_token)
+        .execute()
+    )
+    projects = response.get("projects", [])
+
+    if not projects:
+        return CommandResults(readable_output="No projects found.")
+
+    next_page_token = response.get("nextPageToken")
+
+    readable_output = tableToMarkdown(
+        "Google Cloud Projects",
+        projects,
+        headers=PROJECT_TABLE_HEADERS,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    outputs = {
+        "GCP.ResourceManager.Projects(val.projectId && val.projectId == obj.projectId)": projects,
+        "GCP.ResourceManager(true)": {"ProjectsNextToken": next_page_token},
+    }
+    outputs = remove_empty_elements(outputs)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def resource_manager_project_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Updates the display name and/or labels of an existing GCP project.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id'. May include 'display_name' and 'labels'.
+
+    Returns:
+        CommandResults: The long-running Operation resource tracking the project update.
+    """
+    project_id = args.get("project_id")
+
+    body: dict[str, Any] = {}
+    update_mask_fields = []
+    if display_name := args.get("display_name"):
+        body["displayName"] = display_name
+        update_mask_fields.append("displayName")
+    if (labels_arg := args.get("labels")) is not None:
+        body["labels"] = parse_labels(labels_arg)
+        update_mask_fields.append("labels")
+
+    if not update_mask_fields:
+        raise ValueError("At least one of 'display_name' or 'labels' must be provided to update a project.")
+
+    resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
+    operation = (
+        resource_manager.projects()  # pylint: disable=E1101
+        .patch(name=f"projects/{project_id}", updateMask=",".join(update_mask_fields), body=body)
+        .execute()
+    )
+
+    readable_output = tableToMarkdown(f"The update of project {project_id} was initiated successfully", operation)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.ResourceManager.Operations",
+        outputs_key_field="name",
+        outputs=operation,
+        raw_response=operation,
+    )
+
+
+def resource_manager_project_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Marks a GCP project for deletion.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id'.
+
+    Returns:
+        CommandResults: The long-running Operation resource tracking the project deletion.
+    """
+    project_id = args.get("project_id")
+
+    resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
+    operation = resource_manager.projects().delete(name=f"projects/{project_id}").execute()  # pylint: disable=E1101
+
+    readable_output = tableToMarkdown(f"The deletion of project {project_id} was initiated successfully", operation)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.ResourceManager.Operations",
+        outputs_key_field="name",
+        outputs=operation,
+        raw_response=operation,
+    )
+
+
+def resource_manager_project_undelete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Restores a GCP project that was previously marked for deletion.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id'.
+
+    Returns:
+        CommandResults: The long-running Operation resource tracking the project restoration.
+    """
+    project_id = args.get("project_id")
+
+    resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
+    operation = resource_manager.projects().undelete(name=f"projects/{project_id}", body={}).execute()  # pylint: disable=E1101
+
+    readable_output = tableToMarkdown(f"The restoration of project {project_id} was initiated successfully", operation)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.ResourceManager.Operations",
+        outputs_key_field="name",
+        outputs=operation,
+        raw_response=operation,
+    )
+
+
+def resource_manager_organization_search(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Searches for GCP organizations that are visible to the caller and match an optional query.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): May include 'identifier', 'query', 'limit', and 'next_token'.
+
+    Returns:
+        CommandResults: A list of matching Organization resources and a token to continue pagination.
+    """
+    query = args.get("query")
+    next_token = args.get("next_token")
+    limit = arg_to_number(args.get("limit"))
+    validate_limit(limit)
+
+    resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
+    response = (
+        resource_manager.organizations()  # pylint: disable=E1101
+        .search(query=query, pageSize=limit, pageToken=next_token)
+        .execute()
+    )
+    organizations = response.get("organizations", [])
+
+    if not organizations:
+        return CommandResults(readable_output="No organizations found.")
+
+    next_page_token = response.get("nextPageToken")
+
+    readable_output = tableToMarkdown(
+        "Google Cloud Organizations",
+        organizations,
+        headers=ORGANIZATION_TABLE_HEADERS,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    outputs = {
+        "GCP.ResourceManager.Organizations(val.name && val.name == obj.name)": organizations,
+        "GCP.ResourceManager(true)": {"OrganizationsNextToken": next_page_token},
+    }
+    outputs = remove_empty_elements(outputs)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def resource_manager_organization_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves a GCP organization by its resource name.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'name' (e.g. "organizations/1234").
+
+    Returns:
+        CommandResults: The requested Organization resource.
+    """
+    name = args.get("name")
+
+    resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
+    organization = resource_manager.organizations().get(name=name).execute()  # pylint: disable=E1101
+
+    readable_output = tableToMarkdown(
+        f"Google Cloud Organization {name}",
+        organization,
+        headers=ORGANIZATION_TABLE_HEADERS,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.ResourceManager.Organizations",
+        outputs_key_field="name",
+        outputs=organization,
+        raw_response=organization,
+    )
+
+
 # The command is currently unsupported.
 # def iam_project_deny_policy_create(creds, args: dict[str, Any]) -> CommandResults:
 #     """
@@ -6150,12 +6477,19 @@ def get_credentials(args: dict, params: dict) -> Credentials:
         return creds
 
     # --- Cortex Platform path: CTS token-based authentication ---
-    project_id = args.get("project_id")
-    if not project_id:
-        raise DemistoException("Missing required parameter 'project_id'")
+    # Resource commands provide ``project_id``; global commands provide ``identifier`` (project,
+    # folder, or organization ID). Either is used solely to create the CTS token.
+    # Since there are commands that have both, for example gcp-resource-manager-project-create,
+    # the identifier should be prioritized.
+    identifier = args.get("identifier") or args.get("project_id")
+    if not identifier:
+        raise DemistoException(
+            "Missing required parameter. Provide 'project_id' (resource commands) or 'identifier' "
+            "(a project, folder, or organization ID for global commands) to create the CTS token."
+        )
 
     try:
-        credential_data = get_cloud_credentials(CloudTypes.GCP.value, project_id)
+        credential_data = get_cloud_credentials(CloudTypes.GCP.value, identifier)
     except Exception as e:
         raise DemistoException(f"Failed to authenticate with GCP via CTS: {str(e)}")
 
@@ -6164,7 +6498,7 @@ def get_credentials(args: dict, params: dict) -> Credentials:
         raise DemistoException("Failed to retrieve GCP access token - token is missing from CTS credentials")
 
     creds = Credentials(token=token)
-    demisto.debug(f"[GCP get_credentials] {project_id}: Using CTS token-based credentials (Cortex Platform path)")
+    demisto.debug(f"[GCP get_credentials] {identifier}: Using CTS token-based credentials (Cortex Platform path)")
     return creds
 
 
@@ -8881,6 +9215,15 @@ def main():  # pragma: no cover
             "gcp-gke-cluster-security-update": container_cluster_security_update,
             # IAM commands
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
+            # Resource Manager commands
+            "gcp-resource-manager-project-create": resource_manager_project_create,
+            "gcp-resource-manager-project-get": resource_manager_project_get,
+            "gcp-resource-manager-project-search": resource_manager_project_search,
+            "gcp-resource-manager-project-update": resource_manager_project_update,
+            "gcp-resource-manager-project-delete": resource_manager_project_delete,
+            "gcp-resource-manager-project-undelete": resource_manager_project_undelete,
+            "gcp-resource-manager-organization-search": resource_manager_organization_search,
+            "gcp-resource-manager-organization-get": resource_manager_organization_get,
             # BigQuery commands
             "gcp-bq-dataset-policy-remove": bq_dataset_policy_remove_command,
             # Cloud Run functions commands
@@ -8948,7 +9291,7 @@ def main():  # pragma: no cover
             raise NotImplementedError(f"Command not implemented: {command}")
 
     except HttpError as e:
-        project_id = args.get("project_id") or args.get("folder_id") or "N/A"
+        project_id = args.get("project_id") or args.get("identifier") or "N/A"
         handle_permission_error(e, project_id, command)
 
     except Exception as e:
