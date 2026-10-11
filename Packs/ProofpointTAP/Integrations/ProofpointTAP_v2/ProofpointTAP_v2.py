@@ -22,8 +22,25 @@ DEFAULT_LIMIT = 50
 DEFAULT_LOOK_BACK_MINUTES = 30
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MAX_SEEN_IDS = 10_000
+
+# Upper bounds for the overflow backlog persisted via `demisto.setIntegrationContext`.
+# The integration context is a single Elasticsearch document, and the server rejects any
+# write above `http.max_content_length` (default 100 MB) with:
+#   "request to elasticsearch exceeded maximum size ... (29005)"
+# That rejection is unrecoverable on its own: the drained backlog is never persisted, so
+# every later fetch re-reads the same oversized document and fails identically, wedging
+# the instance until the context is cleared manually.
+#
+# Events that do not fit within these bounds are NOT discarded - `last_fetch` is rewound
+# so they are re-fetched on a later cycle. See `fetch_incidents`.
 MAX_REMAINED_INCIDENTS = 10_000
 MAX_REMAINED_INCIDENTS_BYTES = 10 * 1024 * 1024  # 10 MB, well under the 100 MB server cap
+
+# Warn once the fetch watermark falls this far behind real time. A growing lag means the
+# event rate exceeds what this instance can turn into incidents per cycle. Proofpoint
+# retains only 7 days, so a lag that keeps growing eventually becomes real data loss -
+# this is the signal to narrow the `events_type` / threat filters.
+WATERMARK_LAG_WARNING_MINUTES = 24 * 60
 
 
 def get_now():
@@ -35,7 +52,7 @@ def get_now():
     return datetime.now(UTC).replace(tzinfo=None)
 
 
-def prune_seen_ids(seen_ids: dict[str, str], look_back_minutes: int) -> dict[str, str]:
+def prune_seen_ids(seen_ids: dict[str, str], look_back_minutes: int, reference_time: datetime | None = None) -> dict[str, str]:
     """Remove event IDs outside the lookback window. Apply hard cap if needed.
 
     Args:
@@ -43,6 +60,11 @@ def prune_seen_ids(seen_ids: dict[str, str], look_back_minutes: int) -> dict[str
                   in which the event was first seen) for deduplication.
         look_back_minutes: The lookback window in minutes. A 30-minute safety margin is
                            added on top to tolerate clock skew and API indexing delay.
+        reference_time: Point in time the window is measured back from. Defaults to now.
+                        When an overflow rewinds `last_fetch`, the next fetch resumes from
+                        that earlier watermark, so the window must be measured from there -
+                        measuring from `now` would discard the IDs that keep the re-fetched
+                        events from being reported twice.
 
     Returns:
         Pruned dict with only IDs whose interval_end is within the lookback window + 30min margin.
@@ -50,7 +72,7 @@ def prune_seen_ids(seen_ids: dict[str, str], look_back_minutes: int) -> dict[str
     if not seen_ids:
         return seen_ids
 
-    cutoff = (get_now() - timedelta(minutes=look_back_minutes + 30)).strftime(DATE_FORMAT)
+    cutoff = ((reference_time or get_now()) - timedelta(minutes=look_back_minutes + 30)).strftime(DATE_FORMAT)
     pruned = {event_id: interval_end for event_id, interval_end in seen_ids.items() if interval_end >= cutoff}
 
     if len(pruned) > MAX_SEEN_IDS:
@@ -62,62 +84,57 @@ def prune_seen_ids(seen_ids: dict[str, str], look_back_minutes: int) -> dict[str
     return pruned
 
 
-def bound_remained_incidents(remained_incidents: list) -> list:
-    """Bound the overflow backlog before it is persisted to the integration context.
+def bound_remained_incidents(remained_incidents: list) -> tuple[list, list]:
+    """Split the overflow backlog into the part we can persist and the part we defer.
 
     The integration context is a single Elasticsearch document. Writing more than
     `http.max_content_length` (100 MB by default) is rejected by the server, which wedges
     the instance permanently: the rejected write means the drained backlog is never saved,
     so every later fetch re-reads the same oversized document and fails the same way.
 
-    Keeping the newest incidents (and dropping the oldest) matches the drain order used by
-    `fetch_incidents`, which always serves `remained_incidents[:limit]` from the front.
+    The backlog is drained from the front (`remained_incidents[:limit]`), so the OLDEST
+    incidents are kept and the NEWEST are deferred. Deferring the newest is what makes the
+    `last_fetch` rewind in `fetch_incidents` possible: the deferred events then form a
+    single contiguous tail of time, which one watermark can replay exactly. Deferring the
+    oldest instead would leave a hole no single watermark could re-cover.
 
     Args:
-        remained_incidents: Overflow incidents that did not fit into the current fetch.
+        remained_incidents: Overflow incidents that did not fit into the current fetch,
+                            ordered oldest first.
 
     Returns:
-        The backlog, truncated to `MAX_REMAINED_INCIDENTS` entries and
-        `MAX_REMAINED_INCIDENTS_BYTES` bytes.
+        (kept, deferred) - `kept` fits within both bounds and is safe to persist;
+        `deferred` is the newest tail, to be re-fetched after a `last_fetch` rewind.
     """
     if not remained_incidents:
-        return remained_incidents
+        return remained_incidents, []
 
-    bounded = remained_incidents
-    if len(bounded) > MAX_REMAINED_INCIDENTS:
-        dropped = len(bounded) - MAX_REMAINED_INCIDENTS
-        demisto.error(
-            f"Integration context backlog exceeded {MAX_REMAINED_INCIDENTS} incidents; "
-            f"dropping the {dropped} oldest queued incidents to keep the context writable. "
+    # Count bound first - cheap, and usually the binding constraint.
+    kept = remained_incidents[:MAX_REMAINED_INCIDENTS]
+    deferred = remained_incidents[MAX_REMAINED_INCIDENTS:]
+
+    # Size bound: incident sizes vary widely (rawJSON payloads), so a count cap alone
+    # cannot guarantee the document stays under the server limit.
+    if sum(len(incident.get("rawJSON", "")) for incident in kept) > MAX_REMAINED_INCIDENTS_BYTES:
+        kept_bytes = 0
+        fits = 0
+        for incident in kept:
+            kept_bytes += len(incident.get("rawJSON", ""))
+            if kept_bytes > MAX_REMAINED_INCIDENTS_BYTES:
+                break
+            fits += 1
+        deferred = kept[fits:] + deferred
+        kept = kept[:fits]
+
+    if deferred:
+        demisto.info(
+            f"Backlog exceeded the integration context bounds "
+            f"({MAX_REMAINED_INCIDENTS} incidents / {MAX_REMAINED_INCIDENTS_BYTES} bytes); "
+            f"keeping {len(kept)} and deferring the {len(deferred)} newest for a later fetch. "
             f"The fetch rate cannot keep up with the event volume - consider narrowing the "
             f"'Events to fetch' / threat filters for this instance."
         )
-        bounded = bounded[-MAX_REMAINED_INCIDENTS:]
-
-    # Size-based bound: incident sizes vary widely (rawJSON payloads), so a count cap
-    # alone is not enough to guarantee the document stays under the server limit.
-    total_bytes = sum(len(incident.get("rawJSON", "")) for incident in bounded)
-    if total_bytes <= MAX_REMAINED_INCIDENTS_BYTES:
-        return bounded
-
-    kept: list = []
-    kept_bytes = 0
-    for incident in reversed(bounded):  # newest first
-        incident_bytes = len(incident.get("rawJSON", ""))
-        if kept_bytes + incident_bytes > MAX_REMAINED_INCIDENTS_BYTES:
-            break
-        kept.append(incident)
-        kept_bytes += incident_bytes
-    kept.reverse()
-
-    demisto.error(
-        f"Integration context backlog reached {total_bytes} bytes (limit "
-        f"{MAX_REMAINED_INCIDENTS_BYTES}); dropping the {len(bounded) - len(kept)} oldest "
-        f"queued incidents to keep the context writable. The fetch rate cannot keep up with "
-        f"the event volume - consider narrowing the 'Events to fetch' / threat filters for "
-        f"this instance."
-    )
-    return kept
+    return kept, deferred
 
 
 def get_fetch_times(last_fetch, look_back_minutes: int = 0):
@@ -788,13 +805,19 @@ def fetch_incidents(
     # If no valid intervals, skip querying the API but still drain the carried-over backlog.
     if not fetch_intervals:
         demisto.debug("No fetch intervals generated - skipping the API query for this fetch cycle")
-        return (
-            last_run,
-            carried_over_incidents[:limit],
-            bound_remained_incidents(carried_over_incidents[limit:]),
-        )
+        kept, deferred = bound_remained_incidents(carried_over_incidents[limit:])
+        if deferred:
+            # Nothing was fetched this cycle, so there is no interval to rewind to. The
+            # deferred incidents are already materialized and cannot be re-derived from
+            # the API without a watermark move, so keep them rather than lose them.
+            kept = kept + deferred
+        return last_run, carried_over_incidents[:limit], kept
 
     dedup_count = 0
+    # Both parallel to `incidents`: the start of the interval each incident was fetched
+    # from, and its dedup key. Used to rewind precisely if the incident is later deferred.
+    incident_interval_starts: list[str] = []
+    incident_dedup_keys: list[str] = []
 
     for interval_start, interval_end in fetch_intervals:
         demisto.debug(f"Fetching interval: {interval_start} / {interval_end}")
@@ -836,6 +859,10 @@ def fetch_incidents(
                 # Build incident
                 incident = _build_incident(raw_event, event_type_label, occurred, raw_json_encoding)
                 incidents.append(incident)
+                # Remember which interval produced it, so that if this incident is later
+                # deferred we know exactly how far back to rewind `last_fetch`.
+                incident_interval_starts.append(interval_start)
+                incident_dedup_keys.append(dedup_key)
 
                 # Track this event for dedup — store the end of the fetch interval
                 if dedup_key:
@@ -844,11 +871,48 @@ def fetch_incidents(
     if dedup_count > 0:
         demisto.debug(f"Deduplicated {dedup_count} events")
 
-    # Prune old IDs outside the lookback window (always, to avoid unbounded growth of last_run)
-    seen_ids = prune_seen_ids(seen_ids, look_back_minutes)
+    # Serve the carried-over backlog before the newly fetched incidents, so incidents are
+    # created in roughly the order they occurred and the backlog cannot starve.
+    pending_incidents = carried_over_incidents + incidents
+    remained_incidents, deferred_incidents = bound_remained_incidents(pending_incidents[limit:])
 
     # Advance last_fetch to end of last interval (real now, not shifted)
     end_query_time = fetch_intervals[-1][1]
+
+    # Overflow handling: rather than discarding the events that did not fit, rewind the
+    # watermark so they are re-fetched later. `bound_remained_incidents` defers the NEWEST
+    # incidents, so the deferred set is a contiguous tail of `incidents` that a single
+    # watermark can replay.
+    if deferred_incidents:
+        # The carried-over backlog is served first and kept in full, so the deferred tail
+        # maps onto the end of `incidents` (which is parallel to the tracking lists).
+        first_deferred_offset = len(incidents) - len(deferred_incidents)
+        if 0 <= first_deferred_offset < len(incident_interval_starts):
+            end_query_time = incident_interval_starts[first_deferred_offset]
+            # Re-fetching that interval also returns the events from it that were already
+            # reported or kept. Those must stay in `seen_ids` so they are deduplicated on
+            # the next cycle; only the deferred events are released for re-fetching.
+            # (A purge by timestamp would clear the whole interval and duplicate them.)
+            for dedup_key in incident_dedup_keys[first_deferred_offset:]:
+                seen_ids.pop(dedup_key, None)
+            demisto.info(
+                f"Rewinding last_fetch to {end_query_time} to re-fetch "
+                f"{len(deferred_incidents)} deferred incidents on a later cycle."
+            )
+        else:
+            # Defensive: without a usable rewind point the deferred incidents can only be
+            # recovered by keeping them, so accept a larger context over losing events.
+            remained_incidents = remained_incidents + deferred_incidents
+            demisto.error(
+                f"Could not determine a rewind point for {len(deferred_incidents)} deferred incidents; "
+                f"keeping them in the integration context instead of dropping them."
+            )
+
+    # Prune old IDs outside the lookback window (always, to avoid unbounded growth of
+    # last_run). Measure the window from the watermark we are about to persist: after an
+    # overflow rewind that is earlier than `now`, and pruning relative to `now` would drop
+    # the IDs that stop the re-fetched events from being reported twice.
+    seen_ids = prune_seen_ids(seen_ids, look_back_minutes, datetime.strptime(end_query_time, DATE_FORMAT))
 
     next_run: dict = {
         "last_fetch": end_query_time,
@@ -858,10 +922,15 @@ def fetch_incidents(
     if carry_enabled_from is not None:
         next_run["look_back_enabled_from"] = carry_enabled_from
 
-    # Serve the carried-over backlog before the newly fetched incidents, so incidents are
-    # created in roughly the order they occurred and the backlog cannot starve.
-    pending_incidents = carried_over_incidents + incidents
-    remained_incidents = bound_remained_incidents(pending_incidents[limit:])
+    # A watermark that keeps falling behind means the instance cannot keep up with the
+    # event rate. Proofpoint retains only 7 days, so this eventually becomes data loss.
+    lag_minutes = (now - datetime.strptime(end_query_time, DATE_FORMAT)).total_seconds() / 60
+    if lag_minutes > WATERMARK_LAG_WARNING_MINUTES:
+        demisto.error(
+            f"Fetch is {lag_minutes / 60:.1f} hours behind real time (last_fetch={end_query_time}). "
+            f"Proofpoint retains events for 7 days only - if the lag keeps growing, events will be "
+            f"lost. Consider narrowing the 'Events to fetch' / threat filters for this instance."
+        )
 
     demisto.debug(
         f"Fetch summary: {len(fetch_intervals)} intervals, "
@@ -869,6 +938,7 @@ def fetch_incidents(
         f"{len(carried_over_incidents)} carried over, "
         f"returning {min(len(pending_incidents), limit)}, "
         f"remaining {len(remained_incidents)}, "
+        f"deferred {len(deferred_incidents)}, "
         f"seen_ids={len(seen_ids)}, "
         f"next last_fetch={end_query_time}"
     )
@@ -1593,8 +1663,9 @@ def main():
             demisto.incidents(incidents)
             # Preserve the overflow backlog. `bound_remained_incidents` keeps this document
             # well under the server's size limit, but guard the write anyway: if persisting
-            # the backlog ever fails, dropping it is far better than failing the whole fetch,
-            # which would re-create the already-reported incidents on the next run.
+            # the backlog ever fails, clearing it is far better than failing the whole fetch,
+            # which would re-create the already-reported incidents on the next run. Events
+            # cleared here remain recoverable via the look-back window.
             try:
                 demisto.setIntegrationContext({"incidents": remained_incidents})
             except Exception as context_error:
