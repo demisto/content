@@ -1519,7 +1519,7 @@ def set_api_end_cursor(page_info):
         API_END_CURSOR = None
 
 
-def get_entries(query, variables, wiz_type):
+def get_entries(query, variables, wiz_type, raise_errors=False):
     if not TOKEN:
         get_token()
 
@@ -1557,6 +1557,8 @@ def get_entries(query, variables, wiz_type):
     except Exception as e:
         error_message = f"Received an error while performing an API call.\nError info: {str(e)}"
         demisto.error(error_message)
+        if raise_errors:
+            raise
         return_error(error_message)
 
 
@@ -3577,9 +3579,11 @@ def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolv
 
     response = get_entries(query, variables, WizApiResponse.UPDATE_ISSUE)
     if response:
-        set_issue_note(issue_id, reject_or_resolve_comment)
+        warning = _note_warning(issue_id, reject_or_resolve_comment)
         return_results(
-            CommandResults(outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully modified the threat status to {status}.")
+            CommandResults(
+                outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully modified the threat status to {status}.{warning}"
+            )
         )
         return None
     else:
@@ -3631,7 +3635,7 @@ def truncate_note(text):
     return text[: MAX_NOTE_LENGTH - len(suffix)] + suffix
 
 
-def set_issue_note(issue_id, comment):
+def set_issue_note(issue_id, comment, raise_errors=False):
     """
     Set a note on Wiz Issue
     """
@@ -3644,10 +3648,20 @@ def set_issue_note(issue_id, comment):
     variables = {"input": {"subjectId": issue_id, "subjectType": "ISSUE", "body": comment}}
     query = CREATE_COMMENT_QUERY
 
-    response = get_entries(query, variables, WizApiResponse.CREATE_COMMENT)
+    response = get_entries(query, variables, WizApiResponse.CREATE_COMMENT, raise_errors=raise_errors)
     if not response:
         return_error(f"Error: Failed to set note on issue with ID {issue_id}.\n" f"Please check the input parameters.")
     return response
+
+
+def _note_warning(issue_id, note):
+    """Call only after a successful status update; a note failure must not fail it."""
+    try:
+        set_issue_note(issue_id, note, raise_errors=True)
+    except Exception as e:
+        demisto.error(f"Status updated but the note could not be added to issue {issue_id}: {e}")
+        return f" Warning: the note could not be added: {e}"
+    return ""
 
 
 def _reopen_issue(issue_id, reopen_note):
@@ -3670,10 +3684,7 @@ def _reopen_issue(issue_id, reopen_note):
         demisto.error(error_message)
         return_error(f"Error: {error_message}")
 
-    if reopen_note:
-        return set_issue_note(issue_id, reopen_note)
-
-    return response
+    return response, _note_warning(issue_id, reopen_note) if reopen_note else ""
 
 
 def reopen_threat():
@@ -3682,9 +3693,12 @@ def reopen_threat():
     reopen_note = demisto_args.get(WizInputParam.REOPEN_NOTE)
     demisto.debug(f"reopen_threat called with issue_id: {issue_id}, reopen_note: {reopen_note}")
 
-    if _reopen_issue(issue_id, reopen_note):
+    response, warning = _reopen_issue(issue_id, reopen_note)
+    if response:
         return_results(
-            CommandResults(outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully reopened the threat with ID {issue_id}.")
+            CommandResults(
+                outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully reopened the threat with ID {issue_id}.{warning}"
+            )
         )
     else:
         return_error(

@@ -2966,6 +2966,37 @@ def test_reject_or_resolve_issue_posts_comment_after_update(mock_get_entries, mo
     mock_return_results.assert_called_once()
 
 
+@patch.object(demisto, "error")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_results")
+@patch(
+    "Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries",
+    side_effect=[({"id": "threat-123"}, None), Exception("access denied: [write:all write:comments]")],
+)
+def test_reject_or_resolve_issue_warns_when_note_fails(mock_get_entries, mock_return_results, mock_error):
+    reject_or_resolve_issue(str(uuid.uuid4()), "ISSUE_FIXED", "Fixed the issue", WizStatus.RESOLVED)
+
+    assert mock_get_entries.call_args_list[1][1] == {"raise_errors": True}
+    outputs = mock_return_results.call_args[0][0].outputs
+    assert outputs.startswith("Successfully modified the threat status to RESOLVED.")
+    assert "Warning: the note could not be added" in outputs
+    assert "write:comments" in outputs
+
+
+@pytest.mark.parametrize("raise_errors", [True, False])
+@patch.object(demisto, "error")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_error")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.requests.post", side_effect=Exception("boom"))
+def test_get_entries_raise_errors(mock_post, mock_return_error, mock_error, raise_errors):
+    with patch("Packs.Wiz.Integrations.WizDefend.WizDefend.TOKEN", "token"):
+        if raise_errors:
+            with pytest.raises(Exception, match="boom"):
+                get_entries("query", {}, WizApiResponse.CREATE_COMMENT, raise_errors=True)
+            mock_return_error.assert_not_called()
+        else:
+            get_entries("query", {}, WizApiResponse.CREATE_COMMENT)
+            mock_return_error.assert_called_once()
+
+
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries")
 def test_get_issue_comments_paginates(mock_get_entries):
     issue_id = str(uuid.uuid4())
@@ -3053,9 +3084,10 @@ def test_resolve_threat(mock_return_error, mock_reject_or_resolve, mock_args, va
 @pytest.mark.parametrize(
     "reopen_issue_return,should_succeed",
     [
-        ({"id": "threat-123", "status": "OPEN"}, True),
-        (None, False),
-        ("", False),
+        (({"id": "threat-123", "status": "OPEN"}, ""), True),
+        (({"id": "threat-123", "status": "OPEN"}, " Warning: the note could not be added: denied"), True),
+        ((None, ""), False),
+        (("", ""), False),
     ],
 )
 @patch.object(demisto, "args", return_value={"issue_id": str(uuid.uuid4()), "reopen_note": "Reopening for review"})
@@ -3071,6 +3103,7 @@ def test_reopen_threat(mock_return_error, mock_return_results, mock_args, reopen
             call_args = mock_return_results.call_args[0][0]
             assert call_args.outputs_prefix == OutputPrefix.THREAT
             assert "Successfully reopened the threat" in call_args.outputs
+            assert call_args.outputs.endswith(reopen_issue_return[1])
             assert not mock_return_error.called
         else:
             mock_return_error.assert_called_once()

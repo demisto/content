@@ -2745,6 +2745,30 @@ def test_reject_or_resolve_issue_no_comment_when_update_fails(mock_check_api):
 
 
 @pytest.mark.parametrize(
+    "call",
+    [
+        pytest.param(
+            lambda m: m.reject_or_resolve_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "ISSUE_FIXED", "n", "RESOLVED"),
+            id="resolve",
+        ),
+        pytest.param(lambda m: m.reopen_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "n"), id="reopen"),
+    ],
+)
+@patch.object(demisto, "error")
+def test_status_update_succeeds_with_warning_when_note_fails(mock_error, call):
+    import Wiz
+
+    status_response = {"data": {"updateIssue": {"issue": {"id": "12345678-2222-3333-1111-ff5fa2ff7f78"}}}}
+    denied = Exception("access denied: [write:all write:comments]")
+    with patch("Wiz.checkAPIerrors", side_effect=[status_response, denied]):
+        response = call(Wiz)
+
+    assert response["data"] == status_response["data"]
+    assert "the note could not be added" in response["warning"]
+    assert "write:comments" in response["warning"]
+
+
+@pytest.mark.parametrize(
     "retry_result, expected_error",
     [
         pytest.param(test_reject_issue_response, None, id="legacy_note_accepted"),
@@ -2949,11 +2973,11 @@ def test_get_remote_data_command_notes_none(mock_get_issue, mock_get_comments, m
     assert result.entries == []
 
 
-@patch.object(demisto, "error")
+@patch.object(demisto, "info")
 @patch("Wiz.get_issue_comments", side_effect=Exception("access denied: [read:all read:comments]"))
 @patch("Wiz.get_issue")
 def test_get_remote_data_command_mirrors_issue_when_comments_unreadable(
-    mock_get_issue, mock_get_comments, mock_error, mock_mirror_params
+    mock_get_issue, mock_get_comments, mock_info, mock_mirror_params
 ):
     from Wiz import get_remote_data_command
 
@@ -2962,7 +2986,7 @@ def test_get_remote_data_command_mirrors_issue_when_comments_unreadable(
     result = get_remote_data_command({"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": "2025-01-01T00:00:00Z"})
     assert result.mirrored_object["status"] == "RESOLVED"
     assert result.entries == []
-    assert "read:comments" in mock_error.call_args[0][0]
+    assert "read:comments" in mock_info.call_args[0][0]
 
     mock_get_comments.reset_mock()
     get_remote_data_command({"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": ""})

@@ -2485,8 +2485,17 @@ def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolv
                 f"Wiz API error: {retry_error}"
             )
 
-    set_issue_comment(issue_id, reject_or_resolve_comment)
+    return _add_note_after_status_update(issue_id, reject_or_resolve_comment, response)
 
+
+def _add_note_after_status_update(issue_id, note, response):
+    """Call only after a successful status update; a note failure must not fail it."""
+    try:
+        set_issue_comment(issue_id, note)
+    except Exception as e:
+        warning = f"The issue status was updated, but the note could not be added: {e}"
+        demisto.error(warning)
+        response["warning"] = warning
     return response
 
 
@@ -2507,7 +2516,7 @@ def reopen_issue(issue_id, reopen_note):
     response = checkAPIerrors(query, variables)
 
     if reopen_note:
-        set_issue_comment(issue_id, reopen_note)
+        return _add_note_after_status_update(issue_id, reopen_note, response)
 
     return response
 
@@ -2951,7 +2960,7 @@ def get_remote_data_command(args):
         try:
             comments = get_issue_comments(issue_id)
         except Exception as e:
-            demisto.error(f"get_remote_data: skipping comments for issue {issue_id}: {e}")
+            demisto.info(f"get_remote_data: skipping comments for issue {issue_id}: {e}")
         else:
             entries = _build_new_note_entries(comments, last_update)
     return GetRemoteDataResponse(issue, entries)
