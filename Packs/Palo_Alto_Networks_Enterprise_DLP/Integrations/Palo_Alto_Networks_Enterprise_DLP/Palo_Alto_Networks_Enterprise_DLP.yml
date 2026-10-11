@@ -391,7 +391,7 @@ script:
   - name: pan-dlp-reset-last-run
     deprecated: true
     description: Deprecated. Reset the "last run" timestamp via the integration instance configuration window.
-  dockerimage: demisto/python3:3.12.13.10404775
+  dockerimage: demisto/python3:3.12.14.13495286
   isFetchSamples: true
   isfetch: true
   script: '-'
