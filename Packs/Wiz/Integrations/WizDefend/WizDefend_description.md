@@ -12,7 +12,7 @@ This section explains how to fully configure the instance of Wiz Defend Integrat
       - For **Scope** —Set the Project's scope.
   - Click **Add Integration**. A new service account is created.
   - Copy and save the **client ID**, **client secret**, **API Endpoint URL** and **Authenticate API URL** for the next steps.
-  - Make sure the service account includes the `read:comments` and `write:comments` scopes. They are required by `wiz-defend-set-threat-comment`, `wiz-defend-clear-threat-comments`, and the note arguments of `wiz-defend-resolve-threat` and `wiz-defend-reopen-threat`.
+  - Make sure the service account includes the `write:comments` scope, required by `wiz-defend-set-threat-comment` and the note arguments of `wiz-defend-resolve-threat` and `wiz-defend-reopen-threat`. `wiz-defend-clear-threat-comments` requires both `read:comments` and `write:comments`.
 - In the Cortex XSOAR Integration instance configuration window:
     - Check **Fetches incidents** radio button
     - Choose **Wiz Classifier** as your classifier
