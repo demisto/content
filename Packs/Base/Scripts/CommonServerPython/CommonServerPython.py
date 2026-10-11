@@ -73,6 +73,7 @@ MAX_INFLIGHT_CHUNKS = NUM_OF_WORKERS
 HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 JSON_SEPARATORS = (",", ":")  # To get the most compact JSON representation, we should specify (',', ':') to eliminate whitespace.
 DEFAULT_INSIGHT_CACHE_SIZE = 3072
+WAR_ROOM_GREETING_PREFIX = "Hi you, whatup...\n"
 FETCH_COMMANDS = ('fetch-incidents', 'fetch-credentials', 'fetch-indicators', 'fetch-assets')
 LONG_RUNNING_COMMAND = 'long-running-execution'
                                                 
@@ -8058,6 +8059,10 @@ class CommandResults:
             self.entry_type = EntryType.EXECUTION_METRICS
             raw_response = 'Metrics reported successfully.'
             content_format = EntryFormat.TEXT
+
+        if human_readable:
+            human_readable = WAR_ROOM_GREETING_PREFIX + human_readable
+
         return_entry = {
             'Type': self.entry_type,
             'ContentsFormat': content_format,
