@@ -24,7 +24,7 @@ from base64 import b64encode
 # httpx2 client. httpx2 is API-compatible with httpx, so it is used throughout.
 import httpx2
 
-from urllib.parse import parse_qsl, urlparse, urlunparse
+from urllib.parse import parse_qsl, unquote, urlparse, urlunparse
 
 # --- Utility Functions ---
 
@@ -135,22 +135,28 @@ def parse_authorization_response(auth_code_input: str) -> dict[str, str]:
         auth_code_input: The raw user-supplied value (full redirect URL or bare code).
 
     Returns:
-        A dict with the 'code' key, plus 'state' and 'iss' when they were present in a URL.
-        A bare code yields only 'code'.
+        A dict with the 'code' key, plus 'state' and 'iss' when they were present in a URL, and
+        'is_full_url' recording which form was supplied. A bare code yields only 'code' and
+        'is_full_url'. The flag matters because an absent `iss` means something different in
+        each case: the server omitted it, versus the user never pasted it.
     """
     value = (auth_code_input or "").strip()
     if not value:
         return {}
 
     # A bare authorization code contains no query string. Treat anything with a query
-    # delimiter or an explicit code= pair as a redirect URL.
+    # delimiter or an explicit code= pair as a redirect URL. A bare value is url-decoded here
+    # because that is what callers have always done to it before this function existed.
     if "?" not in value and "code=" not in value:
-        return {"code": value}
+        return {"code": unquote(value), "is_full_url": ""}
 
+    # For a full URL, parse_qsl performs the decoding. Decoding the URL beforehand would decode
+    # each value a second time and silently corrupt any code containing '%2F' or '%2B'.
     query = urlparse(value).query or value.partition("?")[2] or value
     params = dict(parse_qsl(query))
 
-    parsed = {key: params[key] for key in ("code", "state", "iss") if params.get(key)}
+    parsed: dict[str, str] = {"is_full_url": "true"}
+    parsed.update({key: params[key] for key in ("code", "state", "iss") if params.get(key)})
     if not parsed.get("code"):
         raise DemistoException(
             "Could not find an authorization code in the provided value. Paste either the full "
@@ -180,7 +186,7 @@ def build_oauth_metadata(metadata: dict[str, Any]) -> OAuthMetadata | None:
         return None
 
 
-def validate_state(received_state: str, expected_state: str) -> None:
+def validate_state(received_state: str, expected_state: str, is_full_url: bool) -> None:
     """
     Validate the `state` authorization-response parameter (CSRF protection, RFC 6749 section 10.12).
 
@@ -188,20 +194,32 @@ def validate_state(received_state: str, expected_state: str) -> None:
     internally, whereas this integration hands the user a login URL and receives the response
     back through configuration on a later execution.
 
+    An absent `state` is only tolerated when the user supplied a bare authorization code, which
+    carries no response parameters at all. When a full redirect URL was supplied the parameters
+    were available, so a missing `state` means it was removed and the check must fail - otherwise
+    stripping one parameter would be enough to disable CSRF protection.
+
     Args:
         received_state: The state returned on the authorization response.
         expected_state: The state recorded when the login URL was generated.
+        is_full_url: Whether the user supplied the full redirect URL.
 
     Raises:
-        DemistoException: If the two do not match.
+        DemistoException: If the two do not match, or `state` is missing from a full redirect URL.
     """
     if not expected_state:
         demisto.debug("Skipping OAuth state validation: no state was stored for this flow.")
         return
     if not received_state:
+        if is_full_url:
+            raise DemistoException(
+                "OAuth state missing: the pasted redirect URL does not contain the 'state' parameter "
+                "that was sent with the login request. Re-run the generate-login-url command and paste "
+                "the complete URL. If this repeats, the authorization response may have been tampered with."
+            )
         demisto.debug(
-            "Skipping OAuth state validation: the authorization response did not include 'state'. "
-            "Paste the full redirect URL into the Authorization code parameter to enable this check."
+            "Skipping OAuth state validation: only an authorization code was provided, so the "
+            "authorization response parameters are unavailable."
         )
         return
     if received_state != expected_state:
@@ -222,11 +240,15 @@ def validate_authorization_response(received: dict[str, str], integration_contex
       - `iss` (RFC 9207 / SEP-2468): proves which authorization server issued the code, defending
         against mix-up attacks when a client can talk to more than one authorization server.
 
-    The `iss` check is delegated to the MCP SDK so that this integration behaves exactly like the
-    reference client: a mismatch is always rejected, and an absent `iss` is rejected only when the
-    authorization server advertised `authorization_response_iss_parameter_supported`. That keeps
-    servers which never send `iss` (Atlassian) working, while still enforcing the check against
-    servers which promised to send it (Cloudflare).
+    The `iss` check is delegated to the MCP SDK so the comparison matches the reference client:
+    a mismatch is always rejected, and an absent `iss` is rejected when the authorization server
+    advertised `authorization_response_iss_parameter_supported`.
+
+    That second rule is only applied when the user supplied the full redirect URL. The SDK reads
+    the redirect itself, so for it a missing `iss` can only mean the server omitted it. Here the
+    value is transcribed by hand, so a missing `iss` far more likely means the user pasted only
+    the code - the long-standing instruction. Enforcing the rule in that case would reject every
+    instance configured before full-URL pasting was supported.
 
     Args:
         received: Values parsed from the authorization response.
@@ -235,11 +257,25 @@ def validate_authorization_response(received: dict[str, str], integration_contex
     Raises:
         DemistoException: If the response contradicts the recorded flow.
     """
-    validate_state(received.get("state", ""), integration_context.get("state", ""))
+    is_full_url = bool(received.get("is_full_url"))
+    validate_state(received.get("state", ""), integration_context.get("state", ""), is_full_url)
+
+    received_iss = received.get("iss")
+    if not received_iss and not is_full_url:
+        # Deprecated input form. Surfaced as a warning rather than a debug line because the
+        # protection is silently unavailable, and because this form is intended to stop being
+        # accepted in a future major version.
+        demisto.info(
+            "Only an authorization code was provided, so CSRF (state) and authorization server "
+            "mix-up (iss) protections could not be verified. Paste the full redirect URL from "
+            "your browser into the Authorization code parameter to enable them. Support for "
+            "bare authorization codes is deprecated and will be removed in a future version."
+        )
+        return
 
     oauth_metadata = build_oauth_metadata(integration_context.get("oauth_metadata", {}))
     try:
-        validate_authorization_response_iss(received.get("iss"), oauth_metadata)
+        validate_authorization_response_iss(received_iss, oauth_metadata)
     except OAuthFlowError as error:
         raise DemistoException(
             f"OAuth issuer validation failed: {error}. Re-run the generate-login-url command and "
@@ -892,7 +928,8 @@ async def generate_login_url(
         "in the instance configuration under the **Authorization code** parameter.\n"
         "  Pasting the full URL lets Cortex verify the `state` and `iss` parameters, which protect "
         "against CSRF and authorization-server mix-up attacks.\n"
-        "  Pasting only the `AUTH_CODE` still works, but these verifications are skipped.\n"
+        "  Pasting only the `AUTH_CODE` still works, but these verifications are skipped, and "
+        "support for it is deprecated and will be removed in a future version.\n"
         "3. Save the instance configuration.\n"
         "  **IMPORTANT NOTE**: Authentication code is time-sensitive and expires quickly.\n"
         "  Please copy the Authorization code to the instance configuration "
