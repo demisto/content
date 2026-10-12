@@ -952,7 +952,8 @@ def test_initialize_edl_context():
         "mwg_type": "string",
         "bc_category": "bc_category",
         "category_attribute": ["test1", "test2"],
-        "fields_to_present": "name,type",
+        # The raw user input is persisted; it is resolved ("value" -> "name") on from_context_json.
+        "fields_to_present": "value,type",
         "csv_text": True,
         "url_protocol_stripping": True,
         "url_truncate": False,
