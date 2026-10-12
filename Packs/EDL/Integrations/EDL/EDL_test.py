@@ -1514,7 +1514,9 @@ def test_get_fields_to_present(out_format, fields_to_present, expected):
         pytest.param(FORMAT_CSV, "value,type,score", "name,type,score", id="csv_custom_fields"),
     ],
 )
-def test_fields_to_present_survives_context_round_trip(out_format, raw_fields_to_present, expected_fields_to_present):
+def test_fields_to_present_survives_context_round_trip(
+    out_format: str, raw_fields_to_present: str, expected_fields_to_present: str
+) -> None:
     """
     Given:
         - RequestArguments created with a raw fields_to_present value (legacy mode, text default, CSV "all", CSV custom)
