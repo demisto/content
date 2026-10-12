@@ -140,3 +140,13 @@ Gets events from NetQuest OMX. Each event is a report for the specified statisti
 #### Context Output
 
 There is no context output for this command.
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require the **Cortex XSIAM** license:
+
+- Fetch Events
+
+</~PLATFORM>

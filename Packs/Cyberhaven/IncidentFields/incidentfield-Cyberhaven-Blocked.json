@@ -1,0 +1,32 @@
+{
+    "id": "incident_cyberhavenblocked",
+    "version": -1,
+    "modified": "2026-06-17T00:00:00.000000000+05:30",
+    "name": "Cyberhaven Blocked",
+    "ownerOnly": false,
+    "description": "Whether the triggering data transfer was blocked by policy.",
+    "cliName": "cyberhavenblocked",
+    "type": "boolean",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Cyberhaven Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

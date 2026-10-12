@@ -234,7 +234,12 @@ script:
       description: The name of the attribute to modify. For example, sn, displayName, mail, and so on.
     - name: attribute-value
       required: true
-      description: The value to change the attribute to.
+      description: The value to change the attribute to. When attribute-type is "byte", provide a comma-separated list of decimal integers (0-255), e.g. "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" for logonHours.
+    - name: attribute-type
+      description: The type of the attribute value. Set to "byte" for binary/Octet String attributes such as logonHours, objectSID, or objectGUID. When set, attribute-value must be a comma-separated list of decimal integers (0-255).
+      auto: PREDEFINED
+      predefined:
+      - byte
     - name: base-dn
       description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance is used.
     description: Updates attributes of an existing Active Directory user.
@@ -276,7 +281,12 @@ script:
       description: "The attribute name to update."
     - name: attribute-value
       required: true
-      description: "The attribute value to update."
+      description: "The attribute value to update. When attribute-type is \"byte\", provide a comma-separated list of decimal integers (0-255)."
+    - name: attribute-type
+      description: The type of the attribute value. Set to "byte" for binary/Octet String attributes. When set, attribute-value must be a comma-separated list of decimal integers (0-255).
+      auto: PREDEFINED
+      predefined:
+      - byte
     description: Updates attributes of an existing Active Directory contact.
   - name: ad-disable-account
     quickaction: false
@@ -815,9 +825,14 @@ script:
     - description: The name of the attribute to modify. For example, Description and displayName.
       name: attributename
       required: true
-    - description: The value of the attribute to change.
+    - description: The value of the attribute to change. When attribute-type is "byte", provide a comma-separated list of decimal integers (0-255).
       name: attributevalue
       required: true
+    - description: The type of the attribute value. Set to "byte" for binary/Octet String attributes. When set, attributevalue must be a comma-separated list of decimal integers (0-255).
+      name: attribute-type
+      auto: PREDEFINED
+      predefined:
+      - byte
     - description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance is used.
       name: basedn
     description: Updates attributes of an existing Active Directory group.

@@ -1,8 +1,12 @@
 import json
+from datetime import datetime, timedelta, UTC
 
 import demistomock as demisto
 import pytest
 from CheckPointHEC import (
+    MAX_LOOK_BACK_DAYS,
+    SAAS_APPS_TO_SAAS_NAMES,
+    SAAS_NAMES,
     Client,
     checkpointhec_create_anomaly_exception,
     checkpointhec_create_ap_exception,
@@ -287,6 +291,221 @@ def test_fetch_restore_requests(mocker):
     fetch_restore_requests(client, {"first_fetch": "1 day"})
     call_api.assert_called()
     demisto_incidents.assert_called_once()
+
+
+def _restore_requests_client():
+    return Client(
+        base_url="https://smart-api-example-1-us.avanan-example.net",
+        client_id="****",
+        client_secret="****",
+        verify=True,
+        proxy=False,
+    )
+
+
+def _hours_ago(hours: int, suffix: str = "Z"):
+    """Restore request timestamps have to be recent, otherwise the look back clamp filters them out."""
+    return (datetime.now(UTC).replace(tzinfo=None) - timedelta(hours=hours)).isoformat() + suffix
+
+
+def _restore_request_entry(entity_id: str, occurred, **payload):
+    return {
+        "entityInfo": {"entityId": entity_id},
+        "entityPayload": {"restoreRequestTime": occurred, "restoreCommentary": "please restore", **payload},
+    }
+
+
+def _restore_requests_response(entries: list, scroll_id: str = "", total: int = None):
+    return {
+        "responseEnvelope": {
+            "recordsNumber": len(entries) if total is None else total,
+            "scrollId": scroll_id,
+        },
+        "responseData": entries,
+    }
+
+
+def test_fetch_restore_requests_empty_keeps_cursor(mocker):
+    """An empty result must leave the cursor untouched, otherwise requests that are not yet searchable are skipped."""
+    client = _restore_requests_client()
+    mocker.patch.object(Client, "_call_api", return_value=_restore_requests_response([]))
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_rr_fetch": "2023-06-30T00:00:00"})
+    demisto_incidents = mocker.patch.object(demisto, "incidents")
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+    fetch_restore_requests(client, {"first_fetch": "1 day", "saas_apps": "Microsoft Exchange"})
+
+    exchange = SAAS_APPS_TO_SAAS_NAMES["Microsoft Exchange"]
+    assert set_last_run.call_args[0][0]["last_rr_fetch"] == {exchange: "2023-06-30T00:00:00"}
+    demisto_incidents.assert_called_once_with([])
+
+
+def test_fetch_restore_requests_cursor_is_per_saas(mocker):
+    """Each saas app must advance to its own newest record, not to the newest record across every app."""
+    client = _restore_requests_client()
+    first_saas, second_saas = SAAS_NAMES
+    newer, older = _hours_ago(1), _hours_ago(2)
+    mocker.patch.object(
+        Client,
+        "_call_api",
+        side_effect=[
+            _restore_requests_response([_restore_request_entry("newer", newer)]),
+            _restore_requests_response([_restore_request_entry("older", older)]),
+        ],
+    )
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_rr_fetch": _hours_ago(3, "")})
+    demisto_incidents = mocker.patch.object(demisto, "incidents")
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+    fetch_restore_requests(client, {"first_fetch": "1 day"})
+
+    incidents = demisto_incidents.call_args[0][0]
+    assert [incident["dbotMirrorId"] for incident in incidents] == ["older", "newer"]
+    assert set_last_run.call_args[0][0]["last_rr_fetch"] == {first_saas: newer, second_saas: older}
+
+
+def test_fetch_restore_requests_queries_each_saas_from_its_own_cursor(mocker):
+    """A stored per saas cursor must scope that app's query window, so a busy app cannot skip a quiet app's records."""
+    client = _restore_requests_client()
+    first_saas, second_saas = SAAS_NAMES
+    ahead, behind = _hours_ago(1, ""), _hours_ago(5, "")
+    call_api = mocker.patch.object(Client, "_call_api", return_value=_restore_requests_response([]))
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_rr_fetch": {first_saas: ahead, second_saas: behind}})
+    mocker.patch.object(demisto, "incidents")
+    mocker.patch.object(demisto, "setLastRun")
+
+    fetch_restore_requests(client, {"first_fetch": "1 day"})
+
+    start_dates = [
+        next(
+            f["saasAttrValue"]
+            for f in call.kwargs["json_data"]["requestData"]["entityExtendedFilter"]
+            if f["saasAttrName"] == "entityPayload.restoreRequestTime"
+        )
+        for call in call_api.call_args_list
+    ]
+    assert start_dates == [ahead, behind]
+
+
+def test_fetch_restore_requests_clamps_stale_cursor(mocker):
+    """A cursor older than the look back limit must be clamped so the query window stays bounded."""
+    client = _restore_requests_client()
+    call_api = mocker.patch.object(Client, "_call_api", return_value=_restore_requests_response([]))
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_rr_fetch": "2020-01-01T00:00:00"})
+    mocker.patch.object(demisto, "incidents")
+    mocker.patch.object(demisto, "setLastRun")
+
+    fetch_restore_requests(client, {"first_fetch": "1 day", "saas_apps": "Microsoft Exchange"})
+
+    extended_filter = call_api.call_args.kwargs["json_data"]["requestData"]["entityExtendedFilter"]
+    start_date = next(f["saasAttrValue"] for f in extended_filter if f["saasAttrName"] == "entityPayload.restoreRequestTime")
+    expected = datetime.now(UTC).replace(tzinfo=None) - timedelta(days=MAX_LOOK_BACK_DAYS)
+    assert abs((datetime.fromisoformat(start_date) - expected).total_seconds()) < 60
+
+
+def test_fetch_restore_requests_max_fetch_across_saas(mocker):
+    """max_fetch must be enforced across all saas apps, and the remainder left for the next fetch."""
+    client = _restore_requests_client()
+    first_saas, second_saas = SAAS_NAMES
+    seeded = _hours_ago(3, "")
+    newer, older = _hours_ago(1), _hours_ago(2)
+    mocker.patch.object(
+        Client,
+        "_call_api",
+        side_effect=[
+            _restore_requests_response([_restore_request_entry("newer", newer)]),
+            _restore_requests_response([_restore_request_entry("older", older)]),
+        ],
+    )
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_rr_fetch": seeded})
+    demisto_incidents = mocker.patch.object(demisto, "incidents")
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+    fetch_restore_requests(client, {"first_fetch": "1 day", "max_fetch": "1"})
+
+    incidents = demisto_incidents.call_args[0][0]
+    assert [incident["dbotMirrorId"] for incident in incidents] == ["older"]
+    # Truncation dropped the first app's record, so only the app we emitted for may advance.
+    assert set_last_run.call_args[0][0]["last_rr_fetch"] == {first_saas: seeded, second_saas: older}
+
+
+def test_fetch_restore_requests_skips_missing_request_time(mocker):
+    """A restore request without a restoreRequestTime must be skipped instead of failing the whole fetch."""
+    client = _restore_requests_client()
+    mocker.patch.object(
+        Client,
+        "_call_api",
+        return_value=_restore_requests_response(
+            [
+                _restore_request_entry("no-time", None),
+                _restore_request_entry("valid", _hours_ago(1)),
+            ]
+        ),
+    )
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_rr_fetch": _hours_ago(3, "")})
+    demisto_incidents = mocker.patch.object(demisto, "incidents")
+    mocker.patch.object(demisto, "setLastRun")
+
+    fetch_restore_requests(client, {"first_fetch": "1 day", "saas_apps": "Microsoft Exchange"})
+
+    incidents = demisto_incidents.call_args[0][0]
+    assert [incident["dbotMirrorId"] for incident in incidents] == ["valid"]
+
+
+def test_fetch_restore_requests_follows_scroll(mocker):
+    """Results beyond the first page must be retrieved by sending the scroll id back."""
+    client = _restore_requests_client()
+    call_api = mocker.patch.object(
+        Client,
+        "_call_api",
+        side_effect=[
+            _restore_requests_response(
+                [
+                    _restore_request_entry("first", _hours_ago(3)),
+                    _restore_request_entry("second", _hours_ago(2)),
+                ],
+                scroll_id="abc",
+                total=3,
+            ),
+            # The server returns the same scroll id for every page of a scroll.
+            _restore_requests_response([_restore_request_entry("third", _hours_ago(1))], scroll_id="abc", total=3),
+        ],
+    )
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_rr_fetch": _hours_ago(5, "")})
+    demisto_incidents = mocker.patch.object(demisto, "incidents")
+    mocker.patch.object(demisto, "setLastRun")
+
+    fetch_restore_requests(client, {"first_fetch": "1 day", "saas_apps": "Microsoft Exchange"})
+
+    assert call_api.call_count == 2
+    assert call_api.call_args_list[1].kwargs["json_data"]["requestData"]["scrollId"] == "abc"
+    incidents = demisto_incidents.call_args[0][0]
+    assert [incident["dbotMirrorId"] for incident in incidents] == ["first", "second", "third"]
+
+
+def test_fetch_restore_requests_stops_paging_at_max_fetch(mocker):
+    """Since pages arrive oldest first, paging must stop once enough records are held."""
+    client = _restore_requests_client()
+    call_api = mocker.patch.object(
+        Client,
+        "_call_api",
+        return_value=_restore_requests_response(
+            [
+                _restore_request_entry("first", _hours_ago(2)),
+                _restore_request_entry("second", _hours_ago(1)),
+            ],
+            scroll_id="abc",
+            total=50,
+        ),
+    )
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_rr_fetch": _hours_ago(3, "")})
+    demisto_incidents = mocker.patch.object(demisto, "incidents")
+    mocker.patch.object(demisto, "setLastRun")
+
+    fetch_restore_requests(client, {"first_fetch": "1 day", "saas_apps": "Microsoft Exchange", "max_fetch": "1"})
+
+    call_api.assert_called_once()
+    assert [incident["dbotMirrorId"] for incident in demisto_incidents.call_args[0][0]] == ["first"]
 
 
 def test_checkpointhec_get_entity_success(mocker):

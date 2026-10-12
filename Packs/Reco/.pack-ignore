@@ -1,3 +1,5 @@
 [known_words]
 SCIM
 backoff
+paginated
+resumable

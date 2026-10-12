@@ -1,0 +1,26 @@
+{
+    "lastModifyingUserId": "Siemplify automation",
+    "createTime": "1780569465745",
+    "updateTime": "1780912611281",
+    "displayName": "XSOAR 1 Testing",
+    "alertCount": 1,
+    "stage": "Triage",
+    "priority": "PRIORITY_LOW",
+    "important": true,
+    "incident": false,
+    "assignee": "00000000-0000-0000-0000-000000000001",
+    "type": "EXTERNAL",
+    "overflowCase": false,
+    "environment": "XSOAR",
+    "status": "OPENED",
+    "workflowStatus": "NONE",
+    "sla": {
+        "expirationStatus": "NO_SLA"
+    },
+    "alertsSla": {
+        "expirationStatus": "NO_SLA"
+    },
+    "source": "User",
+    "involvedSuspiciousEntity": false,
+    "moveEnvironment": {}
+}

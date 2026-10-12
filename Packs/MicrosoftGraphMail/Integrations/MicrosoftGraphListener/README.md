@@ -1,6 +1,8 @@
 Microsoft Graph grants Cortex XSOAR authorized access to a user's Microsoft Outlook mail data in a personal account or organization account.
 This integration was integrated and tested with version 1.0 of Microsoft Graph Mail Single User
 
+**Note**: This integration operates against a single user mailbox — the one specified in the *Email address to associate for this integration.* configuration parameter. Because it uses delegated permissions, it cannot access other users' mailboxes. For multi-mailbox or cross-tenant access, use the Microsoft Graph Mail (multi-tenant) integration.
+
 ## Fetch Incidents
 
 The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email (item attachment), Cortex XSOAR fetches information about the attached email and downloads all of its attachments (if there are any) as files. To use Fetch incidents, configure a new instance and select the Fetches incidents option in the instance settings.
@@ -318,7 +320,7 @@ There is no context output for this command.
 ### msgraph-mail-list-emails
 
 ***
-Gets the properties of returned emails. Typically shows partial results, use the "page_size" and "pages_to_pull" arguments to get all results.
+Gets the properties of returned emails. Typically shows partial results, use the "page_size" and "pages_to_pull" arguments to get all results. This command lists emails only from the mailbox specified in the integration configuration.
 
 #### Base Command
 
@@ -328,6 +330,7 @@ Gets the properties of returned emails. Typically shows partial results, use the
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| folder_id | A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). | Optional |
 | odata | An OData query. See [OData Usage](#odata-usage) for OData usage examples. | Optional |
 | search | The term for which to search. This argument cannot contain reserved characters such as !, $, #, @, etc. For further information, see https://tools.ietf.org/html/rfc3986#section-2.2. | Optional |
 | page_size | The maximum number of emails to fetch in one request. Default is 20. | Optional |
@@ -364,6 +367,10 @@ Gets the properties of returned emails. Typically shows partial results, use the
 | MSGraphMail.Recipients.Name | String | The name of the user in the 'toRecipients' field of the email. |
 | MSGraphMail.Recipients.Address | String | The email address of the user in the 'toRecipients' field of the email. |
 | MSGraphMail.NextPage | String | A token to pass to the next list command to retrieve additional results. |
+
+#### Command Example
+
+```!msgraph-mail-list-emails folder_id=Inbox page_size=20```
 
 ### msgraph-mail-list-attachments
 
@@ -702,3 +709,13 @@ In case of a **hash verification** error:
 2. Execute the command ***!msgraph-mail-auth-reset***. This command resets the authentication mechanism, allowing for the new credentials to be accepted.
 3. Insert the newly created credentials into the original instance where the error occurred. Make sure the credentials are entered correctly to avoid further errors.
 4. After updating the credentials, test the integration.
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
+
+* Fetch incidents
+
+</~PLATFORM>

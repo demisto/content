@@ -1,0 +1,7 @@
+fromversion: 8.15.0
+id: BoxEventCollector
+name: BoxEventCollector
+rules: ''
+schema: ''
+supportedModules:
+- xsiam

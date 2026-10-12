@@ -1,0 +1,10 @@
+{
+  "name": "projects/chronicle-mock-proj/locations/us/instances/mock-inst-uuid/cases/1001/caseComments/comment-001",
+  "commentId": "comment-001",
+  "createTime": "1780642722226",
+  "updateTime": "1780642722226",
+  "comment": "Investigated the outbound traffic. Confirmed malicious C2 communication.",
+  "isFavorite": false,
+  "isDeleted": false,
+  "case": "1001"
+}

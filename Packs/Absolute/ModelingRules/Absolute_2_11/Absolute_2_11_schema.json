@@ -1,0 +1,64 @@
+{
+    "absolute_secure_endpoint_raw": {
+        "parsed_fields_NewValue": {
+            "type": "string",
+            "is_array": false
+        },
+        "parsed_fields_OldValue": {
+            "type": "string",
+            "is_array": false
+        },        
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "verb": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventType": {
+            "type": "string",
+            "is_array": false
+        },
+        "actorDisplayId": {
+            "type": "string",
+            "is_array": false
+        },
+        "actorObjectType": {
+            "type": "string",
+            "is_array": false
+        },
+        "objectDisplayId": {
+            "type": "string",
+            "is_array": false
+        },
+        "actorDisplayName": {
+            "type": "string",
+            "is_array": false
+        },
+        "objectObjectType": {
+            "type": "string",
+            "is_array": false
+        },
+        "objectDisplayName": {
+            "type": "string",
+            "is_array": false
+        },
+        "secondaryObjectType": {
+            "type": "string",
+            "is_array": false
+        },
+        "secondaryObjectDisplayName": {
+            "type": "string",
+            "is_array": false
+        },
+        "secondaryObjectDisplayId": {
+            "type": "string",
+            "is_array": false
+        },
+        "objectProperties": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}            

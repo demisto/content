@@ -1201,6 +1201,7 @@ class CoreClient(BaseClient):
 
     @logger
     def get_script_execution_result_files(self, action_id: str, endpoint_id: str) -> Dict[str, Any]:
+        """Returns a ``requests.Response`` on XDR/XSOAR/engine, or raw ``bytes`` on XSIAM RBAC path."""
         response = self._http_request(
             method="POST",
             url_suffix="/scripts/get_script_execution_results_files",
@@ -1217,11 +1218,12 @@ class CoreClient(BaseClient):
         # If the link is None, the API call will result in a 'Connection Timeout Error', so we raise an exception
         if not link:
             raise DemistoException(f"Failed getting response files for {action_id=}, {endpoint_id=}")
-        return self._http_request(
-            method="GET",
-            url_suffix=re.findall("download.*", link)[0],
-            resp_type="response",
-        )
+        url_suffix = re.findall("download.*", link)[0]
+        if FORWARD_USER_RUN_RBAC:
+            # XSIAM (RBAC): _apiCall cannot return a Response object; ask for raw bytes.
+            return self._http_request(method="GET", url_suffix=url_suffix, resp_type="content")
+        # XDR / XSOAR / engine: keep the Response so the caller can read Content-Disposition.
+        return self._http_request(method="GET", url_suffix=url_suffix, resp_type="response")
 
     def action_status_get(self, action_id) -> Dict[str, Dict[str, Any]]:
         request_data: Dict[str, Any] = {
@@ -2630,10 +2632,11 @@ def unisolate_endpoint_command(client, args):
 
 def retrieve_files_command(client: CoreClient, args: Dict[str, str]) -> CommandResults:
     endpoint_id_list: list = argToList(args.get("endpoint_ids"))
-    windows: list = argToList(args.get("windows_file_paths"))
-    linux: list = argToList(args.get("linux_file_paths"))
-    macos: list = argToList(args.get("mac_file_paths"))
-    file_path_list: list = argToList(args.get("generic_file_path"))
+    paths_separator: str = args.get("paths_separator", ",")
+    windows: list = argToList(args.get("windows_file_paths"), separator=paths_separator)
+    linux: list = argToList(args.get("linux_file_paths"), separator=paths_separator)
+    macos: list = argToList(args.get("mac_file_paths"), separator=paths_separator)
+    file_path_list: list = argToList(args.get("generic_file_path"), separator=paths_separator)
     incident_id: Optional[int] = arg_to_number(args.get("incident_id"))
 
     reply = client.retrieve_file(
@@ -3854,11 +3857,17 @@ def get_script_execution_result_files_command(client: CoreClient, args: Dict) ->
     action_id = args.get("action_id", "")
     endpoint_id = args.get("endpoint_id")
     file_response = client.get_script_execution_result_files(action_id, endpoint_id)
+
+    if FORWARD_USER_RUN_RBAC:
+        # RBAC path returns raw bytes; no headers available.
+        return fileResult(f"{action_id}.zip", file_response)
+
+    # Non-RBAC path returns a Response; preserve the original filename behaviour.
     try:
         filename = file_response.headers.get("Content-Disposition").split("attachment; filename=")[1]
     except Exception as e:
         demisto.debug(f"Failed extracting filename from response headers - [{e!s}]")
-        filename = action_id + ".zip"
+        filename = f"{action_id}.zip"
     return fileResult(filename, file_response.content)
 
 

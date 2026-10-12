@@ -118,7 +118,7 @@ configuration:
   required: false
   type: 0
   section: Collect
-display: USTA Threat Stream IOC Feed
+display: USTAv4 Threat Stream IOC Feed
 name: FeedUstaThreatStream
 script:
   commands:
@@ -234,7 +234,7 @@ script:
     - contextPath: USTA.ThreatStreamPhishingSites.created
       description: The creation date of the phishing site.
       type: Date
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10116658
   feed: true
   isfetch: false
   longRunning: false
@@ -244,7 +244,7 @@ script:
   subtype: python3
   type: python
 fromversion: 6.10.0
-description: This integration fetches indicators from the USTA Threat Stream feed. The indicators can be of type malicious URLs or malware hashes.
+description: Fetches indicators from the USTAv4 Threat Stream feed. The indicators can be of type malicious URLs or malware hashes.
 marketplaces:
 - xsoar
 - marketplacev2

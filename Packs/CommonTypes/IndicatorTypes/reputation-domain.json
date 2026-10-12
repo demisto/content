@@ -564,5 +564,10 @@
   "manualMapping": null,
   "fileHashesPriority": null,
   "expiration": 20160,
-  "layout": "domainRepUnified"
+  "layout": "domainRepUnified",
+    "supportedModules": [
+        "agentix",
+        "xsiam",
+        "xti"
+    ]
 }

@@ -577,5 +577,9 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.10.0",
-    "marketplaces": ["marketplacev2", "xpanse", "platform"]
+    "marketplaces": ["marketplacev2", "xpanse", "platform"],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

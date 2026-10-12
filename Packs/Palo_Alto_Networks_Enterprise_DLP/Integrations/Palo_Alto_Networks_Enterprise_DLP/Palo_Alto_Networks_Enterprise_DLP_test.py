@@ -155,6 +155,22 @@ CREDENTIALS = {
 }
 
 
+def test_client_init_without_credential_key():
+    """
+    Given:
+        A UCP-reconstructed credentials object that only carries "identifier"/"password"
+        and omits the "credential" key (XSUP-75518).
+    When:
+        The Client is initialized.
+    Then:
+        It does not raise KeyError and falls back to the access-token/refresh-token path.
+    """
+    credentials = {"identifier": "my-access-token", "password": "my-refresh-token"}
+    client = Client(DLP_URL, AUTH_URL, credentials, True, False)
+    assert client.access_token == "my-access-token"
+    assert client.refresh_token == "my-refresh-token"
+
+
 def test_update_incident(requests_mock, mocker):
     incident_id = "abcdefg12345"
     user_id = "someone@somewhere.com"
@@ -218,6 +234,51 @@ def test_get_dlp_report(requests_mock, mocker):
     main()
     results = demisto.results.call_args_list[0][0]
     assert results[0]["Contents"] == {"id": "test"}
+
+
+def test_get_dlp_report_sends_service_name_header(requests_mock, mocker):
+    """
+    Given:
+        - A service_name argument.
+    When:
+        - Running the pan-dlp-get-report command.
+    Then:
+        - Ensure the service-name header is sent, so the report is retrieved from the
+          requested service rather than the prisma-access default.
+    """
+    report_id = 12345
+    requests_mock.get(f"{DLP_URL}public/report/{report_id}?fetchSnippets=true", json={"id": "test"})
+    mocker.patch.object(demisto, "command", return_value="pan-dlp-get-report")
+    args = {"report_id": report_id, "fetch_snippets": "true", "service_name": "prisma-saas"}
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch.object(demisto, "params", return_value={"credentials": CREDENTIALS})
+    mocker.patch.object(demisto, "results")
+
+    main()
+
+    assert requests_mock.last_request.headers["service-name"] == "prisma-saas"
+
+
+def test_get_dlp_report_omits_service_name_header_by_default(requests_mock, mocker):
+    """
+    Given:
+        - No service_name argument.
+    When:
+        - Running the pan-dlp-get-report command.
+    Then:
+        - Ensure no service-name header is sent, leaving existing calls unchanged.
+    """
+    report_id = 12345
+    requests_mock.get(f"{DLP_URL}public/report/{report_id}?fetchSnippets=true", json={"id": "test"})
+    mocker.patch.object(demisto, "command", return_value="pan-dlp-get-report")
+    args = {"report_id": report_id, "fetch_snippets": "true"}
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch.object(demisto, "params", return_value={"credentials": CREDENTIALS})
+    mocker.patch.object(demisto, "results")
+
+    main()
+
+    assert "service-name" not in requests_mock.last_request.headers
 
 
 def test_parse_dlp_report(mocker):
@@ -326,6 +387,42 @@ def test_refresh_token_with_client_credentials(requests_mock):
     requests_mock.post(AUTH_URL, json={"access_token": "abc"})
     client = Client(DLP_URL, AUTH_URL, credentials, False, False)
     assert client.access_token == "abc"
+
+
+def test_client_init_with_use_client_credentials_param(requests_mock):
+    """
+    Given:
+        A UCP-reconstructed credentials object that only carries "identifier"/"password"
+        (no "credential" key), and the use_client_credentials parameter is enabled.
+    When:
+        The Client is initialized.
+    Then:
+        It uses the client-credentials flow: use_client_credentials is True and an access
+        token is fetched from the auth URL.
+    """
+    credentials = {"identifier": "client-id", "password": "client-secret"}
+    requests_mock.post(AUTH_URL, json={"access_token": "abc"})
+    client = Client(DLP_URL, AUTH_URL, credentials, False, False, use_client_credentials=True)
+    assert client.use_client_credentials is True
+    assert client.access_token == "abc"
+
+
+def test_client_init_without_use_client_credentials_param():
+    """
+    Given:
+        A UCP-reconstructed credentials object that only carries "identifier"/"password"
+        (no "credential" key), and the use_client_credentials parameter is disabled.
+    When:
+        The Client is initialized.
+    Then:
+        It falls back to the access-token/refresh-token flow: use_client_credentials is False
+        and the tokens are read from identifier/password.
+    """
+    credentials = {"identifier": "my-access-token", "password": "my-refresh-token"}
+    client = Client(DLP_URL, AUTH_URL, credentials, True, False, use_client_credentials=False)
+    assert client.use_client_credentials is False
+    assert client.access_token == "my-access-token"
+    assert client.refresh_token == "my-refresh-token"
 
 
 @pytest.mark.parametrize(

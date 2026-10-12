@@ -1,0 +1,101 @@
+{
+    "id": "376359",
+    "type": "ADDRESS",
+    "suspicious": false,
+    "internal": false,
+    "networkPriority": 0,
+    "attacker": false,
+    "pivot": false,
+    "environment": "Default Environment",
+    "manuallyCreated": false,
+    "additionalProperties": "{\"Type\":\"ADDRESS\",\"IsArtifact\":\"False\",\"IsEnriched\":\"False\",\"IsVulnerable\":\"False\",\"IsInternalAsset\":\"False\",\"OriginalIdentifier\":\"999.999.999.999\"}",
+    "enriched": false,
+    "artifact": false,
+    "vulnerable": false,
+    "entityUri": "/entity?indicator=999.999.999.999&type=ipAddress",
+    "fields": [
+        {
+            "displayName": "Default",
+            "highlighted": false,
+            "hidden": false,
+            "items": [
+                {
+                    "name": "Network_Priority",
+                    "originalName": "Network_Priority",
+                    "value": "0"
+                },
+                {
+                    "name": "IsSuspicious",
+                    "originalName": "IsSuspicious",
+                    "value": "False"
+                },
+                {
+                    "name": "IsAttacker",
+                    "originalName": "IsAttacker",
+                    "value": "False"
+                },
+                {
+                    "name": "IsManuallyCreated",
+                    "originalName": "IsManuallyCreated",
+                    "value": "False"
+                },
+                {
+                    "name": "Environment",
+                    "originalName": "Environment",
+                    "value": "Default Environment"
+                },
+                {
+                    "name": "Alert_Id",
+                    "originalName": "Alert_Id",
+                    "value": "Testing Alert_62923d4f-05f0-47bf-9290-d0c94406e775"
+                },
+                {
+                    "name": "Type",
+                    "originalName": "Type",
+                    "value": "ADDRESS"
+                },
+                {
+                    "name": "IsArtifact",
+                    "originalName": "IsArtifact",
+                    "value": "False"
+                },
+                {
+                    "name": "IsEnriched",
+                    "originalName": "IsEnriched",
+                    "value": "False"
+                },
+                {
+                    "name": "IsVulnerable",
+                    "originalName": "IsVulnerable",
+                    "value": "False"
+                },
+                {
+                    "name": "IsInternalAsset",
+                    "originalName": "IsInternalAsset",
+                    "value": "False"
+                },
+                {
+                    "name": "OriginalIdentifier",
+                    "originalName": "OriginalIdentifier",
+                    "value": "999.999.999.999"
+                }
+            ]
+        },
+        {
+            "displayName": "Entity",
+            "highlighted": false,
+            "hidden": false,
+            "items": [
+                {
+                    "name": "Is Pivot",
+                    "originalName": "IsPivot",
+                    "value": "False"
+                }
+            ]
+        }
+    ],
+    "alertIdentifier": "Testing Alert_62923d4f-05f0-47bf-9290-d0c94406e775",
+    "caseId": 306082,
+    "alertId": "1001",
+    "identifier": "999.999.999.999"
+}

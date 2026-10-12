@@ -1,4 +1,5 @@
 import json
+import traceback
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -9,6 +10,23 @@ from MicrosoftGraphMailApiModule import *  # noqa: E402
 urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
+# Commands that require a configured mailbox (mailbox_to_fetch).
+# Because this integration uses delegated permissions against a single mailbox,
+# these commands cannot run without it.
+COMMANDS_REQUIRING_MAILBOX = {
+    "fetch-incidents",
+    "msgraph-mail-create-folder",
+    "msgraph-mail-delete-rule",
+    "msgraph-mail-get-attachment",
+    "msgraph-mail-get-email-as-eml",
+    "msgraph-mail-get-rule",
+    "msgraph-mail-list-attachments",
+    "msgraph-mail-list-child-folders",
+    "msgraph-mail-list-emails",
+    "msgraph-mail-list-folders",
+    "msgraph-mail-move-email",
+}
 
 
 class MsGraphListenerClient(MsGraphMailBaseClient):
@@ -181,6 +199,12 @@ def main():  # pragma: no cover
         command = demisto.command()
         LOG(f"Command being called is {command}")
 
+        if command in COMMANDS_REQUIRING_MAILBOX and not mailbox_to_fetch:
+            raise DemistoException(
+                'The "Email address to associate for this integration" parameter is required for '
+                f'the "{command}" command. Please configure it on the integration instance.'
+            )
+
         if command == "test-module":
             if managed_identities_client_id:
                 return_results(client.test_connection())
@@ -188,7 +212,17 @@ def main():  # pragma: no cover
                 # cannot use test module due to the lack of ability to set refresh token to integration context
                 raise Exception("Please use !msgraph-mail-test instead")
         if command == "msgraph-mail-test":
-            client.test_connection()
+            try:
+                client.test_connection()
+            except Exception as e:
+                demisto.error(traceback.format_exc())
+                error_message = str(e)
+                if auth_code:
+                    error_message = (
+                        "Note: Make sure you created the authorization code with the same Microsoft user "
+                        f"you configured the integration instance with.\n\n{error_message}"
+                    )
+                raise DemistoException(error_message) from e
             return_results(CommandResults(readable_output="```✅ Success!```"))
         if command == "msgraph-mail-auth-reset":
             return_results(reset_auth())

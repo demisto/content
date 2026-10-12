@@ -594,5 +594,9 @@
     "name": "Infrastructure",
     "system": false,
     "version": -1,
-    "description": "Infrastructure Indicator Layout"
+    "description": "Infrastructure Indicator Layout",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

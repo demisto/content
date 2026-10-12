@@ -8,7 +8,7 @@ import json
 
 def get_nsg_rules(subscription_id: str, rg_name: str, nsg_name: str, integration_instance: str) -> tuple[list, str]:
     """
-    Runs command 'azure-nsg-security-rules-list' to fetch all rules in a given Azure NSG.
+    Runs command 'azure-vn-security-rules-list' to fetch all rules in a given Azure NSG.
 
     Args:
         subscription_id (str): Azure Subscription ID
@@ -30,7 +30,7 @@ def get_nsg_rules(subscription_id: str, rg_name: str, nsg_name: str, integration
         "network_security_group_name": nsg_name,
         "using": integration_instance,
     }
-    result = demisto.executeCommand("azure-nsg-security-rules-list", cmd_args)
+    result = demisto.executeCommand("azure-vn-security-rules-list", cmd_args)
 
     nsg_rules = []
 
@@ -49,12 +49,11 @@ def get_nsg_rules(subscription_id: str, rg_name: str, nsg_name: str, integration
 
     if not nsg_rules:
         raise DemistoException(
-            "Error retrieving security group details with command 'azure-nsg-security-rules-list'.\n"
-            "Error: No results returned."
+            "Error retrieving security group details with command 'azure-vn-security-rules-list'.\n" "Error: No results returned."
         )
     if isError(nsg_rules):
         raise DemistoException(
-            f"Error retrieving security group details with command 'azure-nsg-security-rules-list'.\n"
+            f"Error retrieving security group details with command 'azure-vn-security-rules-list'.\n"
             f"Error: {json.dumps(nsg_rules[0].get('Contents', ''))}"
         )
 

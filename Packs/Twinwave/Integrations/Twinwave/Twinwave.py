@@ -1,142 +1,162 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from ContentClientApiModule import *  # noqa: F401,F403
 
 """ IMPORTS """
 
-import requests
-import urllib3
-
-# Disable insecure warnings
-urllib3.disable_warnings()
+import json
+import re
+from typing import Any
 
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-API_HOST = "https://api.twinwave.io"
 API_VERSION = "v1"
 EXPIRE_SECONDS = 86400
+PDF_SIGNATURE = b"%PDF-"
+DEFAULT_API_HOST = "api.twinwave.io"
+USER_AGENT = "Twinwave XSOAR Integration"
+SUPPORTED_API_HOSTS = {
+    "api.twinwave.io",
+    "api.global2.twinwave.io",
+    "api.eu1.twinwave.io",
+    "api.apac1.twinwave.io",
+    "api.ind1.twinwave.io",
+    "api.uk1.twinwave.io",
+}
 
 
-class AuthenticationException(Exception):
-    pass
+def get_api_url(api_host: str, version: str = API_VERSION) -> str:
+    if api_host not in SUPPORTED_API_HOSTS:
+        supported_hosts = ", ".join(sorted(SUPPORTED_API_HOSTS))
+        raise ValueError(f"Unsupported Twinwave API host: {api_host}. Supported hosts: {supported_hosts}")
+    return f"https://{api_host}/{version}/"
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     """
     Client to connect to the API
     """
 
-    def __init__(self, api_token, verify, proxy, host=API_HOST, version=API_VERSION):
-        self.host = f"{host}/{version}"
-        self.api_token = api_token
-        self._verify = verify
-        self._proxy = proxy
+    def __init__(
+        self,
+        api_token: str | None,
+        verify: bool,
+        proxy: bool,
+        api_host: str = DEFAULT_API_HOST,
+        version: str = API_VERSION,
+    ) -> None:
+        super().__init__(
+            base_url=get_api_url(api_host, version),
+            verify=verify,
+            proxy=proxy,
+            headers={"X-API-KEY": api_token or "", "User-Agent": USER_AGENT},
+            client_name="Twinwave",
+        )
+        self.host = get_api_url(api_host, version)
 
-    def get_token(self):
-        auth_url = f"{self.host}/accesstoken"
-        resp = requests.get(auth_url, verify=self._verify, proxies=self._proxy)
-        if resp.ok:
-            return resp.json()
-        else:
-            raise AuthenticationException("Error getting access token, Please check the username and password")
-
-    def get_header(self):
-        return {"X-API-KEY": self.api_token}
-
-    def get_recent_jobs(self, num_jobs=10, username=None, source=None, state=None):
-        url = f"{self.host}/jobs/recent"
-        params = {}
-        params["count"] = num_jobs
+    def get_recent_jobs(
+        self,
+        num_jobs: int = 10,
+        username: str | None = None,
+        source: str | None = None,
+        state: str | None = None,
+    ) -> Any:
+        params: dict[str, Any] = {"count": num_jobs}
         if username:
             params["username"] = username
         if source:
             params["source"] = source
         if state:
             params["state"] = state
-        resp = requests.get(url, params=params, headers=self.get_header(), verify=self._verify, proxies=self._proxy)
-        resp.raise_for_status()
-        return resp.json()
 
-    def get_engines(self):
-        url = f"{self.host}/engines"
-        resp = requests.get(url, headers=self.get_header(), verify=self._verify, proxies=self._proxy)
-        resp.raise_for_status()
-        return resp.json()
+        return self._http_request("GET", url_suffix="jobs/recent", params=params)
 
-    def get_job(self, job_id):
-        url = f"{self.host}/jobs/{job_id}"
-        resp = requests.get(url, headers=self.get_header(), verify=self._verify, proxies=self._proxy)
-        resp.raise_for_status()
-        return resp.json()
+    def get_engines(self) -> Any:
+        return self._http_request("GET", url_suffix="engines")
 
-    def get_task_normalized_forensics(self, job_id, task_id):
-        url = f"{self.host}/jobs/{job_id}/tasks/{task_id}/forensics"
-        resp = requests.get(url, headers=self.get_header(), verify=self._verify, proxies=self._proxy)
-        resp.raise_for_status()
-        return resp.json()
+    def get_job(self, job_id: str) -> Any:
+        return self._http_request("GET", url_suffix=f"jobs/{job_id}")
 
-    def get_job_normalized_forensics(self, job_id):
-        url = f"{self.host}/jobs/{job_id}/forensics"
-        resp = requests.get(url, headers=self.get_header(), verify=self._verify, proxies=self._proxy)
-        resp.raise_for_status()
-        return resp.json()
+    def download_job_pdf(self, job_id: str) -> bytes:
+        return self._http_request(
+            "GET",
+            url_suffix=f"jobs/{job_id}/pdfreport",
+            resp_type="content",
+        )
 
-    def get_task_raw_forensics(self, job_id, task_id):
-        url = f"{self.host}/jobs/{job_id}/tasks/{task_id}/rawforensics"
-        resp = requests.get(url, headers=self.get_header(), verify=self._verify, proxies=self._proxy)
+    def get_task_normalized_forensics(self, job_id: str, task_id: str) -> Any:
+        return self._http_request("GET", url_suffix=f"jobs/{job_id}/tasks/{task_id}/forensics")
 
-        # do not raise an exception for 404
-        if resp.status_code == 404:
-            return resp.json()
-        resp.raise_for_status()
-        return resp.json()
+    def get_job_normalized_forensics(self, job_id: str) -> Any:
+        return self._http_request("GET", url_suffix=f"jobs/{job_id}/forensics")
 
-    def submit_url(self, scan_url, engine_list=[], parameters=None, priority=None, profile=None):
-        url = f"{self.host}/jobs/urls"
-        req = {"url": scan_url, "engines": engine_list, "parameters": parameters}
+    def get_task_raw_forensics(self, job_id: str, task_id: str) -> Any:
+        response = self._http_request(
+            "GET",
+            url_suffix=f"jobs/{job_id}/tasks/{task_id}/rawforensics",
+            resp_type="response",
+            ok_codes=(200, 404),
+        )
+        return response.json()
+
+    def submit_url(
+        self,
+        scan_url: str,
+        engine_list: list[str] | None = None,
+        parameters: str | None = None,
+        priority: int | None = None,
+        profile: str | None = None,
+    ) -> Any:
+        req: dict[str, Any] = {"url": scan_url, "engines": engine_list or [], "parameters": parameters}
         if priority:
             req["priority"] = priority
         if profile:
             req["profile"] = profile
 
-        resp = requests.post(url, json=req, headers=self.get_header(), verify=self._verify, proxies=self._proxy)
-        resp.raise_for_status()
-        return resp.json()
+        return self._http_request("POST", url_suffix="jobs/urls", json_data=req)
 
-    def submit_file(self, file_name, file_obj, engine_list=[], priority=None, profile=None):
-        url = f"{self.host}/jobs/files"
-        payload = {}
-        file_dict = {"filedata": file_obj}
-        payload["engines"] = (None, json.dumps(engine_list))
-        payload["filename"] = (None, file_name)
-        payload["priority"] = priority
-        payload["profile"] = profile
-
-        resp = requests.post(
-            url, data=payload, files=file_dict, headers=self.get_header(), verify=self._verify, proxies=self._proxy
+    def submit_file(
+        self,
+        file_name: str,
+        file_obj: bytes,
+        engine_list: list[str] | None = None,
+        priority: int | None = None,
+        profile: str | None = None,
+    ) -> Any:
+        data: dict[str, Any] = {
+            "engines": json.dumps(engine_list or []),
+            "filename": file_name,
+            "priority": priority,
+            "profile": profile,
+        }
+        return self._http_request(
+            "POST",
+            url_suffix="jobs/files",
+            data=data,
+            files={"filedata": file_obj},
         )
-        resp.raise_for_status()
-        return resp.json()
 
-    def resubmit_job(self, job_id):
-        url = f"{self.host}/jobs/{job_id}/reanalyze"
-        resp = requests.get(url, headers=self.get_header(), verify=self._verify, proxies=self._proxy)
-        resp.raise_for_status()
-        return resp.json()
+    def resubmit_job(self, job_id: str) -> Any:
+        return self._http_request("GET", url_suffix=f"jobs/{job_id}/reanalyze")
 
-    def download_submitted_resources(self, job_id, sha256):
-        url = f"{self.host}/jobs/{job_id}/resources/{sha256}"
-        resp = requests.get(url, headers=self.get_header(), verify=self._verify, proxies=self._proxy)
-        resp.raise_for_status()
-        return resp
+    def download_submitted_resources(self, job_id: str, sha256: str) -> Any:
+        return self._http_request("GET", url_suffix=f"jobs/{job_id}/resources/{sha256}", resp_type="response")
 
-    def get_temp_artifact_url(self, path):
-        url = f"{self.host}/jobs/artifact/url?path={path}"
-        resp = requests.get(url, headers=self.get_header(), verify=self._verify, proxies=self._proxy)
-        resp.raise_for_status()
-        return resp.json()
+    def get_temp_artifact_url(self, path: str) -> Any:
+        return self._http_request("GET", url_suffix="jobs/artifact/url", params={"path": path})
 
-    def search_across_jobs_and_resources(self, term, field, count, shared_only, submitted_by, timeframe, page, type):
-        query_params = {}
+    def search_across_jobs_and_resources(
+        self,
+        term: str | None,
+        field: str | None,
+        count: int | None,
+        shared_only: bool | None,
+        submitted_by: str | None,
+        timeframe: int | None,
+        page: int | None,
+        type: str | None,
+    ) -> Any:
+        query_params: dict[str, Any] = {}
         if term:
             query_params["term"] = term
         if field:
@@ -153,10 +173,7 @@ class Client(BaseClient):
             query_params["page"] = page
         if type:
             query_params["type"] = type
-        url = f"{self.host}/jobs/search"
-        resp = requests.get(url, headers=self.get_header(), params=query_params, verify=self._verify, proxies=self._proxy)
-        resp.raise_for_status()
-        return resp.json()
+        return self._http_request("GET", url_suffix="jobs/search", params=query_params)
 
 
 def test_module(client):
@@ -257,8 +274,18 @@ def submit_file(client, args):
     Submit the File
     """
     file_entry_id = args.get("entry_id")
-    file_path = demisto.getFilePath(file_entry_id)["path"]
-    file_name = demisto.getFilePath(file_entry_id)["name"]
+    try:
+        file_info = demisto.getFilePath(file_entry_id)
+    except Exception as error:
+        raise DemistoException(f'Failed to find file entry with id "{file_entry_id}": {error}') from error
+
+    if not isinstance(file_info, dict) or not file_info.get("path"):
+        raise DemistoException(f'Failed to find file entry with id "{file_entry_id}".')
+
+    file_path = file_info["path"]
+    file_name = args.get("filename") or file_info.get("name")
+    if not file_name:
+        raise DemistoException(f'File entry with id "{file_entry_id}" has no filename.')
     engines = argToList(args.get("engines", "[]"))
     priority = args.get("priority", 10)
     profile = args.get("profile")
@@ -498,6 +525,21 @@ def get_job_normalized_forensics(client, args):
     )
 
 
+def download_job_pdf(client: Client, args: dict) -> dict:
+    job_id = args.get("job_id")
+    if not job_id:
+        raise ValueError("The job ID is required")
+    job_summary = client.get_job(job_id=job_id)
+    if isinstance(job_summary, dict) and str(job_summary.get("State", "")).casefold() == "inprogress":
+        raise ValueError("The PDF report cannot be downloaded while the job is in progress")
+
+    pdf_data = client.download_job_pdf(job_id=job_id)
+    if not pdf_data.startswith(PDF_SIGNATURE):
+        raise ValueError("Downloaded PDF report is empty or is not a PDF")
+
+    return fileResult(f"Twinwave job report {job_id}.pdf", data=pdf_data)
+
+
 def get_task_normalized_forensics(client, args):
     """
     Task Normalized Forensics
@@ -583,12 +625,13 @@ def main():
     params = demisto.params()
 
     api_token = params.get("api-token")
+    api_host = params.get("api-host") or DEFAULT_API_HOST
     verify_certificate = not params.get("insecure", False)
-    proxy = handle_proxy()
+    proxy = bool(handle_proxy())
 
     LOG(f"Command being called is {demisto.command()}")
     try:
-        client = Client(api_token=api_token, verify=verify_certificate, proxy=proxy)
+        client = Client(api_token=api_token, verify=verify_certificate, proxy=proxy, api_host=api_host)
 
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
@@ -615,6 +658,9 @@ def main():
 
         elif demisto.command() == "twinwave-get-job-summary":
             return_results(get_job_summary(client, demisto.args()))
+
+        elif demisto.command() == "twinwave-download-job-pdf":
+            return_results(download_job_pdf(client, demisto.args()))
 
         elif demisto.command() == "twinwave-get-job-normalized-forensics":
             return_results(get_job_normalized_forensics(client, demisto.args()))

@@ -1,0 +1,36 @@
+{
+    "netmotion_vpn_raw": {
+        "ecs": {
+            "type": "string",
+            "is_array": false
+        },
+        "log": {
+            "type": "string",
+            "is_array": false
+        },
+        "host": {
+            "type": "string",
+            "is_array": false
+        },
+        "agent": {
+            "type": "string",
+            "is_array": false
+        },
+        "event": {
+            "type": "string",
+            "is_array": false
+        },
+        "winlog": {
+            "type": "string",
+            "is_array": false
+        },
+        "message": {
+            "type": "string",
+            "is_array": false
+        },
+        "_raw_log": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+  }

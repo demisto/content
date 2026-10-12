@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The context outputs paths of the following commands were updated: aws-s3-bucket-website-get, aws-s3-bucket-acl-get, aws-s3-public-access-block-get, aws-s3-bucket-encryption-get, aws-s3-bucket-policy-get."
+}

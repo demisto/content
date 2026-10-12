@@ -114,7 +114,6 @@ class TestHelperFunctions:
         Then:
             - return the edl from the system file
         """
-        import EDL as edl
 
         edl.EDL_ON_DEMAND_CACHE_PATH = "test_data/iocs_cache_values_text.txt"
         edl.EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE = 40
@@ -139,7 +138,6 @@ class TestHelperFunctions:
             - save the edl to the system file
             - assert the edl log is as expected
         """
-        import EDL as edl
 
         expected_edl = "8.8.8.8"
         edl_log_line = "\nAdded | 8.8.8.8 | 8.8.8.8 | Found new Domain."
@@ -226,7 +224,6 @@ class TestHelperFunctions:
 
     def test_create_new_edl(self, mocker):
         """Sanity"""
-        import EDL as edl
 
         f = tempfile.TemporaryFile(mode="w+t")
         f.write(
@@ -320,8 +317,6 @@ class TestHelperFunctions:
             - Ensure that the list is the same as is should.
             - Ensure the log is as expected.
         """
-
-        import EDL as edl
 
         tlds = "com\nco.uk"
         requests_mock.get("https://publicsuffix.org/list/public_suffix_list.dat", text=tlds)
@@ -423,8 +418,6 @@ class TestHelperFunctions:
             - Ensure that the list is the same as is should with no offset and with offset=2
             - Ensure the log is as expected.
         """
-
-        import EDL as edl
 
         tlds = "com\nco.uk"
         requests_mock.get("https://publicsuffix.org/list/public_suffix_list.dat", text=tlds)
@@ -1007,7 +1000,6 @@ def test_get_indicators_to_format_csv():
     Then:
       - assert the indicators are returned properly for the requested format
     """
-    import EDL as edl
 
     indicator_searcher = IndicatorsSearcher(4)
     request_args = edl.RequestArguments(
@@ -1036,7 +1028,6 @@ def test_get_indicators_to_format_json():
     Then:
       - assert the indicators are returned properly for the requested format
     """
-    import EDL as edl
 
     indicator_searcher = IndicatorsSearcher(4)
     request_args = edl.RequestArguments(
@@ -1069,7 +1060,6 @@ def test_get_indicators_to_format_mwg():
     Then:
       - assert the indicators are returned properly for the requested format
     """
-    import EDL as edl
 
     indicator_searcher = IndicatorsSearcher(4)
     request_args = edl.RequestArguments(
@@ -1099,7 +1089,6 @@ def test_get_indicators_to_format_symantec():
     Then:
       - assert the indicators are returned properly for the requested format
     """
-    import EDL as edl
 
     indicator_searcher = IndicatorsSearcher(4)
     request_args = edl.RequestArguments(
@@ -1156,7 +1145,6 @@ def test_get_indicators_to_format_text():
       - assert the indicators are returned properly for the requested format
       - assert the log is as expected
     """
-    import EDL as edl
 
     indicator_searcher = IndicatorsSearcher(4)
     request_args = edl.RequestArguments(
@@ -1195,7 +1183,6 @@ def test_get_indicators_to_format_text_enforce_ascii(mocker):
       - assert the indicators are returned properly for the requested format
       - assert the log is as expected
     """
-    import EDL as edl
 
     mocker.patch.object(demisto, "params", return_value={"enforce_ascii": True})
     indicator_searcher = IndicatorsSearcher(5)
@@ -1304,7 +1291,6 @@ def test_create_log_str_from_indicators(raw_indicators, expected_indicators, exp
         - Ensure the indicator list is as expected.
 
     """
-    import EDL as edl
 
     edl_request_args = edl.RequestArguments(
         out_format="PAN-OS (text)",
@@ -1353,7 +1339,6 @@ def test_route_edl_log(mocker):
     Then:
         - Ensure the contents of the returned log are as the one stored in the file with append and prepend strings.
     """
-    import EDL as edl
 
     mocker.patch.object(
         demisto,
@@ -1391,7 +1376,6 @@ def test_route_edl_log_empty(mocker):
     Then:
         - Ensure the comment '# Empty' is returned.
     """
-    import EDL as edl
 
     mocker.patch.object(
         demisto,
@@ -1430,7 +1414,6 @@ def test_route_edl_log_too_big(mocker):
         - Ensure the contents of the returned log are as the one stored in the file.
         - Ensure the file is returned and saved as zip.
     """
-    import EDL as edl
 
     mocker.patch.object(demisto, "params", return_value={"cache_refresh_rate": "30 minutes"})
     request_args = edl.RequestArguments()
@@ -1474,8 +1457,6 @@ def test_store_log_data(mocker, wip_exist):
     """
     from datetime import datetime
     from pathlib import Path
-
-    import EDL as edl
 
     tmp_dir = mkdtemp()
     wip_log_file = Path(tmp_dir) / "wip_log_file"
@@ -1658,3 +1639,80 @@ def test_get_indicators_to_format_noop_when_stdout_lock_timeout_absent(mocker):
     get_indicators_to_format(indicator_searcher, request_args)
 
     assert not hasattr(demisto, "_stdout_lock_timeout")
+
+
+def test_test_module_ports_free_returns_ok(mocker):
+    """
+    Given:
+      - Both EDL ports are free.
+    When:
+      - test_module runs.
+    Then:
+      - The standard nginx/WSGI test runs and the result is exactly "ok"
+        (the string the platform requires to mark the test as passed).
+    """
+
+    mocker.patch.object(edl, "validate_test_module_params", return_value=None)
+    mocker.patch.object(edl, "get_params_port", return_value=1000)
+    mocker.patch.object(edl, "is_port_in_use", return_value=False)
+    run_long_running_mock = mocker.patch.object(edl, "run_long_running", return_value=None)
+
+    readable_output, outputs, raw = edl.test_module({}, {"longRunningPort": "1000"})
+
+    assert readable_output == "ok"
+    assert outputs == {}
+    assert raw == {}
+    run_long_running_mock.assert_called_once()
+
+
+def test_test_module_existing_healthy_instance_returns_ok(mocker):
+    """
+    Given:
+      - The EDL ports are already in use.
+      - A healthy EDL instance is answering on them.
+    When:
+      - test_module runs.
+    Then:
+      - The result is exactly "ok" so the platform marks the test as passed
+        (regression: a verbose "ok - ..." string was previously treated as a failure reason).
+    """
+
+    mocker.patch.object(edl, "validate_test_module_params", return_value=None)
+    mocker.patch.object(edl, "get_params_port", return_value=1000)
+    mocker.patch.object(edl, "is_port_in_use", return_value=True)
+    mocker.patch.object(edl, "is_our_edl_instance_running", return_value=True)
+    run_long_running_mock = mocker.patch.object(edl, "run_long_running", return_value=None)
+
+    readable_output, outputs, raw = edl.test_module({}, {"longRunningPort": "1000"})
+
+    assert readable_output == "ok"
+    assert outputs == {}
+    assert raw == {}
+    # We must not re-bind the ports of a live instance.
+    run_long_running_mock.assert_not_called()
+
+
+def test_test_module_ports_taken_by_foreign_process_raises(mocker):
+    """
+    Given:
+      - The EDL ports are already in use.
+      - No healthy EDL instance is answering on them (a different process owns the ports).
+    When:
+      - test_module runs.
+    Then:
+      - A DemistoException is raised.
+      - run_long_running is NOT called (we must never re-bind ports owned by another process).
+    """
+
+    from CommonServerPython import DemistoException
+
+    mocker.patch.object(edl, "validate_test_module_params", return_value=None)
+    mocker.patch.object(edl, "get_params_port", return_value=1000)
+    mocker.patch.object(edl, "is_port_in_use", return_value=True)
+    mocker.patch.object(edl, "is_our_edl_instance_running", return_value=False)
+    run_long_running_mock = mocker.patch.object(edl, "run_long_running", return_value=None)
+
+    with pytest.raises(DemistoException):
+        edl.test_module({}, {"longRunningPort": "1000"})
+
+    run_long_running_mock.assert_not_called()

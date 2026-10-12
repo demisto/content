@@ -1,0 +1,24 @@
+[
+    {
+        "id": "12345",
+        "status": "current",
+        "title": "XSOAR_Page",
+        "spaceId": "98765",
+        "authorId": "5ff2e30b4d2179006ea18449",
+        "createdAt": "2024-01-01T10:00:00.000Z",
+        "version": {
+            "number": 1
+        }
+    },
+    {
+        "id": "67890",
+        "status": "current",
+        "title": "Second_Page",
+        "spaceId": "98765",
+        "authorId": "5ff2e30b4d2179006ea18450",
+        "createdAt": "2024-01-02T10:00:00.000Z",
+        "version": {
+            "number": 2
+        }
+    }
+]

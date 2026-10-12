@@ -34,5 +34,9 @@
  "fieldCalcScript": "",
  "selectValues": [],
  "validationRegex": "",
- "sla": 7200
+ "sla": 7200,
+ "supportedModules": [
+  "agentix",
+  "xsiam"
+ ]
 }

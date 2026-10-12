@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: VMwareVCenter_ModelingRule
+name: VMware VCenter 2.11 Modeling Rule
+rules: ''
+schema: ''
+tags: VMware vCenter
+supportedModules:
+- xsiam
