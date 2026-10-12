@@ -508,10 +508,8 @@ def get_job_summary(client: Client, args: dict[str, Any]) -> list[CommandResults
 
 @polling_function(
     name="twinwave-wait-job",
-    interval=arg_to_number(demisto.args().get("interval_in_seconds"))
-    or DEFAULT_POLLING_INTERVAL_IN_SECONDS,
-    timeout=arg_to_number(demisto.args().get("timeout_in_seconds"))
-    or DEFAULT_POLLING_TIMEOUT_IN_SECONDS,
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_POLLING_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds")) or DEFAULT_POLLING_TIMEOUT_IN_SECONDS,
     requires_polling_arg=False,
 )
 def wait_for_job(args: dict[str, Any], client: Client) -> PollResult:
