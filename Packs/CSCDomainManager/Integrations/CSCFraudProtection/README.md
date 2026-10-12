@@ -1,5 +1,5 @@
 This is an anti fraud external api for organizations.
-This integration was integrated and tested with version xx of Anti Fraud API.
+This integration was integrated and tested with version v3 of the CSC Fraud Protection API.
 
 ## Configure Anti Fraud API in Cortex
 
@@ -460,14 +460,14 @@ There is no context output for this command.
 }
 ```
 
-### csc-retrievefilteredlistofmonitoringresultswithinspecifiedtimeframe
+### csc-getfilteredlistofmonitoringresultsspecifiedtime
 
 ***
 Retrieve filtered list of monitoring results within specified timeframe
 
 #### Base Command
 
-`csc-retrievefilteredlistofmonitoringresultswithinspecifiedtimeframe`
+`csc-getfilteredlistofmonitoringresultsspecifiedtime`
 
 #### Input
 
@@ -556,14 +556,14 @@ There is no context output for this command.
 }
 ```
 
-### csc-retrievelistofmonitoringresultswithinspecifiedtimeframe
+### csc-getlistofmonitoringresultsspecifiedtime
 
 ***
 Retrieve list of monitoring results within specified timeframe
 
 #### Base Command
 
-`csc-retrievelistofmonitoringresultswithinspecifiedtimeframe`
+`csc-getlistofmonitoringresultsspecifiedtime`
 
 #### Input
 

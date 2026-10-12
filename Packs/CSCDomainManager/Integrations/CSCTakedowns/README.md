@@ -1,5 +1,5 @@
 This is a CSCTakedowns api for organizations.
-This integration was integrated and tested with version xx of CSCTakedowns.
+This integration was integrated and tested with version v3 of the CSC Fraud Protection (Takedowns) API.
 
 ## Configure CSCTakedowns in Cortex
 
