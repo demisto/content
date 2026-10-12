@@ -1398,6 +1398,7 @@ script:
       description: The public IP address or range of public IP addresses from which to accept requests.
     - name: account_key
       description: The account key used to create the SAS token. If not specified, the account key from the integration configuration is used.
+      secret: true
     outputs:
     - contextPath: Azure.Storage.Container.SAS.name
       description: The name of the container.

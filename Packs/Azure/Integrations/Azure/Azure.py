@@ -4624,8 +4624,7 @@ def storage_container_list_command(client: AzureClient, params: dict, args: dict
 
     response = client.storage_containers_list_request(account_name, args)
 
-    tree = ET.ElementTree(defused_ET.fromstring(response))
-    root = tree.getroot()
+    root = defused_ET.fromstring(response)
 
     containers = []
     for element in root.iter("Container"):
@@ -4678,8 +4677,7 @@ def storage_container_blob_list_command(client: AzureClient, params: dict, args:
 
     response = client.storage_container_blobs_list_request(account_name, container_name, args)
 
-    tree = ET.ElementTree(defused_ET.fromstring(response))
-    root = tree.getroot()
+    root = defused_ET.fromstring(response)
 
     blobs = []
     for element in root.iter("Blob"):
