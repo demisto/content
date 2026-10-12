@@ -399,7 +399,7 @@ script:
       description: The provider-keyed dictionary of target configuration templates.
       type: Unknown
   - name: prisma-airs-redteam-targets-error-logs
-    description: List target-profile (profiling) error logs for a Red Team target. Returns the failures recorded while Prisma AIRs was probing or profiling the target (for example, connection, probe, or authentication errors).
+    description: List target-profile (profiling) error logs for a Red Team target. Returns the failures recorded while Prisma AIRS was probing or profiling the target (for example, connection, probe, or authentication errors).
     arguments:
     - name: target_id
       description: The UUID of the target whose profiling error logs to retrieve.
@@ -2640,7 +2640,7 @@ script:
       description: The version information.
       type: Unknown
   - name: prisma-airs-redteam-registry-credentials-get
-    description: Get or create Red Team registry credentials for pulling scanner container images from the Prisma AIRs registry.
+    description: Get or create Red Team registry credentials for pulling scanner container images from the Prisma AIRS registry.
     outputs:
     - contextPath: PrismaAIRs.RedTeamRegistryCredentials.token
       description: The registry access token for authenticating with the container registry.

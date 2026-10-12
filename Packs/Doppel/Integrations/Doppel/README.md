@@ -2,6 +2,13 @@
 
 Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively. The Cortex XSOAR pack for Doppel mirrors the alerts created by Doppel as Cortex XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.
 
+## Authentication: API V1 vs V2
+
+- **V1 (API Key)** — the default. Requests are authenticated with the static **API Key** header. Existing instances keep working unchanged after upgrading the pack.
+- **V2 (OAuth 2.0 Client Credentials)** — recommended. The integration exchanges the **Client ID** and **Client Secret** for a short-lived access token (valid 24 hours), caches it, and refreshes it automatically before expiry. New Doppel API capabilities are added to V2 only.
+
+**Note:** Doppel limits the number of successful token requests per Client ID per hour. The integration's built-in token caching stays well within this limit, but if the same Client ID is shared with other tools that request tokens aggressively, token requests may be throttled. Prefer a dedicated OAuth client for this integration (each Doppel organization can create up to 10).
+
 ## Configure Doppel on Cortex XSOAR
 
 1. Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
@@ -11,9 +18,11 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Doppel Tenant URL | The Doppel server URL that will be used for calling the APIs. | True |
-| API Key | The API Key to use for connection with Doppel. | True |
-| User API Key | The User API Key \(Optional\) to use for connection with Doppel. | False |
-| Organization Code | Optional organization identifier used when your Doppel environment is organization-scoped. If required by the Doppel API, include the organization code provided by your Doppel administrator. | False |
+| API Version | The Doppel API version to use. V1 authenticates with a static API Key; V2 authenticates with OAuth 2.0 client credentials \(Client ID and Client Secret\). New Doppel API capabilities are added to V2 only, so V2 is recommended. | True |
+| API Key \(V1\) | The API Key to use for connection with Doppel. Required when API Version is V1. | False |
+| User API Key \(V1\) | The User API Key \(Optional\) to use for connection with Doppel. Applies to API Version V1 only. | False |
+| Organization Code \(V1\) | Optional organization identifier used when your Doppel environment is organization-scoped. Applies to API Version V1 only; V2 scopes requests to your organization automatically. | False |
+| Client ID \(V2\) / Client Secret \(V2\) | The OAuth 2.0 client credentials to use for connection with Doppel. Required when API Version is V2. An organization admin can create these from the **Version 2** tab on the **API Settings** page in Doppel Vision. | False |
 | Trust Any Certificate (not secure) | When checked, SSL certificate verification is disabled. Use this only when the Doppel endpoint uses a self-signed or untrusted certificate. | False |
 | Use System Proxy Settings | When checked, the integration uses the system proxy defined in the XSOAR engine configuration (d1.conf). This is required if the engine routes outbound traffic through a local or organizational proxy. | False |
 | Fetch incidents |  | False |
@@ -23,6 +32,7 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 | First fetch | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). | False |
 | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
 | Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
+| Attach alert screenshots to incidents | Whether incoming mirroring downloads the alert screenshot and attaches it to the incident as a War Room file entry whenever the screenshot version changes. Screenshots are stored in your Cortex instance, so consider storage usage on high-volume tenants. The ***doppel-get-alert-screenshot*** command works regardless of this setting. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
@@ -325,6 +335,39 @@ Create an alert for the provided value to abuse box. Will fail if the alert valu
 >| Message |  
 >| --- |  
 >| Abuse alert created successfully |  
+
+### doppel-get-alert-screenshot
+
+***
+
+Fetch the alert's current screenshot from Doppel and attach it to the incident as a War Room file entry. The image is downloaded immediately after the URL is signed and stored durably in Cortex, so the signed URL's one-hour expiry does not matter. A file is attached only when the screenshot version changed since the last attachment; otherwise the command reports that the attached screenshot is already current.
+
+#### Base Command
+
+`doppel-get-alert-screenshot`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |  
+| --- | --- | --- |  
+| id | The Doppel alert ID to fetch the screenshot for. | Required |  
+| force | Whether to re-download and attach the screenshot even when the attached version is already current. Possible values are: true, false. Default is false. | Optional |  
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |  
+| --- | --- | --- |  
+| Doppel.AlertScreenshot.id | String | The Doppel alert ID. |  
+| Doppel.AlertScreenshot.version | String | The screenshot version identifier \(storage object name\) currently attached. |  
+| Doppel.AlertScreenshot.attached | Boolean | Whether this run attached a new screenshot file. |  
+
+#### Command example
+
+```!doppel-get-alert-screenshot id="TET-1234"```
+
+#### Human Readable Output
+
+>Attached screenshot version 8f3a2c1.png for alert TET-1234.
 
 ### doppel-get-alerts
 

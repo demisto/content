@@ -1501,7 +1501,7 @@ tasks:
       brand: ''
     nexttasks:
       yes:
-      - '30'
+      - '31'
     separatecontext: false
     conditions:
     - label: yes
@@ -1512,6 +1512,222 @@ tasks:
               simple: Gra.User.Anomalies.anomaly_name
             iscontext: true
     view: '{"position": {"x": 50, "y": 5800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '31':
+    id: '31'
+    taskid: 'a1c2d3e4-f5a6-4789-8abc-111111111111'
+    type: regular
+    task:
+      id: 'a1c2d3e4-f5a6-4789-8abc-111111111111'
+      version: -1
+      name: gra-fetch-active-datasource-accounts
+      description: ''
+      script: '|||gra-fetch-active-datasource-accounts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '32'
+    scriptarguments:
+      datasource_name:
+        simple: Linux
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '32':
+    id: '32'
+    taskid: 'b2c3d4e5-f6a7-4890-8bcd-222222222222'
+    type: condition
+    task:
+      id: 'b2c3d4e5-f6a7-4890-8bcd-222222222222'
+      version: -1
+      name: Verify Datasource Active Accounts
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '33'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Active.Datasource.Accounts.datasourcename
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 6400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '33':
+    id: '33'
+    taskid: 'c3d4e5f6-a7b8-4901-8cde-333333333333'
+    type: regular
+    task:
+      id: 'c3d4e5f6-a7b8-4901-8cde-333333333333'
+      version: -1
+      name: gra-fetch-datasource-highrisk-accounts
+      description: ''
+      script: '|||gra-fetch-datasource-highrisk-accounts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments:
+      datasource_name:
+        simple: Linux
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '34':
+    id: '34'
+    taskid: 'd4e5f6a7-b8c9-4012-8def-444444444444'
+    type: condition
+    task:
+      id: 'd4e5f6a7-b8c9-4012-8def-444444444444'
+      version: -1
+      name: Verify Datasource Highrisk Accounts
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '35'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Datasource.Highrisk.Accounts.datasourcename
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 6800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '35':
+    id: '35'
+    taskid: 'e5f6a7b8-c9d0-4123-8efa-555555555555'
+    type: regular
+    task:
+      id: 'e5f6a7b8-c9d0-4123-8efa-555555555555'
+      version: -1
+      name: gra-fetch-datasource-hpa
+      description: ''
+      script: '|||gra-fetch-datasource-hpa'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '36'
+    scriptarguments:
+      datasource_name:
+        simple: Linux
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 7000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '36':
+    id: '36'
+    taskid: 'f6a7b8c9-d0e1-4234-8fab-666666666666'
+    type: condition
+    task:
+      id: 'f6a7b8c9-d0e1-4234-8fab-666666666666'
+      version: -1
+      name: Verify Datasource Hpa
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '37'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Datasource.Hpa.datasourcename
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 7200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '37':
+    id: '37'
+    taskid: 'a7b8c9d0-e1f2-4345-8abc-777777777777'
+    type: regular
+    task:
+      id: 'a7b8c9d0-e1f2-4345-8abc-777777777777'
+      version: -1
+      name: gra-fetch-datasource-orphan-accounts
+      description: ''
+      script: '|||gra-fetch-datasource-orphan-accounts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '38'
+    scriptarguments:
+      datasource_name:
+        simple: Linux
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 7400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '38':
+    id: '38'
+    taskid: 'b8c9d0e1-f2a3-4456-8bcd-888888888888'
+    type: condition
+    task:
+      id: 'b8c9d0e1-f2a3-4456-8bcd-888888888888'
+      version: -1
+      name: Verify Datasource Orphan Accounts
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '30'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Datasource.Orphan.Accounts.datasourcename
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 7600}}'
     note: false
     timertriggers: []
     ignoreworker: false

@@ -14,7 +14,7 @@ def model_security_scans_list_command(client: Client, args: dict[str, Any]) -> C
     """List model security scans.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -52,7 +52,7 @@ def model_security_scans_list_command(client: Client, args: dict[str, Any]) -> C
         scans.append(scan_info)
 
     readable_output = tableToMarkdown(
-        "Prisma AIRs Model Security Scans",
+        "Prisma AIRS Model Security Scans",
         scans,
         headers=["uuid", "model_uri", "eval_outcome", "source_type", "security_group_name", "created_at"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -74,7 +74,7 @@ def model_security_scans_create_command(client: Client, args: dict[str, Any]) ->
     Use prisma-airs-model-security-scans-get to poll for completion.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -191,7 +191,7 @@ def model_security_scans_get_command(client: Client, args: dict[str, Any]) -> Co
     rule evaluation summary, and any error details.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -305,7 +305,7 @@ def model_security_scans_violations_command(client: Client, args: dict[str, Any]
     showing which security rules failed and why.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -399,7 +399,7 @@ def model_security_labels_keys_command(client: Client, args: dict[str, Any]) -> 
     Lists all unique label keys that have been used across scans for organization/filtering.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -452,7 +452,7 @@ def model_security_labels_values_command(client: Client, args: dict[str, Any]) -
     Lists all unique values that have been used for a specific label key across scans.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -520,7 +520,7 @@ def model_security_labels_add_command(client: Client, args: dict[str, Any]) -> C
     Labels are key-value pairs that can be used to tag scans.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -589,7 +589,7 @@ def model_security_labels_set_command(client: Client, args: dict[str, Any]) -> C
     This is different from add which appends to existing labels.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -657,7 +657,7 @@ def model_security_labels_delete_command(client: Client, args: dict[str, Any]) -
     Deletes specific labels from a scan by providing their keys.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -732,7 +732,7 @@ def model_security_scans_evaluation_command(client: Client, args: dict[str, Any]
     Retrieves detailed information about a specific rule evaluation result.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -801,7 +801,7 @@ def model_security_scans_violation_command(client: Client, args: dict[str, Any])
     Retrieves detailed information about a specific security rule violation.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -878,7 +878,7 @@ def model_security_scans_files_command(client: Client, args: dict[str, Any]) -> 
     Lists all files that were scanned within a model, showing file structure and scan results.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -983,7 +983,7 @@ def model_security_scans_evaluations_command(client: Client, args: dict[str, Any
     Lists all rule evaluations for a scan, showing which security rules passed, failed, or had errors.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1080,7 +1080,7 @@ def model_security_models_list_command(client: Client, args: dict[str, Any]) -> 
     """List Model Security model catalog entries (aggregate over their versions).
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1127,7 +1127,7 @@ def model_security_models_list_command(client: Client, args: dict[str, Any]) -> 
     ]
 
     readable_output = tableToMarkdown(
-        "Prisma AIRs Model Security Models",
+        "Prisma AIRS Model Security Models",
         models,
         headers=["uuid", "name", "latest_version_revision", "latest_version_outcome", "latest_version_scan_time"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -1147,7 +1147,7 @@ def model_security_models_get_command(client: Client, args: dict[str, Any]) -> C
     """Get a single Model Security model by UUID.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1175,7 +1175,7 @@ def model_security_models_get_command(client: Client, args: dict[str, Any]) -> C
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs Model Security Model: {model_info.get('name') or uuid}",
+        f"Prisma AIRS Model Security Model: {model_info.get('name') or uuid}",
         model_info,
         headerTransform=lambda h: h.replace("_", " ").title(),
         removeNull=True,
@@ -1194,7 +1194,7 @@ def model_security_models_versions_command(client: Client, args: dict[str, Any])
     """List the versions (revisions) of a Model Security model.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1237,7 +1237,7 @@ def model_security_models_versions_command(client: Client, args: dict[str, Any])
     ]
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs Model Security Model Versions (model {model_uuid})",
+        f"Prisma AIRS Model Security Model Versions (model {model_uuid})",
         versions,
         headers=["uuid", "revision", "file_count", "last_eval_outcome", "latest_scan_time"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -1257,7 +1257,7 @@ def model_security_models_version_get_command(client: Client, args: dict[str, An
     """Get a single Model Security model version by UUID.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1289,7 +1289,7 @@ def model_security_models_version_get_command(client: Client, args: dict[str, An
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs Model Security Model Version: {version_info.get('revision') or uuid}",
+        f"Prisma AIRS Model Security Model Version: {version_info.get('revision') or uuid}",
         version_info,
         headerTransform=lambda h: h.replace("_", " ").title(),
         removeNull=True,
@@ -1308,7 +1308,7 @@ def model_security_models_files_command(client: Client, args: dict[str, Any]) ->
     """List the files of a Model Security model version.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1345,7 +1345,7 @@ def model_security_models_files_command(client: Client, args: dict[str, Any]) ->
     ]
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs Model Security Model Version Files (version {model_version_uuid})",
+        f"Prisma AIRS Model Security Model Version Files (version {model_version_uuid})",
         files,
         headers=["uuid", "path", "type", "result", "formats"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -1365,7 +1365,7 @@ def model_security_groups_list_command(client: Client, args: dict[str, Any]) -> 
     """List model security groups.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1401,7 +1401,7 @@ def model_security_groups_list_command(client: Client, args: dict[str, Any]) -> 
         groups.append(group_info)
 
     readable_output = tableToMarkdown(
-        "Prisma AIRs Model Security Groups",
+        "Prisma AIRS Model Security Groups",
         groups,
         headers=["uuid", "name", "source_type", "state", "created_at"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -1420,7 +1420,7 @@ def model_security_groups_get_command(client: Client, args: dict[str, Any]) -> C
     """Get model security group details by UUID.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1474,7 +1474,7 @@ def model_security_groups_create_command(client: Client, args: dict[str, Any]) -
     """Create a new model security group.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1550,7 +1550,7 @@ def model_security_groups_delete_command(client: Client, args: dict[str, Any]) -
     Removes a security group that is no longer needed.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1605,7 +1605,7 @@ def model_security_groups_update_command(client: Client, args: dict[str, Any]) -
     Updates the name and/or description of a security group.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1683,7 +1683,7 @@ def model_security_rules_list_command(client: Client, args: dict[str, Any]) -> C
     """List model security rules.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1716,7 +1716,7 @@ def model_security_rules_list_command(client: Client, args: dict[str, Any]) -> C
         rules.append(rule_info)
 
     readable_output = tableToMarkdown(
-        "Prisma AIRs Model Security Rules",
+        "Prisma AIRS Model Security Rules",
         rules,
         headers=["uuid", "name", "rule_type", "default_state"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -1738,7 +1738,7 @@ def model_security_rules_get_command(client: Client, args: dict[str, Any]) -> Co
     remediation steps, and editable fields.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1841,7 +1841,7 @@ def model_security_rule_instances_list_command(client: Client, args: dict[str, A
     Each instance has a state (DISABLED/ALLOWING/BLOCKING) and optional field customizations.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1939,7 +1939,7 @@ def model_security_rule_instances_update_command(client: Client, args: dict[str,
     of a rule instance. Use this to enable/disable rules or customize rule parameters.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2033,7 +2033,7 @@ def model_security_rule_instances_get_command(client: Client, args: dict[str, An
     Retrieves detailed configuration of a specific rule instance.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2100,7 +2100,7 @@ def model_security_rule_instances_get_command(client: Client, args: dict[str, An
 
 
 def main() -> None:
-    """Main function for Prisma AIRs AI Model Security integration."""
+    """Main function for Prisma AIRS AI Model Security integration."""
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()

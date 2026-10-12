@@ -70,6 +70,13 @@ configuration:
   section: Collect
   type: 0
   required: false
+- defaultvalue: '0'
+  display: Lookback in minutes
+  name: lookback
+  type: 0
+  required: false
+  additionalinfo: The lookback window in minutes to use during the fetch process, to avoid missing incidents.
+  section: Collect
 - defaultvalue: auto-discovery
   display: Time Format e.g. %Y-%m-%dT%H:%M:%SZ. Select "auto-discovery" to try to automatically determine the format.
   name: time_format
@@ -361,7 +368,7 @@ script:
     - contextPath: AlienVault.Event.Subcategory
       description: The event subcategory.
       type: String
-  dockerimage: demisto/python3:3.12.13.10404775
+  dockerimage: demisto/python3:3.12.14.12776751
   isfetch: true
   runonce: false
   script: '-'
