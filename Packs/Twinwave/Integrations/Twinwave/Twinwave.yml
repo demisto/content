@@ -164,7 +164,7 @@ script:
     - name: hide_polling_output
       hidden: true
       description: Hide intermediate polling output.
-    description: Wait for a Twinwave job to complete and return its final summary and score.
+    description: Wait for a Twinwave job to complete and return its final summary and score. This command uses polling and requires Cortex XSOAR 6.2.0 or later.
     name: twinwave-wait-job
     polling: true
     outputs:
@@ -321,6 +321,6 @@ script:
   script: ''
   subtype: python3
   type: python
-fromversion: 6.2.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

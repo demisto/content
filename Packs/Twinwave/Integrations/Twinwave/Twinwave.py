@@ -409,9 +409,9 @@ def build_job_summary(result: dict[str, Any]) -> list[CommandResults]:
     """
     Build the existing job summary output from a job response.
     """
-    command_results = []
+    command_results: list[CommandResults] = []
     # Setting the DbotScore
-    twinwave_score = round(float(result.get("Score")) * 100, 2)
+    twinwave_score = round(float(result.get("Score") or 0) * 100, 2)
     if twinwave_score >= 70:
         score = Common.DBotScore.BAD
     elif twinwave_score >= 30:
@@ -419,9 +419,9 @@ def build_job_summary(result: dict[str, Any]) -> list[CommandResults]:
     else:
         score = Common.DBotScore.GOOD
 
-    submission = result.get("Submission")
-    resources = result.get("Resources")
-    tasks = result.get("Tasks")
+    submission = result.get("Submission") or {}
+    resources = result.get("Resources") or []
+    tasks = result.get("Tasks") or []
     # created_at = result.get('CreatedAt')
 
     readable_output = "## Job Summary\n"
@@ -502,19 +502,13 @@ def build_job_summary(result: dict[str, Any]) -> list[CommandResults]:
 
 def get_job_summary(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     """Get a job summary, including the current score when available."""
-    result = client.get_job(job_id=args.get("job_id"))
+    result = client.get_job(job_id=str(args.get("job_id")))
     return build_job_summary(result)
 
 
-@polling_function(
-    name="twinwave-wait-job",
-    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_POLLING_INTERVAL_IN_SECONDS,
-    timeout=arg_to_number(demisto.args().get("timeout_in_seconds")) or DEFAULT_POLLING_TIMEOUT_IN_SECONDS,
-    requires_polling_arg=False,
-)
-def wait_for_job(args: dict[str, Any], client: Client) -> PollResult:
+def build_wait_for_job_poll_result(args: dict[str, Any], client: Client) -> PollResult:
     """Poll a Twinwave job and return its scored summary only after completion."""
-    job_id = args["job_id"]
+    job_id = str(args["job_id"])
     result = client.get_job(job_id=job_id)
     state = str(result.get("State", "unknown"))
     normalized_state = state.lower()
@@ -539,6 +533,17 @@ def wait_for_job(args: dict[str, Any], client: Client) -> PollResult:
         continue_to_poll=True,
         args_for_next_run=args,
     )
+
+
+@polling_function(
+    name="twinwave-wait-job",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_POLLING_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds")) or DEFAULT_POLLING_TIMEOUT_IN_SECONDS,
+    requires_polling_arg=False,
+)
+def wait_for_job(args: dict[str, Any], client: Client) -> PollResult:
+    """Decorated polling entrypoint for the twinwave-wait-job command."""
+    return build_wait_for_job_poll_result(args, client)
 
 
 def get_job_normalized_forensics(client, args):

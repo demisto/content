@@ -49,7 +49,7 @@ def test_wait_for_job_returns_only_status_while_in_progress():
     client = MagicMock()
     client.get_job.return_value = {"ID": "job-123", "State": "InProgress", "Score": 0.83}
 
-    result = Twinwave.wait_for_job({"job_id": "job-123"}, client)
+    result = Twinwave.build_wait_for_job_poll_result({"job_id": "job-123"}, client)
 
     assert result.response is None
     assert result.continue_to_poll is True
@@ -69,7 +69,7 @@ def test_wait_for_job_returns_summary_when_done():
         "Tasks": [],
     }
 
-    result = Twinwave.wait_for_job({"job_id": "job-123"}, client)
+    result = Twinwave.build_wait_for_job_poll_result({"job_id": "job-123"}, client)
 
     assert result.continue_to_poll is False
     assert result.response[0].outputs["DisplayScore"] == 83.0
@@ -81,7 +81,7 @@ def test_wait_for_job_stops_on_terminal_error_without_score():
     client = MagicMock()
     client.get_job.return_value = {"ID": "job-123", "State": "error", "Score": 0.83}
 
-    result = Twinwave.wait_for_job({"job_id": "job-123"}, client)
+    result = Twinwave.build_wait_for_job_poll_result({"job_id": "job-123"}, client)
 
     assert result.continue_to_poll is False
     assert result.response.outputs == {"ID": "job-123", "State": "error"}
