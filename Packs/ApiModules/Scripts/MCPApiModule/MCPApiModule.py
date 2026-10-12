@@ -127,6 +127,11 @@ APPLICATION_JSON_HEADERS = {"Content-Type": "application/json"}
 FORM_URLENCODED_HEADERS = {"Content-Type": "application/x-www-form-urlencoded"}
 MCP_PROTOCOL_HEADERS = {"MCP-Protocol-Version": "2025-03-26"}
 SOFTWARE_ID = "5bfad241-79aa-4a49-86df-c668f8e03e11"
+
+# OAuth Dynamic Client Registration `application_type` values (SEP-837 / RFC 7591).
+APPLICATION_TYPE_WEB = "web"
+APPLICATION_TYPE_NATIVE = "native"
+LOOPBACK_HOSTS = frozenset({"127.0.0.1", "::1", "localhost"})
 SOFTWARE_VERSION = "1.0.0"
 
 
@@ -149,10 +154,38 @@ class AuthMethods(str, Enum):
         return [member.value for member in cls]
 
 
+def resolve_application_type(redirect_uri: str) -> str:
+    """
+    Determine the OAuth Dynamic Client Registration `application_type` for a redirect URI.
+
+    Required by the MCP 2026-07-28 spec (SEP-837). Per RFC 8252, loopback redirects
+    (http://127.0.0.1, http://[::1], http://localhost) and custom URI schemes identify a
+    native client; a public https redirect identifies a web client.
+
+    Args:
+
+        redirect_uri: The redirect URI the client will register.
+
+    Returns:
+        Either APPLICATION_TYPE_NATIVE or APPLICATION_TYPE_WEB.
+    """
+    parsed = urlparse(redirect_uri)
+    scheme = parsed.scheme.lower()
+    hostname = (parsed.hostname or "").lower()
+
+    if scheme not in ("http", "https"):
+        # A custom scheme (e.g. com.example.app:/oauth) is only used by native clients.
+        return APPLICATION_TYPE_NATIVE
+    if hostname in LOOPBACK_HOSTS:
+        return APPLICATION_TYPE_NATIVE
+    return APPLICATION_TYPE_WEB
+
+
 def get_client_metadata(redirect_uri: str) -> dict[str, Any]:
     """Returns metadata used for OAuth Dynamic Client Registration."""
     return {
         "redirect_uris": [redirect_uri],
+        "application_type": resolve_application_type(redirect_uri),
         "token_endpoint_auth_method": "none",
         "grant_types": ["authorization_code", "refresh_token"],
         "response_types": ["code"],
