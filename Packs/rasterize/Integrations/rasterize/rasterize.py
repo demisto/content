@@ -688,6 +688,13 @@ class PychromeEventHandler:
         self.navigation_timeout = navigation_timeout
         self.is_private_network_url = False
         self.document_url = ""
+        # `_retry_in_progress` makes retry_loading non-re-entrant, and `_retry_deadline` caps
+        # the *total* wall-clock time spent retrying across all cycles for this tab.
+        self._retry_in_progress = False
+        self._retry_deadline: Optional[float] = None
+        # Set to True once the retries gave up with the page still on a chrome-error:// page,
+        # so the caller can fail loudly instead of silently returning a blank screenshot.
+        self.load_failed = False
 
     def page_frame_started_loading(self, frameId):
         demisto.debug(f"PychromeEventHandler.page_frame_started_loading, {frameId=}, {self.tab.id=}, {self.path=}")
@@ -786,62 +793,101 @@ class PychromeEventHandler:
 
         This method will try to reload the current page up to DEFAULT_RETRIES_COUNT times
         if it encounters a Chrome error page. It sets the tab_ready_event when successful.
+
+        Re-entrancy note: this runs inside the ``Page.frameStoppedLoading`` CDP
+        callback and calls ``Page.navigate``, which makes Chrome fire that same callback
+        again. The ``_retry_in_progress`` flag makes the method non-re-entrant so a nested
+        invocation returns immediately instead of starting another full attempt budget,
+        and ``_retry_deadline`` bounds the *total* wall-clock retry time for this tab.
         """
+        if self._retry_in_progress:
+            # Re-entrant call from the frameStoppedLoading event raised by our own
+            # Page.navigate. The outer loop is already handling the retries.
+            demisto.debug(f"retry_loading: retry already in progress, ignoring re-entrant call. {self.tab.id=}, {self.path=}")
+            return
+
         # Cap the total retry budget so that all retry attempts together cannot
         # exceed the engine's dispatch timeout.  Each attempt gets an equal share
         # of the budget, with a minimum of 5 seconds per attempt.
         max_retry_budget_seconds = min(self.navigation_timeout, 120) if self.navigation_timeout > 0 else 120
         per_retry_sleep = max(max_retry_budget_seconds / DEFAULT_RETRIES_COUNT, 5)
-        demisto.debug(
-            f"retry_loading: {max_retry_budget_seconds=}s budget, {per_retry_sleep=:.1f}s per attempt, "
-            f"{self.tab.id=}, {self.path=}"
-        )
-        for retry_count in range(1, DEFAULT_RETRIES_COUNT + 1):
-            demisto.debug(f"Retrying loading URL {self.path}, {self.tab.id}. Attempt {retry_count}/{DEFAULT_RETRIES_COUNT}")
-            try:
-                if self.navigation_timeout > 0:
-                    self.tab.Page.navigate(url=self.path, _timeout=min(self.navigation_timeout, per_retry_sleep))
-                else:
-                    self.tab.Page.navigate(url=self.path)
-            except Exception as e:
-                demisto.debug(
-                    f"Error during navigation to {self.tab.id=}, {self.path=} attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {e}"
-                )
 
-            safe_sleep(per_retry_sleep)
+        # A single wall-clock deadline for *all* retry work on this tab. Once it passes we
+        # stop retrying regardless of how many attempts or cycles have run, so the worker
+        # thread can never outlive the engine's dispatch timeout.
+        if self._retry_deadline is None:
+            self._retry_deadline = time.monotonic() + max_retry_budget_seconds  # pylint: disable=E9003
 
-            try:
-                frame_url = self.get_frame_tree_url()
-            except Exception as e:
-                demisto.debug(
-                    f"Error getting frame URL in retry_loading for {self.tab.id=}, {self.path=} "
-                    f"attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {str(e)}"
-                )
-                frame_url = ""
-
-            # If frame_url is empty string, we can't continue retrying - the tab may be in a bad state
-            if not frame_url:
-                demisto.debug(
-                    f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Could not get frame URL. "
-                    f"Stopping after {DEFAULT_RETRIES_COUNT} retry attempts. "
-                    f"For {self.tab.id=}, {self.path=}"
-                )
-                self.tab_ready_event.set()
-                return
-
-            if not frame_url.lower().startswith(CHROME_ERROR_URL):
-                demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} successful. {self.tab.id=}, {self.path=}")
-                self.tab_ready_event.set()
-                return
-
+        self._retry_in_progress = True
+        # Reset before a new retry run so an earlier failure cannot mask a later success.
+        self.load_failed = False
+        try:
             demisto.debug(
-                f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Page still showing Chrome error. "
+                f"retry_loading: {max_retry_budget_seconds=}s budget, {per_retry_sleep=:.1f}s per attempt, "
                 f"{self.tab.id=}, {self.path=}"
             )
+            for retry_count in range(1, DEFAULT_RETRIES_COUNT + 1):
+                if time.monotonic() >= self._retry_deadline:  # pylint: disable=E9003
+                    demisto.debug(
+                        f"retry_loading: total retry budget of {max_retry_budget_seconds}s exhausted, giving up. "
+                        f"{self.tab.id=}, {self.path=}"
+                    )
+                    self.load_failed = True
+                    return
 
-        demisto.debug(f"Max retries ({DEFAULT_RETRIES_COUNT}) reached, could not load the page. {self.tab.id=}, {self.path=}")
-        # Ensure we always set the event to prevent hanging
-        self.tab_ready_event.set()
+                demisto.debug(f"Retrying loading URL {self.path}, {self.tab.id}. Attempt {retry_count}/{DEFAULT_RETRIES_COUNT}")
+                try:
+                    if self.navigation_timeout > 0:
+                        self.tab.Page.navigate(url=self.path, _timeout=min(self.navigation_timeout, per_retry_sleep))
+                    else:
+                        self.tab.Page.navigate(url=self.path)
+                except Exception as e:
+                    demisto.debug(
+                        f"Error during navigation to {self.tab.id=}, {self.path=} "
+                        f"attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {e}"
+                    )
+
+                # Never sleep past the overall deadline.
+                remaining = self._retry_deadline - time.monotonic()  # pylint: disable=E9003
+                if remaining > 0:
+                    safe_sleep(min(per_retry_sleep, remaining))
+
+                try:
+                    frame_url = self.get_frame_tree_url()
+                except Exception as e:
+                    demisto.debug(
+                        f"Error getting frame URL in retry_loading for {self.tab.id=}, {self.path=} "
+                        f"attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {str(e)}"
+                    )
+                    frame_url = ""
+
+                # If frame_url is empty string, we can't continue retrying - the tab may be in a bad state
+                if not frame_url:
+                    demisto.debug(
+                        f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Could not get frame URL. "
+                        f"Stopping after {DEFAULT_RETRIES_COUNT} retry attempts. "
+                        f"For {self.tab.id=}, {self.path=}"
+                    )
+                    self.load_failed = True
+                    return
+
+                if not frame_url.lower().startswith(CHROME_ERROR_URL):
+                    demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} successful. {self.tab.id=}, {self.path=}")
+                    self.load_failed = False
+                    return
+
+                demisto.debug(
+                    f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Page still showing Chrome error. "
+                    f"{self.tab.id=}, {self.path=}"
+                )
+
+            demisto.debug(f"Max retries ({DEFAULT_RETRIES_COUNT}) reached, could not load the page. {self.tab.id=}, {self.path=}")
+            self.load_failed = True
+        finally:
+            self._retry_in_progress = False
+            # Always release the waiter, on every exit path, so the worker thread can never
+            # block forever waiting for a page that will not load.
+            self.tab_ready_event.set()
 
     def network_request_will_be_sent(self, documentURL: str, **kwargs):
         """Triggered when a request is sent by the browser, catches mailto URLs."""
@@ -1203,6 +1249,50 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
     return None
 
 
+def close_orphaned_tabs(browser: pychrome.Browser, max_allowed_tabs: int = MAX_CHROME_TABS_COUNT) -> int:
+    """Closes tabs that were leaked by previous executions.
+
+    A command whose worker thread is killed by the engine's dispatch timeout never reaches
+    ``TabLifecycleManager.__exit__``, so its Chrome tab is never closed. Those tabs accumulate
+    monotonically (observed growing 1 -> 19 over ~4h on a tenant), degrade Chrome, and make
+    further ``file://`` loads fail - a feedback loop.
+
+    This sweep runs before a new rasterization starts and closes the excess tabs so a container
+    that is already leaking recovers on its own, without needing a restart.
+
+    Args:
+        browser: The Chrome browser instance.
+        max_allowed_tabs: Number of tabs allowed to remain open.
+
+    Returns:
+        int: How many tabs were actually closed.
+    """
+    try:
+        tabs = browser.list_tab()
+    except Exception as ex:
+        demisto.debug(f"close_orphaned_tabs: could not list tabs: {ex}")
+        return 0
+
+    if len(tabs) <= max_allowed_tabs:
+        demisto.debug(f"close_orphaned_tabs: {len(tabs)=} within {max_allowed_tabs=}, nothing to sweep.")
+        return 0
+
+    # Keep the most recently created tabs, close the older leaked ones.
+    orphaned = tabs[:-max_allowed_tabs] if max_allowed_tabs > 0 else tabs
+    demisto.info(f"close_orphaned_tabs: found {len(tabs)} tabs with {max_allowed_tabs=}, closing {len(orphaned)} orphaned tabs.")
+
+    closed = 0
+    for tab in orphaned:
+        try:
+            browser.close_tab(tab)
+            closed += 1
+        except Exception as ex:
+            demisto.debug(f"close_orphaned_tabs: failed to close tab {getattr(tab, 'id', tab)}: {ex}")
+
+    demisto.info(f"close_orphaned_tabs: closed {closed}/{len(orphaned)} orphaned tabs.")
+    return closed
+
+
 def read_json_file(json_file_path: str = CHROME_INSTANCES_FILE_PATH) -> dict[str, Any]:
     """
     Read the content from a JSON file and return it as a Python dictionary or list.
@@ -1272,14 +1362,30 @@ def write_chrome_instances_file(new_chrome_content: Optional[Dict] = {}):
     """
     Add new Chrome instance content to the JSON file.
 
+    The write is atomic and safe for concurrent readers: the content is written to a temporary file in the same
+    directory and then moved into place with os.replace(), which is an atomic rename on POSIX.
+    Writing directly with open(path, "w") truncates the file first, so a concurrent reader can
+    observe a half-written file and fail with JSONDecodeError - which was seen in production and
+    silently reset all Chrome bookkeeping to {}.
+
     :param new_chrome_content: Data to write to the file. If None, an empty file is created.
 
     """
     try:
-        with open(CHROME_INSTANCES_FILE_PATH, "w") as file:
-            json.dump(new_chrome_content, file, indent=4)
+        directory = os.path.dirname(CHROME_INSTANCES_FILE_PATH) or "."
+        with tempfile.NamedTemporaryFile("w", dir=directory, prefix=".chrome_instances_", suffix=".tmp", delete=False) as tmp:
+            tmp_path = tmp.name
+            json.dump(new_chrome_content, tmp, indent=4)
+            tmp.flush()
+            os.fsync(tmp.fileno())
+        Path(tmp_path).replace(CHROME_INSTANCES_FILE_PATH)
     except Exception as e:
         demisto.debug(f"An error occurred while writing to the file: {e}")
+        try:
+            if "tmp_path" in locals() and os.path.exists(tmp_path):
+                os.remove(tmp_path)
+        except OSError as cleanup_ex:
+            demisto.debug(f"Failed to clean up temporary chrome instances file: {cleanup_ex}")
 
 
 def opt_name(opt: str) -> str:
@@ -1738,6 +1844,16 @@ def screenshot_image(
             f" the Loopback Network (127.0.0.0/8) cannot be rasterized.\nURL: {path}"
         )
 
+    if tab_event_handler.load_failed:
+        # The page never loaded - it is still showing chrome-error://chromewebdata/. Capturing a
+        # screenshot here would return an all-white image, which silently feeds a blank artifact
+        # into the playbook. Fail loudly instead.
+        demisto.error(f"Page failed to load after all retry attempts, not capturing a blank screenshot. {path=}, {tab.id=}")
+        return None, (
+            f"Failed to load the page for rasterization after {DEFAULT_RETRIES_COUNT} attempts.\n"
+            f"The page remained on a Chrome error page ({CHROME_ERROR_URL}).\nURL: {path}"
+        )
+
     try:
         page_layout_metrics = tab.Page.getLayoutMetrics()
     except Exception as ex:
@@ -2166,6 +2282,11 @@ def perform_rasterize(
 
     try:
         if browser:
+            # Reclaim tabs leaked by earlier executions that were killed by the engine's
+            # dispatch timeout before TabLifecycleManager.__exit__ could run.
+            # Without this, a container that already leaked tabs stays degraded until it is
+            # manually restarted.
+            close_orphaned_tabs(browser)
             support_multithreading()
             with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
                 rasterization_threads = []
