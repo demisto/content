@@ -180,7 +180,9 @@ def test_persistent_401_is_raised(requests_mock, client):
     Then: The retry is not repeated indefinitely and a credentials error is raised.
     """
     requests_mock.post(AUTH_URL, text="jwt-token")
-    requests_mock.get(f"{API_BASE}/reports/{REPORT_ID}", status_code=401, json={"error": "unauthorized"})
+    requests_mock.get(
+        f"{API_BASE}/reports/{REPORT_ID}", status_code=401, json=load_test_data("error_401_invalid_credentials.json")
+    )
 
     with pytest.raises(DemistoException, match="Authorization Error"):
         client.get_report_details(REPORT_ID)
@@ -207,7 +209,7 @@ def test_test_module_verifies_etm_access(requests_mock, client):
     Then: 'ok' is returned and the report listing endpoint is called.
     """
     requests_mock.post(AUTH_URL, text="jwt-token")
-    list_mock = requests_mock.post(f"{API_BASE}/reports/list", json=[])
+    list_mock = requests_mock.post(f"{API_BASE}/reports/list", json=load_test_data("reports_list_empty.json"))
 
     assert run_test_module(client) == "ok"
     assert list_mock.call_count == 1
@@ -220,7 +222,7 @@ def test_test_module_missing_etm_module(requests_mock, client):
     Then: An error explaining the ETM module and API Access requirements is raised.
     """
     requests_mock.post(AUTH_URL, text="jwt-token")
-    requests_mock.post(f"{API_BASE}/reports/list", status_code=403, json={"error": "ETM module access denied"})
+    requests_mock.post(f"{API_BASE}/reports/list", status_code=403, json=load_test_data("error_403_module_access_denied.json"))
 
     with pytest.raises(DemistoException, match="ETM module is enabled"):
         run_test_module(client)
@@ -256,6 +258,21 @@ def test_active_reports_list_truncates_to_limit(requests_mock, client):
     result = active_reports_list_command(client, {"limit": "1"})
 
     assert len(result.outputs) == 1
+
+
+def test_active_reports_list_command_no_results(requests_mock, client):
+    """
+    Given: A subscription that has no active reports.
+    When: Running the active reports list command.
+    Then: The command succeeds with empty outputs rather than raising an error.
+    """
+    requests_mock.post(AUTH_URL, text="jwt-token")
+    requests_mock.post(f"{API_BASE}/reports/list", json=load_test_data("reports_list_empty.json"))
+
+    result = active_reports_list_command(client, {})
+
+    assert result.outputs == []
+    assert "Qualys ETM Active Reports" in result.readable_output
 
 
 def test_active_reports_list_sends_computed_offset(requests_mock, client):
@@ -311,15 +328,15 @@ def test_reports_delete_command(requests_mock, client):
     Then: The IDs are sent as a bare JSON array and the deletion results are returned to the context.
     """
     requests_mock.post(AUTH_URL, text="jwt-token")
-    delete_mock = requests_mock.delete(
-        f"{API_BASE}/reports", json=[{"reportId": REPORT_ID, "message": "Report deleted successfully"}]
-    )
+    delete_response = load_test_data("delete_reports_response.json")
+    deleted_id = delete_response[0]["reportId"]
+    delete_mock = requests_mock.delete(f"{API_BASE}/reports", json=delete_response)
 
-    result = reports_delete_command(client, {"report_ids": REPORT_ID})
+    result = reports_delete_command(client, {"report_ids": deleted_id})
 
-    assert delete_mock.last_request.json() == [REPORT_ID]
+    assert delete_mock.last_request.json() == [deleted_id]
     assert result.outputs_prefix == "QualysETM.ReportDeletion"
-    assert result.outputs[0]["reportId"] == REPORT_ID
+    assert result.outputs[0]["reportId"] == deleted_id
 
 
 def test_reports_delete_command_single_object_response(requests_mock, client):
@@ -329,11 +346,12 @@ def test_reports_delete_command_single_object_response(requests_mock, client):
     Then: The response is normalized into a list.
     """
     requests_mock.post(AUTH_URL, text="jwt-token")
-    requests_mock.delete(f"{API_BASE}/reports", json={"reportId": REPORT_ID, "message": "Report deleted successfully"})
+    delete_response = load_test_data("delete_reports_response_single_object.json")
+    requests_mock.delete(f"{API_BASE}/reports", json=delete_response)
 
-    result = reports_delete_command(client, {"report_ids": REPORT_ID})
+    result = reports_delete_command(client, {"report_ids": delete_response["reportId"]})
 
-    assert result.outputs == [{"reportId": REPORT_ID, "message": "Report deleted successfully"}]
+    assert result.outputs == [delete_response]
 
 
 def test_reports_delete_command_empty_ids(client):
@@ -357,7 +375,7 @@ def test_report_generate_first_run_submits_and_polls(requests_mock, client, mock
     """
     mocker.patch("CommonServerPython.ScheduledCommand.raise_error_if_not_supported", return_value=None)
     requests_mock.post(AUTH_URL, text="jwt-token")
-    submit_mock = requests_mock.post(f"{API_BASE}/reports/findings", json={"id": REPORT_ID})
+    submit_mock = requests_mock.post(f"{API_BASE}/reports/findings", json=load_test_data("submit_report_response.json"))
 
     result = report_generate_command({"name": "My Report"}, client)
 
@@ -388,7 +406,7 @@ def test_report_generate_continues_polling_while_in_progress(requests_mock, clie
     """
     mocker.patch("CommonServerPython.ScheduledCommand.raise_error_if_not_supported", return_value=None)
     requests_mock.post(AUTH_URL, text="jwt-token")
-    requests_mock.get(f"{API_BASE}/reports/{REPORT_ID}", json={"id": REPORT_ID, "status": "RUNNING"})
+    requests_mock.get(f"{API_BASE}/reports/{REPORT_ID}", json=load_test_data("report_in_progress.json"))
 
     result = report_generate_command({"report_id": REPORT_ID}, client)
 
@@ -404,7 +422,7 @@ def test_report_generate_fails_fast_on_terminal_status(requests_mock, client, mo
     """
     mocker.patch("CommonServerPython.ScheduledCommand.raise_error_if_not_supported", return_value=None)
     requests_mock.post(AUTH_URL, text="jwt-token")
-    requests_mock.get(f"{API_BASE}/reports/{REPORT_ID}", json={"id": REPORT_ID, "status": "FAILED"})
+    requests_mock.get(f"{API_BASE}/reports/{REPORT_ID}", json=load_test_data("report_failed.json"))
 
     with pytest.raises(DemistoException, match="ended with status 'FAILED'"):
         report_generate_command({"report_id": REPORT_ID}, client)
