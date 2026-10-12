@@ -1,0 +1,5 @@
+!qualys-etm-active-reports-list limit=2
+!qualys-etm-report-get-details report_id=0b127284-e128-4d02-a720-2748240c9f1a
+!qualys-etm-report-download report_id=0b127284-e128-4d02-a720-2748240c9f1a resource_name=part_15097524224131306.json
+!qualys-etm-report-generate name="Critical Findings Report" findings_qql="finding.severity: 5" report_format=JSON
+!qualys-etm-reports-delete report_ids=dbc34b32-b957-449a-a357-27cf27df7eab

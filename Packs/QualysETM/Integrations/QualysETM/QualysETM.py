@@ -25,6 +25,9 @@ INTEGRATION_CONTEXT_EXPIRY_KEY = "jwt_token_expiry"
 DEFAULT_LIMIT = 50
 DEFAULT_PAGE = 1
 
+# Header titles that pascalToSpace cannot derive correctly on its own.
+REPORT_LIST_HEADERS = {"id": "Report ID"}
+
 DEFAULT_POLL_INTERVAL_SECONDS = 10
 DEFAULT_POLL_TIMEOUT_SECONDS = 300
 
@@ -273,7 +276,7 @@ def active_reports_list_command(client: Client, args: dict[str, Any]) -> Command
         "Qualys ETM Active Reports",
         reports,
         headers=["id", "name", "status", "created", "expirationDate"],
-        headerTransform=pascalToSpace,
+        headerTransform=lambda header: REPORT_LIST_HEADERS.get(header, pascalToSpace(header)),
         removeNull=True,
         metadata=pagination_message or None,
     )
@@ -340,7 +343,7 @@ def reports_delete_command(client: Client, args: dict[str, Any]) -> CommandResul
         "Qualys ETM Deleted Reports",
         deletion_results,
         headers=["reportId", "message"],
-        headerTransform=pascalToSpace,
+        headerTransform=lambda header: {"reportId": "Report ID"}.get(header, pascalToSpace(header)),
         removeNull=True,
     )
     return CommandResults(

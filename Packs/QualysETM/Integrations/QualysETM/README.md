@@ -43,6 +43,44 @@ Lists the active reports in the Qualys ETM subscription. To retrieve the full de
 | QualysETM.Report.created | Date | The date and time when the report was created. |
 | QualysETM.Report.expirationDate | Date | The date and time when the report expires. |
 
+#### Command example
+
+```!qualys-etm-active-reports-list limit=2```
+
+#### Context Example
+
+```json
+{
+    "QualysETM": {
+        "Report": [
+            {
+                "created": "2026-10-01T10:00:00Z",
+                "expirationDate": "2026-10-08T10:00:00Z",
+                "id": "0b127284-e128-4d02-a720-2748240c9f1a",
+                "name": "Ad-hoc Report",
+                "status": "COMPLETED"
+            },
+            {
+                "created": "2026-10-02T08:30:00Z",
+                "expirationDate": "2026-10-09T08:30:00Z",
+                "id": "dbc34b32-b957-449a-a357-27cf27df7eab",
+                "name": "Weekly Risk Report",
+                "status": "REQUESTED"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Qualys ETM Active Reports
+>
+>|Report ID|Name|Status|Created|Expiration Date|
+>|---|---|---|---|---|
+>| 0b127284-e128-4d02-a720-2748240c9f1a | Ad-hoc Report | COMPLETED | 2026-10-01T10:00:00Z | 2026-10-08T10:00:00Z |
+>| dbc34b32-b957-449a-a357-27cf27df7eab | Weekly Risk Report | REQUESTED | 2026-10-02T08:30:00Z | 2026-10-09T08:30:00Z |
+
 ### qualys-etm-report-get-details
 
 ***
@@ -75,6 +113,46 @@ Returns the full details of a single report, including the list of its downloada
 | QualysETM.Report.expirationDate | Date | The date and time when the report expires. |
 | QualysETM.Report.resources | Unknown | The names of the downloadable part-files of the report. Available once the report status is COMPLETED. |
 
+#### Command example
+
+```!qualys-etm-report-get-details report_id=0b127284-e128-4d02-a720-2748240c9f1a```
+
+#### Context Example
+
+```json
+{
+    "QualysETM": {
+        "Report": {
+            "assetQql": "asset.name: my-host",
+            "created": "2026-10-01T10:00:00Z",
+            "createdBy": {
+                "name": "john_doe"
+            },
+            "description": "Critical findings report",
+            "expirationDate": "2026-10-08T10:00:00Z",
+            "findingsQql": "finding.severity: 5",
+            "id": "0b127284-e128-4d02-a720-2748240c9f1a",
+            "name": "Ad-hoc Report",
+            "reportFormat": "JSON",
+            "resources": [
+                "part_15097524224131306.json",
+                "part_15097524224131307.json"
+            ],
+            "status": "COMPLETED",
+            "updated": "2026-10-01T10:05:00Z"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Qualys ETM Report 0b127284-e128-4d02-a720-2748240c9f1a
+>
+>|Report ID|Name|Description|Report Format|Status|Asset QQL|Findings QQL|Created|Created By|Updated|Expiration Date|Resources|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 0b127284-e128-4d02-a720-2748240c9f1a | Ad-hoc Report | Critical findings report | JSON | COMPLETED | asset.name: my-host | finding.severity: 5 | 2026-10-01T10:00:00Z | john_doe | 2026-10-01T10:05:00Z | 2026-10-08T10:00:00Z | part_15097524224131306.json, part_15097524224131307.json |
+
 ### qualys-etm-report-download
 
 ***
@@ -101,6 +179,29 @@ Downloads a single part-file of a report by its resource name and returns it to 
 | InfoFile.Type | String | The type of the file. |
 | InfoFile.Extension | String | The extension of the file. |
 | InfoFile.Info | String | The information about the file. |
+
+#### Command example
+
+```!qualys-etm-report-download report_id=0b127284-e128-4d02-a720-2748240c9f1a resource_name=part_15097524224131306.json```
+
+#### Context Example
+
+```json
+{
+    "InfoFile": {
+        "EntryID": "1234@abcd-efgh-ijkl-mnop",
+        "Extension": "json",
+        "Info": "application/json",
+        "Name": "part_15097524224131306.json",
+        "Size": 4096,
+        "Type": "ASCII text"
+    }
+}
+```
+
+#### Human Readable Output
+
+>Uploaded file: part_15097524224131306.json
 
 ### qualys-etm-report-generate
 
@@ -140,6 +241,48 @@ Submits a new findings report request, polls until the report generation complet
 | QualysETM.Report.expirationDate | Date | The date and time when the report expires. |
 | QualysETM.Report.resources | Unknown | The names of the downloadable part-files of the report. |
 
+#### Command example
+
+```!qualys-etm-report-generate name="Critical Findings Report" findings_qql="finding.severity: 5" report_format=JSON```
+
+#### Context Example
+
+```json
+{
+    "QualysETM": {
+        "Report": {
+            "assetQql": "asset.name: my-host",
+            "created": "2026-10-01T10:00:00Z",
+            "createdBy": {
+                "name": "john_doe"
+            },
+            "description": "Critical findings report",
+            "expirationDate": "2026-10-08T10:00:00Z",
+            "findingsQql": "finding.severity: 5",
+            "id": "0b127284-e128-4d02-a720-2748240c9f1a",
+            "name": "Ad-hoc Report",
+            "reportFormat": "JSON",
+            "resources": [
+                "part_15097524224131306.json",
+                "part_15097524224131307.json"
+            ],
+            "status": "COMPLETED",
+            "updated": "2026-10-01T10:05:00Z"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Qualys ETM Report 0b127284-e128-4d02-a720-2748240c9f1a
+>
+>|Report ID|Name|Description|Report Format|Status|Asset QQL|Findings QQL|Created|Created By|Updated|Expiration Date|Resources|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 0b127284-e128-4d02-a720-2748240c9f1a | Ad-hoc Report | Critical findings report | JSON | COMPLETED | asset.name: my-host | finding.severity: 5 | 2026-10-01T10:00:00Z | john_doe | 2026-10-01T10:05:00Z | 2026-10-08T10:00:00Z | part_15097524224131306.json, part_15097524224131307.json |
+
+The completed report is also returned to the War Room as the file `report_0b127284-e128-4d02-a720-2748240c9f1a.zip`.
+
 ### qualys-etm-reports-delete
 
 ***
@@ -161,3 +304,30 @@ Deletes one or more reports. To delete a single report, provide its ID as the on
 | --- | --- | --- |
 | QualysETM.ReportDeletion.reportId | String | The ID of the deleted report. |
 | QualysETM.ReportDeletion.message | String | The message returned by Qualys for the deleted report. |
+
+#### Command example
+
+```!qualys-etm-reports-delete report_ids=dbc34b32-b957-449a-a357-27cf27df7eab```
+
+#### Context Example
+
+```json
+{
+    "QualysETM": {
+        "ReportDeletion": [
+            {
+                "message": "Report deleted successfully",
+                "reportId": "dbc34b32-b957-449a-a357-27cf27df7eab"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Qualys ETM Deleted Reports
+>
+>|Report ID|Message|
+>|---|---|
+>| dbc34b32-b957-449a-a357-27cf27df7eab | Report deleted successfully |
