@@ -46,7 +46,6 @@
             }
         ]
     ],
-    "scriptID": "GIBDRPIncidentUpdate",
     "scriptName": "GIBDRPIncidentUpdate",
     "searchClosed": true,
     "system": true,

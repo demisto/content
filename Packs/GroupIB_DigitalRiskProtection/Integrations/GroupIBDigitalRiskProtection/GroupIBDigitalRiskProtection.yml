@@ -234,11 +234,26 @@ script:
     - contextPath: GIBDRP.Brand.id
       description: The brand ID.
       type: string
+    - contextPath: GIBDRP.OtherInfo
+      description: Additional brand information.
+      type: string
+    - contextPath: GIBDRP.OtherInfo.brands.id
+      description: The brand ID.
+      type: string
+    - contextPath: GIBDRP.OtherInfo.brands.name
+      description: The brand name.
+      type: string
   - name: gibdrp-get-subscriptions
     arguments: []
     description: Receive all configured subscriptions.
     outputs:
     - contextPath: GIBDRP.Subscription
+      description: The list of configured subscriptions.
+      type: string
+    - contextPath: GIBDRP.OtherInfo
+      description: Additional subscription information.
+      type: string
+    - contextPath: GIBDRP.OtherInfo.subscriptions
       description: The list of configured subscriptions.
       type: string
   - name: gibdrp-get-violation-by-id

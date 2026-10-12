@@ -13,12 +13,11 @@
         "GIB"
     ],
     "tags": [
-        "Digital Risk Protection",
-        "Brand Protection",
-        "Cortex XSOAR"
+        "Threat Intelligence",
+        "Dark Web"
     ],
     "useCases": [
-        "Digital Risk Protection"
+        "Threat Intelligence Management"
     ],
     "keywords": [
         "Group-IB",

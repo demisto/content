@@ -78,6 +78,9 @@ Receive all configured brands.
 | --- | --- | --- |
 | GIBDRP.Brand.name | string | The brand name. |
 | GIBDRP.Brand.id | string | The brand ID. |
+| GIBDRP.OtherInfo | string | Additional brand information. |
+| GIBDRP.OtherInfo.brands.id | string | The brand ID. |
+| GIBDRP.OtherInfo.brands.name | string | The brand name. |
 
 #### Command example
 
@@ -125,6 +128,8 @@ Receive all configured subscriptions.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GIBDRP.Subscription | string | The list of configured subscriptions. |
+| GIBDRP.OtherInfo | string | Additional subscription information. |
+| GIBDRP.OtherInfo.subscriptions | string | The list of configured subscriptions. |
 
 #### Command example
 

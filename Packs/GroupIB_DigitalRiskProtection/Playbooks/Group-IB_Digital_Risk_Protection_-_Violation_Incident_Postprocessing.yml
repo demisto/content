@@ -217,8 +217,6 @@ tasks:
         simple: ${incident.gibdrpid}
       status:
         simple: approve
-      using:
-        simple: ${incident.sourceInstance}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -256,8 +254,6 @@ tasks:
         simple: ${incident.gibdrpid}
       status:
         simple: reject
-      using:
-        simple: ${incident.sourceInstance}
     separatecontext: false
     continueonerrortype: ""
     view: |-
