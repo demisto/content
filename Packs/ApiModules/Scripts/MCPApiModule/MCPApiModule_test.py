@@ -10,7 +10,9 @@ import sys
 import time
 
 from mcp.client.streamable_http import streamable_http_client
-from mcp.types import CallToolResult, InitializeResult
+from mcp.client.client import Client as MCPClient
+from mcp.types import CallToolResult
+import httpx2
 
 from MCPApiModule import (
     extract_root_error_message,
@@ -1257,14 +1259,12 @@ class TestClient:
         """
         mocker.patch.object(Client, "_resolve_headers", return_value={"Authorization": "Bearer test-token"})
 
-        # Mock the session and its initialize method with proper return values.
-        # mcp 2.0 renamed serverInfo -> server_info, so mock the snake_case name.
+        # The Client API exposes server_info directly; there is no separate initialize step.
         mock_session = mocker.MagicMock()
         mock_server_info = Mock()
         mock_server_info.name = "TestServer"
-        mock_init_result = Mock(spec=["server_info"])
-        mock_init_result.server_info = mock_server_info
-        mock_session.initialize = mocker.AsyncMock(return_value=mock_init_result)
+        mock_session.server_info = mock_server_info
+        mock_session.protocol_version = "2026-07-28"
 
         # Mock tools with proper name attributes
         mock_tool1 = Mock()
@@ -1276,15 +1276,10 @@ class TestClient:
         mock_tools.model_dump.return_value = {"tools": [{"name": "search_tool"}, {"name": "analysis_tool"}]}
         mock_session.list_tools = mocker.AsyncMock(return_value=mock_tools)
 
-        # mcp 2.0 dropped the get_session_id callback, so the transport yields 2 values.
-        mock_streamable_client = mocker.patch("MCPApiModule.streamable_http_client")
-        mock_streamable_client.return_value.__aenter__ = mocker.AsyncMock(return_value=("r", "w"))
-        mock_streamable_client.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
-
-        # Mock the ClientSession context manager return value
-        mock_client_session = mocker.patch("MCPApiModule.ClientSession")
-        mock_client_session.return_value.__aenter__ = mocker.AsyncMock(return_value=mock_session)
-        mock_client_session.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
+        mocker.patch("MCPApiModule.streamable_http_client")
+        mock_mcp_client = mocker.patch("MCPApiModule.MCPClient")
+        mock_mcp_client.return_value.__aenter__ = mocker.AsyncMock(return_value=mock_session)
+        mock_mcp_client.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
 
         result = await mock_client_instance.list_tools()
 
@@ -1310,17 +1305,12 @@ class TestClient:
         mock_result.is_error = False
         mock_result.model_dump.return_value = {"content": {"status": "ok"}}
         mock_session.call_tool.return_value = mock_result
-        mock_session.initialize = mocker.AsyncMock()
+        mock_session.protocol_version = "2026-07-28"
 
-        # mcp 2.0 dropped the get_session_id callback, so the transport yields 2 values.
-        mock_streamable_client = mocker.patch("MCPApiModule.streamable_http_client")
-        mock_streamable_client.return_value.__aenter__ = mocker.AsyncMock(return_value=(None, None))
-        mock_streamable_client.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
-
-        # Mock the ClientSession context manager return value
-        mock_client_session = mocker.patch("MCPApiModule.ClientSession")
-        mock_client_session.return_value.__aenter__ = mocker.AsyncMock(return_value=mock_session)
-        mock_client_session.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
+        mocker.patch("MCPApiModule.streamable_http_client")
+        mock_mcp_client = mocker.patch("MCPApiModule.MCPClient")
+        mock_mcp_client.return_value.__aenter__ = mocker.AsyncMock(return_value=mock_session)
+        mock_mcp_client.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
 
         mocker.patch.object(mock_client_instance, "_resolve_headers", return_value={})
         mocker.patch("MCPApiModule.tableToMarkdown", return_value="Tool executed successfully")
@@ -1389,20 +1379,49 @@ class TestSDKContract:
 
         assert yields == ["yield read_stream, write_stream"], (
             f"streamable_http_client changed its yield signature: {yields}. "
-            "Client._get_session unpacks 2 values and must be updated to match."
+            "Client._get_session passes this transport to the SDK client and must be updated to match."
         )
 
-    def test_initialize_result_exposes_server_info(self):
+    def test_mcp_client_accepts_a_transport_and_auto_mode(self):
         """
         Given: The mcp SDK installed in the Docker image.
-        When: Inspecting InitializeResult.
-        Then: It exposes snake_case server_info, as read by Client._get_session.
-        """
-        fields = InitializeResult.model_fields
+        When: Constructing the SDK client the way Client._get_session does.
+        Then: It accepts a transport object plus mode="auto" and exposes the connection API.
 
-        assert (
-            "server_info" in fields
-        ), f"InitializeResult no longer exposes 'server_info' (has: {sorted(fields)}). Client._get_session must be updated."
+        mode="auto" probes the 2026-07-28 stateless protocol and falls back to the legacy
+        `initialize` handshake, which is what keeps older MCP servers working.
+        """
+        # given
+        http_client = httpx2.AsyncClient()
+        transport = streamable_http_client(url="https://mcp.example.com", http_client=http_client)
+
+        # when
+        sdk_client = MCPClient(transport, mode="auto")
+
+        # then
+        assert sdk_client.mode == "auto"
+        # Checked on the class: server_info and protocol_version are properties that raise
+        # until the context manager is entered.
+        for attribute in ("server_info", "protocol_version", "list_tools", "call_tool"):
+            assert hasattr(MCPClient, attribute), (
+                f"The SDK client no longer exposes '{attribute}'. Client._get_session and its "
+                "callers must be updated."
+            )
+        assert hasattr(MCPClient, "__aenter__")
+
+    def test_mcp_client_knows_the_stateless_protocol_version(self):
+        """
+        Given: The mcp SDK installed in the Docker image.
+        When: Inspecting the protocol version registry.
+        Then: 2026-07-28 is a modern (stateless) revision reachable without the handshake.
+        """
+        from mcp_types.version import HANDSHAKE_PROTOCOL_VERSIONS, MODERN_PROTOCOL_VERSIONS
+
+        assert "2026-07-28" in MODERN_PROTOCOL_VERSIONS
+        assert "2026-07-28" not in HANDSHAKE_PROTOCOL_VERSIONS, (
+            "2026-07-28 became reachable via the initialize handshake; the stateless assumptions "
+            "in Client._get_session should be re-checked."
+        )
 
     def test_call_tool_result_exposes_is_error(self):
         """
@@ -1443,25 +1462,19 @@ class TestConnection:
 
     @staticmethod
     def _patch_session(mocker: MockerFixture, server_name: str = "TestServer") -> Mock:
-        """Patches the SDK transport and session, returning the mocked ClientSession."""
+        """Patches the SDK transport and client, returning the mocked MCP client."""
         mock_server_info = Mock()
         mock_server_info.name = server_name
-        # spec= keeps the mock strict, so a future rename raises AttributeError
-        # instead of silently returning a new Mock.
-        mock_init_result = Mock(spec=["server_info"])
-        mock_init_result.server_info = mock_server_info
 
         mock_session = mocker.MagicMock()
-        mock_session.initialize = mocker.AsyncMock(return_value=mock_init_result)
+        mock_session.server_info = mock_server_info
+        mock_session.protocol_version = "2026-07-28"
 
-        # mcp 2.0 transport yields 2 values.
-        mock_streamable_client = mocker.patch("MCPApiModule.streamable_http_client")
-        mock_streamable_client.return_value.__aenter__ = mocker.AsyncMock(return_value=("r", "w"))
-        mock_streamable_client.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
+        mocker.patch("MCPApiModule.streamable_http_client")
 
-        mock_client_session = mocker.patch("MCPApiModule.ClientSession")
-        mock_client_session.return_value.__aenter__ = mocker.AsyncMock(return_value=mock_session)
-        mock_client_session.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
+        mock_mcp_client = mocker.patch("MCPApiModule.MCPClient")
+        mock_mcp_client.return_value.__aenter__ = mocker.AsyncMock(return_value=mock_session)
+        mock_mcp_client.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
 
         return mock_session
 
@@ -1478,7 +1491,7 @@ class TestConnection:
         result = await mock_client_instance.test_connection()
 
         assert result == "ok"
-        mock_session.initialize.assert_called_once()
+        assert mock_session.server_info.name == "TestServer"
 
     @pytest.mark.asyncio
     async def test_test_connection_auth_test_returns_command_results(self, mocker: MockerFixture, mock_client_instance: Client):
@@ -1494,7 +1507,7 @@ class TestConnection:
 
         assert isinstance(result, CommandResults)
         assert "Authentication successful" in result.readable_output
-        mock_session.initialize.assert_called_once()
+        assert mock_session.server_info.name == "TestServer"
 
     @pytest.mark.asyncio
     async def test_test_connection_propagates_session_failure(self, mocker: MockerFixture, mock_client_instance: Client):
@@ -1504,9 +1517,10 @@ class TestConnection:
         Then: The underlying error propagates rather than being swallowed.
         """
         mocker.patch.object(Client, "_resolve_headers", return_value={})
-        mock_streamable_client = mocker.patch("MCPApiModule.streamable_http_client")
-        mock_streamable_client.return_value.__aenter__ = mocker.AsyncMock(side_effect=ConnectionError("refused"))
-        mock_streamable_client.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
+        mocker.patch("MCPApiModule.streamable_http_client")
+        mock_mcp_client = mocker.patch("MCPApiModule.MCPClient")
+        mock_mcp_client.return_value.__aenter__ = mocker.AsyncMock(side_effect=ConnectionError("refused"))
+        mock_mcp_client.return_value.__aexit__ = mocker.AsyncMock(return_value=None)
 
         with pytest.raises(ConnectionError, match="refused"):
             await mock_client_instance.test_connection()

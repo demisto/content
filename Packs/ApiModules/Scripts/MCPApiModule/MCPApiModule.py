@@ -9,9 +9,12 @@ import os
 import traceback
 import hashlib
 
-from mcp import ClientSession
 from mcp.client.auth.exceptions import OAuthFlowError
 from mcp.client.auth.utils import validate_authorization_response_iss, validate_metadata_issuer
+
+# Aliased: this module defines its own `Client`, which orchestrates authentication on top of
+# the SDK's MCP client.
+from mcp.client.client import Client as MCPClient
 from mcp.client.streamable_http import streamable_http_client
 from mcp.shared.auth import OAuthMetadata
 from pydantic import ValidationError
@@ -824,24 +827,29 @@ class Client:
     @asynccontextmanager
     async def _get_session(self):
         """
-        Creates and initializes an async context manager for MCP client session.
+        Creates and initializes an async context manager for an MCP client session.
 
-        Establishes a streamable HTTP connection to the MCP server and creates a client session
-        for communication. The session is automatically initialized and cleaned up when the
-        context exits.
+        Establishes a streamable HTTP connection to the MCP server and connects a client. The
+        connection is negotiated with `mode="auto"`: the client first probes `server/discover`
+        to use the stateless per-request protocol introduced in MCP 2026-07-28 (SEP-2575,
+        SEP-2567), and falls back to the legacy `initialize` handshake for older servers. The
+        session is cleaned up when the context exits.
+
 
         Yields:
-            ClientSession: An initialized MCP client session for making requests
+            tuple: The connected client and the server name reported by it.
         """
         headers = await self._resolve_headers()
         async with (
             httpx2.AsyncClient(headers=headers, verify=self.verify) as custom_httpx_client,
-            streamable_http_client(url=self.base_url, http_client=custom_httpx_client) as (read_stream, write_stream),
-            ClientSession(read_stream, write_stream) as session,  # pylint: disable=E0601
+            MCPClient(
+                streamable_http_client(url=self.base_url, http_client=custom_httpx_client),
+                mode="auto",
+            ) as session,
         ):
-            # Initialize the connection
-            init = await session.initialize()
-            yield session, init.server_info.name
+            demisto.debug(f"Connected to MCP server using protocol version {session.protocol_version}")
+            server_info = session.server_info
+            yield session, server_info.name if server_info else ""
 
     async def test_connection(self, auth_test: bool = False):
         async with self._get_session():
