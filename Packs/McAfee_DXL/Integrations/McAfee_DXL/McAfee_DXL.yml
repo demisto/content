@@ -151,7 +151,7 @@ script:
       required: true
     - description: The topic for which to publish the 'dxl-push-hash'.
       name: topic
-    description: The push hash to the DXL fabric.
+    description: The push hash to the DXL fabric.gccvvuyvi
     name: dxl-push-hash
   dockerimage: demisto/dxl:1.0.0.10133006
   runonce: false
