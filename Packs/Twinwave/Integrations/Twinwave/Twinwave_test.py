@@ -45,6 +45,49 @@ def test_get_recent_jobs_uses_content_client(mocker):
     )
 
 
+def test_wait_for_job_returns_only_status_while_in_progress():
+    client = MagicMock()
+    client.get_job.return_value = {"ID": "job-123", "State": "InProgress", "Score": 0.83}
+
+    result = Twinwave.wait_for_job({"job_id": "job-123"}, client)
+
+    assert result.response is None
+    assert result.continue_to_poll is True
+    assert result.args_for_next_run["job_id"] == "job-123"
+    assert result.partial_result.outputs == {"ID": "job-123", "State": "InProgress"}
+    assert "DisplayScore" not in result.partial_result.outputs
+    client.get_job.assert_called_once_with(job_id="job-123")
+
+
+def test_wait_for_job_returns_summary_when_done():
+    client = MagicMock()
+    client.get_job.return_value = {
+        "ID": "job-123",
+        "State": "done",
+        "Score": 0.83,
+        "Submission": {"Name": "https://example.com"},
+        "Tasks": [],
+    }
+
+    result = Twinwave.wait_for_job({"job_id": "job-123"}, client)
+
+    assert result.continue_to_poll is False
+    assert result.response[0].outputs["DisplayScore"] == 83.0
+    assert result.response[0].outputs["State"] == "done"
+    client.get_job.assert_called_once_with(job_id="job-123")
+
+
+def test_wait_for_job_stops_on_terminal_error_without_score():
+    client = MagicMock()
+    client.get_job.return_value = {"ID": "job-123", "State": "error", "Score": 0.83}
+
+    result = Twinwave.wait_for_job({"job_id": "job-123"}, client)
+
+    assert result.continue_to_poll is False
+    assert result.response.outputs == {"ID": "job-123", "State": "error"}
+    client.get_job.assert_called_once_with(job_id="job-123")
+
+
 def test_download_job_pdf_uses_binary_response(mocker):
     client = Twinwave.Client(api_token="test-token", verify=True, proxy=False)
     request = mocker.patch.object(client, "_http_request", return_value=b"%PDF-1.7")

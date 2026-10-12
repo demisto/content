@@ -2,7 +2,7 @@ category: Data Enrichment & Threat Intelligence
 sectionorder:
 - Connect
 - Collect
-provider: CrowdStrike
+provider: Cisco Systems
 commonfields:
   id: Twinwave
   version: -1
@@ -154,6 +154,32 @@ script:
   - arguments:
     - name: job_id
       required: true
+      description: The ID of the Twinwave job to wait for.
+    - name: interval_in_seconds
+      defaultValue: "60"
+      description: How often to check the job status, in seconds.
+    - name: timeout_in_seconds
+      defaultValue: "3600"
+      description: Maximum time to wait for the job to complete, in seconds.
+    - name: hide_polling_output
+      hidden: true
+      description: Hide intermediate polling output.
+    description: Wait for a Twinwave job to complete and return its final summary and score.
+    name: twinwave-wait-job
+    polling: true
+    outputs:
+    - contextPath: Twinwave.JobSummary.ID
+      description: Twinwave job ID.
+      type: Unknown
+    - contextPath: Twinwave.JobSummary.State
+      description: Current job status while polling, or final status.
+      type: Unknown
+    - contextPath: Twinwave.JobSummary.DisplayScore
+      description: Final score, returned after the job completes.
+      type: Unknown
+  - arguments:
+    - name: job_id
+      required: true
       description: The job ID.
     description: Download a completed job's PDF report to the War Room.
     name: twinwave-download-job-pdf
@@ -295,6 +321,6 @@ script:
   script: ''
   subtype: python3
   type: python
-fromversion: 6.0.0
+fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
