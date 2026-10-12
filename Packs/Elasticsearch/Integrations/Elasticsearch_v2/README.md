@@ -871,22 +871,22 @@ Run a shell command on one or more Elastic Defend endpoints.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.agents | String | Agent IDs targeted by the action. |
-| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.agentState | Unknown | Response action state for each agent. |
-| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.agentType | String | Agent type. |
-| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.command | String | Response action command. |
-| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.completedAt | String | Action completion time. |
-| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.createdBy | String | User who created the action. |
-| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.hosts | Unknown | Host names associated with the agents. |
-| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.id | String | Response action ID. |
-| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.isComplete | Boolean | Whether the action is complete. |
-| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.isExpired | Boolean | Whether the action is expired. |
-| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.outputs | Unknown | Outputs for each agent. |
-| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.parameters | Unknown | Action parameters. |
-| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.startedAt | Date | Action start time. |
-| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.status | String | Action status. |
-| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.wasCancelled | Boolean | Whether the action was cancelled. |
-| Elasticsearch.Kibana.EndpointExecuteCommandAction.data.wasSuccessful | Boolean | Whether the action was successful. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.agents | String | Agent IDs targeted by the action. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.agentState | Unknown | Response action state for each agent. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.agentType | String | Agent type. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.command | String | Response action command. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.completedAt | String | Action completion time. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.createdBy | String | User who created the action. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.hosts | Unknown | Host names associated with the agents. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.id | String | Response action ID. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.isComplete | Boolean | Whether the action is complete. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.isExpired | Boolean | Whether the action is expired. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.outputs | Unknown | Outputs for each agent. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.parameters | Unknown | Action parameters. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.startedAt | Date | Action start time. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.status | String | Action status. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.wasCancelled | Boolean | Whether the action was cancelled. |
+| Elasticsearch.Kibana.EndpointExecuteCommandAction.wasSuccessful | Boolean | Whether the action was successful. |
 
 #### Context Example
 
@@ -943,22 +943,22 @@ Retrieve the details of a response action by its ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Elasticsearch.Kibana.EndpointGetActionDetails.data.agents | String | The agent IDs to which the response action was sent. |
-| Elasticsearch.Kibana.EndpointGetActionDetails.data.agentState | Unknown | The response action state for each agent ID. |
-| Elasticsearch.Kibana.EndpointGetActionDetails.data.agentType | String | The agent type. |
-| Elasticsearch.Kibana.EndpointGetActionDetails.data.command | String | The response action command. |
-| Elasticsearch.Kibana.EndpointGetActionDetails.data.completedAt | String | The response action completion time. |
-| Elasticsearch.Kibana.EndpointGetActionDetails.data.createdBy | String | The user who created the response action. |
-| Elasticsearch.Kibana.EndpointGetActionDetails.data.hosts | Unknown | The host names associated with the agent IDs. |
-| Elasticsearch.Kibana.EndpointGetActionDetails.data.id | String | The response action ID. |
-| Elasticsearch.Kibana.EndpointGetActionDetails.data.isComplete | Boolean | Whether the response action is complete. |
-| Elasticsearch.Kibana.EndpointGetActionDetails.data.isExpired | Boolean | Whether the response action is expired. |
-| Elasticsearch.Kibana.EndpointGetActionDetails.data.outputs | Unknown | The response action outputs for each agent ID. |
-| Elasticsearch.Kibana.EndpointGetActionDetails.data.parameters | Unknown | The response action parameters. |
-| Elasticsearch.Kibana.EndpointGetActionDetails.data.startedAt | String | The response action start time. |
-| Elasticsearch.Kibana.EndpointGetActionDetails.data.status | String | The response action status. |
-| Elasticsearch.Kibana.EndpointGetActionDetails.data.wasCancelled | Boolean | Whether the response action was cancelled. |
-| Elasticsearch.Kibana.EndpointGetActionDetails.data.wasSuccessful | Boolean | Whether the response action was successful. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.agents | String | The agent IDs to which the response action was sent. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.agentState | Unknown | The response action state for each agent ID. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.agentType | String | The agent type. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.command | String | The response action command. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.completedAt | String | The response action completion time. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.createdBy | String | The user who created the response action. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.hosts | Unknown | The host names associated with the agent IDs. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.id | String | The response action ID. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.isComplete | Boolean | Whether the response action is complete. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.isExpired | Boolean | Whether the response action is expired. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.outputs | Unknown | The response action outputs for each agent ID. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.parameters | Unknown | The response action parameters. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.startedAt | String | The response action start time. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.status | String | The response action status. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.wasCancelled | Boolean | Whether the response action was cancelled. |
+| Elasticsearch.Kibana.EndpointGetActionDetails.wasSuccessful | Boolean | Whether the response action was successful. |
 
 #### Context Example
 
@@ -1124,21 +1124,20 @@ Isolate an endpoint from the network. The endpoint remains isolated until it's r
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Elasticsearch.Kibana.EndpointIsolationAction.action | String | The response action ID. |
-| Elasticsearch.Kibana.EndpointIsolationAction.data.agents | String | The agent IDs to which the response action was sent. |
-| Elasticsearch.Kibana.EndpointIsolationAction.data.agentState | Unknown | The response action state for each agent ID. |
-| Elasticsearch.Kibana.EndpointIsolationAction.data.agentType | String | The agent type. |
-| Elasticsearch.Kibana.EndpointIsolationAction.data.command | String | The response action command. |
-| Elasticsearch.Kibana.EndpointGetActionDetails.data.completedAt | String | The response action completion time. |
-| Elasticsearch.Kibana.EndpointIsolationAction.data.createdBy | String | The user who created the response action. |
-| Elasticsearch.Kibana.EndpointIsolationAction.data.hosts | Unknown | The host names associated with the agent IDs. |
-| Elasticsearch.Kibana.EndpointIsolationAction.data.isComplete | Boolean | Whether the response action is complete. |
-| Elasticsearch.Kibana.EndpointIsolationAction.data.isExpired | Boolean | Whether the response action is expired. |
-| Elasticsearch.Kibana.EndpointIsolationAction.data.outputs | Unknown | The response action outputs for each agent ID. |
-| Elasticsearch.Kibana.EndpointIsolationAction.data.startedAt | Date | The response action start time. |
-| Elasticsearch.Kibana.EndpointIsolationAction.data.status | String | The response action status. |
-| Elasticsearch.Kibana.EndpointIsolationAction.data.wasCancelled | Boolean | Whether the response action was cancelled. |
-| Elasticsearch.Kibana.EndpointIsolationAction.data.wasSuccessful | Boolean | Whether the response action was successful. |
+| Elasticsearch.Kibana.EndpointIsolationAction.agents | String | The agent IDs to which the response action was sent. |
+| Elasticsearch.Kibana.EndpointIsolationAction.agentState | Unknown | The response action state for each agent ID. |
+| Elasticsearch.Kibana.EndpointIsolationAction.agentType | String | The agent type. |
+| Elasticsearch.Kibana.EndpointIsolationAction.command | String | The response action command. |
+| Elasticsearch.Kibana.EndpointIsolationAction.completedAt | String | The response action completion time. |
+| Elasticsearch.Kibana.EndpointIsolationAction.createdBy | String | The user who created the response action. |
+| Elasticsearch.Kibana.EndpointIsolationAction.hosts | Unknown | The host names associated with the agent IDs. |
+| Elasticsearch.Kibana.EndpointIsolationAction.isComplete | Boolean | Whether the response action is complete. |
+| Elasticsearch.Kibana.EndpointIsolationAction.isExpired | Boolean | Whether the response action is expired. |
+| Elasticsearch.Kibana.EndpointIsolationAction.outputs | Unknown | The response action outputs for each agent ID. |
+| Elasticsearch.Kibana.EndpointIsolationAction.startedAt | Date | The response action start time. |
+| Elasticsearch.Kibana.EndpointIsolationAction.status | String | The response action status. |
+| Elasticsearch.Kibana.EndpointIsolationAction.wasCancelled | Boolean | Whether the response action was cancelled. |
+| Elasticsearch.Kibana.EndpointIsolationAction.wasSuccessful | Boolean | Whether the response action was successful. |
 
 #### Command Example
 
@@ -1198,21 +1197,20 @@ Release an isolated endpoint so it can rejoin the network.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Elasticsearch.Kibana.EndpointUnisolationAction.action | String | The response action ID. |
-| Elasticsearch.Kibana.EndpointUnisolationAction.data.agents | String | The agent IDs targeted by the action. |
-| Elasticsearch.Kibana.EndpointUnisolationAction.data.agentState | Unknown | The response action state for each agent. |
-| Elasticsearch.Kibana.EndpointUnisolationAction.data.agentType | String | The agent type. |
-| Elasticsearch.Kibana.EndpointUnisolationAction.data.command | String | The response action command. |
-| Elasticsearch.Kibana.EndpointGetActionDetails.data.completedAt | String | The response action completion time. |
-| Elasticsearch.Kibana.EndpointUnisolationAction.data.createdBy | String | The user who created the action. |
-| Elasticsearch.Kibana.EndpointUnisolationAction.data.hosts | Unknown | Host names associated with the agents. |
-| Elasticsearch.Kibana.EndpointUnisolationAction.data.isComplete | Boolean | Whether the action is complete. |
-| Elasticsearch.Kibana.EndpointUnisolationAction.data.isExpired | Boolean | Whether the action is expired. |
-| Elasticsearch.Kibana.EndpointUnisolationAction.data.outputs | Unknown | Outputs for each agent. |
-| Elasticsearch.Kibana.EndpointUnisolationAction.data.startedAt | Date | Action start time. |
-| Elasticsearch.Kibana.EndpointUnisolationAction.data.status | String | Action status. |
-| Elasticsearch.Kibana.EndpointUnisolationAction.data.wasCancelled | Boolean | Whether the action was cancelled. |
-| Elasticsearch.Kibana.EndpointUnisolationAction.data.wasSuccessful | Boolean | Whether the action was successful. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.agents | String | The agent IDs targeted by the action. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.agentState | Unknown | The response action state for each agent. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.agentType | String | The agent type. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.command | String | The response action command. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.completedAt | String | The response action completion time. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.createdBy | String | The user who created the action. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.hosts | Unknown | Host names associated with the agents. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.isComplete | Boolean | Whether the action is complete. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.isExpired | Boolean | Whether the action is expired. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.outputs | Unknown | Outputs for each agent. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.startedAt | Date | Action start time. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.status | String | Action status. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.wasCancelled | Boolean | Whether the action was cancelled. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.wasSuccessful | Boolean | Whether the action was successful. |
 
 #### Command Example
 

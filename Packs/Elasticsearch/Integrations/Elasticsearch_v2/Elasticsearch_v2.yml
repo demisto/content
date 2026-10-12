@@ -1468,52 +1468,52 @@ script:
     - name: timeout
       description: The maximum timeout value in seconds before the command is terminated. Minimum value is 1.
     outputs:
-    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.agents
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.agents
       description: The agent IDs to which the response action was sent.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.agentState
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.agentState
       description: The response action state for each agent ID.
       type: Unknown
-    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.agentType
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.agentType
       description: The agent type.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.command
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.command
       description: The response action command.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.completedAt
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.completedAt
       description: The response action completion time (e.g., "2023-07-28T18:43:27.362Z").
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.createdBy
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.createdBy
       description: The user who created the response action.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.hosts
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.hosts
       description: The host names associated with the agent IDs.
       type: Unknown
-    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.id
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.id
       description: The ID of the response action.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.isComplete
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.isComplete
       description: Whether the response action is complete.
       type: Boolean
-    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.isExpired
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.isExpired
       description: Whether the response action is expired.
       type: Boolean
-    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.outputs
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.outputs
       description: The response action outputs for each agent ID.
       type: Unknown
-    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.parameters
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.parameters
       description: The response action parameters for each agent ID.
       type: Unknown
-    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.startedAt
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.startedAt
       description: The response action start time (e.g., "2023-07-28T18:43:27.362Z").
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.status
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.status
       description: The response action status.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.wasCancelled
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.wasCancelled
       description: Whether the response action was cancelled.
       type: Boolean
-    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.data.wasSuccessful
+    - contextPath: Elasticsearch.Kibana.EndpointExecuteCommandAction.wasSuccessful
       description: Whether the response action was successful.
       type: Boolean
   - name: es-kibana-endpoint-action-details
@@ -1525,52 +1525,52 @@ script:
       description: The ID of the response action to retrieve.
       required: true
     outputs:
-    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.agents
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.agents
       description: The agent IDs to which the response action was sent.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.agentState
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.agentState
       description: The response action state for each agent ID.
       type: Unknown
-    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.agentType
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.agentType
       description: The agent type.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.command
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.command
       description: The response action command.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.completedAt
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.completedAt
       description: The response action completion time (e.g., "2023-07-28T18:43:27.362Z").
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.createdBy
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.createdBy
       description: The user who created the response action.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.hosts
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.hosts
       description: The host names associated with the agent IDs.
       type: Unknown
-    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.id
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.id
       description: The ID of the response action.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.isComplete
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.isComplete
       description: Whether the response action is complete.
       type: Boolean
-    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.isExpired
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.isExpired
       description: Whether the response action is expired.
       type: Boolean
-    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.outputs
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.outputs
       description: The response action outputs for each agent ID.
       type: Unknown
-    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.parameters
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.parameters
       description: The response action parameters for each agent ID.
       type: Unknown
-    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.startedAt
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.startedAt
       description: The response action start time (e.g., "2023-07-28T18:43:27.362Z").
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.status
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.status
       description: The response action status.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.wasCancelled
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.wasCancelled
       description: Whether the response action was cancelled.
       type: Boolean
-    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.wasSuccessful
+    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.wasSuccessful
       description: Whether the response action was successful.
       type: Boolean
   - name: es-kibana-endpoint-isolate
@@ -1601,49 +1601,46 @@ script:
     - name: comment
       description: The optional comment for the isolation action. Maximum length is 30,000 characters.
     outputs:
-    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.action
-      description: The response action ID.
-      type: String
-    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.agents
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.agents
       description: The agent IDs to which the response action was sent.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.agentState
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.agentState
       description: The response action state for each agent ID.
       type: Unknown
-    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.agentType
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.agentType
       description: The agent type.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.command
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.command
       description: The response action command.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.completedAt
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.completedAt
       description: The response action completion time (e.g., "2023-07-28T18:43:27.362Z").
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.createdBy
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.createdBy
       description: The user who created the response action.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.hosts
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.hosts
       description: The host names associated with the agent IDs.
       type: Unknown
-    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.isComplete
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.isComplete
       description: Whether the response action is complete.
       type: Boolean
-    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.isExpired
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.isExpired
       description: Whether the response action is expired.
       type: Boolean
-    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.outputs
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.outputs
       description: The response action outputs for each agent ID.
       type: Unknown
-    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.startedAt
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.startedAt
       description: The response action start time (e.g., "2023-07-28T18:43:27.362Z").
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.status
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.status
       description: The response action status.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.wasCancelled
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.wasCancelled
       description: Whether the response action was cancelled.
       type: Boolean
-    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.wasSuccessful
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.wasSuccessful
       description: Whether the response action was successful.
       type: Boolean
   - name: es-kibana-endpoint-unisolate
@@ -1674,49 +1671,46 @@ script:
     - name: comment
       description: The optional comment for the isolation action. Maximum length is 30,000 characters.
     outputs:
-    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.action
-      description: The response action ID.
-      type: String
-    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.agents
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.agents
       description: The agent IDs to which the response action was sent.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.agentState
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.agentState
       description: The response action state for each agent ID.
       type: Unknown
-    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.agentType
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.agentType
       description: The agent type.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.command
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.command
       description: The response action command.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointGetActionDetails.data.completedAt
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.completedAt
       description: The response action completion time (e.g., "2023-07-28T18:43:27.362Z").
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.createdBy
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.createdBy
       description: The user who created the response action.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.hosts
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.hosts
       description: The host names associated with the agent IDs.
       type: Unknown
-    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.isComplete
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.isComplete
       description: Whether the response action is complete.
       type: Boolean
-    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.isExpired
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.isExpired
       description: Whether the response action is expired.
       type: Boolean
-    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.outputs
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.outputs
       description: The response action outputs for each agent ID.
       type: Unknown
-    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.startedAt
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.startedAt
       description: The response action start time (e.g., "2023-07-28T18:43:27.362Z").
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.status
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.status
       description: The response action status.
       type: String
-    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.wasCancelled
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.wasCancelled
       description: Whether the response action was cancelled.
       type: Boolean
-    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.data.wasSuccessful
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.wasSuccessful
       description: Whether the response action was successful.
       type: Boolean
   - name: es-kibana-endpoint-metadata-get

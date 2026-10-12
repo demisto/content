@@ -1445,6 +1445,25 @@ def test_search_command_with_query_esql(mocker):
     assert call_args["body"] == {"query": f"{query}| LIMIT 2"}
 
 
+def test_update_http_body():
+    import Elasticsearch_v2
+
+    body = {"endpoint_ids": ["agent-1"]}
+    result = Elasticsearch_v2.update_http_body(
+        body,
+        {"alert_ids": "alert-1,alert-2", "comment": "investigation", "agent_type": ""},
+        array_fields={"alert_ids", "case_ids"},
+        string_fields={"agent_type", "comment"},
+    )
+
+    assert result is body
+    assert body == {
+        "endpoint_ids": ["agent-1"],
+        "alert_ids": ["alert-1", "alert-2"],
+        "comment": "investigation",
+    }
+
+
 class TestGetElasticToken:
     """Tests for the get_elastic_token function."""
 
