@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "Service accounts now require the write:comments scope (adding notes/comments, outgoing mirroring), the read:comments scope (incoming mirroring), and both scopes for clearing notes/comments. Issue notes are no longer included in fetched incidents or in the get issue/threat command outputs. The 'Wiz Issue Note' field is no longer populated by the WizDefend Mapper."
+    "breakingChangesNotes": "Service accounts now require the write:comments scope (adding notes/comments, outgoing mirroring), the read:comments scope (incoming mirroring), and both scopes plus admin:comments for clearing notes/comments written by other authors. admin:comments does not replace read:comments or write:comments. Issue notes are no longer included in fetched incidents or in the get issue/threat command outputs. The 'Wiz Issue Note' field is no longer populated by the WizDefend Mapper."
 }
