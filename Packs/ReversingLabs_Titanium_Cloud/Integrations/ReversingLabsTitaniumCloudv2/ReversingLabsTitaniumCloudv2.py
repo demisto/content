@@ -27,7 +27,6 @@ from ReversingLabs.SDK.ticloud import (
     URLThreatIntelligence,
     YARAHunting,
     YARARetroHunting,
-    ExpressionSearch
 )
 
 VERSION = f"v{get_pack_version() or '2.7.1'}"
