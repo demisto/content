@@ -1874,7 +1874,7 @@ Retrieve the tags of the specified Blob. Required Permissions: Microsoft.Storage
 ### azure-compute-vm-create
 
 ***
-Creates a virtual machine instance with the specified OS image. Required Permissions: Microsoft.Compute/virtualMachines/write.
+Creates a virtual machine instance with the specified OS image. Required permissions: Microsoft.Compute/virtualMachines/write.
 
 #### Base Command
 
@@ -1884,16 +1884,16 @@ Creates a virtual machine instance with the specified OS image. Required Permiss
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group to which the new virtual machine will belong. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | virtual_machine_name | The name of the virtual machine to create. | Required |
 | virtual_machine_location | The location in which to create the virtual machine. Possible values are: westus2, westus, westindia, westeurope, westcentralus, uksouth, ukwest, southeastasia, northcentralus, northeurope, southcentralus, southindia, francesouth, francecentral, japaneast, japanwest, koreacentral, koreasouth, brazilsouth, canadacentral, canadaeast, centralindia, eastus2, eastasia, centralus, eastus, australiacentral, australiacentral2, australiaeast, australiasoutheast. | Required |
-| nic_name | The name of the Network Interface to link the virtual machine with. Note that the virtual machine's location property must match that of the Network Interface you choose to link it to. | Required |
-| vm_size | The name of a VirtualMachineSize, which determines the size of the deployed virtual machine. Possible values are: Standard_D1_v2, Standard_D2_v2, Standard_D2s_v3, Standard_B1ms, Standard_B1s, Standard_B2s, Standard_B4ms, Standard_D4s_v3, Standard_DS1_v2, Standard_DS2_v2, Standard_DS3_v2, Promo_DS2_v2, Promo_DS3_v2. | Required |
-| os_image | The base operating system image of the virtual machine. Either this argument or the group of arguments sku, publisher, version, and offer must be provided. Possible values are: Ubuntu Server 14.04 LTS, Ubuntu Server 16.04 LTS, Ubuntu Server 18.04 LTS, Red Hat Enterprise Linux 7.6, CentOS-based 7.5, Windows Server 2012 R2 Datacenter, Windows Server 2016 Datacenter, Windows 10 Pro Version 1803, Windows 10 Pro Version 1809. | Optional |
-| sku | The SKU of the OS image to be used. Default is 2016-Datacenter. | Optional |
+| nic_name | The name of the Network Interface to link the virtual machine. Note that the virtual machine's location property must match that of the Network Interface to which it is linked. | Required |
+| vm_size | The name of a VirtualMachineSize object, which determines the size of the deployed virtual machine. Possible values are: Standard_D1_v2, Standard_D2_v2, Standard_D2s_v3, Standard_B1ms, Standard_B1s, Standard_B2s, Standard_B4ms, Standard_D4s_v3, Standard_DS1_v2, Standard_DS2_v2, Standard_DS3_v2, Promo_DS2_v2, Promo_DS3_v2. | Required |
+| os_image | The base operating system image of the virtual machine. It is mandatory to provide either this argument or the sku, publisher, version, and offer arguments. Possible values are: Ubuntu Server 14.04 LTS, Ubuntu Server 16.04 LTS, Ubuntu Server 18.04 LTS, Red Hat Enterprise Linux 7.6, CentOS-based 7.5, Windows Server 2012 R2 Datacenter, Windows Server 2016 Datacenter, Windows 10 Pro Version 1803, Windows 10 Pro Version 1809. | Optional |
+| sku | The SKU of the OS image to use. Default is 2016-Datacenter. | Optional |
 | publisher | The name of the publisher of the OS image. Default is MicrosoftWindowsServer. | Optional |
-| version | The version of the image to use. The supported formats are Major.Minor.Build or 'latest'. Default is latest. | Optional |
+| version | The version of the image to use. Supported formats are Major.Minor.Build or latest. Default is latest. | Optional |
 | offer | The offer of the platform image or marketplace image used to create the virtual machine. Default is WindowsServer. | Optional |
 | admin_username | The admin username to use when creating the virtual machine. | Optional |
 | admin_password | The admin password to use when creating the virtual machine. | Optional |
@@ -1902,11 +1902,11 @@ Creates a virtual machine instance with the specified OS image. Required Permiss
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Compute.VirtualMachines.id | String | The ID of the resource. |
-| Azure.Compute.VirtualMachines.name | String | The name of the resource. |
-| Azure.Compute.VirtualMachines.type | String | The type of the resource. |
-| Azure.Compute.VirtualMachines.location | String | The location of the resource. |
-| Azure.Compute.VirtualMachines.tags | Unknown | The tags of the resource. |
+| Azure.Compute.VirtualMachines.id | String | The ID of the virtual machine. |
+| Azure.Compute.VirtualMachines.name | String | The name of the virtual machine. |
+| Azure.Compute.VirtualMachines.type | String | The type of the virtual machine. |
+| Azure.Compute.VirtualMachines.location | String | The location of the virtual machine. |
+| Azure.Compute.VirtualMachines.tags | Unknown | The tags of the virtual machine. |
 | Azure.Compute.VirtualMachines.properties.vmId | String | The unique ID of the virtual machine. |
 | Azure.Compute.VirtualMachines.properties.provisioningState | String | The provisioning state, which only appears in the response. |
 | Azure.Compute.VirtualMachines.properties.hardwareProfile | Unknown | The hardware settings for the virtual machine. |
@@ -1917,7 +1917,7 @@ Creates a virtual machine instance with the specified OS image. Required Permiss
 ### azure-compute-vm-delete
 
 ***
-Deallocates and deletes a specified virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/deallocate/action, Microsoft.Compute/virtualMachines/delete.
+Deallocates and deletes a specified virtual machine. Required permissions: Microsoft.Compute/virtualMachines/deallocate/action, Microsoft.Compute/virtualMachines/delete.
 
 #### Base Command
 
@@ -1927,7 +1927,7 @@ Deallocates and deletes a specified virtual machine. Required Permissions: Micro
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group to which the virtual machine belongs. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | virtual_machine_name | The name of the virtual machine to delete. To see all the virtual machines with their associated names for a specific resource group, run the azure-compute-vm-list command. | Required |
 
@@ -2475,7 +2475,7 @@ Create a security rule. Required permissions: Microsoft.Network/networkSecurityG
 ### azure-vn-network-interface-create
 
 ***
-Creates a virtual machine network interface. Required Permissions: Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/networkSecurityGroups/join/action.
+Creates a virtual machine network interface. Required permissions: Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/networkSecurityGroups/join/action.
 
 #### Base Command
 
@@ -2485,26 +2485,26 @@ Creates a virtual machine network interface. Required Permissions: Microsoft.Net
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group to which the new network interface will belong. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | nic_name | The network interface name. | Required |
 | nic_location | The location in which to create the network interface. Possible values are: westus2, westus, westindia, westeurope, westcentralus, uksouth, ukwest, southeastasia, northcentralus, northeurope, southcentralus, southindia, francesouth, francecentral, japaneast, japanwest, koreacentral, koreasouth, brazilsouth, canadacentral, canadaeast, centralindia, eastus2, eastasia, centralus, eastus, australiacentral, australiacentral2, australiaeast, australiasoutheast. | Required |
-| vnet_name | The virtual network name of the interface. | Required |
-| subnet_name | The subnet name of the interface. | Required |
+| vnet_name | The name of the virtual network of the network interface. | Required |
+| subnet_name | The name of the subnet of the network interface. | Required |
 | address_assignment_method | The address assignment method. Possible values are: Static, Dynamic. Default is Dynamic. | Optional |
-| private_ip_address | The private IP address of the interface. Required if the address_assignment_method argument is set to Static. | Optional |
-| ip_config_name | The IP address configuration name. | Required |
-| network_security_group | The network security group of the interface. | Optional |
+| private_ip_address | The private IP address of the network interface. Required if the address_assignment_method argument is set to Static. | Optional |
+| ip_config_name | The name of the IP address configuration. | Required |
+| network_security_group | The network security group of the network interface. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.VirtualNetworks.NetworkInterfaces.id | String | The ID of the resource. |
-| Azure.VirtualNetworks.NetworkInterfaces.name | String | The name of the resource. |
-| Azure.VirtualNetworks.NetworkInterfaces.etag | String | The unique read-only string that changes whenever the resource is updated. |
-| Azure.VirtualNetworks.NetworkInterfaces.location | String | The location of the resource. |
-| Azure.VirtualNetworks.NetworkInterfaces.tags | Unknown | The tags of the resource. |
+| Azure.VirtualNetworks.NetworkInterfaces.id | String | The ID of the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.name | String | The name of the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.etag | String | The unique read-only string that changes whenever the network interface is updated. |
+| Azure.VirtualNetworks.NetworkInterfaces.location | String | The location of the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.tags | Unknown | The tags of the network interface. |
 | Azure.VirtualNetworks.NetworkInterfaces.properties.provisioningState | String | The provisioning state, which only appears in the response. |
 | Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations | Unknown | The IP configurations of the network interface, containing the name, id, and properties fields. |
 | Azure.VirtualNetworks.NetworkInterfaces.properties.networkSecurityGroup | Unknown | The network security group attached to the network interface. |

@@ -12304,10 +12304,10 @@ script:
         description: The additional properties used to further configure the firewall resource.
         type: Unknown
   - name: azure-compute-vm-create
-    description: "Creates a virtual machine instance with the specified OS image. Required Permissions: Microsoft.Compute/virtualMachines/write."
+    description: "Creates a virtual machine instance with the specified OS image. Required permissions: Microsoft.Compute/virtualMachines/write."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
@@ -12315,10 +12315,10 @@ script:
       required: false
       required:platform: true
     - name: virtual_machine_name
-      description: "The name of the virtual machine to create."
+      description: The name of the virtual machine to create.
       required: true
     - name: virtual_machine_location
-      description: "The location in which to create the virtual machine."
+      description: The location in which to create the virtual machine.
       required: true
       auto: PREDEFINED
       predefined:
@@ -12353,10 +12353,10 @@ script:
       - australiaeast
       - australiasoutheast
     - name: nic_name
-      description: "The name of the Network Interface to link the virtual machine with. Note that the virtual machine's location property must match that of the Network Interface you choose to link it to."
+      description: The name of the Network Interface to link the virtual machine. Note that the virtual machine's location property must match that of the Network Interface to which it is linked.
       required: true
     - name: vm_size
-      description: "The name of a VirtualMachineSize, which determines the size of the deployed virtual machine."
+      description: The name of a VirtualMachineSize object, which determines the size of the deployed virtual machine.
       required: true
       auto: PREDEFINED
       predefined:
@@ -12374,7 +12374,7 @@ script:
       - Promo_DS2_v2
       - Promo_DS3_v2
     - name: os_image
-      description: "The base operating system image of the virtual machine. Either this argument or the group of arguments sku, publisher, version, and offer must be provided."
+      description: The base operating system image of the virtual machine. It is mandatory to provide either this argument or the sku, publisher, version, and offer arguments.
       required: false
       auto: PREDEFINED
       predefined:
@@ -12388,43 +12388,43 @@ script:
       - Windows 10 Pro Version 1803
       - Windows 10 Pro Version 1809
     - name: sku
-      description: "The SKU of the OS image to be used."
+      description: The SKU of the OS image to use.
       required: false
       defaultValue: 2016-Datacenter
     - name: publisher
-      description: "The name of the publisher of the OS image."
+      description: The name of the publisher of the OS image.
       required: false
       defaultValue: MicrosoftWindowsServer
     - name: version
-      description: "The version of the image to use. The supported formats are Major.Minor.Build or 'latest'."
+      description: The version of the image to use. Supported formats are Major.Minor.Build or latest.
       required: false
       defaultValue: latest
     - name: offer
-      description: "The offer of the platform image or marketplace image used to create the virtual machine."
+      description: The offer of the platform image or marketplace image used to create the virtual machine.
       required: false
       defaultValue: WindowsServer
     - name: admin_username
-      description: "The admin username to use when creating the virtual machine."
+      description: The admin username to use when creating the virtual machine.
       required: false
     - name: admin_password
-      description: "The admin password to use when creating the virtual machine."
+      description: The admin password to use when creating the virtual machine.
       required: false
       secret: true
     outputs:
       - contextPath: Azure.Compute.VirtualMachines.id
-        description: The ID of the resource.
+        description: The ID of the virtual machine.
         type: String
       - contextPath: Azure.Compute.VirtualMachines.name
-        description: The name of the resource.
+        description: The name of the virtual machine.
         type: String
       - contextPath: Azure.Compute.VirtualMachines.type
-        description: The type of the resource.
+        description: The type of the virtual machine.
         type: String
       - contextPath: Azure.Compute.VirtualMachines.location
-        description: The location of the resource.
+        description: The location of the virtual machine.
         type: String
       - contextPath: Azure.Compute.VirtualMachines.tags
-        description: The tags of the resource.
+        description: The tags of the virtual machine.
         type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.properties.vmId
         description: The unique ID of the virtual machine.
@@ -12445,11 +12445,11 @@ script:
         description: The network interfaces of the virtual machine.
         type: Unknown
   - name: azure-compute-vm-delete
-    description: "Deallocates and deletes a specified virtual machine. Required Permissions: Microsoft.Compute/virtualMachines/deallocate/action, Microsoft.Compute/virtualMachines/delete."
+    description: "Deallocates and deletes a specified virtual machine. Required permissions: Microsoft.Compute/virtualMachines/deallocate/action, Microsoft.Compute/virtualMachines/delete."
     execution: true
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
@@ -12457,14 +12457,14 @@ script:
       required: false
       required:platform: true
     - name: virtual_machine_name
-      description: "The name of the virtual machine to delete. To see all the virtual machines with their associated names for a specific resource group, run the azure-compute-vm-list command."
+      description: The name of the virtual machine to delete. To see all the virtual machines with their associated names for a specific resource group, run the azure-compute-vm-list command.
       required: true
     outputs: []
   - name: azure-vn-network-interface-create
-    description: "Creates a virtual machine network interface. Required Permissions: Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/networkSecurityGroups/join/action."
+    description: "Creates a virtual machine network interface. Required permissions: Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/networkSecurityGroups/join/action."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
@@ -12472,10 +12472,10 @@ script:
       required: false
       required:platform: true
     - name: nic_name
-      description: "The network interface name."
+      description: The network interface name.
       required: true
     - name: nic_location
-      description: "The location in which to create the network interface."
+      description: The location in which to create the network interface.
       required: true
       auto: PREDEFINED
       predefined:
@@ -12510,13 +12510,13 @@ script:
       - australiaeast
       - australiasoutheast
     - name: vnet_name
-      description: "The virtual network name of the interface."
+      description: The name of the virtual network of the network interface.
       required: true
     - name: subnet_name
-      description: "The subnet name of the interface."
+      description: The name of the subnet of the network interface.
       required: true
     - name: address_assignment_method
-      description: "The address assignment method."
+      description: The address assignment method.
       required: false
       auto: PREDEFINED
       predefined:
@@ -12524,29 +12524,29 @@ script:
       - Dynamic
       defaultValue: Dynamic
     - name: private_ip_address
-      description: "The private IP address of the interface. Required if the address_assignment_method argument is set to Static."
+      description: The private IP address of the network interface. Required if the address_assignment_method argument is set to Static.
       required: false
     - name: ip_config_name
-      description: "The IP address configuration name."
+      description: The name of the IP address configuration.
       required: true
     - name: network_security_group
-      description: "The network security group of the interface."
+      description: The network security group of the network interface.
       required: false
     outputs:
       - contextPath: Azure.VirtualNetworks.NetworkInterfaces.id
-        description: The ID of the resource.
+        description: The ID of the network interface.
         type: String
       - contextPath: Azure.VirtualNetworks.NetworkInterfaces.name
-        description: The name of the resource.
+        description: The name of the network interface.
         type: String
       - contextPath: Azure.VirtualNetworks.NetworkInterfaces.etag
-        description: The unique read-only string that changes whenever the resource is updated.
+        description: The unique read-only string that changes whenever the network interface is updated.
         type: String
       - contextPath: Azure.VirtualNetworks.NetworkInterfaces.location
-        description: The location of the resource.
+        description: The location of the network interface.
         type: String
       - contextPath: Azure.VirtualNetworks.NetworkInterfaces.tags
-        description: The tags of the resource.
+        description: The tags of the network interface.
         type: Unknown
       - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.provisioningState
         description: The provisioning state, which only appears in the response.
