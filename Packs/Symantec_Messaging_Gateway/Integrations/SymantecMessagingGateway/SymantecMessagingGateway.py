@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 import urllib3
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
@@ -46,7 +46,8 @@ def login():
     for tag in hidden_tags:
         name = tag.attrs.get("name", None)
         if name == "lastlogin":
-            last_login = tag.attrs["value"]
+            # attrs values may be multi-valued, but "value" is always single-valued here
+            last_login = str(tag.attrs["value"])
     cookies = {"JSESSIONID": login_jsession}
     demisto.debug(f"{last_login=}")
     data = {"lastlogin": last_login, "username": USERNAME, "password": PASSWORD}
@@ -89,11 +90,16 @@ def get_selected_sender_groups(group):
         a_href = td.find("a")  # Parse <a>
         if a_href:
             href_string = a_href.string  # Extracts the string from the <a>string</a> tags
+            if not href_string:  # <a> has no text, cannot be the group we are looking for
+                continue
             checked_group = " ".join(href_string.split())  # Removes whitespaces from string
             if checked_group == group:
-                previous_td = td.previous_sibling.previous_sibling
+                previous_sibling = td.previous_sibling
+                previous_td = previous_sibling.previous_sibling if previous_sibling else None
+                if not isinstance(previous_td, Tag):  # No preceding <td> holding the group <input>
+                    continue
                 input_tag = previous_td.find("input")  # Parse <input> tags
-                if input_tag:
+                if isinstance(input_tag, Tag):
                     group_number = input_tag["value"]
                     return group_number
     return None
@@ -112,7 +118,7 @@ def block_request(ioc, selected_sender_groups):
     # Check if given domain/email address is valid and is not already blocked
     soup = BeautifulSoup(response.text, "lxml")
     # Look for the error message
-    error = soup.find("div", "errorMessageText")
+    error = soup.find("div", class_="errorMessageText")
     if error:  # Error occured
         error_message = " ".join(error.text.split())  # Removes whitespaces from string
         return error_message
@@ -149,6 +155,18 @@ def get_next_page(selected_sender_groups):
     return next_page
 
 
+def get_page_number_options(soup):
+    """
+    Returns the pagination <option> elements of the given parsed page.
+    Raises a DemistoException when the page number selector is missing, instead of failing
+    later with an obscure AttributeError.
+    """
+    page_number_select = soup.find("select", class_="defaultDrop", id="pageNumber")
+    if not isinstance(page_number_select, Tag):
+        raise DemistoException("Could not find the page number selector in the Symantec Messaging Gateway response.")
+    return page_number_select.find_all("option")
+
+
 """ FUNCTIONS """
 
 
@@ -158,9 +176,9 @@ def get_blocked_domains():
     hr = "### SMG Blocked domains:\n"
     soup = BeautifulSoup(blocked_domains.text, "lxml")
     # Handles pagination of Local Bad Sender Domains
-    pages = soup.find("select", "defaultDrop", id="pageNumber").find_all("option")
+    pages = get_page_number_options(soup)
     for _i in range(len(pages)):  # Loop through all pages of blocked IP address
-        tds_array = soup.find_all("td", "paddingL3")  # Parse <td>
+        tds_array = soup.find_all("td", class_="paddingL3")  # Parse <td>
         for td in tds_array:
             a = td.find("a")  # Parse <a>
             if a:
@@ -186,9 +204,9 @@ def get_blocked_ips():
     hr = "### SMG Blocked IP addresses:\n"
     soup = BeautifulSoup(blocked_emails.text, "lxml")
     # Handles pagination of Local Bad Sender IPs
-    pages = soup.find("select", "defaultDrop", id="pageNumber").find_all("option")
+    pages = get_page_number_options(soup)
     for _i in range(len(pages)):  # Loop through all pages of blocked IP address
-        tds_array = soup.find_all("td", "paddingL3")  # Parse <td>
+        tds_array = soup.find_all("td", class_="paddingL3")  # Parse <td>
         for td in tds_array:
             a = td.find("a")  # Parse <a>
             if a:
@@ -233,18 +251,18 @@ def unblock_email(email):
     # Email member number is required in order to send it in the unblock query
     soup = BeautifulSoup(blocked_emails.text, "lxml")
     # Handles pagination of Local Bad Sender Domains
-    pages = soup.find("select", "defaultDrop", id="pageNumber").find_all("option")
+    pages = get_page_number_options(soup)
     for _i in range(len(pages)):  # Loop through all pages of blocked email addresses
-        tds_array = soup.find_all("td", "paddingL3")  # Parse <td>
+        tds_array = soup.find_all("td", class_="paddingL3")  # Parse <td>
         for td in tds_array:
             a = td.find("a")  # Parse <a>
             if a:
                 s = str(a.find_next_sibling(text=True))  # Get checked email address
                 checked_email = "".join(s.split())  # Removes whitespaces from string
                 if checked_email == email:
-                    href = a["href"]  # Get <a href=...>
+                    href = str(a["href"])  # Get <a href=...>, always a single-valued attribute
                     comma_index = href.find(",")  # Get comma sign index in string
-                    selected_group_member = a["href"][comma_index + 1 : -2]  # Get email member number
+                    selected_group_member = href[comma_index + 1 : -2]  # Get email member number
                     break
         # Get next page
         next_page = get_next_page(selected_sender_groups)
@@ -293,18 +311,18 @@ def unblock_domain(domain):
     # Domain member number is required in order to send it in the unblock query
     soup = BeautifulSoup(blocked_domains.text, "lxml")
     # Handles pagination of Local Bad Sender Domains
-    pages = soup.find("select", "defaultDrop", id="pageNumber").find_all("option")
+    pages = get_page_number_options(soup)
     for _i in range(len(pages)):  # Loop through all pages of blocked domains
-        tds_array = soup.find_all("td", "paddingL3")  # Parse <td>
+        tds_array = soup.find_all("td", class_="paddingL3")  # Parse <td>
         for td in tds_array:
             a = td.find("a")  # Parse <a>
             if a:
                 s = str(a.find_next_sibling(text=True))  # Get checked domain
                 checked_domain = "".join(s.split())  # Removed whitespaces from string
                 if checked_domain == domain:
-                    href = a["href"]  # Get <a href=...>
+                    href = str(a["href"])  # Get <a href=...>, always a single-valued attribute
                     comma_index = href.find(",")  # Get comma sign index in string
-                    selected_group_member = a["href"][comma_index + 1 : -2]  # Get domain member number
+                    selected_group_member = href[comma_index + 1 : -2]  # Get domain member number
                     break
         # Get next page
         next_page = get_next_page(selected_sender_groups)
@@ -353,18 +371,18 @@ def unblock_ip(ip):
     # Domain member number is required in order to send it in the unblock query
     soup = BeautifulSoup(blocked_ips.text, "lxml")
     # Handles pagination of Local Bad Sender IPs
-    pages = soup.find("select", "defaultDrop", id="pageNumber").find_all("option")
+    pages = get_page_number_options(soup)
     for _i in range(len(pages)):  # Loop through all pages of blocked IP address
-        tds_array = soup.find_all("td", "paddingL3")  # Parse <td>
+        tds_array = soup.find_all("td", class_="paddingL3")  # Parse <td>
         for td in tds_array:
             a = td.find("a")  # Parse <a>
             if a:
                 s = str(a.find_next_sibling(text=True))  # Get checked IP address
                 checked_ip = "".join(s.split())  # Removed whitespaces from string
                 if checked_ip == ip:
-                    href = a["href"]  # Get <a href=...>
+                    href = str(a["href"])  # Get <a href=...>, always a single-valued attribute
                     comma_index = href.find(",")  # Get comma sign index in string
-                    selected_group_member = a["href"][comma_index + 1 : -2]  # Get IP member number
+                    selected_group_member = href[comma_index + 1 : -2]  # Get IP member number
                     break
         next_page = get_next_page(selected_sender_groups)
         soup = BeautifulSoup(next_page.text, "lxml")

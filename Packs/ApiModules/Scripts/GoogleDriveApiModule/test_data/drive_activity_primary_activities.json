@@ -1,0 +1,807 @@
+{
+  "activities": [
+    {
+      "primaryActionDetail": {
+        "create": {
+          "new": {}
+        }
+      },
+      "targets": [
+        {
+          "driveItem": {
+            "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+            "title": "Copy of conf.json",
+            "file": true,
+            "mimeType": "application/json",
+            "owner": {
+              "user": {
+                "knownUser": {
+                  "personName": "commentstring personName 22222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              },
+              "domain": {
+                "name": "nimbledata.io",
+                "legacyId": "103399509076537965360"
+              },
+              "drive": {
+                "name": "string",
+                "title": "string"
+              }
+            },
+            "driveFile": true,
+            "driveFolder": {
+              "type": "drive folder type"
+            }
+          }
+        },
+        {
+          "drive": {
+            "name": "string",
+            "title": "string",
+            "root": {
+              "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+              "title": "Copy of conf.json",
+              "file": true,
+              "mimeType": "mimeType string",
+              "owner": {
+                "domain": {
+                  "name": "string",
+                  "legacyId": "string"
+                },
+                "user": {
+                  "knownUser": {
+                    "personName": "commentstring personName 22222",
+                    "isCurrentUser": false
+                  },
+                  "deletedUser": true,
+                  "unknownUser": true
+                },
+                "drive": {
+                  "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+                  "title": "Copy of conf.json"
+                }
+              },
+              "driveFile": true,
+              "driveFolder": {
+                "type": "drive folder type"
+              }
+            }
+          }
+        },
+        {
+          "fileComment": {
+            "legacyCommentId": "string legacyCommentId",
+            "legacyDiscussionId": "string legacyDiscussionId",
+            "linkToDiscussion": "string linkToDiscussion",
+            "parent": {
+              "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+              "title": "Copy of conf.json",
+              "file": true,
+              "mimeType": "mimeType string",
+              "owner": {
+                "domain": {
+                  "name": "string",
+                  "legacyId": "string"
+                },
+                "user": {
+                  "knownUser": {
+                    "personName": "commentstring personName 22222",
+                    "isCurrentUser": false
+                  },
+                  "deletedUser": true,
+                  "unknownUser": true
+                },
+                "drive": {
+                  "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+                  "title": "Copy of conf.json"
+                }
+              },
+              "driveFile": true,
+              "driveFolder": {
+                "type": "drive folder type"
+              }
+            }
+          }
+        }
+      ],
+      "timestamp": "2020-09-19T18:07:00.406Z"
+    },
+    {
+      "primaryActionDetail": {
+        "create": {
+          "upload": {}
+        }
+      },
+      "targets": [
+        {
+          "driveItem": {
+            "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+            "title": "Copy of conf.json",
+            "file": true,
+            "mimeType": "application/json",
+            "owner": {
+              "user": {
+                "knownUser": {
+                  "personName": "commentstring personName 22222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              },
+              "domain": {
+                "name": "nimbledata.io",
+                "legacyId": "103399509076537965360"
+              },
+              "drive": {
+                "name": "string",
+                "title": "string"
+              }
+            },
+            "driveFile": true,
+            "driveFolder": {
+              "type": "drive folder type"
+            }
+          }
+        }
+      ],
+      "timestamp": "2020-09-19T18:07:00.406Z"
+    },
+    {
+      "primaryActionDetail": {
+        "create": {
+          "copy": {
+            "originalObject": {
+              "driveItem": {
+                "name": "item/title1",
+                "title": "title1",
+                "file": {},
+                "folder": {
+                  "type": "DEPRICATED FROM API folder type"
+                },
+                "driveFile": {},
+                "driveFolder": {
+                  "type": "DRIVE folder type"
+                }
+              },
+              "drive": {
+                "name": "DRIVE item/title1",
+                "title": "drive title1"
+              }
+            }
+          }
+        }
+      },
+      "targets": [
+        {
+          "driveItem": {
+            "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+            "title": "Copy of conf.json",
+            "file": true,
+            "mimeType": "application/json",
+            "owner": {
+              "user": {
+                "knownUser": {
+                  "personName": "commentstring personName 22222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              },
+              "domain": {
+                "name": "nimbledata.io",
+                "legacyId": "103399509076537965360"
+              },
+              "drive": {
+                "name": "string",
+                "title": "string"
+              }
+            },
+            "driveFile": true,
+            "driveFolder": {
+              "type": "drive folder type"
+            }
+          }
+        }
+      ],
+      "timestamp": "2020-09-19T18:07:00.406Z"
+    },
+    {
+      "primaryActionDetail": {
+        "edit": {}
+      },
+      "targets": [
+        {
+          "driveItem": {
+            "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+            "title": "Copy of conf.json",
+            "file": true,
+            "mimeType": "application/json",
+            "owner": {
+              "user": {
+                "knownUser": {
+                  "personName": "commentstring personName 22222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              },
+              "domain": {
+                "name": "nimbledata.io",
+                "legacyId": "103399509076537965360"
+              },
+              "drive": {
+                "name": "string",
+                "title": "string"
+              }
+            },
+            "driveFile": true,
+            "driveFolder": {
+              "type": "drive folder type"
+            }
+          }
+        }
+      ],
+      "timestamp": "2020-09-19T18:07:00.406Z"
+    },
+    {
+      "primaryActionDetail": {
+        "move": {
+          "addedParents": [
+            {
+              "driveItem": {
+                "name": "item/test name move",
+                "title": "test name move",
+                "file": {},
+                "folder": {
+                  "type": "DEPRICATED FROM API folder type"
+                },
+                "driveFile": {},
+                "driveFolder": {
+                  "type": "DRIVE folder type"
+                }
+              },
+              "drive": {
+                "name": "DRIVE item/test name move",
+                "title": "drive title1 move"
+              }
+            },
+            {
+              "driveItem": {
+                "name": "item/test name 2",
+                "title": "test name 2",
+                "file": {},
+                "folder": {
+                  "type": "DEPRICATED FROM API folder type"
+                },
+                "driveFile": {},
+                "driveFolder": {
+                  "type": "DRIVE folder type"
+                }
+              },
+              "drive": {
+                "name": "DRIVE item/test name move",
+                "title": "drive title1 move"
+              }
+            }
+          ],
+          "removedParents": [
+            {
+              "driveItem": {
+                "name": "item/test name move",
+                "title": "test name move",
+                "file": {},
+                "folder": {
+                  "type": "DEPRICATED FROM API folder type"
+                },
+                "driveFile": {},
+                "driveFolder": {
+                  "type": "DRIVE folder type"
+                }
+              },
+              "drive": {
+                "name": "DRIVE item/test name move",
+                "title": "drive title1 move"
+              }
+            },
+            {
+              "driveItem": {
+                "name": "item/test name 2",
+                "title": "test name 2",
+                "file": {},
+                "folder": {
+                  "type": "DEPRICATED FROM API folder type"
+                },
+                "driveFile": {},
+                "driveFolder": {
+                  "type": "DRIVE folder type"
+                }
+              },
+              "drive": {
+                "name": "DRIVE item/test name move",
+                "title": "drive title1 move"
+              }
+            }
+          ]
+        }
+      },
+      "targets": [
+        {
+          "driveItem": {
+            "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+            "title": "Copy of conf.json",
+            "file": true,
+            "mimeType": "application/json",
+            "owner": {
+              "user": {
+                "knownUser": {
+                  "personName": "commentstring personName 22222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              },
+              "domain": {
+                "name": "nimbledata.io",
+                "legacyId": "103399509076537965360"
+              },
+              "drive": {
+                "name": "string",
+                "title": "string"
+              }
+            },
+            "driveFile": true,
+            "driveFolder": {
+              "type": "drive folder type"
+            }
+          }
+        }
+      ],
+      "timestamp": "2020-09-19T18:07:00.406Z"
+    },
+    {
+      "primaryActionDetail": {
+        "rename": {
+          "oldTitle": "OLD TITLE RENAMED",
+          "newTitle": "NEW TITLE RENAMED"
+        }
+      },
+      "targets": [
+        {
+          "driveItem": {
+            "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+            "title": "Copy of conf.json",
+            "file": true,
+            "mimeType": "application/json",
+            "owner": {
+              "user": {
+                "knownUser": {
+                  "personName": "commentstring personName 22222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              },
+              "domain": {
+                "name": "nimbledata.io",
+                "legacyId": "103399509076537965360"
+              },
+              "drive": {
+                "name": "string",
+                "title": "string"
+              }
+            },
+            "driveFile": true,
+            "driveFolder": {
+              "type": "drive folder type"
+            }
+          }
+        }
+      ],
+      "timestamp": "2020-09-19T18:07:00.406Z"
+    },
+    {
+      "primaryActionDetail": {
+        "delete": {
+          "type": "DELETE TYPE"
+        }
+      },
+      "targets": [
+        {
+          "driveItem": {
+            "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+            "title": "Copy of conf.json",
+            "file": true,
+            "mimeType": "application/json",
+            "owner": {
+              "user": {
+                "knownUser": {
+                  "personName": "commentstring personName 22222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              },
+              "domain": {
+                "name": "nimbledata.io",
+                "legacyId": "103399509076537965360"
+              },
+              "drive": {
+                "name": "string",
+                "title": "string"
+              }
+            },
+            "driveFile": true,
+            "driveFolder": {
+              "type": "drive folder type"
+            }
+          }
+        }
+      ],
+      "timestamp": "2020-09-19T18:07:00.406Z"
+    },
+    {
+      "primaryActionDetail": {
+        "restore": {
+          "type": "RESTORE TYPE"
+        }
+      },
+      "targets": [
+        {
+          "driveItem": {
+            "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+            "title": "Copy of conf.json",
+            "file": true,
+            "mimeType": "application/json",
+            "owner": {
+              "user": {
+                "knownUser": {
+                  "personName": "commentstring personName 22222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              },
+              "domain": {
+                "name": "nimbledata.io",
+                "legacyId": "103399509076537965360"
+              },
+              "drive": {
+                "name": "string",
+                "title": "string"
+              }
+            },
+            "driveFile": true,
+            "driveFolder": {
+              "type": "drive folder type"
+            }
+          }
+        }
+      ],
+      "timestamp": "2020-09-19T18:07:00.406Z"
+    },
+    {
+      "primaryActionDetail": {
+        "permissionChange": {
+          "addedPermissions": [
+            {
+              "role": "EDITOR PERMISSION ROLE",
+              "allowDiscovery": true,
+              "user": {
+                "knownUser": {
+                  "personName": "string personName",
+                  "isCurrentUser": false
+                },
+                "deletedUser": {},
+                "unknownUser": {}
+              },
+              "group": {
+                "email": "group email string",
+                "title": "group title string"
+              },
+              "domain": {
+                "name": "domain name string",
+                "legacyId": "legacyId 12333333333string"
+              },
+              "anyone": {}
+            },
+            {
+              "role": "EDITOR PERMISSION ROLE 22222222222",
+              "allowDiscovery": true,
+              "user": {
+                "knownUser": {
+                  "personName": "string personName 222222222222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": {},
+                "unknownUser": {}
+              },
+              "group": {
+                "email": "group email string 2222222",
+                "title": "group title string"
+              },
+              "domain": {
+                "name": "domain name string 222222222",
+                "legacyId": "legacyId 12333333333string"
+              },
+              "anyone": {}
+            }
+          ],
+          "removedPermissions": [
+            {
+              "role": "removedPermissionsEDITOR PERMISSION ROLE",
+              "allowDiscovery": true,
+              "user": {
+                "knownUser": {
+                  "personName": "removedPermissionsstring personName",
+                  "isCurrentUser": false
+                },
+                "deletedUser": {},
+                "unknownUser": {}
+              },
+              "group": {
+                "email": "removedPermissionsgroup email string",
+                "title": "removedPermissionsgroup title string"
+              },
+              "domain": {
+                "name": "removedPermissionsdomain name string",
+                "legacyId": "removedPermissionslegacyId 12333333333string"
+              },
+              "anyone": {}
+            },
+            {
+              "role": "removedPermissionsEDITOR PERMISSION ROLE 22222222222",
+              "allowDiscovery": true,
+              "user": {
+                "knownUser": {
+                  "personName": "removedPermissionsstring personName 222222222222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": {},
+                "unknownUser": {}
+              },
+              "group": {
+                "email": "removedPermissionsgroup email string 2222222",
+                "title": "removedPermissionsgroup title string"
+              },
+              "domain": {
+                "name": "removedPermissionsdomain name string 222222222",
+                "legacyId": "removedPermissionslegacyId 12333333333string"
+              },
+              "anyone": {}
+            }
+          ]
+        }
+      },
+      "targets": [
+        {
+          "driveItem": {
+            "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+            "title": "Copy of conf.json",
+            "file": true,
+            "mimeType": "application/json",
+            "owner": {
+              "user": {
+                "knownUser": {
+                  "personName": "commentstring personName 22222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              },
+              "domain": {
+                "name": "nimbledata.io",
+                "legacyId": "103399509076537965360"
+              },
+              "drive": {
+                "name": "string",
+                "title": "string"
+              }
+            },
+            "driveFile": true,
+            "driveFolder": {
+              "type": "drive folder type"
+            }
+          }
+        }
+      ],
+      "timestamp": "2020-09-19T18:07:00.406Z"
+    },
+    {
+      "primaryActionDetail": {
+        "comment": {
+          "mentionedUsers": [
+            {
+              "knownUser": {
+                "personName": "commentstring personName 1111",
+                "isCurrentUser": false
+              },
+              "deletedUser": {},
+              "unknownUser": {}
+            }
+          ],
+          "post": {
+            "subtype": "POST SUBTYPE"
+          },
+          "assignment": {
+            "subtype": "assignment enum (Subtype)",
+            "assignedUser": {
+              "user": {
+                "knownUser": {
+                  "personName": "commentstring personName 22222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": {},
+                "unknownUser": {}
+              }
+            }
+          },
+          "suggestion": {
+            "subtype": "suggestionenum (Subtype)"
+          }
+        }
+      },
+      "targets": [
+        {
+          "driveItem": {
+            "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+            "title": "Copy of conf.json",
+            "file": true,
+            "mimeType": "application/json",
+            "owner": {
+              "user": {
+                "knownUser": {
+                  "personName": "commentstring personName 22222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              },
+              "domain": {
+                "name": "nimbledata.io",
+                "legacyId": "103399509076537965360"
+              },
+              "drive": {
+                "name": "string",
+                "title": "string"
+              }
+            },
+            "driveFile": true,
+            "driveFolder": {
+              "type": "drive folder type"
+            }
+          }
+        }
+      ],
+      "timestamp": "2020-09-19T18:07:00.406Z"
+    },
+    {
+      "primaryActionDetail": {
+        "dlpChange": {
+          "type": "dlpChange TYPE_UNSPECIFIED"
+        }
+      },
+      "targets": [
+        {
+          "driveItem": {
+            "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+            "title": "Copy of conf.json",
+            "file": true,
+            "mimeType": "application/json",
+            "owner": {
+              "user": {
+                "knownUser": {
+                  "personName": "commentstring personName 22222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              },
+              "domain": {
+                "name": "nimbledata.io",
+                "legacyId": "103399509076537965360"
+              },
+              "drive": {
+                "name": "string",
+                "title": "string"
+              }
+            },
+            "driveFile": true,
+            "driveFolder": {
+              "type": "drive folder type"
+            }
+          }
+        }
+      ],
+      "timestamp": "2020-09-19T18:07:00.406Z"
+    },
+    {
+      "primaryActionDetail": {
+        "reference": {
+          "type": "reference LINK"
+        }
+      },
+      "targets": [
+        {
+          "driveItem": {
+            "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+            "title": "Copy of conf.json",
+            "file": true,
+            "mimeType": "application/json",
+            "owner": {
+              "user": {
+                "knownUser": {
+                  "personName": "commentstring personName 22222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              },
+              "domain": {
+                "name": "nimbledata.io",
+                "legacyId": "103399509076537965360"
+              },
+              "drive": {
+                "name": "string",
+                "title": "string"
+              }
+            },
+            "driveFile": true,
+            "driveFolder": {
+              "type": "drive folder type"
+            }
+          }
+        }
+      ],
+      "timestamp": "2020-09-19T18:07:00.406Z"
+    },
+    {
+      "primaryActionDetail": {
+        "settingsChange": {
+          "restrictionChanges": [
+            {
+              "feature": "feature enum (Feature)",
+              "newRestriction": "newRestriction enum (Restriction)"
+            }
+          ]
+        }
+      },
+      "targets": [
+        {
+          "driveItem": {
+            "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+            "title": "Copy of conf.json",
+            "file": true,
+            "mimeType": "application/json",
+            "owner": {
+              "user": {
+                "knownUser": {
+                  "personName": "commentstring personName 22222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              },
+              "domain": {
+                "name": "nimbledata.io",
+                "legacyId": "103399509076537965360"
+              },
+              "drive": {
+                "name": "string",
+                "title": "string"
+              }
+            },
+            "driveFile": true,
+            "driveFolder": {
+              "type": "drive folder type"
+            }
+          }
+        }
+      ],
+      "timestamp": "2020-09-19T18:07:00.406Z"
+    }
+  ],
+  "nextPageToken": "string nextPageToken"
+}

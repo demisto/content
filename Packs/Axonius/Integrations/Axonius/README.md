@@ -37,16 +37,16 @@ Gather device info by saved query
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Devices.adapters | String | The specific adapter names with asset information |
-| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Devices.hostname | String | The hostnames of the assset |
-| Axonius.Devices.name | String | The names of the asset |
-| Axonius.Devices.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset |
-| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset |
-| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) |
-| Axonius.Devices.labels | String | Tags assigned to the asset |
+| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset. |
+| Axonius.Devices.adapters | String | The specific adapter names with asset information. |
+| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset. |
+| Axonius.Devices.hostname | String | The hostnames of the assset. |
+| Axonius.Devices.name | String | The names of the asset. |
+| Axonius.Devices.last_seen | Date | Last seen date/time of the asset. |
+| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset. |
+| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset. |
+| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\). |
+| Axonius.Devices.labels | String | Tags assigned to the asset. |
 
 #### Command Example
 
@@ -129,16 +129,16 @@ Gather devices info by AQL query
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Devices.adapters | String | The specific adapter names with asset information |
-| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Devices.hostname | String | The hostnames of the assset |
-| Axonius.Devices.name | String | The names of the asset |
-| Axonius.Devices.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset |
-| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset |
-| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) |
-| Axonius.Devices.labels | String | Tags assigned to the asset |
+| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset. |
+| Axonius.Devices.adapters | String | The specific adapter names with asset information. |
+| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset. |
+| Axonius.Devices.hostname | String | The hostnames of the assset. |
+| Axonius.Devices.name | String | The names of the asset. |
+| Axonius.Devices.last_seen | Date | Last seen date/time of the asset. |
+| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset. |
+| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset. |
+| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\). |
+| Axonius.Devices.labels | String | Tags assigned to the asset. |
 
 #### Command Example
 
@@ -221,14 +221,14 @@ Gather users info by AQL query
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Users.adapters | String | The specific adapter names with asset information |
-| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Users.username | String | Username of the asset |
-| Axonius.Users.mail | String | Email address of the asset |
-| Axonius.Users.is_admin | Boolean | If the asset has admin privileges |
-| Axonius.Users.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Users.labels | String | Tags assigned to the asset |
+| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset. |
+| Axonius.Users.adapters | String | The specific adapter names with asset information. |
+| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset. |
+| Axonius.Users.username | String | Username of the asset. |
+| Axonius.Users.mail | String | Email address of the asset. |
+| Axonius.Users.is_admin | Boolean | If the asset has admin privileges. |
+| Axonius.Users.last_seen | Date | Last seen date/time of the asset. |
+| Axonius.Users.labels | String | Tags assigned to the asset. |
 
 #### Command Example
 
@@ -283,14 +283,14 @@ Gather user info by saved query
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Users.adapters | String | The specific adapter names with asset information |
-| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Users.username | String | Username of the asset |
-| Axonius.Users.mail | String | Email address of the asset |
-| Axonius.Users.is_admin | Boolean | If the asset has admin privileges |
-| Axonius.Users.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Users.labels | String | Tags assigned to the asset |
+| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset. |
+| Axonius.Users.adapters | String | The specific adapter names with asset information. |
+| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset. |
+| Axonius.Users.username | String | Username of the asset. |
+| Axonius.Users.mail | String | Email address of the asset. |
+| Axonius.Users.is_admin | Boolean | If the asset has admin privileges. |
+| Axonius.Users.last_seen | Date | Last seen date/time of the asset. |
+| Axonius.Users.labels | String | Tags assigned to the asset. |
 
 #### Command Example
 
@@ -345,14 +345,14 @@ Gather user info by email address
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Users.adapters | String | The specific adapter names with asset information |
-| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Users.username | String | Username of the asset |
-| Axonius.Users.mail | String | Email address of the asset |
-| Axonius.Users.is_admin | Boolean | If the asset has admin privileges |
-| Axonius.Users.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Users.labels | String | Tags assigned to the asset |
+| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset. |
+| Axonius.Users.adapters | String | The specific adapter names with asset information. |
+| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset. |
+| Axonius.Users.username | String | Username of the asset. |
+| Axonius.Users.mail | String | Email address of the asset. |
+| Axonius.Users.is_admin | Boolean | If the asset has admin privileges. |
+| Axonius.Users.last_seen | Date | Last seen date/time of the asset. |
+| Axonius.Users.labels | String | Tags assigned to the asset. |
 
 #### Command Example
 
@@ -409,14 +409,14 @@ Gather user info by email address using regex
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Users.adapters | String | The specific adapter names with asset information |
-| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Users.username | String | Username of the asset |
-| Axonius.Users.mail | String | Email address of the asset |
-| Axonius.Users.is_admin | Boolean | If the asset has admin privileges |
-| Axonius.Users.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Users.labels | String | Tags assigned to the asset |
+| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset. |
+| Axonius.Users.adapters | String | The specific adapter names with asset information. |
+| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset. |
+| Axonius.Users.username | String | Username of the asset. |
+| Axonius.Users.mail | String | Email address of the asset. |
+| Axonius.Users.is_admin | Boolean | If the asset has admin privileges. |
+| Axonius.Users.last_seen | Date | Last seen date/time of the asset. |
+| Axonius.Users.labels | String | Tags assigned to the asset. |
 
 #### Command Example
 
@@ -473,14 +473,14 @@ Gather user info by username
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Users.adapters | String | The specific adapter names with asset information |
-| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Users.username | String | Username of the asset |
-| Axonius.Users.mail | String | Email address of the asset |
-| Axonius.Users.is_admin | Boolean | If the asset has admin privileges |
-| Axonius.Users.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Users.labels | String | Tags assigned to the asset |
+| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset. |
+| Axonius.Users.adapters | String | The specific adapter names with asset information. |
+| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset. |
+| Axonius.Users.username | String | Username of the asset. |
+| Axonius.Users.mail | String | Email address of the asset. |
+| Axonius.Users.is_admin | Boolean | If the asset has admin privileges. |
+| Axonius.Users.last_seen | Date | Last seen date/time of the asset. |
+| Axonius.Users.labels | String | Tags assigned to the asset. |
 
 #### Command Example
 
@@ -532,14 +532,14 @@ Gather user info by username using regex
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Users.adapters | String | The specific adapter names with asset information |
-| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Users.username | String | Username of the asset |
-| Axonius.Users.mail | String | Email address of the asset |
-| Axonius.Users.is_admin | Boolean | If the asset has admin privileges |
-| Axonius.Users.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Users.labels | String | Tags assigned to the asset |
+| Axonius.Users.adapter_list_length | Number | The number of adapters with information about the asset. |
+| Axonius.Users.adapters | String | The specific adapter names with asset information. |
+| Axonius.Users.internal_axon_id | String | The internal unique Axonius identifier for the asset. |
+| Axonius.Users.username | String | Username of the asset. |
+| Axonius.Users.mail | String | Email address of the asset. |
+| Axonius.Users.is_admin | Boolean | If the asset has admin privileges. |
+| Axonius.Users.last_seen | Date | Last seen date/time of the asset. |
+| Axonius.Users.labels | String | Tags assigned to the asset. |
 
 #### Command Example
 
@@ -591,16 +591,16 @@ Gather device info by hostname
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Devices.adapters | String | The specific adapter names with asset information |
-| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Devices.hostname | String | The hostnames of the assset |
-| Axonius.Devices.name | String | The names of the asset |
-| Axonius.Devices.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset |
-| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset |
-| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) |
-| Axonius.Devices.labels | String | Tags assigned to the asset |
+| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset. |
+| Axonius.Devices.adapters | String | The specific adapter names with asset information. |
+| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset. |
+| Axonius.Devices.hostname | String | The hostnames of the assset. |
+| Axonius.Devices.name | String | The names of the asset. |
+| Axonius.Devices.last_seen | Date | Last seen date/time of the asset. |
+| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset. |
+| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset. |
+| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\). |
+| Axonius.Devices.labels | String | Tags assigned to the asset. |
 
 #### Command Example
 
@@ -676,16 +676,16 @@ Gather device info by hostname using regex
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Devices.adapters | String | The specific adapter names with asset information |
-| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Devices.hostname | String | The hostnames of the assset |
-| Axonius.Devices.name | String | The names of the asset |
-| Axonius.Devices.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset |
-| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset |
-| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) |
-| Axonius.Devices.labels | String | Tags assigned to the asset |
+| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset. |
+| Axonius.Devices.adapters | String | The specific adapter names with asset information. |
+| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset. |
+| Axonius.Devices.hostname | String | The hostnames of the assset. |
+| Axonius.Devices.name | String | The names of the asset. |
+| Axonius.Devices.last_seen | Date | Last seen date/time of the asset. |
+| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset. |
+| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset. |
+| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\). |
+| Axonius.Devices.labels | String | Tags assigned to the asset. |
 
 #### Command Example
 
@@ -761,16 +761,16 @@ Gather device info by IP address
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Devices.adapters | String | The specific adapter names with asset information |
-| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Devices.hostname | String | The hostnames of the assset |
-| Axonius.Devices.name | String | The names of the asset |
-| Axonius.Devices.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset |
-| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset |
-| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) |
-| Axonius.Devices.labels | String | Tags assigned to the asset |
+| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset. |
+| Axonius.Devices.adapters | String | The specific adapter names with asset information. |
+| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset. |
+| Axonius.Devices.hostname | String | The hostnames of the assset. |
+| Axonius.Devices.name | String | The names of the asset. |
+| Axonius.Devices.last_seen | Date | Last seen date/time of the asset. |
+| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset. |
+| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset. |
+| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\). |
+| Axonius.Devices.labels | String | Tags assigned to the asset. |
 
 #### Command Example
 
@@ -846,16 +846,16 @@ Gather device info by IP address using regex
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Devices.adapters | String | The specific adapter names with asset information |
-| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Devices.hostname | String | The hostnames of the assset |
-| Axonius.Devices.name | String | The names of the asset |
-| Axonius.Devices.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset |
-| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset |
-| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) |
-| Axonius.Devices.labels | String | Tags assigned to the asset |
+| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset. |
+| Axonius.Devices.adapters | String | The specific adapter names with asset information. |
+| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset. |
+| Axonius.Devices.hostname | String | The hostnames of the assset. |
+| Axonius.Devices.name | String | The names of the asset. |
+| Axonius.Devices.last_seen | Date | Last seen date/time of the asset. |
+| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset. |
+| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset. |
+| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\). |
+| Axonius.Devices.labels | String | Tags assigned to the asset. |
 
 #### Command Example
 
@@ -931,16 +931,16 @@ Gather device info by MAC address
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Devices.adapters | String | The specific adapter names with asset information |
-| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Devices.hostname | String | The hostnames of the assset |
-| Axonius.Devices.name | String | The names of the asset |
-| Axonius.Devices.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset |
-| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset |
-| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) |
-| Axonius.Devices.labels | String | Tags assigned to the asset |
+| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset. |
+| Axonius.Devices.adapters | String | The specific adapter names with asset information. |
+| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset. |
+| Axonius.Devices.hostname | String | The hostnames of the assset. |
+| Axonius.Devices.name | String | The names of the asset. |
+| Axonius.Devices.last_seen | Date | Last seen date/time of the asset. |
+| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset. |
+| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset. |
+| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\). |
+| Axonius.Devices.labels | String | Tags assigned to the asset. |
 
 #### Command Example
 
@@ -1016,16 +1016,16 @@ Gather device info by MAC address using regex
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset |
-| Axonius.Devices.adapters | String | The specific adapter names with asset information |
-| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset |
-| Axonius.Devices.hostname | String | The hostnames of the assset |
-| Axonius.Devices.name | String | The names of the asset |
-| Axonius.Devices.last_seen | Date | Last seen date/time of the asset |
-| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset |
-| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset |
-| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\) |
-| Axonius.Devices.labels | String | Tags assigned to the asset |
+| Axonius.Devices.adapter_list_length | Number | The number of adapters with information about the asset. |
+| Axonius.Devices.adapters | String | The specific adapter names with asset information. |
+| Axonius.Devices.internal_axon_id | String | The internal unique Axonius identifier for the asset. |
+| Axonius.Devices.hostname | String | The hostnames of the assset. |
+| Axonius.Devices.name | String | The names of the asset. |
+| Axonius.Devices.last_seen | Date | Last seen date/time of the asset. |
+| Axonius.Devices.network_interfaces_macs | String | The MAC addresses of the asset. |
+| Axonius.Devices.network_interfaces_ips | String | The IP addresses of the asset. |
+| Axonius.Devices.os_type | String | The OS type \(Windows, Linux, macOS,...\). |
+| Axonius.Devices.labels | String | Tags assigned to the asset. |
 
 #### Command Example
 
@@ -1101,7 +1101,7 @@ Add note to assets
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.assets.updates | Number | Number of assets updated |
+| Axonius.assets.updates | Number | Number of assets updated. |
 
 ### axonius-add-tag
 
@@ -1124,7 +1124,7 @@ Add tag to assets
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.assets.updates | Number | Number of assets updated |
+| Axonius.assets.updates | Number | Number of assets updated. |
 
 ### axonius-remove-tag
 
@@ -1147,7 +1147,7 @@ Remove tag from assets
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.asset.updates | Number | Number of assets updated |
+| Axonius.asset.updates | Number | Number of assets updated. |
 
 ### axonius-get-saved-queries
 
@@ -1168,8 +1168,8 @@ Get all saved query of a given asset type.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.Devices.saved_queries | Unknown | Saved queries |
-| Axonius.Users.saved_queries | Unknown | Saved queries |
+| Axonius.Devices.saved_queries | Unknown | Saved queries. |
+| Axonius.Users.saved_queries | Unknown | Saved queries. |
 
 ### axonius-get-tags
 
@@ -1190,4 +1190,273 @@ Get all tags of a given asset type.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Axonius.tags | Unknown | Axonius Tags |
+| Axonius.tags | Unknown | Axonius Tags. |
+
+### axonius-get-assets
+
+***
+Fetch assets of any type using the Axonius v2 API (POST /api/v2/assets/{asset_type}). Supports all asset types including vulnerability_instances. Use next_token for pagination. Large responses (>10 MB) may be stored as a downloadable file by XSOAR instead of being written to the context. NOTE: All calls write to the fixed context key Axonius.Assets regardless of asset_type. If a playbook calls this command more than once with different asset types, each call overwrites the previous result. To avoid data loss, store or transform the context output (e.g. using Set) before issuing a second call with a different type.
+
+#### Base Command
+
+`axonius-get-assets`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_type | The asset type to fetch (e.g. devices, users, vulnerability_instances). See axonius-get-asset-types for all supported values. | Required |
+| query | The AQL filter string to narrow the returned assets. | Optional |
+| fields | A comma-separated list of fields to include in the response. | Optional |
+| fields_to_exclude | A comma-separated list of fields to exclude from the response. | Optional |
+| page_size | The number of assets to request per page (1–2000). Keep this value small for large asset types (e.g. vulnerability_instances) to avoid XSOAR context size limits (~10 MB). Default is 50. | Optional |
+| limit | The maximum number of assets to return from the page (defaults to page_size). | Optional |
+| next_token | The pagination cursor returned from a previous call as Axonius.Assets.next_token. Pass this value to retrieve the next page of results. | Optional |
+| include_metadata | Whether to include metadata in the response. Possible values are: true, false. Default is false. | Optional |
+| include_details | Whether to include detailed asset data in the response. Possible values are: true, false. Default is false. | Optional |
+| use_cache_entry | Whether to use a cached response entry if available. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.Assets.asset_type | String | The asset type that was queried. |
+| Axonius.Assets.assets | Unknown | The list of asset records returned by the query. |
+| Axonius.Assets.count | Number | The number of assets returned in this page. |
+| Axonius.Assets.total_count | Number | The total number of assets matching the query (when available). |
+| Axonius.Assets.next_token | String | The pagination cursor for the next page of results. Pass this as next_token in the next call. |
+
+### axonius-get-asset-types
+
+***
+Return the list of all available asset types in the Axonius instance (GET /api/v2/assets/asset_types).
+
+#### Base Command
+
+`axonius-get-asset-types`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.AssetTypes.asset_type | String | The asset type name. |
+| Axonius.AssetTypes | Unknown | The list of available asset types. |
+
+### axonius-get-custom-data
+
+***
+List custom data management entries (GET /api/v2/custom_data_management).
+
+#### Base Command
+
+`axonius-get-custom-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | The page number to retrieve (1-indexed). Default is 1. | Optional |
+| page_size | The number of entries to return per page. Default is 50. | Optional |
+| limit | The maximum number of entries to return (defaults to page_size). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.CustomData.id | String | The custom data entry unique identifier. |
+| Axonius.CustomData | Unknown | The list of custom data entries. |
+
+### axonius-create-custom-data
+
+***
+Create a new custom data entry (POST /api/v2/custom_data_management).
+
+#### Base Command
+
+`axonius-create-custom-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| payload | The JSON string representing the custom data payload to create. Refer to Axonius API documentation for the required schema. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.CustomData | Unknown | The created custom data entry. |
+
+### axonius-delete-custom-data
+
+***
+Delete a custom data entry by ID (DELETE /api/v2/custom_data_management/{id}).
+
+#### Base Command
+
+`axonius-delete-custom-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the custom data entry to delete. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.CustomData.id | String | The ID of the deleted custom data entry. |
+| Axonius.CustomData.deleted | Boolean | The flag indicating whether the entry was deleted. |
+
+### axonius-get-enforcements
+
+***
+List enforcement sets (GET /api/v2/enforcements).
+
+#### Base Command
+
+`axonius-get-enforcements`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | The page number to retrieve (1-indexed). Default is 1. | Optional |
+| page_size | The number of enforcements to return per page. Default is 50. | Optional |
+| limit | The maximum number of enforcements to return (defaults to page_size). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.Enforcements.uuid | String | The enforcement unique identifier. |
+| Axonius.Enforcements.name | String | The enforcement name. |
+| Axonius.Enforcements | Unknown | The full list of enforcement objects. |
+
+### axonius-run-enforcement
+
+***
+Trigger an enforcement run (POST /api/v2/enforcements/{enforcement_id}/run).
+
+#### Base Command
+
+`axonius-run-enforcement`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| enforcement_id | The UUID of the enforcement to run. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.Enforcements.enforcement_id | String | The ID of the enforcement that was triggered. |
+| Axonius.Enforcements.triggered | Boolean | The flag indicating whether the enforcement was triggered successfully. |
+
+### axonius-get-queries
+
+***
+List saved queries (GET /api/v2/queries).
+
+#### Base Command
+
+`axonius-get-queries`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_type | The asset type to filter queries by (e.g. devices, users). | Optional |
+| page | The page number to retrieve (1-indexed). Default is 1. | Optional |
+| page_size | The number of queries to return per page. Default is 50. | Optional |
+| limit | The maximum number of queries to return (defaults to page_size). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.Queries.uuid | String | The query unique identifier. |
+| Axonius.Queries.name | String | The query name. |
+| Axonius.Queries | Unknown | The full list of query objects. |
+
+### axonius-create-query
+
+***
+Create a new saved query (POST /api/v2/queries).
+
+#### Base Command
+
+`axonius-create-query`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for the new saved query. | Required |
+| query | The AQL filter string for the query. | Required |
+| asset_type | The asset type this query applies to. Default is devices. | Optional |
+| description | The optional description for the query. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.Queries.uuid | String | The UUID of the created query. |
+| Axonius.Queries.name | String | The name of the created query. |
+| Axonius.Queries | Unknown | The created query object. |
+
+### axonius-delete-query
+
+***
+Delete a saved query (DELETE /api/v2/queries/{query_id}).
+
+#### Base Command
+
+`axonius-delete-query`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_id | The UUID of the query to delete. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.Queries.query_id | String | The ID of the deleted query. |
+| Axonius.Queries.deleted | Boolean | The flag indicating whether the query was deleted. |
+
+### axonius-get-grouped-vulnerabilities
+
+***
+Fetch all vulnerability instances, flatten them, group by CVE ID, and return the Top N CVEs sorted by affected host count. Computes average_cvss_score per CVE. Outputs as Axonius.GroupedVulnerabilities keyed by cve_id.
+
+#### Base Command
+
+`axonius-get-grouped-vulnerabilities`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | The optional AQL filter applied before grouping. | Optional |
+| team_name | The team name to filter vulnerability instances by. | Optional |
+| urgent | Whether to filter by urgency on vulnerability instances. Possible values are: true, false. | Optional |
+| top_n | The number of top CVEs to return (sorted by affected_hosts_count descending). Default is 10. | Optional |
+| page_size | The number of records per page when fetching all instances. Default is 100. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Axonius.GroupedVulnerabilities.cve_id | String | The CVE identifier. |
+| Axonius.GroupedVulnerabilities.affected_hosts_count | Number | The number of hosts affected by this CVE. |
+| Axonius.GroupedVulnerabilities.average_cvss_score | Number | The average CVSS score across all instances of this CVE. |

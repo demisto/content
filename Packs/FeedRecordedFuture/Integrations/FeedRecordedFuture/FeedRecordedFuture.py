@@ -183,9 +183,15 @@ class Client(BaseClient):
         demisto.info("RF: done build_iterator")
 
     def stream_compressed_data(self, response: requests.Response, chunk_size: int) -> None:
-        """This will stream the response's compressed data and write it to a file. The streamed data is compressed,
-        therefore, for every chunk that we stream, we will decode it, but we may decode A PART of a character, for which
-        the decoder will throw an error.
+        """This will stream the response's data and write it to a file. The Recorded Future API may
+        intermittently return uncompressed data (e.g. Content-Type: text/plain) for a request that
+        explicitly requested GZIP compression. Therefore, before attempting to
+        gzip-decompress the streamed data, we check the response's Content-Type header, which reliably
+        reflects whether the returned data is actually GZIP compressed. If the response is not GZIP
+        compressed, the raw content is streamed to the file as-is.
+
+        Once we determine whether the streamed data is compressed, for every chunk that we stream, we will
+        decode it, but we may decode A PART of a character, for which the decoder will throw an error.
         We solve this by removing one byte form the chunk and decode again, until we decode
         successfully, and the bytes that were removed will be concatenated to the next chunk.
         UTf-8 uses at most 4 bytes to represent a character, therefore we only need to cut off at most 3 bytes to
@@ -195,7 +201,13 @@ class Client(BaseClient):
             response (requests.Response): The response object.
             chunk_size (int): The chunk size to use while streaming the data.
         """
-        demisto.debug("RF: Will now stream the response's compressed data")
+        demisto.debug("RF: Will now stream the response's data")
+        content_type = response.headers.get("Content-Type", "")
+        is_gzip_compressed = "gzip" in content_type.lower()
+        demisto.info(
+            f"RF: Response Content-Type='{content_type}'. Treating the response's data as "
+            f"{'GZIP compressed' if is_gzip_compressed else 'NOT compressed'}."
+        )
         # Since we need to decompress gzip compressed data, we add 16 to zlib.MAX_WBITS, to tell the decompressor object
         # that we are dealing with gzip
         decompressor = zlib.decompressobj(zlib.MAX_WBITS + 16)
@@ -206,7 +218,7 @@ class Client(BaseClient):
             for chunk in response.iter_content(chunk_size):
                 if chunk:
                     chunks_counter += 1
-                    decompressed_chunk = decompressor.decompress(chunk)
+                    decompressed_chunk = decompressor.decompress(chunk) if is_gzip_compressed else chunk
                     if cut_off_bytes:
                         # To concatenate cut off bytes from previous chunk
                         decompressed_chunk = cut_off_bytes + decompressed_chunk

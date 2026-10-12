@@ -31,7 +31,7 @@ configuration:
   section: Connect
   hidden: true
 - displaypassword: Token
-  name:  credentials_token
+  name: credentials_token
   required: false
   hiddenusername: true
   type: 9
@@ -90,6 +90,13 @@ configuration:
   section: Collect
   required: false
   type: 13
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false

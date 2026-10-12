@@ -592,7 +592,7 @@ def change_nic_state(si, args):  # pragma: no cover
         connectable.connected = False
         connectable.startConnected = False
     else:
-        connectable = virtual_nic_device.connectable
+        connectable = virtual_nic_device.connectable  # type: ignore[assignment]
     virtual_nic_spec.device.connectable = connectable
     dev_changes = []
     dev_changes.append(virtual_nic_spec)

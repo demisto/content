@@ -944,3 +944,21 @@ Avoid the following where possible to adhere to best practices:
 - [Reputation Commands and DBotScore Documentation](https://xsoar.pan.dev/docs/integrations/dbot)
 - [Pydantic 1.10 Documentation](https://docs.pydantic.dev/1.10/)
 - [Python Type Hints](https://docs.python.org/3/library/typing.html)
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require the **Cortex XSIAM** license:
+
+- Fetch events
+
+The following configuration parameters require **Cortex XSIAM** with the **Exposure Management** add-on:
+
+- Fetch assets and vulnerabilities
+
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
+
+- Fetch incidents
+
+</~PLATFORM>

@@ -1,0 +1,64 @@
+{
+    "genetec_security_center_raw": {
+      "AuditTrailModificationType": {
+        "type": "int",
+        "is_array": false
+      },
+      "Description": {
+        "type": "string",
+        "is_array": false
+      },
+      "Guid": {
+        "type": "string",
+        "is_array": false
+      },
+      "Id": {
+        "type": "int",
+        "is_array": false
+      },
+      "Machine": {
+        "type": "string",
+        "is_array": false
+      },
+      "ModifiedBy": {
+        "type": "string",
+        "is_array": false
+      },
+      "ModifiedByAsString": {
+        "type": "string",
+        "is_array": false
+      },
+      "Name": {
+        "type": "string",
+        "is_array": false
+      },
+      "NewValue": {
+        "type": "string",
+        "is_array": false
+      },
+      "OldValue": {
+        "type": "string",
+        "is_array": false
+      },
+      "SourceApplicationAsString": {
+        "type": "string",
+        "is_array": false
+      },
+      "SourceApplicationGuid": {
+        "type": "string",
+        "is_array": false
+      },
+      "SourceApplicationType": {
+        "type": "int",
+        "is_array": false
+      },
+      "Type": {
+        "type": "int",
+        "is_array": false
+      },
+      "Value": {
+        "type": "string",
+        "is_array": false
+    }
+  }
+}

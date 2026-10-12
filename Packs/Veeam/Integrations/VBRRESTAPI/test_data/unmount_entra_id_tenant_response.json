@@ -1,0 +1,21 @@
+{
+  "sessionType": "EntraIdRestore",
+  "state": "Working",
+  "platformName": "EntraID",
+  "id": "f1485e5a-4ef3-4b17-868c-8e3711b871c9",
+  "name": "Microsoft Entra ID Tenant Restore Entra ID Tenant Backup Job 1",
+  "jobId": "a12284ce-b265-4c5f-8291-d0481b3a51de",
+  "creationTime": "2026-05-06T02:03:09.133224-07:00",
+  "endTime": null,
+  "progressPercent": 0,
+  "result": {
+    "result": "None",
+    "message": "",
+    "isCanceled": false
+  },
+  "resourceId": null,
+  "resourceReference": null,
+  "parentSessionId": null,
+  "usn": 46248714,
+  "platformId": "00000000-0000-0000-0000-000000000000"
+}

@@ -84,6 +84,20 @@ tasks:
                     right:
                       value:
                         simple: \
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: inputs.Username
+                      iscontext: true
+                    right:
+                      value:
+                        simple: N/A
+                    ignorecase: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: inputs.Username
+                      iscontext: true
             iscontext: true
           right:
             value: {}
@@ -1488,6 +1502,20 @@ tasks:
               right:
                 value:
                   simple: \
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: inputs.Username
+                iscontext: true
+              right:
+                value:
+                  simple: N/A
+              ignorecase: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Username
+                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1539,6 +1567,20 @@ tasks:
                     right:
                       value:
                         simple: \
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: inputs.Username
+                      iscontext: true
+                    right:
+                      value:
+                        simple: N/A
+                    ignorecase: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: inputs.Username
+                      iscontext: true
             iscontext: true
           right:
             value: {}
@@ -1595,6 +1637,20 @@ tasks:
               right:
                 value:
                   simple: \
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: inputs.Username
+                iscontext: true
+              right:
+                value:
+                  simple: N/A
+              ignorecase: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Username
+                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2019,10 +2075,10 @@ outputs:
   description: Description of the incident.
   type: string
 - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.severity
-  description: The severity of the incident
+  description: The severity of the incident.
   type: string
 - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.status
-  description: The incident status
+  description: The incident status.
   type: string
 - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.points
   description: The score.

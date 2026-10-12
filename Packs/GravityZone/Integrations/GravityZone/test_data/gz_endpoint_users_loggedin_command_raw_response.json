@@ -1,0 +1,61 @@
+{
+    "name": "Get active sessions 2026-05-12",
+    "startDate": "2026-05-12T10:00:00",
+    "status": 3,
+    "type": 26,
+    "owner": {
+        "id": "6941466eda1158ec9f0ecb5d",
+        "userName": "USER_EMAIL"
+    },
+    "company": {
+        "id": "COMPANY_ID",
+        "name": "COMPANY_NAME"
+    },
+    "hasMoreSubtasks": false,
+    "subtasks": [
+        {
+            "endpointId": "ENDPOINT_ID",
+            "endpointName": "ENDPOINT_NAME",
+            "endpointType": 262,
+            "startDate": "2026-05-12T10:00:00",
+            "status": 3,
+            "endDate": "2026-05-12T10:00:20",
+            "result": [
+                {
+                    "connection": {
+                        "started": "2021-05-19T10:37:56Z",
+                        "type": "local"
+                    },
+                    "user": {
+                        "displayName": "TESTDOMAIN\\\\full.user",
+                        "sid": "S-1-2-25-33",
+                        "organizationalUnit": {
+                            "distinguishedName": "OU=office,OU=Developers,OU=Users,DC=microsoft,DC=com"
+                        },
+                        "domain": {
+                            "sid": "S-1-23-131231"
+                        },
+                        "memberOf": [
+                            {
+                                "sid": "S-1-5-32-450"
+                            },
+                            {
+                                "sid": "S-1-5-32-462"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "connection": {
+                        "started": "2021-05-19T11:00:00Z",
+                        "type": "remote"
+                    },
+                    "user": {
+                        "displayName": "basic.user"
+                    }
+                }
+            ]
+        }
+    ],
+    "totalTargetsCount": 1
+}

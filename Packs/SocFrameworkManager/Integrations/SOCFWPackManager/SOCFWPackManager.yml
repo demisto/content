@@ -1,6 +1,6 @@
 display: SOC Framework Pack Manager
 name: SOCFWPackManager
-description: Downloads a SOC Framework content pack from a ZIP URL and installs it on the tenant as system content. Used internally by the SOCFWPackManager script — end users invoke the script, not this integration directly.
+description: "Downloads a SOC Framework content pack from a ZIP URL and installs it on the tenant as system content. Used internally by the SOCFWPackManager script \u2014 end users invoke the script, not this integration directly."
 category: Utilities
 fromversion: 8.0.0
 system: true
@@ -9,12 +9,14 @@ sectionorder:
 configuration:
 - section: Connect
   display: Server URL
+  additionalinfo: The tenant API URL or tenant URL. The integration adds the api- prefix when it is missing.
   name: url
   defaultvalue: ''
   type: 0
   required: true
 - section: Connect
   display: API Key ID
+  additionalinfo: The numeric ID of the Standard API key, shown in the API Keys table, with the key secret itself as the password.
   displaypassword: API Key
   name: credentials
   type: 9
@@ -22,24 +24,34 @@ configuration:
 - section: Connect
   advanced: true
   display: Trust any certificate (not secure)
+  additionalinfo: Whether to disable TLS certificate validation. Off by default.
   name: insecure
   type: 8
   required: false
 - section: Connect
   advanced: true
   display: Use system proxy settings
+  additionalinfo: Whether to route HTTP traffic through the system proxy. Off by default.
   name: proxy
   type: 8
   required: false
+- section: Connect
+  advanced: true
+  display: Pack catalog URL
+  name: catalog_url
+  defaultvalue: https://raw.githubusercontent.com/Palo-Cortex/secops-framework/refs/heads/main/pack_catalog.json
+  type: 0
+  required: false
+  additionalinfo: The location of the SOC Framework pack_catalog.json. Override to point at a fork or branch. Leave empty to use the SOC Framework repository default.
 script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/xsoar-tools:1.0.0.8457987
+  dockerimage: demisto/demisto-sdk:1.39.10.13226002
   runonce: false
   commands:
   - name: socfw-install-pack
-    description: Download and install a SOC Framework pack ZIP as system content. Called by the SOCFWPackManager script — do not invoke directly.
+    description: "Download and install a SOC Framework pack ZIP as system content. Called by the SOCFWPackManager script \u2014 do not invoke directly."
     arguments:
     - name: url
       required: true
@@ -47,8 +59,16 @@ script:
     - name: filename
       required: false
       description: Asset filename, including the .zip extension. Derived from the URL when omitted.
+    - name: use_sdk
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      type: 8
+      description: Whether to install through the demisto-sdk path, which builds the content graph and installs the pack's content items. Setting false uses a direct ZIP upload that registers the pack version WITHOUT installing its content -- it is not a faster install, it is a different and almost always wrong one.
     compliantpolicies:
-      - Domain Blockage
+    - Domain Blockage
     outputs:
     - contextPath: SOCFramework.PackInstall.filename
       description: Installed pack filename.
@@ -62,6 +82,13 @@ script:
     - contextPath: SOCFramework.PackInstall.response
       description: Raw response from demisto-sdk upload_content_entity.
       type: Unknown
+  - name: socfw-catalog-url-get
+    description: Returns the SOC Framework pack catalog URL configured on this instance. Called by the SOCFWPackManager script so the catalog location is set once on the instance instead of passed as an argument on every run.
+    arguments: []
+    outputs:
+    - contextPath: SOCFramework.PackManager.CatalogURL
+      description: The pack catalog URL configured on this instance, or the SOC Framework default when the field is empty.
+      type: String
 commonfields:
   id: SOCFWPackManager
   version: -1

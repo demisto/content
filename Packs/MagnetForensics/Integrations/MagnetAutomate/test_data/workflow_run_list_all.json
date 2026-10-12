@@ -1,0 +1,84 @@
+[
+  {
+    "id": 23,
+    "evidence": {
+      "id": 12,
+      "path": "C:\\data\\evidence1",
+      "evidenceNumber": "EV_001",
+      "customFields": [
+        {
+          "name": "CheckBox",
+          "value": "true",
+          "description": "A checkbox field",
+          "variableName": "EVIDENCE_CHECK_BOX",
+          "type": "CustomFieldCheckbox"
+        }
+      ]
+    },
+    "status": "Processing",
+    "workflowId": 1,
+    "currentStage": {
+      "applicationDisplayName": "AXIOM Process",
+      "status": "Copying"
+    },
+    "outputPath": "C:\\cases",
+    "startDateTime": "2021-01-29T12:05:30.0000000",
+    "endDateTime": "2021-01-29T17:35:40.0000000",
+    "automateVersion": "TEST_VERSION",
+    "createdBy": {
+      "id": 1,
+      "name": "admin"
+    },
+    "duration": 19810,
+    "completedStages": []
+  },
+  {
+    "id": 42,
+    "evidence": {
+      "id": 37,
+      "path": "C:\\data\\evidence2",
+      "evidenceNumber": "EV_002",
+      "customFields": [
+        {
+          "name": "CheckBox",
+          "value": "true",
+          "description": "A checkbox field",
+          "variableName": "EVIDENCE_CHECK_BOX",
+          "type": "CustomFieldCheckbox"
+        }
+      ]
+    },
+    "status": "Success",
+    "workflowId": 5,
+    "currentStage": null,
+    "outputPath": "C:\\cases",
+    "startDateTime": "2020-01-11T22:02:06.1590000Z",
+    "endDateTime": "2020-01-11T22:03:02.1270000Z",
+    "automateVersion": "TEST_VERSION",
+    "createdBy": {
+      "id": 2,
+      "name": "Watch Folder"
+    },
+    "duration": 55,
+    "completedStages": [
+      {
+        "applicationDisplayName": "AXIOM Process computer image with keywords",
+        "applicationName": "AXIOM Process",
+        "applicationVersion": "4.10.0",
+        "nodeName": "NODE_001",
+        "exitStatus": "Success",
+        "startDateTime": "2021-01-29T12:05:30.0000000",
+        "endDateTime": "2021-01-29T17:35:40.0000000"
+      },
+      {
+        "applicationDisplayName": "AXIOM Post Processing Timeline",
+        "applicationName": "AXIOM Post Processing",
+        "applicationVersion": "4.10.0",
+        "nodeName": "NODE_002",
+        "exitStatus": "Success",
+        "startDateTime": "2021-01-29T14:05:30.0000000",
+        "endDateTime": "2021-01-29T16:35:40.0000000"
+      }
+    ]
+  }
+]

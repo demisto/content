@@ -20,6 +20,9 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+# Matches one or more bracket-enclosed groups, e.g. "[1,2,3]" or "[1,2,3],[4,5,6]".
+# Used to validate that the `values` argument is in the expected list-of-lists format.
+BRACKET_LIST_PATTERN = re.compile(r"\[(.*?)\]")
 
 
 # HELPER FUNCTIONS
@@ -105,7 +108,7 @@ def handle_values_input(values: str) -> list:
     """
 
     # Validate that the user has entered valid values
-    if not values or not re.findall("\[(.*?)\]", values):
+    if not values or not BRACKET_LIST_PATTERN.findall(values):
         raise ValueError("Wrong format of values entered, please check the documentation")
 
     # Converting the values the user entered into an array of arrays

@@ -1,0 +1,60 @@
+{
+    "cisco_thousandeyes_raw": {
+        "SOURCE_LOG_TYPE": {
+            "type": "string",
+            "is_array": false
+        },
+        "accountGroupName": {
+            "type": "string",
+            "is_array": false
+        },
+        "aid": {
+            "type": "string",
+            "is_array": false
+        },
+        "alertRuleId": {
+            "type": "string",
+            "is_array": false
+        },
+        "alertSeverity": {
+            "type": "string",
+            "is_array": false
+        },
+        "alertState": {
+            "type": "string",
+            "is_array": false
+        },
+        "alertType": {
+            "type": "string",
+            "is_array": false
+        },
+        "duration": {
+            "type": "int",
+            "is_array": false
+        },
+        "event": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "ipAddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "resources": {
+            "type": "string",
+            "is_array": false
+        },
+        "uid": {
+            "type": "string",
+            "is_array": false
+        },
+        "user": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

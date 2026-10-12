@@ -159,6 +159,7 @@ response_fetch = [
                             "id": "bac9cf67-fa8e-46d1-ad67-69513fc44b5b",
                             "phishmlReport": "null",
                             "pipelineStatus": "PROCESSED",
+                            "reportedAt": "2021-08-08T14:06:08Z",
                             "severity": "UNKNOWN_SEVERITY",
                             "subject": "Fwd: We have received your IT request",
                             "tags": [{"name": "KB4:SECURITY", "type": "STANDARD"}, {"name": "KB4:URGENCY", "type": "STANDARD"}],
@@ -179,9 +180,10 @@ expected_fetch = [
                 "name": "Fwd: We have received your IT request",
                 "occurred": "2021-08-08T14:06:11+00:00",
                 "rawJSON": '{"actionStatus": "RECEIVED", "category": "UNKNOWN", "comments": [], "from": "ek@gmail.com", \
-"id": "bac9cf67-fa8e-46d1-ad67-69513fc44b5b", "phishmlReport": "null", "pipelineStatus": "PROCESSED", "severity": \
+"id": "bac9cf67-fa8e-46d1-ad67-69513fc44b5b", "phishmlReport": "null", "pipelineStatus": "PROCESSED", \
+"reportedAt": "2021-08-08T14:06:08Z", "severity": \
 "UNKNOWN_SEVERITY", "subject": "Fwd: We have received your IT request", "tags": [{"name": "KB4:SECURITY", "type": \
-"STANDARD"}, {"name": "KB4:URGENCY", "type": "STANDARD"}], "created_at_cursor": "2021-08-08T14:06:11Z", \
+"STANDARD"}, {"name": "KB4:URGENCY", "type": "STANDARD"}], "created_at_cursor": "2021-08-08T14:06:08Z", \
 "created at": "2021-08-08T14:06:11+00:00"}',
             }
         ]

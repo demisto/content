@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM108
+
+[file:classifier-Sysdig_Mapper_Webhook.json]
+ignore=BC113

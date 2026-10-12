@@ -1,0 +1,74 @@
+{
+  "automateVersion": "1.2.3.0000",
+  "name": "Process - Image",
+  "description": "Process an image",
+  "sourceType": "Image",
+  "sourceConfig": {
+    "image": {}
+  },
+  "outputPath": "C:\\cases",
+  "keylistPath": "C:\\path\\to\\keylist.txt",
+  "passwordListPath": "C:\\path\\to\\passwordList.txt",
+  "continueOnDecryptionFail": "false,",
+  "distribution": "Localized",
+  "localMode": true,
+  "verticies": [
+    {
+      "id": 1,
+      "displayName": "AXIOM Process",
+      "executableName": "AXIOM Process",
+      "args": "--image \"${IMAGE_PATH}\"--output \"${OUTPUT_PATH}\"--e \"${EVIDENCE_NUMBER}\"--caseNumber \"${CASE_NUMBER}\"--search quick --append--nls ${NLS_URL} --group AdditionalSourcesFound--sourceLocation \"${ORIGINAL_IMAGE_FOLDER}\"",
+      "retries": 0,
+      "vertexType": "Application",
+      "forceImagingNode": false
+    },
+    {
+      "id": 3,
+      "displayName": "AXIOM Exporter",
+      "executableName": "AXIOM Exporter",
+      "args": "${APPLY_DAYLIGHT_SAVING_TIME} --case \"${PREV_OUTPUT_PATH}\"--output \"${OUTPUT_PATH}\"--examine \"${AXIOM_EXPORTER_PATH}\\..\\..\\AXIOM Examine\"--locale \"en - us\"--timezone \"${TIMEZONE}\"--type \"Excel\"--FinalExportPath \"${OUTPUT_PATH}\\AXIOM_Exporter\\Excel\"",
+      "retries": 0,
+      "vertexType": "Application",
+      "forceImagingNode": false
+    },
+    {
+      "id": 4,
+      "displayName": "Custom Plugin",
+      "executableName": "Custom Plugin",
+      "args": "{{\"COPY_OUTPUT\":true,\"EXTRA_TEXT\":\"Expected Selection\",\"NEW_FILENAME\":\"plugin_final_output.txt\"}}",
+      "retries": 0,
+      "vertexType": "Plugin"
+    },
+    {
+      "id": 2,
+      "retries": 0,
+      "vertexType": "Conditional"
+    },
+    {
+      "id": 5,
+      "retries": 0,
+      "vertexType": "Stop for Merge"
+    }
+  ],
+  "edges": [
+    {
+      "sourceId": 1,
+      "destinationId": 2
+    },
+    {
+      "sourceId": 2,
+      "destinationId": 3,
+      "condition": "${CONDITION_FAIL_DEFAULT}"
+    },
+    {
+      "sourceId": 2,
+      "destinationId": 4,
+      "condition": "${CONDITION_PASS_DEFAULT}"
+    },
+    {
+      "sourceId": 4,
+      "destinationId": 5
+    }
+  ],
+  "timeExported": "2023-01-01T00:00:00Z"
+}

@@ -58,7 +58,7 @@ Gets a list of URLs and IPs that are in the denylist.
 ### zia-denylist-update
 
 ***
-Updates the list of URLs and IPs that are in the denylist.
+Updates the list of URLs in the denylist.
 
 #### Base Command
 
@@ -69,7 +69,7 @@ Updates the list of URLs and IPs that are in the denylist.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | A comma-separated list of URLs to update the denylist. For example, snapchat.com,facebook.com. | Optional |
-| ip | A comma-separated list of IPs to update the denylist. For example, 1.2.3.4,8.8.8.8. | Optional |
+| ip | Deprecated. The Zscaler blacklistUrls field only supports URLs. Use the url argument instead. | Optional |
 | action | The action applied to the denylist. Possible values are: ADD_TO_LIST, REMOVE_FROM_LIST, OVERWRITE. | Required |
 
 #### Context Output
@@ -124,7 +124,7 @@ Gets a list of URLs and IPs that are in the allowlist.
 ### zia-allowlist-update
 
 ***
-Updates the list of URLs that are in the allowlist.
+Updates the list of URLs in the allowlist.
 
 #### Base Command
 
@@ -135,7 +135,7 @@ Updates the list of URLs that are in the allowlist.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | A comma-separated list of URLs to update in the allowlist. For example, snapchat.com,facebook.com. | Optional |
-| ip | A comma-separated list of IPs to update in the allowlist. For example, 1.2.3.4,8.8.8.8. | Optional |
+| ip | Deprecated. The Zscaler whitelistUrls field only supports URLs. Use the url argument instead. | Optional |
 | action | The action applied to the allowlist. Possible values are: ADD_TO_LIST, REMOVE_FROM_LIST, OVERWRITE. | Required |
 
 #### Context Output

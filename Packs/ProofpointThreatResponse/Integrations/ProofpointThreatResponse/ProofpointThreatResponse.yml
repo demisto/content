@@ -42,11 +42,27 @@ configuration:
   type: 8
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '12 hours'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -721,10 +737,7 @@ script:
       description: Whether or not to limit the results to include only quarantines that occurred within a limited time after alert creation.
       defaultValue: "True"
     - name: quarantine_limit
-      description: Only used if 'limit_quarantine_occurred_time' argument is set to true. Sets
-        a limit on the quarantines retrieved to include only those where the time
-        difference between alert time and quarantined time is less than the number
-        of seconds specified. The time is in seconds.
+      description: Only used if 'limit_quarantine_occurred_time' argument is set to true. Sets a limit on the quarantines retrieved to include only those where the time difference between alert time and quarantined time is less than the number of seconds specified. The time is in seconds.
       defaultValue: "120"
     - name: fetch_delta
       defaultValue: '6'
@@ -743,7 +756,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10116658
 tests:
 - No test
 fromversion: 5.0.0

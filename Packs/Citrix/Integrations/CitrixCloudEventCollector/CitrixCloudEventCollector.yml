@@ -37,6 +37,17 @@ configuration:
   section: Collect
   type: 0
   required: false
+- display: Fetch Events
+  section: Collect
+  name: isFetchEvents
+  type: 8
+  required: false
+- display: Events Fetch Interval
+  section: Collect
+  name: eventFetchInterval
+  type: 19
+  required: false
+  advanced: true
 - display: Trust any certificate (not secure)
   section: Connect
   name: insecure
@@ -70,7 +81,7 @@ script:
       description: Start DateTime for the records to be retrieved.
     - name: end_date_time
       description: End DateTime for the records to be retrieved.
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.13.10116658
   runonce: false
   script: '-'
   subtype: python3

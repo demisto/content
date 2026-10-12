@@ -2,8 +2,8 @@ id: ANYRUN Detonate Url Linux
 version: -1
 name: ANYRUN Detonate Url Linux
 fromversion: 6.0.0
-description: This playbook submits a URL extracted from an indicator to the 
-  ANY.RUN cloud sandbox for dynamic analysis in an Linux environment. 
+description: This playbook submits a URL extracted from an indicator to the
+  ANY.RUN cloud sandbox for dynamic analysis in an Linux environment.
   It automates the analysis of potentially malicious URLs on Linux OS.
 starttaskid: "0"
 tasks:
@@ -228,7 +228,7 @@ tasks:
       - "6"
     scriptarguments:
       brandname:
-        simple: ANY.RUN Sandbox
+        simple: ANY.RUN Cloud Sandbox
     separatecontext: false
     continueonerrortype: ""
     view: |-

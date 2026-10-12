@@ -482,7 +482,7 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[dict, li
     demisto.debug("Starting the SAP C4C fetch events command.")
 
     report_id = str(params.get("report_id"))
-    max_events_per_fetch = arg_to_number(params.get("max_fetch")) or MAX_EVENTS_PER_FETCH
+    max_events_per_fetch = arg_to_number(params.get("max_fetch", MAX_EVENTS_PER_FETCH)) or MAX_EVENTS_PER_FETCH
     all_events: list[dict[str, Any]] = []
     skip_count = INIT_SKIP
 

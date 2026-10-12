@@ -865,7 +865,7 @@ def fetch_incidents(client: Client, fetch_closed: bool = False):
     look_back = int(params.get("look_back", 0))
     first_fetch = params.get("first_fetch")
 
-    max_fetch_param = arg_to_number(params.get("max_fetch")) or 50
+    max_fetch_param = arg_to_number(params.get("max_fetch", 50)) or 50
     max_fetch = last_run.get("limit") or max_fetch_param
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(
         last_run=last_run, first_fetch=first_fetch, look_back=look_back, date_format=DATE_FORMAT

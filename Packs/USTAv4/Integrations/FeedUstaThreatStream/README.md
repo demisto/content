@@ -1,10 +1,10 @@
-This integration fetches indicators from the USTA Threat Stream feed. The indicators can be of type malicious URLs or malware hashes.
+This integration fetches indicators from the USTAv4 Threat Stream feed. The indicators can be of type malicious URLs or malware hashes.
 This integration was integrated and tested with version 4.1.0 of FeedUstaThreatStream.
 
-## Configure USTA Threat Stream IOC Feed on Cortex XSOAR
+## Configure USTAv4 Threat Stream IOC Feed in Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for USTA Threat Stream IOC Feed.
+2. Search for USTAv4 Threat Stream IOC Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |

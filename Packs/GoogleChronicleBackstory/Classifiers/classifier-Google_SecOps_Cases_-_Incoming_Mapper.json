@@ -1,0 +1,341 @@
+{
+    "description": "Maps incoming Google SecOps Case incident fields.",
+    "feed": false,
+    "id": "Google SecOps Cases - Incoming Mapper",
+    "mapping": {
+        "Google SecOps Case": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Display Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "displayName",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Alert Count": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alertCount",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Alert Details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alertDetails",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Alerts SLA Critical Expiration Time": {
+                    "complex": {
+                        "accessor": "criticalExpirationTime",
+                        "filters": [],
+                        "root": "alertsSla",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "Google SecOps Alerts SLA Expiration Time": {
+                    "complex": {
+                        "accessor": "expirationTime",
+                        "filters": [],
+                        "root": "alertsSla",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "Google SecOps Alerts SLA Remaining Time Since Last Pause": {
+                    "complex": {
+                        "accessor": "remainingTimeSinceLastPause",
+                        "filters": [],
+                        "root": "alertsSla",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Alerts SLA Status": {
+                    "complex": {
+                        "accessor": "expirationStatus",
+                        "filters": [],
+                        "root": "alertsSla",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Assignee": {
+                    "complex": {
+                        "filters": [],
+                        "root": "assignee",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Case ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "caseId",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Closure Action": {
+                    "complex": {
+                        "accessor": "caseClosedAction",
+                        "filters": [],
+                        "root": "closureDetails",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Closure Comment": {
+                    "complex": {
+                        "accessor": "comment",
+                        "filters": [],
+                        "root": "closureDetails",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Closure Reason": {
+                    "complex": {
+                        "accessor": "reason",
+                        "filters": [],
+                        "root": "closureDetails",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Closure Root Cause": {
+                    "complex": {
+                        "accessor": "rootCause",
+                        "filters": [],
+                        "root": "closureDetails",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Entity Details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "entityDetails",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Environment": {
+                    "complex": {
+                        "filters": [],
+                        "root": "environment",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Important": {
+                    "complex": {
+                        "filters": [],
+                        "root": "important",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Incident": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incident",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Involved Suspicious Entity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "involvedSuspiciousEntity",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Last Modified User": {
+                    "complex": {
+                        "filters": [],
+                        "root": "lastModifyingUser",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Last Modified User ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "lastModifyingUserId",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Overflow Case": {
+                    "complex": {
+                        "filters": [],
+                        "root": "overflowCase",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Playbook Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "workflowStatus",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Priority": {
+                    "complex": {
+                        "filters": [],
+                        "root": "priority",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "PRIORITY_"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Google SecOps Products": {
+                    "complex": {
+                        "filters": [],
+                        "root": "products",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps SLA Critical Expiration Time": {
+                    "complex": {
+                        "accessor": "criticalExpirationTime",
+                        "filters": [],
+                        "root": "sla",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "Google SecOps SLA Expiration Time": {
+                    "complex": {
+                        "accessor": "expirationTime",
+                        "filters": [],
+                        "root": "sla",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "Google SecOps SLA Remaining Time Since Last Pause": {
+                    "complex": {
+                        "accessor": "remainingTimeSinceLastPause",
+                        "filters": [],
+                        "root": "sla",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps SLA Status": {
+                    "complex": {
+                        "accessor": "expirationStatus",
+                        "filters": [],
+                        "root": "sla",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "score",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Source": {
+                    "complex": {
+                        "filters": [],
+                        "root": "source",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Stage": {
+                    "complex": {
+                        "filters": [],
+                        "root": "stage",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "status",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Tasks": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tasks",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "type",
+                        "transformers": []
+                    }
+                },
+                "Google SecOps Update Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "updateTime",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "displayName",
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "createTime",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "Google SecOps Cases - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

@@ -18,7 +18,8 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Rubrik DSPM Violation"
+        "Rubrik DSPM Violation",
+        "Rubrik Sensitive Data Object"
     ],
     "associatedToAll": false,
     "unmapped": false,

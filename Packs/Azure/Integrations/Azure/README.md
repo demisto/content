@@ -7,13 +7,17 @@ Click Connect, then click Show advanced settings, and under Additional Security 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Application ID |  |  |
-| Default Subscription ID | You can set the value either in the configuration or directly within the commands. If you set it in both places, the value in the command will override the configuration setting. |  |
+| Default Subscription ID | You can set the value either in the configuration or directly within the commands. If you set it in both places, the value in the command will override the configuration setting. | True |
 | Default Resource Group Name | You can set the value either in the configuration or directly within the commands. If you set it in both places, the value in the command will override the configuration setting. |  |
 | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
+| Authentication Type | The type of authentication. Can be Client Credentials (default authentication type), Device Code, Authorization Code, or Azure Managed Identities. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| Tenant ID |  | False |
-| Client Secret |  | False |
+| Tenant ID | The tenant ID of the Azure app registration. | False |
+| Client Secret | The client secret of the Azure app registration. Required when using the Client Credentials flow. | False |
+| Application redirect URI | The application redirect URI for the Authorization Code flow. | False |
+| Authorization code | The authorization code for the Authorization Code flow, received from the authorization step. See the Detailed Instructions (?) section. | False |
+| Azure Managed Identities Client ID | The managed identities client ID for authentication. Relevant only when the integration is running on an Azure VM. | False |
 
 ## Commands
 
@@ -68,10 +72,143 @@ Update a security rule. If one does not exist, it will be created. The command i
 | Azure.NSGRule.priority | Number | The rule's priority. Can be from 100 to 4096. |
 | Azure.NSGRule.direction | String | The rule's direction. Can be "Inbound" or "Outbound". |
 
+### azure-storage-accounts-list
+
+***
+Lists storage accounts, or retrieves a single storage account when an account name is provided. Required permission: Microsoft.Storage/storageAccounts/read.
+
+#### Base Command
+
+`azure-storage-accounts-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| account_name | The storage account name. When provided, retrieves the specified storage account only; otherwise all storage accounts in the resource group are listed. | Optional |
+| next_token | A token for retrieving the next page of results, returned by a previous call to this command. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Storage.StorageAccounts.id | String | The fully qualified resource ID of the storage account. |
+| Azure.Storage.StorageAccounts.name | String | The name of the storage account. |
+| Azure.Storage.StorageAccounts.type | String | The resource type. |
+| Azure.Storage.StorageAccounts.location | String | The geo-location where the resource lives. |
+| Azure.Storage.StorageAccounts.kind | String | The kind of the storage account. |
+| Azure.Storage.StorageAccounts.tags | Unknown | The resource tags. |
+| Azure.Storage.StorageAccounts.identity | Unknown | The identity of the resource. |
+| Azure.Storage.StorageAccounts.extendedLocation | Unknown | The extended location of the resource. |
+| Azure.Storage.StorageAccounts.placement | Unknown | The zonal placement details for the storage account. |
+| Azure.Storage.StorageAccounts.zones | Unknown | The availability zones. |
+| Azure.Storage.StorageAccounts.sku | Unknown | The SKU of the storage account. |
+| Azure.Storage.StorageAccounts.systemData | Unknown | Azure Resource Manager metadata containing createdBy and modifiedBy information. |
+| Azure.Storage.StorageAccounts.properties.provisioningState | String | The status of the storage account when the operation was called. |
+| Azure.Storage.StorageAccounts.properties.primaryLocation | String | The location of the primary data center for the storage account. |
+| Azure.Storage.StorageAccounts.properties.secondaryLocation | String | The location of the geo-replicated secondary for the storage account. Only available if the account type is Standard_GRS or Standard_RAGRS. |
+| Azure.Storage.StorageAccounts.properties.statusOfPrimary | String | The status indicating whether the primary location of the storage account is available or unavailable. |
+| Azure.Storage.StorageAccounts.properties.statusOfSecondary | String | The status indicating whether the secondary location of the storage account is available or unavailable. |
+| Azure.Storage.StorageAccounts.properties.lastGeoFailoverTime | Date | The timestamp of the most recent instance of a failover to the secondary location. |
+| Azure.Storage.StorageAccounts.properties.creationTime | Date | The creation date and time of the storage account, in UTC. |
+| Azure.Storage.StorageAccounts.properties.primaryEndpoints | Unknown | The URLs used to retrieve a public blob, queue, or table object from the primary location. |
+| Azure.Storage.StorageAccounts.properties.secondaryEndpoints | Unknown | The URLs used to retrieve a public blob, queue, or table object from the secondary location. Only available if the SKU name is Standard_RAGRS. |
+| Azure.Storage.StorageAccounts.properties.customDomain | Unknown | The custom domain the user assigned to the storage account. |
+| Azure.Storage.StorageAccounts.properties.accessTier | String | The access tier for billing, used by BlobStorage accounts. |
+| Azure.Storage.StorageAccounts.properties.supportsHttpsTrafficOnly | Boolean | Whether the storage account allows only HTTPS traffic. |
+| Azure.Storage.StorageAccounts.properties.minimumTlsVersion | String | The minimum TLS version permitted on requests to storage. |
+| Azure.Storage.StorageAccounts.properties.allowBlobPublicAccess | Boolean | Whether public access to all blobs or containers in the storage account is permitted. |
+| Azure.Storage.StorageAccounts.properties.allowSharedKeyAccess | Boolean | Whether the storage account permits requests to be authorized with the account access key via Shared Key. |
+| Azure.Storage.StorageAccounts.properties.allowSharedKeyAccessForServices | Unknown | The shared key access properties at the service level. |
+| Azure.Storage.StorageAccounts.properties.allowCrossTenantReplication | Boolean | Whether cross AAD tenant object replication is allowed. |
+| Azure.Storage.StorageAccounts.properties.allowCrossTenantDelegationSas | Boolean | Whether cross AAD tenant user delegation SAS is allowed. |
+| Azure.Storage.StorageAccounts.properties.allowedCopyScope | String | Restricts copy to and from storage accounts within an AAD tenant or with Private Links to the same VNet. |
+| Azure.Storage.StorageAccounts.properties.defaultToOAuthAuthentication | Boolean | Whether the default authentication is OAuth. |
+| Azure.Storage.StorageAccounts.properties.publicNetworkAccess | String | Whether public network access to the storage account is allowed. |
+| Azure.Storage.StorageAccounts.properties.networkAcls | Unknown | The network rule set of the storage account. |
+| Azure.Storage.StorageAccounts.properties.encryption | Unknown | The encryption settings used for server-side encryption for the storage account. |
+| Azure.Storage.StorageAccounts.properties.keyCreationTime | Unknown | The creation date and time of the storage account keys. |
+| Azure.Storage.StorageAccounts.properties.keyPolicy | Unknown | The KeyPolicy assigned to the storage account. |
+| Azure.Storage.StorageAccounts.properties.sasPolicy | Unknown | The SasPolicy assigned to the storage account. |
+| Azure.Storage.StorageAccounts.properties.privateEndpointConnections | Unknown | The list of private endpoint connections associated with the storage account. |
+| Azure.Storage.StorageAccounts.properties.routingPreference | Unknown | The network routing choice opted by the user for data transfer. |
+| Azure.Storage.StorageAccounts.properties.blobRestoreStatus | Unknown | The blob restore status. |
+| Azure.Storage.StorageAccounts.properties.geoReplicationStats | Unknown | The geo replication stats. |
+| Azure.Storage.StorageAccounts.properties.geoPriorityReplicationStatus | String | The status indicating whether Geo Priority Replication is enabled for the account. |
+| Azure.Storage.StorageAccounts.properties.failoverInProgress | Boolean | Whether a failover is in progress. |
+| Azure.Storage.StorageAccounts.properties.accountMigrationInProgress | Boolean | Whether a customer-initiated account migration is in progress. |
+| Azure.Storage.StorageAccounts.properties.isSkuConversionBlocked | Boolean | Whether the SKU conversion is blocked during an ongoing migration. |
+| Azure.Storage.StorageAccounts.properties.storageAccountSkuConversionStatus | Unknown | The storage account SKU conversion status. |
+| Azure.Storage.StorageAccounts.properties.isHnsEnabled | Boolean | Whether the account HierarchicalNamespace is enabled. |
+| Azure.Storage.StorageAccounts.properties.isNfsV3Enabled | Boolean | Whether NFS 3.0 protocol support is enabled. |
+| Azure.Storage.StorageAccounts.properties.isSftpEnabled | Boolean | Whether Secure File Transfer Protocol is enabled. |
+| Azure.Storage.StorageAccounts.properties.isLocalUserEnabled | Boolean | Whether the local users feature is enabled. |
+| Azure.Storage.StorageAccounts.properties.enableExtendedGroups | Boolean | Whether extended group support with the local users feature is enabled. |
+| Azure.Storage.StorageAccounts.properties.largeFileSharesState | String | Whether large file shares are allowed. |
+| Azure.Storage.StorageAccounts.properties.azureFilesIdentityBasedAuthentication | Unknown | The identity-based authentication settings for Azure Files. |
+| Azure.Storage.StorageAccounts.properties.immutableStorageWithVersioning | Unknown | The account-level object immutability property. |
+| Azure.Storage.StorageAccounts.properties.dnsEndpointType | String | The type of endpoint for the storage account. |
+| Azure.Storage.StorageAccounts.properties.dualStackEndpointPreference | Unknown | Information about the internet protocol opted by the user. |
+| Azure.Storage.StorageAccounts.properties.dataCollaborationPolicyProperties | Unknown | The data collaboration policy for the storage account. |
+| Azure.Storage.StorageAccountsNextToken | String | A token for retrieving the next page of storage accounts. Pass it as the next_token argument in a subsequent call. |
+
+### azure-storage-blob-containers-list
+
+***
+Lists blob containers, or retrieves a single blob container when a container name is provided. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/read.
+
+#### Base Command
+
+`azure-storage-blob-containers-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| account_name | The storage account name. | Required |
+| container_name | The container name. When provided, retrieves the specified container only; otherwise all containers in the storage account are listed. | Optional |
+| include_deleted | Whether to include soft-deleted blob containers in the response. Possible values are: true, false. | Optional |
+| limit | The maximum number of containers to return (1-5000). | Optional |
+| next_token | A token for retrieving the next page of results, returned by a previous call to this command. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Storage.BlobContainers.id | String | The fully qualified resource ID of the resource. |
+| Azure.Storage.BlobContainers.name | String | The name of the resource. |
+| Azure.Storage.BlobContainers.type | String | The resource type. |
+| Azure.Storage.BlobContainers.etag | String | The resource etag. |
+| Azure.Storage.BlobContainers.properties.version | String | The version of the deleted blob container. |
+| Azure.Storage.BlobContainers.properties.deleted | Boolean | Whether the blob container was deleted. |
+| Azure.Storage.BlobContainers.properties.deletedTime | Date | The date and time when the blob container was deleted. |
+| Azure.Storage.BlobContainers.properties.remainingRetentionDays | Number | The number of remaining days after which the blob container is permanently deleted. |
+| Azure.Storage.BlobContainers.properties.defaultEncryptionScope | String | The default encryption scope to use for blob operations in the container. |
+| Azure.Storage.BlobContainers.properties.denyEncryptionScopeOverride | Boolean | Whether to block the override of the encryption scope from the container default. |
+| Azure.Storage.BlobContainers.properties.publicAccess | String | The access level, which specifies whether data in the container can be accessed publicly. |
+| Azure.Storage.BlobContainers.properties.lastModifiedTime | Date | The date and time when the container was last modified, in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| Azure.Storage.BlobContainers.properties.leaseStatus | String | The lease status of the container. |
+| Azure.Storage.BlobContainers.properties.leaseState | String | The lease state of the container. |
+| Azure.Storage.BlobContainers.properties.leaseDuration | String | The duration of the lease, specified whether the lease is of infinite or fixed duration, only when the container is leased. |
+| Azure.Storage.BlobContainers.properties.metadata | Unknown | A name-value pair to associate with the container as metadata. |
+| Azure.Storage.BlobContainers.properties.immutabilityPolicy | Unknown | The ImmutabilityPolicy property of the container. |
+| Azure.Storage.BlobContainers.properties.legalHold | Unknown | The LegalHold property of the container. |
+| Azure.Storage.BlobContainers.properties.hasLegalHold | Boolean | Whether at least one legal hold tag exists for the container. |
+| Azure.Storage.BlobContainers.properties.hasImmutabilityPolicy | Boolean | Whether an ImmutabilityPolicy exists for the container. |
+| Azure.Storage.BlobContainers.properties.immutableStorageWithVersioning | Unknown | The object level immutability property of the container. |
+| Azure.Storage.BlobContainers.properties.enableNfsV3RootSquash | Boolean | Whether NFSv3 root squash is enabled for the container. |
+| Azure.Storage.BlobContainers.properties.enableNfsV3AllSquash | Boolean | Whether NFSv3 all squash is enabled for the container. |
+| Azure.Storage.BlobContainers.systemData | Unknown | Azure Resource Manager metadata containing createdBy and modifiedBy information. |
+| Azure.Storage.BlobContainersNextToken | String | A token for retrieving the next page of blob containers. Pass it as the next_token argument in a subsequent call. |
+
 ### azure-storage-account-update
 
 ***
-Updates a specific account storage. Required Permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write.
+Updates a specific account storage. Required permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write.
 
 #### Base Command
 
@@ -82,7 +219,7 @@ Updates a specific account storage. Required Permissions: Microsoft.Storage/stor
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | account_name | The name of the storage account. | Required |
 | sku | Gets or sets the SKU name, Required for account creation; optional for update. Possible values are: Premium_LRS, Premium_ZRS, Standard_GRS, Standard_GZRS, Standard_LRS, Standard_RAGRS, Standard_RAGZRS, Standard_ZRS. | Optional |
 | kind | Indicates the type of storage account, Required for account creation; optional for update. Possible values are: Storage, StorageV2, BlobStorage, FileStorage, BlockBlobStorage. | Optional |
@@ -173,7 +310,7 @@ Sets properties for the blob service in a specific account storage. The command 
 ### azure-policy-assignment-create
 
 ***
-Creates a policy assignment. Required Permissions: Microsoft.Authorization/policyAssignments/read, Microsoft.Authorization/policyAssignments/write.
+Creates a policy assignment. Required permissions: Microsoft.Authorization/policyAssignments/read, Microsoft.Authorization/policyAssignments/write.
 
 #### Base Command
 
@@ -184,7 +321,7 @@ Creates a policy assignment. Required Permissions: Microsoft.Authorization/polic
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the policy assignment. | Required |
-| subscription_id | Subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | scope | The scope of the policy assignment. | Required |
 | policy_definition_id | The ID of the policy definition or policy set definition being assigned. | Optional |
 | display_name | The assignment display name. | Optional |
@@ -351,7 +488,7 @@ Updates the authentication and authorization settings of an existing Azure Web A
 ### azure-mysql-flexible-server-param-set
 
 ***
-Updates a configuration of a server. Required Permissions: Microsoft.DBforMySQL/flexibleServers/configurations/read, Microsoft.DBforMySQL/flexibleServers/configurations/write.
+Updates a server configuration. Required permissions: Microsoft.DBforMySQL/flexibleServers/configurations/read, Microsoft.DBforMySQL/flexibleServers/configurations/write.
 
 #### Base Command
 
@@ -361,8 +498,8 @@ Updates a configuration of a server. Required Permissions: Microsoft.DBforMySQL/
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. | Optional |
-| subscription_id | Subscription ID. | Optional |
+| resource_group_name | The resource group name. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | server_name | Name of the MySQL flexible server. | Required |
 | configuration_name | The name of the server configuration. | Required |
 | source | Source of the configuration. | Optional |
@@ -375,7 +512,7 @@ There is no context output for this command.
 ### azure-monitor-log-profile-update
 
 ***
-Updates a log profile in Azure Monitoring REST API. Required Permissions: Microsoft.Insights/logprofiles/read, Microsoft.Insights/logprofiles/write.
+Updates a log profile in Azure Monitoring REST API. Required permissions: Microsoft.Insights/logprofiles/read, Microsoft.Insights/logprofiles/write.
 
 #### Base Command
 
@@ -386,7 +523,7 @@ Updates a log profile in Azure Monitoring REST API. Required Permissions: Micros
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | log_profile_name | The name of the log profile to update. | Required |
-| subscription_id | subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | location | Resource location. | Optional |
 | retention_policy_days | Number of days to retain logs. | Optional |
 | retention_policy_enabled | Whether to enable the retention policy. Possible values are: true, false. | Optional |
@@ -733,7 +870,7 @@ Updates the database's threat detection policy. The command is deprecated, pleas
 ### azure-sql-db-transparent-data-encryption-set
 
 ***
-Updates a logical database's transparent data encryption configuration. Required Permissions: Microsoft.Sql/servers/databases/transparentDataEncryption/read, Microsoft.Sql/servers/databases/transparentDataEncryption/write.
+Updates a logical database's transparent data encryption configuration. Required permissions: Microsoft.Sql/servers/databases/transparentDataEncryption/read, Microsoft.Sql/servers/databases/transparentDataEncryption/write.
 
 #### Base Command
 
@@ -746,79 +883,12 @@ Updates a logical database's transparent data encryption configuration. Required
 | server_name | Server name. | Required |
 | db_name | Database name. | Required |
 | state | The state of the transparent data encryption. Possible values are: Disabled, Enabled. | Required |
-| subscription_id | Subscription ID. | Optional |
-| resource_group_name | The name of the resource group. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
 
 #### Context Output
 
 There is no context output for this command.
-
-### azure-cosmos-db-update
-
-***
-Updates the properties of an existing Azure Cosmos DB database account. The command is deprecated, please use azure-cosmosdb-db-account-update. Required Permissions: Microsoft.DocumentDB/databaseAccounts/read, Microsoft.DocumentDB/databaseAccounts/write.
-
-#### Base Command
-
-`azure-cosmos-db-update`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_name | Cosmos DB database account name. | Required |
-| disable_key_based_metadata_write_access | Whether to disable write operations on metadata resources via account keys. Possible values are: true, false. | Optional |
-| subscription_id | Subscription ID. | Optional |
-| resource_group_name | The name of the resource group. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Azure.CosmosDB.id | String | The unique resource identifier of the ARM resource. |
-| Azure.CosmosDB.name | String | The name of the ARM resource. |
-| Azure.CosmosDB.location | String | The location of the resource group to which the resource belongs. |
-| Azure.CosmosDB.kind | String | The database account type. |
-| Azure.CosmosDB.identity.type | String | The type of identity used for the resource. |
-| Azure.CosmosDB.identity.userAssignedIdentities | Dictionary | The list of user identities associated with the resource. |
-| Azure.CosmosDB.properties.analyticalStorageConfiguration.schemaType | String | The analytical storage schema types. |
-| Azure.CosmosDB.properties.apiProperties | Dictionary | API specific properties. |
-| Azure.CosmosDB.properties.backupPolicy | unknown | The policy for taking backups on an account. |
-| Azure.CosmosDB.properties.capabilities | List | List of Cosmos DB capabilities for the account. |
-| Azure.CosmosDB.properties.capacity | Integer | Properties related to capacity enforcement on an account. |
-| Azure.CosmosDB.properties.connectorOffer | String | The Cassandra connector offer type for the Cosmos DB database account. |
-| Azure.CosmosDB.properties.consistencyPolicy | String | The consistency policy for the Cosmos DB database account. |
-| Azure.CosmosDB.properties.cors | List | The CORS policy for the Cosmos DB database account. |
-| Azure.CosmosDB.properties.createMode | String | The mode of account creation. |
-| Azure.CosmosDB.properties.customerManagedKeyStatus | String | Status of the Customer Managed Key feature on the account. |
-| Azure.CosmosDB.properties.databaseAccountOfferType | String | The offer type for the Cosmos DB database account. |
-| Azure.CosmosDB.properties.defaultIdentity | String | The default identity for accessing key vault used in features like customer managed keys. |
-| Azure.CosmosDB.properties.disableKeyBasedMetadataWriteAccess | Boolean | Whether write operations on metadata resources via account keys is disabled. |
-| Azure.CosmosDB.properties.disableLocalAuth | Boolean | Whether local authentication is disabled. |
-| Azure.CosmosDB.properties.documentEndpoint | String | The connection endpoint for the Cosmos DB database account. |
-| Azure.CosmosDB.properties.enableAnalyticalStorage | Boolean | Whether storage analytics are enabled. |
-| Azure.CosmosDB.properties.enableAutomaticFailover | Boolean | Enables automatic failover of the write region. |
-| Azure.CosmosDB.properties.enableBurstCapacity | Boolean | Whether Burst Capacity is enabled. |
-| Azure.CosmosDB.properties.enableCassandraConnector | Boolean | Enables the Cassandra connector on the Cosmos DB account. |
-| Azure.CosmosDB.properties.enableFreeTier | Boolean | Whether Free Tier is enabled. |
-| Azure.CosmosDB.properties.enableMultipleWriteLocations | Boolean | Enables the account to write in multiple locations. |
-| Azure.CosmosDB.properties.enablePartitionMerge | Boolean | Whether Partition Merge is enabled. |
-| Azure.CosmosDB.properties.enablePerRegionPerPartitionAutoscale | Boolean | Whether PerRegionPerPartitionAutoscale is enabled. |
-| Azure.CosmosDB.properties.failoverPolicies | List | An array that contains the regions ordered by their failover priorities. |
-| Azure.CosmosDB.properties.instanceId | String | A unique identifier assigned to the database account. |
-| Azure.CosmosDB.properties.ipRules | List | List of IP rules. |
-| Azure.CosmosDB.properties.isVirtualNetworkFilterEnabled | Boolean | Whether the Virtual Network ACL rules are enabled. |
-| Azure.CosmosDB.properties.keyVaultKeyUri | String | The URI of the key vault. |
-| Azure.CosmosDB.properties.keysMetadata | Dictionary | Metadata related to each access key for the given Cosmos DB database account. |
-| Azure.CosmosDB.properties.locations | List | An array that contains all of the locations enabled for the Cosmos DB account. |
-| Azure.CosmosDB.properties.minimalTlsVersion | String | The minimum allowed TLS version. |
-| Azure.CosmosDB.properties.networkAclBypass | String | Which services are allowed to bypass firewall checks. |
-| Azure.CosmosDB.properties.networkAclBypassResourceIds | List | List of resource IDs that are allowed to bypass firewall checks. |
-| Azure.CosmosDB.properties.privateEndpointConnections | List | List of private endpoint connections. |
-| Azure.CosmosDB.properties.provisioningState | String | The status of the Cosmos DB account at the time the operation was called. |
-| Azure.CosmosDB.properties.readLocations | List | An array that contains the read locations enabled for the Cosmos DB account. |
-| Azure.CosmosDB.properties.virtualNetworkRules | List | List of Virtual Network ACL rules. |
-| Azure.CosmosDB.properties.writeLocations | List | An array that contains the write locations enabled for the Cosmos DB account. |
 
 ### azure-vm-instance-details-get
 
@@ -1295,7 +1365,7 @@ Powers off a given virtual machine. The command is deprecated, please use azure-
 ### azure-billing-usage-list
 
 ***
-Returns actual usage and cost details for a given time period, optionally filtered by service name. Required Permissions: Microsoft.Consumption/usageDetails/read.
+Returns actual usage and cost details for a given time period, optionally filtered by service name. Required permission: Microsoft.Consumption/usageDetails/read.
 
 #### Base Command
 
@@ -1305,11 +1375,11 @@ Returns actual usage and cost details for a given time period, optionally filter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID on which to run the command. It will be sent as a scope parameter - /subscriptions/{subscriptionId}/. | Required |
-| expand_result | Whether to expand the result. Default - false. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| expand_result | Whether to expand the result. Default - false. Possible values are: false, true. | Optional |
 | filter | Optional filter for the API. API argument - $filter. | Optional |
 | metric | The metric to retrieve. API values [actualcost, amortizedcost, usage]. Possible values are: Actual Cost, Amortized Cost, Usage. | Optional |
-| max_results | Maximum results to return. Default - 50, Max - 1000. | Optional |
+| max_results | Maximum results to return. Default - 50, Max - 1000. Default is 50. | Optional |
 | next_page_token | Next page token for pagination. Use value from Azure.Billing.UsageNextToken. | Optional |
 
 #### Context Output
@@ -1377,7 +1447,7 @@ Returns actual usage and cost details for a given time period, optionally filter
 ### azure-billing-forecast-list
 
 ***
-Returns cost forecast for a subscription over a given time range. Required Permissions: Microsoft.CostManagement/forecast/read.
+Returns cost forecast for a subscription over a given time range. Required permission: Microsoft.CostManagement/forecast/read.
 
 #### Base Command
 
@@ -1385,18 +1455,18 @@ Returns cost forecast for a subscription over a given time range. Required Permi
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subscription_id | Azure subscription ID (required). | Required |
-| type | Forecast type (required). Possible values are: Usage, ActualCost, AmortizedCost. | Required |
-| aggregation_function_name | The name of the column to aggregate (required). Possible values are: PreTaxCostUSD, Cost, CostUSD, PreTaxCost. | Required |
-| aggregation_function_type | The name of the aggregation function to use. Default is Sum. | Optional |
-| granularity | The granularity of the forecast. Default is Daily. | Optional |
-| start_date | Start date for the forecast. Default value current time. | Optional |
-| end_date | End date for the forecast. Default value 7 days from current time. | Optional |
-| filter | A URL parameter to filter forecasts by properties/usageDate (Utc time), properties/chargeType or properties/grain. The filter supports 'eq', 'lt', 'gt', 'le', 'ge', and 'and'. It does not currently support 'ne', 'or', or 'not'. | Optional |
-| include_actual_cost | Include actual cost data. Possible values are: true, false. Default is false. | Optional |
-| include_fresh_partial_cost | Include fresh partial cost data. Possible values are: true, false. Default is false. | Optional |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                  | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| type | Forecast type (required). Possible values are: Usage, ActualCost, AmortizedCost.                                                                                                                                                                 | Required |
+| aggregation_function_name | The name of the column to aggregate (required). Possible values are: PreTaxCostUSD, Cost, CostUSD, PreTaxCost.                                                                                                                                   | Required |
+| aggregation_function_type | The name of the aggregation function to use. Default is Sum.                                                                                                                                                                                     | Optional |
+| granularity | The granularity of the forecast. Default is Daily.                                                                                                                                                                                               | Optional |
+| start_date | Start date for the forecast. Default value current time (UTC). e.g. 2022-01-01T00:00:00Z.                                                                                                                                                        | Optional |
+| end_date | End date for the forecast. Default value 7 days from current time (UTC). e.g. 2022-01-01T00:00:00Z.                                                                                                                                                                                                                       | Optional |
+| filter | A URL parameter to filter forecasts by properties/usageDate (Utc time), properties/chargeType or properties/grain. The filter supports 'eq', 'lt', 'gt', 'le', 'ge', and 'and'. It does not currently support 'ne', 'or', or 'not'.              | Optional |
+| include_actual_cost | Include actual cost data. Possible values are: true, false. Default is false.                                                                                                                                                                    | Optional |
+| include_fresh_partial_cost | Include fresh partial cost data. Possible values are: true, false. Default is false.                                                                                                                                                             | Optional |
 
 #### Context Output
 
@@ -1412,7 +1482,7 @@ Returns cost forecast for a subscription over a given time range. Required Permi
 ### azure-billing-budgets-list
 
 ***
-Lists configured budgets at the subscription or resource group scope. Required Permissions: Microsoft.Consumption/budgets/read.
+Lists configured budgets at the subscription or resource group level. Required permission: Microsoft.Consumption/budgets/read.
 
 #### Base Command
 
@@ -1422,7 +1492,7 @@ Lists configured budgets at the subscription or resource group scope. Required P
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID on which to run the command. Will be sent as a scope parameter - /subscriptions/{subscriptionId}/. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | budget_name | Name of the budget. Optional; if provided, returns a specific budget. | Optional |
 
 #### Context Output
@@ -1461,7 +1531,7 @@ Lists configured budgets at the subscription or resource group scope. Required P
 ### azure-storage-container-property-get
 
 ***
-Retrieve properties for the specified Container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/read.
+Retrieves properties for a specific Container. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/read.
 
 #### Base Command
 
@@ -1472,7 +1542,7 @@ Retrieve properties for the specified Container. Required Permissions: Microsoft
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | container_name | The name of the Container. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 
@@ -1491,7 +1561,7 @@ Retrieve properties for the specified Container. Required Permissions: Microsoft
 ### azure-storage-container-create
 
 ***
-Create a new Container under the specified account. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write.
+Creates a new Container under the specified account. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/write.
 
 #### Base Command
 
@@ -1502,7 +1572,7 @@ Create a new Container under the specified account. Required Permissions: Micros
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | container_name | The name of the Container to create. Rules for naming containers can be found here:<br/>https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata<br/>. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 
@@ -1513,7 +1583,7 @@ There is no context output for this command.
 ### azure-storage-container-delete
 
 ***
-Marks the specified Container for deletion. The Container and any Blobs contained within it, will be deleted during garbage collection. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/delete.
+Marks a specific Container for deletion. The Container and any Blobs contained within it will be deleted during garbage collection. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/delete.
 
 #### Base Command
 
@@ -1524,7 +1594,7 @@ Marks the specified Container for deletion. The Container and any Blobs containe
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | container_name | The name of the Container to delete. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 
@@ -1710,7 +1780,7 @@ There is no context output for this command.
 ### azure-storage-container-public-access-block
 
 ***
-Block public access to a container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action.
+Blocks public access to a container. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action.
 
 #### Base Command
 
@@ -1721,46 +1791,13 @@ Block public access to a container. Required Permissions: Microsoft.Storage/stor
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | container_name | Name of a container. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 
 #### Context Output
 
 There is no context output for this command.
-
-### azure-nsg-security-rules-list
-
-***
-Gets all security rules in a network security group. The command is deprecated, please use azure-vn-security-rules-list. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read.
-
-#### Base Command
-
-`azure-nsg-security-rules-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
-| resource_group_name | Resource group name. | Required |
-| network_security_group_name | The name of the network security group. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Azure.NSGRule.name | String | The rule's name. |
-| Azure.NSGRule.id | String | The rule's ID. |
-| Azure.NSGRule.properties.provisioningState | String | The rule's provisioning state. |
-| Azure.NSGRule.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". |
-| Azure.NSGRule.properties.sourcePortRange | String | For a single port, the source port or a range of ports. |
-| Azure.NSGRule.properties.destinationPortRange | String | For a single port, the destination port or range of ports. |
-| Azure.NSGRule.properties.sourceAddressPrefix | String | The source address. |
-| Azure.NSGRule.properties.destinationAddressPrefix | String | The destination address. |
-| Azure.NSGRule.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
-| Azure.NSGRule.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
-| Azure.NSGRule.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
 
 ### azure-storage-blob-property-get
 
@@ -1777,7 +1814,7 @@ Retrieve Blob properties. Required Permissions: Microsoft.Storage/storageAccount
 | --- | --- | --- |
 | container_name | The name of the Blob Container. | Required |
 | blob_name | The name of the blob. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 
@@ -1821,7 +1858,7 @@ Retrieve the tags of the specified Blob. Required Permissions: Microsoft.Storage
 | --- | --- | --- |
 | container_name | The name of the Blob Container. | Required |
 | blob_name | The name of the blob. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 
@@ -1847,7 +1884,7 @@ Lists all the virtual machines in the specified subscription. Use the next_token
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group. | Required |
 | next_token | The URI to fetch the next page of results. | Optional |
 
@@ -1927,7 +1964,7 @@ Gets the properties of a given virtual machine. Required Permissions: Microsoft.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group to which the virtual machine belongs. | Required |
 | virtual_machine_name | The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-compute-vm-list` command. | Required |
 | expand | The expand expression to apply on the operation. 'InstanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'UserData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation. Possible values are: instanceView, userData, resiliencyView. Default is instanceView. | Optional |
@@ -1963,7 +2000,7 @@ Creates a network security group. Required Permissions: Microsoft.Network/networ
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | security_group_name | The name of the network security group. | Required |
 | location | The location of the network security group. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilsouth, brazilsoutheast, brazilus, canadacentral, canadaeast, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, francecentral, francesouth, germanynorth, germanywestcentral, israelcentral, italynorth, japaneast, japanwest, jioindiacentral, jioindiawest, koreacentral, koreasouth, malaysiasouth, mexicocentral, newzealandnorth, northcentralus, northeurope, norwayeast, norwaywest, polandcentral, qatarcentral, southafricanorth, southafricawest, southcentralus, southeastasia, southindia, spaincentral, swedencentral, swedensouth, switzerlandnorth, switzerlandwest, uaecentral, uaenorth, uksouth, ukwest, westcentralus, westeurope, westindia, westus, westus2, westus3, australiaeastfoundational, austriaeast, chilecentral, eastusslv, indonesiacentral, israelnorthwest, malaysiawest, southcentralus2, southeastus, southeastus3, southwestus, usgovarizona, usgovtexas, usgovvirginia. | Required |
@@ -1999,7 +2036,7 @@ Powers off a given virtual machine. Required Permissions: Microsoft.Compute/virt
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-rm-resource-groups-list` command. | Required |
 | virtual_machine_name | The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-compute-vm-list` command. | Required |
 | skip_shutdown | Set to True to request non-graceful VM shutdown. Possible values are: true, false. Default is false. | Optional |
@@ -2025,7 +2062,7 @@ Powers on a given virtual machine. Required Permissions: Microsoft.Compute/virtu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | Resource Group to which the virtual machine belongs. | Required |
 | virtual_machine_name | Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-compute-vm-list` command. | Required |
 
@@ -2052,7 +2089,7 @@ Updates the properties of an existing Azure Cosmos DB database account. The requ
 | --- | --- | --- |
 | account_name | Cosmos DB database account name. | Required |
 | disable_key_based_metadata_write_access | Whether to disable write operations on metadata resources via account keys. Possible values are: true, false. | Optional |
-| subscription_id | Subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group. | Required |
 
 #### Context Output
@@ -2067,7 +2104,7 @@ Updates the properties of an existing Azure Cosmos DB database account. The requ
 | Azure.CosmosDB.DBAccounts.identity.userAssignedIdentities | Unknown | The list of user identities associated with the resource. |
 | Azure.CosmosDB.DBAccounts.properties.analyticalStorageConfiguration | Unknown | Analytical storage specific properties. |
 | Azure.CosmosDB.DBAccounts.properties.apiProperties | Unknown | API specific properties. |
-| Azure.CosmosDB.DBAccounts.properties.backupPolicy | unknown | The policy for taking backups on an account. |
+| Azure.CosmosDB.DBAccounts.properties.backupPolicy | Unknown | The policy for taking backups on an account. |
 | Azure.CosmosDB.DBAccounts.properties.capabilities | Unknown | List of Cosmos DB capabilities for the account. |
 | Azure.CosmosDB.DBAccounts.properties.capacity | Number | Properties related to capacity enforcement on an account. |
 | Azure.CosmosDB.DBAccounts.properties.connectorOffer | String | The Cassandra connector offer type for the Cosmos DB database account. |
@@ -2118,7 +2155,7 @@ Updates a key vault in the specified subscription. The required permissions are:
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | vault_name | Key Vault name. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group. | Required |
 | enable_purge_protection | Whether protection against purge is enabled for this vault. This functionality is always enabled, it cannot be disabled. Possible values are: true, false. | Optional |
 | enable_soft_delete | Whether soft delete is enabled for this key vault. This functionality is always enabled, it cannot be disabled. Possible values are: true, false. | Optional |
@@ -2159,7 +2196,7 @@ Gets all resource groups for a subscription. Required Permissions: Microsoft.Res
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | Limit on the number of resource groups to return. Default is 50. | Optional |
 | tag | A single tag in the form of `{"Tag Name":"Tag Value"}` to filter the list by. | Optional |
 
@@ -2196,7 +2233,7 @@ Updates a database's security alert policy. The required permissions are: Micros
 | server_name | Server name. | Required |
 | db_name | Database name. | Required |
 | email_account_admins_enabled | Whether the alert is sent to the account administrators. Possible values are: true, false. | Optional |
-| subscription_id | Subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group. | Required |
 
 #### Context Output
@@ -2234,7 +2271,7 @@ Gets network interfaces in a resource group. Required permissions: Microsoft.Net
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | The maximum number of records to return. Default is 50. | Optional |
 | all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. Default is false. | Optional |
 
@@ -2269,9 +2306,9 @@ Gets public IP addresses in a resource group. Required permissions: Microsoft.Ne
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | The maximum number of records to return. Default is 50. | Optional |
-| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. | Optional |
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. Default is false. | Optional |
 
 #### Context Output
 
@@ -2305,7 +2342,7 @@ List all network security groups. Required permissions: Microsoft.Network/networ
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 
 #### Context Output
@@ -2337,7 +2374,7 @@ Create a security rule. Required permissions: Microsoft.Network/networkSecurityG
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | Resource group name. | Required |
 | security_group_name | The name of the security group. | Required |
 | security_rule_name | The name of the rule to create. | Required |
@@ -2346,9 +2383,9 @@ Create a security rule. Required permissions: Microsoft.Network/networkSecurityG
 | protocol | The protocol on which to apply the rule. Possible values are: Any, TCP, UDP, ICMP. Default is Any. | Optional |
 | source | The source IP address range from which incoming traffic is allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is Any. | Optional |
 | priority | The priority of the rule, with a value between 100 and 4096. Each rule in the collection must have a unique priority number. Lower numbers indicate higher priority. | Required |
-| source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is`*`. | Optional |
+| source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is `*`. | Optional |
 | destination | The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. Default is Any. | Optional |
-| destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is`*`. | Optional |
+| destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is*. | Optional |
 | description | A description to add to the rule. | Optional |
 
 #### Context Output
@@ -2384,7 +2421,7 @@ Updates a network interface. Required Permissions: Microsoft.Network/networkInte
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group to which the network interface belongs. | Required |
 | network_interface_name | The name of the network interface to update. | Required |
 | location | The location of the network security group. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilsouth, brazilsoutheast, brazilus, canadacentral, canadaeast, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, francecentral, francesouth, germanynorth, germanywestcentral, israelcentral, italynorth, japaneast, japanwest, jioindiacentral, jioindiawest, koreacentral, koreasouth, malaysiasouth, mexicocentral, newzealandnorth, northcentralus, northeurope, norwayeast, norwaywest, polandcentral, qatarcentral, southafricanorth, southafricawest, southcentralus, southeastasia, southindia, spaincentral, swedencentral, swedensouth, switzerlandnorth, switzerlandwest, uaecentral, uaenorth, uksouth, ukwest, westcentralus, westeurope, westindia, westus, westus2, westus3, australiaeastfoundational, austriaeast, chilecentral, eastusslv, indonesiacentral, israelnorthwest, malaysiawest, southcentralus2, southeastus, southeastus3, southwestus, usgovarizona, usgovtexas, usgovvirginia. | Optional |
@@ -2446,7 +2483,7 @@ Delete a security rule. Required permissions: Microsoft.Network/networkSecurityG
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | Resource group name. | Required |
 | security_group_name | The name of the security group. | Required |
 | security_rule_name | The name of the rule to delete. | Required |
@@ -2468,7 +2505,7 @@ Get a specific rule. Required permissions: Microsoft.Network/networkSecurityGrou
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | Resource group name. | Required |
 | security_group_name | The name of the security group. | Required |
 | security_rule_name | The name of the rule to get. | Required |
@@ -2507,7 +2544,7 @@ Update a security rule. If one does not exist, it will be created. Required perm
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group. | Required |
 | security_group_name | The name of the security group. | Required |
 | security_rule_name | The name of the rule to be updated. | Required |
@@ -2554,7 +2591,7 @@ Gets all security rules in a network security group. Required permissions: Micro
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | Resource group name. | Required |
 | network_security_group_name | The name of the network security group. | Required |
 
@@ -2574,6 +2611,8 @@ Gets all security rules in a network security group. Required permissions: Micro
 | Azure.VirtualNetworks.SecurityRules.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
 | Azure.VirtualNetworks.SecurityRules.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
 
+#### Base Command
+
 ### azure-vn-network-interface-get
 
 ***
@@ -2587,7 +2626,7 @@ Gets the properties of a given network interface. Required permissions: Microsof
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group to which the network interface belongs. | Required |
 | network_interface_name | The name of the network interface you want to view the details of. | Required |
 
@@ -2600,7 +2639,6 @@ Gets the properties of a given network interface. Required permissions: Microsof
 | Azure.VirtualNetworks.NetworkInterfaces.name | String | The interface name. |
 | Azure.VirtualNetworks.NetworkInterfaces.location | String | The interface location. |
 | Azure.VirtualNetworks.NetworkInterfaces.id | String | The interface ID. |
-| Azure.VirtualNetworks.NetworkInterfaces.location | String | The Azure region where the network interface is deployed. |
 | Azure.VirtualNetworks.NetworkInterfaces.etag | String | A unique read-only string that changes whenever the network interface resource is updated. |
 | Azure.VirtualNetworks.NetworkInterfaces.kind | String | The type of the network interface resource, used for Azure internal classification. |
 | Azure.VirtualNetworks.NetworkInterfaces.properties.tapConfigurations | String | The list of tap configurations attached to the network interface for traffic mirroring. |
@@ -2623,7 +2661,7 @@ Gets the properties of a given public IP address. Permissions required: Microsof
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group to which the IP address belongs. | Required |
 | address_name | The IP address name. | Required |
 
@@ -2659,7 +2697,7 @@ Updates container properties as specified in request body. Properties not mentio
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 | container_name | The container name. | Required |
@@ -2692,7 +2730,7 @@ Create a new Blob under the specified Container. Required permissions: Microsoft
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 | container_name | The name of the Blob Container. | Required |
@@ -2716,7 +2754,7 @@ Retrieve a Blob from a Container. Required permissions: Microsoft.Storage/storag
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 | container_name | The name of the Blob Container. | Required |
@@ -2734,7 +2772,7 @@ Retrieve a Blob from a Container. Required permissions: Microsoft.Storage/storag
 | File.EntryID | String | The entry ID of the file. |
 | File.Info | String | File information. |
 | File.Type | String | The file type. |
-| File.MD5 | Unknown | The MD5 hash of the file. |
+| File.MD5 | String | The MD5 hash of the file. |
 | File.Extension | String | The file extension. |
 
 ### azure-storage-blob-tag-set
@@ -2753,7 +2791,7 @@ Updates the tags for the specified Blob. The command can replace the entire tags
 | container_name | The name of the Blob Container. | Required |
 | blob_name | The name of the blob. | Required |
 | tags | Tags fields in JSON format: {"tag-name-1": "tag-value-1", "tag-name-2": "tag-value-2"}. The tags fields may contain at most 10 tags. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 | append | Whether to append tags to the existing tags or not. Default is false. Possible values are: true, false. | Optional |
@@ -2777,7 +2815,7 @@ Set Blob properties. Required permissions: Microsoft.Storage/storageAccounts/blo
 | --- | --- | --- |
 | container_name | The name of the Blob Container. | Required |
 | blob_name | The name of the blob. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 | content_type | Blob content type. Indicates the media type of the blob. | Optional |
@@ -2807,7 +2845,7 @@ Updates the configuration settings of an existing Azure Web App. Required permis
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Required |
-| subscription_id | Subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | name | Name of the Web App. | Required |
 | http20_enabled | Configures a web site to allow clients to connect over http2.0. Possible values are: true, false. | Optional |
 | remote_debugging_enabled | True if remote debugging is enabled; otherwise, false. Possible values are: true, false. | Optional |
@@ -2860,7 +2898,7 @@ Updates the authentication and authorization settings of an existing Azure Web A
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Required |
-| subscription_id | Subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | name | Name of the Web App. | Required |
 | enabled | True if the Authentication / Authorization feature is enabled for the current app; otherwise, false. Possible values are: true, false. | Optional |
 
@@ -2915,7 +2953,7 @@ Updates a disk. Required permissions: Microsoft.Compute/disks/read, Microsoft.Co
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Required |
-| subscription_id | Subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | disk_name | The name of the managed disk that is being created. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters. | Required |
 | public_network_access | Policy for controlling export on the disk. Possible values are: Disabled, Enabled. | Optional |
 | network_access_policy | Policy for accessing the disk via network. Possible values are: AllowAll, AllowPrivate, DenyAll. | Optional |
@@ -2979,7 +3017,7 @@ Updates an Azure Web App. The required permissions are: Microsoft.Web/sites/read
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Required |
-| subscription_id | Subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | name | Name of the Web App. | Required |
 | identity_type | Managed service identity type. Possible values are: None, SystemAssigned. | Optional |
 | https_only | Configures the web site to accept only https requests. Possible values are: true, false. | Optional |
@@ -3028,7 +3066,7 @@ Updates a container registry. Required permissions: Microsoft.ContainerRegistry/
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Required |
-| subscription_id | Subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | registry_name | The name of the container registry. | Required |
 | allow_exports | Whether artifacts can be exported. Possible values are: disabled, enabled. | Optional |
 | public_network_access | Whether public network access is allowed for the container registry. Possible values are: disabled, enabled. | Optional |
@@ -3076,7 +3114,7 @@ Run this command to get the blob service properties of a specific account storag
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 
@@ -3112,7 +3150,7 @@ Sets properties for the blob service in a specific account storage. Required per
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | account_name | The name of the storage account. | Required |
 | delete_retention_policy_enabled | Whether DeleteRetentionPolicy is enabled. Possible values are: true, false. | Optional |
 | delete_retention_policy_days | The number of days the deleted item should be retained. | Optional |
@@ -3134,3 +3172,653 @@ Sets properties for the blob service in a specific account storage. Required per
 | Azure.Storage.BlobServices.properties.restorePolicy | Unknown | The blob service properties for blob restore policy. |
 | Azure.Storage.BlobServices.sku.name | String | The SKU name. |
 | Azure.Storage.BlobServices.sku.tier | String | The SKU tier. |
+
+### azure-auth-test
+
+***
+Tests the connectivity to Azure. Relevant for the Device Code and Authorization Code authentication flows (used instead of the Test button for these interactive flows).
+
+#### Base Command
+
+`azure-auth-test`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-generate-login-url
+
+***
+Generates the login URL used for authorization. Relevant only for the Authorization Code authentication flow.
+
+#### Base Command
+
+`azure-generate-login-url`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-auth-complete
+
+***
+Completes the authorization process for the Device Code flow. Should be used after running the azure-auth-start command.
+
+#### Base Command
+
+`azure-auth-complete`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-auth-reset
+
+***
+Resets the authentication process. Relevant for the Device Code and Authorization Code authentication flows.
+
+#### Base Command
+
+`azure-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-auth-start
+
+***
+Starts the authorization process for the Device Code / Authorization Code flows. Follow the instructions in the command results.
+
+#### Base Command
+
+`azure-auth-start`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-firewall-policy-detach
+
+***
+Detaches the firewall policy from a firewall. The command detaches the policy from the firewall, but does not delete the policy. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write.
+
+#### Base Command
+
+`azure-firewall-policy-detach`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| firewall_name | The name of the firewall from which the policy is detached. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Firewall.Firewalls.id | String | The firewall resource ID. |
+| Azure.Firewall.Firewalls.name | String | The firewall resource name. |
+| Azure.Firewall.Firewalls.type | String | The firewall resource type. |
+| Azure.Firewall.Firewalls.location | String | The firewall resource location. |
+| Azure.Firewall.Firewalls.etag | String | The unique read-only string that changes whenever the resource is updated. |
+| Azure.Firewall.Firewalls.tags | Unknown | The firewall resource tags. |
+| Azure.Firewall.Firewalls.zones | Unknown | A list of availability zones from which the resource originates. |
+| Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the firewall resource. Possible values are "Succeeded", "Updating", "Deleting", or "Failed". |
+| Azure.Firewall.Firewalls.properties.threatIntelMode | String | The threat intelligence operation mode. |
+| Azure.Firewall.Firewalls.properties.firewallPolicy | Unknown | The firewall policy object associated with the firewall containing the id field. |
+| Azure.Firewall.Firewalls.properties.sku | Unknown | The SKU object of the firewall containing the name and tier fields. |
+| Azure.Firewall.Firewalls.properties.ipConfigurations | Unknown | The IP configurations of the firewall resource. |
+| Azure.Firewall.Firewalls.properties.hubIPAddresses | Unknown | The IP addresses associated with the firewall resource. |
+| Azure.Firewall.Firewalls.properties.virtualHub | Unknown | The virtual hub object to which the firewall belongs containing the id field. |
+| Azure.Firewall.Firewalls.properties.managementIpConfiguration | Unknown | The management IP configuration of the firewall resource used for forced tunneling. |
+| Azure.Firewall.Firewalls.properties.applicationRuleCollections | Unknown | A list of application rule collections of the firewall resource. Returned only when the firewall is not managed by a firewall policy. |
+| Azure.Firewall.Firewalls.properties.natRuleCollections | Unknown | A list of NAT rule collections of the firewall resource. Returned only when the firewall is not managed by a firewall policy. |
+| Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | A list of network rule collections of the firewall resource. Returned only when the firewall is not managed by a firewall policy. |
+| Azure.Firewall.Firewalls.properties.ipGroups | Unknown | A list of IP groups associated with the firewall resource. |
+| Azure.Firewall.Firewalls.properties.autoscaleConfiguration | Unknown | The autoscale settings of the firewall resource containing the minCapacity and maxCapacity fields. |
+| Azure.Firewall.Firewalls.properties.additionalProperties | Unknown | The additional properties used to further configure the firewall resource. |
+
+### azure-vn-firewall-policy-get
+
+***
+Retrieves a firewall policy. Required permission: Microsoft.Network/firewallPolicies/read.
+
+#### Base Command
+
+`azure-vn-firewall-policy-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the firewall policy to retrieve. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.FirewallPolicies.id | String | The firewall policy resource ID. |
+| Azure.VirtualNetworks.FirewallPolicies.name | String | The firewall policy resource name. |
+| Azure.VirtualNetworks.FirewallPolicies.type | String | The firewall policy resource type. |
+| Azure.VirtualNetworks.FirewallPolicies.location | String | The firewall policy resource location. |
+| Azure.VirtualNetworks.FirewallPolicies.etag | String | The unique read-only string that changes whenever the resource is updated. |
+| Azure.VirtualNetworks.FirewallPolicies.tags | Unknown | The firewall policy resource tags. |
+| Azure.VirtualNetworks.FirewallPolicies.identity | Unknown | The managed identity of the firewall policy containing the type, principalId, tenantId, and userAssignedIdentities fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.provisioningState | String | The provisioning state of the firewall policy resource. Possible values are "Succeeded", "Updating", "Deleting", or "Failed". |
+| Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelMode | String | The threat intelligence operation mode. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelWhitelist | Unknown | The threat intelligence allow list object containing the ipAddresses and fqdns fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.dnsSettings | Unknown | The DNS settings object containing the servers, enableProxy, and requireProxyForNetworkRules fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.sku | Unknown | The SKU object of the firewall policy containing the tier field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.basePolicy | Unknown | The parent firewall policy object from which rules are inherited containing the id field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.firewalls | Unknown | A list of references to Azure Firewalls associated with the firewall policy. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.childPolicies | Unknown | A list of references to child firewall policies. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.ruleCollectionGroups | Unknown | A list of references to rule collection groups of the firewall policy. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.size | String | The size of the firewall policy, in MB \(for example, 0.5 MB\). |
+| Azure.VirtualNetworks.FirewallPolicies.properties.insights | Unknown | The insights settings of the firewall policy containing the isEnabled, retentionDays, and logAnalyticsResources fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.snat | Unknown | The private IP address ranges to which traffic is not SNATed containing the privateRanges and autoLearnPrivateRanges fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.sql | Unknown | The SQL settings of the firewall policy containing the allowSqlRedirect field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.explicitProxy | Unknown | The explicit proxy settings of the firewall policy containing the enableExplicitProxy, httpPort, httpsPort, enablePacFile, pacFilePort, and pacFile fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.intrusionDetection | Unknown | The intrusion detection settings of the firewall policy containing the mode, profile, and configuration fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.transportSecurity | Unknown | The TLS inspection settings of the firewall policy containing the certificateAuthority field. |
+
+### azure-vn-firewall-policy-delete
+
+***
+Deletes a firewall policy resource. Required permission: Microsoft.Network/firewallPolicies/delete.
+
+#### Base Command
+
+`azure-vn-firewall-policy-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the firewall policy to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-vn-firewall-policy-list
+
+***
+Lists the firewall policies in a resource group. Use the next_token argument to view the next page of results. Required permission: Microsoft.Network/firewallPolicies/read.
+
+#### Base Command
+
+`azure-vn-firewall-policy-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| next_token | The URI to fetch the next page of results as returned in the Azure.VirtualNetworks.FirewallPoliciesNextToken output of a previous run. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.FirewallPolicies.id | String | The firewall policy resource ID. |
+| Azure.VirtualNetworks.FirewallPolicies.name | String | The firewall policy resource name. |
+| Azure.VirtualNetworks.FirewallPolicies.type | String | The firewall policy resource type. |
+| Azure.VirtualNetworks.FirewallPolicies.location | String | The firewall policy resource location. |
+| Azure.VirtualNetworks.FirewallPolicies.etag | String | The unique read-only string that changes whenever the resource is updated. |
+| Azure.VirtualNetworks.FirewallPolicies.tags | Unknown | The firewall policy resource tags. |
+| Azure.VirtualNetworks.FirewallPolicies.identity | Unknown | The managed identity of the firewall policy containing the type, principalId, tenantId, and userAssignedIdentities fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.provisioningState | String | The provisioning state of the firewall policy resource. Possible values are "Succeeded", "Updating", "Deleting", or "Failed". |
+| Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelMode | String | The threat intelligence operation mode. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelWhitelist | Unknown | The threat intelligence allow list object containing the ipAddresses and fqdns fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.dnsSettings | Unknown | The DNS settings object containing the servers, enableProxy, and requireProxyForNetworkRules fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.sku | Unknown | The SKU object of the firewall policy containing the tier field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.basePolicy | Unknown | The parent firewall policy object from which rules are inherited containing the id field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.firewalls | Unknown | A list of references to Azure Firewalls associated with the firewall policy. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.childPolicies | Unknown | A list of references to child firewall policies. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.ruleCollectionGroups | Unknown | A list of references to rule collection groups of the firewall policy. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.size | String | The size of the firewall policy, in MB \(for example, 0.5 MB\). |
+| Azure.VirtualNetworks.FirewallPolicies.properties.insights | Unknown | The insights settings of the firewall policy containing the isEnabled, retentionDays, and logAnalyticsResources fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.snat | Unknown | The private IP address ranges to which traffic is not SNATed containing the privateRanges and autoLearnPrivateRanges fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.sql | Unknown | The SQL settings of the firewall policy containing the allowSqlRedirect field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.explicitProxy | Unknown | The explicit proxy settings of the firewall policy containing the enableExplicitProxy, httpPort, httpsPort, enablePacFile, pacFilePort, and pacFile fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.intrusionDetection | Unknown | The intrusion detection settings of the firewall policy containing the mode, profile, and configuration fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.transportSecurity | Unknown | The TLS inspection settings of the firewall policy containing the certificateAuthority field. |
+| Azure.VirtualNetworks.FirewallPoliciesNextToken | String | The URI to fetch the next page of firewall policies. Run the same command with the next_token argument to get the next page. |
+
+### azure-firewall-policy-attach
+
+***
+Attaches a firewall policy to a firewall. The policy and the firewall must belong to the same tier. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write, Microsoft.Network/firewallPolicies/join/action.
+
+#### Base Command
+
+`azure-firewall-policy-attach`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| firewall_name | The name of the firewall to which the policy is attached. | Required |
+| policy_id | The ID of the firewall policy to attach. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Firewall.Firewalls.id | String | The firewall resource ID. |
+| Azure.Firewall.Firewalls.name | String | The firewall resource name. |
+| Azure.Firewall.Firewalls.type | String | The firewall resource type. |
+| Azure.Firewall.Firewalls.location | String | The firewall resource location. |
+| Azure.Firewall.Firewalls.etag | String | The unique read-only string that changes whenever the resource is updated. |
+| Azure.Firewall.Firewalls.tags | Unknown | The firewall resource tags. |
+| Azure.Firewall.Firewalls.zones | Unknown | A list of availability zones from which the resource originates. |
+| Azure.Firewall.Firewalls.properties.provisioningState | String | The provisioning state of the firewall resource. Possible values are "Succeeded", "Updating", "Deleting", or "Failed". |
+| Azure.Firewall.Firewalls.properties.threatIntelMode | String | The threat intelligence operation mode. |
+| Azure.Firewall.Firewalls.properties.firewallPolicy | Unknown | The firewall policy object associated with the firewall containing the id field. |
+| Azure.Firewall.Firewalls.properties.sku | Unknown | The SKU object of the firewall containing the name and tier fields. |
+| Azure.Firewall.Firewalls.properties.ipConfigurations | Unknown | The IP configurations of the firewall resource. |
+| Azure.Firewall.Firewalls.properties.hubIPAddresses | Unknown | The IP addresses associated with the firewall resource. |
+| Azure.Firewall.Firewalls.properties.virtualHub | Unknown | The virtual hub object to which the firewall belongs containing the id field. |
+| Azure.Firewall.Firewalls.properties.managementIpConfiguration | Unknown | The management IP configuration of the firewall resource used for forced tunneling. |
+| Azure.Firewall.Firewalls.properties.applicationRuleCollections | Unknown | A list of application rule collections of the firewall resource. Returned only when the firewall is not managed by a firewall policy. |
+| Azure.Firewall.Firewalls.properties.natRuleCollections | Unknown | A list of NAT rule collections of the firewall resource. Returned only when the firewall is not managed by a firewall policy. |
+| Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | A list of network rule collections of the firewall resource. Returned only when the firewall is not managed by a firewall policy. |
+| Azure.Firewall.Firewalls.properties.ipGroups | Unknown | A list of IP groups associated with the firewall resource. |
+| Azure.Firewall.Firewalls.properties.autoscaleConfiguration | Unknown | The autoscale settings of the firewall resource containing the minCapacity and maxCapacity fields. |
+| Azure.Firewall.Firewalls.properties.additionalProperties | Unknown | The additional properties used to further configure the firewall resource. |
+
+### azure-vn-firewall-policy-update
+
+***
+Updates a firewall policy. Only provided arguments are updated. Required permissions: Microsoft.Network/firewallPolicies/read, Microsoft.Network/firewallPolicies/write.
+
+#### Base Command
+
+`azure-vn-firewall-policy-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the firewall policy to update. | Required |
+| threat_intelligence_mode | The threat intelligence operation mode. Possible values are: Alert, Deny, Off. | Optional |
+| ips | The comma-separated list of IP addresses for the threat intelligence allow list. | Optional |
+| domains | The comma-separated list of fully qualified domain names for the threat intelligence allow list (for example, "*.microsoft.com,email.college.edu"). | Optional |
+| base_policy_id | The ID of the parent firewall policy from which rules are inherited. | Optional |
+| enable_proxy | Whether to enable the DNS proxy on firewalls attached to the firewall policy. Possible values are: true, false. | Optional |
+| dns_servers | The comma-separated list of custom DNS servers. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.FirewallPolicies.id | String | The firewall policy resource ID. |
+| Azure.VirtualNetworks.FirewallPolicies.name | String | The firewall policy resource name. |
+| Azure.VirtualNetworks.FirewallPolicies.type | String | The firewall policy resource type. |
+| Azure.VirtualNetworks.FirewallPolicies.location | String | The firewall policy resource location. |
+| Azure.VirtualNetworks.FirewallPolicies.etag | String | The unique read-only string that changes whenever the resource is updated. |
+| Azure.VirtualNetworks.FirewallPolicies.tags | Unknown | The firewall policy resource tags. |
+| Azure.VirtualNetworks.FirewallPolicies.identity | Unknown | The managed identity of the firewall policy containing the type, principalId, tenantId, and userAssignedIdentities fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.provisioningState | String | The provisioning state of the firewall policy resource. Possible values are "Succeeded", "Updating", "Deleting", or "Failed". |
+| Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelMode | String | The threat intelligence operation mode. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelWhitelist | Unknown | The threat intelligence allow list object containing the ipAddresses and fqdns fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.dnsSettings | Unknown | The DNS settings object containing the servers, enableProxy, and requireProxyForNetworkRules fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.sku | Unknown | The SKU object of the firewall policy containing the tier field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.basePolicy | Unknown | The parent firewall policy object from which rules are inherited containing the id field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.firewalls | Unknown | A list of references to the Azure Firewalls associated with the firewall policy. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.childPolicies | Unknown | A list of references to child firewall policies. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.ruleCollectionGroups | Unknown | A list of references to rule collection groups of the firewall policy. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.size | String | The size of the firewall policy, in MB \(for example, 0.5 MB\). |
+| Azure.VirtualNetworks.FirewallPolicies.properties.insights | Unknown | The insights settings of the firewall policy containing the isEnabled, retentionDays, and logAnalyticsResources fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.snat | Unknown | The private IP address ranges to which traffic is not SNATed containing the privateRanges and autoLearnPrivateRanges fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.sql | Unknown | The SQL settings of the firewall policy containing the allowSqlRedirect field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.explicitProxy | Unknown | The explicit proxy settings of the firewall policy containing the enableExplicitProxy, httpPort, httpsPort, enablePacFile, pacFilePort, and pacFile fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.intrusionDetection | Unknown | The intrusion detection settings of the firewall policy containing the mode, profile, and configuration fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.transportSecurity | Unknown | The TLS inspection settings of the firewall policy containing the certificateAuthority field. |
+
+### azure-vn-firewall-policy-create
+
+***
+Creates a firewall policy. This command only creates the policy resource. To attach the policy to a firewall, run the azure-firewall-policy-attach command. Required permissions: Microsoft.Network/firewallPolicies/read, Microsoft.Network/firewallPolicies/write.
+
+#### Base Command
+
+`azure-vn-firewall-policy-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the firewall policy to create. | Required |
+| location | The region location of the firewall policy resource. | Required |
+| tier | The tier of the firewall policy. Possible values are: Standard, Premium, Basic. Default is Standard. | Required |
+| threat_intelligence_mode | The operation mode for threat intelligence. Possible values are: Alert, Deny, Off. | Optional |
+| ips | The comma-separated list of IP addresses for the threat intelligence allow list. | Optional |
+| domains | The comma-separated list of fully qualified domain names for the threat intelligence allow list (for example, "*.microsoft.com,email.college.edu"). | Optional |
+| base_policy_id | The ID of the parent firewall policy from which rules are inherited. | Optional |
+| enable_proxy | Whether to enable the DNS proxy on the firewalls attached to the firewall policy. Possible values are: true, false. | Optional |
+| dns_servers | The comma-separated list of custom DNS servers. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.FirewallPolicies.id | String | The firewall policy resource ID. |
+| Azure.VirtualNetworks.FirewallPolicies.name | String | The firewall policy resource name. |
+| Azure.VirtualNetworks.FirewallPolicies.type | String | The firewall policy resource type. |
+| Azure.VirtualNetworks.FirewallPolicies.location | String | The firewall policy resource location. |
+| Azure.VirtualNetworks.FirewallPolicies.etag | String | The unique read-only string that changes whenever the resource is updated. |
+| Azure.VirtualNetworks.FirewallPolicies.tags | Unknown | The firewall policy resource tags. |
+| Azure.VirtualNetworks.FirewallPolicies.identity | Unknown | The managed identity of the firewall policy, containing the type, principalId, tenantId, and userAssignedIdentities fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.provisioningState | String | The provisioning state of the firewall policy resource. Possible values are "Succeeded", "Updating", "Deleting", or "Failed". |
+| Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelMode | String | The operation mode for threat intelligence. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.threatIntelWhitelist | Unknown | The threat intelligence allow list object containing the ipAddresses and fqdns fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.dnsSettings | Unknown | The DNS settings object containing the servers, enableProxy, and requireProxyForNetworkRules fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.sku | Unknown | The SKU object of the firewall policy containing the tier field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.basePolicy | Unknown | The parent firewall policy object from which rules are inherited containing the id field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.firewalls | Unknown | A list of references to Azure Firewalls associated with the firewall policy. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.childPolicies | Unknown | A list of references to child firewall policies. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.ruleCollectionGroups | Unknown | A list of references to rule collection groups of the firewall policy. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.size | String | The size of the firewall policy, in MB \(for example, 0.5 MB\). |
+| Azure.VirtualNetworks.FirewallPolicies.properties.insights | Unknown | The insights settings of the firewall policy containing the isEnabled, retentionDays, and logAnalyticsResources fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.snat | Unknown | The private IP address ranges to which traffic is not SNATed containing the privateRanges and autoLearnPrivateRanges fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.sql | Unknown | The SQL settings of the firewall policy containing the allowSqlRedirect field. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.explicitProxy | Unknown | The explicit proxy settings of the firewall policy containing the enableExplicitProxy, httpPort, httpsPort, enablePacFile, pacFilePort, and pacFile fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.intrusionDetection | Unknown | The intrusion detection settings of the firewall policy containing the mode, profile, and configuration fields. |
+| Azure.VirtualNetworks.FirewallPolicies.properties.transportSecurity | Unknown | The TLS inspection settings of the firewall policy containing the certificateAuthority field. |
+
+### azure-application-gateway-waf-policy-get
+
+***
+Retrieves an Application Gateway Web Application Firewall (WAF) policy by name. Required permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read.
+
+#### Base Command
+
+`azure-application-gateway-waf-policy-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group containing the policy. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the WAF policy to retrieve. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ApplicationGateway.WAFPolicies.id | String | The resource ID of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.name | String | The name of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.type | String | The resource type of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.location | String | The location of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.etag | String | The ETag used to prevent concurrent updates from overwriting the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.tags | Unknown | The tags of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.sku | Unknown | The WAF policy pricing tier containing the name field. |
+| Azure.ApplicationGateway.WAFPolicies.properties.provisioningState | String | The provisioning state of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.properties.resourceState | String | The resource state of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.properties.policySettings | Unknown | The policy settings object containing the mode, state, requestBodyCheck, maxRequestBodySizeInKb, and fileUploadLimitInMb fields. |
+| Azure.ApplicationGateway.WAFPolicies.properties.customRules | Unknown | The custom rules of the policy, each containing the name, priority, ruleType, matchConditions, and action fields. |
+| Azure.ApplicationGateway.WAFPolicies.properties.managedRules | Unknown | The managed rules of the policy containing the managedRuleSets, exclusions, and exceptions fields. |
+
+### azure-application-gateway-waf-policies-list
+
+***
+Lists the Application Gateway Web Application Firewall (WAF) policies of a resource group, or of the whole subscription when no resource group is given. Required permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/read.
+
+#### Base Command
+
+`azure-application-gateway-waf-policies-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group from which to list policies. If not specified, lists policies for the entire subscription. | Optional |
+| next_token | The URI used to fetch the next page of results. Set to the value of the Azure.ApplicationGateway.WAFPoliciesNextToken context output from the previous response. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ApplicationGateway.WAFPolicies.id | String | The resource ID of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.name | String | The name of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.type | String | The resource type of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.location | String | The location of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.etag | String | The ETag used to prevent concurrent updates from overwriting the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.tags | Unknown | The tags of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.sku | Unknown | The WAF policy pricing tier containing the name field. |
+| Azure.ApplicationGateway.WAFPolicies.properties.provisioningState | String | The provisioning state of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.properties.resourceState | String | The resource state of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.properties.policySettings | Unknown | The policy settings object containing the mode, state, requestBodyCheck, maxRequestBodySizeInKb, and fileUploadLimitInMb fields. |
+| Azure.ApplicationGateway.WAFPolicies.properties.customRules | Unknown | The custom rules of the policy, each containing the name, priority, ruleType, matchConditions, and action fields. |
+| Azure.ApplicationGateway.WAFPolicies.properties.managedRules | Unknown | The managed rules of the policy containing the managedRuleSets, exclusions, and exceptions fields. |
+| Azure.ApplicationGateway.WAFPoliciesNextToken | String | The URI used to fetch the next page of policies. Pass this value to the next_token argument to retrieve the next page. |
+
+### azure-application-gateway-waf-policy-create-or-update
+
+***
+Creates an Application Gateway Web Application Firewall (WAF) policy, or fully replaces an existing one. Warning: this is a full replacement and not a partial update. Any property that is not provided as an argument is removed from the policy or reset to its default, since the policy is not read before it is written. Required permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/write.
+
+#### Base Command
+
+`azure-application-gateway-waf-policy-create-or-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group to create the policy in. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the WAF policy to create or update. | Required |
+| location | The Azure region of the policy. For example "westus2". | Required |
+| managed_rules | The managed rules of the policy, as a JSON string. For example, {"managedRuleSets": [{"ruleSetType": "OWASP", "ruleSetVersion": "3.2"}]}. | Required |
+| policy_settings | The policy settings, as a JSON string. For example, {"mode": "Prevention", "state": "Enabled"}. | Optional |
+| custom_rules | The custom rules of the policy, as a JSON string containing a list of rule objects. | Optional |
+| tags | The tags to assign to the policy, as a JSON string. For example, {"env": "prod"}. | Optional |
+| resource_id | The resource ID of the policy. Used when updating an existing policy. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ApplicationGateway.WAFPolicies.id | String | The resource ID of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.name | String | The name of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.type | String | The resource type of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.location | String | The location of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.etag | String | The ETag used to prevent concurrent updates from overwriting the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.tags | Unknown | The tags of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.sku | Unknown | The WAF policy pricing tier containing the name field. |
+| Azure.ApplicationGateway.WAFPolicies.properties.provisioningState | String | The provisioning state of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.properties.resourceState | String | The resource state of the WAF policy. |
+| Azure.ApplicationGateway.WAFPolicies.properties.policySettings | Unknown | The policy settings object containing the mode, state, requestBodyCheck, maxRequestBodySizeInKb, and fileUploadLimitInMb fields. |
+| Azure.ApplicationGateway.WAFPolicies.properties.customRules | Unknown | The custom rules of the policy, each containing the name, priority, ruleType, matchConditions, and action fields. |
+| Azure.ApplicationGateway.WAFPolicies.properties.managedRules | Unknown | The managed rules of the policy containing the managedRuleSets, exclusions, and exceptions fields. |
+
+### azure-application-gateway-waf-policy-delete
+
+***
+Deletes an Application Gateway Web Application Firewall (WAF) policy. Required permission: Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete.
+
+#### Base Command
+
+`azure-application-gateway-waf-policy-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group containing the policy. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the WAF policy to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-front-door-policy-get
+
+***
+Retrieves a Front Door Web Application Firewall (WAF) policy by name. Required permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read.
+
+#### Base Command
+
+`azure-front-door-policy-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group containing the policy. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the Front Door WAF policy to retrieve. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.FrontDoor.Policies.id | String | The resource ID of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.name | String | The name of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.type | String | The resource type of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.location | String | The location of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.etag | String | The ETag used to prevent concurrent updates from overwriting the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.tags | Unknown | The tags of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.sku | Unknown | The Front Door WAF policy pricing tier containing the name field. |
+| Azure.FrontDoor.Policies.properties.provisioningState | String | The provisioning state of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.properties.resourceState | String | The resource state of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.properties.policySettings | Unknown | The policy settings object containing the mode, enabledState, redirectUrl, customBlockResponseStatusCode, and customBlockResponseBody fields. |
+| Azure.FrontDoor.Policies.properties.customRules | Unknown | The custom rules of the policy containing the rules field. |
+| Azure.FrontDoor.Policies.properties.managedRules | Unknown | The managed rules of the policy containing the managedRuleSets field. |
+| Azure.FrontDoor.Policies.properties.frontendEndpointLinks | Unknown | The Front Door endpoints associated with the policy. |
+
+### azure-front-door-policies-list
+
+***
+Lists the Front Door Web Application Firewall (WAF) policies of a resource group, or of the whole subscription when no resource group is given. Required permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/read.
+
+#### Base Command
+
+`azure-front-door-policies-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group from which to list policies. When not provided, policies for the entire subscription are listed. | Optional |
+| next_token | The URI used to fetch the next page of results. Set to the value of the Azure.FrontDoor.PoliciesNextToken context output from the previous response. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.FrontDoor.Policies.id | String | The resource ID of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.name | String | The name of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.type | String | The resource type of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.location | String | The location of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.etag | String | The ETag used to prevent concurrent updates from overwriting the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.tags | Unknown | The tags of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.sku | Unknown | The Front Door WAF policy pricing tier containing the name field. |
+| Azure.FrontDoor.Policies.properties.provisioningState | String | The provisioning state of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.properties.resourceState | String | The resource state of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.properties.policySettings | Unknown | The policy settings object containing the mode, enabledState, redirectUrl, customBlockResponseStatusCode, and customBlockResponseBody fields. |
+| Azure.FrontDoor.Policies.properties.customRules | Unknown | The custom rules of the policy containing the rules field. |
+| Azure.FrontDoor.Policies.properties.managedRules | Unknown | The managed rules of the policy containing the managedRuleSets field. |
+| Azure.FrontDoor.PoliciesNextToken | String | The URI used to fetch the next page of policies. Pass this value to the next_token argument to retrieve the next page. |
+
+### azure-front-door-policy-create-or-update
+
+***
+Creates a Front Door Web Application Firewall (WAF) policy, or fully replaces an existing one. Warning: this is a full replacement and not a partial update. Any property that is not provided as an argument is removed from the policy or reset to its default, since the policy is not read before it is written. Required permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/write.
+
+#### Base Command
+
+`azure-front-door-policy-create-or-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group to create the policy in. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the Front Door WAF policy to create or update. | Required |
+| managed_rules | The managed rules of the policy, as a JSON string. For example, {"managedRuleSets": [{"ruleSetType": "DefaultRuleSet", "ruleSetVersion": "1.0"}]}. | Required |
+| policy_settings | The policy settings, as a JSON string. For example, {"mode": "Prevention", "enabledState": "Enabled"}. | Optional |
+| custom_rules | The custom rules of the policy, as a JSON string. For example, {"rules": []}. | Optional |
+| location | The Azure region of the policy. Front Door WAF policies are global resources. Default is Global. | Optional |
+| sku | The pricing tier of the policy. Possible values are: Classic_AzureFrontDoor, Standard_AzureFrontDoor, Premium_AzureFrontDoor. Default is Classic_AzureFrontDoor. | Optional |
+| tags | The tags to assign to the policy, as a JSON string. For example, {"env": "prod"}. | Optional |
+| etag | The ETag used to prevent concurrent updates from overwriting the WAF policy. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.FrontDoor.Policies.id | String | The resource ID of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.name | String | The name of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.type | String | The resource type of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.location | String | The location of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.etag | String | The ETag used to prevent concurrent updates from overwriting the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.tags | Unknown | The tags of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.sku | Unknown | The Front Door WAF policy pricing tier containing the name field. |
+| Azure.FrontDoor.Policies.properties.provisioningState | String | The provisioning state of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.properties.resourceState | String | The resource state of the Front Door WAF policy. |
+| Azure.FrontDoor.Policies.properties.policySettings | Unknown | The policy settings object containing the mode, enabledState, redirectUrl, customBlockResponseStatusCode, and customBlockResponseBody fields. |
+| Azure.FrontDoor.Policies.properties.customRules | Unknown | The custom rules of the policy containing the rules field. |
+| Azure.FrontDoor.Policies.properties.managedRules | Unknown | The managed rules of the policy containing the managedRuleSets field. |
+
+### azure-front-door-policy-delete
+
+***
+Deletes a Front Door Web Application Firewall (WAF) policy. Required permission: Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/delete.
+
+#### Base Command
+
+`azure-front-door-policy-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group containing the policy. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| policy_name | The name of the Front Door WAF policy to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.

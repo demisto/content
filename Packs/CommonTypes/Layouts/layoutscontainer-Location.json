@@ -588,5 +588,9 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "description": "Location indicator layout"
+    "description": "Location indicator layout",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

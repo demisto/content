@@ -85,15 +85,26 @@ def ip_enrichment_script(
 
     if is_xsiam():
         demisto.debug("Command Batch 2: Internal commands (for XSIAM)")
-        command_batch2.append(
-            Command(
+        # On platform, we use the built-in commands and brand Builtin, which is always enabled
+        # and does not require enabling the integration.
+        if is_platform():
+            prevalence_command = Command(
+                name="getIPAnalyticsPrevalence",
+                args={"ip_address": valid_inputs},
+                command_type=CommandType.BUILTIN,
+                brand="Builtin",
+                context_output_mapping={"Core.AnalyticsPrevalence.Ip": "Core.AnalyticsPrevalence.Ip"},
+                ignore_using_brand=True,
+            )
+        else:
+            prevalence_command = Command(
                 name="core-get-IP-analytics-prevalence",
                 args={"ip_address": valid_inputs},
                 command_type=CommandType.INTERNAL,
                 brand="Cortex Core - IR",
                 context_output_mapping={"Core.AnalyticsPrevalence.Ip": "Core.AnalyticsPrevalence.Ip"},
             )
-        )
+        command_batch2.append(prevalence_command)
 
     demisto.debug("Command Batch 2: Enriching indicators")
     command_batch2.append(

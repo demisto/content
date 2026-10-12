@@ -362,3 +362,13 @@ Runs text or an image through the OpenAI Moderations API and returns per-categor
 | OpenAiChatGPTV3.Moderation.Flagged | Boolean | Whether the content was flagged by the moderation model. |
 | OpenAiChatGPTV3.Moderation.Categories | Unknown | The object of boolean values indicating which categories were flagged. |
 | OpenAiChatGPTV3.Moderation.CategoryScores | Unknown | The object of float values indicating the confidence score for each category. |
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require the **Cortex XSIAM** license:
+
+- Fetch events
+
+</~PLATFORM>

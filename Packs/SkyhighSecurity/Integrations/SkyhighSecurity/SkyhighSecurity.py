@@ -103,23 +103,29 @@ def calculate_offset_and_limit(**kwargs) -> tuple[int, int]:
 
 
 def convert_to_xsoar_severity(severity: str) -> float:
-    """Maps Skyhigh Security severity to Cortex XSOAR severity
+    """Maps a Skyhigh Security incident severity to a Cortex XSOAR severity.
 
-    Converts the Skyhigh Security incident severity level to Cortex XSOAR incident severity (1 to 4)
-    for mapping.
+    Known documented values ('low', 'medium', 'high'), as well as 'info', map to their
+    XSOAR equivalents. The lookup is case-insensitive. Any unrecognized or missing value
+    is mapped to IncidentSeverity.UNKNOWN.
 
     :type severity: ``str``
-    :param severity: severity as returned from the Skyhigh Security API ('info', 'low', 'medium', 'high')
+    :param severity: severity as returned from the Skyhigh Security API.
 
-    :return: Cortex XSOAR Severity (int: 1 to 4)
+    :return: Cortex XSOAR Severity.
     :rtype: ``float``
     """
-    return {
+    severity_map = {
         "info": IncidentSeverity.INFO,
         "low": IncidentSeverity.LOW,
         "medium": IncidentSeverity.MEDIUM,
         "high": IncidentSeverity.HIGH,
-    }[severity]
+    }
+    normalized = (severity or "").lower()
+    if normalized not in severity_map:
+        demisto.debug(f"Unmapped Skyhigh incidentRiskSeverity '{severity}' received; defaulting to UNKNOWN severity.")
+        return IncidentSeverity.UNKNOWN
+    return severity_map[normalized]
 
 
 """ COMMAND FUNCTIONS """

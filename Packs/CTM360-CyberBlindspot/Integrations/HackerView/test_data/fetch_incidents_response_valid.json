@@ -10,7 +10,7 @@
         ],
         "issue_name": "TLS Certificate is Self Signed",
         "potential_attack_type": [],
-        "potential_impact": [], 
+        "potential_impact": [],
         "status": "active",
         "progress_status": "New",
         "severity": "high",
@@ -31,7 +31,8 @@
         "domain": "doughnutkitten.com",
         "host": "doughnutkitten.com",
         "asset_type": "host",
-        "asset": "doughnutkitten.com"
+        "asset": "doughnutkitten.com",
+        "brand": "REPERSEA"
     },
     {
         "id": "HVI-11136324",
@@ -63,7 +64,8 @@
         "domain": "hacksplaining.com",
         "host": "hacksplaining.com",
         "asset_type": "host",
-        "asset": "hacksplaining.com"
+        "asset": "hacksplaining.com",
+        "brand": "REPERSEA"
     },
     {
         "id": "HVI-98944790",
@@ -97,6 +99,7 @@
         "domain": "doughnutkitten.com",
         "host": "www.doughnutkitten.com",
         "asset_type": "host",
-        "asset": "www.doughnutkitten.com"
+        "asset": "www.doughnutkitten.com",
+        "brand": "REPERSEA"
     }
 ]
