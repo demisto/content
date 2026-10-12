@@ -23,14 +23,7 @@ DEFAULT_LOOK_BACK_MINUTES = 30
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MAX_SEEN_IDS = 10_000
 
-# Upper bounds for the overflow backlog persisted via `demisto.setIntegrationContext`.
-# The integration context is a single Elasticsearch document, and the server rejects any
-# write above `http.max_content_length` (default 100 MB) with:
-#   "request to elasticsearch exceeded maximum size ... (29005)"
-# That rejection is unrecoverable on its own: the drained backlog is never persisted, so
-# every later fetch re-reads the same oversized document and fails identically, wedging
-# the instance until the context is cleared manually.
-#
+# Hard cap on the number of incidents that can remain in the fetch buffer.
 # Events that do not fit within these bounds are NOT discarded - `last_fetch` is rewound
 # so they are re-fetched on a later cycle. See `fetch_incidents`.
 MAX_REMAINED_INCIDENTS = 10_000
