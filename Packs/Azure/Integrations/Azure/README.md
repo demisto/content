@@ -3703,7 +3703,7 @@ Lists the Azure firewalls in the specified resource group or subscription. Use t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group. Required when the resource argument is set to resource_group, and ignored when it is set to subscription. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource | The scope that contains the firewalls to list. Possible values are: resource_group, subscription. Default is resource_group. | Optional |
 | next_token | The token for the next set of items to return, used for pagination. The token is the value of Azure.Firewall.FirewallsNextToken from the previous response. | Optional |
@@ -3727,7 +3727,7 @@ Lists the Azure firewalls in the specified resource group or subscription. Use t
 | Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the firewall, containing the id, name, etag, and properties fields. |
 | Azure.Firewall.Firewalls.properties.applicationRuleCollections | Unknown | The application rule collections of the firewall, containing the id, name, etag, and properties fields. |
 | Azure.Firewall.Firewalls.properties.natRuleCollections | Unknown | The NAT rule collections of the firewall, containing the id, name, etag, and properties fields. |
-| Azure.Firewall.Firewalls.properties.managementIpConfiguration | Unknown | The management IP configuration of the firewall, containing name, id, etag, type, and properties fields. |
+| Azure.Firewall.Firewalls.properties.managementIpConfiguration | Unknown | The management IP configuration of the firewall, containing the name, id, etag, type, and properties fields. |
 | Azure.Firewall.Firewalls.properties.hubIPAddresses | Unknown | The IP addresses associated with the firewall, containing the publicIPs and privateIPAddress fields. |
 | Azure.Firewall.Firewalls.properties.ipGroups | Unknown | The IP groups associated with the firewall, containing the id and changeNumber fields. |
 | Azure.Firewall.Firewalls.properties.virtualHub | Unknown | The virtual hub to which the firewall belongs, containing the id field. |
@@ -3737,12 +3737,12 @@ Lists the Azure firewalls in the specified resource group or subscription. Use t
 | Azure.Firewall.Firewalls.extendedLocation | Unknown | The extended location of the firewall, containing the name and type fields. |
 | Azure.Firewall.Firewalls.extendedLocation.name | String | The name of the extended location. |
 | Azure.Firewall.Firewalls.extendedLocation.type | String | The type of the extended location. |
-| Azure.Firewall.FirewallsNextToken | String | The URI to fetch the next page of firewalls. Run the same command with the next_token argument to get the next page of firewalls. |
+| Azure.Firewall.FirewallsNextToken | String | The URI used to fetch the next page of firewalls. Run the same command with the next_token argument to get the next page of firewalls. |
 
 ### azure-firewall-get
 
 ***
-Gets the properties of a given Azure firewall, and optionally displays its rule collections of a given type. Required permission: Microsoft.Network/azureFirewalls/read.
+Gets the properties of an Azure firewall, and displays its rule collections when a rule type is specified. Required permission: Microsoft.Network/azureFirewalls/read.
 
 #### Base Command
 
@@ -3752,7 +3752,7 @@ Gets the properties of a given Azure firewall, and optionally displays its rule 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | firewall_name | The name of the Azure firewall to retrieve. | Required |
 | rule_type | The rule collection type to display for the firewall. When omitted, the rule collections are not displayed. Possible values are: application_rule, network_rule, nat_rule. | Optional |
@@ -3776,7 +3776,7 @@ Gets the properties of a given Azure firewall, and optionally displays its rule 
 | Azure.Firewall.Firewalls.properties.networkRuleCollections | Unknown | The network rule collections of the firewall, containing the id, name, etag, and properties fields. |
 | Azure.Firewall.Firewalls.properties.applicationRuleCollections | Unknown | The application rule collections of the firewall, containing the id, name, etag, and properties fields. |
 | Azure.Firewall.Firewalls.properties.natRuleCollections | Unknown | The NAT rule collections of the firewall, containing the id, name, etag, and properties fields. |
-| Azure.Firewall.Firewalls.properties.managementIpConfiguration | Unknown | The management IP configuration of the firewall, containing name, id, etag, type, and properties fields. |
+| Azure.Firewall.Firewalls.properties.managementIpConfiguration | Unknown | The management IP configuration of the firewall, containing the name, id, etag, type, and properties fields. |
 | Azure.Firewall.Firewalls.properties.hubIPAddresses | Unknown | The IP addresses associated with the firewall, containing the publicIPs and privateIPAddress fields. |
 | Azure.Firewall.Firewalls.properties.ipGroups | Unknown | The IP groups associated with the firewall, containing the id and changeNumber fields. |
 | Azure.Firewall.Firewalls.properties.virtualHub | Unknown | The virtual hub to which the firewall belongs, containing the id field. |
@@ -3790,7 +3790,7 @@ Gets the properties of a given Azure firewall, and optionally displays its rule 
 ### azure-firewall-rules-list
 
 ***
-Lists the rules of an Azure firewall rule collection or of a firewall policy rule collection group. You must provide exactly one of the arguments firewall_name or policy_name. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/read.
+Lists the rules of an Azure firewall rule collection or a firewall policy rule collection group. It is mandatory to provide either the firewall_name or policy_name argument. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/read.
 
 #### Base Command
 
@@ -3800,10 +3800,10 @@ Lists the rules of an Azure firewall rule collection or of a firewall policy rul
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| firewall_name | The name of the Azure firewall that contains the rules. You must provide exactly one of firewall_name or policy_name. | Optional |
-| policy_name | The name of the Azure firewall policy that contains the rules. You must provide exactly one of firewall_name or policy_name. | Optional |
+| firewall_name | The name of the Azure firewall that contains the rules. It is mandatory to provide either firewall_name or policy_name. | Optional |
+| policy_name | The name of the Azure firewall policy that contains the rules. It is mandatory to provide either firewall_name or policy_name. | Optional |
 | rule_type | The rule type to retrieve. Required when the firewall_name argument is provided. Possible values are: application_rule, network_rule, nat_rule. | Optional |
 | collection_name | The name of the rule collection that contains the rules. | Required |
 
@@ -3834,7 +3834,7 @@ Lists the rules of an Azure firewall rule collection or of a firewall policy rul
 ### azure-firewall-rule-get
 
 ***
-Gets the properties of a given Azure firewall or firewall policy rule. You must provide exactly one of the arguments firewall_name or policy_name. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/read.
+Gets the properties of an Azure firewall or firewall policy rule. It is mandatory to provide either the firewall_name or policy_name argument. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/read.
 
 #### Base Command
 
@@ -3844,10 +3844,10 @@ Gets the properties of a given Azure firewall or firewall policy rule. You must 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| firewall_name | The name of the Azure firewall that contains the rule. You must provide exactly one of firewall_name or policy_name. | Optional |
-| policy_name | The name of the Azure firewall policy that contains the rule. You must provide exactly one of firewall_name or policy_name. | Optional |
+| firewall_name | The name of the Azure firewall that contains the rule. It is mandatory to provide either firewall_name or policy_name argument. | Optional |
+| policy_name | The name of the Azure firewall policy that contains the rule. It is mandatory to provide either firewall_name or policy_name argument. | Optional |
 | rule_type | The rule type to retrieve. Required when the firewall_name argument is provided. Possible values are: application_rule, network_rule, nat_rule. | Optional |
 | collection_name | The name of the rule collection that contains the rule. | Required |
 | rule_name | The name of the rule to retrieve. | Required |
@@ -3879,7 +3879,7 @@ Gets the properties of a given Azure firewall or firewall policy rule. You must 
 ### azure-firewall-service-tags-information-list
 
 ***
-Lists the service tag information resources of a given location. Use the next_token argument to view the next page of results. Required permission: Microsoft.Network/locations/serviceTagDetails/read.
+Lists the service tag information resources of a specified location. Use the next_token argument to view the next page of results. Required permission: Microsoft.Network/locations/serviceTagDetails/read.
 
 #### Base Command
 
@@ -3889,8 +3889,8 @@ Lists the service tag information resources of a given location. Use the next_to
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| location | The location that is used as a reference for the service tags version. For example: eastus. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The location that is used as a reference for the service tags version. For example, eastus. | Required |
 | next_token | The token for the next set of items to return, used for pagination. The token is the value of Azure.VirtualNetworks.ServiceTagsInformationNextToken from the previous response. | Optional |
 
 #### Context Output
@@ -3906,7 +3906,7 @@ Lists the service tag information resources of a given location. Use the next_to
 | Azure.VirtualNetworks.ServiceTagsInformation.properties.addressPrefixes | Unknown | The list of IP address prefixes of the service tag. |
 | Azure.VirtualNetworks.ServiceTagsInformation.properties.state | String | The state of the service tag. |
 | Azure.VirtualNetworks.ServiceTagsInformation.properties.networkFeatures | Unknown | The network features of the service tag, indicating where the service tag is applicable. |
-| Azure.VirtualNetworks.ServiceTagsInformationNextToken | String | The URI to fetch the next page of service tags. Run the same command with the next_token argument to get the next page of service tags. |
+| Azure.VirtualNetworks.ServiceTagsInformationNextToken | String | The URI used to fetch the next page of service tags. Run the same command with the next_token argument to get the next page of service tags. |
 
 ### azure-vn-firewall-policy-rule-collection-groups-list
 
@@ -3921,7 +3921,7 @@ Lists the rule collection groups of an Azure firewall policy. Required permissio
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | policy_name | The name of the Azure firewall policy that contains the rule collection groups. | Required |
 | rule_type | The rule collection type to retrieve. Possible values are: application_rule, network_rule, nat_rule. | Required |
@@ -3940,4 +3940,4 @@ Lists the rule collection groups of an Azure firewall policy. Required permissio
 | Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState | String | The provisioning state of the rule collection group resource. |
 | Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections | Unknown | The rule collections of the policy rule collection group, containing the ruleCollectionType, name, priority, action, and rules fields. |
 | Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.size | String | The size of the rule collection group in kilobytes. |
-| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroupsNextToken | String | The URI to fetch the next page of rule collection groups. Run the same command with the next_token argument to get the next page of rule collection groups. |
+| Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroupsNextToken | String | The URI used to fetch the next page of rule collection groups. Run the same command with the next_token argument to get the next page of rule collection groups. |

@@ -12006,7 +12006,7 @@ script:
     description: "Lists the Azure firewalls in the specified resource group or subscription. Use the next_token argument to view the next page of results. Required permission: Microsoft.Network/azureFirewalls/read."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
@@ -12070,7 +12070,7 @@ script:
         description: The NAT rule collections of the firewall, containing the id, name, etag, and properties fields.
         type: Unknown
       - contextPath: Azure.Firewall.Firewalls.properties.managementIpConfiguration
-        description: The management IP configuration of the firewall, containing name, id, etag, type, and properties fields.
+        description: The management IP configuration of the firewall, containing the name, id, etag, type, and properties fields.
         type: Unknown
       - contextPath: Azure.Firewall.Firewalls.properties.hubIPAddresses
         description: The IP addresses associated with the firewall, containing the publicIPs and privateIPAddress fields.
@@ -12100,13 +12100,13 @@ script:
         description: The type of the extended location.
         type: String
       - contextPath: Azure.Firewall.FirewallsNextToken
-        description: The URI to fetch the next page of firewalls. Run the same command with the next_token argument to get the next page of firewalls.
+        description: The URI used to fetch the next page of firewalls. Run the same command with the next_token argument to get the next page of firewalls.
         type: String
   - name: azure-firewall-get
-    description: "Gets the properties of a given Azure firewall, and optionally displays its rule collections of a given type. Required permission: Microsoft.Network/azureFirewalls/read."
+    description: "Gets the properties of an Azure firewall, and displays its rule collections when a rule type is specified. Required permission: Microsoft.Network/azureFirewalls/read."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
@@ -12171,7 +12171,7 @@ script:
         description: The NAT rule collections of the firewall, containing the id, name, etag, and properties fields.
         type: Unknown
       - contextPath: Azure.Firewall.Firewalls.properties.managementIpConfiguration
-        description: The management IP configuration of the firewall, containing name, id, etag, type, and properties fields.
+        description: The management IP configuration of the firewall, containing the name, id, etag, type, and properties fields.
         type: Unknown
       - contextPath: Azure.Firewall.Firewalls.properties.hubIPAddresses
         description: The IP addresses associated with the firewall, containing the publicIPs and privateIPAddress fields.
@@ -12204,7 +12204,7 @@ script:
     description: "Lists the rule collection groups of an Azure firewall policy. Required permission: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
@@ -12212,7 +12212,7 @@ script:
       required: false
       required:platform: true
     - name: policy_name
-      description: "The name of the Azure firewall policy that contains the rule collection groups."
+      description: The name of the Azure firewall policy that contains the rule collection groups.
       required: true
     - name: rule_type
       description: The rule collection type to retrieve.
@@ -12223,7 +12223,7 @@ script:
       - network_rule
       - nat_rule
     - name: next_token
-      description: "The token for the next set of items to return, used for pagination. The token is the value of Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroupsNextToken from the previous response."
+      description: The token for the next set of items to return, used for pagination. The token is the value of Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroupsNextToken from the previous response.
       required: false
     outputs:
       - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id
@@ -12254,13 +12254,13 @@ script:
         description: The size of the rule collection group in kilobytes.
         type: String
       - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroupsNextToken
-        description: The URI to fetch the next page of rule collection groups. Run the same command with the next_token argument to get the next page of rule collection groups.
+        description: The URI used to fetch the next page of rule collection groups. Run the same command with the next_token argument to get the next page of rule collection groups.
         type: String
   - name: azure-firewall-rules-list
-    description: "Lists the rules of an Azure firewall rule collection or of a firewall policy rule collection group. You must provide exactly one of the arguments firewall_name or policy_name. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/read."
+    description: "Lists the rules of an Azure firewall rule collection or a firewall policy rule collection group. It is mandatory to provide either the firewall_name or policy_name argument. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/read."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
@@ -12268,10 +12268,10 @@ script:
       required: false
       required:platform: true
     - name: firewall_name
-      description: "The name of the Azure firewall that contains the rules. You must provide exactly one of firewall_name or policy_name."
+      description: The name of the Azure firewall that contains the rules. It is mandatory to provide either firewall_name or policy_name.
       required: false
     - name: policy_name
-      description: "The name of the Azure firewall policy that contains the rules. You must provide exactly one of firewall_name or policy_name."
+      description: The name of the Azure firewall policy that contains the rules. It is mandatory to provide either firewall_name or policy_name.
       required: false
     - name: rule_type
       description: The rule type to retrieve. Required when the firewall_name argument is provided.
@@ -12282,7 +12282,7 @@ script:
       - network_rule
       - nat_rule
     - name: collection_name
-      description: "The name of the rule collection that contains the rules."
+      description: The name of the rule collection that contains the rules.
       required: true
     outputs:
       - contextPath: Azure.Firewall.Rules.name
@@ -12343,10 +12343,10 @@ script:
         description: The translated FQDN of the NAT rule.
         type: String
   - name: azure-firewall-rule-get
-    description: "Gets the properties of a given Azure firewall or firewall policy rule. You must provide exactly one of the arguments firewall_name or policy_name. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/read."
+    description: "Gets the properties of an Azure firewall or firewall policy rule. It is mandatory to provide either the firewall_name or policy_name argument. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/read."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: resource_group_name
@@ -12354,10 +12354,10 @@ script:
       required: false
       required:platform: true
     - name: firewall_name
-      description: "The name of the Azure firewall that contains the rule. You must provide exactly one of firewall_name or policy_name."
+      description: The name of the Azure firewall that contains the rule. It is mandatory to provide either firewall_name or policy_name argument.
       required: false
     - name: policy_name
-      description: "The name of the Azure firewall policy that contains the rule. You must provide exactly one of firewall_name or policy_name."
+      description: The name of the Azure firewall policy that contains the rule. It is mandatory to provide either firewall_name or policy_name argument.
       required: false
     - name: rule_type
       description: The rule type to retrieve. Required when the firewall_name argument is provided.
@@ -12368,10 +12368,10 @@ script:
       - network_rule
       - nat_rule
     - name: collection_name
-      description: "The name of the rule collection that contains the rule."
+      description: The name of the rule collection that contains the rule.
       required: true
     - name: rule_name
-      description: "The name of the rule to retrieve."
+      description: The name of the rule to retrieve.
       required: true
     outputs:
       - contextPath: Azure.Firewall.Rules.name
@@ -12432,17 +12432,17 @@ script:
         description: The translated FQDN of the NAT rule.
         type: String
   - name: azure-firewall-service-tags-information-list
-    description: "Lists the service tag information resources of a given location. Use the next_token argument to view the next page of results. Required permission: Microsoft.Network/locations/serviceTagDetails/read."
+    description: "Lists the service tag information resources of a specified location. Use the next_token argument to view the next page of results. Required permission: Microsoft.Network/locations/serviceTagDetails/read."
     arguments:
     - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
     - name: location
-      description: "The location that is used as a reference for the service tags version. For example: eastus."
+      description: The location that is used as a reference for the service tags version. For example, eastus.
       required: true
     - name: next_token
-      description: "The token for the next set of items to return, used for pagination. The token is the value of Azure.VirtualNetworks.ServiceTagsInformationNextToken from the previous response."
+      description: The token for the next set of items to return, used for pagination. The token is the value of Azure.VirtualNetworks.ServiceTagsInformationNextToken from the previous response.
       required: false
     outputs:
       - contextPath: Azure.VirtualNetworks.ServiceTagsInformation.id
@@ -12473,7 +12473,7 @@ script:
         description: The network features of the service tag, indicating where the service tag is applicable.
         type: Unknown
       - contextPath: Azure.VirtualNetworks.ServiceTagsInformationNextToken
-        description: The URI to fetch the next page of service tags. Run the same command with the next_token argument to get the next page of service tags.
+        description: The URI used to fetch the next page of service tags. Run the same command with the next_token argument to get the next page of service tags.
         type: String
   isfetch: false
   runonce: false
