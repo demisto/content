@@ -125,7 +125,13 @@ CODE_CHALLENGE_METHOD = "S256"
 ACCESS_TOKEN_DEFAULT_DURATION_SECONDS = 1800  # Default to 30 minutes if not provided
 APPLICATION_JSON_HEADERS = {"Content-Type": "application/json"}
 FORM_URLENCODED_HEADERS = {"Content-Type": "application/x-www-form-urlencoded"}
-MCP_PROTOCOL_HEADERS = {"MCP-Protocol-Version": "2025-03-26"}
+
+# Sent ONLY on the OAuth discovery requests (.well-known/*), never on the MCP session.
+# The session's protocol version is negotiated by the SDK inside the JSON-RPC body and is
+# unrelated to this value. Do not reuse this constant on session requests: a 2026-07-28
+# header declares the stateless core, and a server will reject it (-32020) if the request
+# is a legacy `initialize` handshake.
+OAUTH_DISCOVERY_HEADERS = {"MCP-Protocol-Version": "2026-07-28"}
 SOFTWARE_ID = "5bfad241-79aa-4a49-86df-c668f8e03e11"
 
 # OAuth Dynamic Client Registration `application_type` values (SEP-837 / RFC 7591).
@@ -247,7 +253,7 @@ class OAuthHandler:
         )
         try:
             response = await self.session.get(
-                f"{origin_base_url}/.well-known/oauth-protected-resource", headers=MCP_PROTOCOL_HEADERS
+                f"{origin_base_url}/.well-known/oauth-protected-resource", headers=OAUTH_DISCOVERY_HEADERS
             )
             if response.is_success:
                 metadata = response.json()
@@ -273,7 +279,7 @@ class OAuthHandler:
         }
         error_message = f"Error discovering OAuth metadata for {base_url}, using default metadata."
         try:
-            response = await self.session.get(f"{base_url}/.well-known/oauth-authorization-server", headers=MCP_PROTOCOL_HEADERS)
+            response = await self.session.get(f"{base_url}/.well-known/oauth-authorization-server", headers=OAUTH_DISCOVERY_HEADERS)
             if response.is_success:
                 metadata.update(response.json())
             else:
