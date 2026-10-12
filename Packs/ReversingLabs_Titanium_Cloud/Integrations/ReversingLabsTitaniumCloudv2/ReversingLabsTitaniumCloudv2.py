@@ -27,6 +27,7 @@ from ReversingLabs.SDK.ticloud import (
     URLThreatIntelligence,
     YARAHunting,
     YARARetroHunting,
+    ExpressionSearch
 )
 
 VERSION = f"v{get_pack_version() or '2.7.1'}"
@@ -615,6 +616,10 @@ def advanced_search_output(result_list):
     )
 
     return results, file_results
+
+
+def expression_search_command():
+    return_error(message="Command reversinglabs-titaniumcloud-expression-search is no longer available and can not be used.")
 
 
 def file_download_command():
@@ -2247,6 +2252,9 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-advanced-search":
         advanced_search_command()
+
+    elif command == "reversinglabs-titaniumcloud-expression-search":
+        expression_search_command()
 
     elif command == "reversinglabs-titaniumcloud-file-download":
         file_download_command()
