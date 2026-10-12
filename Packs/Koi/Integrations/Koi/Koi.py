@@ -214,7 +214,7 @@ def get_log_types_from_titles(event_types_to_fetch: list[str]) -> list[LogType]:
 def extract_time_from_event(event: dict, log_type: LogType) -> str | None:
     """Extract the time field value from an event based on log type.
 
-    For alerts: finding_info.created_time (epoch ms) -> converted to ISO 8601.
+    For alerts: the top-level "time" field (epoch ms) -> converted to ISO 8601.
     For audit logs: created_at (ISO 8601 string).
 
     Args:
@@ -225,14 +225,13 @@ def extract_time_from_event(event: dict, log_type: LogType) -> str | None:
         ISO 8601 formatted time string, or None if not found.
     """
     if log_type == LogType.ALERTS:
-        finding_info = event.get("finding_info", {})
-        created_time_ms = finding_info.get("created_time")
-        if created_time_ms:
+        event_time_ms = event.get("time")
+        if event_time_ms:
             try:
-                dt = datetime.fromtimestamp(created_time_ms / 1000, tz=UTC)
+                dt = datetime.fromtimestamp(int(event_time_ms) / 1000, tz=UTC)
                 return dt.strftime(Config.DATE_FORMAT)
             except (ValueError, TypeError, OSError):
-                demisto.debug(f"[Time Extract] Failed to parse alert created_time: {created_time_ms}")
+                demisto.debug(f"[Time Extract] Failed to parse alert time: {event_time_ms}")
                 return None
     else:
         return event.get("created_at")
@@ -260,7 +259,11 @@ def add_time_to_events(events: list[dict], log_type: LogType) -> None:
 
 
 def get_event_id(event: dict) -> str | None:
-    """Extract the event ID from an event dictionary.
+    """Extract the unique event ID from an event dictionary.
+
+    For alerts, KOI's stable per-instance identifier is metadata.notification_event_id
+    (one per affected device); it is the documented key for deduplication and tracking
+    ingestion progress. The event.id observable is not unique as it repeats across devices.
 
     Args:
         event: The event dictionary.
@@ -268,6 +271,10 @@ def get_event_id(event: dict) -> str | None:
     Returns:
         The event ID string, or None if not found.
     """
+    notification_event_id = (event.get("metadata") or {}).get("notification_event_id")
+    if notification_event_id:
+        return str(notification_event_id)
+
     for id_field in ("id", "alert_id", "log_id", "uuid"):
         event_id = event.get(id_field)
         if event_id:

@@ -173,8 +173,14 @@ class TestExtractTimeFromEvent:
     """Tests for the extract_time_from_event helper function."""
 
     def test_alert_event_with_epoch_ms(self):
-        """Test extracting time from an alert event with epoch ms timestamp."""
-        event = {"finding_info": {"created_time": 1704067200000}}
+        """Test extracting time from an alert event using the per-event top-level time (epoch ms)."""
+        event = {"time": 1704067200000}
+        result = extract_time_from_event(event, LogType.ALERTS)
+        assert result == "2024-01-01T00:00:00Z"
+
+    def test_alert_event_ignores_finding_group_created_time(self):
+        """The finding group created_time must NOT be used; only the per-event time is (XSUP-78592)."""
+        event = {"time": 1704067200000, "finding_info": {"created_time": 1500000000000}}
         result = extract_time_from_event(event, LogType.ALERTS)
         assert result == "2024-01-01T00:00:00Z"
 
@@ -188,10 +194,10 @@ class TestExtractTimeFromEvent:
         "event, log_type_name",
         [
             ({}, "ALERTS"),
-            ({"finding_info": {}}, "ALERTS"),
+            ({"id": "alert-001"}, "ALERTS"),
             ({}, "AUDIT"),
         ],
-        ids=["empty_alert", "missing_created_time", "empty_audit"],
+        ids=["empty_alert", "missing_event_time", "empty_audit"],
     )
     def test_missing_time_field(self, event: dict, log_type_name: str):
         """Test extracting time when the field is missing returns None."""
@@ -212,7 +218,7 @@ class TestAddTimeToEvents:
         "events, log_type_name, expected_time, expected_source",
         [
             (
-                [{"id": "alert-001", "finding_info": {"created_time": 1704067200000}}],
+                [{"id": "alert-001", "time": 1704067200000}],
                 "ALERTS",
                 "2024-01-01T00:00:00Z",
                 "Alerts",
@@ -266,10 +272,21 @@ class TestGetEventId:
         """Test extracting event ID from various field names."""
         assert get_event_id(event) == expected_id
 
+    def test_alert_notification_event_id_preferred(self):
+        """Alerts use metadata.notification_event_id as the unique dedup key (XSUP-78592)."""
+        event = {"metadata": {"notification_event_id": "a74afbae-0078-4060-8782-bb853fccc7de"}}
+        assert get_event_id(event) == "a74afbae-0078-4060-8782-bb853fccc7de"
+
+    def test_notification_event_id_takes_precedence_over_top_level_id(self):
+        """notification_event_id wins over top-level id when both are present."""
+        event = {"id": "123", "metadata": {"notification_event_id": "notif-999"}}
+        assert get_event_id(event) == "notif-999"
+
     def test_no_id_field(self):
         """Test that missing ID field returns None."""
         assert get_event_id({}) is None
         assert get_event_id({"name": "test"}) is None
+        assert get_event_id({"metadata": {}}) is None
 
 
 # endregion
@@ -698,7 +715,7 @@ class TestFetchEventsCommand:
         """Test that when HWM timestamp hasn't changed, IDs are merged (covers line 594)."""
         # Events with same timestamp as last_fetch
         events = [
-            {"id": "alert-003", "finding_info": {"created_time": 1704067200000}},
+            {"metadata": {"notification_event_id": "alert-003"}, "time": 1704067200000},
         ]
         mocker.patch.object(mock_client, "get_events_page", return_value=events)
         mocker.patch.object(
@@ -727,6 +744,39 @@ class TestFetchEventsCommand:
         previous_ids = last_run_arg["previous_ids_alerts"]
         assert "alert-001" in previous_ids
         assert "alert-003" in previous_ids
+
+    def test_same_timestamp_batch_sent_once_then_deduped(self, mock_client, mocker):
+        """A batch of distinct alerts sharing one timestamp must be sent once, then fully deduped
+        on the next cycle instead of being re-sent indefinitely."""
+        same_time_ms = 1704067200000
+        batch = [{"metadata": {"notification_event_id": f"notif-{i}"}, "time": same_time_ms} for i in range(34)]
+        mocker.patch.object(mock_client, "get_events_page", return_value=batch)
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"max_fetch": "5000", "event_types_to_fetch": "Alerts"},
+        )
+        mock_send = mocker.patch.object(mock_client, "send_events")
+
+        # First cycle: no prior state -> all 34 are new and sent once.
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        captured = {}
+        mocker.patch.object(demisto, "setLastRun", side_effect=lambda lr: captured.update(lr))
+
+        fetch_events_command(mock_client)
+
+        assert mock_send.call_count == 1
+        assert len(mock_send.call_args[0][0]) == 34
+        assert captured["last_fetch_alerts"] == "2024-01-01T00:00:00Z"
+        assert set(captured["previous_ids_alerts"]) == {f"notif-{i}" for i in range(34)}
+
+        # Second cycle: same batch, carrying forward the persisted IDs -> nothing re-sent.
+        mock_send.reset_mock()
+        mocker.patch.object(demisto, "getLastRun", return_value=captured)
+
+        fetch_events_command(mock_client)
+
+        mock_send.assert_not_called()
 
     def test_last_event_missing_time(self, mock_client, mocker):
         """Test fetch-events when last event has no time field (covers line 600)."""
@@ -1085,7 +1135,7 @@ class TestLastRunState:
                 "first_run_both_types",
                 "Alerts,Audit",
                 {},
-                [{"id": "a1", "finding_info": {"created_time": 1704067200000}}],
+                [{"metadata": {"notification_event_id": "a1"}, "time": 1704067200000}],
                 [{"id": "au1", "created_at": "2024-01-01T00:00:00Z"}],
                 ["last_fetch_alerts", "previous_ids_alerts", "last_fetch_audit", "previous_ids_audit"],
                 [],
@@ -1095,7 +1145,7 @@ class TestLastRunState:
                 "first_run_alerts_only",
                 "Alerts",
                 {},
-                [{"id": "a1", "finding_info": {"created_time": 1704067200000}}],
+                [{"metadata": {"notification_event_id": "a1"}, "time": 1704067200000}],
                 [],
                 ["last_fetch_alerts", "previous_ids_alerts"],
                 ["last_fetch_audit"],
@@ -1120,7 +1170,7 @@ class TestLastRunState:
                     "last_fetch_audit": "2024-01-01T00:00:00Z",
                     "previous_ids_audit": ["old-audit-id"],
                 },
-                [{"id": "a2", "finding_info": {"created_time": 1704067260000}}],
+                [{"metadata": {"notification_event_id": "a2"}, "time": 1704067260000}],
                 [],
                 ["last_fetch_alerts", "previous_ids_alerts", "last_fetch_audit", "previous_ids_audit"],
                 [],
@@ -1147,8 +1197,8 @@ class TestLastRunState:
                     "previous_ids_alerts": ["a1"],
                 },
                 [
-                    {"id": "a1", "finding_info": {"created_time": 1704067200000}},
-                    {"id": "a2", "finding_info": {"created_time": 1704067200000}},
+                    {"metadata": {"notification_event_id": "a1"}, "time": 1704067200000},
+                    {"metadata": {"notification_event_id": "a2"}, "time": 1704067200000},
                 ],
                 [],
                 ["last_fetch_alerts", "previous_ids_alerts"],
@@ -1230,7 +1280,7 @@ class TestLastRunState:
         def side_effect_get_events_page(**kwargs):
             log_type = kwargs.get("log_type")
             if log_type == LogType.ALERTS:
-                return [{"id": "alert-100", "finding_info": {"created_time": 1704067200000}}]
+                return [{"metadata": {"notification_event_id": "alert-100"}, "time": 1704067200000}]
             return [{"id": "audit-200", "created_at": "2024-01-01T00:00:00Z"}]
 
         mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
@@ -1290,7 +1340,7 @@ class TestLastRunState:
         def side_effect_get_events_page(**kwargs):
             log_type = kwargs.get("log_type")
             if log_type == LogType.ALERTS:
-                return [{"id": "alert-ok", "finding_info": {"created_time": 1704067200000}}]
+                return [{"metadata": {"notification_event_id": "alert-ok"}, "time": 1704067200000}]
             raise Exception("Audit API is down")
 
         mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
