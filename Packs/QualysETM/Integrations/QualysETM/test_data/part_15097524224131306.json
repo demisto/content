@@ -1,0 +1,23 @@
+{
+    "findings": [
+        {
+            "findingId": "100001",
+            "vendorName": "Qualys",
+            "type": "VULNERABILITY",
+            "severity": 5,
+            "truRiskScore": 95,
+            "title": "Sample Critical Vulnerability",
+            "cveIds": [
+                "CVE-2026-00001"
+            ],
+            "status": "ACTIVE",
+            "firstFound": "2026-09-20T08:00:00Z",
+            "lastFound": "2026-10-01T09:00:00Z",
+            "asset": {
+                "assetId": "200001",
+                "name": "sample-host-01",
+                "operatingSystem": "Ubuntu 22.04"
+            }
+        }
+    ]
+}

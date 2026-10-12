@@ -312,13 +312,17 @@ def test_report_download_command(requests_mock, client, mocker):
     When: Running the report download command.
     Then: The resource content is returned to the War Room as a file.
     """
+    resource_name = "part_15097524224131306.json"
+    with open(os.path.join(TEST_DATA_DIR, resource_name), "rb") as resource_file:
+        resource_content = resource_file.read()
+
     requests_mock.post(AUTH_URL, text="jwt-token")
-    requests_mock.get(f"{API_BASE}/reports/{REPORT_ID}/resources/part_1.json", content=b'{"findings": []}')
-    file_result_mock = mocker.patch("QualysETM.fileResult", return_value={"File": "part_1.json"})
+    requests_mock.get(f"{API_BASE}/reports/{REPORT_ID}/resources/{resource_name}", content=resource_content)
+    file_result_mock = mocker.patch("QualysETM.fileResult", return_value={"File": resource_name})
 
-    report_download_command(client, {"report_id": REPORT_ID, "resource_name": "part_1.json"})
+    report_download_command(client, {"report_id": REPORT_ID, "resource_name": resource_name})
 
-    file_result_mock.assert_called_once_with(filename="part_1.json", data=b'{"findings": []}')
+    file_result_mock.assert_called_once_with(filename=resource_name, data=resource_content)
 
 
 def test_reports_delete_command(requests_mock, client):

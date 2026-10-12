@@ -1,11 +1,7 @@
 """Qualys Enterprise TruRisk Management (ETM) integration for Cortex XSOAR / XSIAM."""
 
-import urllib3
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-urllib3.disable_warnings()
 
 """ CONSTANTS """
 
@@ -53,7 +49,7 @@ class Client(BaseClient):
     integration context so that it is reused across command executions and polling iterations.
     """
 
-    def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
+    def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool) -> None:
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self._username = username
         self._password = password
@@ -106,7 +102,7 @@ class Client(BaseClient):
         return token
 
     @staticmethod
-    def _error_handler(response) -> None:
+    def _error_handler(response: requests.Response) -> None:
         """Translate Qualys HTTP errors into actionable messages."""
         if response.status_code == 401:
             raise DemistoException(CREDENTIALS_ERROR, res=response)
@@ -381,15 +377,33 @@ def build_generate_success_result(client: Client, report: dict[str, Any], report
     return [command_results, fileResult(filename=f"report_{report_id}.zip", data=archive)]
 
 
-@polling_function(
-    name="qualys-etm-report-generate",
-    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_POLL_INTERVAL_SECONDS,
-    timeout=arg_to_number(demisto.args().get("timeout_in_seconds")) or DEFAULT_POLL_TIMEOUT_SECONDS,
-    poll_message="Generating the Qualys ETM report",
-    requires_polling_arg=False,
-)
-def report_generate_command(args: dict[str, Any], client: Client) -> PollResult:
+def report_generate_command(args: dict[str, Any], client: Client) -> Any:
     """Submit a findings report, poll until it completes, and download it.
+
+    The polling interval and timeout are command arguments, so the polling decorator is applied here at call
+    time rather than at import time.
+
+    Args:
+        args: The command arguments.
+        client: The Qualys ETM API client.
+
+    Returns:
+        The command results, or a scheduled command that polls again.
+    """
+    interval = arg_to_number(args.get("interval_in_seconds")) or DEFAULT_POLL_INTERVAL_SECONDS
+    timeout = arg_to_number(args.get("timeout_in_seconds")) or DEFAULT_POLL_TIMEOUT_SECONDS
+    polling_command = polling_function(
+        name="qualys-etm-report-generate",
+        interval=interval,
+        timeout=timeout,
+        poll_message="Generating the Qualys ETM report",
+        requires_polling_arg=False,
+    )(run_report_generate_poll)
+    return polling_command(args, client)
+
+
+def run_report_generate_poll(args: dict[str, Any], client: Client) -> PollResult:
+    """Run a single iteration of the report generation polling flow.
 
     On the first invocation the report is submitted and its ID is carried over to the following polling
     iterations. Terminal failure statuses abort the polling immediately rather than waiting for the timeout.
@@ -468,7 +482,7 @@ def main() -> None:
             raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as exception:
-        return_error(f"Failed to execute {command} command.\nError:\n{exception!s}")
+        return_error(f"Failed to execute {command} command.\nError:\n{exception!s}", error=exception)
 
 
 """ ENTRY POINT """
