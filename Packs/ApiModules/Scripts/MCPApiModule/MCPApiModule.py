@@ -10,7 +10,11 @@ import traceback
 import hashlib
 
 from mcp import ClientSession
+from mcp.client.auth.exceptions import OAuthFlowError
+from mcp.client.auth.utils import validate_authorization_response_iss, validate_metadata_issuer
 from mcp.client.streamable_http import streamable_http_client
+from mcp.shared.auth import OAuthMetadata
+from pydantic import ValidationError
 from typing import Any
 import base64
 from base64 import b64encode
@@ -20,7 +24,7 @@ from base64 import b64encode
 # httpx2 client. httpx2 is API-compatible with httpx, so it is used throughout.
 import httpx2
 
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import parse_qsl, urlparse, urlunparse
 
 # --- Utility Functions ---
 
@@ -113,6 +117,136 @@ def update_integration_context_oauth_flow(data: dict[str, Any], override: bool =
         integration_context = get_integration_context()
         integration_context.update(remove_empty_elements(data))
     set_integration_context(integration_context)
+
+
+def parse_authorization_response(auth_code_input: str) -> dict[str, str]:
+    """
+    Parse the value pasted into the 'Authorization code' parameter.
+
+    Accepts either the full redirect URL the authorization server sent the user to, or - for
+    backwards compatibility with instances configured before this was supported - a bare
+    authorization code.
+
+    Parsing the full URL is what makes `state` (CSRF) and `iss` (RFC 9207 mix-up) validation
+    possible: those values only ever reach us through the redirect, and the previous flow
+    instructed users to discard everything except the code.
+
+    Args:
+        auth_code_input: The raw user-supplied value (full redirect URL or bare code).
+
+    Returns:
+        A dict with the 'code' key, plus 'state' and 'iss' when they were present in a URL.
+        A bare code yields only 'code'.
+    """
+    value = (auth_code_input or "").strip()
+    if not value:
+        return {}
+
+    # A bare authorization code contains no query string. Treat anything with a query
+    # delimiter or an explicit code= pair as a redirect URL.
+    if "?" not in value and "code=" not in value:
+        return {"code": value}
+
+    query = urlparse(value).query or value.partition("?")[2] or value
+    params = dict(parse_qsl(query))
+
+    parsed = {key: params[key] for key in ("code", "state", "iss") if params.get(key)}
+    if not parsed.get("code"):
+        raise DemistoException(
+            "Could not find an authorization code in the provided value. Paste either the full "
+            "redirect URL you were sent to after signing in, or just the authorization code."
+        )
+    return parsed
+
+
+def build_oauth_metadata(metadata: dict[str, Any]) -> OAuthMetadata | None:
+    """
+    Parse discovered OAuth metadata into the SDK model used by the spec validators.
+
+    Args:
+        metadata: The raw authorization server metadata.
+
+    Returns:
+        The parsed model, or None if the metadata is absent or does not satisfy the schema.
+    """
+    if not metadata or not metadata.get("issuer"):
+        return None
+    try:
+        return OAuthMetadata.model_validate(metadata)
+    except ValidationError as error:
+        # Logged at error level rather than debug: an unparseable document silently disables
+        # the RFC 9207 issuer check, so it should be visible when diagnosing an auth failure.
+        demisto.error(f"Authorization server metadata did not match the OAuth schema: {error}")
+        return None
+
+
+def validate_state(received_state: str, expected_state: str) -> None:
+    """
+    Validate the `state` authorization-response parameter (CSRF protection, RFC 6749 section 10.12).
+
+    This is handled here rather than by the SDK because the SDK's OAuth provider owns `state`
+    internally, whereas this integration hands the user a login URL and receives the response
+    back through configuration on a later execution.
+
+    Args:
+        received_state: The state returned on the authorization response.
+        expected_state: The state recorded when the login URL was generated.
+
+    Raises:
+        DemistoException: If the two do not match.
+    """
+    if not expected_state:
+        demisto.debug("Skipping OAuth state validation: no state was stored for this flow.")
+        return
+    if not received_state:
+        demisto.debug(
+            "Skipping OAuth state validation: the authorization response did not include 'state'. "
+            "Paste the full redirect URL into the Authorization code parameter to enable this check."
+        )
+        return
+    if received_state != expected_state:
+        raise DemistoException(
+            "OAuth state mismatch: the authorization response does not match the login request. "
+            "Re-run the generate-login-url command and complete the sign-in again. If this repeats, "
+            "the authorization response may have been tampered with."
+        )
+    demisto.debug("Validated OAuth state (CSRF protection).")
+
+
+def validate_authorization_response(received: dict[str, str], integration_context: dict[str, Any]) -> None:
+    """
+    Validate the authorization response against the values recorded when the login URL was built.
+
+    Two independent checks:
+      - `state` (CSRF): proves this response belongs to a flow we started.
+      - `iss` (RFC 9207 / SEP-2468): proves which authorization server issued the code, defending
+        against mix-up attacks when a client can talk to more than one authorization server.
+
+    The `iss` check is delegated to the MCP SDK so that this integration behaves exactly like the
+    reference client: a mismatch is always rejected, and an absent `iss` is rejected only when the
+    authorization server advertised `authorization_response_iss_parameter_supported`. That keeps
+    servers which never send `iss` (Atlassian) working, while still enforcing the check against
+    servers which promised to send it (Cloudflare).
+
+    Args:
+        received: Values parsed from the authorization response.
+        integration_context: The stored OAuth flow context.
+
+    Raises:
+        DemistoException: If the response contradicts the recorded flow.
+    """
+    validate_state(received.get("state", ""), integration_context.get("state", ""))
+
+    oauth_metadata = build_oauth_metadata(integration_context.get("oauth_metadata", {}))
+    try:
+        validate_authorization_response_iss(received.get("iss"), oauth_metadata)
+    except OAuthFlowError as error:
+        raise DemistoException(
+            f"OAuth issuer validation failed: {error}. Re-run the generate-login-url command and "
+            "complete the sign-in again. If this repeats, the authorization response may have been "
+            "tampered with."
+        )
+    demisto.debug("Validated OAuth issuer (RFC 9207 mix-up protection).")
 
 
 # --- Constants and Configuration ---
@@ -230,11 +364,15 @@ class OAuthHandler:
         self.client_secret = client_secret
         self.token_endpoint = token_endpoint
         self.scope = scope
-        self.auth_code = auth_code
         self.redirect_uri = redirect_uri
         self.verify = verify
         self.session = httpx2.AsyncClient(timeout=5, verify=verify)
         self.command_prefix = command_prefix
+
+        # The user may paste the full redirect URL (preferred - carries `state` and `iss`) or a
+        # bare authorization code (legacy). Keep both the code and the response parameters.
+        self.authorization_response = parse_authorization_response(auth_code)
+        self.auth_code = self.authorization_response.get("code", "")
 
     async def close(self):
         if self.session:
@@ -286,6 +424,24 @@ class OAuthHandler:
                 demisto.debug(error_message)
         except Exception:
             demisto.debug(error_message)
+
+        # Anchor the issuer to the URL it was discovered from (RFC 8414 section 3.3 / SEP-2468).
+        # Without this, the later `iss` check would compare a server's self-declaration against
+        # the same self-declaration and prove nothing. Delegated to the SDK so the comparison
+        # matches the reference client exactly (simple string comparison, no URL normalization).
+        #
+        # Metadata that is absent or unparseable deliberately leaves no issuer recorded: the
+        # `iss` check then relies on whether the server advertised support, rather than on an
+        # issuer value we invented.
+        if parsed_metadata := build_oauth_metadata(metadata):
+            try:
+                validate_metadata_issuer(parsed_metadata, url_origin_join(base_url))
+            except OAuthFlowError as error:
+                raise DemistoException(
+                    f"OAuth authorization server metadata is inconsistent: {error}. RFC 8414 requires the "
+                    "metadata issuer to match the URL it was served from. Refusing to continue, as the "
+                    "metadata may have been tampered with."
+                )
 
         return metadata
 
@@ -376,15 +532,41 @@ class OAuthHandler:
             "token_endpoint": metadata.get("token_endpoint"),
             "redirect_uri": self.redirect_uri,
             "state": state,
+            # Recorded so the `iss` on the authorization response can be validated (RFC 9207).
+            # The whole metadata document is kept, not just the issuer, because the validator
+            # also needs `authorization_response_iss_parameter_supported` to decide whether an
+            # absent `iss` is acceptable.
+            "oauth_metadata": metadata,
         }
         return auth_url, context_data
 
-    def generate_authorization_code_login_url(self, authorization_endpoint: str) -> str:
-        """Generates the login URL for the standard Authorization Code flow."""
+    def generate_authorization_code_login_url(self, authorization_endpoint: str) -> tuple[str, dict[str, str]]:
+        """
+        Generates the login URL for the standard Authorization Code flow.
+
+        Returns the authorization URL and the context data to save. The context data carries the
+        `state` so it can be validated when the authorization response comes back; previously it
+        was generated, sent, and then discarded, which left the CSRF check unenforceable.
+        """
         auth_endpoint = authorization_endpoint or url_origin_join(self.base_url, "oauth2/authorize")
         state = generate_state()
         auth_url = self._create_authorization_url(auth_endpoint, self.client_id, self.scope, state=state)
-        return auth_url
+        context_data = {
+            "authorization_endpoint": auth_endpoint,
+            "redirect_uri": self.redirect_uri,
+            "state": state,
+            # This flow performs no RFC 8414 discovery (the endpoints are constructed from the
+            # instance URL), so the only issuer identity available is the authorization
+            # endpoint's own origin. Recorded in metadata shape so the same RFC 9207 validator
+            # handles both flows. No `authorization_response_iss_parameter_supported` is set,
+            # so an absent `iss` is tolerated here - the server never advertised otherwise.
+            "oauth_metadata": {
+                "issuer": url_origin_join(auth_endpoint),
+                "authorization_endpoint": auth_endpoint,
+                "token_endpoint": self.token_endpoint or url_origin_join(self.base_url, "oauth2/token"),
+            },
+        }
+        return auth_url, context_data
 
     async def get_client_credentials_token(self) -> tuple[str, int]:
         """Obtains an access token using Client Credentials Grant."""
@@ -434,6 +616,10 @@ class OAuthHandler:
         else:
             # --- Authorization Code Flow ---
             demisto.debug("Running OAuth Authorization Code flow.")
+
+            # Verify the authorization response before redeeming the code. Only applies here:
+            # a refresh token is not an authorization response and carries no state/iss.
+            validate_authorization_response(self.authorization_response, get_integration_context())
 
             payload["grant_type"] = "authorization_code"
             payload["code"] = self.auth_code
@@ -690,7 +876,7 @@ async def generate_login_url(
     auth_url = ""
     context_data: dict[str, Any] = {}
     if auth_type == AuthMethods.AUTHORIZATION_CODE:
-        auth_url = oauth_handler.generate_authorization_code_login_url(authorization_endpoint)
+        auth_url, context_data = oauth_handler.generate_authorization_code_login_url(authorization_endpoint)
 
     if auth_type == AuthMethods.DYNAMIC_CLIENT_REGISTRATION:
         auth_url, context_data = await oauth_handler.generate_dynamic_registration_login_url()
@@ -701,9 +887,12 @@ async def generate_login_url(
         "### Authorization instructions\n"
         f"1. Click on the [login URL]({auth_url}) to sign in and grant Cortex permissions for your MCP server.\n"
         "  You will be automatically redirected to a link with the following structure:\n"
-        "  ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```\n"
-        "2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter) and paste it "
+        "  ```REDIRECT_URI?code=AUTH_CODE&state=STATE&iss=ISSUER```\n"
+        "2. Copy the **entire URL** from your browser's address bar and paste it "
         "in the instance configuration under the **Authorization code** parameter.\n"
+        "  Pasting the full URL lets Cortex verify the `state` and `iss` parameters, which protect "
+        "against CSRF and authorization-server mix-up attacks.\n"
+        "  Pasting only the `AUTH_CODE` still works, but these verifications are skipped.\n"
         "3. Save the instance configuration.\n"
         "  **IMPORTANT NOTE**: Authentication code is time-sensitive and expires quickly.\n"
         "  Please copy the Authorization code to the instance configuration "
