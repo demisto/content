@@ -1,0 +1,16 @@
+[
+    {
+        "id": "0b127284-e128-4d02-a720-2748240c9f1a",
+        "name": "Ad-hoc Report",
+        "status": "COMPLETED",
+        "created": "2026-10-01T10:00:00Z",
+        "expirationDate": "2026-10-08T10:00:00Z"
+    },
+    {
+        "id": "dbc34b32-b957-449a-a357-27cf27df7eab",
+        "name": "Weekly Risk Report",
+        "status": "REQUESTED",
+        "created": "2026-10-02T08:30:00Z",
+        "expirationDate": "2026-10-09T08:30:00Z"
+    }
+]

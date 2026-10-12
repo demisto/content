@@ -1,0 +1,19 @@
+{
+    "id": "0b127284-e128-4d02-a720-2748240c9f1a",
+    "name": "Ad-hoc Report",
+    "description": "Critical findings report",
+    "reportFormat": "JSON",
+    "status": "COMPLETED",
+    "assetQql": "asset.name: my-host",
+    "findingsQql": "finding.severity: 5",
+    "created": "2026-10-01T10:00:00Z",
+    "createdBy": {
+        "name": "john_doe"
+    },
+    "updated": "2026-10-01T10:05:00Z",
+    "expirationDate": "2026-10-08T10:00:00Z",
+    "resources": [
+        "part_15097524224131306.json",
+        "part_15097524224131307.json"
+    ]
+}
