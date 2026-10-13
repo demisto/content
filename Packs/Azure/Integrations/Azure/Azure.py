@@ -5236,7 +5236,11 @@ def aks_clusters_list_command(client: AzureClient, params: dict[str, Any], args:
     clusters = response.get("value", [])
 
     if not clusters:
-        return CommandResults(readable_output="No AKS managed clusters were found.", raw_response=response)
+        return CommandResults(
+            outputs={"Azure.AKS(true)": {"ManagedClusterNextToken": response.get("nextLink")}},
+            readable_output="No AKS managed clusters were found.",
+            raw_response=response,
+        )
 
     outputs = {
         "Azure.AKS.ManagedCluster(val.id && val.id == obj.id)": clusters,

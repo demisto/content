@@ -905,7 +905,7 @@ def test_aks_clusters_list_command_no_results(mocker, client, mock_params):
     """
     Given: An Azure client whose aks_clusters_list returns an empty cluster list.
     When: The aks_clusters_list_command function is called.
-    Then: The function returns CommandResults with a "no clusters found" readable output and no context.
+    Then: The function returns a "no clusters found" readable output and clears the next token in context.
     """
     from CommonServerPython import CommandResults
 
@@ -915,7 +915,21 @@ def test_aks_clusters_list_command_no_results(mocker, client, mock_params):
     result = aks_clusters_list_command(client, mock_params, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs is None
+    assert result.outputs == {"Azure.AKS(true)": {"ManagedClusterNextToken": None}}
+    assert result.readable_output == "No AKS managed clusters were found."
+
+
+def test_aks_clusters_list_command_empty_page_with_next_link(mocker, client, mock_params):
+    """
+    Given: An Azure client whose aks_clusters_list returns an empty page that still has a nextLink.
+    When: The aks_clusters_list_command function is called.
+    Then: The next token is surfaced in context so the user can continue paging, despite the empty page.
+    """
+    mocker.patch.object(client, "aks_clusters_list", return_value={"value": [], "nextLink": "mock_next_link"})
+
+    result = aks_clusters_list_command(client, mock_params, {"subscription_id": "mock_subscription_id"})
+
+    assert result.outputs == {"Azure.AKS(true)": {"ManagedClusterNextToken": "mock_next_link"}}
     assert result.readable_output == "No AKS managed clusters were found."
 
 
