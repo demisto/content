@@ -530,12 +530,16 @@ class FakeHalcyonEventsApi:
 
     Each event has an ``indexed_at`` time: it is not returned before that time, which models the
     Halcyon indexing delay (an event can become queryable minutes after its occurredAt).
+
+    With ``ignore_occurred_before=True`` the fake returns events dated after occurredBefore,
+    which models the real API returning future-dated events.
     """
 
-    def __init__(self):
+    def __init__(self, ignore_occurred_before: bool = False):
         self.rows: list[dict] = []
         self.now = ""
         self.calls: list[dict] = []
+        self.ignore_occurred_before = ignore_occurred_before
 
     def add(self, event_id: str | None, occurred_at: str, indexed_at: str | None = None, **extra) -> None:
         event = {"occurredAt": occurred_at, **extra}
@@ -555,7 +559,7 @@ class FakeHalcyonEventsApi:
             for row in self.rows
             if time_of(row["indexed_at"]) <= self.now
             and (not occurred_after or time_of(row["event"]["occurredAt"]) >= occurred_after)
-            and (not occurred_before or time_of(row["event"]["occurredAt"]) <= occurred_before)
+            and (self.ignore_occurred_before or not occurred_before or time_of(row["event"]["occurredAt"]) <= occurred_before)
         ]
         visible.sort(key=lambda e: (time_of(e["occurredAt"]), e.get("eventId", "")))
         # Fresh copies, like real JSON responses, so enrichment of a sent event does not leak into later cycles.
@@ -819,7 +823,7 @@ class TestEventsLogging:
         import demistomock as demisto
 
         info = mocker.patch.object(demisto, "info")
-        api = FakeHalcyonEventsApi()
+        api = FakeHalcyonEventsApi(ignore_occurred_before=True)
         api.add("future", "2026-10-05T07:03:00Z", indexed_at="2026-10-05T07:00:00Z")
 
         run_cycles(mock_client, mocker, api, ["2026-10-05T07:01:00.000000Z"])
