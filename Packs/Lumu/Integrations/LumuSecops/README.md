@@ -9,11 +9,9 @@ This integration was integrated and tested with version xx of LumuSecops.
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
 | Password |  | True |
-| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-| None |  | False |
-| Incident Offset |  | False |
-| Total incidents per fetch |  | False |
-| Max time in seconds per fetch |  | False |
+| Lumu incident fetch offset |  | False |
+| Size of Lumu incident records per Lumu fetch |  | False |
+| Max Seconds waiting for fetching Lumu incidents |  | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
 | Incidents Fetch Interval |  | False |

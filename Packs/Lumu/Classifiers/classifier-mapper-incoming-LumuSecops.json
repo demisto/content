@@ -39,9 +39,6 @@
                 "lumu_secops_offenders_count": {
                     "simple": "lumu_secops_offenders_count"
                 },
-                "lumu_secops_company_id": {
-                    "simple": "companyId"
-                },
                 "lumu_secops_actions_count": {
                     "simple": "lumu_secops_actions_count"
                 },
@@ -57,17 +54,11 @@
                 "lumu_secops_last_comment": {
                     "simple": "lumu_secops_last_comment"
                 },
-                "lumu_secops_description": {
-                    "simple": "lumu_secops_description"
-                },
                 "lumu_secops_detector_type": {
                     "simple": "lumu_secops_detector_type"
                 },
                 "lumu_secops_event_type": {
                     "simple": "lumu_secops_event_type"
-                },
-                "lumu_secops_incident_id": {
-                    "simple": "lumu_secops_incident_id"
                 },
                 "lumu_secops_incident_grouping_fields": {
                     "simple": "lumu_secops_incident_grouping_fields"
@@ -79,13 +70,6 @@
 					"complex": {
 						"filters": [],
 						"root": "lumu_secops_source_name",
-						"transformers": []
-					}
-				},
-                "lumu_secops_status": {
-					"complex": {
-						"filters": [],
-						"root": "status",
 						"transformers": []
 					}
 				},
