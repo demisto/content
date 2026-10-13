@@ -1,3 +1,5 @@
+name: NodeZero MCP
+display: NodeZero MCP
 category: Vulnerability Management
 provider: Horizon3
 sectionorder:
@@ -24,8 +26,6 @@ configuration:
     section: Connect
     additionalinfo: The authorization code returned by the !nodezero-mcp-generate-login-url command. Paste it here, then run !nodezero-mcp-auth-test to complete authentication.
 description: Use this integration to connect to the NodeZero MCP server and automatically discover its available pentesting tools.
-display: NodeZero MCP
-name: NodeZero MCP
 script:
   commands:
     - arguments: []
@@ -49,15 +49,11 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/mcp:1.0.0.10120494
+  dockerimage: demisto/mcp:1.0.0.13526390
   mcp: true
-fromversion: 6.1.0
+fromversion: 8.13.0
 tests:
   - No tests (auto formatted)
-marketplaces:
-  - xsoar
-  - marketplacev2
-  - platform
 supportedModules:
   - agentix
   - xsiam

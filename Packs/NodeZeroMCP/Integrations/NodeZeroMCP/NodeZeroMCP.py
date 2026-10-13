@@ -1,9 +1,9 @@
+import asyncio
+from urllib.parse import unquote
+
 import demistomock as demisto
 from CommonServerPython import *
 from MCPApiModule import *
-
-import asyncio
-from urllib.parse import unquote
 
 COMMAND_PREFIX = "nodezero-mcp"
 DEFAULT_BASE_URL = "https://mcp.horizon3ai.com/mcp"
@@ -29,7 +29,7 @@ async def main() -> None:  # pragma: no cover
     client = None
     try:
         base_url = params.get("base_url", DEFAULT_BASE_URL)
-        auth_code = unquote(params.get("auth_code", {}).get("password") or "")
+        auth_code = unquote((params.get("auth_code") or {}).get("password") or "")
 
         validate_required_params(base_url, auth_code, command)
 
@@ -54,7 +54,10 @@ async def main() -> None:  # pragma: no cover
             return_results(result)
 
         elif command == "call-tool":
-            result = await client.call_tool(args["name"], args.get("arguments", ""))
+            tool_name = args.get("name")
+            if not tool_name:
+                raise ValueError("The 'name' argument is required.")
+            result = await client.call_tool(tool_name, args.get("arguments", ""))
             return_results(result)
 
         elif command == f"{COMMAND_PREFIX}-auth-test":
@@ -68,9 +71,9 @@ async def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
-    except BaseException as eg:
+    except Exception as eg:
         root_msg = extract_root_error_message(eg)
-        return_error(f"Failed to execute {command} command.\nError:\n{root_msg}")
+        return_error(f"Failed to execute {command} command.\nError:\n{root_msg}", error=eg)
 
     finally:
         if client:

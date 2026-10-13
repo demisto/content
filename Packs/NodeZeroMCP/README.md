@@ -2,13 +2,16 @@
 
 NodeZero is an autonomous penetration testing platform that continuously identifies exploitable weaknesses across your infrastructure. By simulating real-world attack paths, NodeZero provides proof-based findings that help security teams prioritize remediation efforts.
 
-This pack integrates NodeZero's MCP server with Cortex XSOAR to automatically discover NodeZero's pentesting tools and exposing them as agentic system actions.
+This pack integrates NodeZero's MCP server with Cortex to automatically discover NodeZero's pentesting tools and expose them as agentic system actions.
 
-## What Does This Pack Do?
+## What does this pack do?
 
-This pack is intended for the Cortex Agentic AI.
+This pack is intended for the Cortex Agentic AI. It connects your Cortex agents to Horizon3's NodeZero MCP server so they can work with your NodeZero pentesting data.
 
-Authorizes your Cortex agent to Horizon3's NodeZero MCP server. Exposes MCP server commands to integrate your agentic system with NodeZero.
+- Connects to the NodeZero MCP server for your region (US, EU, or AU).
+- Authenticates with OAuth 2.0 Dynamic Client Registration through the NodeZero portal, so no pre-issued Client ID or Client Secret is needed.
+- Discovers the tools the MCP server offers and runs them on the agent's behalf, so new NodeZero tools are available without updating the pack.
+- Lets agents review pentests and their results, look up weaknesses and NodeZero terminology, schedule new pentests, and run read-only queries against the NodeZero GraphQL API.
 
 ## Tools
 
@@ -28,7 +31,7 @@ This MCP server provides the following tools for interacting with Horizon3 (H3) 
 ### get_h3_terminology
 
 - **Type**: Read
-- **Purpose**: Look up H3-specific term definitions (e.g. weakness vs. vulnerability, context score, attack path) to keep terminology accurate.
+- **Purpose**: Look up H3-specific term definitions (e.g., weakness vs. vulnerability, context score, attack path) to keep terminology accurate.
 
 ### setup_pentest_scope
 
@@ -38,7 +41,7 @@ This MCP server provides the following tools for interacting with Horizon3 (H3) 
 ### fetch_h3_graphql_docs
 
 - **Type**: Read
-- **Purpose**: Fetch H3 GraphQL schema documentation for a given (type, field, enum, etc.) to help construct valid queries.
+- **Purpose**: Fetch H3 GraphQL schema documentation for a given item (type, field, enum, etc.) to help construct valid queries.
 
 ### run_h3_graphql_query
 

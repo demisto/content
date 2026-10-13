@@ -302,3 +302,45 @@ class TestMain:
         mock_return_error.assert_called_once()
         error_call = mock_return_error.call_args[0][0]
         assert "Authorization Code is required" in error_call
+
+    @pytest.mark.asyncio
+    async def test_none_auth_code_calls_return_error(self, mocker: MockerFixture):
+        """Given: Params contain auth_code set to None.
+        When: Main function processes a command that requires auth.
+        Then: return_error is called with the missing Authorization Code message instead of an AttributeError.
+        """
+        mocker.patch("NodeZeroMCP.Client")
+        mocker.patch.object(demisto, "params", return_value={"base_url": "https://mcp.horizon3ai.com", "auth_code": None})
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(demisto, "command", return_value="list-tools")
+        mock_return_error = mocker.patch("NodeZeroMCP.return_error")
+
+        await main()
+
+        mock_return_error.assert_called_once()
+        error_call = mock_return_error.call_args[0][0]
+        assert "Authorization Code is required" in error_call
+
+    @pytest.mark.asyncio
+    async def test_call_tool_missing_name_calls_return_error(self, mocker: MockerFixture):
+        """Given: call-tool is invoked without a name argument.
+        When: Main function processes the command.
+        Then: return_error is called with a missing name message.
+        """
+
+        async def mock_close():
+            pass
+
+        mock_client = mocker.MagicMock()
+        mock_client.close = mock_close
+        mocker.patch("NodeZeroMCP.Client", return_value=mock_client)
+        mocker.patch.object(demisto, "params", return_value=VALID_PARAMS)
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(demisto, "command", return_value="call-tool")
+        mock_return_error = mocker.patch("NodeZeroMCP.return_error")
+
+        await main()
+
+        mock_return_error.assert_called_once()
+        error_call = mock_return_error.call_args[0][0]
+        assert "The 'name' argument is required" in error_call

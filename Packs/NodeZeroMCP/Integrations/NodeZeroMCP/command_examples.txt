@@ -1,0 +1,2 @@
+!nodezero-mcp-generate-login-url
+!nodezero-mcp-auth-test
