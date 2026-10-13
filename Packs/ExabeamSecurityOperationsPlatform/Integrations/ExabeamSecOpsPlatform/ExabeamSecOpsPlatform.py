@@ -160,7 +160,7 @@ class Client(BaseClient):
         data = json.dumps(data_dict)
         full_url = f"{self._base_url}/search/v2/events"
         request_kwargs: dict[str, Any] = {"method": "POST", "full_url": full_url, "data": data}
-        if timeout:
+        if timeout is not None:
             request_kwargs["timeout"] = timeout
         return self.request(**request_kwargs)
 
@@ -733,6 +733,8 @@ def event_search_command(client: Client, args: dict) -> CommandResults:
         kwargs.update({"groupBy": group_list, "fields": group_list})
 
     timeout = arg_to_number(args.get("timeout"), arg_name="timeout")
+    if timeout is not None and timeout <= 0:
+        raise DemistoException("timeout must be a positive integer.")
     response = client.event_search_request(kwargs, timeout=timeout)
 
     if error := response.get("errors", {}):
@@ -1238,6 +1240,25 @@ def create_case_note(client: Client, args: dict) -> CommandResults:
     )
 
 
+def get_request_timeout(params: dict) -> int:
+    """
+    Parses and validates the 'Request timeout (seconds)' integration parameter.
+
+    Args:
+        params (dict): The integration parameters.
+
+    Returns:
+        int: The request timeout in seconds, or the default timeout if not provided.
+
+    Raises:
+        DemistoException: If the provided timeout is not a positive integer.
+    """
+    request_timeout = arg_to_number(params.get("request_timeout"), arg_name="Request timeout (seconds)")
+    if request_timeout is not None and request_timeout <= 0:
+        raise DemistoException("Request timeout must be a positive integer.")
+    return request_timeout or DEFAULT_REQUEST_TIMEOUT
+
+
 """ MAIN FUNCTION """
 
 
@@ -1251,11 +1272,8 @@ def main() -> None:  # pragma: no cover
     base_url = params.get("url", "")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    request_timeout = (
-        arg_to_number(params.get("request_timeout"), arg_name="Request timeout (seconds)") or DEFAULT_REQUEST_TIMEOUT
-    )
-
     try:
+        request_timeout = get_request_timeout(params)
         client = Client(
             base_url.rstrip("/"),
             verify=verify_certificate,

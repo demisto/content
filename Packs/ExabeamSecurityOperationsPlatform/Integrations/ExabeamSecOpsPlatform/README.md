@@ -57,7 +57,7 @@ Get events from Exabeam Security Operations Platform.
 
 #### Command example
 
-```!exabeam-platform-event-search end_time="today" start_time="7 days ago" limit=2 query="product: Correlation Rule AND rule_severity: High"```
+```!exabeam-platform-event-search end_time="today" start_time="7 days ago" limit=2 query="product: Correlation Rule AND rule_severity: High" timeout=120```
 
 #### Context Example
 

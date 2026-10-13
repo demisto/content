@@ -296,6 +296,89 @@ def test_event_search_command_timeout(mocker: MockerFixture, args: dict, expecte
     assert mock_request.call_args.kwargs["timeout"] == expected_timeout
 
 
+@pytest.mark.parametrize("timeout", ["0", "-5"])
+def test_event_search_command_invalid_timeout(mocker: MockerFixture, timeout: str):
+    """
+    GIVEN:
+        'exabeam-platform-event-search' arguments with a non-positive 'timeout' argument.
+    WHEN:
+        'event_search_command' is called.
+    THEN:
+        A DemistoException is raised and no search request is sent.
+    """
+    from ExabeamSecOpsPlatform import event_search_command
+
+    client = MockClient("", "", "", False, False)
+    mock_request = mocker.patch.object(client, "event_search_request", return_value={"rows": []})
+
+    with pytest.raises(DemistoException, match="timeout must be a positive integer."):
+        event_search_command(client, {"start_time": "2024-05-01T00:00:00", "end_time": "2024-05-08T00:00:00", "timeout": timeout})
+    mock_request.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "timeout, expected_kwarg_present",
+    [
+        pytest.param(None, False, id="no timeout - client default used"),
+        pytest.param(0, True, id="explicit zero timeout forwarded"),
+    ],
+)
+def test_event_search_request_timeout_is_not_none_check(mocker: MockerFixture, timeout: int | None, expected_kwarg_present: bool):
+    """
+    GIVEN:
+        A client and a timeout value of None or 0.
+    WHEN:
+        'event_search_request' is called.
+    THEN:
+        The timeout kwarg is forwarded only when it is not None (explicit 'is not None' check rather than truthiness).
+    """
+    mock_request = mocker.patch("ExabeamSecOpsPlatform.Client.request", return_value={})
+    mocker.patch("ExabeamSecOpsPlatform.Client._authenticate")
+    client = Client(base_url="https://example-api.com", client_id="id", client_secret="secret", verify=False, proxy=False)
+
+    client.event_search_request({"key": "value"}, timeout=timeout)
+
+    assert ("timeout" in mock_request.call_args.kwargs) is expected_kwarg_present
+
+
+@pytest.mark.parametrize(
+    "params, expected_timeout",
+    [
+        pytest.param({}, 60, id="no parameter - default"),
+        pytest.param({"request_timeout": ""}, 60, id="empty parameter - default"),
+        pytest.param({"request_timeout": "120"}, 120, id="valid parameter"),
+    ],
+)
+def test_get_request_timeout(params: dict, expected_timeout: int):
+    """
+    GIVEN:
+        Integration parameters with or without a valid 'request_timeout' value.
+    WHEN:
+        'get_request_timeout' is called.
+    THEN:
+        The parsed timeout is returned, or the 60 seconds default when not provided.
+    """
+    from ExabeamSecOpsPlatform import get_request_timeout
+
+    assert get_request_timeout(params) == expected_timeout
+
+
+@pytest.mark.parametrize("request_timeout", ["0", "-10"])
+def test_get_request_timeout_invalid(request_timeout: str):
+    """
+    GIVEN:
+        Integration parameters with a non-positive 'request_timeout' value.
+    WHEN:
+        'get_request_timeout' is called.
+    THEN:
+        A DemistoException is raised instead of silently passing an invalid timeout to requests.
+    """
+    from ExabeamSecOpsPlatform import get_request_timeout
+
+    with pytest.raises(DemistoException, match="Request timeout must be a positive integer."):
+        get_request_timeout({"request_timeout": request_timeout})
+
+
 @pytest.mark.parametrize(
     "args, expected_output", [({}, 50), ({"limit": None}, 50), ({"limit": 1000}, 1000), ({"limit": 5000}, 3000)]
 )
