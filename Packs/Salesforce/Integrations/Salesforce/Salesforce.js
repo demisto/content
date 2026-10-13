@@ -271,10 +271,10 @@ function leadsToEntry(raw_info, title, userMapping) {
 
 function tasksToEntry(raw_info, title, lead_dict) {
     // fix owner field
-    if (leadMapping) {
+    if (lead_dict) {
         for (var i in raw_info) {
             // use WhoId if no lead was found
-            raw_info[i].WhoId = leadMapping[raw_info[i].WhoId] || raw_info[i].WhoId;
+            raw_info[i].WhoId = lead_dict[raw_info[i].WhoId] || raw_info[i].WhoId;
         }
     }
 
@@ -326,8 +326,7 @@ function objectToEntry(obj_type, obj) {
         case 'Lead':
             return leadsToEntry([obj], 'Lead:', userMapping);
         case 'Task':
-            leadMapping = undefined; // TODO: implement
-            return tasksToEntry([obj], 'Lead:', leadMapping);
+            return tasksToEntry([obj], 'Lead:', undefined);
         case 'User':
             return usersToEntry([obj], 'User:');
         default:

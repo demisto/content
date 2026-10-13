@@ -118,7 +118,7 @@ def test_main_uses_account_prefix_xsoar6(mocker):
 
 
 def test_main_uses_xsoar8_uri(mocker):
-    """On XSOAR 8, the URI uses the xsoar/public/v1/ prefix."""
+    """On XSOAR 8, the URI does not use the xsoar/public/v1/ prefix."""
     mocker.patch.object(HealthCheckIncidentTypes, "is_demisto_version_ge", return_value=True)
     mocker.patch.object(
         HealthCheckIncidentTypes,
@@ -133,7 +133,7 @@ def test_main_uses_xsoar8_uri(mocker):
     main()
 
     core_call = HealthCheckIncidentTypes.execute_command.call_args_list[0]
-    assert core_call[0][1]["uri"] == "xsoar/public/v1/incidenttype"
+    assert core_call[0][1]["uri"] == "incidenttype"
 
 
 def test_main_list_response(mocker):

@@ -1,4 +1,4 @@
-description: Test playbook for Prisma AIRs DLP data patterns. Tests pattern CRUD (list, create, get, patch, replace, delete), ensuring only the pattern created by this playbook is modified and deleted.
+description: Test playbook for Prisma AIRS DLP data patterns. Tests pattern CRUD (list, create, get, patch, replace, delete), ensuring only the pattern created by this playbook is modified and deleted.
 id: PaloAltoNetworks_Prisma_AIRs_DLP_Patterns_Test
 inputs:
 - key: PatternName
