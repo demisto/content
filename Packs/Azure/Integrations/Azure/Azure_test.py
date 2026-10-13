@@ -6432,7 +6432,7 @@ def test_ip_group_update_command_success(mocker):
     mock_client.ip_group_get.return_value = copy.deepcopy(IP_GROUP_RESPONSE)
     mock_client.ip_group_update.return_value = IP_GROUP_RESPONSE
     params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
-    args = {"ip_group_name": IP_GROUP_NAME, "ip_addresses_to_add": "10.0.0.3", "ip_addresses_to_remove": "10.0.0.1"}
+    args = {"ip_group_name": IP_GROUP_NAME, "ip_addresses_to_add": "10.0.0.4", "ip_addresses_to_remove": "10.0.0.1"}
 
     result = ip_group_update_command(args, client=mock_client, params=params)
 
@@ -6441,7 +6441,7 @@ def test_ip_group_update_command_success(mocker):
     assert "The update of IP group test-ip-group has started" in result.readable_output
     assert args["ip_group_updated"] is True
     sent_data = mock_client.ip_group_update.call_args.kwargs["ip_group_data"]
-    assert sent_data["properties"]["ipAddresses"] == ["10.0.0.2", "10.0.0.3"]
+    assert sent_data["properties"]["ipAddresses"] == ["10.0.0.2", "10.0.0.4"]
 
 
 def test_ip_group_update_command_polling_run_succeeded(mocker):
@@ -6460,7 +6460,7 @@ def test_ip_group_update_command_polling_run_succeeded(mocker):
     mock_client = mocker.Mock(spec=AzureClient)
     mock_client.ip_group_get.return_value = IP_GROUP_RESPONSE
     params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
-    args = {"ip_group_name": IP_GROUP_NAME, "ip_addresses_to_add": "10.0.0.3", "ip_group_updated": True}
+    args = {"ip_group_name": IP_GROUP_NAME, "ip_addresses_to_add": "10.0.0.4", "ip_group_updated": True}
 
     result = ip_group_update_command(args, client=mock_client, params=params)
 
@@ -6487,12 +6487,12 @@ def test_ip_group_update_command_does_not_duplicate_existing_ip(mocker):
     mock_client.ip_group_get.return_value = copy.deepcopy(IP_GROUP_RESPONSE)
     mock_client.ip_group_update.return_value = IP_GROUP_RESPONSE
     params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
-    args = {"ip_group_name": IP_GROUP_NAME, "ip_addresses_to_add": "10.0.0.1,10.0.0.3"}
+    args = {"ip_group_name": IP_GROUP_NAME, "ip_addresses_to_add": "10.0.0.1,10.0.0.4"}
 
     ip_group_update_command(args, client=mock_client, params=params)
 
     sent_data = mock_client.ip_group_update.call_args.kwargs["ip_group_data"]
-    assert sent_data["properties"]["ipAddresses"] == ["10.0.0.1", "10.0.0.2", "10.0.0.3"]
+    assert sent_data["properties"]["ipAddresses"] == ["10.0.0.1", "10.0.0.2", "10.0.0.4"]
 
 
 def test_ip_group_update_command_ignores_missing_ip_to_remove(mocker):
@@ -6535,12 +6535,12 @@ def test_ip_group_update_command_adds_to_group_with_no_ip_addresses(mocker):
     mock_client.ip_group_get.return_value = {"name": IP_GROUP_NAME, "properties": {"provisioningState": "Succeeded"}}
     mock_client.ip_group_update.return_value = IP_GROUP_RESPONSE
     params = {"subscription_id": "sub-id", "resource_group_name": "test-rg"}
-    args = {"ip_group_name": IP_GROUP_NAME, "ip_addresses_to_add": "10.0.0.9"}
+    args = {"ip_group_name": IP_GROUP_NAME, "ip_addresses_to_add": "10.0.0.5"}
 
     ip_group_update_command(args, client=mock_client, params=params)
 
     sent_data = mock_client.ip_group_update.call_args.kwargs["ip_group_data"]
-    assert sent_data["properties"]["ipAddresses"] == ["10.0.0.9"]
+    assert sent_data["properties"]["ipAddresses"] == ["10.0.0.5"]
 
 
 def test_ip_group_update_command_removes_every_ip_address(mocker):
@@ -6644,13 +6644,13 @@ def test_ip_group_list_command_success(mocker):
     from Azure import ip_group_list_command
 
     mock_client = mocker.Mock(spec=AzureClient)
-    mock_client.ip_group_list.return_value = {"value": [IP_GROUP_RESPONSE], "nextLink": "https://next.page"}
+    mock_client.ip_group_list.return_value = {"value": [IP_GROUP_RESPONSE], "nextLink": "https://test.url"}
     params = {"subscription_id": "sub-id"}
 
     result = ip_group_list_command(client=mock_client, params=params, args={"resource_group_name": "test-rg"})
 
     assert result.outputs["Azure.VirtualNetworks.IPGroups(val.id && val.id == obj.id)"] == [IP_GROUP_RESPONSE]
-    assert result.outputs["Azure.VirtualNetworks(true)"] == {"IPGroupsNextToken": "https://next.page"}
+    assert result.outputs["Azure.VirtualNetworks(true)"] == {"IPGroupsNextToken": "https://test.url"}
     assert "IP Groups List" in result.readable_output
     mock_client.ip_group_list.assert_called_once_with(subscription_id="sub-id", resource_group_name="test-rg", next_token="")
 

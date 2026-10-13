@@ -4441,10 +4441,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The name of the resource group.
       type: String
-      required: false
-      required:platform: true
+      required: true
     - name: ip_group_name
       description: The name of the IP group to create.
       required: true
@@ -4509,10 +4508,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The name of the resource group.
       type: String
-      required: false
-      required:platform: true
+      required: true
     - name: ip_group_name
       description: The name of the IP group to update.
       required: true
@@ -4576,10 +4574,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The name of the resource group.
       type: String
-      required: false
-      required:platform: true
+      required: true
     - name: ip_group_name
       description: The name of the IP group to retrieve.
       required: true
@@ -4672,10 +4669,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The name of the resource group.
       type: String
-      required: false
-      required:platform: true
+      required: true
     - name: ip_group_name
       description: The name of the IP group to delete.
       required: true

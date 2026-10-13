@@ -3704,7 +3704,7 @@ Creates an IP group resource and polls until the IP group is fully provisioned. 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
 | ip_group_name | The name of the IP group to create. | Required |
 | location | The location of the IP group resource. | Required |
 | ip_addresses | The comma-separated list of IP addresses or IP address prefixes to include in the IP group (for example, "10.0.0.1,10.1.0.0/24"). | Optional |
@@ -3740,7 +3740,7 @@ Updates an IP group resource by adding or removing IP addresses, and polls until
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
 | ip_group_name | The name of the IP group to update. | Required |
 | ip_addresses_to_add | The comma-separated list of IP addresses or IP address prefixes to add to the IP group (for example, "10.0.0.1,10.1.0.0/24"). At least one of ip_addresses_to_add or ip_addresses_to_remove must be provided. | Optional |
 | ip_addresses_to_remove | The comma-separated list of IP addresses or IP address prefixes to remove from the IP group (for example, "10.0.0.1,10.1.0.0/24"). An address that is not in the group is ignored. At least one of ip_addresses_to_add or ip_addresses_to_remove must be provided. | Optional |
@@ -3776,7 +3776,7 @@ Retrieves an IP group resource. Required Permissions: Microsoft.Network/ipGroups
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
 | ip_group_name | The name of the IP group to retrieve. | Required |
 
 #### Context Output
@@ -3841,7 +3841,7 @@ Deletes an IP group resource. Required Permissions: Microsoft.Network/ipGroups/d
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
 | ip_group_name | The name of the IP group to delete. | Required |
 
 #### Context Output
