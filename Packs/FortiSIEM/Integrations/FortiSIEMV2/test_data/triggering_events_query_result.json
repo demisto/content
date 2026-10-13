@@ -1,0 +1,37 @@
+{
+    "data": [
+        {
+            "custId": 1,
+            "index": 0,
+            "id": 4895412795018308000,
+            "eventType": "PH_USER_MON_SUDDEN_LOGIN_DISTRIBUTION_CHANGE",
+            "receiveTime": 1684282203000,
+            "rawMessage": "<158>[PH_USER_MON_SUDDEN_LOGIN_DISTRIBUTION_CHANGE]:[eventSeverity]=5,[user]=rbose",
+            "nid": 4895412795001472000,
+            "attributes": {
+                "User": "Administrator",
+                "Reporting IP": "192.168.1.25",
+                "Event Parser Name": "PHBoxParser",
+                "Event ID": 4895412795018308000
+            },
+            "eventAttributes": [],
+            "dataStr": {}
+        },
+        {
+            "custId": 1,
+            "index": 1,
+            "id": 4895412795018308001,
+            "eventType": "Win-App-Microsoft-Windows-Security-SPP-16384",
+            "receiveTime": 1684282204000,
+            "rawMessage": "<158>[Win-App-Microsoft-Windows-Security-SPP-16384]",
+            "nid": 4895412795001472001,
+            "attributes": {
+                "Source IP": "192.168.30.124",
+                "Destination IP": "192.168.91.113",
+                "Host Name": "DEVICE_1"
+            },
+            "eventAttributes": [],
+            "dataStr": {}
+        }
+    ]
+}
