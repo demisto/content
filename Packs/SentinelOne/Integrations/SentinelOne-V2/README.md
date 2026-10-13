@@ -2348,18 +2348,18 @@ Lists all unified exclusions that match the specified input filter. Relevant for
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | List of exclusion IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
-| account_ids | List of Account IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
-| site_ids | List of Site IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
-| os_types | List of OS types to filter by. Possible values are: windows, windows_legacy, macos, linux. | Optional |
-| mode_type | List of exclusion mode types to filter by. Possible values are: suppression, agent_interoperability, binary_vault, endpoint, all. | Optional |
-| value_contains | Free-text filter by exclusion value. | Optional |
-| exclusion_name_contains | Free-text filter by exclusion name. | Optional |
-| include_children | Return exclusions from children scope levels. Default is false. | Optional |
-| include_parents | Return exclusions from parent scope levels. Default is false. | Optional |
-| tenant | Set to true to filter for tenant scope only. | Optional |
-| limit | Maximum number of items to return (1-1000). Default is 10. | Optional |
-| cursor | Cursor position returned by the last request, used to paginate beyond 1000 items. | Optional |
+| ids | A comma-separated list of exclusion IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
+| account_ids | A comma-separated list of Account IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
+| site_ids | A comma-separated list of Site IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
+| os_types | A comma-separated list of OS types to filter by. Possible values are: windows, windows_legacy, macos, linux. | Optional |
+| mode_type | A comma-separated list of exclusion mode types to filter by. Possible values are: suppression, agent_interoperability, binary_vault, endpoint, all. | Optional |
+| value_contains | The free-text filter by exclusion value. | Optional |
+| exclusion_name_contains | The free-text filter by exclusion name. | Optional |
+| include_children | Whether to return exclusions from children scope levels. Default is false. | Optional |
+| include_parents | Whether to return exclusions from parent scope levels. Default is false. | Optional |
+| tenant | Whether to filter for tenant scope only. | Optional |
+| limit | The maximum number of items to return (1-1000). Default is 10. | Optional |
+| cursor | The cursor position returned by the last request, used to paginate beyond 1000 items. | Optional |
 
 #### Context Output
 
@@ -2368,16 +2368,16 @@ Lists all unified exclusions that match the specified input filter. Relevant for
 | SentinelOne.UnifiedExclusions.ID | String | The exclusion item ID. |
 | SentinelOne.UnifiedExclusions.Name | String | The exclusion item name. |
 | SentinelOne.UnifiedExclusions.Type | String | The exclusion type. |
-| SentinelOne.UnifiedExclusions.Value | String | Value of the exclusion item. |
-| SentinelOne.UnifiedExclusions.OsType | String | Operating system type of the exclusion item. |
+| SentinelOne.UnifiedExclusions.Value | String | The value of the exclusion item. |
+| SentinelOne.UnifiedExclusions.OsType | String | The operating system type of the exclusion item. |
 | SentinelOne.UnifiedExclusions.ModeType | String | The exclusion mode type. |
-| SentinelOne.UnifiedExclusions.Description | String | Description of the exclusion item. |
-| SentinelOne.UnifiedExclusions.Source | String | Source of the exclusion item. |
-| SentinelOne.UnifiedExclusions.CreatedAt | Date | Timestamp when the exclusion item was created. |
-| SentinelOne.UnifiedExclusions.UpdatedAt | Date | Timestamp when the exclusion item was last updated. |
-| SentinelOne.UnifiedExclusions.UserName | String | Username of the user who created the exclusion item. |
-| SentinelOne.UnifiedExclusions.ThreatType | String | Threat type associated with the exclusion item. |
-| SentinelOne.UnifiedExclusions.Engines | String | Engines associated with the exclusion item. |
+| SentinelOne.UnifiedExclusions.Description | String | The description of the exclusion item. |
+| SentinelOne.UnifiedExclusions.Source | String | The source of the exclusion item. |
+| SentinelOne.UnifiedExclusions.CreatedAt | Date | The timestamp when the exclusion item was created, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
+| SentinelOne.UnifiedExclusions.UpdatedAt | Date | The timestamp when the exclusion item was last updated, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
+| SentinelOne.UnifiedExclusions.UserName | String | The username of the user who created the exclusion item. |
+| SentinelOne.UnifiedExclusions.ThreatType | String | The threat type associated with the exclusion item. |
+| SentinelOne.UnifiedExclusions.Engines | String | The engines associated with the exclusion item. |
 
 ### sentinelone-create-unified-exclusion
 
@@ -2392,19 +2392,19 @@ Creates a new unified exclusion using a type and value (e.g. path, hash, certifi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exclusion_name | Name of the exclusion item. | Required |
-| os_type | Operating system type. Possible values are: windows, windows_legacy, macos, linux. | Required |
-| mode_type | Exclusion mode type. Possible values are: suppression, agent_interoperability, binary_vault, all. | Required |
-| exclusion_type | Exclusion type that determines how the value is interpreted. Possible values are: file_type, path, white_hash, certificate, browser. | Required |
+| exclusion_name | The name of the exclusion item. | Required |
+| os_type | The operating system type. Possible values are: windows, windows_legacy, macos, linux. | Required |
+| mode_type | The exclusion mode type. Possible values are: suppression, agent_interoperability, binary_vault, all. | Required |
+| exclusion_type | The exclusion type that determines how the value is interpreted. Possible values are: file_type, path, white_hash, certificate, browser. | Required |
 | value | The exclusion value, for example a file path or hash. | Optional |
-| scope_level | Scope level for the exclusion. Possible values are: group, site, account, tenant. | Required |
-| scope_level_id | ID of the scope (group, site, or account). Not required when scope_level is tenant. | Optional |
-| reason | Reason for creating the exclusion. Possible values are: performance_issue, false_positive, other. | Required |
-| description | Description of the exclusion item. | Optional |
-| threat_type | Threat type associated with the exclusion, for example "EDR". | Required |
-| engines | Engine associated with the exclusion, for example "suppress". | Optional |
-| path_exclusion_type | Path exclusion type. Applies to path exclusions only. Possible values are: file, folder, subfolder. | Optional |
-| sha256_value | SHA-256 value associated with the exclusion. | Optional |
+| scope_level | The scope level for the exclusion. Possible values are: group, site, account, tenant. | Required |
+| scope_level_id | The ID of the scope (group, site, or account). Not required when scope_level is tenant. | Optional |
+| reason | The reason for creating the exclusion. Possible values are: performance_issue, false_positive, other. | Required |
+| description | The description of the exclusion item. | Optional |
+| threat_type | The threat type associated with the exclusion, for example "EDR". | Required |
+| engines | The engine associated with the exclusion, for example "suppress". | Optional |
+| path_exclusion_type | The path exclusion type. Applies to path exclusions only. Possible values are: file, folder, subfolder. | Optional |
+| sha256_value | The SHA-256 value associated with the exclusion. | Optional |
 | child_process | Whether the exclusion applies to child processes. | Optional |
 
 #### Context Output
@@ -2416,18 +2416,18 @@ Creates a new unified exclusion using a type and value (e.g. path, hash, certifi
 | SentinelOne.UnifiedExclusions.Type | String | The exclusion type (e.g. path, white_hash). |
 | SentinelOne.UnifiedExclusions.Value | String | The exclusion value. |
 | SentinelOne.UnifiedExclusions.ModeType | String | The exclusion mode type (e.g. suppression). |
-| SentinelOne.UnifiedExclusions.OsType | String | Operating system type of the exclusion item. |
-| SentinelOne.UnifiedExclusions.Description | String | Description of the exclusion item. |
-| SentinelOne.UnifiedExclusions.ThreatType | String | Threat type associated with the exclusion item. |
-| SentinelOne.UnifiedExclusions.Engines | String | Engine associated with the exclusion item. |
-| SentinelOne.UnifiedExclusions.PathExclusionType | String | Path exclusion type (e.g. file, folder). |
-| SentinelOne.UnifiedExclusions.Sha256Value | String | SHA-256 value associated with the exclusion item. |
-| SentinelOne.UnifiedExclusions.Source | String | Source of the exclusion item. |
-| SentinelOne.UnifiedExclusions.ScopeName | String | Scope name of the exclusion item. |
-| SentinelOne.UnifiedExclusions.ScopePath | String | Full scope path of the exclusion item. |
-| SentinelOne.UnifiedExclusions.CreatedAt | Date | Timestamp when the exclusion item was created. |
-| SentinelOne.UnifiedExclusions.UpdatedAt | Date | Timestamp when the exclusion item was last updated. |
-| SentinelOne.UnifiedExclusions.UserName | String | Username of the user who created the exclusion item. |
+| SentinelOne.UnifiedExclusions.OsType | String | The operating system type of the exclusion item. |
+| SentinelOne.UnifiedExclusions.Description | String | The description of the exclusion item. |
+| SentinelOne.UnifiedExclusions.ThreatType | String | The threat type associated with the exclusion item. |
+| SentinelOne.UnifiedExclusions.Engines | String | The engine associated with the exclusion item. |
+| SentinelOne.UnifiedExclusions.PathExclusionType | String | The path exclusion type (e.g. file, folder). |
+| SentinelOne.UnifiedExclusions.Sha256Value | String | The SHA-256 value associated with the exclusion item. |
+| SentinelOne.UnifiedExclusions.Source | String | The source of the exclusion item. |
+| SentinelOne.UnifiedExclusions.ScopeName | String | The scope name of the exclusion item. |
+| SentinelOne.UnifiedExclusions.ScopePath | String | The full scope path of the exclusion item. |
+| SentinelOne.UnifiedExclusions.CreatedAt | Date | The timestamp when the exclusion item was created, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
+| SentinelOne.UnifiedExclusions.UpdatedAt | Date | The timestamp when the exclusion item was last updated, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
+| SentinelOne.UnifiedExclusions.UserName | String | The username of the user who created the exclusion item. |
 
 ### sentinelone-delete-unified-exclusions
 
@@ -2449,7 +2449,7 @@ Deletes unified exclusion items by their IDs and types. Relevant for API version
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SentinelOne.UnifiedExclusions.Deleted.Affected | Number | Number of exclusion items successfully deleted. |
+| SentinelOne.UnifiedExclusions.Deleted.Affected | Number | The number of exclusion items successfully deleted. |
 
 ### sentinelone-get-alert-with-raw-indicators
 
@@ -2482,11 +2482,11 @@ Retrieves a UAM alert enriched with raw SDL event indicators using the v2.1 unif
 | SentinelOne.AlertWithRawIndicators.Result | String | The mitigation result of the alert. |
 | SentinelOne.AlertWithRawIndicators.StorylineId | String | The storyline ID associated with the alert. |
 | SentinelOne.AlertWithRawIndicators.AttackSurfaces | String | The attack surfaces of the alert. |
-| SentinelOne.AlertWithRawIndicators.CreatedAt | Date | Timestamp when the alert was created. |
-| SentinelOne.AlertWithRawIndicators.DetectedAt | Date | Timestamp when the alert was detected. |
-| SentinelOne.AlertWithRawIndicators.FirstSeenAt | Date | Timestamp when the alert was first seen. |
-| SentinelOne.AlertWithRawIndicators.LastSeenAt | Date | Timestamp when the alert was last seen. |
-| SentinelOne.AlertWithRawIndicators.UpdatedAt | Date | Timestamp when the alert was last updated. |
+| SentinelOne.AlertWithRawIndicators.CreatedAt | Date | The timestamp when the alert was created, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
+| SentinelOne.AlertWithRawIndicators.DetectedAt | Date | The timestamp when the alert was detected, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
+| SentinelOne.AlertWithRawIndicators.FirstSeenAt | Date | The timestamp when the alert was first seen, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
+| SentinelOne.AlertWithRawIndicators.LastSeenAt | Date | The timestamp when the alert was last seen, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
+| SentinelOne.AlertWithRawIndicators.UpdatedAt | Date | The timestamp when the alert was last updated, in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
 | SentinelOne.AlertWithRawIndicators.ExternalId | String | The external ID of the alert. |
 | SentinelOne.AlertWithRawIndicators.Indicators | Unknown | List of structured indicators associated with the alert. |
 | SentinelOne.AlertWithRawIndicators.RawIndicators | Unknown | List of raw SDL telemetry events that triggered the alert indicators. |
