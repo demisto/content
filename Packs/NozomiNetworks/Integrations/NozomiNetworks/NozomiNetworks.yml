@@ -104,6 +104,12 @@ configuration:
   advanced: true
   required: false
   additionalinfo: The Cortex XSOAR role assigned to incidents created from fetched Nozomi alerts, for example Analyst_L2. Multiple roles can be specified as a comma-separated list. Leave empty to not assign a role.
+- display: Custom incident name pattern
+  name: customIncidentNamePattern
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: 'Optional. Builds the incident name by concatenating Nozomi alert fields written as {field} placeholders. For example: {type_id}_{id} - {description}. Missing fields are rendered as empty. The name is limited to 76 characters (longer names are truncated with "..."). Leave empty, or if the result is empty, to use the default name <alert name>_<alert id>.'
 script:
   script: ''
   type: python

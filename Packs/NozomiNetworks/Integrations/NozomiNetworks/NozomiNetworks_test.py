@@ -757,3 +757,71 @@ def __run_request_test(status_code, expected_exception_message):
 def __load_test_data(json_path):
     with open(json_path) as f:
         return json.load(f)
+
+
+CUSTOM_NAME_ALERT = {
+    "id": "1af93f46-65c1-4f52-a46a-2a181597fb0c",
+    "type_id": "NET:RST-FROM-SLAVE",
+    "name": "Link RST sent by Slave",
+    "description": "The slave 10.197.23.139 sent a RST of the connection to the master.",
+    "risk": "4.5",
+    "record_created_at": 1392048082242,
+}
+DEFAULT_NAME = "Link RST sent by Slave_1af93f46-65c1-4f52-a46a-2a181597fb0c"
+
+
+def test_incident_name_default_without_pattern():
+    assert incident_name(CUSTOM_NAME_ALERT) == DEFAULT_NAME
+    assert incident_name(CUSTOM_NAME_ALERT, "") == DEFAULT_NAME
+
+
+def test_incident_name_custom_pattern():
+    assert incident_name(CUSTOM_NAME_ALERT, "{type_id}_{id}") == "NET:RST-FROM-SLAVE_1af93f46-65c1-4f52-a46a-2a181597fb0c"
+    assert incident_name(CUSTOM_NAME_ALERT, "{name} - {ip_src}") == "Link RST sent by Slave -"
+
+
+def test_incident_name_missing_and_empty_fields():
+    alert = {**CUSTOM_NAME_ALERT, "description": ""}
+    assert incident_name(alert, "{type_id} - {description}") == "NET:RST-FROM-SLAVE -"
+    assert incident_name(alert, "{missing}|{type_id}") == "|NET:RST-FROM-SLAVE"
+    assert incident_name(alert, "{missing}") == DEFAULT_NAME
+
+
+@pytest.mark.parametrize("pattern", ["   ", "\t\n ", "{missing}", " {missing} \t{description} "])
+def test_incident_name_blank_result_falls_back_to_default(pattern):
+    alert = {**CUSTOM_NAME_ALERT, "description": ""}
+    assert incident_name(alert, pattern) == DEFAULT_NAME
+
+
+def test_incident_name_is_deterministic_and_sanitized():
+    alert = {**CUSTOM_NAME_ALERT, "description": "a\nb\t\tc"}
+    pattern = "{{literal}} {type_id} {description}"
+    assert incident_name(alert, pattern) == incident_name(alert, pattern) == "{literal} NET:RST-FROM-SLAVE a b c"
+
+
+def test_incident_name_values_are_not_reinterpolated_or_html():
+    alert = {**CUSTOM_NAME_ALERT, "description": "<script>{type_id}</script>"}
+    assert incident_name(alert, "{description}") == "script{type_id}/script"
+
+
+def test_incident_name_max_length():
+    assert MAX_INCIDENT_NAME_LENGTH == 76
+    name = incident_name({**CUSTOM_NAME_ALERT, "description": "x" * 1000}, "{description}")
+    assert len(name) == MAX_INCIDENT_NAME_LENGTH
+    assert name.endswith("...")
+    exact = incident_name({**CUSTOM_NAME_ALERT, "description": "x" * 76}, "{description}")
+    assert exact == "x" * 76
+
+
+def test_incident_name_long_example_is_truncated():
+    name = incident_name(CUSTOM_NAME_ALERT, "{type_id}_{id} - {description}")
+    assert name == "NET:RST-FROM-SLAVE_1af93f46-65c1-4f52-a46a-2a181597fb0c - The slave 10.19..."
+
+
+def test_parse_incident_uses_params():
+    with patch.object(demisto, "params", return_value={"customIncidentNamePattern": "{type_id}_{id}"}):
+        assert parse_incident(CUSTOM_NAME_ALERT)["name"] == "NET:RST-FROM-SLAVE_1af93f46-65c1-4f52-a46a-2a181597fb0c"
+    with patch.object(demisto, "params", return_value={"customIncidentNamePattern": "  "}):
+        assert parse_incident(CUSTOM_NAME_ALERT)["name"] == DEFAULT_NAME
+    with patch.object(demisto, "params", return_value={}):
+        assert parse_incident(CUSTOM_NAME_ALERT)["name"] == DEFAULT_NAME

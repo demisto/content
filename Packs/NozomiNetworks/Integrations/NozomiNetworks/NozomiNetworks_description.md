@@ -14,3 +14,7 @@ The integration provides the following capabilities:
 2. **Execute Commands**: Perform actions to gather and update data from Nozomi Networks.
 
 For detailed setup and usage instructions, consult the technical documentation provided by Nozomi Networks.
+
+## Custom incident name
+
+By default, incidents are named `{name}_{id}` using the Nozomi alert name and id. To compose the name from other alert fields, set **Custom incident name pattern**, for example `{type_id}_{id} - {description}`. `{field}` inserts the value of an alert field. Missing fields are rendered as empty and the name is limited to 76 characters. If the parameter is empty, or the resulting name is empty, the default name is used.
