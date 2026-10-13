@@ -1,3 +1,4 @@
+import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 from typing import Any
 
@@ -12,13 +13,6 @@ from collections.abc import Sequence
 from datetime import datetime, timedelta
 import time
 from dateutil.parser import parse as parse_date
-
-# Bind demisto on this module when CommonServerPython does not export it (local stubs / builtins-only).
-if "demisto" not in globals():
-    try:
-        import demistomock as demisto  # type: ignore  # noqa: F401
-    except ImportError:
-        pass
 
 
 UTC = pytz.UTC
