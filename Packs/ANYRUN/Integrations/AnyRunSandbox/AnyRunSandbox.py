@@ -17,6 +17,7 @@ VERSION = "PA-XSOAR:2.5.0"
 
 SCORE_TO_VERDICT = {0: "Unknown", 1: "Suspicious", 2: "Malicious"}
 XDR_REPUTATION = {0: "UNKNOWN", 1: "SUSPICIOUS", 2: "BAD"}
+XDR_ALLOWED_IOC_REPUTATIONS = (1, 2)  # Only Suspicious and Malicious IOCs are pushed to Cortex XDR
 XDR_SEVERITY = {0: "INFO", 1: "MEDIUM", 2: "HIGH"}
 
 SCORE_BY_REPUTATION = {
@@ -307,7 +308,8 @@ def create_indicators(
 
     :param report: Analysis report
     :param task_uuid: ANY.RUN task UUID
-    :param create_xdr_iocs: Whether to also build XDR IOC objects (needed by the XDR playbooks only)
+    :param create_xdr_iocs: Whether to also build XDR IOC objects (needed by the XDR playbooks only).
+        Unknown reputation IOCs are never included.
     :return XDR IOCDetails, readable output, comma-separated IOC values
     """
     output: list[dict[str, str]] = []
@@ -356,7 +358,12 @@ def create_indicators(
 
         ioc_values.append(indicator_value)
 
-        if not create_xdr_iocs or not xdr_indicator_type or not _xdr_indicator_class:
+        if (
+            not create_xdr_iocs
+            or not xdr_indicator_type
+            or not _xdr_indicator_class
+            or reputation not in XDR_ALLOWED_IOC_REPUTATIONS
+        ):
             continue
 
         ioc_object = {

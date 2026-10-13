@@ -208,7 +208,7 @@ tasks:
       id: 2f78f28f-d630-4a20-8a3a-deaf2ce30864
       version: -1
       name: '[ANY.RUN] Detonate URL Android'
-      description: Performs URL analysis using a Android VM in ANY.RUN Cloud Sandbox.
+      description: Performs URL analysis using an Android VM in ANY.RUN Cloud Sandbox.
       script: '|||anyrun-detonate-url-android'
       type: regular
       iscommand: true
@@ -513,7 +513,7 @@ tasks:
       report_format:
         simple: ioc
       create_xdr_iocs:
-        simple: "true"
+        simple: ${inputs.AutoAddIOCsToXDR}
       task_uuid:
         simple: ${ANYRUN_DetonateUrlAndroid.TaskID}
     separatecontext: false
@@ -604,6 +604,14 @@ tasks:
             iscontext: true
           right:
             value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoAddIOCsToXDR
+            iscontext: true
+          right:
+            value:
+              simple: "true"
     continueonerrortype: ""
     view: |-
       {
@@ -751,8 +759,15 @@ inputs:
   required: false
   description: The browser name.
   playbookInputQuery: null
+- key: AutoAddIOCsToXDR
+  value:
+    simple: "true"
+  required: false
+  description: 'Whether to automatically add malicious and suspicious ANY.RUN IOCs (Unknown reputation IOCs are always excluded) to Cortex XDR IOC rules. Set to "false" to disable.'
+  playbookInputQuery: null
 inputSections:
 - inputs:
+  - AutoAddIOCsToXDR
   - Using
   - obj_url
   name: URL and Instance Selection

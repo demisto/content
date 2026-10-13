@@ -37,6 +37,7 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Using | The name of the ANY.RUN Cloud Sandbox integration instance to use for running commands in this playbook. If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance. |  | Optional |
+| AutoAddIOCsToXDR | Whether to automatically add malicious and suspicious ANY.RUN IOCs (Unknown reputation IOCs are always excluded) to Cortex XDR IOC rules. Set to "false" to disable. | true | Optional |
 | file_entry_id | The existing War Room file EntryID. If provided, endpoint retrieval is skipped and this file is submitted to ANY.RUN. |  | Optional |
 | endpoint_id | The Cortex XDR endpoint/agent ID. Used only when file_entry_id is not provided. | ${issue.xdmsourceagentidentifier} | Optional |
 | file_path | The full Linux path to the file on the endpoint. Used for retrieval and filename matching when file_entry_id is not provided. | ${issue.initiatorpath} | Optional |

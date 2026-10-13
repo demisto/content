@@ -482,7 +482,7 @@ tasks:
       report_format:
         simple: ioc
       create_xdr_iocs:
-        simple: "true"
+        simple: ${inputs.AutoAddIOCsToXDR}
       task_uuid:
         simple: ${ANYRUN_DetonateFileWindows.TaskID}
     separatecontext: false
@@ -939,6 +939,14 @@ tasks:
             iscontext: true
           right:
             value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoAddIOCsToXDR
+            iscontext: true
+          right:
+            value:
+              simple: "true"
     continueonerrortype: ""
     view: |-
       {
@@ -1315,8 +1323,15 @@ inputs:
   required: false
   description: Whether to change the extension to a valid one.
   playbookInputQuery: null
+- key: AutoAddIOCsToXDR
+  value:
+    simple: "true"
+  required: false
+  description: 'Whether to automatically add malicious and suspicious ANY.RUN IOCs (Unknown reputation IOCs are always excluded) to Cortex XDR IOC rules. Set to "false" to disable.'
+  playbookInputQuery: null
 inputSections:
 - inputs:
+  - AutoAddIOCsToXDR
   - Using
   - file_entry_id
   - endpoint_id

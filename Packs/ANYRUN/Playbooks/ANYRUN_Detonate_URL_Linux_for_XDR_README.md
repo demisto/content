@@ -33,6 +33,7 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Using | The name of the ANY.RUN Cloud Sandbox integration instance to use for running commands in this playbook. If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance. |  | Optional |
+| AutoAddIOCsToXDR | Whether to automatically add malicious and suspicious ANY.RUN IOCs (Unknown reputation IOCs are always excluded) to Cortex XDR IOC rules. Set to "false" to disable. | true | Optional |
 | obj_url | The target URL to submit to ANY.RUN. By default, this playbook uses the Cortex XDR normalized target URL field xdm.target.url \(${issue.xdmtargeturl}\). If your issue uses another URL field, such as xdm.network.http.url, override this input accordingly. Size range 5-512. Example: \(http/https\)://\(your-link\). | ${issue.xdmtargeturl} | Optional |
 | env_locale | The operating system language. Use locale identifier or country name \(for example, "en-US" or "Brazil"\). Case insensitive. | en-US | Optional |
 | env_os | The operating system. Possible values: ubuntu, debian. | ubuntu | Optional |
