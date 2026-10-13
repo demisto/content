@@ -1053,7 +1053,7 @@ def main() -> None:
     url = params.get("url", "")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    api_key = params.get("api_key", "")
+    api_key = params.get("api_key", {}).get("credentials", {}).get("password")
 
     offset_set_off = params.get("fetch_offset", "0")
     items = int(params.get("total_items_per_lumu_fetch", 30))

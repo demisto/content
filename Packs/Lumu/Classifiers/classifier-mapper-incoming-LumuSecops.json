@@ -9,9 +9,18 @@
                 "Comment": {
                     "simple": "comment"
                 },
+				"companyId": {
+					"simple": "companyId"
+				},
                 "details": {
                     "simple": "lumu_secops_description"
                 },
+				"lumu_description": {
+					"simple": "lumu_secops_description"
+				},
+				"lumu_incidentId": {
+					"simple": "lumu_secops_incident_id"
+				},
                 "lumu_secops_adversary_types": {
                     "simple": "lumu_secops_adversary_types"
                 },
@@ -84,6 +93,13 @@
 					"complex": {
 						"filters": [],
 						"root": "totalEvents",
+						"transformers": []
+					}
+				},
+				"lumu_status": {
+					"complex": {
+						"filters": [],
+						"root": "status",
 						"transformers": []
 					}
 				},

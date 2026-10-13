@@ -301,21 +301,19 @@
 						"i": "8wpdlw4ktx-a41d62e8-ffb2-4cb8-92de-50eea397fb02",
 						"items": [
 							{
-								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "lumusecopscompanyid",
+								"fieldId": "companyid",
 								"height": 53,
-								"id": "3562bc9e-35a0-4aee-bf3b-b0a8bffd6dfc",
+								"id": "00e1b9d9-5304-4125-9d70-a303e2e988cd",
 								"index": 0,
-								"listId": "8wpdlw4ktx-a41d62e8-ffb2-4cb8-92de-50eea397fb02",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "lumusecopsincidentid",
+								"fieldId": "lumuincidentid",
 								"height": 53,
-								"id": "91165918-4cb4-4ddc-9512-a977de316629",
+								"id": "d08d6b04-05b1-45e7-a676-154d1897028b",
 								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -368,7 +366,7 @@
 								"fieldId": "lumusecopsdetectortype",
 								"height": 53,
 								"id": "a61bda03-0872-4d3d-b85b-df5df16fba97",
-								"index": 2,
+								"index": 1,
 								"listId": "8wpdlw4ktx-a41d62e8-ffb2-4cb8-92de-50eea397fb02",
 								"sectionItemType": "field",
 								"startCol": 2
@@ -379,7 +377,7 @@
 								"fieldId": "lumusecopstakestatusaction",
 								"height": 53,
 								"id": "227b73cb-484a-4151-b30a-e8e71fb277c8",
-								"index": 4,
+								"index": 2,
 								"listId": "8wpdlw4ktx-a41d62e8-ffb2-4cb8-92de-50eea397fb02",
 								"sectionItemType": "field",
 								"startCol": 2
@@ -476,11 +474,13 @@
 								"startCol": 0
 							},
 							{
+								"dropEffect": "move",
 								"endCol": 6,
-								"fieldId": "lumusecopsdescription",
-								"height": 106,
-								"id": "fd66f70d-b229-40e0-a40b-bc381ef5c81d",
+								"fieldId": "lumudescription",
+								"height": 53,
+								"id": "0594c9ed-4812-4ca8-9549-b03ce144e6e8",
 								"index": 0,
+								"listId": "8wpdlw4ktx-d83359ab-6070-4bd6-946d-56c789fb893c",
 								"sectionItemType": "field",
 								"startCol": 2
 							}
@@ -544,99 +544,99 @@
             {
                 "description": "",
                 "fields": [
-                    {
-                        "fieldId": "incident_lumusecopsincidentid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsstatus",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopseventtype",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsdetectortype",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsincidenttype",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsadversarytypes",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopssourcename",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopscompanyid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopstotalevents",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsendpointtargetscount",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsusertargetscount",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsothertargetscount",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopstotaltargetscount",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsoffenderscount",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsincidentgroupingfields",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsdescription",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_description",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopslastaction",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsactionscount",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopslastcomment",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopslastactiontime",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopslastactionuserid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_comment",
-                        "isVisible": true
-                    }
-                ],
+					{
+						"fieldId": "incident_lumuincidentid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumustatus",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopseventtype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopsdetectortype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopsincidenttype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopsadversarytypes",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopssourcename",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_companyid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopstotalevents",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopsendpointtargetscount",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopsusertargetscount",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopsothertargetscount",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopstotaltargetscount",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopsoffenderscount",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopsincidentgroupingfields",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumudescription",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_description",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopslastaction",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopsactionscount",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopslastcomment",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopslastactiontime",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopslastactionuserid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_comment",
+						"isVisible": true
+					}
+				],
                 "isVisible": true,
                 "name": "Lumu SecOps Fields",
                 "query": null,
@@ -708,87 +708,87 @@
             {
                 "description": "",
                 "fields": [
-                    {
-                        "fieldId": "incident_lumusecopsincidentid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsstatus",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopseventtype",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsdetectortype",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsincidenttype",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsadversarytypes",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopstotalevents",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsendpointtargetscount",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsusertargetscount",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsothertargetscount",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopstotaltargetscount",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsoffenderscount",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsincidentgroupingfields",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsdescription",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopslastaction",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopslastactiontime",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopslastactionuserid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopslastcomment",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lumusecopsactionscount",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_description",
-                        "isVisible": true
-                    }
-                ],
+					{
+						"fieldId": "incident_lumuincidentid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumustatus",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopseventtype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopsdetectortype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopsincidenttype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopsadversarytypes",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopstotalevents",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopsendpointtargetscount",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopsusertargetscount",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopsothertargetscount",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopstotaltargetscount",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopsoffenderscount",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopsincidentgroupingfields",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumudescription",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopslastaction",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopslastactiontime",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopslastactionuserid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopslastcomment",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lumusecopsactionscount",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_description",
+						"isVisible": true
+					}
+				],
                 "isVisible": true,
                 "name": "Lumu SecOps",
                 "query": null,
