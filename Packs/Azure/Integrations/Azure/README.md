@@ -3899,14 +3899,14 @@ Deletes the specified table and any data it contains. Required permission: Micro
 
 There is no context output for this command.
 
-### azure-storage-table-list
+### azure-storage-tables-list
 
 ***
 Lists tables under the specified storage account. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/read.
 
 #### Base Command
 
-`azure-storage-table-list`
+`azure-storage-tables-list`
 
 #### Input
 

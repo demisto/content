@@ -371,7 +371,7 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/azureFirewalls/write": ["azure-firewall-policy-attach", "azure-firewall-policy-detach"],
     "Microsoft.Storage/storageAccounts/tableServices/tables/write": ["azure-storage-table-create"],
     "Microsoft.Storage/storageAccounts/tableServices/tables/delete": ["azure-storage-table-delete"],
-    "Microsoft.Storage/storageAccounts/tableServices/tables/read": ["azure-storage-table-list"],
+    "Microsoft.Storage/storageAccounts/tableServices/tables/read": ["azure-storage-tables-list"],
     "Microsoft.Storage/storageAccounts/tableServices/tables/entities/write": [
         "azure-storage-table-entity-insert",
         "azure-storage-table-entity-update",
@@ -604,7 +604,7 @@ STORAGE_BLOB_SPECIAL_COMMANDS = [
     "azure-storage-blob-tag-set",
     "azure-storage-table-create",
     "azure-storage-table-delete",
-    "azure-storage-table-list",
+    "azure-storage-tables-list",
     "azure-storage-table-entity-insert",
     "azure-storage-table-entity-update",
     "azure-storage-table-entity-replace",
@@ -1555,7 +1555,7 @@ class AzureClient:
 
         return response
 
-    def create_table_request(self, account_name: str, table_name: str) -> dict[str, Any]:
+    def create_table_request(self, account_name: str, table_name: str):
         """
         Create a new table in a storage account.
 
@@ -1570,7 +1570,7 @@ class AzureClient:
         data = {"TableName": table_name}
         self.storage_container_set_headers({"Content-Type": "application/json", "Accept": "application/json;odata=nometadata"})
         try:
-            return self.http_request(method="POST", full_url=full_url, json_data=data, resp_type="json")  # type: ignore[return-value]
+            return self.http_request(method="POST", full_url=full_url, json_data=data, resp_type="json")
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -1578,7 +1578,6 @@ class AzureClient:
                 resource_type="Storage Table",
                 api_function_name="create_table_request",
             )
-            return {}
 
     def delete_table_request(self, account_name: str, table_name: str) -> None:
         """
@@ -1600,9 +1599,7 @@ class AzureClient:
                 api_function_name="delete_table_request",
             )
 
-    def list_tables_request(
-        self, account_name: str, limit: str = None, query_filter: str = None, next_token: str = None
-    ) -> requests.Response:
+    def list_tables_request(self, account_name: str, limit: str = None, query_filter: str = None, next_token: str = None):
         """
         List tables under the specified account.
 
@@ -1619,7 +1616,7 @@ class AzureClient:
         params = remove_empty_elements({"$top": limit, "$filter": query_filter, "NextTableName": next_token})
         self.storage_container_set_headers({"Accept": "application/json;odata=nometadata"})
         try:
-            return self.http_request(method="GET", full_url=full_url, params=params, resp_type="response")  # type: ignore[return-value]
+            return self.http_request(method="GET", full_url=full_url, params=params, resp_type="response")
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -1627,9 +1624,8 @@ class AzureClient:
                 resource_type="Storage Table",
                 api_function_name="list_tables_request",
             )
-            return requests.Response()
 
-    def insert_entity_request(self, account_name: str, table_name: str, entity_fields: dict) -> dict[str, Any]:
+    def insert_entity_request(self, account_name: str, table_name: str, entity_fields: dict):
         """
         Insert a new entity into a table.
 
@@ -1644,7 +1640,7 @@ class AzureClient:
         full_url = f"https://{account_name}.{TABLE_SERVICE_PREFIX}/{table_name}"
         self.storage_container_set_headers({"Content-Type": "application/json", "Accept": "application/json;odata=nometadata"})
         try:
-            return self.http_request(method="POST", full_url=full_url, json_data=entity_fields, resp_type="json")  # type: ignore[return-value]
+            return self.http_request(method="POST", full_url=full_url, json_data=entity_fields, resp_type="json")
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -1652,7 +1648,6 @@ class AzureClient:
                 resource_type="Storage Table Entity",
                 api_function_name="insert_entity_request",
             )
-            return {}
 
     def update_entity_request(
         self, account_name: str, table_name: str, partition_key: str, row_key: str, entity_fields: dict
@@ -1719,7 +1714,7 @@ class AzureClient:
         limit: str = None,
         next_partition_key: str = None,
         next_row_key: str = None,
-    ) -> requests.Response:
+    ):
         """
         Query entities in a table.
 
@@ -1753,7 +1748,7 @@ class AzureClient:
         )
         self.storage_container_set_headers({"Accept": "application/json;odata=nometadata"})
         try:
-            return self.http_request(method="GET", full_url=full_url, params=params, resp_type="response")  # type: ignore[return-value]
+            return self.http_request(method="GET", full_url=full_url, params=params, resp_type="response")
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -1761,7 +1756,6 @@ class AzureClient:
                 resource_type="Storage Table Entity",
                 api_function_name="query_entity_request",
             )
-            return requests.Response()
 
     def delete_entity_request(self, account_name: str, table_name: str, partition_key: str, row_key: str) -> None:
         """
@@ -4854,7 +4848,10 @@ def list_tables_command(client: AzureClient, params: dict, args: dict) -> Comman
 
     tables = raw_response.get("value", [])
     if not tables:
-        return CommandResults(readable_output=f"No tables found in storage account {account_name}.", raw_response=raw_response)
+        return CommandResults(
+            readable_output=f"No tables found in storage account {account_name}.",
+            outputs={"Azure.Storage(true)": {"TablesNextToken": response.headers.get("x-ms-continuation-NextTableName")}},
+        )
 
     # The Table data-plane returns the continuation token for the next page in the
     # 'x-ms-continuation-NextTableName' response header (empty when there are no more results).
@@ -5024,10 +5021,17 @@ def query_entity_command(client: AzureClient, params: dict, args: dict) -> Comma
     )
     raw_response = response.json()
 
+    next_page_partition_key = response.headers.get("x-ms-continuation-NextPartitionKey")
+    next_page_row_key = response.headers.get("x-ms-continuation-NextRowKey")
+    entities_next_token = f"{next_page_partition_key}\t{next_page_row_key or ''}" if next_page_partition_key else None
+
     entities = [raw_response] if partition_key else raw_response.get("value", [])
 
     if not entities:
-        return CommandResults(readable_output=f"No entities found in table {table_name}.", raw_response=raw_response)
+        return CommandResults(
+            readable_output=f"No entities found in table {table_name}.",
+            outputs={"Azure.Storage(true)": {"EntitiesNextToken": entities_next_token}},
+        )
 
     for entity in entities:
         # Trim the Table data-plane's 7th fractional-second digit (and trailing "Z") down to the 6 digits
@@ -5042,12 +5046,6 @@ def query_entity_command(client: AzureClient, params: dict, args: dict) -> Comma
         headerTransform=pascalToSpace,
         removeNull=True,
     )
-
-    # Recombine the two continuation headers into a single tab-joined token for the next page
-    # (empty when there are no more results). Only relevant for multi-entity queries.
-    next_page_partition_key = response.headers.get("x-ms-continuation-NextPartitionKey")
-    next_page_row_key = response.headers.get("x-ms-continuation-NextRowKey")
-    entities_next_token = f"{next_page_partition_key}\t{next_page_row_key or ''}" if next_page_partition_key else None
 
     outputs: dict[str, Any] = {
         "Azure.Storage.Table.Entity(val.PartitionKey && val.PartitionKey == obj.PartitionKey "
@@ -7886,7 +7884,7 @@ def main():  # pragma: no cover
             "azure-storage-container-public-access-block": storage_container_block_public_access_command,
             "azure-storage-table-create": create_table_command,
             "azure-storage-table-delete": delete_table_command,
-            "azure-storage-table-list": list_tables_command,
+            "azure-storage-tables-list": list_tables_command,
             "azure-storage-table-entity-insert": insert_entity_command,
             "azure-storage-table-entity-update": update_entity_command,
             "azure-storage-table-entity-replace": replace_entity_command,

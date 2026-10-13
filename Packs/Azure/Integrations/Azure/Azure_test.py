@@ -6319,9 +6319,10 @@ def test_list_tables_command(mocker, client, mock_params):
 
 def test_list_tables_command_empty(mocker, client, mock_params):
     """
-    Given: An Azure client whose list_tables_request returns no tables.
+    Given: An Azure client whose list_tables_request returns no tables and no continuation header.
     When: list_tables_command is called.
-    Then: It returns a CommandResults with a 'no tables found' readable output and no context.
+    Then: It returns a 'no tables found' readable output and explicitly sets TablesNextToken to None,
+          so a stale token from a previous page is overwritten.
     """
     from Azure import list_tables_command
 
@@ -6336,7 +6337,31 @@ def test_list_tables_command_empty(mocker, client, mock_params):
     result = list_tables_command(client, mock_params, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs is None
+    assert result.outputs == {"Azure.Storage(true)": {"TablesNextToken": None}}
+    assert "No tables found" in result.readable_output
+
+
+def test_list_tables_command_empty_page_with_token(mocker, client, mock_params):
+    """
+    Given: An Azure client whose list_tables_request returns an empty page that still carries a continuation header
+           (the service evaluates a filter per page, so later pages may match).
+    When: list_tables_command is called.
+    Then: The continuation token is returned in the context and is not dropped.
+    """
+    from Azure import list_tables_command
+
+    mocker.patch("Azure.validate_limit", create=True)
+    mock_http = mocker.Mock()
+    mock_http.json.return_value = {"value": []}
+    mock_http.headers = {"x-ms-continuation-NextTableName": "next-table-token"}
+    mocker.patch.object(client, "list_tables_request", return_value=mock_http)
+
+    args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount", "filter": "TableName eq 'x'"}
+
+    result = list_tables_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == {"Azure.Storage(true)": {"TablesNextToken": "next-table-token"}}
     assert "No tables found" in result.readable_output
 
 
@@ -6580,9 +6605,10 @@ def test_query_entity_command_partial_keys(mocker, client, mock_params):
 
 def test_query_entity_command_empty(mocker, client, mock_params):
     """
-    Given: An Azure client whose query_entity_request returns no entities.
+    Given: An Azure client whose query_entity_request returns no entities and no continuation headers.
     When: query_entity_command is called without keys.
-    Then: It returns a CommandResults with a 'no entities found' readable output and no context.
+    Then: It returns a 'no entities found' readable output and explicitly sets EntitiesNextToken to None,
+          so a stale token from a previous page is overwritten.
     """
     from Azure import query_entity_command
 
@@ -6597,7 +6623,39 @@ def test_query_entity_command_empty(mocker, client, mock_params):
     result = query_entity_command(client, mock_params, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs is None
+    assert result.outputs == {"Azure.Storage(true)": {"EntitiesNextToken": None}}
+    assert "No entities found" in result.readable_output
+
+
+def test_query_entity_command_empty_page_with_token(mocker, client, mock_params):
+    """
+    Given: An Azure client whose query_entity_request returns an empty page that still carries both continuation
+           headers (the service evaluates a filter per page, so later pages may match).
+    When: query_entity_command is called without keys.
+    Then: The compound continuation token is returned in the context and is not dropped.
+    """
+    from Azure import query_entity_command
+
+    mocker.patch("Azure.validate_limit", create=True)
+    mock_http = mocker.Mock()
+    mock_http.json.return_value = {"value": []}
+    mock_http.headers = {
+        "x-ms-continuation-NextPartitionKey": "next-pk",
+        "x-ms-continuation-NextRowKey": "next-rk",
+    }
+    mocker.patch.object(client, "query_entity_request", return_value=mock_http)
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "table_name": "mocktable",
+        "filter": "Age gt 100",
+    }
+
+    result = query_entity_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == {"Azure.Storage(true)": {"EntitiesNextToken": "next-pk\tnext-rk"}}
     assert "No entities found" in result.readable_output
 
 

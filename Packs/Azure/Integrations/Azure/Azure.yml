@@ -1797,6 +1797,7 @@ script:
       type: String
   - name: azure-storage-table-delete
     description: "Deletes the specified table and any data it contains. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/delete."
+    execution: true
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -1808,7 +1809,7 @@ script:
     - name: table_name
       description: The name of the table to delete.
       required: true
-  - name: azure-storage-table-list
+  - name: azure-storage-tables-list
     description: "Lists tables under the specified storage account. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/read."
     arguments:
     - name: subscription_id
@@ -1891,6 +1892,7 @@ script:
       required: true
   - name: azure-storage-table-entity-replace
     description: "Replaces an existing entity in a table. Replaces the entire entity and can be used to remove properties. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/entities/write."
+    execution: true
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -1958,6 +1960,7 @@ script:
       type: String
   - name: azure-storage-table-entity-delete
     description: "Deletes an existing entity in a table. Required permission: Microsoft.Storage/storageAccounts/tableServices/tables/entities/delete."
+    execution: true
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
