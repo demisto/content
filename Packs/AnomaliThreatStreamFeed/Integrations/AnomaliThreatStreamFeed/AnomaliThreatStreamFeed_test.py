@@ -1,4 +1,4 @@
-from CommonServerPython import tableToMarkdown, Common, FeedIndicatorType, EntityRelationship
+from CommonServerPython import tableToMarkdown, Common, DemistoException, FeedIndicatorType, EntityRelationship
 import demistomock as demisto
 import pytest
 from AnomaliThreatStreamFeed import Client
@@ -1066,11 +1066,14 @@ def test_fetch_indicators_command_parsing_error_skips_indicator(mocker):
     assert total_pushed == len(expected_indicators)
     assert create_indicators.call_args[0][0] == expected_indicators
 
-    # Verify demisto.error was called for the skipped indicator
-    mock_demisto_error.assert_called_once_with(
+    # Verify demisto.error was called for the skipped indicator, including a traceback for debugging.
+    mock_demisto_error.assert_called_once()
+    logged_error = mock_demisto_error.call_args[0][0]
+    assert (
         f"{THREAT_STREAM} - Error parsing indicator ID {first_indicator_raw.get('id')}:"
-        f"Simulated parsing error. Skipping this indicator."
+        f"Simulated parsing error. Skipping this indicator." in logged_error
     )
+    assert "Traceback (most recent call last)" in logged_error
 
     # Verify that parse_indicator_for_fetch was called for ALL raw indicators,
     # even though one failed.
@@ -1520,6 +1523,87 @@ def test_handle_fetch_pagination_stops_and_keeps_pushed_on_error(mocker):
 
     assert total_fetched == 1
     assert pushed == [{"id": "initial_ind"}]
+
+
+def test_handle_fetch_pagination_push_failure_propagates(mocker):
+    """
+    Tests that a push failure on a PAGINATED page is NOT swallowed by the pagination error handling.
+
+    The push call sits inside the pagination loop, next to the guarded API call. If it were covered
+    by the same try/except, a createIndicators failure would be caught, the loop would break, and the
+    fetch would finish "successfully" - advancing last_run past indicators that were never ingested
+    and losing them permanently. Only API errors may be tolerated.
+
+    Given:
+        - An initial API response with indicators and a 'next' page URL.
+        - A parse_and_push callback that succeeds for the initial page but raises for the next page
+          (simulating a createIndicators failure part-way through pagination).
+    When:
+        - Calling handle_fetch_pagination.
+    Then:
+        Verify that:
+        - The exception propagates to the caller instead of being caught and turned into a clean exit.
+    """
+    from AnomaliThreatStreamFeed import handle_fetch_pagination
+
+    initial_response = {"objects": [{"id": "initial_ind"}], "meta": {"next": "/api/v1/indicators?offset=1000"}}
+    client = mock_client()
+    mocker.patch.object(
+        client,
+        "http_request",
+        return_value={"objects": [{"id": "page_2_ind"}], "meta": {"next": None}},
+    )
+
+    pushed_pages: list[list[dict[str, Any]]] = []
+
+    def push_failing_on_second_page(page):
+        # The initial page is pushed before the loop; only fail once inside the pagination loop.
+        pushed_pages.append(list(page))
+        if len(pushed_pages) > 1:
+            raise DemistoException("createIndicators failed - server overloaded")
+
+    with pytest.raises(DemistoException, match="createIndicators failed"):
+        handle_fetch_pagination(client, initial_response, push_failing_on_second_page)
+
+    # The failure happened on the paginated page, not the initial one.
+    assert pushed_pages == [[{"id": "initial_ind"}], [{"id": "page_2_ind"}]]
+
+
+def test_fetch_indicators_command_push_failure_prevents_last_run_update(mocker):
+    """
+    Tests that a createIndicators failure mid-pagination aborts the fetch so last_run is never advanced.
+
+    Given:
+        - A feed returning 2 full batches worth of indicators across paginated pages.
+        - demisto.createIndicators raising on the second batch.
+    When:
+        - Calling fetch_indicators_command.
+    Then:
+        Verify that:
+        - The exception propagates, so main() never reaches setLastRun and the data is refetched
+          rather than being silently skipped.
+    """
+    from AnomaliThreatStreamFeed import CREATE_INDICATORS_BATCH_SIZE, fetch_indicators_command
+
+    def make_page(start: int) -> list[dict[str, Any]]:
+        return [
+            {"id": f"ind_{i}", "type": "ip", "value": f"1.1.1.{i}", "confidence": 80}
+            for i in range(start, start + CREATE_INDICATORS_BATCH_SIZE)
+        ]
+
+    client = mock_client()
+    mocker.patch.object(
+        client,
+        "http_request",
+        side_effect=[
+            {"objects": make_page(0), "meta": {"next": "/api/v2/intelligence/?offset=2000"}},
+            {"objects": make_page(CREATE_INDICATORS_BATCH_SIZE), "meta": {"next": None}},
+        ],
+    )
+    mocker.patch.object(demisto, "createIndicators", side_effect=[None, DemistoException("server overloaded")])
+
+    with pytest.raises(DemistoException, match="server overloaded"):
+        fetch_indicators_command(client, {"feedReliability": "A - Completely reliable"}, {})
 
 
 def test_fetch_indicators_command_streams_in_batches(mocker):

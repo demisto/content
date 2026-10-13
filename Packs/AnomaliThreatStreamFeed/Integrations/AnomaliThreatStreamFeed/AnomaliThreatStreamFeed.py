@@ -443,6 +443,9 @@ def handle_fetch_pagination(client: Client, initial_response: dict[str, Any], pa
     next_page = initial_response.get("meta", {}).get("next")
 
     while next_page:  # Loop continues as long as there's a next page link
+        # Only the API call is guarded: a failure to retrieve another page is tolerated and we keep
+        # the indicators already pushed. Pushing itself is deliberately left outside this block, so
+        # a createIndicators failure propagates and prevents last_run from advancing over lost data.
         try:
             # Determine the URL suffix for the next page
             if next_page.startswith("/api/"):
@@ -454,20 +457,21 @@ def handle_fetch_pagination(client: Client, initial_response: dict[str, Any], pa
             demisto.debug(f"{THREAT_STREAM} - Fetching next page: {url_suffix_for_next_page}")
             response = client.http_request(method="GET", url_suffix=url_suffix_for_next_page)
             current_page_indicators = response.get("objects", [])
-
-            if not current_page_indicators:
-                demisto.debug(f"{THREAT_STREAM} - No more indicators found on current page during pagination, breaking.")
-                break
-
-            # Parse and push this page immediately, then drop it, so memory stays bounded.
-            total_fetched += len(current_page_indicators)
-            parse_and_push(current_page_indicators)
-
             next_page = response.get("meta", {}).get("next")  # Get the 'next' link for the subsequent page
         except Exception as e:
             # Log the error and break the pagination, but keep already pushed indicators
-            demisto.error(f"{THREAT_STREAM} - Error during pagination: {e}. Continuing with fetched indicators.")
+            demisto.error(
+                f"{THREAT_STREAM} - Error during pagination: {e}. Continuing with fetched indicators.\n{traceback.format_exc()}"
+            )
             break  # Break pagination on error but keep what was already pushed
+
+        if not current_page_indicators:
+            demisto.debug(f"{THREAT_STREAM} - No more indicators found on current page during pagination, breaking.")
+            break
+
+        # Parse and push this page immediately, then drop it, so memory stays bounded.
+        total_fetched += len(current_page_indicators)
+        parse_and_push(current_page_indicators)
 
     return total_fetched
 
@@ -542,6 +546,7 @@ def fetch_indicators_command(client: Client, params: dict[str, Any], last_run: d
             except Exception as e:
                 demisto.error(
                     f"{THREAT_STREAM} - Error parsing indicator ID {indicator_raw.get('id')}:{e}. Skipping this indicator."
+                    f"\n{traceback.format_exc()}"
                 )
                 continue  # Continue to the next indicator even if one fails
 
