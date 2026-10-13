@@ -14,7 +14,7 @@ With the **NozomiNetworks** pack you can:
 * Manage incidents
   * Import and sync the Nozomi incidents
     * You have to look for _Nozomi Networks_ in the **Settings** > **Integrations** > **Servers & Services** section and add an instance.
-  * Optionally customize the incident name with the *Custom incident name pattern* parameter (default: `{name}_{id}`); see the integration README for the pattern syntax, e.g. `{type_id}_{id} - {description}`
+  * Optionally customize the incident name with the _Custom incident name pattern_ parameter (default: `{name}_{id}`); see the integration README for the pattern syntax, e.g. `{type_id}_{id} - {description}`
   * Through the _**nozomi-close-incidents-as-change**_ and _**nozomi-close-incidents-as-security**_ commands close  the incidents inside the Nozomi platform
 * Find assets
   * the command _**nozomi-find-assets**_ return the asset filtered with the attributes passed.
