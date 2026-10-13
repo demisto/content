@@ -307,7 +307,7 @@ def convert_contribution_to_pack(contrib_converter):
 def prepare_content_pack_for_validation(filename: str, data: bytes, content_dir_path: str) -> str:
     from demisto_sdk.commands.init.contribution_converter import ContributionConverter
 
-    # Sanitize filename to prevent path traversal (CWE-22).
+    # Use only the base name of the file.
     filename = os.path.basename(filename)
 
     # Write zip file data to file system.
@@ -326,7 +326,7 @@ def prepare_content_pack_for_validation(filename: str, data: bytes, content_dir_
 def prepare_single_content_item_for_validation(file_name: str, data: bytes, packs_path: str) -> str:
     from demisto_sdk.commands.init.contribution_converter import ContributionConverter
 
-    # Sanitize filename to prevent path traversal (CWE-22).
+    # Use only the base name of the file.
     file_name = os.path.basename(file_name)
 
     pack_name = "TmpPack"
