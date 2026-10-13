@@ -32,7 +32,7 @@ MAX_PAGE_SIZE = 1000
 DEFAULT_MAX_INCIDENTS = 200
 MAX_INCIDENTS_TO_FETCH = 1000
 REQUEST_TIMEOUT = 60
-DEFAULT_INCIDENT_TYPE = "Intel471 Leaked Credential"
+DEFAULT_INCIDENT_TYPE = "Intel 471 Leaked Credential"
 BATCH_SIZE = 2000
 INFO_STEALER_FIELDS = (
     "antivirus_software",
@@ -327,7 +327,7 @@ def build_incident(credential: dict[str, Any], incident_type: str = DEFAULT_INCI
     occurred = credential.get("last_updated_ts", "")
     info_stealer = data.get("info_stealer", {}) or {}
 
-    name = f"Intel471 Leaked Credential: {login}"
+    name = f"Intel 471 Leaked Credential: {login}"
     if domain:
         name = f"{name} @ {domain}"
 

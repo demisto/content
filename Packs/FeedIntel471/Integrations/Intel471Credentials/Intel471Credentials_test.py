@@ -42,7 +42,7 @@ def test_build_incident_name_includes_login_and_domain():
     incident = build_incident(_sample_credential())
 
     assert "victim@example.com" in incident["name"]
-    assert incident["type"] == "Intel471 Leaked Credential"
+    assert incident["type"] == "Intel 471 Leaked Credential"
     assert incident["occurred"] == "2026-06-20T10:00:00Z"
     payload = json.loads(incident["rawJSON"])
     assert payload["id"] == "cred--00000000-0000-0000-0000-000000000001"
@@ -208,7 +208,7 @@ def test_associate_indicators_to_incident_prefers_the_incident_id():
     from Intel471Credentials import associate_indicators_to_incident, extract_indicators
 
     indicators = extract_indicators(_sample_credential())
-    associate_indicators_to_incident(indicators, "42", "Intel471 Leaked Credential: victim@example.com")
+    associate_indicators_to_incident(indicators, "42", "Intel 471 Leaked Credential: victim@example.com")
 
     assert all(i["relatedIncidents"] == ["42"] for i in indicators)
 
@@ -217,9 +217,9 @@ def test_associate_indicators_to_incident_falls_back_to_the_incident_name():
     from Intel471Credentials import associate_indicators_to_incident, extract_indicators
 
     indicators = extract_indicators(_sample_credential())
-    associate_indicators_to_incident(indicators, "", "Intel471 Leaked Credential: victim@example.com")
+    associate_indicators_to_incident(indicators, "", "Intel 471 Leaked Credential: victim@example.com")
 
-    assert all(i["relatedIncidents"] == ["Intel471 Leaked Credential: victim@example.com"] for i in indicators)
+    assert all(i["relatedIncidents"] == ["Intel 471 Leaked Credential: victim@example.com"] for i in indicators)
 
 
 def test_created_incident_ids_matches_by_name():
@@ -347,7 +347,7 @@ def test_get_indicators_command_reports_the_incident_each_indicator_belongs_to(m
     results = Intel471Credentials.get_indicators_command(client, {"limit": "10"})
 
     assert len(results.outputs) == 5
-    assert "Intel471 Leaked Credential: victim@example.com @ example.com" in results.readable_output
+    assert "Intel 471 Leaked Credential: victim@example.com @ example.com" in results.readable_output
 
 
 def test_test_module(monkeypatch):

@@ -10,7 +10,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 The primary command is `fetch-incidents`:
 
 1. Leaked credentials are pulled from `/credentials/stream`.
-2. Each credential becomes one incident of type **Intel471 Leaked Credential** (configurable), named `Intel471 Leaked Credential: <login> @ <domain>`, with the info stealer attributes attached as incident labels and the raw API record kept in `rawJSON`.
+2. Each credential becomes one incident of type **Intel 471 Leaked Credential** (configurable), named `Intel 471 Leaked Credential: <login> @ <domain>`, with the info stealer attributes attached as incident labels and the raw API record kept in `rawJSON`.
 3. The incidents are created and their server-assigned IDs are read back.
 4. Every observable the credential carries is then extracted as its own indicator:
 
