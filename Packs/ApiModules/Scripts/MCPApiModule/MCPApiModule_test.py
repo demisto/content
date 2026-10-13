@@ -1353,6 +1353,70 @@ async def test_generate_login_url_authorization_code(mocker: MockerFixture, mock
     mock_oauth_handler.generate_authorization_code_login_url.assert_called_once()
 
 
+@pytest.mark.asyncio
+async def test_generate_login_url_promises_iss_only_when_server_advertises_it(
+    mocker: MockerFixture, mock_oauth_handler: OAuthHandler
+):
+    """
+    Given: An authorization server that advertises RFC 9207 iss support (Cloudflare).
+    When: generate_login_url is called.
+    Then: The instructions mention iss in both the URL shape and the protections.
+    """
+    # given
+    mocker.patch.object(
+        mock_oauth_handler,
+        "generate_dynamic_registration_login_url",
+        return_value=(
+            "https://as.example.com/authorize",
+            {
+                "state": "S1",
+                "oauth_metadata": _oauth_metadata(
+                    "https://bindings.mcp.cloudflare.com", authorization_response_iss_parameter_supported=True
+                ),
+            },
+        ),
+    )
+
+    # when
+    result = await generate_login_url(mock_oauth_handler, AuthMethods.DYNAMIC_CLIENT_REGISTRATION)
+
+    # then
+    assert "iss=ISSUER" in result.readable_output
+    assert "mix-up" in result.readable_output
+
+
+@pytest.mark.asyncio
+async def test_generate_login_url_omits_iss_when_server_does_not_advertise_it(
+    mocker: MockerFixture, mock_oauth_handler: OAuthHandler
+):
+    """
+    Given: An authorization server that does not advertise RFC 9207 support (Atlassian).
+    When: generate_login_url is called.
+    Then: The instructions describe only the state check.
+
+    Mentioning iss here would promise a protection the authorization response cannot carry,
+    and would tell users to look for a parameter the server never sends.
+    """
+    # given
+    mocker.patch.object(
+        mock_oauth_handler,
+        "generate_dynamic_registration_login_url",
+        return_value=(
+            "https://as.example.com/authorize",
+            {"state": "S1", "oauth_metadata": _oauth_metadata("https://mcp.atlassian.com")},
+        ),
+    )
+
+    # when
+    result = await generate_login_url(mock_oauth_handler, AuthMethods.DYNAMIC_CLIENT_REGISTRATION)
+
+    # then
+    assert "iss=ISSUER" not in result.readable_output
+    assert "`iss`" not in result.readable_output
+    assert "mix-up" not in result.readable_output
+    assert "`state` parameter, which protects against CSRF attacks" in result.readable_output
+
+
 # --- SDK Contract Tests ---------------------------------------------------
 #
 # These tests deliberately do NOT mock the mcp SDK. They assert the real shape of the

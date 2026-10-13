@@ -927,16 +927,29 @@ async def generate_login_url(
 
     update_integration_context_oauth_flow(context_data, override=True)
 
+    # Only promise the `iss` check when the authorization server advertised RFC 9207 support.
+    # Servers that do not send `iss` (Atlassian, for example) would otherwise be described as
+    # offering a protection the response cannot carry.
+    oauth_metadata = build_oauth_metadata(context_data.get("oauth_metadata", {}))
+    iss_supported = bool(oauth_metadata and oauth_metadata.authorization_response_iss_parameter_supported)
+
+    redirect_structure = "REDIRECT_URI?code=AUTH_CODE&state=STATE&iss=ISSUER" if iss_supported else (
+        "REDIRECT_URI?code=AUTH_CODE&state=STATE"
+    )
+    verified_params = "`state` and `iss` parameters, which protect against CSRF and " "authorization-server mix-up attacks" if (
+        iss_supported
+    ) else "`state` parameter, which protects against CSRF attacks"
+    verification_noun = "these verifications are" if iss_supported else "this verification is"
+
     result_msg = (
         "### Authorization instructions\n"
         f"1. Click on the [login URL]({auth_url}) to sign in and grant Cortex permissions for your MCP server.\n"
         "  You will be automatically redirected to a link with the following structure:\n"
-        "  ```REDIRECT_URI?code=AUTH_CODE&state=STATE&iss=ISSUER```\n"
+        f"  ```{redirect_structure}```\n"
         "2. Copy the **entire URL** from your browser's address bar and paste it "
         "in the instance configuration under the **Authorization code** parameter.\n"
-        "  Pasting the full URL lets Cortex verify the `state` and `iss` parameters, which protect "
-        "against CSRF and authorization-server mix-up attacks.\n"
-        "  Pasting only the `AUTH_CODE` still works, but these verifications are skipped, and "
+        f"  Pasting the full URL lets Cortex verify the {verified_params}.\n"
+        f"  Pasting only the `AUTH_CODE` still works, but {verification_noun} skipped, and "
         "support for it is deprecated and will be removed in a future version.\n"
         "3. Save the instance configuration.\n"
         "  **IMPORTANT NOTE**: Authentication code is time-sensitive and expires quickly.\n"
