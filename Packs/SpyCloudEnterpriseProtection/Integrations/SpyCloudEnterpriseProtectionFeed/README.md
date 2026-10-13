@@ -1,6 +1,6 @@
 ## SpyCloud Enterprise Protection Feed
 
-Create breach, malware and access incidents in Cortex® XSOAR™ using the SpyCloud Enterprise Protection API.
+Turn session cookies, plaintext credentials, and more – recaptured from breaches, malware, and successful phishes – into Cortex® XSOAR™ incidents and automated response.
 This integration was integrated and tested with version 3.5 of SpyCloud Enterprise Protection API
 
 ## Configure SpyCloud Enterprise Protection Feed in Cortex
