@@ -4967,7 +4967,7 @@ script:
       description: The network interface card type (Standard/Basic).
       type: String
 
-  - name: azure-nsg-virtual-networks-list
+  - name: azure-vn-virtual-networks-list
     description: "Gets virtual networks in a resource group. Required permissions: Microsoft.Network/virtualNetworks/read."
     arguments:
     - description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -5021,7 +5021,7 @@ script:
       description: Whether DDoS protection is enabled for all the protected resources in the virtual network.
       type: Boolean
 
-  - name: azure-nsg-network-interface-create
+  - name: azure-vn-network-interface-create
     description: "Creates a network interface in a resource group. Required permissions: Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/publicIPAddresses/join/action, Microsoft.Network/networkSecurityGroups/join/action."
     arguments:
     - description: The network interface name.
@@ -5038,7 +5038,7 @@ script:
       type: String
       required: false
       required:platform: true
-    - description: The virtual network name. Run the azure-nsg-virtual-networks-list command to find available virtual networks.
+    - description: The virtual network name. Run the azure-vn-virtual-networks-list command to find available virtual networks.
       name: vnet_name
       type: String
       required: true
@@ -5180,7 +5180,7 @@ script:
       description: The network interface card type (Standard/Basic).
       type: String
 
-  - name: azure-nsg-subscriptions-list
+  - name: azure-rm-subscriptions-list
     description: "Gets all subscriptions for a tenant. Required permissions: Microsoft.Resources/subscriptions/read."
     arguments: []
     outputs:

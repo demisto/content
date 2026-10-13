@@ -88,7 +88,7 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-vn-network-interfaces-list",
         "azure-vn-network-interface-get",
     ],
-    "Microsoft.Network/networkInterfaces/write": ["azure-vn-network-interface-update", "azure-nsg-network-interface-create"],
+    "Microsoft.Network/networkInterfaces/write": ["azure-vn-network-interface-update", "azure-vn-network-interface-create"],
     "Microsoft.Network/publicIPAddresses/read": [
         "azure-nsg-public-ip-addresses-list",
         "azure-vm-public-ip-details-get",
@@ -360,8 +360,8 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/firewallPolicies/join/action": ["azure-firewall-policy-attach"],
     "Microsoft.Network/azureFirewalls/read": ["azure-firewall-policy-attach", "azure-firewall-policy-detach"],
     "Microsoft.Network/azureFirewalls/write": ["azure-firewall-policy-attach", "azure-firewall-policy-detach"],
-    "Microsoft.Network/virtualNetworks/read": ["azure-nsg-virtual-networks-list"],
-    "Microsoft.Resources/subscriptions/read": ["azure-nsg-subscriptions-list"],
+    "Microsoft.Network/virtualNetworks/read": ["azure-vn-virtual-networks-list"],
+    "Microsoft.Resources/subscriptions/read": ["azure-rm-subscriptions-list"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -5629,7 +5629,7 @@ def nsg_public_ip_addresses_list_command(client: AzureClient, params: dict[str, 
     )
 
 
-def nsg_virtual_networks_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+def virtual_networks_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
     List all virtual networks in a resource group.
     Args:
@@ -5666,7 +5666,7 @@ def nsg_virtual_networks_list_command(client: AzureClient, params: dict[str, Any
     )
 
 
-def nsg_network_interface_create_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+def network_interface_create_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
     Create a network interface in a resource group.
     Args:
@@ -7598,9 +7598,9 @@ def main():  # pragma: no cover
             "azure-vn-network-interfaces-list": nsg_network_interfaces_list_command,
             "azure-nsg-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
             "azure-vn-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
-            "azure-nsg-virtual-networks-list": nsg_virtual_networks_list_command,
-            "azure-nsg-network-interface-create": nsg_network_interface_create_command,
-            "azure-nsg-subscriptions-list": subscriptions_list_command,
+            "azure-vn-virtual-networks-list": virtual_networks_list_command,
+            "azure-vn-network-interface-create": network_interface_create_command,
+            "azure-rm-subscriptions-list": subscriptions_list_command,
             "azure-vm-instance-start": start_vm_command,
             "azure-compute-vm-start": start_vm_command,
             "azure-vm-instance-power-off": poweroff_vm_command,

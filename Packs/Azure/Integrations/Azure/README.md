@@ -3823,14 +3823,14 @@ Deletes a Front Door Web Application Firewall (WAF) policy. Required permission:
 
 There is no context output for this command.
 
-### azure-nsg-virtual-networks-list
+### azure-vn-virtual-networks-list
 
 ***
 Gets virtual networks in a resource group. Required permissions: Microsoft.Network/virtualNetworks/read.
 
 #### Base Command
 
-`azure-nsg-virtual-networks-list`
+`azure-vn-virtual-networks-list`
 
 #### Input
 
@@ -3857,14 +3857,14 @@ Gets virtual networks in a resource group. Required permissions: Microsoft.Netwo
 | Azure.VirtualNetworks.VirtualNetworks.properties.dhcpOptions | Unknown | The dhcpOptions object of the virtual network, containing the dnsServers field which is a list of DNS servers IP addresses. |
 | Azure.VirtualNetworks.VirtualNetworks.properties.enableDdosProtection | Boolean | Whether DDoS protection is enabled for all the protected resources in the virtual network. |
 
-### azure-nsg-network-interface-create
+### azure-vn-network-interface-create
 
 ***
 Creates a network interface in a resource group. Required permissions: Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/publicIPAddresses/join/action, Microsoft.Network/networkSecurityGroups/join/action.
 
 #### Base Command
 
-`azure-nsg-network-interface-create`
+`azure-vn-network-interface-create`
 
 #### Input
 
@@ -3873,7 +3873,7 @@ Creates a network interface in a resource group. Required permissions: Microsoft
 | nic_name | The network interface name. | Required |
 | resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| vnet_name | The virtual network name. Run the azure-nsg-virtual-networks-list command to find available virtual networks. | Required |
+| vnet_name | The virtual network name. Run the azure-vn-virtual-networks-list command to find available virtual networks. | Required |
 | subnet_name | The subnet name. | Required |
 | ip_config_name | The IP configuration name. | Required |
 | location | The resource location. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilsouth, brazilsoutheast, brazilus, canadacentral, canadaeast, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, francecentral, francesouth, germanynorth, germanywestcentral, israelcentral, italynorth, japaneast, japanwest, jioindiacentral, jioindiawest, koreacentral, koreasouth, malaysiasouth, mexicocentral, newzealandnorth, northcentralus, northeurope, norwayeast, norwaywest, polandcentral, qatarcentral, southafricanorth, southafricawest, southcentralus, southeastasia, southindia, spaincentral, swedencentral, swedensouth, switzerlandnorth, switzerlandwest, uaecentral, uaenorth, uksouth, ukwest, westcentralus, westeurope, westindia, westus, westus2, westus3, australiaeastfoundational, austriaeast, chilecentral, eastusslv, indonesiacentral, israelnorthwest, malaysiawest, southcentralus2, southeastus, southeastus3, southwestus, usgovarizona, usgovtexas, usgovvirginia. | Required |
@@ -3899,14 +3899,14 @@ Creates a network interface in a resource group. Required permissions: Microsoft
 | Azure.VirtualNetworks.NetworkInterfaces.properties.enableIPForwarding | Boolean | Whether IP forwarding is enabled on the network interface. |
 | Azure.VirtualNetworks.NetworkInterfaces.properties.nicType | String | The network interface card type \(Standard/Basic\). |
 
-### azure-nsg-subscriptions-list
+### azure-rm-subscriptions-list
 
 ***
 Gets all subscriptions for a tenant. Required permissions: Microsoft.Resources/subscriptions/read.
 
 #### Base Command
 
-`azure-nsg-subscriptions-list`
+`azure-rm-subscriptions-list`
 
 #### Input
 

@@ -9463,16 +9463,16 @@ def test_storage_blob_container_list_command_surfaces_next_token(mocker):
     assert result.outputs["Azure.Storage(true)"]["BlobContainersNextToken"] == "https://management.azure.com/next-containers-page"
 
 
-def test_nsg_virtual_networks_list_command(mocker):
+def test_virtual_networks_list_command(mocker):
     """
     Given: An Azure client mock and the list_virtual_networks_response.json file.
-    When: nsg_virtual_networks_list_command is called.
+    When: virtual_networks_list_command is called.
     Then:
           1. It should return all the virtual networks from the response.
           2. The results should contain expected fields such as name, id and location.
           3. The etag field should be cleaned up (first 3 chars and last char removed).
     """
-    from Azure import nsg_virtual_networks_list_command
+    from Azure import virtual_networks_list_command
 
     mock_response = util_load_json("test_data/list_virtual_networks_response.json")
 
@@ -9481,7 +9481,7 @@ def test_nsg_virtual_networks_list_command(mocker):
 
     params = {"subscription_id": "subid", "resource_group_name": "rg1"}
 
-    result: CommandResults = nsg_virtual_networks_list_command(mock_client, params, {})
+    result: CommandResults = virtual_networks_list_command(mock_client, params, {})
 
     assert result.outputs_prefix == "Azure.VirtualNetworks.VirtualNetworks"
     assert result.outputs_key_field == "id"
@@ -9505,19 +9505,19 @@ def test_nsg_virtual_networks_list_command(mocker):
     assert "Virtual Networks List" in result.readable_output
 
 
-def test_nsg_virtual_networks_list_command_empty_response(mocker):
+def test_virtual_networks_list_command_empty_response(mocker):
     """
     Given: An Azure client mock returning a response with no virtual networks.
-    When: nsg_virtual_networks_list_command is called.
+    When: virtual_networks_list_command is called.
     Then: It should return empty outputs without raising an error.
     """
-    from Azure import nsg_virtual_networks_list_command
+    from Azure import virtual_networks_list_command
 
     mock_client = mocker.Mock()
     mock_client.list_virtual_networks_request.return_value = {"value": []}
 
     params = {"subscription_id": "subid", "resource_group_name": "rg1"}
-    result: CommandResults = nsg_virtual_networks_list_command(mock_client, params, {})
+    result: CommandResults = virtual_networks_list_command(mock_client, params, {})
 
     assert result.outputs == []
     assert result.outputs_prefix == "Azure.VirtualNetworks.VirtualNetworks"
@@ -9542,14 +9542,14 @@ def test_list_virtual_networks_request_error(mocker, client):
     assert call_kwargs["subscription_id"] == "subid"
 
 
-def test_nsg_network_interface_create_command(mocker):
+def test_network_interface_create_command(mocker):
     """
     Given: An Azure client mock and the create_network_interface_response.json file.
-    When: nsg_network_interface_create_command is called with all optional arguments.
+    When: network_interface_create_command is called with all optional arguments.
     Then: It should build the correct request body, and return the created network interface
           with a cleaned etag under the Azure.VirtualNetworks.NetworkInterfaces prefix.
     """
-    from Azure import nsg_network_interface_create_command
+    from Azure import network_interface_create_command
 
     mock_response = util_load_json("test_data/create_network_interface_response.json")
 
@@ -9568,7 +9568,7 @@ def test_nsg_network_interface_create_command(mocker):
         "public_ip_address_name": "test-ip",
     }
 
-    result: CommandResults = nsg_network_interface_create_command(mock_client, params, args)
+    result: CommandResults = network_interface_create_command(mock_client, params, args)
 
     assert result.outputs_prefix == "Azure.VirtualNetworks.NetworkInterfaces"
     assert result.outputs_key_field == "id"
@@ -9593,14 +9593,14 @@ def test_nsg_network_interface_create_command(mocker):
     assert ip_config["properties"]["publicIPAddress"]["id"] == f"{prefix}publicIPAddresses/test-ip"
 
 
-def test_nsg_network_interface_create_command_without_optional_args(mocker):
+def test_network_interface_create_command_without_optional_args(mocker):
     """
     Given: An Azure client mock and only the required arguments for creating a network interface.
-    When: nsg_network_interface_create_command is called.
+    When: network_interface_create_command is called.
     Then: The optional networkSecurityGroup, privateIPAddress and publicIPAddress keys should be None
           so they are stripped by remove_empty_elements in the client layer.
     """
-    from Azure import nsg_network_interface_create_command
+    from Azure import network_interface_create_command
 
     mock_response = util_load_json("test_data/create_network_interface_response.json")
 
@@ -9616,7 +9616,7 @@ def test_nsg_network_interface_create_command_without_optional_args(mocker):
         "location": "eastus",
     }
 
-    nsg_network_interface_create_command(mock_client, params, args)
+    network_interface_create_command(mock_client, params, args)
 
     data = mock_client.create_network_interface_request.call_args[1]["network_interface_data"]
     assert data["properties"]["networkSecurityGroup"] is None
