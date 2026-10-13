@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: OktaASA_ModelingRule
-name: OktaASA Modeling Rule
+id: Okta_ASA_ModelingRule
+name: Okta ASA Modeling Rule
 rules: ''
 schema: ''
 tags: ''

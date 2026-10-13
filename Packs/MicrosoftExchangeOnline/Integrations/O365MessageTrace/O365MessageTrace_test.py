@@ -943,14 +943,14 @@ class TestFetchEvents:
         assert "2025-01-01T09:02:00.000000Z" in first_call_params["$filter"]
         assert "2025-01-01T09:05:00.000000Z" not in first_call_params["$filter"]
 
-    def test_seen_ids_holds_sent_ids_at_boundary_timestamp(self, mock_client, mocker):
-        """seen_ids holds the IDs of events sent to XSIAM at the high-water-mark timestamp.
+    def test_seen_ids_holds_all_ids_at_boundary_timestamp(self, mock_client, mocker):
+        """seen_ids holds every fetched ID at the high-water-mark timestamp, incl. deduped-out ones.
 
         The Graph API timestamps have second-level granularity, so several events
-        can share the exact same ``receivedDateTime``. ``seen_ids`` tracks the IDs of
-        the events published to XSIAM at the boundary timestamp so the next run's
-        ``$filter`` (``ge boundary``) does not re-send them. Events that were already
-        deduped out this run are not re-published and therefore are not re-added.
+        can share the exact same ``receivedDateTime``. ``seen_ids`` is built from ALL
+        fetched events at the boundary timestamp (pre-dedup), so the next run's
+        ``$filter`` (``ge boundary``) re-fetches them but they are correctly deduped
+        out - including events that were already deduped out this run.
         """
         # Previous run already published evt-1 at the boundary timestamp (10:01:00).
         last_run = {"last_fetch": "2025-01-01T10:00:00Z", "seen_ids": ["evt-1|bob@contoso.com"]}
@@ -969,9 +969,9 @@ class TestFetchEvents:
 
         new_state = set_last_run.call_args.args[0]
         assert new_state["last_fetch"] == "2025-01-01T10:01:00Z"
-        # Only the newly-published event at the boundary timestamp is tracked; the
-        # already-seen duplicate (evt-1) was deduped out and not re-sent.
-        assert set(new_state["seen_ids"]) == {"evt-2|dave@contoso.com"}
+        # Both boundary-timestamp IDs are tracked (from all fetched events, pre-dedup),
+        # including the deduped-out duplicate (evt-1), so the next run's re-scan re-sends nothing.
+        assert set(new_state["seen_ids"]) == {"evt-1|bob@contoso.com", "evt-2|dave@contoso.com"}
 
 
 # ============================================================================
@@ -1144,15 +1144,19 @@ class TestFetchEventsInRunLoop:
         new_state = set_last_run.call_args.args[0]
         assert new_state["last_fetch"] == "2025-01-01T09:30:00.000000Z"
 
-    def test_catch_up_truncates_total_to_max_events(self, mock_client, mocker):
-        """Events accumulated across multiple windows must be truncated to
-        ``max_events`` before publishing.
+    def test_catch_up_stops_walking_after_reaching_max_events(self, mock_client, mocker):
+        """``max_events`` is a soft per-run stop condition, not a hard cross-window cap.
 
-        Two windows each return two events (four total) but ``max_events`` is 3, so
-        only three events may be published.
+        The window walk keeps going while ``len(all_events) < max_events``. Once a
+        window pushes the running total to/past ``max_events`` the loop stops, but the
+        events already collected in that window are NOT sliced away (a hard cut could
+        split a same-second group across a window boundary). With two windows of two
+        events and ``max_events=3``, the walk stops after window 2 and all four are
+        published; the cap simply prevents a third window from being fetched.
         """
-        # last_fetch=09:00, now=09:10 -> 2 windows: [09:00,09:05], [09:05,09:10].
-        now = datetime(2025, 1, 1, 9, 10, 0, tzinfo=UTC)
+        # last_fetch=09:00, now=09:15 -> a third window [09:10,09:15] would exist,
+        # but the walk stops after window 2 because the total (4) reaches max_events.
+        now = datetime(2025, 1, 1, 9, 15, 0, tzinfo=UTC)
         last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
         window1 = {
             "value": [
@@ -1166,17 +1170,22 @@ class TestFetchEventsInRunLoop:
                 {"id": "w2-b", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:07:00Z"},
             ]
         }
+        # A third window's response is provided but must never be requested.
+        window3 = {"value": [{"id": "w3-a", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:11:00Z"}]}
         mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
         mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
         send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.side_effect = [window1, window2]
+        mock_client.ms_client.http_request.side_effect = [window1, window2, window3]
 
         fetch_events(mock_client, max_events=3)
 
-        # Four events were collected across both windows but only three may be published.
+        # All four collected events are published; the walk stopped before window 3.
         sent_events = [e for call in send_mock.call_args_list for e in call.kwargs["events"]]
-        assert len(sent_events) == 3
+        assert len(sent_events) == 4
+        assert {e["id"] for e in sent_events} == {"w1-a", "w1-b", "w2-a", "w2-b"}
+        # Only two windows were fetched (the third was never requested).
+        assert mock_client.ms_client.http_request.call_count == 2
 
     def test_429_on_second_window_keeps_first_window_events_and_advances_last_run(self, mock_client, mocker):
         """A 429 (rate-limit) error on the second window's API request must NOT lose
@@ -1336,3 +1345,77 @@ class TestGetMessageTracesPageUsesHttpRequest:
 
         mock_client.ms_client.http_request.assert_called_once()
         assert mock_client.ms_client.http_request.call_args.kwargs["full_url"] == "next-link-placeholder"
+
+
+class TestBoundarySecondTruncation:
+    """``receivedDateTime`` is second-granular, so many events can share one second.
+
+    When truncating to ``max_events``, ``fetch_events_sequential`` must keep the WHOLE
+    boundary second (never split a same-second group), and ``fetch_events`` must build
+    ``seen_ids`` from ALL fetched events at the boundary (pre-dedup) so the next run's
+    ``ge boundary`` re-scan re-sends nothing.
+    """
+
+    @staticmethod
+    def _frozen_now(now: datetime):
+        class FrozenDatetime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return now
+
+        return FrozenDatetime
+
+    def test_truncation_keeps_whole_boundary_second(self, mock_client):
+        """Truncating past ``max_events`` extends the cut to keep all same-second events."""
+        # 5 events: three share the boundary second 10:00:02; max_events=3 lands mid-group.
+        page = {
+            "value": [
+                {"id": "a", "recipientAddress": "u@contoso.com", "receivedDateTime": "2025-01-01T10:00:00Z"},
+                {"id": "b", "recipientAddress": "u@contoso.com", "receivedDateTime": "2025-01-01T10:00:01Z"},
+                {"id": "c", "recipientAddress": "u@contoso.com", "receivedDateTime": "2025-01-01T10:00:02Z"},
+                {"id": "d", "recipientAddress": "u@contoso.com", "receivedDateTime": "2025-01-01T10:00:02Z"},
+                {"id": "e", "recipientAddress": "u@contoso.com", "receivedDateTime": "2025-01-01T10:00:02Z"},
+            ]
+        }
+        mock_client.ms_client.http_request.return_value = page
+        start = datetime(2025, 1, 1, 10, 0, 0, tzinfo=UTC)
+        end = datetime(2025, 1, 1, 10, 5, 0, tzinfo=UTC)
+
+        collected = fetch_events_sequential(mock_client, start, end, max_events=3)
+
+        # The cut is extended from 3 to 5 to keep the whole 10:00:02 group intact.
+        assert [e["id"] for e in collected] == ["a", "b", "c", "d", "e"]
+
+    def test_no_duplicates_when_next_run_rescans_boundary_second(self, mock_client, mocker):
+        """seen_ids covers every ID at the boundary second, so a re-scan sends no duplicates."""
+        now = datetime(2025, 1, 1, 10, 1, 0, tzinfo=UTC)
+        # Three events share the high-water-mark second 10:00:30.
+        first_run = {
+            "value": [
+                {"id": "x", "recipientAddress": "u@contoso.com", "receivedDateTime": "2025-01-01T10:00:30Z"},
+                {"id": "y", "recipientAddress": "u@contoso.com", "receivedDateTime": "2025-01-01T10:00:30Z"},
+                {"id": "z", "recipientAddress": "u@contoso.com", "receivedDateTime": "2025-01-01T10:00:30Z"},
+            ]
+        }
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value={})
+        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.return_value = first_run
+
+        fetch_events(mock_client, max_events=100)
+
+        # First run publishes all three and records them all in seen_ids at the boundary.
+        first_sent = {e["id"] for call in send_mock.call_args_list for e in call.kwargs["events"]}
+        assert first_sent == {"x", "y", "z"}
+        state = set_last_run.call_args.args[0]
+        assert set(state["seen_ids"]) == {"x|u@contoso.com", "y|u@contoso.com", "z|u@contoso.com"}
+
+        # Second run re-scans ``ge boundary`` and re-fetches the same second; nothing new is sent.
+        send_mock.reset_mock()
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=state)
+        mock_client.ms_client.http_request.return_value = first_run
+
+        fetch_events(mock_client, max_events=100)
+
+        send_mock.assert_not_called()

@@ -1,6 +1,6 @@
 Use this feed integration to fetch Google Threat Intelligence Threat Lists matches as indicators. It processes the latest finished job retrieving its matches based on the limit parameter (10 by default) in every fetch until there are no more matches for that job.
 
-## Configure Google Threat Intelligence Threat Lists on Cortex XSOAR
+## Configure Google Threat Intelligence Threat Lists in Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Google Threat Intelligence Threat Lists.
@@ -10,6 +10,8 @@ Use this feed integration to fetch Google Threat Intelligence Threat Lists match
 | --- | --- | --- |
 | feed | The fetch indicators. | False |
 | credentials | API Key. | True |
+| Use system proxy settings | Whether to use the system proxy settings. | False |
+| Trust any certificate (not secure) | Whether to trust any certificate (not secure). | False |
 | feed_type | Feed type. | True |
 | filter | Filter your Threat Lists (e.g., "gti_score:70+ positives:10- has:campaigns"). Leave empty to receive all. | False |
 | limit | The maximum number of results to return. Default is 10. | False |

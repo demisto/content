@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: CloudflareZeroTrust_ModelingRule
-name: CloudflareZeroTrust Modeling Rule
+id: Cloudflare_Zero_Trust_ModelingRule
+name: Cloudflare Zero Trust Modeling Rule
 rules: ''
 schema: ''
 tags: 

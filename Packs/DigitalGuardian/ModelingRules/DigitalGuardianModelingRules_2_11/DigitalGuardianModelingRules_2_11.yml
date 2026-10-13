@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: DigitalGuardian_ModelingRule
-name: DigitalGuardian Modeling Rule
+id: DigitalGuardianModelingRule
+name: Digital Guardian ARC Modeling Rule
 rules: ''
 schema: ''
 tags: ''

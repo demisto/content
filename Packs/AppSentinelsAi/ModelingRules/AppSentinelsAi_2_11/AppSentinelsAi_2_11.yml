@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-name: AppSentinelsAi Modeling Rule
-id: AppSentinelsAi_ModelingRule
+name: AppSentinels Ai Modeling Rule
+id: AppSentinels_Ai_ModelingRule
 rules: ''
 schema: ''
 tags: ''

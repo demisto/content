@@ -19,6 +19,10 @@ alter
     xdm.source.user.upn = username,
     xdm.source.identity.upn = username,
     xdm.source.user.user_type = if(
+        type = "user", XDM_CONST.USER_TYPE_REGULAR, 
+        type = "service", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT, 
+        null
+    ),
     xdm.source.identity.user_type = if(
         type = "user", XDM_CONST.USER_TYPE_REGULAR, 
         type = "service", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT, 

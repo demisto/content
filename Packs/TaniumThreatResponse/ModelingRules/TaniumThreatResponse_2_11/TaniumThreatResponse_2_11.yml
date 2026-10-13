@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: TaniumThreatResponse_ModelingRule
-name: TaniumThreatResponse Modeling Rule
+id: Tanium_Threat_Response_ModelingRule
+name: Tanium Threat Response Modeling Rule
 rules: ''
 schema: ''
 tags: ''

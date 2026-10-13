@@ -1,0 +1,15 @@
+{
+    "result": {
+        "id": "ruleset_id_1",
+        "name": "Cloudflare Managed Ruleset",
+        "kind": "custom",
+        "phase": "http_request_firewall_custom",
+        "description": "Custom ruleset created by Cloudflare",
+        "version": "4",
+        "last_updated": "2023-01-18T10:00:00Z",
+        "rules": []
+    },
+    "success": true,
+    "errors": [],
+    "messages": []
+}

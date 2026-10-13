@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: SailPointIdentityNow_ModelingRule
-name: SailPointIdentityNow Modeling Rule
+id: SailPoint_IdentityNow_ModelingRule
+name: SailPoint IdentityNow Modeling Rule
 rules: ''
 schema: ''
 tags: ''

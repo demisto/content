@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: PrismaCloudCompute_ModelingRule
-name: PrismaCloudCompute Modeling Rule
+id: Prisma_Cloud_Compute_ModelingRule
+name: Prisma Cloud Compute Modeling Rule
 rules: ''
 schema: ''
 tags: ''

@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: MicrosoftADFS_ModelingRule
-name: MicrosoftADFS Modeling Rule
+id: Microsoft_ADFS_ModelingRule
+name: Microsoft ADFS Modeling Rule
 rules: ''
 schema: ''
 tags: Microsoft Windows Active Directory Federation Services ADFS Event Colletion

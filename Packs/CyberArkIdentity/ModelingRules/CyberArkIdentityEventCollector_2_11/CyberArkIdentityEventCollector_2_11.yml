@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: CyberArkIdentity_ModelingRule
-name: CyberArkIdentity Modeling Rule
+id: CyberArk_Identity_ModelingRule
+name: CyberArk Identity Modeling Rule
 rules: ''
 schema: ''
 supportedModules:

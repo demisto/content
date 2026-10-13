@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: TrendMicroVisionOne_ModelingRule
-name: TrendMicroVisionOne Modeling Rule
+id: trend_micro_vision_one_ModelingRule
+name: TrendAI Vision One™ Modeling Rule
 rules: ''
 schema: ''
 tags: trend_micro_vision_one

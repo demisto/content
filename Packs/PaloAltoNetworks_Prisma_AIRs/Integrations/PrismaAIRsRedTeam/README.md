@@ -112,7 +112,7 @@ List all Red Team targets.
 
 #### Human Readable Output
 
->### Prisma AIRs Red Team Targets
+>### Prisma AIRS Red Team Targets
 >
 >|Uuid|Name|Target Type|Status|Active|Validated|Created At|
 >|---|---|---|---|---|---|---|
@@ -1069,7 +1069,7 @@ List Red Team custom target adapters. List rows carry no script, description, or
 
 #### Human Readable Output
 
->### Prisma AIRs Red Team Adapters
+>### Prisma AIRS Red Team Adapters
 >
 >|Uuid|Name|Status|Target Count|Created At|Updated At|
 >|---|---|---|---|---|---|
@@ -1422,7 +1422,7 @@ List all Red Team scans.
 
 #### Human Readable Output
 
->### Prisma AIRs Red Team Scans
+>### Prisma AIRS Red Team Scans
 >
 >|Uuid|Job Type|Status|Target Name|Progress|Created At|
 >|---|---|---|---|---|---|
@@ -1710,7 +1710,7 @@ List Red Team network broker channels. Network channels are the data-plane relay
 
 #### Human Readable Output
 
->### Prisma AIRs Red Team Network Channels
+>### Prisma AIRS Red Team Network Channels
 >
 >|Uuid|Name|Status|Description|Last Online At|Created At|
 >|---|---|---|---|---|---|
@@ -1817,7 +1817,7 @@ There are no input arguments for this command.
 
 #### Human Readable Output
 
->### Prisma AIRs Red Team Network Channel Stats
+>### Prisma AIRS Red Team Network Channel Stats
 >
 >|Network Channels Server Domain|Online Channels|Total Channels|Docker Registry|Docker Image|Helm Chart|Client Version|
 >|---|---|---|---|---|---|---|
@@ -1879,7 +1879,7 @@ Get a single Red Team network broker channel by UUID.
 
 #### Human Readable Output
 
->### Prisma AIRs Red Team Network Channel
+>### Prisma AIRS Red Team Network Channel
 >
 >|Uuid|Name|Status|Description|Last Online At|Created At|Updated At|
 >|---|---|---|---|---|---|---|
@@ -1991,7 +1991,7 @@ List the tenant's allowed languages for Red Team scans. Queries the data plane b
 
 #### Human Readable Output
 
->### Prisma AIRs Red Team Supported Languages (multilingual_enabled: True; job types: STATIC, DYNAMIC, CUSTOM)
+>### Prisma AIRS Red Team Supported Languages (multilingual_enabled: True; job types: STATIC, DYNAMIC, CUSTOM)
 >
 >|Code|Name|
 >|---|---|
@@ -2946,7 +2946,7 @@ Archive or unarchive a Red Team prompt set.
 ### prisma-airs-redteam-registry-credentials-get
 
 ***
-Get or create Red Team registry credentials for pulling scanner container images from the Prisma AIRs registry.
+Get or create Red Team registry credentials for pulling scanner container images from the Prisma AIRS registry.
 
 #### Base Command
 

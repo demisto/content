@@ -31,6 +31,7 @@
 <li><strong>Fetch limit</strong></li>
 <li><strong>Time format</strong></li>
 <li><strong>First fetch timestamp (<span> </span><time>, e.g., 12 hours, 7 days)</time></strong></li>
+<li><strong>Lookback in minutes</strong>: the lookback window in minutes to use during the fetch process, to avoid missing incidents. Defaults to 0 (disabled). See<span> </span><a href="#troubleshooting">Troubleshooting</a>.</li>
 </ul>
 </li>
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
@@ -3211,4 +3212,22 @@
 </tbody>
 </table>
 </div>
+</div>
+<div class="cl-preview-section">
+<h2 id="troubleshooting">Troubleshooting</h2>
+</div>
+<div class="cl-preview-section">
+<h3 id="missing-incidents">Missing incidents</h3>
+</div>
+<div class="cl-preview-section">
+<p>In some edge cases, incidents may be missing from a<span> </span><strong>fetch-incidents</strong><span> </span>run. This usually happens when an alarm is indexed in AlienVault USM Anywhere later than it was created.</p>
+</div>
+<div class="cl-preview-section">
+<p>The<span> </span><strong>Lookback in minutes</strong><span> </span>parameter configures how far back in time (in minutes) the fetch looks for alarms that were created earlier but indexed only recently. Alarms already fetched are tracked by their UUID and filtered out, so enabling a lookback window does not create duplicate incidents.</p>
+</div>
+<div class="cl-preview-section">
+<p>This parameter defaults to<span> </span><strong>0</strong><span> </span>(disabled). Enable it only if you notice that incidents are missing.</p>
+</div>
+<div class="cl-preview-section">
+<p><strong>Note</strong>: Increasing the lookback window causes each fetch to request a wider time range, so prefer the smallest value that resolves the missing incidents. For more information about lookback, see<span> </span><a href="https://xsoar.pan.dev/docs/integrations/fetch-incidents-lookback">Fetch Missing Incidents with Generic Lookback Methods</a>.</p>
 </div>

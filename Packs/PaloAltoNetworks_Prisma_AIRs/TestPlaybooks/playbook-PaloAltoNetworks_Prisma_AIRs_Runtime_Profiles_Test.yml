@@ -1,4 +1,4 @@
-description: Test playbook for Prisma AIRs Runtime security profiles and topics. Tests profile + topic CRUD and topic-apply, ensuring only the profile and topic created by this playbook are modified, applied, and deleted.
+description: Test playbook for Prisma AIRS Runtime security profiles and topics. Tests profile + topic CRUD and topic-apply, ensuring only the profile and topic created by this playbook are modified, applied, and deleted.
 id: PaloAltoNetworks_Prisma_AIRs_Runtime_Profiles_Test
 inputs:
 - key: ProfileName

@@ -24,7 +24,7 @@ def runtime_scan_command(client: Client, args: dict[str, Any]) -> CommandResults
     """Scan a prompt against a security profile.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -88,7 +88,7 @@ def runtime_scan_command(client: Client, args: dict[str, Any]) -> CommandResults
     if metadata:
         scan_request["metadata"] = metadata
 
-    # Call Prisma AIRs scanner API
+    # Call Prisma AIRS scanner API
     scan_response = client.scanner_request(scan_request)
 
     # Parse detections for both prompt and response
@@ -186,7 +186,7 @@ def runtime_scan_command(client: Client, args: dict[str, Any]) -> CommandResults
         )
 
     # Build readable output
-    readable_output = "## Prisma AIRs Runtime Scan Results\n\n"
+    readable_output = "## Prisma AIRS Runtime Scan Results\n\n"
     readable_output += tableToMarkdown(
         "Scan Summary", scan_summary, headers=["Scan ID", "Report ID", "Profile", "Action", "Category", "Detected"]
     )
@@ -226,7 +226,7 @@ def runtime_api_keys_list_command(client: Client, args: dict[str, Any]) -> Comma
     """List Runtime API Keys.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -259,7 +259,7 @@ def runtime_api_keys_list_command(client: Client, args: dict[str, Any]) -> Comma
         api_keys.append(api_key_info)
 
     readable_output = tableToMarkdown(
-        "Prisma AIRs Runtime API Keys",
+        "Prisma AIRS Runtime API Keys",
         api_keys,
         headers=["id", "name", "last8", "created_at", "expires_at", "revoked"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -278,7 +278,7 @@ def runtime_api_keys_create_command(client: Client, args: dict[str, Any]) -> Com
     """Create a new Runtime API Key.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -412,7 +412,7 @@ def runtime_api_keys_regenerate_command(client: Client, args: dict[str, Any]) ->
     This creates a NEW key with a NEW UUID and invalidates the old key.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -514,7 +514,7 @@ def runtime_api_keys_delete_command(client: Client, args: dict[str, Any]) -> Com
     This permanently deletes the API key and revokes access immediately.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -570,7 +570,7 @@ def runtime_profiles_list_command(client: Client, args: dict[str, Any]) -> Comma
     """List runtime security profiles.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -605,7 +605,7 @@ def runtime_profiles_list_command(client: Client, args: dict[str, Any]) -> Comma
         profiles.append(profile_info)
 
     readable_output = tableToMarkdown(
-        "Prisma AIRs Security Profiles",
+        "Prisma AIRS Security Profiles",
         profiles,
         headers=["id", "name", "revision", "active", "created_by", "updated_by", "last_modified_ts"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -626,7 +626,7 @@ def runtime_profiles_get_command(client: Client, args: dict[str, Any]) -> Comman
     Note: There is no dedicated GET endpoint - this fetches all profiles and filters.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -715,7 +715,7 @@ def runtime_profiles_create_command(client: Client, args: dict[str, Any]) -> Com
     """Create a new security profile.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -801,7 +801,7 @@ def runtime_profiles_update_command(client: Client, args: dict[str, Any]) -> Com
     WARNING: This modifies the profile configuration and can break scanning if misconfigured.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -891,7 +891,7 @@ def runtime_profiles_delete_command(client: Client, args: dict[str, Any]) -> Com
     WARNING: This permanently deletes the security profile. This action cannot be undone.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -955,7 +955,7 @@ def runtime_customer_apps_list_command(client: Client, args: dict[str, Any]) -> 
     """List customer applications.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -988,7 +988,7 @@ def runtime_customer_apps_list_command(client: Client, args: dict[str, Any]) -> 
         apps.append(app_info)
 
     readable_output = tableToMarkdown(
-        "Prisma AIRs Customer Applications",
+        "Prisma AIRS Customer Applications",
         apps,
         headers=["id", "name", "model_name", "cloud_provider", "environment", "ai_agent_framework"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -1007,7 +1007,7 @@ def runtime_customer_apps_get_command(client: Client, args: dict[str, Any]) -> C
     """Get customer application details by name.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1073,7 +1073,7 @@ def runtime_customer_apps_update_command(client: Client, args: dict[str, Any]) -
     """Update a customer application.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1154,7 +1154,7 @@ def runtime_customer_apps_consumption_command(client: Client, args: dict[str, An
     """Get per-application token consumption and session statistics.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1299,7 +1299,7 @@ def runtime_customer_apps_violations_command(client: Client, args: dict[str, Any
     """Get per-detector violation severity breakdown for an application.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1388,7 +1388,7 @@ def runtime_customer_apps_delete_command(client: Client, args: dict[str, Any]) -
     WARNING: This permanently deletes the application and revokes all associated API keys immediately.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1450,7 +1450,7 @@ def runtime_deployment_profiles_list_command(client: Client, args: dict[str, Any
     """List deployment profiles.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1485,7 +1485,7 @@ def runtime_deployment_profiles_list_command(client: Client, args: dict[str, Any
         profiles.append(profile_info)
 
     readable_output = tableToMarkdown(
-        "Prisma AIRs Deployment Profiles",
+        "Prisma AIRS Deployment Profiles",
         profiles,
         headers=["name", "auth_code", "status", "expiration_date", "ave_text_records"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -1504,7 +1504,7 @@ def runtime_dlp_profiles_list_command(client: Client, args: dict[str, Any]) -> C
     """List DLP data profiles (v2 API).
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1550,7 +1550,7 @@ def runtime_dlp_profiles_list_command(client: Client, args: dict[str, Any]) -> C
     total_pages = response.get("page", {}).get("total_pages", 1)
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs DLP Data Profiles (Page {page + 1}/{total_pages}, {len(profiles)} of {total_elements})",
+        f"Prisma AIRS DLP Data Profiles (Page {page + 1}/{total_pages}, {len(profiles)} of {total_elements})",
         profiles,
         headers=["id", "name", "type", "profile_status", "profile_type", "version"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -1569,7 +1569,7 @@ def runtime_dlp_profiles_get_command(client: Client, args: dict[str, Any]) -> Co
     """Get a single DLP data profile by ID.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1605,7 +1605,7 @@ def runtime_dlp_profiles_get_command(client: Client, args: dict[str, Any]) -> Co
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs DLP Data Profile: {profile_info.get('name')}",
+        f"Prisma AIRS DLP Data Profile: {profile_info.get('name')}",
         profile_info,
         headers=["id", "name", "type", "profile_status", "profile_type", "description"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -1624,7 +1624,7 @@ def runtime_dlp_profiles_create_command(client: Client, args: dict[str, Any]) ->
     """Create a new DLP data profile.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1679,7 +1679,7 @@ def runtime_dlp_profiles_create_command(client: Client, args: dict[str, Any]) ->
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs DLP Data Profile Created: {profile_info.get('name')}",
+        f"Prisma AIRS DLP Data Profile Created: {profile_info.get('name')}",
         profile_info,
         headers=["id", "name", "type", "profile_status", "profile_type", "description"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -1698,7 +1698,7 @@ def runtime_dlp_profiles_patch_command(client: Client, args: dict[str, Any]) -> 
     """Partially update a DLP data profile (JSON Merge Patch).
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1765,7 +1765,7 @@ def runtime_dlp_profiles_patch_command(client: Client, args: dict[str, Any]) -> 
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs DLP Data Profile Patched: {profile_info.get('name')}",
+        f"Prisma AIRS DLP Data Profile Patched: {profile_info.get('name')}",
         profile_info,
         headers=["id", "name", "type", "profile_status", "profile_type", "description"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -1784,7 +1784,7 @@ def runtime_dlp_profiles_replace_command(client: Client, args: dict[str, Any]) -
     """Replace (full update) a DLP data profile.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1844,7 +1844,7 @@ def runtime_dlp_profiles_replace_command(client: Client, args: dict[str, Any]) -
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs DLP Data Profile Replaced: {profile_info.get('name')}",
+        f"Prisma AIRS DLP Data Profile Replaced: {profile_info.get('name')}",
         profile_info,
         headers=["id", "name", "type", "profile_status", "profile_type", "description"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -1872,7 +1872,7 @@ def runtime_dlp_profiles_delete_command(client: Client, args: dict[str, Any]) ->
        patch it to a deleted lifecycle state (typically profile_status: 'deleted')."
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1915,7 +1915,7 @@ def runtime_dlp_profiles_delete_command(client: Client, args: dict[str, Any]) ->
     }
 
     readable_output = tableToMarkdown(
-        "Prisma AIRs DLP Data Profile Deleted",
+        "Prisma AIRS DLP Data Profile Deleted",
         [context_output],
         headers=["id", "name", "profile_status", "status"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -1935,7 +1935,7 @@ def runtime_topics_list_command(client: Client, args: dict[str, Any]) -> Command
     """List custom topics.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -1976,7 +1976,7 @@ def runtime_topics_list_command(client: Client, args: dict[str, Any]) -> Command
         topics.append(topic_info)
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs Custom Topics ({len(topics)} of {response.get('total', len(topics))})",
+        f"Prisma AIRS Custom Topics ({len(topics)} of {response.get('total', len(topics))})",
         topics,
         headers=["topic_id", "topic_name", "revision", "description"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -1997,7 +1997,7 @@ def runtime_topics_get_command(client: Client, args: dict[str, Any]) -> CommandR
     Note: There is no dedicated GET endpoint - this fetches all topics and filters.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2083,7 +2083,7 @@ def runtime_topics_create_command(client: Client, args: dict[str, Any]) -> Comma
     """Create a new custom topic guardrail.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2161,7 +2161,7 @@ def runtime_topics_update_command(client: Client, args: dict[str, Any]) -> Comma
     WARNING: This modifies the topic definition and can break detection if misconfigured.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2244,7 +2244,7 @@ def runtime_topics_delete_command(client: Client, args: dict[str, Any]) -> Comma
     WARNING: This permanently deletes the topic. Fails if topic is referenced by a profile.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2315,7 +2315,7 @@ def runtime_topics_apply_command(client: Client, args: dict[str, Any]) -> Comman
     Omitting revision defaults to revision 0 (original), not latest.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2492,7 +2492,7 @@ def runtime_bulk_scan_command(client: Client, args: dict[str, Any]) -> CommandRe
     """Perform bulk scanning of prompts via async API.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2585,7 +2585,7 @@ def runtime_bulk_scan_command(client: Client, args: dict[str, Any]) -> CommandRe
     # Create summary table
     summary = [{"Total Prompts": total, "Blocked": blocked, "Allowed": allowed, "Errors": errors}]
 
-    readable_output = "## Prisma AIRs Bulk Scan Results\n\n"
+    readable_output = "## Prisma AIRS Bulk Scan Results\n\n"
     readable_output += f"**Profile:** {profile_name}\n"
     if session_id:
         readable_output += f"**Session ID:** {session_id}\n"
@@ -2619,7 +2619,7 @@ def runtime_dlp_dictionaries_list_command(client: Client, args: dict[str, Any]) 
     """List DLP dictionaries.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2667,7 +2667,7 @@ def runtime_dlp_dictionaries_list_command(client: Client, args: dict[str, Any]) 
     total_pages = response.get("total_pages", 1)
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs DLP Dictionaries (Page {page + 1}/{total_pages}, {len(dictionaries)} of {total_elements})",
+        f"Prisma AIRS DLP Dictionaries (Page {page + 1}/{total_pages}, {len(dictionaries)} of {total_elements})",
         dictionaries,
         headers=["id", "name", "category", "type", "number_of_keywords", "region_name"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -2686,7 +2686,7 @@ def runtime_dlp_dictionaries_get_command(client: Client, args: dict[str, Any]) -
     """Get a single DLP dictionary by ID.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2733,7 +2733,7 @@ def runtime_dlp_dictionaries_get_command(client: Client, args: dict[str, Any]) -
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs DLP Dictionary: {dict_info.get('name')}",
+        f"Prisma AIRS DLP Dictionary: {dict_info.get('name')}",
         dict_info,
         headers=["id", "name", "category", "type", "region_name", "is_case_sensitive", "description"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -2752,7 +2752,7 @@ def runtime_dlp_dictionaries_create_command(client: Client, args: dict[str, Any]
     """Create a new DLP dictionary by uploading a keyword file.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2832,7 +2832,7 @@ def runtime_dlp_dictionaries_create_command(client: Client, args: dict[str, Any]
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs DLP Dictionary Created: {dict_info.get('name')}",
+        f"Prisma AIRS DLP Dictionary Created: {dict_info.get('name')}",
         dict_info,
         headers=["id", "name", "category", "type", "region_name", "description"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -2851,7 +2851,7 @@ def runtime_dlp_dictionaries_patch_command(client: Client, args: dict[str, Any])
     """Partially update a DLP dictionary (JSON Merge Patch).
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -2921,7 +2921,7 @@ def runtime_dlp_dictionaries_patch_command(client: Client, args: dict[str, Any])
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs DLP Dictionary Patched: {dict_info.get('name')}",
+        f"Prisma AIRS DLP Dictionary Patched: {dict_info.get('name')}",
         dict_info,
         headers=["id", "name", "category", "type", "region_name", "description"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -2940,7 +2940,7 @@ def runtime_dlp_dictionaries_replace_command(client: Client, args: dict[str, Any
     """Replace (full update) a DLP dictionary by uploading a new keyword file.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3024,7 +3024,7 @@ def runtime_dlp_dictionaries_replace_command(client: Client, args: dict[str, Any
         }
 
         readable_output = tableToMarkdown(
-            f"Prisma AIRs DLP Dictionary Replaced: {dict_info.get('name')}",
+            f"Prisma AIRS DLP Dictionary Replaced: {dict_info.get('name')}",
             dict_info,
             headers=["id", "name", "category", "type", "region_name", "description"],
             headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3040,7 +3040,7 @@ def runtime_dlp_dictionaries_replace_command(client: Client, args: dict[str, Any
     else:
         # 204 No Content response
         readable_output = (
-            f"## Prisma AIRs DLP Dictionary Replaced\n\n"
+            f"## Prisma AIRS DLP Dictionary Replaced\n\n"
             f"Dictionary ID `{dictionary_id}` has been successfully replaced (204 No Content)."
         )
         return CommandResults(readable_output=readable_output)
@@ -3050,7 +3050,7 @@ def runtime_dlp_dictionaries_delete_command(client: Client, args: dict[str, Any]
     """Delete a DLP dictionary.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3075,7 +3075,7 @@ def runtime_dlp_dictionaries_delete_command(client: Client, args: dict[str, Any]
     context_output = {"id": dictionary_id, "deleted": True, "status": "Successfully deleted"}
 
     readable_output = tableToMarkdown(
-        "Prisma AIRs DLP Dictionary Deleted",
+        "Prisma AIRS DLP Dictionary Deleted",
         context_output,
         headers=["id", "status"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3094,7 +3094,7 @@ def runtime_dlp_patterns_list_command(client: Client, args: dict[str, Any]) -> C
     """List DLP data patterns.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3139,7 +3139,7 @@ def runtime_dlp_patterns_list_command(client: Client, args: dict[str, Any]) -> C
     total_pages = response.get("total_pages", 1)
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs DLP Patterns (Page {page + 1}/{total_pages}, {len(patterns)} of {total_elements})",
+        f"Prisma AIRS DLP Patterns (Page {page + 1}/{total_pages}, {len(patterns)} of {total_elements})",
         patterns,
         headers=["id", "name", "category", "type", "detection_technique", "pattern_status"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3158,7 +3158,7 @@ def runtime_dlp_patterns_get_command(client: Client, args: dict[str, Any]) -> Co
     """Get a single DLP data pattern by ID.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3195,7 +3195,7 @@ def runtime_dlp_patterns_get_command(client: Client, args: dict[str, Any]) -> Co
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs DLP Pattern: {pattern_info.get('name')}",
+        f"Prisma AIRS DLP Pattern: {pattern_info.get('name')}",
         pattern_info,
         headers=["id", "name", "type", "status", "license_type", "description"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3214,7 +3214,7 @@ def runtime_dlp_patterns_create_command(client: Client, args: dict[str, Any]) ->
     """Create a new DLP data pattern.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3293,7 +3293,7 @@ def runtime_dlp_patterns_create_command(client: Client, args: dict[str, Any]) ->
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs DLP Pattern Created: {pattern_info.get('name')}",
+        f"Prisma AIRS DLP Pattern Created: {pattern_info.get('name')}",
         pattern_info,
         headers=["id", "name", "type", "status", "description"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3312,7 +3312,7 @@ def runtime_dlp_patterns_patch_command(client: Client, args: dict[str, Any]) -> 
     """Partially update a DLP data pattern (JSON Merge Patch).
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3406,7 +3406,7 @@ def runtime_dlp_patterns_patch_command(client: Client, args: dict[str, Any]) -> 
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs DLP Pattern Patched: {pattern_info.get('name')}",
+        f"Prisma AIRS DLP Pattern Patched: {pattern_info.get('name')}",
         pattern_info,
         headers=["id", "name", "type", "status", "description"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3425,7 +3425,7 @@ def runtime_dlp_patterns_replace_command(client: Client, args: dict[str, Any]) -
     """Replace (full update) a DLP data pattern.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3507,7 +3507,7 @@ def runtime_dlp_patterns_replace_command(client: Client, args: dict[str, Any]) -
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs DLP Pattern Replaced: {pattern_info.get('name')}",
+        f"Prisma AIRS DLP Pattern Replaced: {pattern_info.get('name')}",
         pattern_info,
         headers=["id", "name", "type", "status", "description"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3526,7 +3526,7 @@ def runtime_dlp_patterns_delete_command(client: Client, args: dict[str, Any]) ->
     """Delete (soft-delete/archive) a DLP data pattern.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3539,19 +3539,34 @@ def runtime_dlp_patterns_delete_command(client: Client, args: dict[str, Any]) ->
     # Call DLP patterns delete endpoint
     # Reference: ./knowledge/prisma-airs-sdk-main/src/management/dlp/data-patterns.ts
     # SDK: DELETE /v2/api/data-patterns/{resourceId}
-    # Returns 204 No Content on success
-    client.http_request(
-        method="DELETE",
-        url_suffix=f"{DLP_PATTERNS_PATH}/{pattern_id}",
-        use_dlp_base=True,
-        return_empty_response=True,  # Proper XSOAR pattern for DELETE operations (204 No Content)
-    )
+    # Returns 204 No Content on success (soft-delete / archive).
+    try:
+        client.http_request(
+            method="DELETE",
+            url_suffix=f"{DLP_PATTERNS_PATH}/{pattern_id}",
+            use_dlp_base=True,
+            return_empty_response=True,  # Proper XSOAR pattern for DELETE operations (204 No Content)
+        )
+    except DemistoException as e:
+        # The DLP API returns a bare HTTP 400 (no detail body) when the pattern is still
+        # referenced by an active data profile - it cannot be archived until the reference is
+        # removed. Surface an actionable message instead of the opaque "Bad Request".
+        # NOTE: this precondition is not documented in the OpenAPI spec (which lists only
+        # 204/401/403/404), and a referencing profile currently cannot be deleted because the
+        # data-profile mutation endpoints return HTTP 500 upstream.
+        if "[400]" in str(e):
+            raise DemistoException(
+                f"Failed to delete DLP data pattern '{pattern_id}' (HTTP 400). The pattern is likely "
+                "still referenced by an active data profile and cannot be deleted until that reference "
+                "is removed. Remove the pattern from any data profile's detection rules first, then retry."
+            ) from e
+        raise
 
     # Action-tracking context so playbooks can confirm the deletion (soft-delete / archive)
     context_output = {"id": pattern_id, "deleted": True, "status": "Successfully archived"}
 
     readable_output = tableToMarkdown(
-        "Prisma AIRs DLP Pattern Deleted",
+        "Prisma AIRS DLP Pattern Deleted",
         context_output,
         headers=["id", "status"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3570,7 +3585,7 @@ def runtime_dlp_filtering_profiles_list_command(client: Client, args: dict[str, 
     """List DLP filtering profiles.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3611,7 +3626,7 @@ def runtime_dlp_filtering_profiles_list_command(client: Client, args: dict[str, 
     total_pages = response.get("total_pages", 1)
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs DLP Filtering Profiles (Page {page + 1}/{total_pages}, {len(filtering_profiles)} of {total_elements})",
+        f"Prisma AIRS DLP Filtering Profiles (Page {page + 1}/{total_pages}, {len(filtering_profiles)} of {total_elements})",
         filtering_profiles,
         headers=["id", "name", "type", "default_action", "description"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3630,7 +3645,7 @@ def runtime_dlp_filtering_profiles_get_command(client: Client, args: dict[str, A
     """Get a single DLP filtering profile by ID.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3672,7 +3687,7 @@ def runtime_dlp_filtering_profiles_get_command(client: Client, args: dict[str, A
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs DLP Filtering Profile: {profile_info.get('name')}",
+        f"Prisma AIRS DLP Filtering Profile: {profile_info.get('name')}",
         profile_info,
         headers=["id", "name", "type", "direction", "file_based", "non_file_based", "log_severity", "description"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3691,7 +3706,7 @@ def runtime_dlp_filtering_profiles_replace_command(client: Client, args: dict[st
     """Replace (full update) a DLP filtering profile.
 
     Args:
-        client: Prisma AIRs API client.
+        client: Prisma AIRS API client.
         args: Command arguments from XSOAR.
 
     Returns:
@@ -3779,7 +3794,7 @@ def runtime_dlp_filtering_profiles_replace_command(client: Client, args: dict[st
     }
 
     readable_output = tableToMarkdown(
-        f"Prisma AIRs DLP Filtering Profile Updated: {profile_info.get('name')}",
+        f"Prisma AIRS DLP Filtering Profile Updated: {profile_info.get('name')}",
         profile_info,
         headers=["id", "name", "type", "direction", "file_based", "non_file_based", "log_severity", "description"],
         headerTransform=lambda h: h.replace("_", " ").title(),
@@ -3795,7 +3810,7 @@ def runtime_dlp_filtering_profiles_replace_command(client: Client, args: dict[st
 
 
 def main() -> None:
-    """Main function for Prisma AIRs AI Runtime Security integration."""
+    """Main function for Prisma AIRS AI Runtime Security integration."""
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()

@@ -1,4 +1,4 @@
-description: Test playbook for Prisma AIRs Red Team integration. Tests CRUD operations for prompt sets and prompts.
+description: Test playbook for Prisma AIRS Red Team integration. Tests CRUD operations for prompt sets and prompts.
 id: PaloAltoNetworks_Prisma_AIRs_RedTeam_Prompts_Test
 inputs:
 - key: PromptSetName

@@ -1,0 +1,18 @@
+{
+    "id": "DomainToolsFeed IP",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "regex": "",
+    "details": "DomainToolsFeed IP",
+    "reputationCommand": "ip",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "contextPath": "IP(val.Address \u0026\u0026 val.Address === obj.Address)",
+    "contextValue": "Address",
+    "expiration": 0,
+    "layout": "DomainToolsFeed IP Indicator"
+}

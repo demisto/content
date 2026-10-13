@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: LenelS2NetBox_ModelingRule
-name: LenelS2NetBox Modeling Rule
+id: LenelS2_NetBox_ModelingRule
+name: LenelS2 NetBox Modeling Rule
 rules: ''
 schema: ''
 tags: ''

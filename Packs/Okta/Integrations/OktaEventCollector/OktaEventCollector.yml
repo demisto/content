@@ -114,7 +114,7 @@ script:
     - contextPath: Okta.Event.severity
       description: The severity of the event.
       type: String
-  dockerimage: demisto/fastapi:0.125.0.10158186
+  dockerimage: demisto/fastapi:0.125.0.12689358
   isfetchevents: true
   subtype: python3
 marketplaces:
