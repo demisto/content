@@ -1,4 +1,5 @@
 from CommonServerPython import tableToMarkdown, Common, FeedIndicatorType, EntityRelationship
+import demistomock as demisto
 import pytest
 from AnomaliThreatStreamFeed import Client
 from datetime import datetime, UTC
@@ -986,11 +987,15 @@ def test_fetch_indicators_command_subsequent_run_no_new_indicators(mocker):
     # Mock datetime.now for consistent timestamps
     mock_now_dt = test_case["mock_now"]
     mocker.patch("AnomaliThreatStreamFeed.get_current_utc_time", return_value=mock_now_dt)
+    create_indicators = mocker.patch.object(demisto, "createIndicators")
 
-    next_run_timestamp, parsed_indicators_list = fetch_indicators_command(client, test_case["params"], test_case["last_run"])
+    next_run_timestamp, total_pushed = fetch_indicators_command(client, test_case["params"], test_case["last_run"])
 
     assert next_run_timestamp == test_case["expected_next_run_timestamp"]
-    assert parsed_indicators_list == test_case["expected_parsed_indicators"]
+    # Indicators are pushed to the server while paginating rather than returned.
+    expected_indicators = test_case["expected_parsed_indicators"]
+    assert total_pushed == len(expected_indicators)
+    assert create_indicators.call_args[0][0] == expected_indicators
     assert mock_http_request.call_count == 1  # Assert that http_request was called exactly once
 
 
@@ -1006,7 +1011,7 @@ def test_fetch_indicators_command_parsing_error_skips_indicator(mocker):
         - Calling fetch_indicators_command.
     Then:
         Verify that:
-        - Only successfully parsed indicators are returned.
+        - Only successfully parsed indicators are pushed to the server.
         - `parse_indicator_for_fetch` is attempted for all raw indicators.
         - The `next_run_timestamp` is correctly updated.
     """
@@ -1050,14 +1055,16 @@ def test_fetch_indicators_command_parsing_error_skips_indicator(mocker):
     mock_demisto_error = mocker.patch("AnomaliThreatStreamFeed.demisto.error")  # Patch demisto.error to assert its call
     mock_now_dt = test_case_data["mock_now"]
     mocker.patch("AnomaliThreatStreamFeed.get_current_utc_time", return_value=mock_now_dt)
+    create_indicators = mocker.patch.object(demisto, "createIndicators")
 
-    next_run_timestamp, parsed_indicators_list = fetch_indicators_command(
-        client, test_case_data["params"], test_case_data["last_run"]
-    )
+    next_run_timestamp, total_pushed = fetch_indicators_command(client, test_case_data["params"], test_case_data["last_run"])
 
     # Assertions
     assert next_run_timestamp == test_case_data["expected_next_run_timestamp"]
-    assert parsed_indicators_list == test_case_data["expected_parsed_indicators"]
+    # The indicator that failed parsing is skipped; only the successful one is pushed.
+    expected_indicators = test_case_data["expected_parsed_indicators"]
+    assert total_pushed == len(expected_indicators)
+    assert create_indicators.call_args[0][0] == expected_indicators
 
     # Verify demisto.error was called for the skipped indicator
     mock_demisto_error.assert_called_once_with(
@@ -1347,7 +1354,7 @@ def test_handle_get_pagination_multiple_pages(mocker):
     assert client.http_request.call_count == 2
 
     call1_url = "v1/indicators?limit=1000&offset=1000".replace("limit=1000", f"limit={initial_limit - LIMIT_RES_FROM_API}")
-    call2_url = "v1/indicators?limit=1000&offset=2000".replace("limit=1000", f"limit={initial_limit - 2*LIMIT_RES_FROM_API}")
+    call2_url = "v1/indicators?limit=1000&offset=2000".replace("limit=1000", f"limit={initial_limit - 2 * LIMIT_RES_FROM_API}")
     client.http_request.assert_any_call(method="GET", url_suffix=call1_url)
     client.http_request.assert_any_call(method="GET", url_suffix=call2_url)
 
@@ -1394,7 +1401,7 @@ def test_handle_get_pagination_no_more_indicators_on_page(mocker):
 def test_handle_fetch_pagination_no_initial_indicators():
     """
     Tests handle_fetch_pagination when the initial API response contains no indicators.
-    Verifies that an empty list is returned and no further API calls are made.
+    Verifies that nothing is fetched and no further API calls are made.
 
     Given:
         - An initial API response dictionary where the 'objects' key's value is an empty list,
@@ -1403,14 +1410,19 @@ def test_handle_fetch_pagination_no_initial_indicators():
         - Calling handle_fetch_pagination with this initial response.
     Then:
         Verify that:
-        - An empty list is returned.
+        - A total count of 0 is returned.
+        - The parse_and_push callback is never invoked.
     """
     from AnomaliThreatStreamFeed import handle_fetch_pagination
 
     initial_response = {"objects": [], "meta": {"next": None}}
     client = mock_client()
-    result = handle_fetch_pagination(client, initial_response)
-    assert result == []
+    pushed: list[dict[str, Any]] = []
+
+    total_fetched = handle_fetch_pagination(client, initial_response, pushed.extend)
+
+    assert total_fetched == 0
+    assert pushed == []
 
 
 def test_handle_fetch_pagination_no_pagination_needed(mocker):
@@ -1425,21 +1437,27 @@ def test_handle_fetch_pagination_no_pagination_needed(mocker):
         - Calling handle_fetch_pagination with this initial response.
     Then:
         Verify that:
-        - The function returns all indicators from the initial response.
+        - All indicators from the initial response are handed to the callback.
+        - The returned total count matches the number of indicators.
     """
     from AnomaliThreatStreamFeed import handle_fetch_pagination
 
     initial_response = {"objects": [{"id": "ind1"}, {"id": "ind2"}], "meta": {"next": None}}
     client = mock_client()
-    result = handle_fetch_pagination(client, initial_response)
-    assert len(result) == 2
-    assert {"id": "ind1"} in result
-    assert {"id": "ind2"} in result
+    pushed: list[dict[str, Any]] = []
+
+    total_fetched = handle_fetch_pagination(client, initial_response, pushed.extend)
+
+    assert total_fetched == 2
+    assert len(pushed) == 2
+    assert {"id": "ind1"} in pushed
+    assert {"id": "ind2"} in pushed
 
 
 def test_handle_fetch_pagination_multiple_pages(mocker):
     """
-    Tests handle_fetch_pagination's ability to fetch data across multiple API pages sequentially.
+    Tests handle_fetch_pagination's ability to fetch data across multiple API pages sequentially,
+    streaming each page to the callback as soon as it is retrieved.
 
     Given:
         - An initial API response with indicators and a 'next' page URL.
@@ -1450,7 +1468,8 @@ def test_handle_fetch_pagination_multiple_pages(mocker):
         - Calling handle_fetch_pagination with this setup.
     Then:
         Verify that:
-        - The returned list includes indicators from the initial response and all subsequently fetched pages.
+        - Indicators from the initial response and all subsequent pages are streamed to the callback.
+        - Each page is handed over separately, rather than accumulated into a single list.
         - The 'http_request' method is called twice for pagination.
     """
     from AnomaliThreatStreamFeed import handle_fetch_pagination
@@ -1467,10 +1486,114 @@ def test_handle_fetch_pagination_multiple_pages(mocker):
         ],
     )
 
-    result = handle_fetch_pagination(client, initial_response)
+    pages: list[list[dict[str, Any]]] = []
+    total_fetched = handle_fetch_pagination(client, initial_response, lambda page: pages.append(list(page)))
 
-    assert len(result) == 3
-    assert {"id": "initial_ind"} in result
-    assert {"id": "page_2_ind"} in result
-    assert {"id": "page_3_ind"} in result
+    assert total_fetched == 3
+    # Each page is streamed separately instead of being accumulated in memory.
+    assert pages == [[{"id": "initial_ind"}], [{"id": "page_2_ind"}], [{"id": "page_3_ind"}]]
     assert client.http_request.call_count == 2
+
+
+def test_handle_fetch_pagination_stops_and_keeps_pushed_on_error(mocker):
+    """
+    Tests that a failure mid-pagination does not discard indicators that were already pushed.
+
+    Given:
+        - An initial API response with indicators and a 'next' page URL.
+        - The client's 'http_request' raises an exception on the paginated call.
+    When:
+        - Calling handle_fetch_pagination with this setup.
+    Then:
+        Verify that:
+        - The exception is swallowed and pagination stops.
+        - Indicators streamed before the failure are retained.
+    """
+    from AnomaliThreatStreamFeed import handle_fetch_pagination
+
+    initial_response = {"objects": [{"id": "initial_ind"}], "meta": {"next": "/api/v1/indicators?offset=1000"}}
+    client = mock_client()
+    mocker.patch.object(client, "http_request", side_effect=Exception("API is down"))
+
+    pushed: list[dict[str, Any]] = []
+    total_fetched = handle_fetch_pagination(client, initial_response, pushed.extend)
+
+    assert total_fetched == 1
+    assert pushed == [{"id": "initial_ind"}]
+
+
+def test_fetch_indicators_command_streams_in_batches(mocker):
+    """
+    Tests that fetch_indicators_command pushes indicators to the server while paginating,
+    instead of accumulating the entire feed in memory and pushing once at the end.
+
+    Given:
+        - A feed returning 3 pages of 1000 indicators each (3000 in total).
+    When:
+        - Calling fetch_indicators_command.
+    Then:
+        Verify that:
+        - createIndicators is called in bounded batches of CREATE_INDICATORS_BATCH_SIZE.
+        - The final, partially-filled batch is flushed.
+        - Every indicator is pushed exactly once.
+        - The returned count reflects all pushed indicators.
+    """
+    from AnomaliThreatStreamFeed import CREATE_INDICATORS_BATCH_SIZE, fetch_indicators_command
+
+    def make_page(start: int) -> list[dict[str, Any]]:
+        return [{"id": f"ind_{i}", "type": "ip", "value": f"1.1.1.{i}", "confidence": 80} for i in range(start, start + 1000)]
+
+    client = mock_client()
+    mocker.patch.object(
+        client,
+        "http_request",
+        side_effect=[
+            {"objects": make_page(0), "meta": {"next": "/api/v2/intelligence/?offset=1000"}},
+            {"objects": make_page(1000), "meta": {"next": "/api/v2/intelligence/?offset=2000"}},
+            {"objects": make_page(2000), "meta": {"next": None}},
+        ],
+    )
+    create_indicators = mocker.patch.object(demisto, "createIndicators")
+
+    _, total_pushed = fetch_indicators_command(client, {"feedReliability": "A - Completely reliable"}, {})
+
+    assert total_pushed == 3000
+    batch_sizes = [len(call.args[0]) for call in create_indicators.call_args_list]
+    # Bounded batches: nothing larger than the batch size is ever held/pushed at once.
+    assert all(size <= CREATE_INDICATORS_BATCH_SIZE for size in batch_sizes)
+    assert sum(batch_sizes) == 3000
+    # 3000 indicators -> a full 2000 batch plus a flushed remainder of 1000.
+    assert batch_sizes == [CREATE_INDICATORS_BATCH_SIZE, 1000]
+
+
+def test_fetch_indicators_command_flushes_partial_batch(mocker):
+    """
+    Tests that a feed returning fewer indicators than one full batch is still pushed.
+
+    Given:
+        - A feed returning a single page with 3 indicators and no further pages.
+    When:
+        - Calling fetch_indicators_command.
+    Then:
+        Verify that:
+        - The partial batch is flushed to the server in a single call.
+        - The returned count reflects the pushed indicators.
+    """
+    from AnomaliThreatStreamFeed import fetch_indicators_command
+
+    client = mock_client()
+    mocker.patch.object(
+        client,
+        "http_request",
+        return_value={
+            "objects": [{"id": f"ind_{i}", "type": "ip", "value": f"1.1.1.{i}", "confidence": 80} for i in range(3)],
+            "meta": {"next": None},
+        },
+    )
+    create_indicators = mocker.patch.object(demisto, "createIndicators")
+
+    _, total_pushed = fetch_indicators_command(client, {"feedReliability": "A - Completely reliable"}, {})
+
+    assert total_pushed == 3
+    assert create_indicators.call_count == 1
+    assert len(create_indicators.call_args[0][0]) == 3
