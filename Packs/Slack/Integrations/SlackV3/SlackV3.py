@@ -1704,6 +1704,12 @@ class SlackLogger(IntegrationLogger):
         else:
             self.level = logging.INFO
 
+    def getEffectiveLevel(self):
+        return self.level
+
+    def isEnabledFor(self, level):
+        return level >= self.level
+
 
 SlackLog = SlackLogger()
 
