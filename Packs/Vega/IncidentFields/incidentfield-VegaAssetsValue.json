@@ -7,7 +7,6 @@
     "cliName": "vegaassetsvalue",
     "type": "multiSelect",
     "openEnded": true,
-    "selectValues": [],
     "closeForm": false,
     "editForm": false,
     "required": false,

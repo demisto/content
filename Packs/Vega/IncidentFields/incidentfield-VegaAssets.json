@@ -17,7 +17,6 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "openEnded": false,
     "associatedTypes": [
         "Vega Incident"
     ],
@@ -25,6 +24,10 @@
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0",
+    "openEnded": false,
     "columns": [
         {
             "key": "type",
@@ -53,8 +56,5 @@
     ],
     "defaultRows": [
         {}
-    ],
-    "sla": 0,
-    "threshold": 72,
-    "fromVersion": "6.10.0"
+    ]
 }

@@ -4,3 +4,4 @@
 !vega-update-detections detection_id="det-1" severity="HIGH" state="ENABLED" tags="tag1,tag2"
 !vega-update-alert alert_ids="alert-1" status="IN PROGRESS" severity="HIGH" verdict="MALICIOUS" verdict_reasoning="Investigating" comment="Started analysis" assignees="user@example.com"
 !vega-update-incident incident_ids="inc-1" status="INVESTIGATING" severity="HIGH" verdict="MALICIOUS" verdict_reasoning="Confirmed" comment="Opened case" assignee_emails="user@example.com"
+!vega-reconcile-incidents start_date="2024-06-01" end_date="2024-06-02" vega_entities="Alerts,Incidents" alert_severities="HIGH"
