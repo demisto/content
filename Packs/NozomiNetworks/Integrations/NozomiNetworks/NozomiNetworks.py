@@ -101,7 +101,7 @@ def get_client():
     return Client()
 
 
-MAX_INCIDENT_NAME_LENGTH = 76  # 36 (alert id) + 40
+MAX_INCIDENT_NAME_LENGTH = 76
 TRUNCATION_SUFFIX = "..."
 INCIDENT_NAME_PLACEHOLDER = re.compile(r"\{(\w+)\}")
 
