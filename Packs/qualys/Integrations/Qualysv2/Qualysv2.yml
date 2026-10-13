@@ -46,6 +46,7 @@ configuration:
   - xpanse
   supportedModules:
   - xsiam
+  - exposure_management
 - display: Fetch events
   name: isFetchEvents
   type: 8
@@ -2912,7 +2913,7 @@ script:
     - contextPath: Qualys.QID
       description: All the Qualys QID (Qualys ID) associated with a specified CVE.
       type: unknown
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.13053055
   isfetchevents: true
   isfetchassets: true
   runonce: false

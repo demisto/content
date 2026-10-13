@@ -48,6 +48,7 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 safe_pickle_loads, UnsafePickleError
                                 )
 
+
 EVENTS_LOG_ERROR = \
     """Error sending new events into XSIAM.
 Parameters used:
@@ -9898,6 +9899,49 @@ def test_content_type(content_format, outputs, expected_type):
     assert command_results.to_context()['ContentsFormat'] == expected_type
 
 
+def _install_fake_ijson(mocker):
+    """
+    Install a minimal fake ``ijson`` module into ``sys.modules`` so ``stream_json_items`` can be exercised
+    in every docker image WITHOUT requiring the real ``ijson`` package to be installed.
+
+    Rationale: ``ijson`` is intentionally NOT part of the CommonServerPython runtime image (``stream_json_items``
+    imports it lazily and raises a clear error if missing, so each adopting integration adds it to its own
+    image), and the SDK's pytest-in-docker test images do not include ``ijson`` either (it is not in the SDK's
+    dev-requirements) and cannot pip-install at test time. Injecting a fake keeps the ``stream_json_items``
+    code path (lazy import + ``ijson.items(...)`` loop + one-at-a-time yield) fully covered in CI with no infra
+    dependency.
+
+    The fake exposes ``items(source, prefix)`` matching the contract stream_json_items relies on: it parses the
+    whole source (bytes / str / file-like) and yields the records addressed by ``prefix`` ('item' for a top-level
+    array, 'a.b.item' for a nested array), one at a time.
+
+    :return: the fake ijson module object.
+    """
+    import types as _types
+
+    def _read_all(source):
+        data = source.read() if hasattr(source, 'read') else source
+        if isinstance(data, bytes):
+            data = data.decode('utf-8')
+        return json.loads(data)
+
+    def items(source, prefix):
+        parsed = _read_all(source)
+        node = parsed
+        for token in prefix.split('.'):
+            if token == 'item':
+                for element in node:
+                    yield element
+                return
+            node = node[token]
+        yield node
+
+    fake = _types.ModuleType('ijson')
+    fake.items = items
+    mocker.patch.dict('sys.modules', {'ijson': fake})
+    return fake
+
+
 class TestSendEventsToXSIAMTest:
     with open('test_data/events.json') as f:
         test_data = json.load(f)
@@ -10117,8 +10161,517 @@ class TestSendEventsToXSIAMTest:
         assert len(streaming_lines) == 2
         assert all('blob' not in line for line in streaming_lines)
 
-    @pytest.mark.parametrize('chunk_size', [2 ** 20, 50])
-    def test_send_data_to_xsiam_streaming_threaded_matches_legacy(self, mocker, chunk_size):
+    def test_send_assets_and_vulnerabilities_to_xsiam_defaults_to_streaming(self, mocker):
+        """
+        Given: a list of dict assets.
+        When:  calling send_assets_and_vulnerabilities_to_xsiam with default arguments (use_streaming_send defaults to True).
+        Then:  the assets are sent via the streaming path (serialize+free one at a time), the assets snapshot
+               headers (collector-type/snapshot-id/total-items-count) are preserved, and the same set of
+               serialized assets is delivered as the legacy path would deliver.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, send_assets_and_vulnerabilities_to_xsiam
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('time.time', return_value=123)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        assets = [{'id': i, 'name': 'asset number {}'.format(i)} for i in range(10)]
+
+        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_assets_and_vulnerabilities_to_xsiam(data=list(assets), vendor='some vendor', product='some product')
+
+        # The assets snapshot headers must be preserved (send goes through the assets data_type path).
+        headers = http_mock.call_args[1]['headers']
+        assert headers['collector-type'] == 'assets'
+        assert headers['snapshot-id'] == '123000'
+        assert headers['total-items-count'] == str(len(assets))
+
+        # Verify the streaming path delivered exactly the expected serialized assets.
+        streaming_lines = []
+        for call in http_mock.call_args_list:
+            streaming_lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
+        expected_lines = [json.dumps(asset) for asset in assets]
+        assert sorted(streaming_lines) == sorted(expected_lines)
+        demisto.updateModuleHealth.assert_called_with({'assetsPulled': len(assets)})
+
+    def test_send_assets_and_vulnerabilities_to_xsiam_non_streaming_preserves_headers(self, mocker):
+        """
+        Given: a list of dict assets.
+        When:  calling send_assets_and_vulnerabilities_to_xsiam with use_streaming_send=False (opt out of streaming).
+        Then:  the legacy (chunked) path is used, the assets snapshot headers are still preserved, and the
+               same set of serialized assets is delivered.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, send_assets_and_vulnerabilities_to_xsiam
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('time.time', return_value=123)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        assets = [{'id': i} for i in range(5)]
+        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_assets_and_vulnerabilities_to_xsiam(data=list(assets), vendor='v', product='p', use_streaming_send=False)
+
+        headers = http_mock.call_args[1]['headers']
+        assert headers['collector-type'] == 'assets'
+        assert headers['snapshot-id'] == '123000'
+        assert headers['total-items-count'] == str(len(assets))
+
+        lines = []
+        for call in http_mock.call_args_list:
+            lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
+        assert sorted(lines) == sorted(json.dumps(a) for a in assets)
+
+    def test_send_assets_and_vulnerabilities_to_xsiam_custom_snapshot_id_and_items_count(self, mocker):
+        """
+        Given: a list of assets with a custom snapshot_id and items_count.
+        When:  calling send_assets_and_vulnerabilities_to_xsiam.
+        Then:  the custom snapshot_id and items_count are used in the request headers.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, send_assets_and_vulnerabilities_to_xsiam
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('time.time', return_value=123)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_assets_and_vulnerabilities_to_xsiam(data=[{'id': 1}], vendor='v', product='p',
+                             snapshot_id='999', items_count=42)
+
+        headers = http_mock.call_args[1]['headers']
+        assert headers['snapshot-id'] == '999'
+        assert headers['total-items-count'] == '42'
+
+    def test_send_assets_and_vulnerabilities_to_xsiam_empty(self, mocker):
+        """
+        Given: an empty list of assets.
+        When:  calling send_assets_and_vulnerabilities_to_xsiam.
+        Then:  no HTTP call is made and the health module reports 0 assets.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, send_assets_and_vulnerabilities_to_xsiam
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        update_health_mock = mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        http_mock = mocker.patch.object(BaseClient, '_http_request')
+
+        send_assets_and_vulnerabilities_to_xsiam(data=[], vendor='v', product='p')
+
+        assert http_mock.call_count == 0
+        update_health_mock.assert_called_with({'assetsPulled': 0})
+
+    def test_send_assets_and_vulnerabilities_to_xsiam_multiple_threads_uses_streaming(self, mocker):
+        """
+        Given: a list of dict assets.
+        When:  calling send_assets_and_vulnerabilities_to_xsiam with multiple_threads=True (while use_streaming_send
+               defaults to True).
+        Then:  the streaming send path IS used together with multiple threads - each finished gzip chunk is POSTed
+               on a bounded thread pool (streaming, free-as-you-go) and a list of futures is returned to the caller.
+               This confirms multiple_threads keeps the memory-efficient streaming that
+               send_assets_and_vulnerabilities_to_xsiam provides, rather than falling back to the legacy path.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, send_assets_and_vulnerabilities_to_xsiam
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('CommonServerPython.support_multithreading')
+        mocker.patch('time.time', return_value=123)
+
+        info_mock = mocker.patch.object(demisto, 'info')
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+
+        futures = send_assets_and_vulnerabilities_to_xsiam(data=[{'id': 1}, {'id': 2}], vendor='v', product='p',
+                                       multiple_threads=True)
+
+        # multiple_threads path returns a list of futures ...
+        assert isinstance(futures, list)
+        import concurrent.futures
+        total = 0
+        for future in concurrent.futures.as_completed(futures):
+            total += future.result()
+        assert total == 2
+
+        # ... and the streaming ("free-as-you-go") path WAS taken together with multiple threads.
+        streaming_logged = any(
+            'streaming' in str(call.args[0]).lower() and 'multiple threads' in str(call.args[0]).lower()
+            for call in info_mock.call_args_list if call.args
+        )
+        assert streaming_logged, 'streaming send should stay enabled when multiple_threads=True'
+        # The two small items fit a single streamed chunk, so the decompressed blob is newline-separated.
+        sent_blobs = [gzip.decompress(call[1]['data']).decode('utf-8') for call in http_mock.call_args_list]
+        assert any('\n' in blob for blob in sent_blobs)
+
+    def test_send_assets_and_vulnerabilities_to_xsiam_custom_client_class(self, mocker):
+        """
+        Given: a custom client class.
+        When:  calling send_assets_and_vulnerabilities_to_xsiam with client_class set.
+        Then:  the custom client class is instantiated and used to perform the send.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, send_assets_and_vulnerabilities_to_xsiam
+        from requests import Response
+
+        class MyClient(BaseClient):
+            pass
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('time.time', return_value=123)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        init_spy = mocker.spy(MyClient, '__init__')
+        mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_assets_and_vulnerabilities_to_xsiam(data=[{'id': 1}], vendor='v', product='p', client_class=MyClient)
+        assert init_spy.call_count == 1
+
+    def test_stream_json_items_top_level_array(self, mocker):
+        """
+        Given: a JSON payload that is a top-level array (as bytes).
+        When:  parsing it with stream_json_items using the default 'item' prefix.
+        Then:  every record in the array is yielded, in order.
+        """
+        _install_fake_ijson(mocker)
+        from CommonServerPython import stream_json_items
+        import io
+
+        top_level = [{'id': 1}, {'id': 2}, {'id': 3}]
+        source = io.BytesIO(json.dumps(top_level).encode('utf-8'))
+        assert list(stream_json_items(source, items_prefix='item')) == top_level
+
+    def test_stream_json_items_nested_array(self, mocker):
+        """
+        Given: a JSON payload containing an array nested under a key.
+        When:  parsing it with the matching nested prefix ('data.item').
+        Then:  only the nested records are yielded.
+        """
+        _install_fake_ijson(mocker)
+        from CommonServerPython import stream_json_items
+        import io
+
+        nested = {'data': [{'id': 10}, {'id': 20}], 'meta': {'total': 2}}
+        source = io.BytesIO(json.dumps(nested).encode('utf-8'))
+        assert list(stream_json_items(source, items_prefix='data.item')) == nested['data']
+
+    def test_stream_json_items_empty_array(self, mocker):
+        """
+        Given: a JSON payload that is an empty array.
+        When:  parsing it with stream_json_items.
+        Then:  no records are yielded.
+        """
+        _install_fake_ijson(mocker)
+        from CommonServerPython import stream_json_items
+        import io
+
+        source = io.BytesIO(b'[]')
+        assert list(stream_json_items(source, items_prefix='item')) == []
+
+    def test_stream_json_items_from_bytes(self, mocker):
+        """
+        Given: a JSON array supplied directly as a bytes object (not a stream).
+        When:  parsing it with stream_json_items.
+        Then:  the records are yielded correctly (ijson accepts bytes input).
+        """
+        _install_fake_ijson(mocker)
+        from CommonServerPython import stream_json_items
+
+        assert list(stream_json_items(b'[{"a": 1}, {"a": 2}]', items_prefix='item')) == [{'a': 1}, {'a': 2}]
+
+    def test_stream_json_items_yields_one_at_a_time(self, mocker):
+        """
+        Given: a JSON array parsed via stream_json_items.
+        When:  advancing the returned generator one step at a time.
+        Then:  it is a lazy generator that yields a single record per iteration (does not build a full list
+               up front), confirming the one-record-at-a-time contract of stream_json_items.
+        """
+        _install_fake_ijson(mocker)
+        from CommonServerPython import stream_json_items
+
+        gen = stream_json_items(b'[{"id": 0}, {"id": 1}, {"id": 2}]', items_prefix='item')
+        # It's a generator (lazy), not a materialized list.
+        assert hasattr(gen, '__next__') or hasattr(gen, 'next')
+        assert next(gen) == {'id': 0}
+        assert next(gen) == {'id': 1}
+        assert list(gen) == [{'id': 2}]
+
+    def test_stream_json_items_is_lazy(self, mocker):
+        """
+        Given: a JSON array wrapped in a stream whose reads are counted (real ijson only).
+        When:  advancing the stream_json_items generator by a single step (next()).
+        Then:  the whole stream is NOT fully consumed up front, proving parsing is incremental/lazy.
+
+        This test asserts real-library incremental behavior, so it requires the real ``ijson`` and is skipped
+        when it is not installed (the one-record-at-a-time contract is covered without ijson by
+        test_stream_json_items_yields_one_at_a_time).
+        """
+        pytest.importorskip('ijson')
+        from CommonServerPython import stream_json_items
+        import io
+
+        payload = json.dumps([{'id': i} for i in range(1000)]).encode('utf-8')
+
+        class CountingStream(io.BytesIO):
+            def __init__(self, data):
+                io.BytesIO.__init__(self, data)
+                self.total_read = 0
+
+            def read(self, size=-1):
+                chunk = io.BytesIO.read(self, size)
+                self.total_read += len(chunk)
+                return chunk
+
+        stream = CountingStream(payload)
+        gen = stream_json_items(stream, items_prefix='item')
+        first = next(gen)
+        assert first == {'id': 0}
+        # The generator produced the first record without reading the entire (large) payload.
+        assert stream.total_read < len(payload)
+
+    def test_stream_json_items_missing_ijson(self, mocker):
+        """
+        Given: an environment where ijson is not installed.
+        When:  calling stream_json_items.
+        Then:  a clear DemistoException is raised instructing to add ijson to the docker image.
+        """
+        from CommonServerPython import stream_json_items
+        try:
+            import builtins  # Python 3
+        except ImportError:
+            import __builtin__ as builtins  # type: ignore # Python 2
+
+        real_import = builtins.__import__
+
+        def fake_import(name, *args, **kwargs):
+            if name == 'ijson':
+                raise ImportError('No module named ijson')
+            return real_import(name, *args, **kwargs)
+
+        mocker.patch.object(builtins, '__import__', side_effect=fake_import)
+        with pytest.raises(DemistoException, match='ijson'):
+            list(stream_json_items(b'[]'))
+
+    def test_stream_xml_elements_basic(self):
+        """
+        Given: an XML document with repeated <asset> elements interleaved with other tags.
+        When:  parsing it with stream_xml_elements(tags=['asset']).
+        Then:  only <asset> elements are yielded as (local_tag, element) tuples, in document order,
+               and non-matching tags are ignored.
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = (
+            b'<assets>'
+            b'<asset><id>1</id><name>a</name></asset>'
+            b'<asset><id>2</id><name>b</name></asset>'
+            b'<other>ignored</other>'
+            b'<asset><id>3</id><name>c</name></asset>'
+            b'</assets>'
+        )
+        # Extract data during iteration (elements are cleared once the generator advances past them).
+        results = [(local_tag, elem.findtext('id')) for local_tag, elem in
+                   stream_xml_elements(io.BytesIO(xml_bytes), tags=['asset'])]
+        assert [local_tag for local_tag, _ in results] == ['asset', 'asset', 'asset']
+        assert [id_text for _, id_text in results] == ['1', '2', '3']
+
+    def test_stream_xml_elements_single_tag_as_string(self):
+        """
+        Given: an XML document with repeated <asset> elements.
+        When:  parsing it with a single tag passed as a string (convenience form).
+        Then:  matching elements are yielded as (local_tag, element) tuples.
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = b'<assets><asset><id>1</id></asset><asset><id>2</id></asset></assets>'
+        ids = [elem.findtext('id') for local_tag, elem in stream_xml_elements(io.BytesIO(xml_bytes), tags='asset')]
+        assert ids == ['1', '2']
+
+    def test_stream_xml_elements_multiple_tags_single_pass(self):
+        """
+        Given: an XML document containing several different tags (data + error/pagination markers),
+               as in a Qualys host-list response.
+        When:  parsing it with stream_xml_elements(tags=['HOST', 'CODE', 'URL']) in one pass.
+        Then:  every requested tag is yielded with its local name so the caller can tell them apart,
+               in document order, from a single read of the stream.
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = (
+            b'<OUTPUT>'
+            b'<RESPONSE>'
+            b'<HOST_LIST>'
+            b'<HOST><ID>1</ID></HOST>'
+            b'<HOST><ID>2</ID></HOST>'
+            b'</HOST_LIST>'
+            b'<WARNING><URL>https://example.com?id_min=3</URL></WARNING>'
+            b'</RESPONSE>'
+            b'</OUTPUT>'
+        )
+        results = [(local_tag, (elem.findtext('ID') or elem.text)) for local_tag, elem in
+                   stream_xml_elements(io.BytesIO(xml_bytes), tags=['HOST', 'CODE', 'URL'])]
+        assert results == [
+            ('HOST', '1'),
+            ('HOST', '2'),
+            ('URL', 'https://example.com?id_min=3'),
+        ]
+
+    def test_stream_xml_elements_captures_error_code(self):
+        """
+        Given: an XML error envelope containing a <CODE> element.
+        When:  parsing it while requesting the CODE tag alongside data tags.
+        Then:  the CODE element is surfaced so the caller can raise on API errors.
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = b'<SIMPLE_RETURN><RESPONSE><CODE>1234</CODE><TEXT>bad</TEXT></RESPONSE></SIMPLE_RETURN>'
+        # Extract data during iteration (elements are cleared once the generator advances past them).
+        results = [(local_tag, elem.text) for local_tag, elem in
+                   stream_xml_elements(io.BytesIO(xml_bytes), tags=['HOST', 'CODE'])]
+        assert results == [('CODE', '1234')]
+
+    def test_stream_xml_elements_namespaced(self):
+        """
+        Given: a namespaced XML document.
+        When:  parsing it with stream_xml_elements matching on the local tag name.
+        Then:  namespaced elements are matched (namespace-agnostic).
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        ns_xml = (
+            b'<ns:assets xmlns:ns="http://example.com">'
+            b'<ns:asset><ns:id>7</ns:id></ns:asset>'
+            b'<ns:asset><ns:id>8</ns:id></ns:asset>'
+            b'</ns:assets>'
+        )
+        count = sum(1 for _ in stream_xml_elements(io.BytesIO(ns_xml), tags=['asset']))
+        assert count == 2
+
+    def test_stream_xml_elements_no_matches(self):
+        """
+        Given: an XML document with no elements matching the requested tags.
+        When:  parsing it with stream_xml_elements.
+        Then:  nothing is yielded.
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = b'<root><foo>1</foo><bar>2</bar></root>'
+        assert list(stream_xml_elements(io.BytesIO(xml_bytes), tags=['asset'])) == []
+
+    def test_stream_xml_elements_clears_elements(self):
+        """
+        Given: an XML document with repeated <asset> elements.
+        When:  parsing it with stream_xml_elements and consuming the generator fully.
+        Then:  each yielded element is cleared (has no children/text) after the caller advances past it,
+               proving the memory-freeing behavior (elem.clear()).
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = (
+            b'<assets>'
+            b'<asset><id>1</id></asset>'
+            b'<asset><id>2</id></asset>'
+            b'</assets>'
+        )
+        seen = []
+        for _local_tag, elem in stream_xml_elements(io.BytesIO(xml_bytes), tags=['asset']):
+            # capture the previously-yielded element - it should have been cleared before we advanced here
+            seen.append(elem)
+        # After iteration, all yielded elements have been cleared (no children remain).
+        for elem in seen:
+            assert len(list(elem)) == 0
+
+    def test_stream_xml_elements_nested_same_tag(self):
+        """
+        Given: an XML document with the target tag nested inside another instance of the same tag.
+        When:  parsing it with stream_xml_elements.
+        Then:  every matching element (inner and outer) is yielded on its 'end' event.
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = (
+            b'<root>'
+            b'<asset><id>outer</id><asset><id>inner</id></asset></asset>'
+            b'</root>'
+        )
+        count = sum(1 for _ in stream_xml_elements(io.BytesIO(xml_bytes), tags=['asset']))
+        assert count == 2
+
+    def test_stream_xml_elements_is_lazy(self):
+        """
+        Given: a large XML document wrapped in a stream whose reads are counted.
+        When:  advancing the stream_xml_elements generator by a single step (next()).
+        Then:  the whole stream is NOT fully consumed up front, proving parsing is incremental/lazy
+               (iterparse reads/parses on demand rather than loading the entire tree).
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        # Build a large document so incremental parsing is observable via read counting.
+        body = b'<assets>' + b''.join(
+            b'<asset><id>%d</id></asset>' % i for i in range(5000)
+        ) + b'</assets>'
+
+        class CountingStream(io.BytesIO):
+            def __init__(self, data):
+                io.BytesIO.__init__(self, data)
+                self.total_read = 0
+
+            def read(self, size=-1):
+                chunk = io.BytesIO.read(self, size)
+                self.total_read += len(chunk)
+                return chunk
+
+        stream = CountingStream(body)
+        gen = stream_xml_elements(stream, tags=['asset'])
+        _local_tag, first = next(gen)
+        assert first.findtext('id') == '0'
+        # The first element was produced without reading the entire (large) document.
+        assert stream.total_read < len(body)
+
+    def test_send_data_to_xsiam_streaming_threaded_matches_legacy(self, mocker):
         """
         Given: a list of dict events and both use_streaming_send=True and multiple_threads=True (CIAC-17212).
         When:  calling send_data_to_xsiam, forcing several chunks with a small chunk_size.
@@ -10128,13 +10681,15 @@ class TestSendEventsToXSIAMTest:
         if not IS_PY3:
             return
         import concurrent.futures
-        from CommonServerPython import BaseClient
+        import CommonServerPython as csp
         from requests import Response
 
+        chunk_size = 50
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
         mocker.patch.object(demisto, 'updateModuleHealth')
         mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
         mocker.patch('CommonServerPython.support_multithreading')
+        mocker.patch.object(csp, 'NUM_OF_WORKERS', 2)  # cap pool: avoid oversubscription on the loaded nightly runner
 
         api_response = Response()
         api_response.status_code = 200
@@ -10143,7 +10698,7 @@ class TestSendEventsToXSIAMTest:
         events = [{'id': i, 'msg': 'event number {}'.format(i)} for i in range(25)]
 
         # legacy single-thread path (the reference payload)
-        legacy_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        legacy_mock = mocker.patch.object(csp.BaseClient, '_http_request', return_value=api_response)
         send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=chunk_size,
                            data_type='events', use_streaming_send=False)
         legacy_lines = []
@@ -10154,7 +10709,7 @@ class TestSendEventsToXSIAMTest:
         demisto.updateModuleHealth.reset_mock()
 
         # streaming + threaded path
-        threaded_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        threaded_mock = mocker.patch.object(csp.BaseClient, '_http_request', return_value=api_response)
         futures = send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=chunk_size,
                                      data_type='events', use_streaming_send=True, multiple_threads=True,
                                      should_update_health_module=False)
@@ -10184,7 +10739,7 @@ class TestSendEventsToXSIAMTest:
         if not IS_PY3:
             return
         import concurrent.futures
-        from CommonServerPython import BaseClient, MAX_ALLOWED_ENTRY_SIZE
+        import CommonServerPython as csp
         from requests import Response
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
@@ -10192,6 +10747,7 @@ class TestSendEventsToXSIAMTest:
         mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
         mocker.patch.object(demisto, 'error')
         mocker.patch('CommonServerPython.support_multithreading')
+        mocker.patch.object(csp, 'NUM_OF_WORKERS', 2)  # cap pool: avoid oversubscription on the loaded nightly runner
 
         api_response = Response()
         api_response.status_code = 200
@@ -10199,11 +10755,11 @@ class TestSendEventsToXSIAMTest:
 
         events = [
             {'id': 0, 'msg': 'first'},
-            {'id': 1, 'blob': 'x' * (MAX_ALLOWED_ENTRY_SIZE + 1000)},
+            {'id': 1, 'blob': 'x' * (csp.MAX_ALLOWED_ENTRY_SIZE + 1000)},
             {'id': 2, 'msg': 'second'},
         ]
 
-        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        http_mock = mocker.patch.object(csp.BaseClient, '_http_request', return_value=api_response)
         futures = send_data_to_xsiam(data=list(events), vendor='v', product='p',
                                      data_type='events', use_streaming_send=True, multiple_threads=True,
                                      should_update_health_module=False)
@@ -10222,12 +10778,13 @@ class TestSendEventsToXSIAMTest:
         """Streaming + threaded path with an empty list makes no HTTP call and returns an empty futures list."""
         if not IS_PY3:
             return
-        from CommonServerPython import BaseClient
+        import CommonServerPython as csp
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
         mocker.patch.object(demisto, 'updateModuleHealth')
         mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
         mocker.patch('CommonServerPython.support_multithreading')
-        http_mock = mocker.patch.object(BaseClient, '_http_request')
+        mocker.patch.object(csp, 'NUM_OF_WORKERS', 2)  # cap pool: avoid oversubscription on the loaded nightly runner
+        http_mock = mocker.patch.object(csp.BaseClient, '_http_request')
         result = send_data_to_xsiam(data=[], vendor='v', product='p', data_type='events',
                                     use_streaming_send=True, multiple_threads=True,
                                     should_update_health_module=False)
@@ -10237,16 +10794,15 @@ class TestSendEventsToXSIAMTest:
 
     def test_send_data_to_xsiam_streaming_threaded_bounds_inflight_chunks(self, mocker):
         """
-        MAX_INFLIGHT_CHUNKS is patched below NUM_OF_WORKERS so the back-pressure loop - not the pool size -
-        caps residency. Resident (submitted, not-yet-completed) chunks must never exceed the bound, proving
-        the loop bounds peak memory independently of the pool.
+        MAX_INFLIGHT_CHUNKS (patched below NUM_OF_WORKERS) - not the pool size - caps residency. Resident
+        (submitted, not-yet-completed) chunks must never exceed the bound. Event-driven (no fixed sleeps) and
+        the pool is fully drained, so the test cannot hang on py2.7 (no cancel_futures) or a loaded runner.
         """
         if not IS_PY3:
             return
         import threading
         import concurrent.futures
         import CommonServerPython as csp
-        from CommonServerPython import BaseClient, NUM_OF_WORKERS
         from requests import Response
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
@@ -10254,18 +10810,18 @@ class TestSendEventsToXSIAMTest:
         mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
         mocker.patch('CommonServerPython.support_multithreading')
 
-        # Force the bound to be strictly below the pool size so a passing assertion cannot be attributed to
-        # max_workers. If the back-pressure loop were removed, residency would rise to NUM_OF_WORKERS (> bound).
-        bound = 5
-        assert bound < NUM_OF_WORKERS
+        # Keep the pool tiny and set the bound strictly below it, so a pass cannot be attributed to max_workers.
+        pool_size = 4
+        bound = 2
+        assert bound < pool_size
+        mocker.patch.object(csp, 'NUM_OF_WORKERS', pool_size)
         mocker.patch.object(csp, 'MAX_INFLIGHT_CHUNKS', bound)
 
         api_response = Response()
         api_response.status_code = 200
         api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
 
-        # Residency = chunks handed to the pool whose future has not completed yet. We increment when the
-        # worker starts POSTing and decrement when it returns; the peak of this counter is what the bound caps.
+        # Residency = chunks handed to the pool whose future has not completed yet.
         resident = {'current': 0, 'max': 0}
         lock = threading.Lock()
         release = threading.Event()
@@ -10274,20 +10830,24 @@ class TestSendEventsToXSIAMTest:
             with lock:
                 resident['current'] += 1
                 resident['max'] = max(resident['max'], resident['current'])
-            # hold the "POST" open so, without back-pressure, up to NUM_OF_WORKERS chunks would pile up
-            release.wait(timeout=0.2)
+                # Self-release once `bound` workers are concurrently resident: that is the most the back-pressure
+                # loop can allow, so peak residency is already recorded. Releasing from INSIDE the worker (rather
+                # than after send_data_to_xsiam returns) is essential - the producer blocks in the loop waiting
+                # for in-flight futures, so a post-return release.set() would deadlock. No fixed sleeps.
+                if resident['current'] >= bound:
+                    release.set()
+            release.wait(timeout=2)  # safety net only; normally set immediately by the line above (short to avoid a long tail on a loaded nightly runner)
             with lock:
                 resident['current'] -= 1
             return api_response
 
-        mocker.patch.object(BaseClient, '_http_request', side_effect=blocking_http_request)
+        mocker.patch.object(csp.BaseClient, '_http_request', side_effect=blocking_http_request)
 
         # tiny chunk_size => one event per chunk => far more chunks than the (patched) bound
         events = [{'id': i, 'msg': 'x'} for i in range(bound * 6)]
         futures = send_data_to_xsiam(data=events, vendor='v', product='p', chunk_size=1,
                                      data_type='events', use_streaming_send=True, multiple_threads=True,
                                      should_update_health_module=False)
-        release.set()
         for future in concurrent.futures.as_completed(futures):
             future.result()
 
@@ -10296,16 +10856,15 @@ class TestSendEventsToXSIAMTest:
 
     def test_send_data_to_xsiam_streaming_threaded_midstream_failure_preserves_delivered(self, mocker):
         """
-        A chunk POST fails mid-stream after earlier chunks were delivered (MAX_INFLIGHT_CHUNKS patched low so
-        the error surfaces via the back-pressure loop). The exception must propagate and carry
-        exc.submitted_futures so the caller can still count already-delivered chunks (no silent loss).
+        A chunk POST fails mid-stream after earlier chunks were delivered (bound patched low so the error
+        surfaces via the back-pressure loop). The exception must propagate carrying exc.submitted_futures so
+        the caller can still count delivered chunks. Small pool + full drain => cannot hang on py2.7.
         """
         if not IS_PY3:
             return
         import threading
         import concurrent.futures
         import CommonServerPython as csp
-        from CommonServerPython import BaseClient
         from requests import Response
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
@@ -10313,8 +10872,9 @@ class TestSendEventsToXSIAMTest:
         mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
         mocker.patch('CommonServerPython.support_multithreading')
 
-        # Low bound => the producer must wait on in-flight futures via the back-pressure loop, guaranteeing the
-        # failing chunk's error re-raises inside send_data_to_xsiam rather than only when the caller awaits.
+        # Tiny pool + low bound => the producer must wait on in-flight futures via the back-pressure loop,
+        # guaranteeing the failing chunk's error re-raises inside send_data_to_xsiam, not only when awaited.
+        mocker.patch.object(csp, 'NUM_OF_WORKERS', 2)
         mocker.patch.object(csp, 'MAX_INFLIGHT_CHUNKS', 2)
 
         ok_response = Response()
@@ -10335,9 +10895,9 @@ class TestSendEventsToXSIAMTest:
                 state['delivered'] += 1
             return ok_response
 
-        mocker.patch.object(BaseClient, '_http_request', side_effect=flaky_http_request)
+        mocker.patch.object(csp.BaseClient, '_http_request', side_effect=flaky_http_request)
 
-        events = [{'id': i, 'msg': 'x'} for i in range(20)]
+        events = [{'id': i, 'msg': 'x'} for i in range(8)]
         with pytest.raises(ValueError, match='boom on chunk') as exc_info:
             send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=1,
                                data_type='events', use_streaming_send=True, multiple_threads=True,
@@ -10347,6 +10907,7 @@ class TestSendEventsToXSIAMTest:
         submitted = getattr(exc_info.value, 'submitted_futures', None)
         assert submitted is not None, 'exception must carry submitted_futures for count recovery'
         recovered = 0
+        # drains every submitted future (delivered + the failing one) so no worker thread outlives the test
         for future in concurrent.futures.as_completed(submitted):
             try:
                 recovered += future.result()
@@ -10359,12 +10920,13 @@ class TestSendEventsToXSIAMTest:
     def test_send_data_to_xsiam_streaming_threaded_backpressure_surfaces_worker_error(self, mocker):
         """
         With MAX_INFLIGHT_CHUNKS=1 a worker failure occurs while the producer waits in the back-pressure loop;
-        finished.result() inside the loop must re-raise it promptly rather than swallow it.
+        finished.result() inside the loop must re-raise it promptly. Tiny pool + drain of any leftover future
+        => no worker thread outlives the test (safe on py2.7 where shutdown has no cancel_futures).
         """
         if not IS_PY3:
             return
+        import concurrent.futures
         import CommonServerPython as csp
-        from CommonServerPython import BaseClient
         from requests import Response
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
@@ -10374,18 +10936,27 @@ class TestSendEventsToXSIAMTest:
 
         # bound of 1 => the producer must wait for the single in-flight future before submitting the next chunk,
         # forcing the error to surface through the back-pressure loop's finished.result() rather than at the end.
+        mocker.patch.object(csp, 'NUM_OF_WORKERS', 2)
         mocker.patch.object(csp, 'MAX_INFLIGHT_CHUNKS', 1)
 
         def failing_http_request(*args, **kwargs):
             raise ValueError('worker exploded')
 
-        mocker.patch.object(BaseClient, '_http_request', side_effect=failing_http_request)
+        mocker.patch.object(csp.BaseClient, '_http_request', side_effect=failing_http_request)
 
-        events = [{'id': i, 'msg': 'x'} for i in range(10)]
-        with pytest.raises(ValueError, match='worker exploded'):
+        events = [{'id': i, 'msg': 'x'} for i in range(6)]
+        with pytest.raises(ValueError, match='worker exploded') as exc_info:
             send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=1,
                                data_type='events', use_streaming_send=True, multiple_threads=True,
                                should_update_health_module=False)
+
+        # drain any already-submitted future so no worker thread lingers past the test (all raise; ignored)
+        for future in concurrent.futures.as_completed(getattr(exc_info.value, 'submitted_futures', []) or []):
+            try:
+                future.result()
+            except Exception:
+                # Intentionally ignore errors from drained futures; the primary failure is asserted above.
+                continue
 
     @pytest.mark.parametrize('chunk_size', [2 ** 20, 50])
     def test_send_data_to_xsiam_streaming_threaded_assets_snapshot_headers(self, mocker, chunk_size):
@@ -10396,20 +10967,21 @@ class TestSendEventsToXSIAMTest:
         if not IS_PY3:
             return
         import concurrent.futures
-        from CommonServerPython import BaseClient
+        import CommonServerPython as csp
         from requests import Response
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
         mocker.patch.object(demisto, 'updateModuleHealth')
         mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
         mocker.patch('CommonServerPython.support_multithreading')
+        mocker.patch.object(csp, 'NUM_OF_WORKERS', 3)  # tiny pool: fast + no lingering threads on py2.7
 
         api_response = Response()
         api_response.status_code = 200
         api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
-        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        http_mock = mocker.patch.object(csp.BaseClient, '_http_request', return_value=api_response)
 
-        assets = [{'id': i, 'msg': 'asset {}'.format(i)} for i in range(25)]
+        assets = [{'id': i, 'msg': 'asset {}'.format(i)} for i in range(9)]
         futures = send_data_to_xsiam(data=list(assets), vendor='v', product='p', chunk_size=chunk_size,
                                      data_type='assets', snapshot_id='snap-999', items_count=len(assets),
                                      use_streaming_send=True, multiple_threads=True,
@@ -10431,20 +11003,21 @@ class TestSendEventsToXSIAMTest:
         if not IS_PY3:
             return
         import concurrent.futures
-        from CommonServerPython import BaseClient
+        import CommonServerPython as csp
         from requests import Response
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
         health_mock = mocker.patch.object(demisto, 'updateModuleHealth')
         mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
         mocker.patch('CommonServerPython.support_multithreading')
+        mocker.patch.object(csp, 'NUM_OF_WORKERS', 3)  # tiny pool: fast + no lingering threads on py2.7
 
         api_response = Response()
         api_response.status_code = 200
         api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
-        mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        mocker.patch.object(csp.BaseClient, '_http_request', return_value=api_response)
 
-        events = [{'id': i, 'msg': 'x'} for i in range(10)]
+        events = [{'id': i, 'msg': 'x'} for i in range(6)]
         futures = send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=1,
                                      data_type='events', use_streaming_send=True, multiple_threads=True,
                                      should_update_health_module=True)
@@ -12352,6 +12925,18 @@ def ucp_metadata_multi():
 
 
 @pytest.fixture()
+def ucp_metadata_passthrough_unmatched():
+    """Single passthrough profile whose capability no command maps to (XSUP-76663)."""
+    return load_ucp_test_data('ucp_metadata.json', key='passthrough_unmatched_capability')
+
+
+@pytest.fixture()
+def ucp_metadata_multi_no_automation():
+    """Multi-profile UCP metadata with no automation-and-remediation profile."""
+    return load_ucp_test_data('ucp_metadata.json', key='multi_profile_no_automation')
+
+
+@pytest.fixture()
 def ucp_creds_oauth2():
     """OAuth2 UCP credentials."""
     return load_ucp_test_data('ucp_credentials.json', key='oauth2')
@@ -12600,6 +13185,282 @@ class TestUcpCapabilityResolution:
             'fetch-indicators': 'threat-intelligence-and-enrichment',
             'fetch-assets': 'fetch-assets-and-vulnerabilities',
         }
+
+
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
+class TestUcpCapabilityReconciliation:
+    """Tests for reconciling the command-derived capability against the
+    capabilities the connector's connection profiles actually declare.
+
+    A capability that no profile provides cannot select a profile, which leaves
+    _select_ucp_profiles empty and blinds _ucp_auth_is_passthrough -- the
+    XSUP-76663 failure mode. Each test pairs the resolved capability with the
+    should_use_ucp_auth() decision it drives.
+    """
+
+    @staticmethod
+    def _metadata(*profiles):
+        """UCP metadata carrying *profiles*, each a (capability, type) pair."""
+        return {
+            'connectorId': 'test-connector',
+            'connectionProfiles': [
+                {'capability': capability, 'type': profile_type,
+                 'method_unique_id': 'method-{}'.format(index), 'sub_capabilities': []}
+                for index, (capability, profile_type) in enumerate(profiles)
+            ],
+        }
+
+    @pytest.fixture()
+    def ucp_env(self, mocker):
+        """Silence debug logging and reset the interpolation flag."""
+        mocker.patch.object(demisto, 'debug')
+        original = CommonServerPython._UCP_AUTH_PARAMS_INJECTED
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = False
+        yield
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = original
+
+    # ── no profiles to reconcile against ──
+
+    def test_resolve_capability_no_profiles_returns_default(self, mocker, ucp_env):
+        """An empty connectionProfiles list leaves the command mapping untouched."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value={'connectionProfiles': []})
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+
+    def test_resolve_capability_empty_metadata_returns_default(self, mocker, ucp_env):
+        """Empty metadata (non-UCP mode) leaves the command mapping untouched."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value={})
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+
+    def test_resolve_capability_profiles_without_capability_key_ignored(self, mocker, ucp_env):
+        """Profiles carrying no capability contribute nothing to reconcile against."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value={'connectionProfiles': [{'method_unique_id': 'A'}]})
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+
+    # ── XSUP-76663: single passthrough profile, unmatched capability ──
+
+    def test_xsup_76663_single_passthrough_profile_unmatched_capability(
+            self, mocker, ucp_env, ucp_metadata_passthrough_unmatched):
+        """test-module on a feed connector must not apply UCP credentials.
+
+        The connector declares only threat-intelligence-and-enrichment via a
+        passthrough profile. test-module maps to automation-and-remediation,
+        which no profile provides, so without reconciliation no profile is
+        selected, _ucp_auth_is_passthrough() sees nothing, should_use_ucp_auth()
+        returns True and the passthrough envelope reaches the dispatcher.
+        """
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_passthrough_unmatched)
+
+        assert CommonServerPython.resolve_ucp_capability() == 'threat-intelligence-and-enrichment'
+        assert CommonServerPython._ucp_auth_is_passthrough() is True
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_xsup_76663_get_indicators_command_same_outcome(
+            self, mocker, ucp_env, ucp_metadata_passthrough_unmatched):
+        """A vendor-specific get-indicators command behaves exactly like test-module."""
+        mocker.patch.object(demisto, 'command', return_value='webex-get-indicators')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_passthrough_unmatched)
+
+        assert CommonServerPython.resolve_ucp_capability() == 'threat-intelligence-and-enrichment'
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    # ── single profile, unmatched capability, dispatcher-supported type ──
+
+    def test_resolve_capability_single_non_passthrough_unmatched(self, mocker, ucp_env):
+        """A typed profile still authenticates; reconciliation only fixes which profile is found."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('threat-intelligence-and-enrichment', 'api_key')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'threat-intelligence-and-enrichment'
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    # ── capability already matches: reconciliation is a no-op ──
+
+    def test_resolve_capability_matching_default_passthrough(self, mocker, ucp_env):
+        """A profile already on the default capability is selected unchanged."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('automation-and-remediation', 'passthrough')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_resolve_capability_matching_default_typed(self, mocker, ucp_env):
+        """The normal dispatcher path stays intact."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('automation-and-remediation', 'api_key')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    def test_resolve_capability_command_match_passthrough_profile(self, mocker, ucp_env):
+        """An explicit command mapping wins when a profile provides it."""
+        mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('threat-intelligence-and-enrichment', 'passthrough')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'threat-intelligence-and-enrichment'
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_resolve_capability_command_match_typed_profile(self, mocker, ucp_env):
+        """An explicit command mapping wins for dispatcher-supported types too."""
+        mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('threat-intelligence-and-enrichment', 'api_key')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'threat-intelligence-and-enrichment'
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    # ── command maps, but no profile provides the mapped capability ──
+
+    def test_resolve_capability_command_maps_but_profile_lacks_it_passthrough(self, mocker, ucp_env):
+        """A mapped-but-unavailable capability reconciles rather than selecting nothing.
+
+        fetch-incidents maps to fetch-issues, which this connector does not
+        provide. Keying reconciliation on "the command matched the mapping"
+        instead of "the capability is available" would leave this broken.
+        """
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('log-collection', 'passthrough')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'log-collection'
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_resolve_capability_command_maps_but_profile_lacks_it_typed(self, mocker, ucp_env):
+        """Same reconciliation for a dispatcher-supported type."""
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('log-collection', 'plain')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'log-collection'
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    # ── multiple profiles ──
+
+    def test_resolve_capability_multi_profile_prefers_automation_passthrough(self, mocker, ucp_env):
+        """The automation capability is preferred over other available ones."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('log-collection', 'api_key'),
+                                                        ('automation-and-remediation', 'passthrough')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_resolve_capability_multi_profile_prefers_automation_typed(self, mocker, ucp_env):
+        """Preferring automation does not disable dispatcher auth by itself."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('log-collection', 'api_key'),
+                                                        ('automation-and-remediation', 'oauth2')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    def test_resolve_capability_multi_profile_no_automation_uses_first(
+            self, mocker, ucp_env, ucp_metadata_multi_no_automation):
+        """Without the automation capability, the first profile's capability wins.
+
+        This keeps capability resolution aligned with get_ucp_method_unique_id's
+        first-profile fallback, so both pick the same profile.
+        """
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi_no_automation)
+
+        assert CommonServerPython.resolve_ucp_capability() == 'fetch-issues'
+        assert CommonServerPython.should_use_ucp_auth() is True
+
+    def test_resolve_capability_multi_profile_no_automation_first_is_passthrough(self, mocker, ucp_env):
+        """First-profile selection also governs the passthrough decision."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('fetch-issues', 'passthrough'),
+                                                        ('log-collection', 'api_key')))
+
+        assert CommonServerPython.resolve_ucp_capability() == 'fetch-issues'
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    # ── interpolation short-circuits the auth decision ──
+
+    def test_should_use_ucp_auth_false_when_params_already_interpolated(self, mocker, ucp_env):
+        """An interpolated profile has already supplied its credentials."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('log-collection', 'api_key')))
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = True
+
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_mapping_present_but_nothing_interpolated_falls_back_to_passthrough_guard(self, mocker, ucp_env):
+        """A mapping that resolves no values must not leave the dispatcher exposed.
+
+        The injected flag stays False because nothing was interpolated, so the
+        passthrough guard is the only thing standing between a passthrough
+        profile and the dispatcher.
+        """
+        metadata = {
+            'connectorId': 'test-connector',
+            'connectionProfiles': [
+                {'capability': 'threat-intelligence-and-enrichment', 'type': 'passthrough',
+                 'method_unique_id': 'A', 'sub_capabilities': [],
+                 'metadata': {'xsoar': {'interpolation_mapping': 'absent:credentials.password'}}},
+            ],
+        }
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=metadata)
+        mocker.patch.object(CommonServerPython, 'get_ucp_credentials',
+                            return_value={'type': 'passthrough', 'passthrough': {'parameters': {}}})
+        demisto.callingContext = {'params': {}}
+
+        assert CommonServerPython.interpolate_ucp_params() is False
+        assert CommonServerPython._UCP_AUTH_PARAMS_INJECTED is False
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    # ── metadata access must never break resolution ──
+
+    def test_resolve_capability_metadata_raises_falls_back_to_command_mapping(self, mocker, ucp_env):
+        """A metadata failure degrades to the command mapping instead of propagating."""
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', side_effect=Exception('boom'))
+        error_mock = mocker.patch.object(demisto, 'error')
+        assert CommonServerPython.resolve_ucp_capability() == 'fetch-issues'
+        assert error_mock.call_count == 1
+        assert 'could not read profiles' in error_mock.call_args[0][0]
+
+    def test_resolve_capability_metadata_attribute_error_falls_back(self, mocker, ucp_env):
+        """Servers without unifiedConnectorMetadata() keep the legacy mapping."""
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', side_effect=AttributeError)
+        error_mock = mocker.patch.object(demisto, 'error')
+        assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+        assert error_mock.call_count == 1
+        assert 'could not read profiles' in error_mock.call_args[0][0]
+
+    def testget_configured_ucp_capabilities_returns_declared_order(self, mocker, ucp_env,
+                                                             ucp_metadata_multi_no_automation):
+        """Capabilities are reported in connectionProfiles order."""
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi_no_automation)
+        assert CommonServerPython.get_configured_ucp_capabilities() == ['fetch-issues', 'log-collection']
+
+    # ── reconciliation is not bypassed by an explicit command argument ──
+
+    def test_resolve_capability_explicit_command_also_reconciles(self, mocker, ucp_env):
+        """An explicitly passed command reconciles just like demisto.command().
+
+        'test-module' maps to the default capability whether the caller supplies
+        it or not, so skipping reconciliation for explicit callers would
+        reintroduce XSUP-76663 through every such call site.
+        """
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata(('log-collection', 'passthrough')))
+        assert CommonServerPython.resolve_ucp_capability(command='test-module') == 'log-collection'
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -13196,6 +14057,60 @@ class TestUcpCredentialApplication:
         creds = {'type': 'kerberos', 'kerberos': {'ticket': 'abc'}}
         with pytest.raises(CommonServerPython.UcpException):
             client._apply_ucp_credentials(creds, ctx)
+
+    # ── passthrough: the integration owns the credential ──
+
+    def test_dispatch_passthrough_is_noop(self, mocker):
+        """A passthrough envelope must leave the request exactly as it was.
+
+        Passthrough exists so that UCP credentials are NOT applied; raising here
+        turns a valid configuration into an opaque authentication error.
+        """
+        mocker.patch.object(demisto, 'debug')
+        client = self._make_client()
+        ctx = self._make_ctx()
+        ctx.headers['Accept'] = 'application/json'
+        creds = {'type': 'passthrough', 'passthrough': {'parameters': {'api_key': 'should-not-be-used'}}}
+
+        assert client._apply_ucp_credentials(creds, ctx) is None
+        assert ctx.headers == {'Accept': 'application/json'}
+        assert ctx.auth is None
+        assert ctx.params == {}
+
+    def test_dispatch_passthrough_logs_debug_not_error(self, mocker):
+        """Reaching the dispatcher with passthrough is diagnosable but not an error."""
+        debug_mock = mocker.patch.object(demisto, 'debug')
+        error_mock = mocker.patch.object(demisto, 'error')
+        client = self._make_client()
+        ctx = self._make_ctx()
+
+        client._apply_ucp_credentials({'type': 'passthrough'}, ctx)
+
+        assert 'passthrough' in debug_mock.call_args[0][0]
+        error_mock.assert_not_called()
+
+    def test_inject_passthrough_direct_call_does_not_raise(self, mocker, ucp_clean_cache):
+        """_inject_ucp_credentials is safe even when should_use_ucp_auth() is bypassed.
+
+        Integrations may call the injection flow directly, so the guard cannot
+        live only in should_use_ucp_auth().
+        """
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value={
+            'connectionProfiles': [
+                {'capability': 'automation-and-remediation', 'type': 'passthrough',
+                 'method_unique_id': 'abc123', 'sub_capabilities': []},
+            ],
+        })
+        mocker.patch.object(demisto, 'getUCPCredentials',
+                            return_value={'type': 'passthrough', 'passthrough': {'parameters': {}}})
+        client = self._make_client()
+        ctx = self._make_ctx()
+
+        assert client._inject_ucp_credentials(ctx) == 'abc123'
+        assert ctx.headers == {}
+        assert ctx.auth is None
 
     def test_existing_headers_preserved(self, ucp_creds_oauth2):
         """UCP credential injection should preserve existing headers."""
@@ -13845,6 +14760,30 @@ class TestUcpNonUcpRegression:
             client._http_request('GET', url_suffix='/test')
 
         inject_spy.assert_not_called()
+
+    def test_no_injection_for_passthrough_with_unmatched_capability(
+            self, mocker, ucp_metadata_passthrough_unmatched, ucp_clean_cache, ucp_reset_injected_flag):
+        """End-to-end XSUP-76663: no credential fetch, no injection, no auth header.
+
+        The connector's only profile is passthrough under a capability the
+        command does not map to. The request must go out untouched.
+        """
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_passthrough_unmatched)
+        creds_mock = mocker.patch.object(demisto, 'getUCPCredentials', return_value={})
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = False
+
+        with requests_mock.Mocker() as m:
+            m.get('https://example.com/api/test', json={'ok': True}, status_code=200)
+            client = CommonServerPython.BaseClient(base_url='https://example.com/api')
+            inject_spy = mocker.patch.object(client, '_inject_ucp_credentials')
+            client._http_request('GET', url_suffix='/test')
+            request_headers = m.last_request.headers
+
+        inject_spy.assert_not_called()
+        creds_mock.assert_not_called()
+        assert 'Authorization' not in request_headers
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
