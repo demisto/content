@@ -1511,18 +1511,24 @@ def test_handle_fetch_pagination_stops_and_keeps_pushed_on_error(mocker):
         Verify that:
         - The exception is swallowed and pagination stops.
         - Indicators streamed before the failure are retained.
+        - The error is logged together with its traceback.
     """
     from AnomaliThreatStreamFeed import handle_fetch_pagination
 
     initial_response = {"objects": [{"id": "initial_ind"}], "meta": {"next": "/api/v1/indicators?offset=1000"}}
     client = mock_client()
     mocker.patch.object(client, "http_request", side_effect=Exception("API is down"))
+    mock_demisto_error = mocker.patch("AnomaliThreatStreamFeed.demisto.error")
 
     pushed: list[dict[str, Any]] = []
     total_fetched = handle_fetch_pagination(client, initial_response, pushed.extend)
 
     assert total_fetched == 1
     assert pushed == [{"id": "initial_ind"}]
+    mock_demisto_error.assert_called_once()
+    logged_error = mock_demisto_error.call_args[0][0]
+    assert "Error during pagination: API is down" in logged_error
+    assert "Traceback (most recent call last)" in logged_error
 
 
 def test_handle_fetch_pagination_push_failure_propagates(mocker):
