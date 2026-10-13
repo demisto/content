@@ -1,4 +1,6 @@
+import io
 import json
+import zipfile
 import pytest
 import demistomock as demisto
 from importlib import import_module
@@ -253,7 +255,45 @@ def test_download_fetched_file(mocker, requests_mock, capfd):
     call = sentinelone_v2.return_results.call_args_list
     command_results, file_result = call[0].args[0]
 
-    assert command_results.outputs["Path"] == "download_fetched_file/"
+    assert command_results.outputs["Path"] == "download_fetched_file/test.txt"
+    assert file_result["File"] == "download_fetched_file_test.txt"
+
+
+def _build_zip(entries: dict[str, bytes]) -> bytes:
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        for name, content in entries.items():
+            archive.writestr(name, content)
+    return buffer.getvalue()
+
+
+@pytest.mark.parametrize(
+    "entries, expected",
+    [
+        ({"manifest.json": b"{}", "C/": b"", "C/path/": b"", "C/path/file.txt": b"hello"}, ("C/path/file.txt", b"hello")),
+        ({"manifest.json": b"{}", "C/path/file.txt": b"hello"}, ("C/path/file.txt", b"hello")),
+    ],
+)
+def test_extract_sentinelone_zip_file(entries, expected):
+    """
+    Given:
+        A zip with and without explicit directory entries
+    Then:
+        The collected file is returned, never a directory entry
+    """
+    assert sentinelone_v2.extract_sentinelone_zip_file(_build_zip(entries), "password") == expected
+
+
+def test_extract_sentinelone_zip_file_no_file():
+    """
+    Given:
+        A zip containing only the manifest and directory entries
+    Then:
+        A DemistoException is raised
+    """
+    zip_data = _build_zip({"manifest.json": b"{}", "C/": b"", "C/path/": b""})
+    with pytest.raises(sentinelone_v2.DemistoException, match="No file found"):
+        sentinelone_v2.extract_sentinelone_zip_file(zip_data, "password")
 
 
 def test_get_blocklist(mocker, requests_mock):
