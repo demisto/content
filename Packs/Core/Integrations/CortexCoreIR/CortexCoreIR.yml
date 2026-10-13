@@ -4481,3 +4481,4 @@ supportedModules:
 - cloud_posture
 - xsiam
 - edr
+excludefromtightlycoupled: true
