@@ -103,6 +103,11 @@ VENDOR = "cyberark"
 # RedRock queries time out after two minutes, so we page through the results
 # instead of requesting everything at once.
 PAGE_SIZE = 1000
+# The maximum number of pages collected in a single fetch-events run (10 x 1000 = 10,000 events).
+# Results are ordered ascending, so when a run hits the cap the cursor moves to the last collected
+# event and the next run continues from there. This keeps every run small after a reset, an outage,
+# or a run of failed fetches, instead of collecting the whole backlog in memory in one run.
+MAX_PAGES_PER_FETCH = 10
 
 
 class CyberArkIdentityEventsOptions(IntegrationOptions):
@@ -158,23 +163,63 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
     client: CyberArkIdentityEventsClient
 
     @staticmethod
-    def get_last_run_ids(events: list) -> list:
-        ids = [event.get("ID") for event in events]
-        demisto.debug(f"[get_last_run_ids] Collected {len(ids)} event IDs for the next-run dedup list.")
-        return ids
+    def get_when_occurred_ms(event: dict) -> int:
+        """Return WhenOccurred as epoch milliseconds. RedRock formats it as '/Date(1651483379362)/'."""
+        return int(str(event.get("WhenOccurred", "")).removesuffix(")/").removeprefix("/Date("))
 
     @staticmethod
-    def get_last_run_time(events: list) -> str:
-        # The date is in timestamp format and looks like {'WhenOccurred': '/Date(1651483379362)/'}
-        last_timestamp = max([int(e.get("WhenOccurred", "").removesuffix(")/").removeprefix("/Date(")) for e in events])
-        last_run_time = datetime.utcfromtimestamp(last_timestamp / 1000).strftime(DATETIME_FORMAT)
+    def get_last_run_time(last_timestamp_ms: int) -> str:
+        # Build the cursor from integer milliseconds (not a float division) so it always matches the
+        # event's millisecond exactly.
+        last_run_time = (datetime(1970, 1, 1) + timedelta(milliseconds=last_timestamp_ms)).strftime(DATETIME_FORMAT)
         demisto.debug(f"[get_last_run_time] Computed last-run cursor (max WhenOccurred) = {last_run_time}.")
         return last_run_time
 
+    @staticmethod
+    def get_last_run_ids(events: list, last_timestamp_ms: int) -> list:
+        # The next query starts at the cursor's millisecond (inclusive), so only the events at that
+        # exact millisecond can be returned again. Those are the only IDs needed for dedup.
+        ids = [event.get("ID") for event in events if CyberArkIdentityGetEvents.get_when_occurred_ms(event) == last_timestamp_ms]
+        demisto.debug(f"[get_last_run_ids] Kept {len(ids)} event IDs at the cursor millisecond for the next-run dedup list.")
+        return ids
+
     def get_last_run(self, events: list) -> dict:  # type: ignore
-        last_run = {"from": self.get_last_run_time(events), "ids": self.get_last_run_ids(events)}
+        last_timestamp_ms = max(self.get_when_occurred_ms(event) for event in events)
+        last_run_time = self.get_last_run_time(last_timestamp_ms)
+        ids = self.get_last_run_ids(events, last_timestamp_ms)
+        previous_last_run = demisto.getLastRun()
+        if previous_last_run.get("from") == last_run_time:
+            # Every event in this run is still at the previous cursor's millisecond, so the events
+            # skipped as duplicates this run must stay in the dedup list too.
+            ids = list(dict.fromkeys(previous_last_run.get("ids", []) + ids))
+            demisto.debug(f"[get_last_run] Cursor did not move; merged with the previous dedup list ({len(ids)} ids).")
+        last_run = {"from": last_run_time, "ids": ids}
         demisto.debug(f"[get_last_run] Built last run with from={last_run['from']} and {len(last_run['ids'])} ids.")
         return last_run
+
+    @staticmethod
+    def _parse_redrock_response(response_json: dict, page_number: int) -> dict:
+        """Return the 'Result' object of a RedRock response, or raise if the query failed.
+
+        On failure RedRock returns success=false and Result=null together with Message/ErrorID.
+        Raising (instead of treating it as an empty page) makes the run fail visibly and keeps
+        the last-run cursor unchanged, so the next run retries the same window.
+        """
+        result = response_json.get("Result")
+        if response_json.get("success") is False or not isinstance(result, dict):
+            error_details = {
+                "Message": response_json.get("Message"),
+                "MessageID": response_json.get("MessageID"),
+                "ErrorID": response_json.get("ErrorID"),
+                "ErrorCode": response_json.get("ErrorCode"),
+                "Exception": str(response_json.get("Exception"))[:500],
+            }
+            demisto.debug(f"[_parse_redrock_response] RedRock query failed on page {page_number}: {error_details}")
+            raise DemistoException(
+                f"CyberArk RedRock query failed on page {page_number}: "
+                f"{error_details['Message'] or 'no error message returned'} (ErrorID: {error_details['ErrorID']})"
+            )
+        return result
 
     def _set_page_number(self, page_number: int) -> None:
         """Update the PageNumber in the request body so the next call fetches the given page."""
@@ -194,12 +239,14 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
 
         # RedRock returns at most PageSize rows per call and reports the total number of
         # matching rows in "FullCount". We page through the result set (ordered ascending by
-        # WhenOccurred) until we have collected every matching row, so no events are dropped
-        # when a single fetch window contains more than one page of events.
+        # WhenOccurred, then ID) until we have collected every matching row, so no events are dropped
+        # when a single fetch window contains more than one page of events. On fetch-events a run
+        # stops after MAX_PAGES_PER_FETCH pages; the rest is collected by the next runs.
+        max_pages = MAX_PAGES_PER_FETCH if demisto.command() == "fetch-events" else None
         while True:
             demisto.debug(f"[_iter_events] Requesting RedRock page {page_number} (PageSize={PAGE_SIZE}).")
             self._set_page_number(page_number)
-            result = self.client.call(self.client.request).json().get("Result") or {}
+            result = self._parse_redrock_response(self.client.call(self.client.request).json(), page_number)
 
             events = result.get("Results") or []
             page_count = len(events)
@@ -229,6 +276,13 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
                 )
                 break
 
+            if max_pages and page_number >= max_pages:
+                demisto.debug(
+                    f"[_iter_events] Reached the per-fetch cap of {max_pages} pages ({collected} events). "
+                    f"The remaining events (FullCount={full_count}) will be collected by the next runs."
+                )
+                break
+
             page_number += 1
 
         demisto.debug(f"[_iter_events] Event collection finished. Total events pulled from RedRock: {collected}.")
@@ -245,10 +299,13 @@ def get_request_params(**kwargs: dict) -> dict:
         "url": f"{str(kwargs.get('url', '')).removesuffix('/')}/RedRock/Query",
         "data": json.dumps(
             {
-                # Order ascending by WhenOccurred so pagination is deterministic and the last-run
-                # cursor (max WhenOccurred) is safe. Caching=-1 requests live (non-cached) data.
-                "Script": f"Select {', '.join(EVENT_FIELDS)} from Event where WhenOccurred > '{from_time}' "
-                f"ORDER BY WhenOccurred ASC",
+                # Order ascending by WhenOccurred (then ID, so events in the same millisecond keep a
+                # stable order across pages) so pagination is deterministic and the last-run cursor
+                # (max WhenOccurred) is safe. The cursor is inclusive (>=): events at the cursor's
+                # millisecond are returned again and removed by the last-run ID dedup, so none are
+                # skipped when a run ends in the middle of a millisecond. Caching=-1 requests live data.
+                "Script": f"Select {', '.join(EVENT_FIELDS)} from Event where WhenOccurred >= '{from_time}' "
+                f"ORDER BY WhenOccurred ASC, ID ASC",
                 "args": {"PageNumber": 1, "PageSize": PAGE_SIZE, "Caching": -1},
             }
         ),
