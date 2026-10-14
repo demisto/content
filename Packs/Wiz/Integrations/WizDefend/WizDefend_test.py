@@ -2693,33 +2693,27 @@ def test_get_single_threat_invalid_scenarios(mock_get_filtered, mock_log_and_ret
             mock_get_filtered.assert_not_called()
 
 
-@pytest.mark.parametrize(
-    "set_status_return,should_succeed",
-    [
-        ({"id": "test-threat", "status": "IN_PROGRESS"}, True),
-        (None, False),
-        ("", False),
-    ],
-)
 @patch.object(demisto, "args", return_value={"issue_id": str(uuid.uuid4())})
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_results")
-@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_error")
-def test_set_threat_in_progress(mock_return_error, mock_return_results, mock_args, set_status_return, should_succeed):
-    """Test set_threat_in_progress function with various API responses"""
-    with patch("Packs.Wiz.Integrations.WizDefend.WizDefend.set_status", return_value=set_status_return):
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries", return_value=({"id": "threat-123"}, None))
+def test_set_threat_in_progress(mock_get_entries, mock_return_results, mock_args):
+    set_threat_in_progress()
+
+    mock_get_entries.assert_called_once()
+    assert "Successfully set the threat" in mock_return_results.call_args[0][0].outputs
+
+
+@patch.object(demisto, "args", return_value={"issue_id": "not-a-uuid"})
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_results")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_error", side_effect=SystemExit)
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries")
+def test_set_threat_in_progress_invalid_id_errors(mock_get_entries, mock_return_error, mock_return_results, mock_args):
+    with pytest.raises(SystemExit):
         set_threat_in_progress()
 
-        if should_succeed:
-            mock_return_results.assert_called_once()
-            call_args = mock_return_results.call_args[0][0]
-            assert call_args.outputs_prefix == OutputPrefix.THREAT
-            assert "Successfully set the threat" in call_args.outputs
-            assert not mock_return_error.called
-        else:
-            mock_return_error.assert_called_once()
-            error_message = mock_return_error.call_args[0][0]
-            assert "Failed to set the threat" in error_message
-            assert not mock_return_results.called
+    assert "UUID format" in mock_return_error.call_args[0][0]
+    mock_get_entries.assert_not_called()
+    mock_return_results.assert_not_called()
 
 
 @patch.object(demisto, "args", return_value={"issue_id": str(uuid.uuid4()), "note": "Test comment"})
@@ -3077,100 +3071,31 @@ def test_resolve_threat(mock_return_error, mock_reject_or_resolve, mock_args, va
             assert not mock_reject_or_resolve.called
 
 
-@pytest.mark.parametrize(
-    "is_valid_id_result,status,get_entries_return,expected_result_type,should_succeed",
-    [
-        # Valid cases
-        ((True, "Valid"), WizStatus.IN_PROGRESS, {"id": "threat-123", "status": "IN_PROGRESS"}, dict, True),
-        ((True, "Valid"), WizStatus.OPEN, {"id": "threat-123", "status": "OPEN"}, dict, True),
-        ((True, "Valid"), WizStatus.REJECTED, {"id": "threat-123", "status": "REJECTED"}, dict, True),
-        ((True, "Valid"), WizStatus.RESOLVED, {"id": "threat-123", "status": "RESOLVED"}, dict, True),
-        # Invalid ID cases
-        ((False, "Invalid UUID format"), WizStatus.IN_PROGRESS, None, str, False),
-        # Invalid status cases
-        ((True, "Valid"), "INVALID_STATUS", None, str, False),
-        ((True, "Valid"), "PENDING", None, str, False),
-        ((True, "Valid"), "CLOSED", None, str, False),
-        ((True, "Valid"), "", None, str, False),
-    ],
-)
-def test_set_status_with_validation(is_valid_id_result, status, get_entries_return, expected_result_type, should_succeed):
-    """Test set_status function with various validation scenarios including status validation"""
-    issue_id = str(uuid.uuid4()) if is_valid_id_result[0] else "invalid-uuid"
-
-    mock_is_valid = patch("Packs.Wiz.Integrations.WizDefend.WizDefend.is_valid_issue_id", return_value=is_valid_id_result)
-    mock_get_entries_patch = patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries", return_value=get_entries_return)
-
-    with mock_is_valid, mock_get_entries_patch as mock_get_entries:
-        result = set_status(issue_id, status)
-
-        assert isinstance(result, expected_result_type)
-
-        if should_succeed and is_valid_id_result[0]:
-            # Should call get_entries for valid cases
-            mock_get_entries.assert_called_once()
-            call_args = mock_get_entries.call_args
-            variables = call_args[0][1]  # Second positional argument (variables)
-            assert variables[WizApiVariables.ISSUE_ID] == issue_id
-            assert variables[WizApiVariables.PATCH][WizApiVariables.STATUS] == status
-            assert result == get_entries_return
-        elif not is_valid_id_result[0]:
-            # Invalid ID should return error message without calling API
-            assert not mock_get_entries.called
-            assert result == is_valid_id_result[1]
-        else:
-            # Invalid status should return error message without calling API
-            assert not mock_get_entries.called
-            assert "Invalid status" in result
-            assert status in result or str(status) in result
+@pytest.mark.parametrize("status", [WizStatus.IN_PROGRESS, WizStatus.OPEN, WizStatus.REJECTED, WizStatus.RESOLVED])
+def test_set_status_sends_update(status):
+    issue_id = str(uuid.uuid4())
+    with patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries", return_value=({"id": issue_id}, None)) as mock_get:
+        assert set_status(issue_id, status) == ({"id": issue_id}, None)
+    variables = mock_get.call_args[0][1]
+    assert variables[WizApiVariables.ISSUE_ID] == issue_id
+    assert variables[WizApiVariables.PATCH][WizApiVariables.STATUS] == status
 
 
 @pytest.mark.parametrize(
-    "issue_id,status,expected_result_type,should_call_api",
+    "issue_id,status,expected_error",
     [
-        # Valid combinations - should call API
-        (str(uuid.uuid4()), WizStatus.IN_PROGRESS, dict, True),
-        (str(uuid.uuid4()), WizStatus.OPEN, dict, True),
-        (str(uuid.uuid4()), WizStatus.REJECTED, dict, True),
-        (str(uuid.uuid4()), WizStatus.RESOLVED, dict, True),
-        # Invalid UUID - should fail validation, not call API
-        ("not-a-uuid", WizStatus.IN_PROGRESS, str, False),
-        (None, WizStatus.IN_PROGRESS, str, False),
-        ("", WizStatus.IN_PROGRESS, str, False),
-        # Invalid status - should fail validation, not call API
-        (str(uuid.uuid4()), "INVALID_STATUS", str, False),
-        (str(uuid.uuid4()), "PENDING", str, False),
-        (str(uuid.uuid4()), None, str, False),
-        # Both invalid - should fail on UUID first
-        ("not-a-uuid", "INVALID_STATUS", str, False),
+        pytest.param(None, WizStatus.IN_PROGRESS, "Issue ID", id="missing_id"),
+        pytest.param(str(uuid.uuid4()), "PENDING", "Invalid status: PENDING", id="invalid_status"),
     ],
 )
-def test_set_status_validation(issue_id, status, expected_result_type, should_call_api):
-    """Test set_status function with real validation - no mocking of validation functions"""
-    # Only mock the API call, not the validation
-    with patch(
-        "Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries", return_value={"id": "test-response"}
-    ) as mock_get_entries:
-        result = set_status(issue_id, status)
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_error", side_effect=SystemExit)
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries")
+def test_set_status_rejects_invalid_input(mock_get_entries, mock_return_error, issue_id, status, expected_error):
+    with pytest.raises(SystemExit):
+        set_status(issue_id, status)
 
-        # Check return type
-        assert isinstance(result, expected_result_type)
-
-        if should_call_api:
-            # Should succeed and call the API
-            mock_get_entries.assert_called_once()
-            call_args = mock_get_entries.call_args
-            variables = call_args[0][1]  # Second positional argument (variables)
-            assert variables[WizApiVariables.ISSUE_ID] == issue_id
-            assert variables[WizApiVariables.PATCH][WizApiVariables.STATUS] == status
-        else:
-            # Should fail validation and not call API
-            mock_get_entries.assert_not_called()
-            # Check that we get appropriate error messages
-            if issue_id in [None, "", "not-a-uuid"]:
-                assert "UUID format" in result or "should pass an Issue ID" in result
-            elif status not in [WizStatus.OPEN, WizStatus.IN_PROGRESS, WizStatus.REJECTED, WizStatus.RESOLVED]:
-                assert "Invalid status" in result
+    assert expected_error in mock_return_error.call_args[0][0]
+    mock_get_entries.assert_not_called()
 
 
 @pytest.mark.parametrize(

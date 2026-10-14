@@ -3530,14 +3530,12 @@ def set_status(issue_id, status):
     # Validate issue ID
     is_valid_id, message = is_valid_issue_id(issue_id)
     if not is_valid_id:
-        return message
+        return return_error(f"Error: {message}")
 
     # Validate status is in WizStatus
     valid_statuses = [WizStatus.OPEN, WizStatus.IN_PROGRESS, WizStatus.REJECTED, WizStatus.RESOLVED]
     if status not in valid_statuses:
-        error_msg = f"Invalid status: {status}. Valid statuses are: {', '.join(valid_statuses)}."
-        demisto.error(error_msg)
-        return error_msg
+        return return_error(f"Error: Invalid status: {status}. Valid statuses are: {', '.join(valid_statuses)}.")
 
     variables = {WizApiVariables.ISSUE_ID: issue_id, WizApiVariables.PATCH: {WizApiVariables.STATUS: status}}
     query = UPDATE_ISSUE_QUERY
@@ -3684,17 +3682,12 @@ def set_threat_in_progress():
     issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
     demisto.debug(f"set_threat_in_progress called with issue_id: {issue_id}")
 
-    if set_status(issue_id, WizStatus.IN_PROGRESS):
-        return_results(
-            CommandResults(
-                outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully set the threat with ID {issue_id} to In Progress."
-            )
+    set_status(issue_id, WizStatus.IN_PROGRESS)
+    return_results(
+        CommandResults(
+            outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully set the threat with ID {issue_id} to In Progress."
         )
-    else:
-        return_error(
-            f"Error: Failed to set the threat with ID {issue_id} to In Progress. "
-            f"Please check the input parameters and try again."
-        )
+    )
 
 
 def set_threat_comment():

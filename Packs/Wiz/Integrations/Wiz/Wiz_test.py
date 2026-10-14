@@ -1905,7 +1905,7 @@ def test_handle_incident_closed(mock_resolve, _mock_type):
     mock_resolve.assert_called_once_with(
         "11111111-1111-1111-1111-111111111111",
         DEFAULT_RESOLUTION_REASON,
-        "Resolved from Cortex XSOAR",
+        "Status mirrored from Cortex XSOAR",
         "RESOLVED",
     )
 
@@ -2771,6 +2771,13 @@ def format_as_note(text: str, time: str, author: str) -> dict[str, Any]:
             0,
             None,
             id="skips_xsoar_mirrored",
+        ),
+        pytest.param(
+            [format_as_note("Status mirrored from Cortex XSOAR", "2025-06-01T10:00:00Z", "SA")],
+            LAST_UPDATE,
+            0,
+            None,
+            id="skips_xsoar_status_note",
         ),
         pytest.param(
             [

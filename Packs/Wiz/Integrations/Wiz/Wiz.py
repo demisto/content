@@ -1626,6 +1626,7 @@ class WizMirrorField:
 
 
 XSOAR_MIRROR_MARKER = "Mirrored from Cortex XSOAR"
+XSOAR_STATUS_NOTE = "Status mirrored from Cortex XSOAR"
 DEFAULT_RESOLUTION_REASON = "WONT_FIX"
 
 WIZ_MIRRORED_FIELDS = ["status", "notes", "dueAt", "resolutionReason"]
@@ -2995,7 +2996,7 @@ def _build_new_note_entries(comments, last_update):
     entries: list[dict] = []
     last_update_dt = _parse_iso_timestamp(last_update)
     for note in comments:
-        if XSOAR_MIRROR_MARKER in note.get("body", ""):
+        if XSOAR_MIRROR_MARKER.lower() in note.get("body", "").lower():
             continue
         note_time = note.get("updatedAt") or note.get("createdAt", "")
         note_dt = _parse_iso_timestamp(note_time)
@@ -3074,10 +3075,10 @@ def _mirror_status_to_wiz(issue_id, xsoar_status, delta, data=None):
             if not _can_resolve_issue(issue_id):
                 return
             resolution_reason = _resolve_wiz_reason(delta, data) or DEFAULT_RESOLUTION_REASON
-            reject_or_resolve_issue(issue_id, resolution_reason, "Status mirrored from Cortex XSOAR", "RESOLVED")
+            reject_or_resolve_issue(issue_id, resolution_reason, XSOAR_STATUS_NOTE, "RESOLVED")
         elif status_lower in ("rejected",):
             reject_reason = _resolve_wiz_reason(delta, data) or DEFAULT_RESOLUTION_REASON
-            reject_or_resolve_issue(issue_id, reject_reason, "Status mirrored from Cortex XSOAR", "REJECTED")
+            reject_or_resolve_issue(issue_id, reject_reason, XSOAR_STATUS_NOTE, "REJECTED")
         elif status_lower in ("active", "open", "reopened"):
             reopen_issue(issue_id=issue_id, reopen_note="")
         elif status_lower in ("in_progress", "in progress"):
@@ -3095,7 +3096,7 @@ def _handle_incident_closed(remote_id, resolution_reason=None):
     try:
         if not _can_resolve_issue(remote_id):
             return
-        reject_or_resolve_issue(remote_id, reason, "Resolved from Cortex XSOAR", "RESOLVED")
+        reject_or_resolve_issue(remote_id, reason, XSOAR_STATUS_NOTE, "RESOLVED")
     except Exception as e:
         demisto.info(f"_handle_incident_closed: failed (may already be resolved): {e}")
 
