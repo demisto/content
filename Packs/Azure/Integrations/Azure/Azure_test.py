@@ -10256,20 +10256,11 @@ def test_storage_blob_container_list_command_surfaces_next_token(mocker):
 # --- Azure Resource Graph (migrated from the AzureResourceGraph pack) ---
 
 
-@pytest.mark.parametrize(
-    "limit, page_size, page_number, expected_number_of_operations, expected_first_name",
-    [
-        (1, None, None, 1, "Microsoft.ResourceGraph/operations/read"),
-        (3, 2, 2, 2, "Microsoft.ResourceGraph/resourcesHistory/read"),
-    ],
-)
-def test_resource_graph_list_operations_command_success(
-    mocker, limit, page_size, page_number, expected_number_of_operations, expected_first_name
-):
+def test_resource_graph_list_operations_command_success(mocker):
     """
     Given: An Azure client mock returning a list of Resource Graph operations.
-    When: resource_graph_list_operations_command is called with limit and paging arguments.
-    Then: It returns CommandResults with the expected operations sliced per the paging logic.
+    When: resource_graph_list_operations_command is called.
+    Then: It returns CommandResults with every operation returned by the API, since the API does not support paging.
     """
     from Azure import resource_graph_list_operations_command
 
@@ -10277,12 +10268,11 @@ def test_resource_graph_list_operations_command_success(
     mock_client = mocker.Mock()
     mock_client.resource_graph_list_operations.return_value = operations_data
 
-    args = {"limit": limit, "page": page_number, "page_size": page_size}
-    result = resource_graph_list_operations_command(mock_client, {}, args)
+    result = resource_graph_list_operations_command(mock_client, {}, {})
 
     assert result.outputs_prefix == "Azure.ResourceGraph.Operations"
-    assert result.outputs[0]["Name"] == expected_first_name
-    assert len(result.outputs) == expected_number_of_operations
+    assert len(result.outputs) == len(operations_data["value"])
+    assert result.outputs[0]["Name"] == "Microsoft.ResourceGraph/operations/read"
 
 
 def test_resource_graph_list_operations_command_no_results(mocker):
@@ -10303,26 +10293,29 @@ def test_resource_graph_list_operations_command_no_results(mocker):
 
 
 @pytest.mark.parametrize(
-    "limit, page_size, page_number, expected_error_message",
+    "page_size, page_number, expected_error_message",
     [
-        (None, None, 2, 'Please enter a value for "page_size" when using "page".'),
-        (None, 2, None, 'Please enter a value for "page" when using "page_size".'),
+        (None, 2, 'Please enter a value for "page_size" when using "page".'),
+        (2, None, 'Please enter a value for "page" when using "page_size".'),
+        (2, 0, 'The "page" argument must be a positive integer.'),
+        (1001, 1, "The acceptable values of the argument limit are 1 to 1000"),
     ],
 )
-def test_resource_graph_list_operations_command_validation_error(mocker, limit, page_size, page_number, expected_error_message):
+def test_resource_graph_query_resources_command_validation_error(mocker, page_size, page_number, expected_error_message):
     """
-    Given: An Azure client mock and invalid paging arguments (page without page_size or vice versa).
-    When: resource_graph_list_operations_command is called.
-    Then: A DemistoException is raised with the expected validation message.
+    Given: Invalid paging arguments (page without page_size, page_size without page, a non-positive page,
+        or a page_size above 1000).
+    When: resource_graph_query_resources_command is called.
+    Then: A DemistoException is raised with the expected validation message and the API is not called.
     """
-    from Azure import resource_graph_list_operations_command
+    from Azure import resource_graph_query_resources_command
 
     mock_client = mocker.Mock()
-    mock_client.resource_graph_list_operations.return_value = {"value": []}
-    args = {"limit": limit, "page": page_number, "page_size": page_size}
+    args = {"query": "Resources | limit 1", "page": page_number, "page_size": page_size}
 
     with pytest.raises(DemistoException, match=re.escape(expected_error_message)):
-        resource_graph_list_operations_command(mock_client, {}, args)
+        resource_graph_query_resources_command(mock_client, {}, args)
+    mock_client.resource_graph_query_resources.assert_not_called()
 
 
 QUERY_RESULTS_PATH = "Azure.ResourceGraph.Query(val.id && val.id == obj.id)"
@@ -10333,7 +10326,7 @@ def test_resource_graph_query_resources_command_success(mocker):
     """
     Given: An Azure client mock returning resources from a Resource Graph query.
     When: resource_graph_query_resources_command is called with a query and a limit.
-    Then: It returns CommandResults limited to the requested number of resources, keyed by id.
+    Then: The limit is sent to the API as $top and the returned resources are output keyed by id.
     """
     from Azure import resource_graph_query_resources_command
 
@@ -10341,11 +10334,12 @@ def test_resource_graph_query_resources_command_success(mocker):
     mock_client = mocker.Mock()
     mock_client.resource_graph_query_resources.return_value = query_data
 
-    args = {"query": "Resources | project id, name, type, location, tags | limit 3", "limit": 1}
+    args = {"query": "Resources | project id, name, type, location, tags", "limit": 10}
     result = resource_graph_query_resources_command(mock_client, {}, args)
 
+    assert mock_client.resource_graph_query_resources.call_args[1]["paging_options"] == {"$top": 10}
     query_results = result.outputs[QUERY_RESULTS_PATH]
-    assert len(query_results) == 1
+    assert len(query_results) == len(query_data["data"])
     assert query_results[0]["name"] == "test-ssh-nsg"
 
 
@@ -10361,8 +10355,10 @@ def test_resource_graph_query_resources_command_paging(mocker):
     mock_client = mocker.Mock()
     mock_client.resource_graph_query_resources.return_value = query_data
 
-    args = {"query": "Resources | project id, name, type, location, tags", "page": 1, "page_size": 3}
+    args = {"query": "Resources | project id, name, type, location, tags", "page": 2, "page_size": 3}
     result = resource_graph_query_resources_command(mock_client, {}, args)
+
+    assert mock_client.resource_graph_query_resources.call_args[1]["paging_options"] == {"$skip": 3, "$top": 3}
 
     query_results = result.outputs[QUERY_RESULTS_PATH]
     assert len(query_results) == 3
@@ -10430,7 +10426,7 @@ def test_resource_graph_query_resources_command_accepts_next_token(mocker):
     """
     Given: A next_token argument to continue a previous Resource Graph query.
     When: resource_graph_query_resources_command is called with next_token.
-    Then: The token is passed to the client as the $skipToken paging option.
+    Then: The token is passed to the client as the $skipToken paging option along with the default $top.
     """
     from Azure import resource_graph_query_resources_command
 
@@ -10440,24 +10436,37 @@ def test_resource_graph_query_resources_command_accepts_next_token(mocker):
     resource_graph_query_resources_command(mock_client, {}, {"query": "Resources | limit 1", "next_token": "prev-token"})
 
     call_kwargs = mock_client.resource_graph_query_resources.call_args[1]
-    assert call_kwargs["paging_options"] == {"$skipToken": "prev-token"}
+    assert call_kwargs["paging_options"] == {"$top": 50, "$skipToken": "prev-token"}
 
 
 @pytest.mark.parametrize(
-    "page_size, page_number, expected_length",
+    "subscriptions, management_groups, expected_body",
     [
-        (3, 5, 3),
-        (200, 1, 50),
+        ([], [], {"query": "Resources", "options": {"$top": 5}}),
+        (
+            ["mock-subscription-id"],
+            ["mock-management-group"],
+            {
+                "query": "Resources",
+                "options": {"$top": 5},
+                "subscriptions": ["mock-subscription-id"],
+                "managementGroups": ["mock-management-group"],
+            },
+        ),
     ],
 )
-def test_resource_graph_pagination_helper(page_size, page_number, expected_length):
+def test_resource_graph_query_resources_client_request_body(mocker, client, subscriptions, management_groups, expected_body):
     """
-    Given: A full list of items and paging parameters (one normal, one above the max page size).
-    When: resource_graph_pagination is called.
-    Then: It returns a slice capped at RESOURCE_GRAPH_MAX_PAGE_SIZE items.
+    Given: An Azure client and a query with or without subscriptions and management groups.
+    When: resource_graph_query_resources is called.
+    Then: Empty scopes are omitted from the request body and the latest API version is sent.
     """
-    from Azure import resource_graph_pagination
+    mock_http = mocker.patch.object(client, "http_request", return_value={"data": []})
 
-    fake_response = list(range(1, 101))
-    results = resource_graph_pagination(fake_response, page_size=page_size, page_number=page_number)
-    assert len(results) == expected_length
+    client.resource_graph_query_resources(
+        query="Resources", paging_options={"$top": 5}, subscriptions=subscriptions, management_groups=management_groups
+    )
+
+    call_kwargs = mock_http.call_args[1]
+    assert call_kwargs["json_data"] == expected_body
+    assert call_kwargs["params"] == {"api-version": "2024-04-01"}

@@ -35,7 +35,7 @@ API_VERSION = "2022-09-01"
 NEW_API_VERSION_PARAMS = {"api-version": "2024-05-01"}
 BLOB_CONTAINERS_MAX_PAGE_SIZE = 5000
 RESOURCE_GRAPH_API_VERSION = "2024-04-01"
-RESOURCE_GRAPH_MAX_PAGE_SIZE = 50
+RESOURCE_GRAPH_MAX_PAGE_SIZE = 1000
 
 GRANT_BY_CONNECTION = {
     "Device Code": DEVICE_CODE,
@@ -503,7 +503,7 @@ API_FUNCTION_TO_PERMISSIONS = {
     "replace_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/write"],
     "query_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/read"],
     "delete_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/delete"],
-        "resource_graph_list_operations": ["Microsoft.ResourceGraph/operations/read"],
+    "resource_graph_list_operations": ["Microsoft.ResourceGraph/operations/read"],
     "resource_graph_query_resources": ["Microsoft.ResourceGraph/resources/read"],
 }
 
@@ -3940,11 +3940,9 @@ class AzureClient:
         Raises:
             DemistoException: If there are permission or other API errors.
         """
-        request_data: dict[str, Any] = {"query": query, "options": paging_options}
-        if subscriptions:
-            request_data["subscriptions"] = subscriptions
-        if management_groups:
-            request_data["managementGroups"] = management_groups
+        request_data = remove_empty_elements(
+            {"query": query, "options": paging_options, "subscriptions": subscriptions, "managementGroups": management_groups}
+        )
 
         management_host = urlparse(PREFIX_URL_AZURE).hostname
         full_url = f"https://{management_host}/providers/Microsoft.ResourceGraph/resources"
@@ -7110,26 +7108,6 @@ def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: 
     )
 
 
-def resource_graph_pagination(response: list, page_size: int, page_number: int) -> list:
-    """
-    Generate a page (slice) of data for client-side pagination.
-
-    Args:
-        response (list): The full list of items to paginate.
-        page_size (int): The maximum number of items per page.
-        page_number (int): The page number to return (1-based).
-
-    Returns:
-        list: The slice of items for the requested page.
-    """
-    if page_size > RESOURCE_GRAPH_MAX_PAGE_SIZE:
-        page_size = RESOURCE_GRAPH_MAX_PAGE_SIZE
-
-    starting_index = (page_number - 1) * page_size
-    ending_index = starting_index + page_size
-    return response[starting_index:ending_index]
-
-
 def resource_graph_list_operations_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """
     Lists all available Azure Resource Graph operations and their descriptions.
@@ -7137,46 +7115,19 @@ def resource_graph_list_operations_command(client: AzureClient, params: dict, ar
     Args:
         client (AzureClient): Azure client instance for API communication.
         params (dict): Configuration parameters from integration settings.
-        args (dict): Command arguments including the optional limit, page_size, and page.
+        args (dict): Command arguments.
 
     Returns:
         CommandResults: Contains the list of Azure Resource Graph operations.
     """
-    limit = arg_to_number(args.get("limit"))
-    page_size = arg_to_number(args.get("page_size"))
-    page = arg_to_number(args.get("page"))
-    validate_limit(limit, max_limit=RESOURCE_GRAPH_MAX_PAGE_SIZE)
-    validate_limit(page_size, max_limit=RESOURCE_GRAPH_MAX_PAGE_SIZE)
-    validate_limit(page)
-
-    if page and not page_size:
-        raise DemistoException('Please enter a value for "page_size" when using "page".')
-    if page_size and not page:
-        raise DemistoException('Please enter a value for "page" when using "page_size".')
-
     response = client.resource_graph_list_operations()
-    operations_list = response.get("value", [])
-    md_output_notes = ""
-
-    if page and page_size:
-        if limit:
-            md_output_notes = '"limit" was ignored for paging parameters.'
-            demisto.debug('"limit" was ignored for paging parameters.')
-        operations_list = resource_graph_pagination(operations_list, page_size, page)
-
-    if page_size:
-        limit = page_size
-
-    operations = []
-    for operation in operations_list[:limit]:
-        operations.append({"Name": operation.get("name"), "Display": operation.get("display")})
+    operations = [{"Name": operation.get("name"), "Display": operation.get("display")} for operation in response.get("value", [])]
 
     if not operations:
         return CommandResults(readable_output="No Azure Resource Graph operations were found.", raw_response=response)
 
-    title = "List of Azure Resource Graph Operations\n\n" + md_output_notes
     readable_output = tableToMarkdown(
-        title,
+        "List of Azure Resource Graph Operations",
         operations,
         headers=["Name", "Display"],
         headerTransform=pascalToSpace,
@@ -7200,76 +7151,46 @@ def resource_graph_query_resources_command(client: AzureClient, params: dict, ar
         client (AzureClient): Azure client instance for API communication.
         params (dict): Configuration parameters from integration settings.
         args (dict): Command arguments including the required query and the optional limit,
-            page_size, page, management_groups, and subscriptions.
+            page_size, page, management_groups, subscriptions, and next_token.
 
     Returns:
         CommandResults: Contains the resources returned by the query.
     """
-    limit = arg_to_number(args.get("limit"))
+    limit = arg_to_number(args.get("limit") or DEFAULT_LIMIT)
     page_size = arg_to_number(args.get("page_size"))
     page_number = arg_to_number(args.get("page"))
     validate_limit(limit, max_limit=RESOURCE_GRAPH_MAX_PAGE_SIZE)
     validate_limit(page_size, max_limit=RESOURCE_GRAPH_MAX_PAGE_SIZE)
-    validate_limit(page_number)
     management_groups = argToList(args.get("management_groups"))
     subscriptions = argToList(args.get("subscriptions"))
     next_token = args.get("next_token")
     query = args.get("query", "")
 
+    if page_number is not None and page_number < 1:
+        raise DemistoException(f'The "page" argument must be a positive integer. Currently the value is {page_number}.')
     if page_number and not page_size:
         raise DemistoException('Please enter a value for "page_size" when using "page".')
     if page_size and not page_number:
         raise DemistoException('Please enter a value for "page" when using "page_size".')
 
-    list_of_query_results: list = []
-    total_records = 0
-    response_skip_token = ""
-
     if page_number and page_size:
-        skip = (page_number - 1) * page_size
-        paging_options: dict[str, Any] = {"$skip": skip, "$top": page_size}
-        response = client.resource_graph_query_resources(
-            query=query, paging_options=paging_options, management_groups=management_groups, subscriptions=subscriptions
-        )
-        total_records = response.get("totalRecords", 0)
-        list_of_query_results = response.get("data", [])
-        response_skip_token = response.get("$skipToken", "")
+        paging_options: dict[str, Any] = {"$skip": (page_number - 1) * page_size, "$top": page_size}
     else:
-        # No explicit paging: bound the unbounded fetch with the documented default limit.
-        limit = limit or RESOURCE_GRAPH_MAX_PAGE_SIZE
-        query_results: list = []
-        skip_token = next_token or ""
-        counter = 0
+        # The API supports $top, so the limit is sent to the API instead of being enforced client-side.
+        paging_options = remove_empty_elements({"$top": limit, "$skipToken": next_token})
 
-        while True:
-            paging_options = {"$skipToken": skip_token} if skip_token else {}
-            response = client.resource_graph_query_resources(
-                query=query,
-                paging_options=paging_options,
-                management_groups=management_groups,
-                subscriptions=subscriptions,
-            )
-            current_results = response.get("data", [])
-            query_results.extend(current_results)
-            counter += len(current_results)
-            response_skip_token = response.get("$skipToken", "")
-            if limit and counter >= limit:
-                break
-            if response_skip_token and (not limit or counter < limit):
-                skip_token = response_skip_token
-            else:
-                break
-
-        total_records = response.get("totalRecords", 0)
-        list_of_query_results = query_results
-
-    if limit:
-        list_of_query_results = list_of_query_results[:limit]
+    response = client.resource_graph_query_resources(
+        query=query, paging_options=paging_options, management_groups=management_groups, subscriptions=subscriptions
+    )
+    list_of_query_results = response.get("data", [])
+    total_records = response.get("totalRecords", 0)
+    response_skip_token = response.get("$skipToken", "")
 
     if not list_of_query_results:
         readable_output = "No resources were found for the given query."
         if response_skip_token:
             readable_output += " More pages are available - re-run the command with the next_token argument to continue."
+        # The token is always written, as null when there are no more results, so a stale token is cleared from the context.
         return CommandResults(
             readable_output=readable_output,
             outputs={"Azure.ResourceGraph(true)": {"QueryNextToken": response_skip_token or None}},

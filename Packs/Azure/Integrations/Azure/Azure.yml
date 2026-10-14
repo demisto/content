@@ -12708,18 +12708,6 @@ script:
         description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
         required: false
         required:platform: true
-      - name: limit
-        description: 'The maximum number of operations to return. Accepted values are 1 to 50. Note: Do not use with page and page_size.'
-        required: false
-        type: Number
-      - name: page_size
-        description: The maximum number of operations to return per page. Accepted values are 1 to 50.
-        required: false
-        type: Number
-      - name: page
-        description: The page number to return.
-        required: false
-        type: Number
     outputs:
       - contextPath: Azure.ResourceGraph.Operations.Name
         description: The name of the Azure Resource Graph operation.
@@ -12741,12 +12729,12 @@ script:
           For example: `resources | where (resourceGroup =~ ('demisto-sentinel2'))`.
           The query is based on Kusto Query Language (KQL). Reference: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/.
       - name: limit
-        description: 'The maximum number of resources to return. Accepted values are 1 to 50. Note: Do not use with page and page_size.'
+        description: 'The maximum number of resources to return. Accepted values are 1 to 1000. Note: Do not use with page and page_size.'
         required: false
         defaultValue: "50"
         type: Number
       - name: page_size
-        description: The maximum number of resources to return per page. Accepted values are 1 to 50.
+        description: The maximum number of resources to return per page. Accepted values are 1 to 1000.
         required: false
         type: Number
       - name: page
