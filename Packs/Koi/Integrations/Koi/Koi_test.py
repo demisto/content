@@ -1196,6 +1196,7 @@ class TestOversizedTimestampBucket:
                 "last_fetch_audit": self.STUCK_TIME,
                 "previous_ids_audit": [f"audit-{i}" for i in range(200)],
                 "page_audit": 3,
+                "page_size_audit": 200,
                 "window_end_audit": "2026-10-11T12:00:00Z",
             },
         )
@@ -1223,6 +1224,7 @@ class TestOversizedTimestampBucket:
                 "last_fetch_audit": self.STUCK_TIME,
                 "previous_ids_audit": ["audit-0"],
                 "page_audit": 5,
+                "page_size_audit": 200,
                 "window_end_audit": "2026-10-11T12:00:00Z",
             },
         )
@@ -1252,6 +1254,7 @@ class TestOversizedTimestampBucket:
                 "last_fetch_audit": self.STUCK_TIME,
                 "previous_ids_audit": [f"audit-{i}" for i in range(50)],
                 "page_audit": 4,
+                "page_size_audit": 200,
                 "window_end_audit": "2026-10-11T12:00:00Z",
             },
         )
@@ -1308,6 +1311,129 @@ class TestOversizedTimestampBucket:
         assert last_run_arg["last_fetch_audit"] == "2024-01-01T00:00:09Z"
         assert last_run_arg["page_audit"] == Config.DEFAULT_PAGE
         assert not last_run_arg["window_end_audit"]
+
+    def test_page_size_change_restarts_from_page_one(self, mock_client, mocker):
+        """Raising max_fetch mid-bucket must restart at page 1 instead of skipping events.
+
+        Page 3 at size 200 starts at event 401, but at size 500 it starts at event 1001,
+        so resuming at page 3 would skip events 401-1000.
+        """
+        mock_get_page = mocker.patch.object(mock_client, "get_events_page", return_value=self._bucket(500))
+        mocker.patch.object(demisto, "params", return_value={"max_fetch": "5000", "event_types_to_fetch": "Audit"})
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={
+                "last_fetch_audit": self.STUCK_TIME,
+                "previous_ids_audit": [f"audit-{i}" for i in range(400)],
+                "page_audit": 3,
+                "page_size_audit": 200,
+                "window_end_audit": "2026-10-11T12:00:00Z",
+            },
+        )
+        mock_send = mocker.patch.object(mock_client, "send_events")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        first_call = mock_get_page.call_args_list[0].kwargs
+        assert first_call["page"] == Config.DEFAULT_PAGE
+        assert first_call["page_size"] == 500
+        # The 400 already-sent events are dropped by dedup, so only new ones are sent.
+        sent_ids = {event["id"] for call in mock_send.call_args_list for event in call.args[0]}
+        assert sent_ids == {f"audit-{i}" for i in range(400, 500)}
+        assert mock_set_last_run.call_args[0][0]["page_size_audit"] == 500
+
+    def test_missing_page_size_restarts_from_page_one(self, mock_client, mocker):
+        """State saved before page_size was stored must restart at page 1 without resending.
+
+        This is the first cycle after upgrading while a stuck timestamp is mid-way.
+        """
+        mock_get_page = mocker.patch.object(mock_client, "get_events_page", return_value=self._bucket(200))
+        mocker.patch.object(demisto, "params", return_value=self.AUDIT_PARAMS)
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={
+                "last_fetch_audit": self.STUCK_TIME,
+                "previous_ids_audit": [f"audit-{i}" for i in range(400)],
+                "page_audit": 3,
+                "window_end_audit": "2026-10-11T12:00:00Z",
+            },
+        )
+        mock_send = mocker.patch.object(mock_client, "send_events")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        assert mock_get_page.call_args_list[0].kwargs["page"] == Config.DEFAULT_PAGE
+        # Page 1 holds only already-sent events, so nothing is sent again.
+        mock_send.assert_not_called()
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        assert last_run_arg["page_size_audit"] == 200
+        # Still stuck on the same timestamp, so it moves on to page 2 next cycle.
+        assert last_run_arg["page_audit"] == 2
+
+    def test_restart_after_upgrade_sends_each_event_exactly_once(self, mock_client, mocker):
+        """Across the full restart walk, dedup must drop every already-sent event and nothing is skipped.
+
+        1000 events share one timestamp; the first 400 were sent before the upgrade, which
+        left page 3 saved with no page size. The new build restarts at page 1 and walks forward.
+        """
+        window = self._bucket(1000) + [{"id": "audit-newer", "created_at": "2026-10-11T10:47:09Z"}]
+        page_size = 200
+        last_run: dict = {
+            "last_fetch_audit": self.STUCK_TIME,
+            "previous_ids_audit": [f"audit-{i}" for i in range(400)],
+            "page_audit": 3,
+            "window_end_audit": "2026-10-11T12:00:00Z",
+        }
+        sent_ids: list[str] = []
+
+        mocker.patch.object(demisto, "params", return_value=self.AUDIT_PARAMS)
+        mocker.patch.object(demisto, "getLastRun", side_effect=lambda: last_run)
+        mocker.patch.object(demisto, "setLastRun", side_effect=lambda lr: last_run.update(lr))
+        mocker.patch.object(
+            mock_client, "send_events", side_effect=lambda events, **kwargs: sent_ids.extend(e["id"] for e in events)
+        )
+
+        def paged(**kwargs):
+            start = (kwargs["page"] - 1) * page_size
+            return window[start : start + page_size]
+
+        mocker.patch.object(mock_client, "get_events_page", side_effect=paged)
+
+        for _ in range(10):
+            fetch_events_command(mock_client)
+            if last_run["last_fetch_audit"] != self.STUCK_TIME:
+                break
+
+        # No event is sent twice, and every event not sent before the upgrade is sent.
+        assert len(sent_ids) == len(set(sent_ids))
+        assert set(sent_ids) == {f"audit-{i}" for i in range(400, 1000)} | {"audit-newer"}
+        assert last_run["last_fetch_audit"] == "2026-10-11T10:47:09Z"
+
+    def test_unchanged_page_size_keeps_resume_page(self, mock_client, mocker):
+        """With max_fetch unchanged, the stored resume page is used as before."""
+        mock_get_page = mocker.patch.object(mock_client, "get_events_page", return_value=self._bucket(200))
+        mocker.patch.object(demisto, "params", return_value=self.AUDIT_PARAMS)
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={
+                "last_fetch_audit": self.STUCK_TIME,
+                "previous_ids_audit": [f"audit-{i}" for i in range(400)],
+                "page_audit": 3,
+                "page_size_audit": 200,
+                "window_end_audit": "2026-10-11T12:00:00Z",
+            },
+        )
+        mocker.patch.object(mock_client, "send_events")
+        mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        assert mock_get_page.call_args_list[0].kwargs["page"] == 3
 
 
 class TestLastRunState:

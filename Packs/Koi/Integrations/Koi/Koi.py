@@ -1234,6 +1234,7 @@ def _fetch_single_log_type(
         last_fetch_key = f"last_fetch_{log_type.type_string}"
         previous_ids_key = f"previous_ids_{log_type.type_string}"
         page_key = f"page_{log_type.type_string}"
+        page_size_key = f"page_size_{log_type.type_string}"
         window_end_key = f"window_end_{log_type.type_string}"
 
         raw_timestamp = last_run.get(last_fetch_key)
@@ -1245,6 +1246,16 @@ def _fetch_single_log_type(
         # re-read forever from page 1, so resume deeper instead of exceeding max_fetch.
         raw_page = last_run.get(page_key)
         start_page = raw_page if isinstance(raw_page, int) and raw_page > 0 else Config.DEFAULT_PAGE
+        page_size = min(Config.MAX_PAGE_SIZE, max_events)
+
+        # A resume page only addresses the same events under the same page size. If max_fetch
+        # changed (or the size was never saved), restart from page 1; already-sent events are
+        # dropped by dedup.
+        saved_page_size = last_run.get(page_size_key)
+        if start_page > Config.DEFAULT_PAGE and saved_page_size != page_size:
+            reason = f"Page size changed from {saved_page_size} to {page_size}" if saved_page_size else "No saved page size"
+            demisto.debug(f"[Fetch] {log_type.type_string}: {reason}. Restarting from page 1.")
+            start_page = Config.DEFAULT_PAGE
 
         # Page numbers are only valid against a stable result set, so reuse the original
         # end time while resuming mid-window. A fresh window is capped at the current time.
@@ -1267,7 +1278,6 @@ def _fetch_single_log_type(
         # Fetch one page at a time and send-and-flush it, so we never hold more than a
         # single page in memory (this is what fixes the OOM).
         page = start_page
-        page_size = min(Config.MAX_PAGE_SIZE, max_events)
         fetched = 0
 
         # A partial last page means the window is drained, so the resume point must hold
@@ -1364,11 +1374,13 @@ def _fetch_single_log_type(
             result.last_run_updates[last_fetch_key] = hwm_time
             result.last_run_updates[previous_ids_key] = list(ids_at_last_timestamp)
             result.last_run_updates[page_key] = next_page
+            result.last_run_updates[page_size_key] = page_size
             # Keep the window end only while mid-window; clearing it opens a fresh window.
-            result.last_run_updates[window_end_key] = created_before if next_page > Config.DEFAULT_PAGE else ""
+            saved_window_end = created_before if next_page > Config.DEFAULT_PAGE else ""
+            result.last_run_updates[window_end_key] = saved_window_end
             demisto.debug(
                 f"[Fetch] {log_type.type_string}: State updated. New HWM: {hwm_time}, "
-                f"next page: {next_page}, window end: {created_before}"
+                f"next page: {next_page}, window end: {saved_window_end}"
             )
         else:
             demisto.debug(f"[Fetch] {log_type.type_string}: No events with a time field. State not updated.")
@@ -2349,8 +2361,6 @@ COMMAND_MAP: dict[str, Any] = {
 def main() -> None:
     """Main entry point for KOI integration."""
     demisto.debug(f"{INTEGRATION_NAME} integration started")
-    # TEMP: custom pre-release marker. Remove before the general release.
-    demisto.debug(f"{INTEGRATION_NAME} running custom pre-release build (resume-page fetch fix)")
     command = demisto.command()
 
     try:
