@@ -59,6 +59,7 @@ class FakeRedRock:
         self.full_count = full_count
         self.requested_pages: list = []
         self.page_sizes: list = []
+        self.cursors: list = []
         self.after_page = None  # optional callback(page_number), run after each page is served
 
     @staticmethod
@@ -70,6 +71,7 @@ class FakeRedRock:
         body = json.loads(request.text)
         match = re.search(r"WhenOccurred >= '([^']+)'", body["Script"])
         assert match, f"query is not using an inclusive cursor: {body['Script']}"
+        self.cursors.append(match.group(1))
         cursor_ms = cursor_to_ms(match.group(1))
         if self.precision == "second":
             cursor_ms -= cursor_ms % 1000
@@ -407,19 +409,54 @@ def test_all_rows_unparseable_keeps_cursor_and_dedups(mocker):
     assert second_events == []
 
 
-def test_null_full_count(mocker):
+@pytest.mark.parametrize("row_count, expected_pages", [(3, [1]), (2500, [1, 2, 3])])
+def test_null_full_count(mocker, row_count, expected_pages):
     """
     Given
-        - RedRock returns FullCount: null.
+        - RedRock returns FullCount: null, with one page or several pages of events.
     When
         - fetch-events runs.
     Then
-        - The run doesn't crash and all events are sent.
+        - The run doesn't crash, pages until a short page, and sends all events.
     """
-    redrock = FakeRedRock([_build_row(i, BASE_MS + i) for i in range(3)], full_count=None)
-    events, _, _, error = _run(mocker, redrock)
+    redrock = FakeRedRock([_build_row(i, BASE_MS + i) for i in range(row_count)], full_count=None)
+    events, _, _, error = _run(mocker, redrock, limit=None)
     assert error is None
-    assert len(events) == 3
+    assert redrock.requested_pages == expected_pages
+    assert len(events) == row_count
+
+
+def test_limit_given_as_string(mocker):
+    """
+    Given
+        - The limit parameter is saved as a string.
+    When
+        - fetch-events runs.
+    Then
+        - It is parsed as a number and caps the run.
+    """
+    redrock = FakeRedRock([_build_row(i, BASE_MS + i) for i in range(3000)])
+    events, _, _, error = _run(mocker, redrock, limit="2500")
+    assert error is None
+    assert len(events) == 2500
+
+
+def test_upgrade_from_old_last_run(mocker):
+    """
+    Given
+        - A last run saved by the old version: the cursor of the newest event and the IDs of all 1000 sent events.
+    When
+        - fetch-events runs.
+    Then
+        - Only events after the old run are sent and the saved IDs shrink to the boundary millisecond.
+    """
+    redrock = FakeRedRock([_build_row(i, BASE_MS + i) for i in range(1500)])
+    old_last_run = {"from": ms_to_cursor(BASE_MS + 999), "ids": [f"event-{i}" for i in range(1000)]}
+
+    events, last_run, _, error = _run(mocker, redrock, last_run=old_last_run, limit=None)
+    assert error is None
+    assert _ids(events) == [f"event-{i}" for i in range(1000, 1500)]
+    assert last_run == {"from": ms_to_cursor(BASE_MS + 1499), "ids": ["event-1499"]}
 
 
 def test_get_events_push_with_limit_cut_at_a_tie(mocker):
@@ -445,39 +482,96 @@ def test_get_events_push_with_limit_cut_at_a_tie(mocker):
     assert sorted(_ids(command_events + fetch_events)) == ["event-0", "event-1", "event-2", "event-3", "event-4"]
 
 
-def test_get_events_without_push_does_not_save_last_run(mocker):
+@pytest.mark.parametrize("should_push_events", ["false", "False"])
+def test_get_events_without_push_does_not_save_last_run(mocker, should_push_events):
     """
     Given
-        - cyberarkidentity-get-events with should_push_events=false.
+        - cyberarkidentity-get-events with should_push_events=false (any case).
     When
         - The command runs.
     Then
         - Events are returned, nothing is sent and the last run isn't saved.
     """
     redrock = FakeRedRock([_build_row(i, BASE_MS + i) for i in range(3)])
-    events, last_run, contents, _ = _run(
-        mocker, redrock, command="cyberarkidentity-get-events", args={"should_push_events": "false"}
+    events, last_run, contents, error = _run(
+        mocker, redrock, command="cyberarkidentity-get-events", args={"should_push_events": should_push_events}
     )
+    assert error is None
     assert len(contents["Contents"]) == 3
     assert events == []
     assert last_run is None
 
 
+def test_get_events_without_push_uses_its_from_argument(mocker):
+    """
+    Given
+        - A saved last run past all events, and cyberarkidentity-get-events with a 'from' argument and no push.
+    When
+        - The command runs.
+    Then
+        - The query starts at the 'from' argument, not the saved cursor, and all events are returned.
+    """
+    redrock = FakeRedRock([_build_row(i, BASE_MS + i) for i in range(3)])
+    saved_last_run = {"from": ms_to_cursor(BASE_MS + 100), "ids": []}
+    _, _, contents, error = _run(
+        mocker,
+        redrock,
+        last_run=saved_last_run,
+        command="cyberarkidentity-get-events",
+        args={"should_push_events": "false", "from": "2022-05-15T12:00:00"},
+    )
+    assert error is None
+    assert redrock.cursors == ["2022-05-15T12:00:00.000000"]
+    assert len(contents["Contents"]) == 3
+
+
 def test_test_module_reads_one_page(mocker):
     """
     Given
-        - 2500 matching events.
+        - 2500 matching events and a saved last run with several IDs.
     When
         - test-module runs.
     Then
-        - Only page 1 is requested and the result is 'ok'.
+        - Only page 1 is requested from the first fetch time (the saved cursor is ignored) and the result is 'ok'.
     """
     redrock = FakeRedRock([_build_row(i, BASE_MS + i) for i in range(2500)])
-    _, last_run, contents, error = _run(mocker, redrock, command="test-module")
+    saved_last_run = {"from": ms_to_cursor(BASE_MS + 2000), "ids": ["event-1998", "event-1999", "event-2000"]}
+    _, last_run, contents, error = _run(mocker, redrock, last_run=saved_last_run, command="test-module")
     assert error is None
     assert contents == "ok"
     assert redrock.requested_pages == [1]
+    assert redrock.page_sizes == [1]
+    assert redrock.cursors == [f"{FIRST_FETCH}.000000"]
     assert last_run is None
+
+
+@pytest.mark.parametrize("non_json_endpoint", ["oauth2/platformtoken", "RedRock/Query"])
+def test_non_json_response_is_clear(mocker, non_json_endpoint):
+    """
+    Given
+        - The token endpoint or RedRock returns an HTML page with status 200.
+    When
+        - fetch-events runs.
+    Then
+        - The run fails with an error naming the non-JSON response; nothing is sent.
+    """
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+    mock_return_error = mocker.patch("CyberArkIdentityEventCollector.return_error")
+    sent = mocker.patch("CyberArkIdentityEventCollector.send_events_to_xsiam")
+
+    with requests_mock.Mocker() as m:
+        m.post(f"{URL}oauth2/platformtoken", json={"access_token": "123456abc"})
+        m.post(f"{URL}RedRock/Query", json={"success": True, "Result": {"Results": []}})
+        m.post(f"{URL}{non_json_endpoint}", text="<html>Service Unavailable</html>")
+
+        from CyberArkIdentityEventCollector import main
+
+        main("fetch-events", dict(DEMISTO_PARAMS))
+
+    assert "returned a non-JSON response (status code 200)" in mock_return_error.call_args[0][0]
+    assert not sent.called
+    assert not mock_set_last_run.called
 
 
 REDROCK_FAILURE_RESPONSE = {
@@ -585,6 +679,20 @@ def test_first_fetch_uses_relative_from(mocker):
     parsed = datetime.strptime(from_time, DATETIME_FORMAT)
     now = datetime.now(UTC).replace(tzinfo=None)
     assert timedelta(days=2, hours=23) < now - parsed < timedelta(days=3, hours=1)
+
+
+def test_first_fetch_with_time_zone_offset_is_converted_to_utc():
+    """
+    Given
+        - A first fetch time with a +03:00 offset.
+    When
+        - The cursor is computed.
+    Then
+        - The cursor is the same moment in UTC.
+    """
+    from CyberArkIdentityEventCollector import get_from_time
+
+    assert get_from_time({"from": "2022-05-15T13:00:00+03:00"}, last_run={}) == "2022-05-15T10:00:00.000000"
 
 
 def test_request_params_include_order_by_and_caching():

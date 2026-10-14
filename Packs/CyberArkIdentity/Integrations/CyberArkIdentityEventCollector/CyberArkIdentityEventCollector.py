@@ -161,9 +161,10 @@ class CyberArkIdentityEventsClient(IntegrationEventsClient):
 
         try:
             response = self.call(request)  # raises on a non-2xx response
-            access_token = response.json().get("access_token")
-        except (DemistoException, ValueError) as e:
+        except DemistoException as e:
             raise DemistoException(f"CyberArk authentication failed: {e}") from e
+        body = parse_json_response(response, "CyberArk authentication")
+        access_token = body.get("access_token")
         if not access_token:
             raise DemistoException(
                 f"CyberArk authentication failed: no access_token in the response (status code {response.status_code})."
@@ -183,11 +184,15 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
         from_time: str,
         last_run: dict | None = None,
         max_events: int | None = None,
+        page_size: int = PAGE_SIZE,
+        max_pages: int | None = None,
     ) -> None:
         super().__init__(client, options)
         self.from_time = from_time
         self.last_run = last_run or {}
         self.max_events = max_events
+        self.page_size = page_size
+        self.max_pages = max_pages
 
     @staticmethod
     def get_when_occurred_ms(event: dict) -> int | None:
@@ -236,7 +241,7 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
                 "MessageID": response_json.get("MessageID"),
                 "ErrorID": response_json.get("ErrorID"),
                 "ErrorCode": response_json.get("ErrorCode"),
-                "Exception": str(response_json.get("Exception"))[:500],
+                "Exception": str(response_json.get("Exception") or "")[:500],
             }
             demisto.debug(f"[_parse_redrock_response] RedRock query failed on page {page_number}: {error_details}")
             raise DemistoException(
@@ -250,10 +255,6 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
         body = json.loads(self.client.request.data)  # type: ignore[arg-type]
         body["args"]["PageNumber"] = page_number
         self.client.request.data = json.dumps(body)
-
-    def _page_size(self) -> int:
-        body = json.loads(self.client.request.data)  # type: ignore[arg-type]
-        return int(body["args"]["PageSize"])
 
     def _filter_new_events(self, rows: list, seen_ids: set, cursor_ms: int, page_number: int) -> list:
         """Drop rows already sent or older than the cursor, and add the kept IDs to seen_ids."""
@@ -285,7 +286,7 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
         self.client.authenticate()
 
         cursor_ms = cursor_to_ms(self.from_time)
-        page_size = self._page_size()
+        page_size = self.page_size
         # The last run's boundary IDs, plus every ID collected in this run.
         seen_ids = set(self.last_run.get("ids", []))
         demisto.debug(f"[_iter_events] Loaded {len(seen_ids)} already-fetched event IDs from last run for dedup.")
@@ -296,7 +297,8 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
         while True:
             demisto.debug(f"[_iter_events] Requesting RedRock page {page_number} (PageSize={page_size}).")
             self._set_page_number(page_number)
-            result = self._parse_redrock_response(self.client.call(self.client.request).json(), page_number)
+            response = self.client.call(self.client.request)
+            result = self._parse_redrock_response(parse_json_response(response, "CyberArk RedRock query"), page_number)
 
             results = result.get("Results") or []
             page_count = len(results)
@@ -304,7 +306,8 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
                 demisto.debug(f"[_iter_events] Page {page_number} returned no events. Stopping pagination.")
                 break
 
-            full_count = result.get("FullCount") or page_count
+            # FullCount can be null; then only a short page ends the paging.
+            full_count = result.get("FullCount")
             collected += page_count
             demisto.debug(
                 f"[_iter_events] Page {page_number}: received {page_count} events "
@@ -317,7 +320,7 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
             yield new_events
 
             # Last page.
-            if collected >= full_count or page_count < page_size:
+            if (full_count is not None and collected >= full_count) or page_count < page_size:
                 demisto.debug(
                     f"[_iter_events] Finished paginating after page {page_number} "
                     f"(collected={collected}, FullCount={full_count}, page_count={page_count})."
@@ -331,9 +334,26 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
                 )
                 break
 
+            if self.max_pages and page_number >= self.max_pages:
+                demisto.debug(f"[_iter_events] Reached the cap of {self.max_pages} pages.")
+                break
+
             page_number += 1
 
         demisto.debug(f"[_iter_events] Event collection finished. Pulled {collected} events from RedRock, kept {kept}.")
+
+
+def parse_json_response(response: requests.Response, source: str) -> dict:
+    """Return the response body as a dict, or raise a clear error for a non-JSON or non-object body."""
+    try:
+        body = response.json()
+    except ValueError as e:
+        raise DemistoException(
+            f"{source} returned a non-JSON response (status code {response.status_code}): {response.text[:200]}"
+        ) from e
+    if not isinstance(body, dict):
+        raise DemistoException(f"{source} returned an unexpected response (status code {response.status_code}).")
+    return body
 
 
 def get_from_time(demisto_params: dict, last_run: dict) -> str:
@@ -348,7 +368,8 @@ def get_from_time(demisto_params: dict, last_run: dict) -> str:
             ) from e
     fetch_from = str(demisto_params.get("from") or "3 days")
     default_from = datetime.now(UTC).replace(tzinfo=None) - timedelta(days=3)
-    return (dateparser.parse(fetch_from, settings={"TIMEZONE": "UTC"}) or default_from).strftime(DATETIME_FORMAT)
+    parsed = dateparser.parse(fetch_from, settings={"TIMEZONE": "UTC", "TO_TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": False})
+    return (parsed or default_from).strftime(DATETIME_FORMAT)
 
 
 def get_request_params(from_time: str, url: str, insecure: Any = False, page_size: int = PAGE_SIZE) -> dict:
@@ -369,11 +390,11 @@ def get_request_params(from_time: str, url: str, insecure: Any = False, page_siz
 
 def main(command: str, demisto_params: dict):
     demisto.debug(f"[main] Command '{command}' started.")
-    credentials = Credentials(**demisto_params.get("credentials", {}))
-    # The limit is applied in _iter_events, so turn off the base class's own truncation.
-    options = CyberArkIdentityEventsOptions(**(demisto_params | {"limit": None}))
 
     try:
+        credentials = Credentials(**demisto_params.get("credentials", {}))
+        # The limit is applied in _iter_events, so turn off the base class's own truncation.
+        options = CyberArkIdentityEventsOptions(**(demisto_params | {"limit": None}))
         limit = arg_to_number(demisto_params.get("limit"), arg_name="limit")
         if limit is None:
             limit = DEFAULT_LIMIT
@@ -381,15 +402,28 @@ def main(command: str, demisto_params: dict):
             raise DemistoException(f"limit must be a positive number, got {limit}.")
         max_events = 1 if command == "test-module" else limit
         page_size = min(max_events, PAGE_SIZE)
-        demisto.debug(f"[main] {command}: collecting up to {max_events} events (PageSize={page_size}).")
+        should_push = command == "fetch-events" or (
+            command == "cyberarkidentity-get-events" and argToBoolean(demisto_params.get("should_push_events", False))
+        )
+        # Only runs that push events use and move the saved cursor. test-module and a display-only
+        # command start from the first fetch time (or the command's 'from' argument) instead.
+        last_run = (demisto.getLastRun() or {}) if should_push else {}
+        demisto.debug(f"[main] {command}: collecting up to {max_events} events (PageSize={page_size}, push={should_push}).")
 
-        last_run = demisto.getLastRun() or {}
         from_time = get_from_time(demisto_params, last_run)
         request = CyberArkIdentityEventsRequest(
             **get_request_params(from_time, demisto_params.get("url", ""), demisto_params.get("insecure"), page_size)
         )
         client = CyberArkIdentityEventsClient(request, options, credentials)
-        get_events = CyberArkIdentityGetEvents(client, options, from_time=from_time, last_run=last_run, max_events=max_events)
+        get_events = CyberArkIdentityGetEvents(
+            client,
+            options,
+            from_time=from_time,
+            last_run=last_run,
+            max_events=max_events,
+            page_size=page_size,
+            max_pages=1 if command == "test-module" else None,
+        )
 
         if command == "test-module":
             demisto.debug("[main] Running test-module.")
@@ -400,7 +434,7 @@ def main(command: str, demisto_params: dict):
             events = get_events.run()
             demisto.debug(f"[main] Collected {len(events)} events for command '{command}'.")
 
-            if command == "fetch-events" or argToBoolean(demisto_params.get("should_push_events", False)):
+            if should_push:
                 demisto.debug(f"[main] Sending {len(events)} events to XSIAM (vendor={VENDOR}, product={PRODUCT}).")
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 if events:
@@ -428,6 +462,5 @@ def main(command: str, demisto_params: dict):
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    # Args is always stronger. Get getIntegrationContext even stronger
-    demisto_params_ = demisto.params() | demisto.args() | demisto.getLastRun()
-    main(demisto.command(), demisto_params_)
+    # Command arguments override instance parameters. The last run is read in main().
+    main(demisto.command(), demisto.params() | demisto.args())

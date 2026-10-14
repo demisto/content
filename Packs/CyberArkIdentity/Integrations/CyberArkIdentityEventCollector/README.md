@@ -10,7 +10,7 @@ This integration was integrated and tested with version 22.4 of CyberArk Identit
 | User name | The user that was created in CyberArk for the XSIAM integration. For example, `admin@example.com`.                  | True |
 | Password | The password for the user that was created in CyberArk for the XSIAM integration.                                                      | True |
 | First fetch time  | The period to retrieve events for. <br/>Format: &lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months. <br/>Default is 3 days. | True |
-| Maximum number of events per fetch | The maximum number of events to collect in each fetch. Default is 5000. | True |
+| Maximum number of events per fetch | The maximum number of events to collect in each fetch. Default is 5000. The recommended maximum is 10000. | True |
 | Trust any certificate (not secure) | When selected, certificates are not checked.  | False |
 | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.  | False |
 
