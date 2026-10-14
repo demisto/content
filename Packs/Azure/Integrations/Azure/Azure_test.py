@@ -9585,11 +9585,11 @@ def test_storage_container_blob_list_command_success(mocker):
     }
     result = storage_container_blob_list_command(mock_client, {}, args)
 
-    outputs = result.outputs["Azure.Storage.Blob(val.ContainerName && val.ContainerName == obj.ContainerName)"]
+    blobs = result.outputs["Azure.Storage.Blob(val.name && val.name == obj.name && val.ContainerName == obj.ContainerName)"]
     assert isinstance(result, CommandResults)
-    assert outputs["ContainerName"] == "mock-container-1"
-    assert len(outputs["Blob"]) == 2
-    assert outputs["Blob"][0]["name"] == "mock-blob-1.txt"
+    assert len(blobs) == 2
+    assert blobs[0]["name"] == "mock-blob-1.txt"
+    assert all(blob["ContainerName"] == "mock-container-1" for blob in blobs)
     assert result.outputs["Azure.Storage(true)"]["BlobsNextToken"] == "mock-next-marker"
 
 
@@ -9760,28 +9760,52 @@ def test_storage_container_blob_delete_command_error(mocker):
 
 def test_generate_sas_token_command_success(mocker):
     """
-    Given: An Azure client, a params dict with an account key, and valid SAS args.
+    Given: An Azure client and valid SAS args that include the storage account key.
     When: generate_sas_token_command is called.
     Then: It returns CommandResults with a signed SAS URL for the container.
     """
     from Azure import generate_sas_token_command
 
     mock_client = mocker.Mock()
-    params = {"credentials": {"password": "bW9ja19hY2NvdW50X2tleQ=="}}  # base64 of "mock_account_key"
     args = {
         "account_name": "mock_account_name",
         "container_name": "mock-container-1",
         "expiry_time": "1",
         "signed_resources": "c",
         "signed_permissions": "r",
+        "account_key": "bW9ja19hY2NvdW50X2tleQ==",  # base64 of "mock_account_key"
     }
 
-    result = generate_sas_token_command(mock_client, params, args)
+    result = generate_sas_token_command(mock_client, {}, args)
 
     assert result.outputs_prefix == "Azure.Storage.Container.SAS"
     assert result.outputs["name"] == "mock-container-1"
     assert result.outputs["SASURL"].startswith("https://mock_account_name.blob.core.windows.net/mock-container-1?")
     assert "sig=" in result.outputs["SASURL"]
+
+
+def test_generate_sas_token_command_ignores_client_secret_param(mocker):
+    """
+    Given: The integration Client Secret is configured and a different storage account key is passed as an argument.
+    When: generate_sas_token_command is called.
+    Then: The SAS token is signed with the account_key argument, not with the Client Secret.
+    """
+    from Azure import generate_sas_token_command
+
+    sign = mocker.patch("Azure.generate_sas_signature", return_value="sig=mock")
+    params = {"credentials": {"password": "client-secret-not-a-storage-key"}}
+    args = {
+        "account_name": "mock_account_name",
+        "container_name": "mock-container-1",
+        "expiry_time": "1",
+        "signed_resources": "c",
+        "signed_permissions": "r",
+        "account_key": "bW9ja19hY2NvdW50X2tleQ==",
+    }
+
+    generate_sas_token_command(mocker.Mock(), params, args)
+
+    assert sign.call_args.args[0] == "bW9ja19hY2NvdW50X2tleQ=="
 
 
 def test_generate_sas_token_command_invalid_permissions(mocker):
@@ -9793,35 +9817,14 @@ def test_generate_sas_token_command_invalid_permissions(mocker):
     from Azure import generate_sas_token_command
 
     mock_client = mocker.Mock()
-    params = {"credentials": {"password": "bW9ja19hY2NvdW50X2tleQ=="}}
     args = {
         "account_name": "mock_account_name",
         "container_name": "mock-container-1",
         "expiry_time": "1",
         "signed_resources": "c",
         "signed_permissions": "wr",  # invalid order
+        "account_key": "bW9ja19hY2NvdW50X2tleQ==",
     }
 
     with pytest.raises(DemistoException, match="Permissions are invalid or in the wrong order"):
-        generate_sas_token_command(mock_client, params, args)
-
-
-def test_generate_sas_token_command_missing_account_key(mocker):
-    """
-    Given: SAS args and params without an account key.
-    When: generate_sas_token_command is called.
-    Then: It raises a DemistoException about the missing account key.
-    """
-    from Azure import generate_sas_token_command
-
-    mock_client = mocker.Mock()
-    args = {
-        "account_name": "mock_account_name",
-        "container_name": "mock-container-1",
-        "expiry_time": "1",
-        "signed_resources": "c",
-        "signed_permissions": "r",
-    }
-
-    with pytest.raises(DemistoException, match="An account key must be given"):
         generate_sas_token_command(mock_client, {}, args)

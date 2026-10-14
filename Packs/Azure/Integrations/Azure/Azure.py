@@ -4693,7 +4693,7 @@ def storage_container_blob_list_command(client: AzureClient, params: dict, args:
         for blob_property in element.findall("Properties"):
             for attribute in blob_property:
                 properties[attribute.tag] = attribute.text
-        blobs.append({"name": element.findtext("Name"), "Property": properties})
+        blobs.append({"name": element.findtext("Name"), "ContainerName": container_name, "Property": properties})
 
     # Azure returns an empty <NextMarker /> on the last page; normalize it to None so a stale token is overwritten.
     next_token = root.findtext("NextMarker") or None
@@ -4706,8 +4706,8 @@ def storage_container_blob_list_command(client: AzureClient, params: dict, args:
         return CommandResults(readable_output=readable_output, outputs=token_output, raw_response=response)
 
     outputs = {
-        "Azure.Storage.Blob(val.ContainerName && val.ContainerName == obj.ContainerName)": remove_empty_elements(
-            {"ContainerName": container_name, "Blob": blobs}
+        "Azure.Storage.Blob(val.name && val.name == obj.name && val.ContainerName == obj.ContainerName)": remove_empty_elements(
+            blobs
         ),
         **token_output,
     }
@@ -4875,9 +4875,7 @@ def generate_sas_token_command(client: AzureClient, params: dict, args: dict) ->
             "Permissions are invalid or in the wrong order. The correct order for permissions is 'racwdxltmeop'."
         )
 
-    account_key = params.get("credentials", {}).get("password") or args.get("account_key")
-    if not account_key:
-        raise DemistoException("An account key must be given to generate the SAS token.")
+    account_key = args["account_key"]
 
     now = dt.datetime.now(UTC)
     signed_start = (now - dt.timedelta(minutes=2)).strftime(DATE_FORMAT)

@@ -3877,9 +3877,9 @@ Lists blobs under the specified container. Required permission: Microsoft.Storag
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.Storage.Blob.ContainerName | String | The name of the container. |
-| Azure.Storage.Blob.Blob.name | String | The name of the blob. |
-| Azure.Storage.Blob.Blob.Property | Unknown | The blob system properties, including: Last-Modified, Etag, Content-Length, Content-Type, Content-Encoding, Content-Language, Content-MD5, Cache-Control, Content-Disposition, BlobType, LeaseStatus, LeaseState, and ServerEncrypted. |
+| Azure.Storage.Blob.name | String | The name of the blob. |
+| Azure.Storage.Blob.ContainerName | String | The name of the container that holds the blob. |
+| Azure.Storage.Blob.Property | Unknown | The blob system properties, including: Last-Modified, Etag, Content-Length, Content-Type, Content-Encoding, Content-Language, Content-MD5, Cache-Control, Content-Disposition, BlobType, LeaseStatus, LeaseState, and ServerEncrypted. |
 | Azure.Storage.BlobsNextToken | String | The continuation token to use when requesting the next set of blobs. |
 
 ### azure-storage-blob-update
@@ -3947,7 +3947,7 @@ Creates a shared access signature (SAS) token for a container.
 | signed_resources | The resources that are accessible via the shared access signature. Can be "c" (container), "b" (blob), "bv" (blob version), "bs" (blob snapshot), or "d" (directory). Possible values are: c, b, bv, bs, d. Default is c. | Required |
 | signed_permissions | The permissions that are associated with the shared access signature. The user is restricted to operations that are allowed by the permissions. Possible permissions: r = Read, a = Add, c = Create, w = Write. The permissions must follow this order "racwdxltmeop". For example: r, c, a, w, rac, racw. Default is r. | Required |
 | signed_ip | The public IP address or range of public IP addresses from which to accept requests. | Optional |
-| account_key | The account key used to create the SAS token. If not specified, the account key from the integration configuration is used. | Optional |
+| account_key | The access key of the storage account, used to sign the SAS token. | Required |
 
 #### Context Output
 
