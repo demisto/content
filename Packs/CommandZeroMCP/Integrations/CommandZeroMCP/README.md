@@ -6,10 +6,10 @@ Use this integration to connect securely with the Command Zero Model Context Pro
 | --- | --- | --- |
 | Region | The region that hosts your Command Zero organization. | True |
 | API Key | The Command Zero API key. The integration can perform only the actions allowed by the key's role. | True |
-| Organization ID | The ID of the Command Zero organization to connect to. Required only if the API key has access to more than one organization. | False |
-| Custom Server URL | Overrides the Region parameter. Use only when instructed by Command Zero. | False |
-| Custom headers | Add custom headers to be sent with each request. | False |
-| Trust any certificate (not secure) | | False |
+| Organization ID | The ID of the Command Zero organization to connect to. Required only if the API key has access to more than one organization. |  |
+| Custom Server URL | Overrides the Region parameter. Use only when instructed by Command Zero. |  |
+| Custom headers | Add custom headers to be sent with each request.<br/>Enter each header on a new line in the format: HeaderName: HeaderValue. |  |
+| Trust any certificate (not secure) |  |  |
 
 ## Commands
 
