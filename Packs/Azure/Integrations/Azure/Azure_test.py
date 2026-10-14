@@ -9597,6 +9597,24 @@ def test_resource_graph_query_resources_command_no_results(mocker):
     assert result.readable_output == "No resources were found for the given query."
 
 
+def test_resource_graph_query_resources_command_empty_page_with_next_token(mocker):
+    """
+    Given: An Azure client mock returning an empty page that still carries a $skipToken.
+    When: resource_graph_query_resources_command is called with page and page_size arguments.
+    Then: The live token is surfaced as QueryNextToken and the readable output says more pages are available.
+    """
+    from Azure import resource_graph_query_resources_command
+
+    mock_client = mocker.Mock()
+    mock_client.resource_graph_query_resources.return_value = {"data": [], "totalRecords": 6, "$skipToken": "next-page-token"}
+
+    args = {"query": "Resources | limit 1", "page": 2, "page_size": 3}
+    result = resource_graph_query_resources_command(mock_client, {}, args)
+
+    assert result.outputs == {QUERY_NEXT_TOKEN_PATH: {"QueryNextToken": "next-page-token"}}
+    assert "More pages are available" in result.readable_output
+
+
 def test_resource_graph_query_resources_command_surfaces_next_token(mocker):
     """
     Given: An Azure client mock returning a page of resources along with a $skipToken.

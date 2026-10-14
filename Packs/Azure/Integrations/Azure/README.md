@@ -3837,8 +3837,8 @@ Gets all Azure Resource Graph operations permissions and descriptions. Required 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| limit | The maximum number of operations to return. Note: Do not use with page and page_size. | Optional |
-| page_size | The maximum number of operations to return per page. | Optional |
+| limit | The maximum number of operations to return. Accepted values are 1 to 50. Note: Do not use with page and page_size. | Optional |
+| page_size | The maximum number of operations to return per page. Accepted values are 1 to 50. | Optional |
 | page | The page number to return. | Optional |
 
 #### Context Output
@@ -3863,8 +3863,8 @@ Executes an Azure Resource Graph query based on Kusto Query Language (KQL). For 
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | query | The query for the Azure Resource Graph to execute.<br/>For example: `resources \| where (resourceGroup =~ ('demisto-sentinel2'))`.<br/>The query is based on Kusto Query Language (KQL). Reference: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/. | Required |
-| limit | The maximum number of resources to return. Note: Do not use with page and page_size. Default is 50. | Optional |
-| page_size | The maximum number of resources to return per page. | Optional |
+| limit | The maximum number of resources to return. Accepted values are 1 to 50. Note: Do not use with page and page_size. Default is 50. | Optional |
+| page_size | The maximum number of resources to return per page. Accepted values are 1 to 50. | Optional |
 | page | The page number to return. | Optional |
 | management_groups | A comma-separated list of Azure management groups against which to execute the query. For example: 'mg1, mg2'. | Optional |
 | subscriptions | A comma-separated list of Azure subscriptions against which to execute the query. For example: 'sub1, sub2'. | Optional |

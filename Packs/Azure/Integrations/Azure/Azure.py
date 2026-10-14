@@ -6453,8 +6453,11 @@ def resource_graph_query_resources_command(client: AzureClient, params: dict, ar
         list_of_query_results = list_of_query_results[:limit]
 
     if not list_of_query_results:
+        readable_output = "No resources were found for the given query."
+        if response_skip_token:
+            readable_output += " More pages are available - re-run the command with the next_token argument to continue."
         return CommandResults(
-            readable_output="No resources were found for the given query.",
+            readable_output=readable_output,
             outputs={"Azure.ResourceGraph(true)": {"QueryNextToken": response_skip_token or None}},
             raw_response=response,
         )

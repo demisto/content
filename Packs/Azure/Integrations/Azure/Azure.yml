@@ -12311,11 +12311,11 @@ script:
         required: false
         required:platform: true
       - name: limit
-        description: 'The maximum number of operations to return. Note: Do not use with page and page_size.'
+        description: 'The maximum number of operations to return. Accepted values are 1 to 50. Note: Do not use with page and page_size.'
         required: false
         type: Number
       - name: page_size
-        description: The maximum number of operations to return per page.
+        description: The maximum number of operations to return per page. Accepted values are 1 to 50.
         required: false
         type: Number
       - name: page
@@ -12343,12 +12343,12 @@ script:
           For example: `resources | where (resourceGroup =~ ('demisto-sentinel2'))`.
           The query is based on Kusto Query Language (KQL). Reference: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/.
       - name: limit
-        description: 'The maximum number of resources to return. Note: Do not use with page and page_size.'
+        description: 'The maximum number of resources to return. Accepted values are 1 to 50. Note: Do not use with page and page_size.'
         required: false
         defaultValue: "50"
         type: Number
       - name: page_size
-        description: The maximum number of resources to return per page.
+        description: The maximum number of resources to return per page. Accepted values are 1 to 50.
         required: false
         type: Number
       - name: page
