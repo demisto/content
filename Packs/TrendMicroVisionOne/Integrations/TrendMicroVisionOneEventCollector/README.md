@@ -1,3 +1,5 @@
+**Important:** This integration is supported by Palo Alto Networks.
+
 Palo Alto Networks TrendAI Vision One™ Event Collector integration for Cortex XSIAM collects the Workbench, Observed Attack Techniques, Search Detections and Audit logs.
 TrendAI Vision One™ is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—TrendAI Vision One™ prevents the majority of attacks with automated protection.
 
@@ -62,6 +64,14 @@ The following table provides a brief description of each role.
 * For API rate limits, refer [here](https://automation.trendmicro.com/xdr/Guides/API-Request-Limits)
 * Observed Attack Techniques Logs and Search Detection Logs are fetched from the newest to the oldest as its the logs are returned in descending order from the api.
 * For Observed Attack Techniques Logs and Search Detection Logs it is possible that the limit will be exceeded due to api limitations.
+
+### Reliability and fetch behavior
+
+* **Automatic retry with backoff:** transient failures (HTTP *500*, *502*, *503* and *504*, dropped connections and read timeouts) are retried automatically with exponential backoff and jitter, so a short-lived API outage does not abort an entire fetch round.
+* **Page size handling:** the *maximum number of events per fetch* is mapped to the closest valid page size accepted by the API. For Observed Attack Techniques logs the accepted values are *50*, *100* and *200*; for Search Detections logs they are *50*, *100*, *500*, *1000* and *5000*. When the fetch-timeout backoff reduces the limit, the resulting value is clamped to a valid page size.
+* **Per-log-type checkpoints:** each log type is sent to Cortex XSIAM and checkpointed as soon as it is fetched, instead of accumulating all types and sending them at the end. If one log type fails, the others keep their progress and the failed type resumes from its last saved checkpoint on the next run.
+* **Fetch-timeout backoff:** if a fetch round reaches the execution timeout, the next round halves the page size and is scheduled *30* seconds later, so the collector catches up on a large backlog instead of re-scanning overlapping time windows.
+* **User-Agent header:** all API requests include a *User-Agent* header identifying the integration (for example *TMV1CortexXSOAREventCollector/4.6.0*), so traffic from this collector can be traced in TrendAI Vision One™.
 
 ## Commands
 
