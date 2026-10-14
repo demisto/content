@@ -99,14 +99,9 @@ EVENT_FIELDS = [
 ]
 PRODUCT = "identity"
 VENDOR = "cyberark"
-# The maximum number of events to request from RedRock in a single page.
-# RedRock queries time out after two minutes, so we page through the results
-# instead of requesting everything at once.
+# Events per RedRock page.
 PAGE_SIZE = 1000
-# The maximum number of pages collected in a single fetch-events run (10 x 1000 = 10,000 events).
-# Results are ordered ascending, so when a run hits the cap the cursor moves to the last collected
-# event and the next run continues from there. This keeps every run small after a reset, an outage,
-# or a run of failed fetches, instead of collecting the whole backlog in memory in one run.
+# Max pages per fetch-events run; the next run continues from the cursor.
 MAX_PAGES_PER_FETCH = 10
 
 
@@ -164,21 +159,19 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
 
     @staticmethod
     def get_when_occurred_ms(event: dict) -> int:
-        """Return WhenOccurred as epoch milliseconds. RedRock formats it as '/Date(1651483379362)/'."""
+        """Return WhenOccurred ('/Date(1651483379362)/') as epoch milliseconds."""
         return int(str(event.get("WhenOccurred", "")).removesuffix(")/").removeprefix("/Date("))
 
     @staticmethod
     def get_last_run_time(last_timestamp_ms: int) -> str:
-        # Build the cursor from integer milliseconds (not a float division) so it always matches the
-        # event's millisecond exactly.
+        # Integer math, so the cursor matches the event's millisecond exactly.
         last_run_time = (datetime(1970, 1, 1) + timedelta(milliseconds=last_timestamp_ms)).strftime(DATETIME_FORMAT)
         demisto.debug(f"[get_last_run_time] Computed last-run cursor (max WhenOccurred) = {last_run_time}.")
         return last_run_time
 
     @staticmethod
     def get_last_run_ids(events: list, last_timestamp_ms: int) -> list:
-        # The next query starts at the cursor's millisecond (inclusive), so only the events at that
-        # exact millisecond can be returned again. Those are the only IDs needed for dedup.
+        # The next query is >= cursor, so only events at the cursor millisecond can repeat.
         ids = [event.get("ID") for event in events if CyberArkIdentityGetEvents.get_when_occurred_ms(event) == last_timestamp_ms]
         demisto.debug(f"[get_last_run_ids] Kept {len(ids)} event IDs at the cursor millisecond for the next-run dedup list.")
         return ids
@@ -189,8 +182,7 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
         ids = self.get_last_run_ids(events, last_timestamp_ms)
         previous_last_run = demisto.getLastRun()
         if previous_last_run.get("from") == last_run_time:
-            # Every event in this run is still at the previous cursor's millisecond, so the events
-            # skipped as duplicates this run must stay in the dedup list too.
+            # Cursor didn't move: keep the previous IDs too.
             ids = list(dict.fromkeys(previous_last_run.get("ids", []) + ids))
             demisto.debug(f"[get_last_run] Cursor did not move; merged with the previous dedup list ({len(ids)} ids).")
         last_run = {"from": last_run_time, "ids": ids}
@@ -199,12 +191,7 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
 
     @staticmethod
     def _parse_redrock_response(response_json: dict, page_number: int) -> dict:
-        """Return the 'Result' object of a RedRock response, or raise if the query failed.
-
-        On failure RedRock returns success=false and Result=null together with Message/ErrorID.
-        Raising (instead of treating it as an empty page) makes the run fail visibly and keeps
-        the last-run cursor unchanged, so the next run retries the same window.
-        """
+        """Return the response's Result, or raise if RedRock returned success=false / Result=null."""
         result = response_json.get("Result")
         if response_json.get("success") is False or not isinstance(result, dict):
             error_details = {
@@ -222,7 +209,7 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
         return result
 
     def _set_page_number(self, page_number: int) -> None:
-        """Update the PageNumber in the request body so the next call fetches the given page."""
+        """Set PageNumber in the request body."""
         body = json.loads(self.client.request.data)  # type: ignore[arg-type]
         body["args"]["PageNumber"] = page_number
         self.client.request.data = json.dumps(body)
@@ -232,17 +219,13 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
         demisto.debug("[_iter_events] Starting event collection.")
         self.client.authenticate()
 
-        # A set, so each per-row check below is constant time whatever the size of the saved list.
+        # Set for constant-time lookups.
         fetched_events_ids = set(demisto.getLastRun().get("ids", []))
         demisto.debug(f"[_iter_events] Loaded {len(fetched_events_ids)} already-fetched event IDs from last run for dedup.")
         page_number = 1
         collected = 0
 
-        # RedRock returns at most PageSize rows per call and reports the total number of
-        # matching rows in "FullCount". We page through the result set (ordered ascending by
-        # WhenOccurred, then ID) until we have collected every matching row, so no events are dropped
-        # when a single fetch window contains more than one page of events. On fetch-events a run
-        # stops after MAX_PAGES_PER_FETCH pages; the rest is collected by the next runs.
+        # Page until all rows are read; fetch-events stops after MAX_PAGES_PER_FETCH pages.
         max_pages = MAX_PAGES_PER_FETCH if demisto.command() == "fetch-events" else None
         while True:
             demisto.debug(f"[_iter_events] Requesting RedRock page {page_number} (PageSize={PAGE_SIZE}).")
@@ -269,7 +252,7 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
             )
             yield new_events
 
-            # Stop once we've drained every matching row, or the page was not full (last page).
+            # Last page.
             if collected >= full_count or page_count < PAGE_SIZE:
                 demisto.debug(
                     f"[_iter_events] Finished paginating after page {page_number} "
@@ -300,11 +283,8 @@ def get_request_params(**kwargs: dict) -> dict:
         "url": f"{str(kwargs.get('url', '')).removesuffix('/')}/RedRock/Query",
         "data": json.dumps(
             {
-                # Order ascending by WhenOccurred (then ID, so events in the same millisecond keep a
-                # stable order across pages) so pagination is deterministic and the last-run cursor
-                # (max WhenOccurred) is safe. The cursor is inclusive (>=): events at the cursor's
-                # millisecond are returned again and removed by the last-run ID dedup, so none are
-                # skipped when a run ends in the middle of a millisecond. Caching=-1 requests live data.
+                # Inclusive cursor + ID tiebreak: events at the cursor millisecond repeat and are deduped by ID.
+                # Caching=-1 requests live data.
                 "Script": f"Select {', '.join(EVENT_FIELDS)} from Event where WhenOccurred >= '{from_time}' "
                 f"ORDER BY WhenOccurred ASC, ID ASC",
                 "args": {"PageNumber": 1, "PageSize": PAGE_SIZE, "Caching": -1},
@@ -320,10 +300,7 @@ def main(command: str, demisto_params: dict):
     demisto.debug(f"[main] Command '{command}' started (build: XSUP-78439 cap+dedup).")
     credentials = Credentials(**demisto_params.get("credentials", {}))
     options = CyberArkIdentityEventsOptions(**demisto_params)
-    # On fetch-events we must drain the full backlog, so the configured "limit" must not
-    # truncate the collected events (otherwise events beyond the limit are silently dropped
-    # and the cursor advances past them). "limit" is only meant to cap the manual
-    # cyberarkidentity-get-events command.
+    # "limit" only applies to cyberarkidentity-get-events; fetch-events is bounded by MAX_PAGES_PER_FETCH.
     if command == "fetch-events":
         demisto.debug(
             f"[main] fetch-events: disabling the collected-events limit (was {options.limit}) to drain the full backlog."

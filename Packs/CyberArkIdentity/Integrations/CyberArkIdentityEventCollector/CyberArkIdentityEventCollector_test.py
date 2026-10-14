@@ -164,13 +164,11 @@ def _build_row(index: int, when_occurred_ms: int) -> dict:
 def test_fetch_events_paginates_full_backlog(mocker):
     """
     Given
-        - 2500 events match the fetch window in CyberArk (more than a single RedRock page of 1000).
+        - 2500 matching events (3 pages).
     When
-        - fetch-events is running.
+        - fetch-events runs.
     Then
-        - Verify the integration pages through ALL results (3 pages) and collects every event,
-          so no events are dropped when the backlog exceeds one page.
-        - Verify the last_run cursor is set to the max WhenOccurred of the whole backlog.
+        - All events are collected and the cursor is the newest event.
     """
     from CyberArkIdentityEventCollector import PAGE_SIZE
 
@@ -204,25 +202,20 @@ def test_fetch_events_paginates_full_backlog(mocker):
         main("fetch-events", params.return_value | args.return_value)
 
     events = sent.call_args[0][0]
-    # All 2500 events must be collected across the 3 pages (1000 + 1000 + 500) - none dropped.
     assert len(events) == total_events
     last_run = mock_last_run.call_args[0][0]
-    # Cursor must advance to the newest event in the whole backlog, not just the first page.
     assert last_run.get("from") == datetime.utcfromtimestamp((base_ms + total_events - 1) / 1000).strftime("%Y-%m-%dT%H:%M:%S.%f")
-    # Only the event at the cursor's millisecond is kept for dedup.
     assert last_run.get("ids") == [f"event-{total_events - 1}"]
 
 
 def test_fetch_events_stops_at_per_fetch_cap(mocker):
     """
     Given
-        - 12,500 events match the fetch window (more than the 10-page per-fetch cap).
+        - 12,500 matching events (more than the 10-page cap).
     When
         - fetch-events runs twice.
     Then
-        - Verify the first run stops after MAX_PAGES_PER_FETCH pages and sends exactly 10,000 events.
-        - Verify the cursor moves to the last collected event, and the second run collects the
-          remaining 2,500 events with no duplicates and none missing.
+        - Run 1 stops at 10 pages; run 2 collects the rest, with no duplicates or gaps.
     """
     from CyberArkIdentityEventCollector import MAX_PAGES_PER_FETCH, PAGE_SIZE
 
@@ -244,13 +237,11 @@ def test_fetch_events_stops_at_per_fetch_cap(mocker):
 def test_fetch_events_millisecond_tie_across_cap_is_not_lost(mocker):
     """
     Given
-        - The 10,000th and 10,001st events (the last event of the per-fetch cap and the first event
-          after it) share the same WhenOccurred millisecond, together with a few more events.
+        - 5 events share one millisecond across the 10-page cap boundary.
     When
         - fetch-events runs twice.
     Then
-        - Verify the events at the shared millisecond are split across the two runs without being
-          lost or sent twice, because the cursor is inclusive (>=) and the boundary IDs are deduped.
+        - Each event is sent exactly once.
     """
     from CyberArkIdentityEventCollector import MAX_PAGES_PER_FETCH, PAGE_SIZE
 
@@ -258,8 +249,7 @@ def test_fetch_events_millisecond_tie_across_cap_is_not_lost(mocker):
     base_ms = 1652621700000
     tie_ms = base_ms + cap
     rows = [_build_row(i, base_ms + i) for i in range(cap - 2)]
-    # 5 events share one millisecond: 2 fall inside the first run's cap, 3 fall after it.
-    rows += [_build_row(i, tie_ms) for i in range(cap - 2, cap + 3)]
+    rows += [_build_row(i, tie_ms) for i in range(cap - 2, cap + 3)]  # 2 inside the cap, 3 after
     rows += [_build_row(i, tie_ms + 1 + i) for i in range(cap + 3, cap + 10)]
     fake_redrock = FakeRedRock(rows)
 
@@ -276,13 +266,11 @@ def test_fetch_events_millisecond_tie_across_cap_is_not_lost(mocker):
 def test_last_run_ids_merged_when_cursor_does_not_move(mocker):
     """
     Given
-        - The previous run ended at a millisecond that still has more events, and this run returns
-          only events at that same millisecond (some already sent).
+        - All returned events are at the previous cursor millisecond, some already sent.
     When
         - fetch-events runs.
     Then
-        - Verify only the new events are sent, and the new last run keeps both the previous and the
-          new IDs at that millisecond, so the next run doesn't send the earlier ones again.
+        - Only new events are sent and the saved IDs include old and new.
     """
     tie_ms = 1652621700000
     fake_redrock = FakeRedRock([_build_row(i, tie_ms) for i in range(4)])
@@ -297,11 +285,11 @@ def test_last_run_ids_merged_when_cursor_does_not_move(mocker):
 def test_fetch_events_already_fetched_ids_are_skipped(mocker):
     """
     Given
-        - A single page of 3 events, two of which were already fetched in the previous run.
+        - 3 events, 2 already fetched in the previous run.
     When
-        - fetch-events is running.
+        - fetch-events runs.
     Then
-        - Verify only the one new event is sent to XSIAM (dedup by ID works with pagination).
+        - Only the new event is sent.
     """
     total_events = 3
     base_ms = 1652621700000
@@ -345,14 +333,11 @@ REDROCK_FAILURE_RESPONSE = {
 def test_fetch_events_redrock_failure_is_raised(mocker, failing_page):
     """
     Given
-        - RedRock returns a failure response (success=false, Result=null) on page 1, or on page 2
-          after a full first page.
+        - RedRock fails (success=false, Result=null) on page 1 or page 2.
     When
-        - fetch-events is running.
+        - fetch-events runs.
     Then
-        - Verify the run fails with an error that includes CyberArk's message and ErrorID.
-        - Verify no events are sent and the last run is not updated, so the next run retries
-          the same window and no events are lost.
+        - The error includes Message and ErrorID; nothing is sent and the last run is unchanged.
     """
     from CyberArkIdentityEventCollector import PAGE_SIZE
 
@@ -394,10 +379,9 @@ def test_request_params_include_order_by_and_caching():
     Given
         - Fetch parameters.
     When
-        - Building the RedRock request params.
+        - Building the RedRock request.
     Then
-        - Verify the query is ordered ascending by WhenOccurred and requests live (non-cached) data,
-          which is required for safe pagination and a monotonic last-run cursor.
+        - The query uses >=, sorts by WhenOccurred then ID, and requests live data.
     """
     from CyberArkIdentityEventCollector import PAGE_SIZE, get_request_params
 
