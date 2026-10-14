@@ -25,6 +25,8 @@ from Azure import (
     update_key_vault_command,
     sql_db_threat_policy_update_command,
     sql_db_tde_set_command,
+    aks_clusters_list_command,
+    aks_cluster_addon_update_command,
     cosmosdb_update_command,
     remove_member_from_group_command,
     get_azure_client,
@@ -862,6 +864,341 @@ def test_sql_db_tde_set_command(mocker, client, mock_params):
 
     # Verify results
     assert "Updated SQL database test-db of the server test-server" in result.readable_output
+
+
+def test_aks_clusters_list_command(mocker, client, mock_params):
+    """
+    Given: An Azure client whose aks_clusters_list returns a list of managed clusters with a nextLink.
+    When: The aks_clusters_list_command function is called.
+    Then: The function returns CommandResults with the clusters keyed by id and the next-token nested output.
+    """
+    from CommonServerPython import CommandResults
+
+    api_response = util_load_json("test_data/aks_clusters_list_response.json")
+    api_response["nextLink"] = "mock_next_link"
+    mocker.patch.object(client, "aks_clusters_list", return_value=api_response)
+
+    args = {"subscription_id": "mock_subscription_id"}
+    result = aks_clusters_list_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["Azure.AKS.ManagedCluster(val.id && val.id == obj.id)"] == api_response.get("value")
+    assert result.outputs["Azure.AKS(true)"] == {"ManagedClusterNextToken": "mock_next_link"}
+
+
+def test_aks_clusters_list_command_pagination(mocker, client, mock_params):
+    """
+    Given: An Azure client and a next_token argument for pagination.
+    When: The aks_clusters_list_command function is called with next_token.
+    Then: The next_token is forwarded to the client method.
+    """
+    api_response = util_load_json("test_data/aks_clusters_list_response.json")
+    mock_list = mocker.patch.object(client, "aks_clusters_list", return_value=api_response)
+
+    args = {"subscription_id": "mock_subscription_id", "next_token": "mock_next_link"}
+    aks_clusters_list_command(client, mock_params, args)
+
+    assert mock_list.call_args.kwargs["next_token"] == "mock_next_link"
+
+
+def test_aks_clusters_list_command_no_results(mocker, client, mock_params):
+    """
+    Given: An Azure client whose aks_clusters_list returns an empty cluster list.
+    When: The aks_clusters_list_command function is called.
+    Then: The function returns a "no clusters found" readable output and clears the next token in context.
+    """
+    from CommonServerPython import CommandResults
+
+    mocker.patch.object(client, "aks_clusters_list", return_value={"value": []})
+
+    args = {"subscription_id": "mock_subscription_id"}
+    result = aks_clusters_list_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == {"Azure.AKS(true)": {"ManagedClusterNextToken": None}}
+    assert result.readable_output == "No AKS managed clusters were found."
+
+
+def test_aks_clusters_list_command_empty_page_with_next_link(mocker, client, mock_params):
+    """
+    Given: An Azure client whose aks_clusters_list returns an empty page that still has a nextLink.
+    When: The aks_clusters_list_command function is called.
+    Then: The next token is surfaced in context so the user can continue paging, despite the empty page.
+    """
+    mocker.patch.object(client, "aks_clusters_list", return_value={"value": [], "nextLink": "mock_next_link"})
+
+    result = aks_clusters_list_command(client, mock_params, {"subscription_id": "mock_subscription_id"})
+
+    assert result.outputs == {"Azure.AKS(true)": {"ManagedClusterNextToken": "mock_next_link"}}
+    assert result.readable_output == "No AKS managed clusters were found."
+
+
+def test_aks_cluster_addon_update_command(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to update a managed cluster addon with monitoring enabled.
+    When: The aks_cluster_addon_update_command function is called with valid snake_case args.
+    Then: The client method is invoked with the parsed boolean args and a success message is returned.
+    """
+    mock_update = mocker.patch.object(client, "aks_cluster_addon_update", return_value=None)
+
+    args = {
+        "resource_name": "mock_cluster_name",
+        "location": "eastus",
+        "monitoring_agent_enabled": "true",
+        "subscription_id": "mock_subscription_id",
+        "resource_group_name": "mock_resource_group",
+    }
+    result = aks_cluster_addon_update_command(client, mock_params, args)
+
+    mock_update.assert_called_once()
+    call_kwargs = mock_update.call_args.kwargs
+    assert call_kwargs["resource_name"] == "mock_cluster_name"
+    assert call_kwargs["monitoring_agent_enabled"] is True
+    assert call_kwargs["http_application_routing_enabled"] is None
+    assert result.readable_output == "The request to update the managed cluster was sent successfully."
+
+
+def test_aks_cluster_addon_update_command_http_routing(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to update a managed cluster with HTTP application routing enabled.
+    When: The aks_cluster_addon_update_command function is called with http_application_routing_enabled set.
+    Then: The client method is invoked with the parsed boolean and monitoring left as None.
+    """
+    mock_update = mocker.patch.object(client, "aks_cluster_addon_update", return_value=None)
+
+    args = {
+        "resource_name": "mock_cluster_name",
+        "location": "eastus",
+        "http_application_routing_enabled": "false",
+        "subscription_id": "mock_subscription_id",
+        "resource_group_name": "mock_resource_group",
+    }
+    result = aks_cluster_addon_update_command(client, mock_params, args)
+
+    mock_update.assert_called_once()
+    call_kwargs = mock_update.call_args.kwargs
+    assert call_kwargs["http_application_routing_enabled"] is False
+    assert call_kwargs["monitoring_agent_enabled"] is None
+    assert call_kwargs["monitoring_resource_name"] is None
+    assert result.readable_output == "The request to update the managed cluster was sent successfully."
+
+
+def test_azure_client_aks_clusters_list(mocker, client):
+    """
+    Given: An Azure client and a subscription ID.
+    When: The aks_clusters_list method is called.
+    Then: The function makes a GET call to the managed clusters URL with the AKS api-version.
+    """
+    mock_response = {"value": [{"id": "mock_cluster_id", "name": "mock_cluster"}]}
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    result = client.aks_clusters_list(subscription_id="mock_subscription_id")
+
+    expected_url = f"{PREFIX_URL_AZURE}mock_subscription_id/providers/Microsoft.ContainerService/managedClusters"
+    client.http_request.assert_called_once()
+    call_args = client.http_request.call_args
+    assert call_args[0][0] == "GET"
+    assert call_args[1]["full_url"] == expected_url
+    assert "api-version" in call_args[1]["params"]
+    assert result == mock_response
+
+
+def test_azure_client_aks_clusters_list_error(mocker, client):
+    """
+    Given: An Azure client whose http_request raises an error.
+    When: The aks_clusters_list method is called.
+    Then: The error is routed through handle_azure_error.
+    """
+    mocker.patch.object(client, "http_request", side_effect=Exception("403 Forbidden"))
+    mock_handle = mocker.patch.object(client, "handle_azure_error")
+
+    client.aks_clusters_list(subscription_id="mock_subscription_id")
+
+    mock_handle.assert_called_once()
+    assert mock_handle.call_args.kwargs["api_function_name"] == "aks_clusters_list"
+    assert mock_handle.call_args.kwargs["subscription_id"] == "mock_subscription_id"
+
+
+def test_azure_client_aks_cluster_get(mocker, client):
+    """
+    Given: An Azure client and cluster identifiers.
+    When: The aks_cluster_get method is called.
+    Then: The function makes a GET call to the managed cluster URL with the AKS api-version.
+    """
+    mock_response = {"id": "mock_cluster_id", "name": "mock_cluster"}
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    result = client.aks_cluster_get(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        resource_name="mock_cluster",
+    )
+
+    expected_url = (
+        f"{PREFIX_URL_AZURE}mock_subscription_id/resourceGroups/mock_resource_group"
+        "/providers/Microsoft.ContainerService/managedClusters/mock_cluster"
+    )
+    client.http_request.assert_called_once()
+    call_args = client.http_request.call_args
+    assert call_args[0][0] == "GET"
+    assert call_args[1]["full_url"] == expected_url
+    assert "api-version" in call_args[1]["params"]
+    assert result == mock_response
+
+
+def test_azure_client_aks_cluster_get_error(mocker, client):
+    """
+    Given: An Azure client whose http_request raises an error.
+    When: The aks_cluster_get method is called.
+    Then: The error is routed through handle_azure_error with the resource details.
+    """
+    mocker.patch.object(client, "http_request", side_effect=Exception("404 Not Found"))
+    mock_handle = mocker.patch.object(client, "handle_azure_error")
+
+    client.aks_cluster_get(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        resource_name="mock_cluster",
+    )
+
+    mock_handle.assert_called_once()
+    assert mock_handle.call_args.kwargs["api_function_name"] == "aks_cluster_get"
+    assert mock_handle.call_args.kwargs["resource_name"] == "mock_cluster"
+
+
+def test_azure_client_aks_cluster_addon_update_http_routing(mocker, client):
+    """
+    Given: An Azure client, an HTTP application routing update, and an existing cluster with other properties.
+    When: The aks_cluster_addon_update method is called with http_application_routing_enabled.
+    Then: The cluster is fetched first (read-modify-write), the PUT body contains the httpApplicationRouting
+          addon profile, and the cluster's existing properties are preserved.
+    """
+    mocker.patch.object(client, "http_request", return_value={})
+    mocker.patch.object(
+        client,
+        "aks_cluster_get",
+        return_value={"properties": {"kubernetesVersion": "1.27.0", "addonProfiles": {"omsagent": {"enabled": True}}}},
+    )
+
+    client.aks_cluster_addon_update(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        resource_name="mock_cluster",
+        location="eastus",
+        http_application_routing_enabled=True,
+    )
+
+    client.aks_cluster_get.assert_called_once_with("mock_subscription_id", "mock_resource_group", "mock_cluster")
+    call_args = client.http_request.call_args
+    assert call_args[0][0] == "PUT"
+    json_data = call_args[1]["json_data"]
+    assert json_data["location"] == "eastus"
+    # Existing, unmanaged properties must be preserved by the read-modify-write.
+    assert json_data["properties"]["kubernetesVersion"] == "1.27.0"
+    addon_profiles = json_data["properties"]["addonProfiles"]
+    assert addon_profiles["httpApplicationRouting"] == {"enabled": True}
+    # The pre-existing omsagent addon must be preserved, not wiped.
+    assert addon_profiles["omsagent"] == {"enabled": True}
+
+
+def test_azure_client_aks_cluster_addon_update_monitoring_with_resource(mocker, client):
+    """
+    Given: An Azure client and a monitoring update that specifies a monitoring workspace name.
+    When: The aks_cluster_addon_update method is called with monitoring_resource_name.
+    Then: The cluster is still fetched (read-modify-write) and the omsagent profile is built with the
+          constructed Log Analytics workspace resource ID derived from monitoring_resource_name.
+    """
+    mocker.patch.object(client, "http_request", return_value={})
+    mock_get = mocker.patch.object(client, "aks_cluster_get", return_value={"properties": {}})
+
+    client.aks_cluster_addon_update(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        resource_name="mock_cluster",
+        location="eastus",
+        monitoring_agent_enabled=True,
+        monitoring_resource_name="mock_workspace",
+    )
+
+    mock_get.assert_called_once_with("mock_subscription_id", "mock_resource_group", "mock_cluster")
+    omsagent = client.http_request.call_args[1]["json_data"]["properties"]["addonProfiles"]["omsagent"]
+    assert omsagent["enabled"] is True
+    workspace_id = omsagent["config"]["logAnalyticsWorkspaceResourceID"]
+    assert "mock_subscription_id" in workspace_id
+    assert workspace_id.endswith("mock_workspace")
+
+
+def test_azure_client_aks_cluster_addon_update_monitoring_without_resource(mocker, client):
+    """
+    Given: An Azure client and a monitoring update with no workspace name provided.
+    When: The aks_cluster_addon_update method is called without monitoring_resource_name.
+    Then: The existing workspace resource ID is read from the cluster via aks_cluster_get.
+    """
+    mocker.patch.object(client, "http_request", return_value={})
+    mocker.patch.object(
+        client,
+        "aks_cluster_get",
+        return_value={
+            "properties": {
+                "addonProfiles": {"omsagent": {"config": {"logAnalyticsWorkspaceResourceID": "mock_existing_workspace_id"}}}
+            }
+        },
+    )
+
+    client.aks_cluster_addon_update(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        resource_name="mock_cluster",
+        location="eastus",
+        monitoring_agent_enabled=True,
+    )
+
+    client.aks_cluster_get.assert_called_once_with("mock_subscription_id", "mock_resource_group", "mock_cluster")
+    omsagent = client.http_request.call_args[1]["json_data"]["properties"]["addonProfiles"]["omsagent"]
+    assert omsagent["config"]["logAnalyticsWorkspaceResourceID"] == "mock_existing_workspace_id"
+
+
+def test_azure_client_aks_cluster_addon_update_error(mocker, client):
+    """
+    Given: An Azure client whose http_request raises an error.
+    When: The aks_cluster_addon_update method is called.
+    Then: The error is routed through handle_azure_error.
+    """
+    mocker.patch.object(client, "http_request", side_effect=Exception("400 Bad Request"))
+    mocker.patch.object(client, "aks_cluster_get", return_value={"properties": {}})
+    mock_handle = mocker.patch.object(client, "handle_azure_error")
+
+    client.aks_cluster_addon_update(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        resource_name="mock_cluster",
+        location="eastus",
+        http_application_routing_enabled=True,
+    )
+
+    mock_handle.assert_called_once()
+    assert mock_handle.call_args.kwargs["api_function_name"] == "aks_cluster_addon_update"
+    assert mock_handle.call_args.kwargs["resource_name"] == "mock_cluster"
+
+
+def test_azure_client_aks_cluster_addon_update_monitoring_no_existing_workspace(mocker, client):
+    """
+    Given: An Azure client, a monitoring enable request with no workspace name, and a cluster
+           that has no existing Log Analytics workspace configured.
+    When: The aks_cluster_addon_update method is called.
+    Then: A DemistoException is raised prompting for the monitoring_resource_name argument.
+    """
+    mocker.patch.object(client, "http_request", return_value={})
+    mocker.patch.object(client, "aks_cluster_get", return_value={"properties": {}})
+
+    with pytest.raises(DemistoException, match="no Log Analytics workspace is currently configured"):
+        client.aks_cluster_addon_update(
+            subscription_id="mock_subscription_id",
+            resource_group_name="mock_resource_group",
+            resource_name="mock_cluster",
+            location="eastus",
+            monitoring_agent_enabled=True,
+        )
 
 
 def test_cosmosdb_update_command(mocker, client, mock_params):
@@ -6233,6 +6570,458 @@ def test_main_auth_reset(mocker):
     mock_get_client.assert_not_called()
 
 
+def test_create_table_command(mocker, client, mock_params):
+    """
+    Given: An Azure client whose create_table_request returns a created table.
+    When: create_table_command is called with valid snake_case args.
+    Then: It returns CommandResults with the Azure.Storage.Table prefix and the created table name.
+    """
+    from Azure import create_table_command
+
+    mock_response = util_load_json("test_data/table_create_response.json")
+    mocker.patch.object(client, "create_table_request", return_value=mock_response)
+
+    args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount", "table_name": "mocktable"}
+
+    result = create_table_command(client, mock_params, args)
+
+    client.create_table_request.assert_called_once_with("mockaccount", "mocktable")
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Storage.Table"
+    assert result.outputs.get("TableName") == "mocktable"
+
+
+def test_create_table_command_invalid_name(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to create a table with an invalid name.
+    When: create_table_command is called with an invalid table name.
+    Then: It raises an exception about the invalid table name.
+    """
+    from Azure import create_table_command
+
+    args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount", "table_name": "test--1"}
+
+    with pytest.raises(Exception) as excinfo:
+        create_table_command(client, mock_params, args)
+
+    assert "table name is invalid" in str(excinfo.value)
+
+
+def test_delete_table_command(mocker, client, mock_params):
+    """
+    Given: An Azure client whose delete_table_request succeeds.
+    When: delete_table_command is called with valid snake_case args.
+    Then: It returns a CommandResults with the success readable output and no context.
+    """
+    from Azure import delete_table_command
+
+    mocker.patch.object(client, "delete_table_request")
+
+    args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount", "table_name": "mocktable"}
+
+    result = delete_table_command(client, mock_params, args)
+
+    client.delete_table_request.assert_called_once_with("mockaccount", "mocktable")
+    assert isinstance(result, CommandResults)
+    assert result.outputs is None
+    assert result.readable_output == "Table mocktable successfully deleted."
+
+
+def test_list_tables_command(mocker, client, mock_params):
+    """
+    Given: An Azure client whose list_tables_request returns two tables and a continuation header.
+    When: list_tables_command is called with valid snake_case args.
+    Then: It returns CommandResults with both table names and the continuation token as TablesNextToken.
+    """
+    from Azure import list_tables_command
+
+    mocker.patch("Azure.validate_limit", create=True)
+    mock_response = util_load_json("test_data/table_list_response.json")
+    mock_http = mocker.Mock()
+    mock_http.json.return_value = mock_response
+    mock_http.headers = {"x-ms-continuation-NextTableName": "next-table-token"}
+    mocker.patch.object(client, "list_tables_request", return_value=mock_http)
+
+    args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount"}
+
+    result = list_tables_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    tables = result.outputs["Azure.Storage.Table(val.TableName && val.TableName == obj.TableName)"]
+    assert len(tables) == 2
+    assert tables[0].get("TableName") == "mocktable1"
+    assert tables[1].get("TableName") == "mocktable2"
+    assert result.outputs["Azure.Storage(true)"]["TablesNextToken"] == "next-table-token"
+
+
+def test_list_tables_command_empty(mocker, client, mock_params):
+    """
+    Given: An Azure client whose list_tables_request returns no tables and no continuation header.
+    When: list_tables_command is called.
+    Then: It returns a 'no tables found' readable output and explicitly sets TablesNextToken to None,
+          so a stale token from a previous page is overwritten.
+    """
+    from Azure import list_tables_command
+
+    mocker.patch("Azure.validate_limit", create=True)
+    mock_http = mocker.Mock()
+    mock_http.json.return_value = {"value": []}
+    mock_http.headers = {}
+    mocker.patch.object(client, "list_tables_request", return_value=mock_http)
+
+    args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount"}
+
+    result = list_tables_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == {"Azure.Storage(true)": {"TablesNextToken": None}}
+    assert "No tables found" in result.readable_output
+
+
+def test_list_tables_command_empty_page_with_token(mocker, client, mock_params):
+    """
+    Given: An Azure client whose list_tables_request returns an empty page that still carries a continuation header
+           (the service evaluates a filter per page, so later pages may match).
+    When: list_tables_command is called.
+    Then: The continuation token is returned in the context and is not dropped.
+    """
+    from Azure import list_tables_command
+
+    mocker.patch("Azure.validate_limit", create=True)
+    mock_http = mocker.Mock()
+    mock_http.json.return_value = {"value": []}
+    mock_http.headers = {"x-ms-continuation-NextTableName": "next-table-token"}
+    mocker.patch.object(client, "list_tables_request", return_value=mock_http)
+
+    args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount", "filter": "TableName eq 'x'"}
+
+    result = list_tables_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == {"Azure.Storage(true)": {"TablesNextToken": "next-table-token"}}
+    assert "No tables found" in result.readable_output
+
+
+def test_insert_entity_command(mocker, client, mock_params):
+    """
+    Given: An Azure client whose insert_entity_request returns the inserted entity.
+    When: insert_entity_command is called with a valid JSON entity_fields and keys.
+    Then: It returns CommandResults with the Azure.Storage.Table.Entity prefix and the inserted entity.
+    """
+    from Azure import insert_entity_command
+
+    mock_response = util_load_json("test_data/table_insert_entity_response.json")
+    mocker.patch.object(client, "insert_entity_request", return_value=mock_response)
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "table_name": "mocktable",
+        "partition_key": "mock-partition",
+        "row_key": "mock-row",
+        "entity_fields": '{"Age": 20}',
+    }
+
+    result = insert_entity_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Storage.Table.Entity"
+    assert result.outputs.get("PartitionKey") == "mock-partition"
+    assert result.outputs.get("RowKey") == "mock-row"
+
+
+def test_insert_entity_command_invalid_json(mocker, client, mock_params):
+    """
+    Given: An Azure client and an invalid JSON entity_fields argument.
+    When: insert_entity_command is called.
+    Then: It raises a DemistoException naming the entity_fields argument.
+    """
+    from Azure import insert_entity_command
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "table_name": "mocktable",
+        "partition_key": "mock-partition",
+        "row_key": "mock-row",
+        "entity_fields": "not-json",
+    }
+
+    with pytest.raises(DemistoException, match='Failed to parse the "entity_fields" argument as JSON'):
+        insert_entity_command(client, mock_params, args)
+
+
+def test_update_entity_command(mocker, client, mock_params):
+    """
+    Given: An Azure client whose update_entity_request succeeds.
+    When: update_entity_command is called with valid snake_case args.
+    Then: It returns a CommandResults with the success readable output and no context.
+    """
+    from Azure import update_entity_command
+
+    mocker.patch.object(client, "update_entity_request")
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "table_name": "mocktable",
+        "partition_key": "mock-partition",
+        "row_key": "mock-row",
+        "entity_fields": '{"Address": "New York"}',
+    }
+
+    result = update_entity_command(client, mock_params, args)
+
+    client.update_entity_request.assert_called_once_with(
+        "mockaccount", "mocktable", "mock-partition", "mock-row", {"Address": "New York"}
+    )
+    assert isinstance(result, CommandResults)
+    assert result.outputs is None
+    assert result.readable_output == "Entity in mocktable table successfully updated."
+
+
+def test_replace_entity_command(mocker, client, mock_params):
+    """
+    Given: An Azure client whose replace_entity_request succeeds.
+    When: replace_entity_command is called with valid snake_case args.
+    Then: It returns a CommandResults with the success readable output and no context.
+    """
+    from Azure import replace_entity_command
+
+    mocker.patch.object(client, "replace_entity_request")
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "table_name": "mocktable",
+        "partition_key": "mock-partition",
+        "row_key": "mock-row",
+        "entity_fields": '{"Address": "New York"}',
+    }
+
+    result = replace_entity_command(client, mock_params, args)
+
+    client.replace_entity_request.assert_called_once_with(
+        "mockaccount", "mocktable", "mock-partition", "mock-row", {"Address": "New York"}
+    )
+    assert isinstance(result, CommandResults)
+    assert result.outputs is None
+    assert result.readable_output == "Entity in mocktable table successfully replaced."
+
+
+ENTITY_OUTPUTS_KEY = (
+    "Azure.Storage.Table.Entity(val.PartitionKey && val.PartitionKey == obj.PartitionKey "
+    "&& val.RowKey && val.RowKey == obj.RowKey)"
+)
+
+
+def test_query_entity_command(mocker, client, mock_params):
+    """
+    Given: An Azure client whose query_entity_request returns a single entity for a multi-entity query.
+    When: query_entity_command is called with valid snake_case args (no partition_key).
+    Then: It returns CommandResults whose outputs hold the entities list and an empty continuation token.
+    """
+    from Azure import query_entity_command
+
+    mocker.patch("Azure.validate_limit", create=True)
+    mock_response = util_load_json("test_data/table_query_entity_response.json")
+    mock_http = mocker.Mock()
+    mock_http.json.return_value = mock_response
+    mock_http.headers = {}
+    mocker.patch.object(client, "query_entity_request", return_value=mock_http)
+
+    args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount", "table_name": "mocktable", "limit": "1"}
+
+    result = query_entity_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    entities = result.outputs[ENTITY_OUTPUTS_KEY]
+    assert len(entities) == 1
+    assert entities[0].get("PartitionKey") == "mock-partition"
+    assert entities[0].get("RowKey") == "mock-row"
+    assert entities[0].get("Address") == "New York"
+    assert result.outputs["Azure.Storage(true)"]["EntitiesNextToken"] is None
+
+
+def test_query_entity_command_single_entity(mocker, client, mock_params):
+    """
+    Given: An Azure client whose query_entity_request returns a single entity for a point query.
+    When: query_entity_command is called with both partition_key and row_key.
+    Then: It returns the single entity and does not emit a continuation token.
+    """
+    from Azure import query_entity_command
+
+    mocker.patch("Azure.validate_limit", create=True)
+    # A point query (PartitionKey + RowKey) returns a single flat entity object, not a {"value": [...]} list.
+    mock_response = {
+        "PartitionKey": "mock-partition",
+        "RowKey": "mock-row",
+        "Timestamp": "2021-08-16T15:03:57.5229430Z",
+        "Address": "New York",
+    }
+    mock_http = mocker.Mock()
+    mock_http.json.return_value = mock_response
+    mock_http.headers = {}
+    mocker.patch.object(client, "query_entity_request", return_value=mock_http)
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "table_name": "mocktable",
+        "partition_key": "mock-partition",
+        "row_key": "mock-row",
+    }
+
+    result = query_entity_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    entities = result.outputs[ENTITY_OUTPUTS_KEY]
+    assert len(entities) == 1
+    assert entities[0].get("Address") == "New York"
+    assert "Azure.Storage(true)" not in result.outputs
+
+
+def test_query_entity_command_pagination(mocker, client, mock_params):
+    """
+    Given: A client returning continuation headers, and an inbound tab-joined next_token.
+    When: query_entity_command is called for a multi-entity query.
+    Then: The inbound token is split into the two query params, and the response headers are
+          recombined into a single tab-joined EntitiesNextToken in the context output.
+    """
+    from Azure import query_entity_command
+
+    mocker.patch("Azure.validate_limit", create=True)
+    mock_response = util_load_json("test_data/table_query_entity_response.json")
+    mock_http = mocker.Mock()
+    mock_http.json.return_value = mock_response
+    mock_http.headers = {
+        "x-ms-continuation-NextPartitionKey": "next-pk",
+        "x-ms-continuation-NextRowKey": "next-rk",
+    }
+    query_mock = mocker.patch.object(client, "query_entity_request", return_value=mock_http)
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "table_name": "mocktable",
+        "next_token": "prev-pk\tprev-rk",
+    }
+
+    result = query_entity_command(client, mock_params, args)
+
+    # Inbound token split into the two continuation query params (positional args 8 and 9).
+    call_args = query_mock.call_args[0]
+    assert call_args[7] == "prev-pk"
+    assert call_args[8] == "prev-rk"
+    # Outbound headers recombined into a single tab-joined token.
+    assert result.outputs["Azure.Storage(true)"]["EntitiesNextToken"] == "next-pk\tnext-rk"
+
+
+def test_query_entity_command_partial_keys(mocker, client, mock_params):
+    """
+    Given: An Azure client and args providing only partition_key without row_key.
+    When: query_entity_command is called.
+    Then: It raises an exception requiring both partition_key and row_key together.
+    """
+    from Azure import query_entity_command
+
+    mocker.patch("Azure.validate_limit", create=True)
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "table_name": "mocktable",
+        "partition_key": "mock-partition",
+    }
+
+    with pytest.raises(Exception) as excinfo:
+        query_entity_command(client, mock_params, args)
+
+    assert "partition_key" in str(excinfo.value)
+    assert "row_key" in str(excinfo.value)
+
+
+def test_query_entity_command_empty(mocker, client, mock_params):
+    """
+    Given: An Azure client whose query_entity_request returns no entities and no continuation headers.
+    When: query_entity_command is called without keys.
+    Then: It returns a 'no entities found' readable output and explicitly sets EntitiesNextToken to None,
+          so a stale token from a previous page is overwritten.
+    """
+    from Azure import query_entity_command
+
+    mocker.patch("Azure.validate_limit", create=True)
+    mock_http = mocker.Mock()
+    mock_http.json.return_value = {"value": []}
+    mock_http.headers = {}
+    mocker.patch.object(client, "query_entity_request", return_value=mock_http)
+
+    args = {"subscription_id": "mock_subscription_id", "account_name": "mockaccount", "table_name": "mocktable"}
+
+    result = query_entity_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == {"Azure.Storage(true)": {"EntitiesNextToken": None}}
+    assert "No entities found" in result.readable_output
+
+
+def test_query_entity_command_empty_page_with_token(mocker, client, mock_params):
+    """
+    Given: An Azure client whose query_entity_request returns an empty page that still carries both continuation
+           headers (the service evaluates a filter per page, so later pages may match).
+    When: query_entity_command is called without keys.
+    Then: The compound continuation token is returned in the context and is not dropped.
+    """
+    from Azure import query_entity_command
+
+    mocker.patch("Azure.validate_limit", create=True)
+    mock_http = mocker.Mock()
+    mock_http.json.return_value = {"value": []}
+    mock_http.headers = {
+        "x-ms-continuation-NextPartitionKey": "next-pk",
+        "x-ms-continuation-NextRowKey": "next-rk",
+    }
+    mocker.patch.object(client, "query_entity_request", return_value=mock_http)
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "table_name": "mocktable",
+        "filter": "Age gt 100",
+    }
+
+    result = query_entity_command(client, mock_params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == {"Azure.Storage(true)": {"EntitiesNextToken": "next-pk\tnext-rk"}}
+    assert "No entities found" in result.readable_output
+
+
+def test_delete_entity_command(mocker, client, mock_params):
+    """
+    Given: An Azure client whose delete_entity_request succeeds.
+    When: delete_entity_command is called with valid snake_case args.
+    Then: It returns a CommandResults with the success readable output and no context.
+    """
+    from Azure import delete_entity_command
+
+    mocker.patch.object(client, "delete_entity_request")
+
+    args = {
+        "subscription_id": "mock_subscription_id",
+        "account_name": "mockaccount",
+        "table_name": "mocktable",
+        "partition_key": "mock-partition",
+        "row_key": "mock-row",
+    }
+
+    result = delete_entity_command(client, mock_params, args)
+
+    client.delete_entity_request.assert_called_once_with("mockaccount", "mocktable", "mock-partition", "mock-row")
+    assert isinstance(result, CommandResults)
+    assert result.outputs is None
+    assert result.readable_output == "Entity in mocktable table successfully deleted."
+
+
 # ---------------------------------------------------------------------------
 # YAML <-> Python wiring tests
 #
@@ -7601,6 +8390,674 @@ def test_extract_fallback_prefix_returns_empty_for_unknown_handler():
 
 
 # ---------------------------------------------------------------------------
+# WAF policy commands (Application Gateway and Front Door).
+# ---------------------------------------------------------------------------
+
+WAF_POLICY = {
+    "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network"
+    "/ApplicationGatewayWebApplicationFirewallPolicies/policy1",
+    "name": "policy1",
+    "type": "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies",
+    "location": "westus2",
+    "properties": {
+        "provisioningState": "Succeeded",
+        "resourceState": "Enabled",
+        "policySettings": {"mode": "Prevention", "state": "Enabled"},
+        "managedRules": {"managedRuleSets": [{"ruleSetType": "OWASP", "ruleSetVersion": "3.2"}]},
+    },
+}
+
+FRONT_DOOR_POLICY = {
+    "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network"
+    "/FrontDoorWebApplicationFirewallPolicies/fdpolicy1",
+    "name": "fdpolicy1",
+    "type": "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies",
+    "location": "Global",
+    "sku": {"name": "Classic_AzureFrontDoor"},
+    "properties": {
+        "provisioningState": "Succeeded",
+        "resourceState": "Enabled",
+        "policySettings": {"mode": "Prevention", "enabledState": "Enabled"},
+        "managedRules": {"managedRuleSets": [{"ruleSetType": "DefaultRuleSet", "ruleSetVersion": "1.0"}]},
+    },
+}
+
+
+def test_waf_policy_get_command_success(mocker):
+    """
+    Given: An AzureClient whose waf_policy_get returns a WAF policy.
+    When: waf_policy_get_command is called with a policy name.
+    Then: The policy is returned under the Azure.ApplicationGateway.WAFPolicies prefix and the client is
+          called with the resolved subscription and resource group.
+    """
+    from Azure import waf_policy_get_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_policy_get.return_value = WAF_POLICY
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1", "policy_name": "policy1"}
+    result = waf_policy_get_command(mock_client, {}, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.ApplicationGateway.WAFPolicies"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == WAF_POLICY
+    assert "policy1" in result.readable_output
+    mock_client.waf_policy_get.assert_called_once_with(policy_name="policy1", subscription_id="sub1", resource_group_name="rg1")
+
+
+def test_waf_policy_list_command_success(mocker):
+    """
+    Given: An AzureClient whose waf_policy_list returns one policy and a next link.
+    When: waf_policy_list_command is called for a resource group.
+    Then: The policies and the continuation token are placed in the context outputs.
+    """
+    from Azure import waf_policy_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_policy_list.return_value = {"value": [WAF_POLICY], "nextLink": "next-page-token"}
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+    result = waf_policy_list_command(mock_client, {}, args)
+
+    assert result.outputs["Azure.ApplicationGateway.WAFPolicies(val.id && val.id == obj.id)"] == [WAF_POLICY]
+    assert result.outputs["Azure.ApplicationGateway(true)"] == {"WAFPoliciesNextToken": "next-page-token"}
+    assert "policy1" in result.readable_output
+    mock_client.waf_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="rg1", next_token="")
+
+
+def test_waf_policy_list_command_subscription_scope(mocker):
+    """
+    Given: No resource group, and several policies returned by the API.
+    When: waf_policy_list_command is called.
+    Then: The client is called with an empty resource group, so the whole subscription is
+          listed, and all the returned policies are placed in the context outputs.
+    """
+    from Azure import waf_policy_list_command
+
+    mock_client = mocker.Mock()
+    second_policy = {**WAF_POLICY, "name": "policy2", "id": "policy2-id"}
+    mock_client.waf_policy_list.return_value = {"value": [WAF_POLICY, second_policy]}
+
+    result = waf_policy_list_command(mock_client, {}, {"subscription_id": "sub1"})
+
+    assert result.outputs["Azure.ApplicationGateway.WAFPolicies(val.id && val.id == obj.id)"] == [WAF_POLICY, second_policy]
+    mock_client.waf_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="", next_token="")
+
+
+def test_waf_policy_list_command_ignores_the_resource_group_parameter(mocker):
+    """
+    Given: An instance configured with a default resource group, and a command call that does
+           not pass one.
+    When: waf_policy_list_command is called.
+    Then: The client is called with an empty resource group, so the instance default does not
+          prevent listing the policies of the whole subscription.
+    """
+    from Azure import waf_policy_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_policy_list.return_value = {"value": [WAF_POLICY]}
+
+    waf_policy_list_command(mock_client, {"resource_group_name": "default-rg"}, {"subscription_id": "sub1"})
+
+    mock_client.waf_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="", next_token="")
+
+
+def test_waf_front_door_policy_list_command_ignores_the_resource_group_parameter(mocker):
+    """
+    Given: An instance configured with a default resource group, and a command call that does
+           not pass one.
+    When: waf_front_door_policy_list_command is called.
+    Then: The client is called with an empty resource group, so the instance default does not
+          prevent listing the policies of the whole subscription.
+    """
+    from Azure import waf_front_door_policy_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_list.return_value = {"value": [FRONT_DOOR_POLICY]}
+
+    waf_front_door_policy_list_command(mock_client, {"resource_group_name": "default-rg"}, {"subscription_id": "sub1"})
+
+    mock_client.waf_front_door_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="", next_token="")
+
+
+def test_waf_policy_list_command_no_results(mocker):
+    """
+    Given: An AzureClient that returns no policies.
+    When: waf_policy_list_command is called.
+    Then: A readable "not found" message is returned, and the next token is cleared so that a
+          token left in the context by a previous page cannot be read again.
+    """
+    from Azure import waf_policy_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_policy_list.return_value = {"value": []}
+
+    result = waf_policy_list_command(mock_client, {}, {"subscription_id": "sub1", "resource_group_name": "rg1"})
+
+    assert result.readable_output == "No WAF policies were found in resource group 'rg1'."
+    assert result.outputs == {"Azure.ApplicationGateway(true)": {"WAFPoliciesNextToken": None}}
+
+
+def test_waf_policy_create_or_update_command_success(mocker):
+    """
+    Given: Every argument of the command, with the JSON arguments supplied as JSON strings.
+    When: waf_policy_create_or_update_command is called.
+    Then: Each argument reaches the request body at its documented location, the JSON
+          arguments are parsed into objects, and the created or updated policy is returned.
+    """
+    from Azure import waf_policy_create_or_update_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_policy_upsert.return_value = WAF_POLICY
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "policy_name": "policy1",
+        "resource_id": WAF_POLICY["id"],
+        "location": "westus2",
+        "managed_rules": '{"managedRuleSets": [{"ruleSetType": "OWASP", "ruleSetVersion": "3.2"}]}',
+        "policy_settings": '{"mode": "Prevention", "state": "Enabled"}',
+        "custom_rules": '[{"name": "blockIP", "priority": 1, "ruleType": "MatchRule", "action": "Block"}]',
+        "tags": '{"env": "prod"}',
+    }
+    result = waf_policy_create_or_update_command(mock_client, {}, args)
+
+    assert result.outputs_prefix == "Azure.ApplicationGateway.WAFPolicies"
+    assert result.outputs == WAF_POLICY
+    assert "created or updated successfully" in result.readable_output
+
+    mock_client.waf_policy_upsert.assert_called_once_with(
+        policy_name="policy1",
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        data={
+            "id": WAF_POLICY["id"],
+            "location": "westus2",
+            "tags": {"env": "prod"},
+            "properties": {
+                "policySettings": {"mode": "Prevention", "state": "Enabled"},
+                "customRules": [{"name": "blockIP", "priority": 1, "ruleType": "MatchRule", "action": "Block"}],
+                "managedRules": {"managedRuleSets": [{"ruleSetType": "OWASP", "ruleSetVersion": "3.2"}]},
+            },
+        },
+    )
+
+
+@pytest.mark.parametrize(
+    "status_code, expected_message",
+    [
+        (200, "WAF Policy policy1 was deleted successfully."),
+        (202, "The delete request for WAF Policy policy1 was accepted and the operation will complete asynchronously."),
+        (204, "WAF Policy policy1 was not found."),
+    ],
+)
+def test_waf_policy_delete_command_status_codes(mocker, status_code, expected_message):
+    """
+    Given: A delete call that returns 200, 202 or 204.
+    When: waf_policy_delete_command is called.
+    Then: The readable output reflects the distinct meaning of each status code.
+    """
+    from Azure import waf_policy_delete_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_policy_delete.return_value = mocker.Mock(status_code=status_code)
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1", "policy_name": "policy1"}
+    result = waf_policy_delete_command(mock_client, {}, args)
+
+    assert result.readable_output == expected_message
+
+
+def test_waf_front_door_policy_get_command_success(mocker):
+    """
+    Given: An AzureClient whose waf_front_door_policy_get returns a Front Door WAF policy.
+    When: waf_front_door_policy_get_command is called with a policy name.
+    Then: The policy is returned under the Azure.FrontDoor.Policies prefix.
+    """
+    from Azure import waf_front_door_policy_get_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_get.return_value = FRONT_DOOR_POLICY
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1", "policy_name": "fdpolicy1"}
+    result = waf_front_door_policy_get_command(mock_client, {}, args)
+
+    assert result.outputs_prefix == "Azure.FrontDoor.Policies"
+    assert result.outputs == FRONT_DOOR_POLICY
+    assert "fdpolicy1" in result.readable_output
+    mock_client.waf_front_door_policy_get.assert_called_once_with(
+        policy_name="fdpolicy1", subscription_id="sub1", resource_group_name="rg1"
+    )
+
+
+def test_waf_front_door_policy_list_command_success(mocker):
+    """
+    Given: An AzureClient whose waf_front_door_policy_list returns one policy and a next link.
+    When: waf_front_door_policy_list_command is called for a resource group.
+    Then: The policies and the continuation token are placed in the context outputs.
+    """
+    from Azure import waf_front_door_policy_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_list.return_value = {"value": [FRONT_DOOR_POLICY], "nextLink": "next-page-token"}
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+    result = waf_front_door_policy_list_command(mock_client, {}, args)
+
+    assert result.outputs["Azure.FrontDoor.Policies(val.id && val.id == obj.id)"] == [FRONT_DOOR_POLICY]
+    assert result.outputs["Azure.FrontDoor(true)"] == {"PoliciesNextToken": "next-page-token"}
+    mock_client.waf_front_door_policy_list.assert_called_once_with(
+        subscription_id="sub1", resource_group_name="rg1", next_token=""
+    )
+
+
+def test_waf_front_door_policy_list_command_no_results(mocker):
+    """
+    Given: An AzureClient that returns no Front Door policies.
+    When: waf_front_door_policy_list_command is called.
+    Then: A readable "not found" message is returned, and the next token is cleared so that a
+          token left in the context by a previous page cannot be read again.
+    """
+    from Azure import waf_front_door_policy_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_list.return_value = {"value": []}
+
+    result = waf_front_door_policy_list_command(mock_client, {}, {"subscription_id": "sub1"})
+
+    assert result.readable_output == "No Front Door WAF policies were found in subscription 'sub1'."
+    assert result.outputs == {"Azure.FrontDoor(true)": {"PoliciesNextToken": None}}
+
+
+def test_waf_front_door_policy_create_or_update_command_success(mocker):
+    """
+    Given: Every argument of the command, with the JSON arguments supplied as JSON strings.
+    When: waf_front_door_policy_create_or_update_command is called.
+    Then: Each argument reaches the request body at its documented location, the JSON
+          arguments are parsed into objects, and the created or updated policy is returned.
+    """
+    from Azure import waf_front_door_policy_create_or_update_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_upsert.return_value = FRONT_DOOR_POLICY
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "policy_name": "fdpolicy1",
+        "managed_rules": '{"managedRuleSets": [{"ruleSetType": "DefaultRuleSet", "ruleSetVersion": "1.0"}]}',
+        "policy_settings": '{"mode": "Prevention", "enabledState": "Enabled"}',
+        "custom_rules": '{"rules": [{"name": "blockIP", "priority": 1, "ruleType": "MatchRule", "action": "Block"}]}',
+        "location": "Global",
+        "sku": "Premium_AzureFrontDoor",
+        "tags": '{"env": "prod"}',
+        "etag": '"abc"',
+    }
+    result = waf_front_door_policy_create_or_update_command(mock_client, {}, args)
+
+    assert result.outputs_prefix == "Azure.FrontDoor.Policies"
+    assert result.outputs == FRONT_DOOR_POLICY
+    assert "created or updated successfully" in result.readable_output
+
+    mock_client.waf_front_door_policy_upsert.assert_called_once_with(
+        policy_name="fdpolicy1",
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        data={
+            "location": "Global",
+            "tags": {"env": "prod"},
+            "etag": '"abc"',
+            "sku": {"name": "Premium_AzureFrontDoor"},
+            "properties": {
+                "policySettings": {"mode": "Prevention", "enabledState": "Enabled"},
+                "customRules": {"rules": [{"name": "blockIP", "priority": 1, "ruleType": "MatchRule", "action": "Block"}]},
+                "managedRules": {"managedRuleSets": [{"ruleSetType": "DefaultRuleSet", "ruleSetVersion": "1.0"}]},
+            },
+        },
+    )
+
+
+def test_waf_front_door_policy_create_or_update_command_applies_global_defaults(mocker):
+    """
+    Given: Only a policy name and managed rules, with no location or SKU.
+    When: waf_front_door_policy_create_or_update_command is called.
+    Then: The body defaults to the Global location and the classic Front Door SKU, which
+          the API requires when creating the policy.
+    """
+    from Azure import waf_front_door_policy_create_or_update_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_upsert.return_value = FRONT_DOOR_POLICY
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "policy_name": "fdpolicy1",
+        "managed_rules": '{"managedRuleSets": [{"ruleSetType": "DefaultRuleSet", "ruleSetVersion": "1.0"}]}',
+    }
+    result = waf_front_door_policy_create_or_update_command(mock_client, {}, args)
+
+    assert result.outputs_prefix == "Azure.FrontDoor.Policies"
+    sent_body = mock_client.waf_front_door_policy_upsert.call_args.kwargs["data"]
+    assert sent_body["location"] == "Global"
+    assert sent_body["sku"] == {"name": "Classic_AzureFrontDoor"}
+    assert sent_body["properties"]["managedRules"]["managedRuleSets"][0]["ruleSetType"] == "DefaultRuleSet"
+
+
+def test_waf_front_door_policy_create_or_update_command_honours_explicit_sku(mocker):
+    """
+    Given: An explicit SKU argument.
+    When: waf_front_door_policy_create_or_update_command is called.
+    Then: The supplied SKU is nested under sku.name rather than being overridden by the
+          default.
+    """
+    from Azure import waf_front_door_policy_create_or_update_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_upsert.return_value = FRONT_DOOR_POLICY
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "policy_name": "fdpolicy1",
+        "managed_rules": '{"managedRuleSets": []}',
+        "sku": "Premium_AzureFrontDoor",
+    }
+    waf_front_door_policy_create_or_update_command(mock_client, {}, args)
+
+    sent_body = mock_client.waf_front_door_policy_upsert.call_args.kwargs["data"]
+    assert sent_body["sku"] == {"name": "Premium_AzureFrontDoor"}
+
+
+@pytest.mark.parametrize(
+    "etag",
+    [
+        '"abc"',
+        "123",
+        "true",
+    ],
+)
+def test_waf_front_door_policy_create_or_update_command_sends_plain_strings_unchanged(mocker, etag):
+    """
+    Given: An ETag that looks like JSON, such as a quoted string, a number or a boolean.
+    When: waf_front_door_policy_create_or_update_command is called.
+    Then: The ETag is sent to the API exactly as supplied, keeping its quotes and its string
+          type, because only the JSON arguments of the policy are parsed.
+    """
+    from Azure import waf_front_door_policy_create_or_update_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_upsert.return_value = FRONT_DOOR_POLICY
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "policy_name": "fdpolicy1",
+        "managed_rules": '{"managedRuleSets": []}',
+        "etag": etag,
+    }
+    waf_front_door_policy_create_or_update_command(mock_client, {}, args)
+
+    sent_body = mock_client.waf_front_door_policy_upsert.call_args.kwargs["data"]
+    assert sent_body["etag"] == etag
+
+
+def test_build_waf_policy_body_parses_only_the_json_arguments():
+    """
+    Given: A mapping holding both JSON arguments and plain string arguments, where the plain
+           strings contain values that are valid JSON.
+    When: build_waf_policy_body is called.
+    Then: The JSON arguments are parsed into objects while the plain strings keep their
+          original string value.
+    """
+    from Azure import build_waf_policy_body
+
+    body = build_waf_policy_body(
+        {
+            "resource_id": "12345",
+            "location": "true",
+            "tags": '{"env": "prod"}',
+            "policy_settings": '{"mode": "Prevention"}',
+        },
+        {
+            "resource_id": "id",
+            "location": "location",
+            "tags": "tags",
+            "policy_settings": "properties.policySettings",
+        },
+    )
+
+    assert body["id"] == "12345"
+    assert body["location"] == "true"
+    assert body["tags"] == {"env": "prod"}
+    assert body["properties"]["policySettings"] == {"mode": "Prevention"}
+
+
+@pytest.mark.parametrize(
+    "status_code, expected_message",
+    [
+        (200, "Front Door WAF Policy fdpolicy1 was deleted successfully."),
+        (
+            202,
+            "The delete request for Front Door WAF Policy fdpolicy1 was accepted "
+            "and the operation will complete asynchronously.",
+        ),
+        (204, "Front Door WAF Policy fdpolicy1 was not found."),
+    ],
+)
+def test_waf_front_door_policy_delete_command_status_codes(mocker, status_code, expected_message):
+    """
+    Given: A delete call that returns 200, 202 or 204.
+    When: waf_front_door_policy_delete_command is called.
+    Then: The readable output reflects the distinct meaning of each status code.
+    """
+    from Azure import waf_front_door_policy_delete_command
+
+    mock_client = mocker.Mock()
+    mock_client.waf_front_door_policy_delete.return_value = mocker.Mock(status_code=status_code)
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1", "policy_name": "fdpolicy1"}
+    result = waf_front_door_policy_delete_command(mock_client, {}, args)
+
+    assert result.readable_output == expected_message
+
+
+def test_build_waf_policy_body_nests_and_skips_missing_arguments():
+    """
+    Given: A mix of JSON, plain string and absent arguments.
+    When: build_waf_policy_body is called.
+    Then: JSON values are parsed into objects, plain strings are kept as-is, dotted paths
+          are expanded into nested dictionaries, and absent arguments are omitted entirely.
+    """
+    from Azure import build_waf_policy_body
+
+    args = {"location": "westus2", "policy_settings": '{"mode": "Prevention"}', "tags": None}
+    body = build_waf_policy_body(
+        args,
+        {"location": "location", "policy_settings": "properties.policySettings", "tags": "tags"},
+    )
+
+    assert body == {"location": "westus2", "properties": {"policySettings": {"mode": "Prevention"}}}
+
+
+def test_build_waf_policy_body_keeps_invalid_json_as_plain_string():
+    """
+    Given: An argument whose value is not valid JSON.
+    When: build_waf_policy_body is called.
+    Then: The raw string is used as the value rather than raising, so a caller may pass a
+          plain string where the API accepts one.
+    """
+    from Azure import build_waf_policy_body
+
+    body = build_waf_policy_body({"location": "west us"}, {"location": "location"})
+
+    assert body == {"location": "west us"}
+
+
+def test_waf_client_methods_use_the_expected_urls_and_api_versions(mocker):
+    """
+    Given: An AzureClient with a mocked http_request.
+    When: The WAF policy and Front Door WAF policy client methods are called.
+    Then: Each targets its documented resource path and pins the api-version its API
+          expects, so a change to either is caught here.
+    """
+    from Azure import (
+        AzureClient,
+        WAF_POLICY_API_VERSION,
+        WAF_FRONT_DOOR_POLICY_API_VERSION,
+        WAF_POLICY_PATH,
+        WAF_FRONT_DOOR_POLICY_PATH,
+    )
+
+    client = mocker.Mock(spec=AzureClient)
+    client.http_request.return_value = WAF_POLICY
+
+    AzureClient.waf_policy_get(client, policy_name="policy1", subscription_id="sub1", resource_group_name="rg1")
+    call = client.http_request.call_args
+    assert call.kwargs["params"] == {"api-version": WAF_POLICY_API_VERSION}
+    assert call.kwargs["full_url"].endswith(f"{WAF_POLICY_PATH}/policy1")
+
+    AzureClient.waf_front_door_policy_get(client, policy_name="fdpolicy1", subscription_id="sub1", resource_group_name="rg1")
+    call = client.http_request.call_args
+    assert call.kwargs["params"] == {"api-version": WAF_FRONT_DOOR_POLICY_API_VERSION}
+    assert call.kwargs["full_url"].endswith(f"{WAF_FRONT_DOOR_POLICY_PATH}/fdpolicy1")
+
+
+def test_waf_policy_get_client_method_raises_value_error_on_404(mocker):
+    """
+    Given: An AzureClient whose http_request raises a 404 error.
+    When: waf_policy_get is called.
+    Then: handle_azure_error converts it into a ValueError naming the policy, so the user
+          learns the requested policy does not exist.
+    """
+    from Azure import AzureClient
+
+    client = AzureClient(
+        app_id="app",
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        verify=False,
+        proxy=False,
+        connection_type="Client Credentials",
+    )
+    mocker.patch.object(AzureClient, "http_request", side_effect=Exception("Error in API call [404] - Not Found"))
+
+    with pytest.raises(ValueError, match="policy1"):
+        client.waf_policy_get(policy_name="policy1", subscription_id="sub1", resource_group_name="rg1")
+
+
+def test_waf_policy_delete_client_method_names_the_permission_quoted_in_a_403(mocker):
+    """
+    Given: An AzureClient whose http_request raises a 403 that names the missing action,
+           which is how Azure reports an RBAC denial.
+    When: waf_policy_delete is called.
+    Then: The named delete permission is resolved from the api_function_name mapping and
+          reported through return_multiple_permissions_error, so the user is told exactly
+          which permission to grant instead of seeing a bare 403.
+    """
+    from Azure import AzureClient
+
+    client = AzureClient(
+        app_id="app",
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        verify=False,
+        proxy=False,
+        connection_type="Client Credentials",
+    )
+    error = Exception(
+        "Error in API call [403] - Forbidden. The client does not have authorization to perform action "
+        "'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete' over scope."
+    )
+    mocker.patch.object(AzureClient, "http_request", side_effect=error)
+    permissions_error = mocker.patch("Azure.return_multiple_permissions_error")
+
+    client.waf_policy_delete(policy_name="policy1", subscription_id="sub1", resource_group_name="rg1")
+
+    error_entries = permissions_error.call_args[0][0]
+    assert error_entries[0]["account_id"] == "sub1"
+    assert error_entries[0]["name"] == "Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/delete"
+
+
+def test_waf_policy_delete_client_method_falls_back_when_403_names_no_permission(mocker):
+    """
+    Given: An AzureClient whose http_request raises a 403 that does not name any action.
+    When: waf_policy_delete is called.
+    Then: A permission error is still reported, with the name falling back to "N/A" rather
+          than the command guessing a permission the error never mentioned.
+    """
+    from Azure import AzureClient
+
+    client = AzureClient(
+        app_id="app",
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        verify=False,
+        proxy=False,
+        connection_type="Client Credentials",
+    )
+    mocker.patch.object(AzureClient, "http_request", side_effect=Exception("Error in API call [403] - Forbidden"))
+    permissions_error = mocker.patch("Azure.return_multiple_permissions_error")
+
+    client.waf_policy_delete(policy_name="policy1", subscription_id="sub1", resource_group_name="rg1")
+
+    error_entries = permissions_error.call_args[0][0]
+    assert error_entries[0]["name"] == "N/A"
+
+
+def test_waf_policy_list_client_method_scopes_by_resource_group_and_next_token(mocker):
+    """
+    Given: An AzureClient with a mocked http_request.
+    When: waf_policy_list is called with a resource group, without one, and with a next token.
+    Then: The resource-group URL, the subscription-wide URL and the verbatim next-token URL
+          are used respectively, with the api-version omitted when following a next link,
+          since the token already carries the full query string.
+    """
+    from Azure import AzureClient, WAF_POLICY_API_VERSION
+
+    client = mocker.Mock(spec=AzureClient)
+    client.http_request.return_value = {"value": []}
+    next_token = "https://management.azure.com/subscriptions/sub1/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies?$skipToken=abc"  # noqa: E501
+
+    AzureClient.waf_policy_list(client, subscription_id="sub1", resource_group_name="rg1")
+    assert "resourceGroups/rg1" in client.http_request.call_args.kwargs["full_url"]
+    assert client.http_request.call_args.kwargs["params"] == {"api-version": WAF_POLICY_API_VERSION}
+
+    AzureClient.waf_policy_list(client, subscription_id="sub1", resource_group_name="")
+    assert "resourceGroups" not in client.http_request.call_args.kwargs["full_url"]
+
+    AzureClient.waf_policy_list(client, subscription_id="sub1", resource_group_name="rg1", next_token=next_token)
+    assert client.http_request.call_args.kwargs["full_url"] == next_token
+    assert client.http_request.call_args.kwargs["params"] == {}
+
+
+@pytest.mark.parametrize(
+    "next_token",
+    [
+        pytest.param("https://evil.com/subscriptions/sub1", id="foreign_host"),
+        pytest.param("http://management.azure.com/subscriptions/sub1", id="non_https_scheme"),
+        pytest.param("next-page-token", id="not_a_url"),
+    ],
+)
+def test_waf_policy_list_client_method_rejects_invalid_next_token(mocker, next_token):
+    """
+    Given: A next token that does not point at the configured Azure management endpoint over HTTPS.
+    When: waf_policy_list is called with that token.
+    Then: A DemistoException is raised and no request is sent, so the bearer token is not leaked.
+    """
+    from Azure import AzureClient
+
+    client = mocker.Mock(spec=AzureClient)
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        AzureClient.waf_policy_list(client, subscription_id="sub1", resource_group_name="rg1", next_token=next_token)
+
+    client.http_request.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
 # Firewall policy commands
 # ---------------------------------------------------------------------------
 
@@ -8399,3 +9856,397 @@ def test_http_request_injects_default_api_version_without_full_url(mocker):
     client.http_request(method="GET", url_suffix="sub1/resourceGroups", params={})
 
     assert ms_http_request.call_args.kwargs["params"]["api-version"] == API_VERSION
+
+
+def test_storage_account_list_command(mocker):
+    """
+    Given: An Azure client mock returning a list of storage accounts.
+    When: storage_account_list_command is called without an account_name argument.
+    Then: It returns CommandResults with the Azure.Storage.StorageAccounts prefix and the full account list.
+    """
+    from Azure import storage_account_list_command
+
+    mock_response = util_load_json("test_data/storage_account_list_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_account_list_request.return_value = mock_response
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {}
+
+    result: CommandResults = storage_account_list_command(mock_client, params, args)
+
+    mock_client.storage_account_list_request.assert_called_once_with(
+        account_name="", resource_group_name="mock_resource_group", subscription_id="mock_subscription_id", next_token=""
+    )
+
+    assert isinstance(result, CommandResults)
+    accounts_key = "Azure.Storage.StorageAccounts(val.id && val.id == obj.id)"
+    assert result.outputs[accounts_key] == mock_response.get("value")
+    assert "Azure Storage Account List" in result.readable_output
+    assert "mock_account_name_1" in result.readable_output
+    assert "mock_account_name_2" in result.readable_output
+
+
+def test_storage_account_list_command_single(mocker):
+    """
+    Given: An Azure client mock returning a single storage account.
+    When: storage_account_list_command is called with an account_name argument.
+    Then: It returns CommandResults wrapping the single account in a list under the expected prefix.
+    """
+    from Azure import storage_account_list_command
+
+    mock_response = util_load_json("test_data/storage_account_single_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_account_list_request.return_value = mock_response
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {"account_name": "mock_account_name"}
+
+    result: CommandResults = storage_account_list_command(mock_client, params, args)
+
+    mock_client.storage_account_list_request.assert_called_once_with(
+        account_name="mock_account_name",
+        resource_group_name="mock_resource_group",
+        subscription_id="mock_subscription_id",
+        next_token="",
+    )
+
+    assert isinstance(result, CommandResults)
+    accounts_key = "Azure.Storage.StorageAccounts(val.id && val.id == obj.id)"
+    assert result.outputs[accounts_key][0] == mock_response
+    assert "mock_account_name" in result.readable_output
+
+
+def test_storage_account_list_command_no_results(mocker):
+    """
+    Given: An Azure client mock returning an empty storage account list.
+    When: storage_account_list_command is called.
+    Then: It returns CommandResults with a "No storage accounts were found." readable output.
+    """
+    from Azure import storage_account_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.storage_account_list_request.return_value = {"value": []}
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {}
+
+    result: CommandResults = storage_account_list_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No storage accounts were found."
+
+
+def test_storage_account_list_command_error_response(mocker):
+    """
+    Given: An Azure client whose storage_account_list_request raises a permission error.
+    When: storage_account_list_command is called.
+    Then: The error propagates through the client layer and surfaces to main().
+    """
+    from Azure import storage_account_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.storage_account_list_request.side_effect = DemistoException("403 Forbidden")
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {}
+
+    with pytest.raises(DemistoException):
+        storage_account_list_command(mock_client, params, args)
+
+
+def test_storage_blob_container_list_command(mocker):
+    """
+    Given: An Azure client mock returning a list of blob containers.
+    When: storage_blob_container_list_command is called without a container_name argument.
+    Then: It returns CommandResults with the Azure.Storage.BlobContainers prefix and the full container list.
+    """
+    from Azure import storage_blob_container_list_command
+
+    mock_response = util_load_json("test_data/blob_containers_list_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_container_list_request.return_value = mock_response
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {"account_name": "mock_account_name"}
+
+    result: CommandResults = storage_blob_container_list_command(mock_client, params, args)
+
+    mock_client.storage_blob_container_list_request.assert_called_once_with(
+        subscription_id="mock_subscription_id", resource_group_name="mock_resource_group", args=args
+    )
+
+    assert isinstance(result, CommandResults)
+    containers_key = "Azure.Storage.BlobContainers(val.id && val.id == obj.id)"
+    assert result.outputs[containers_key] == mock_response.get("value")
+    assert "Azure Storage Blob Containers List" in result.readable_output
+    assert "test" in result.readable_output
+    assert "test2" in result.readable_output
+
+
+def test_storage_blob_container_list_command_single(mocker):
+    """
+    Given: An Azure client mock returning a single blob container.
+    When: storage_blob_container_list_command is called with account_name and container_name arguments.
+    Then: It returns CommandResults wrapping the single container in a list under the expected prefix.
+    """
+    from Azure import storage_blob_container_list_command
+
+    mock_response = util_load_json("test_data/blob_containers_single_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_container_list_request.return_value = mock_response
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {"account_name": "mock_account_name", "container_name": "test"}
+
+    result: CommandResults = storage_blob_container_list_command(mock_client, params, args)
+
+    mock_client.storage_blob_container_list_request.assert_called_once_with(
+        subscription_id="mock_subscription_id", resource_group_name="mock_resource_group", args=args
+    )
+
+    assert isinstance(result, CommandResults)
+    containers_key = "Azure.Storage.BlobContainers(val.id && val.id == obj.id)"
+    assert result.outputs[containers_key][0] == mock_response
+    assert "test" in result.readable_output
+
+
+def test_storage_blob_container_list_command_no_results(mocker):
+    """
+    Given: An Azure client mock returning an empty blob container list.
+    When: storage_blob_container_list_command is called.
+    Then: It returns CommandResults with a "No blob containers were found." readable output.
+    """
+    from Azure import storage_blob_container_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_container_list_request.return_value = {"value": []}
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {"account_name": "mock_account_name"}
+
+    result: CommandResults = storage_blob_container_list_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No blob containers were found."
+
+
+def test_storage_blob_container_list_command_error_response(mocker):
+    """
+    Given: An Azure client whose storage_blob_container_list_request raises a permission error.
+    When: storage_blob_container_list_command is called.
+    Then: The error propagates through the client layer and surfaces to main().
+    """
+    from Azure import storage_blob_container_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_container_list_request.side_effect = DemistoException("403 Forbidden")
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {"account_name": "mock_account_name"}
+
+    with pytest.raises(DemistoException):
+        storage_blob_container_list_command(mock_client, params, args)
+
+
+@pytest.mark.parametrize("limit", [1, 100, 5000, None])
+def test_validate_limit_valid_input(limit):
+    """
+    Given: A limit value within the allowed range (or None).
+    When: validate_limit is called.
+    Then: No exception is raised.
+    """
+    from Azure import validate_limit
+
+    validate_limit(limit)
+
+
+@pytest.mark.parametrize("limit", [0, -1, 5001])
+def test_validate_limit_invalid_input(limit):
+    """
+    Given: A limit value outside the allowed range (1-5000 inclusive).
+    When: validate_limit is called.
+    Then: A DemistoException is raised.
+    """
+    from Azure import validate_limit
+
+    with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 5000"):
+        validate_limit(limit)
+
+
+def test_storage_blob_container_list_request_limit_sets_maxpagesize(mocker, client):
+    """
+    Given: A limit argument within the allowed range.
+    When: storage_blob_container_list_request is called.
+    Then: The request is sent with the $maxpagesize query parameter set to the limit value.
+    """
+    http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.storage_blob_container_list_request(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        args={"account_name": "mock_account_name", "limit": "100"},
+    )
+
+    sent_params = http_request.call_args.kwargs["params"]
+    assert sent_params["$maxpagesize"] == "100"
+
+
+def test_storage_blob_container_list_request_url_without_container(mocker, client):
+    """
+    Given: No container_name argument.
+    When: storage_blob_container_list_request is called.
+    Then: The URL ends at the containers collection (no trailing container segment).
+    """
+    http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.storage_blob_container_list_request(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        args={"account_name": "mock_account_name"},
+    )
+
+    assert http_request.call_args.kwargs["full_url"].endswith(
+        "/providers/Microsoft.Storage/storageAccounts/mock_account_name/blobServices/default/containers"
+    )
+
+
+def test_storage_blob_container_list_request_url_with_container(mocker, client):
+    """
+    Given: A container_name argument.
+    When: storage_blob_container_list_request is called.
+    Then: The URL includes the specific container segment.
+    """
+    http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.storage_blob_container_list_request(
+        subscription_id="mock_subscription_id",
+        resource_group_name="mock_resource_group",
+        args={"account_name": "mock_account_name", "container_name": "mock_container"},
+    )
+
+    assert http_request.call_args.kwargs["full_url"].endswith("/blobServices/default/containers/mock_container")
+
+
+def test_storage_account_list_request_url_without_account(mocker, client):
+    """
+    Given: No account_name argument.
+    When: storage_account_list_request is called.
+    Then: The URL ends at the storageAccounts collection (no trailing account segment).
+    """
+    http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.storage_account_list_request(
+        account_name="",
+        resource_group_name="mock_resource_group",
+        subscription_id="mock_subscription_id",
+    )
+
+    assert http_request.call_args.kwargs["full_url"].endswith("/providers/Microsoft.Storage/storageAccounts")
+
+
+def test_storage_account_list_request_url_with_account(mocker, client):
+    """
+    Given: An account_name argument.
+    When: storage_account_list_request is called.
+    Then: The URL includes the specific storage account segment.
+    """
+    http_request = mocker.patch.object(client, "http_request", return_value={})
+
+    client.storage_account_list_request(
+        account_name="mock_account_name",
+        resource_group_name="mock_resource_group",
+        subscription_id="mock_subscription_id",
+    )
+
+    assert http_request.call_args.kwargs["full_url"].endswith("/storageAccounts/mock_account_name")
+
+
+def test_storage_blob_container_list_request_invalid_limit_raises(mocker, client):
+    """
+    Given: A limit argument outside the allowed range.
+    When: storage_blob_container_list_request is called.
+    Then: A DemistoException is raised before any request is sent.
+    """
+    http_request = mocker.patch.object(client, "http_request")
+
+    with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 5000"):
+        client.storage_blob_container_list_request(
+            subscription_id="mock_subscription_id",
+            resource_group_name="mock_resource_group",
+            args={"account_name": "mock_account_name", "limit": "6000"},
+        )
+
+    http_request.assert_not_called()
+
+
+def test_storage_account_list_command_surfaces_next_token(mocker):
+    """
+    Given: An Azure client mock returning a list of storage accounts with a nextLink.
+    When: storage_account_list_command is called.
+    Then: The nextLink is surfaced under the StorageAccountsNextToken context key.
+    """
+    from Azure import storage_account_list_command
+
+    mock_response = util_load_json("test_data/storage_account_list_response.json")
+    mock_response["nextLink"] = "https://management.azure.com/next-accounts-page"
+
+    mock_client = mocker.Mock()
+    mock_client.storage_account_list_request.return_value = mock_response
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {}
+
+    result: CommandResults = storage_account_list_command(mock_client, params, args)
+
+    assert result.outputs["Azure.Storage(true)"]["StorageAccountsNextToken"] == "https://management.azure.com/next-accounts-page"
+
+
+def test_storage_account_list_command_passes_next_token(mocker):
+    """
+    Given: A next_token argument.
+    When: storage_account_list_command is called.
+    Then: The next_token is forwarded to the client request method.
+    """
+    from Azure import storage_account_list_command
+
+    mock_client = mocker.Mock()
+    mock_client.storage_account_list_request.return_value = {"value": [{"id": "a1", "name": "acc1"}]}
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {"next_token": "https://management.azure.com/next-accounts-page"}
+
+    storage_account_list_command(mock_client, params, args)
+
+    mock_client.storage_account_list_request.assert_called_once_with(
+        account_name="",
+        resource_group_name="mock_resource_group",
+        subscription_id="mock_subscription_id",
+        next_token="https://management.azure.com/next-accounts-page",
+    )
+
+
+def test_storage_blob_container_list_command_surfaces_next_token(mocker):
+    """
+    Given: An Azure client mock returning a list of blob containers with a nextLink.
+    When: storage_blob_container_list_command is called.
+    Then: The nextLink is surfaced under the BlobContainersNextToken context key.
+    """
+    from Azure import storage_blob_container_list_command
+
+    mock_response = util_load_json("test_data/blob_containers_list_response.json")
+    mock_response["nextLink"] = "https://management.azure.com/next-containers-page"
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_container_list_request.return_value = mock_response
+
+    params = {"subscription_id": "mock_subscription_id", "resource_group_name": "mock_resource_group"}
+    args = {"account_name": "mock_account_name"}
+
+    result: CommandResults = storage_blob_container_list_command(mock_client, params, args)
+
+    assert result.outputs["Azure.Storage(true)"]["BlobContainersNextToken"] == "https://management.azure.com/next-containers-page"
