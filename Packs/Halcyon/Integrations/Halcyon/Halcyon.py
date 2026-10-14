@@ -46,27 +46,6 @@ EVENTS_DEDUP_CACHE_KEY = "events_dedup_cache"  # {eventId: occurredAt} of events
 EVENTS_FLOOR_KEY = "events_fetch_floor"  # Set by the migration: never query before the legacy watermark.
 LEGACY_EVENTS_IDS_KEY = "previous_ids_events"  # Legacy dedup list, replaced by EVENTS_DEDUP_CACHE_KEY.
 
-# TEMPORARY DIAGNOSTICS - remove once answered. Checks whether /v2/events can filter or sort by the
-# time an event was inserted (indexed). Each candidate filter is sent with a value one day in the
-# future: if the API honors it, no event matches; if it ignores it, events come back as usual.
-INSERT_TIME_PROBE_ENABLED = True
-INSERT_TIME_PROBE_INTERVAL = timedelta(hours=1)
-INSERT_TIME_PROBE_LAST_RUN_KEY = "insert_time_probe_last_run"
-INSERT_TIME_PROBE_LOG_PREFIX = "HALCYON-INSERT-TIME-PROBE"
-INSERT_TIME_FILTER_CANDIDATES = [
-    "insertedAfter",
-    "ingestedAfter",
-    "indexedAfter",
-    "createdAfter",
-    "receivedAfter",
-    "processedAfter",
-    "updatedAfter",
-    "modifiedAfter",
-    "reportedAfter",
-    "lastSeenAfter",
-]
-INSERT_TIME_SORT_CANDIDATES = ["InsertedAt", "IngestedAt", "IndexedAt", "CreatedAt", "ReceivedAt", "UpdatedAt"]
-
 """ LOG TYPE ENUM """
 
 
@@ -422,17 +401,6 @@ class Client(ContentClient):
             params["occurredBefore"] = occurred_before
 
         demisto.debug(f"Fetching events with params: {params}")
-        return self._http_request(method="GET", url_suffix="/v2/events", params=params)
-
-    def probe_events(self, params: dict[str, Any]) -> dict:
-        """TEMPORARY DIAGNOSTICS: call /v2/events with arbitrary query parameters.
-
-        Args:
-            params: The query parameters to send as-is.
-
-        Returns:
-            The raw API response.
-        """
         return self._http_request(method="GET", url_suffix="/v2/events", params=params)
 
 
@@ -1071,109 +1039,6 @@ def fetch_events_for_log_type(
     return enriched_events, last_run
 
 
-def run_events_probe_call(client: Client, description: str, params: dict[str, Any], log_all_keys: bool = False) -> int | None:
-    """TEMPORARY DIAGNOSTICS: make one /v2/events call and log the result. Never raises.
-
-    The whole body (API call, parsing and logging) is inside one try/except, so nothing
-    that goes wrong here can fail the fetch.
-
-    Args:
-        client: The Halcyon client.
-        description: What this call checks, for the log line.
-        params: The query parameters.
-        log_all_keys: Also log every field name of the first event.
-
-    Returns:
-        The number of events returned, or None if anything failed.
-    """
-    try:
-        response = client.probe_events(params)
-        if not isinstance(response, dict):
-            demisto.info(f"{INSERT_TIME_PROBE_LOG_PREFIX} {description}: OK but the response is a {type(response).__name__}")
-            return None
-        rows = response.get("data", response.get("items", response.get("results", []))) or []
-        envelope = {key: response.get(key) for key in ("totalCount", "totalPages", "page", "pageSize") if key in response}
-        first_event = rows[0] if rows and isinstance(rows[0], dict) else {}
-        time_fields = {key: value for key, value in first_event.items() if key.lower().endswith(("at", "time", "date"))}
-        demisto.info(
-            f"{INSERT_TIME_PROBE_LOG_PREFIX} {description}: OK rows={len(rows)} envelope={envelope} "
-            f"first_event_time_fields={time_fields}"
-        )
-        if log_all_keys:
-            demisto.info(f"{INSERT_TIME_PROBE_LOG_PREFIX} {description}: first_event_keys={sorted(first_event)}")
-        return len(rows)
-    except Exception as e:
-        try:
-            demisto.info(f"{INSERT_TIME_PROBE_LOG_PREFIX} {description}: ERROR {str(e)[:1000]}")
-        except Exception:  # noqa: S110 - even a logging failure must not fail the fetch
-            pass
-        return None
-
-
-def get_insert_time_filter_verdict(baseline_rows: int | None, filtered_rows: int | None) -> str:
-    """TEMPORARY DIAGNOSTICS: explain what a filter probe result means.
-
-    Args:
-        baseline_rows: Events returned with no time filter.
-        filtered_rows: Events returned with the candidate filter set one day in the future.
-
-    Returns:
-        A short verdict for the log.
-    """
-    if filtered_rows is None:
-        return "REJECTED - see the error above; it may list the valid parameters"
-    if not baseline_rows:
-        return "INCONCLUSIVE - the call with no filter returned no events"
-    if filtered_rows == 0:
-        return "HONORED - a future value returned no events, so the API filters on this parameter"
-    return "IGNORED - events came back despite a future value"
-
-
-def probe_insert_time_filters(client: Client, cycle_start: datetime) -> None:
-    """TEMPORARY DIAGNOSTICS: check which /v2/events parameters filter or sort by insert time.
-
-    Args:
-        client: The Halcyon client.
-        cycle_start: When this fetch cycle started.
-    """
-    base_params: dict[str, Any] = {"page": 1, "pageSize": 10}
-    future_value = (cycle_start + timedelta(days=1)).strftime(DATE_FORMAT)
-    demisto.info(f"{INSERT_TIME_PROBE_LOG_PREFIX} starting; candidate filters are sent with {future_value}")
-
-    baseline_rows = run_events_probe_call(client, "baseline (no time filter)", base_params, log_all_keys=True)
-    for filter_name in INSERT_TIME_FILTER_CANDIDATES:
-        filtered_rows = run_events_probe_call(client, f"filter {filter_name}", {**base_params, filter_name: future_value})
-        verdict = get_insert_time_filter_verdict(baseline_rows, filtered_rows)
-        demisto.info(f"{INSERT_TIME_PROBE_LOG_PREFIX} filter {filter_name}: {verdict}")
-
-    for sort_by in INSERT_TIME_SORT_CANDIDATES:
-        run_events_probe_call(client, f"sortBy={sort_by} Desc", {**base_params, "sortBy": sort_by, "sortOrder": "Desc"})
-    demisto.info(f"{INSERT_TIME_PROBE_LOG_PREFIX} finished")
-
-
-def maybe_probe_insert_time_filters(client: Client, last_run: dict, cycle_start: datetime) -> None:
-    """TEMPORARY DIAGNOSTICS: run the insert-time probe at most once per INSERT_TIME_PROBE_INTERVAL. Never raises.
-
-    Args:
-        client: The Halcyon client.
-        last_run: The last run dictionary. The probe time is stored in it.
-        cycle_start: When this fetch cycle started.
-    """
-    if not INSERT_TIME_PROBE_ENABLED:
-        return
-    try:
-        last_probe = last_run.get(INSERT_TIME_PROBE_LAST_RUN_KEY)
-        if last_probe:
-            last_probe_time = datetime.strptime(last_probe, DATE_FORMAT).replace(tzinfo=timezone.utc)
-            if cycle_start - last_probe_time < INSERT_TIME_PROBE_INTERVAL:
-                return
-        # Stored before probing, so a failing probe is not retried on every cycle.
-        last_run[INSERT_TIME_PROBE_LAST_RUN_KEY] = cycle_start.strftime(DATE_FORMAT)
-        probe_insert_time_filters(client, cycle_start)
-    except Exception as e:
-        demisto.info(f"{INSERT_TIME_PROBE_LOG_PREFIX} probe failed, the fetch continues: {e}")
-
-
 """ COMMAND FUNCTIONS """
 
 
@@ -1330,9 +1195,6 @@ def fetch_events_command(
 
         demisto.debug(f"Fetched {len(events)} {log_type.type_string}")
         all_events.extend(events)
-
-    if LogType.EVENTS in log_types:
-        maybe_probe_insert_time_filters(client, last_run, cycle_start)
 
     return all_events, last_run
 
