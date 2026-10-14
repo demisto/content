@@ -1,6 +1,6 @@
 name: Panorays Axis MCP
 display: Panorays Axis MCP
-description: Use this integration to connect securely with the Panorays Axis Model Context Protocol (MCP) server and access its tools in real time.
+description: Connects securely with the Panorays Axis Model Context Protocol (MCP) server and accesses its tools in real time.
 category: Vulnerability Management
 provider: Panorays
 sectionorder:
@@ -18,7 +18,7 @@ configuration:
     options:
       - Bearer
       - OAuth 2.0 Authorization Code
-    additionalinfo: Select the authentication method.
+    additionalinfo: The authentication method.
   - name: token
     type: 9
     displaypassword: API Token
@@ -36,7 +36,7 @@ configuration:
     displaypassword: Authorization code
     hiddenusername: true
     section: Connect
-    additionalinfo: Authorization code returned after running the `!panorays-mcp-generate-login-url` command and authenticating. Required for OAuth authentication.
+    additionalinfo: The authorization code returned after running the `!panorays-mcp-generate-login-url` command and authenticating. Required for OAuth authentication.
   - name: redirect_uri
     section: Connect
     display: Redirect URI
@@ -56,14 +56,14 @@ script:
       description: The name of the tool to call.
       required: true
     - name: arguments
-      description: Parameters for the tool execution.
+      description: The parameters for the tool execution.
     description: Calls a specific tool on the Panorays Axis MCP server with optional input parameters.
     name: call-tool
     hidden: true
     outputs: []
-  - description: Test the authentication configuration with the MCP server.
+  - description: Tests the authentication configuration with the MCP server.
     name: panorays-mcp-auth-test
-  - description: Generate an authentication login URL. Only available for OAuth authentication.
+  - description: Generates an authentication login URL. Only available for OAuth authentication.
     name: panorays-mcp-generate-login-url
   script: '-'
   type: python

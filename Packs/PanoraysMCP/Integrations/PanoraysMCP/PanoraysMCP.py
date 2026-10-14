@@ -27,9 +27,9 @@ def validate_required_params(auth_type: str, token: str, client_id: str, client_
     """
     if auth_type not in SUPPORTED_AUTH_TYPES:
         raise ValueError(f"Unsupported authentication type: {auth_type}. Supported types: {', '.join(SUPPORTED_AUTH_TYPES)}.")
-    if auth_type == AuthMethods.BEARER and not token:
+    if auth_type == AuthMethods.BEARER.value and not token:
         raise ValueError("API Token is required for Bearer authentication.")
-    if auth_type == AuthMethods.AUTHORIZATION_CODE and not all((client_id, client_secret)):
+    if auth_type == AuthMethods.AUTHORIZATION_CODE.value and not all((client_id, client_secret)):
         raise ValueError("Client ID and Client Secret are required for OAuth authentication.")
 
 
@@ -40,7 +40,7 @@ async def main() -> None:  # pragma: no cover
 
     client = None
     try:
-        auth_type = params.get("auth_type", "")
+        auth_type = params.get("auth_type") or AuthMethods.BEARER.value
         token = params.get("token", {}).get("password", "")
         client_id = params.get("oauth_credentials", {}).get("identifier", "")
         client_secret = params.get("oauth_credentials", {}).get("password", "")
@@ -64,7 +64,7 @@ async def main() -> None:  # pragma: no cover
         demisto.debug(f"Command being called is {command}")
 
         if command == "test-module":
-            if auth_type == AuthMethods.AUTHORIZATION_CODE:
+            if auth_type == AuthMethods.AUTHORIZATION_CODE.value:
                 raise DemistoException(
                     f"\nTest module is unavailable for this authentication type: {auth_type}.\n"
                     f"Please use the **!{COMMAND_PREFIX}-auth-test** command to test "

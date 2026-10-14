@@ -134,6 +134,19 @@ class TestMain:
         assert client_class.call_args.kwargs["redirect_uri"] == "https://oproxy.demisto.ninja/authcode"
 
     @pytest.mark.asyncio
+    async def test_auth_type_defaults_to_bearer_when_empty(self, mocker: MockerFixture):
+        """Given: Bearer authentication parameters with an empty authentication type.
+        When: Main function processes a command.
+        Then: The client is created with Bearer authentication, matching the YAML default.
+        """
+        params = BEARER_PARAMS | {"auth_type": ""}
+        client_class, _, _, _ = mock_main_dependencies(mocker, params, "list-tools")
+
+        await main()
+
+        assert client_class.call_args.kwargs["auth_type"] == "Bearer"
+
+    @pytest.mark.asyncio
     async def test_test_module_bearer(self, mocker: MockerFixture):
         """Given: The test-module command is called with Bearer authentication.
         When: Main function processes the command.

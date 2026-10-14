@@ -1,10 +1,8 @@
 ## Panorays Axis MCP
 
-This integration connects securely with the Panorays Axis Model Context Protocol (MCP) server, allowing you to access its tools in real time.
-
 Select one of the following authentication types.
 
-## Bearer
+### Bearer
 
 1. Log in to your Panorays platform.
 2. Navigate to **Settings → Integrations → Public API**.
@@ -12,9 +10,9 @@ Select one of the following authentication types.
 4. Copy the token into the **API Token** parameter.
 5. Save the integration instance and click **Test**.
 
-## OAuth 2.0 Authorization Code
+### OAuth 2.0 Authorization Code
 
-### Prerequisites
+#### Prerequisites
 
 Contact Panorays support at **support@panorays.com** to create an OAuth client for Cortex. Ask for a client with:
 
@@ -24,7 +22,7 @@ Contact Panorays support at **support@panorays.com** to create an OAuth client f
 
 Panorays support will provide a **Client ID** and **Client Secret**.
 
-### Configuration
+#### Configuration
 
 1. Enter the **Client ID** and **Client Secret** provided by Panorays support.
 2. Save the integration instance.
@@ -32,6 +30,6 @@ Panorays support will provide a **Client ID** and **Client Secret**.
 4. Copy the generated **Authorization code** into the integration instance and save.
 5. Run the command `!panorays-mcp-auth-test` from the Playground to verify connectivity.
 
-## Support
+### Support
 
 For assistance, contact Panorays support at **support@panorays.com**.
