@@ -64,13 +64,20 @@ configuration:
   type: 13
   section: Collect
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 description: This integration fetches findings from completed Cymulate assessments as Cortex XSOAR incidents using the V2 Assessment API.
 display: Cymulate v3
 defaultmapperin: Cymulate Assessment Findings - Incoming Mapper
 name: cymulate_v3
 script:
   commands: []
-  dockerimage: demisto/python3:3.12.12.7090913
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   script: "-"
   subtype: python3

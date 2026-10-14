@@ -1,0 +1,48 @@
+{
+    "Type": 1,
+    "Contents": {
+        "id": "00000000000000000001",
+        "actors": [
+            ""
+        ],
+        "google_document_id": "0000000000000000000000::0000000000001",
+        "title": "Key Developments: XYZ (July 20-27, 2026)",
+        "summary": "Summary of the report.",
+        "tags": [
+            "AI",
+            "Key Developments: XYZ",
+            "Cybersecurity & Internet Governance"
+        ],
+        "body": "",
+        "title_asset": "/assets/00000000000000000001",
+        "title_asset_id": "000000000000000000001",
+        "assets": [],
+        "asset_ids": [],
+        "sources": [
+            {
+                "original": "",
+                "platform_url": null,
+                "source": null,
+                "source_id": null,
+                "type": "External",
+                "title": ""
+            }
+        ],
+        "is_featured": false,
+        "ingested_at": "2026-07-27T21:12:56.445+00:00",
+        "posted_at": "2026-07-27T21:12:56.445+00:00",
+        "platform_url": "https://fp.tools/cti/intelligence/report/00000000000000000001",
+        "notified_at": "2026-07-27T21:12:56.445+00:00",
+        "updated_at": "2026-07-27T21:12:56.445+00:00",
+        "version_posted_at": "2026-07-27T21:12:56.445+00:00",
+        "published_status": "published"
+    },
+    "ContentsFormat": "json",
+    "HumanReadable": "### Flashpoint Ignite Report details\n",
+    "EntryContext": {
+        "Ignite.Report(val.ReportId == obj.ReportId)": {
+            "ReportId": "00000000000000000001",
+            "Title": "Key Developments: XYZ (July 20-27, 2026)"
+        }
+    }
+}

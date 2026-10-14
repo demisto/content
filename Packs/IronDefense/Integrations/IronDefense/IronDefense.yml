@@ -1,4 +1,7 @@
 category: Network Security
+sectionorder:
+- Connect
+- Collect
 provider: IronNet Cybersecurity
 commonfields:
   id: IronDefense
@@ -8,38 +11,53 @@ configuration:
   name: ironAPIHost
   required: true
   type: 0
+  section: Connect
 - defaultvalue: '6942'
   display: IronAPI Port
   name: ironAPIPort
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   required: true
   type: 9
+  section: Connect
 - defaultvalue: '60'
   display: Request Timeout (Sec)
   name: requestTimeout
   type: 0
   required: false
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  advanced: true
+  section: Collect
 - defaultvalue: 'true'
   display: Enable Alert Notification Ingestion (Refresh Not Supported)
   name: enableAlertNotifications
   type: 8
   required: false
+  section: Collect
 - defaultvalue: '200'
   display: Alert Notification Limit Per Request. (Max 500)
   name: alertLimit
   type: 0
   required: false
+  section: Collect
 - display: Alert Notification Categories to Exclude
   name: alertCategories
   options:
@@ -50,20 +68,24 @@ configuration:
   - Other
   type: 16
   required: false
+  section: Collect
 - display: Alert Notification SubCategories to Exclude, See https://ironnet.atlassian.net/wiki/x/hADvGg for values (Enter in comma separated list format)
   name: alertSubCategories
   type: 12
   required: false
+  section: Collect
 - defaultvalue: '0'
   display: Lower Bound of Severity for Alert Notification (0-1000)
   name: alertSeverityLower
   type: 0
   required: false
+  section: Collect
 - defaultvalue: '1000'
   display: Upper Bound of Severity for Alert Notification (0-1000)
   name: alertSeverityUpper
   type: 0
   required: false
+  section: Collect
 - display: Alert Notification Actions to Include (Alert Created enabled by default)
   name: alertActions
   options:
@@ -77,16 +99,19 @@ configuration:
   - Alert Event Added
   type: 16
   required: false
+  section: Collect
 - defaultvalue: 'false'
   display: Enable Event Notification Ingestion (Refresh Not Supported)
   name: enableEventNotifications
   type: 8
   required: false
+  section: Collect
 - defaultvalue: '200'
   display: Event Notification Limit Per Request. (Max 500)
   name: eventLimit
   type: 0
   required: false
+  section: Collect
 - display: Event Notification Categories to Exclude
   name: eventCategories
   options:
@@ -97,20 +122,24 @@ configuration:
   - Other
   type: 16
   required: false
+  section: Collect
 - display: Event Notification SubCategories to Exclude, See https://ironnet.atlassian.net/wiki/x/hADvGg for values (Enter in comma separated list format)
   name: eventSubCategories
   type: 12
   required: false
+  section: Collect
 - defaultvalue: '0'
   display: Lower Bound of Severity for Event Notification (0-1000)
   name: eventSeverityLower
   type: 0
   required: false
+  section: Collect
 - defaultvalue: '1000'
   display: Upper Bound of Severity for Event Notification (0-1000)
   name: eventSeverityUpper
   type: 0
   required: false
+  section: Collect
 - display: Event Notification Actions to Include (Event Created enabled by default)
   name: eventActions
   options:
@@ -122,16 +151,19 @@ configuration:
   - Event Alert Closed
   type: 16
   required: false
+  section: Collect
 - defaultvalue: 'false'
   display: Enable Dome Notification Ingestion (Refresh Not Supported)
   name: enableDomeNotifications
   type: 8
   required: false
+  section: Collect
 - defaultvalue: '500'
   display: Dome Notification Limit Per Request. (Max 500)
   name: domeLimit
   type: 0
   required: false
+  section: Collect
 - display: Dome Notification Types to Exclude
   name: domeCategories
   options:
@@ -146,6 +178,7 @@ configuration:
   - High Cognitive System Score
   type: 16
   required: false
+  section: Collect
 description: The IronDefense Integration for Cortex XSOAR allows users to interact with IronDefense alerts within Cortex XSOAR. The Integration provides the ability to rate alerts, update alert statuses, add comments to alerts, to report observed bad activity, get alerts, get events, and get IronDome information.
 display: IronDefense
 name: IronDefense
@@ -790,7 +823,7 @@ script:
     - contextPath: IronDefense.Query.GetEvents.total
       description: The total number of results possible from the query.
       type: Number
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   runonce: false
   script: '-'

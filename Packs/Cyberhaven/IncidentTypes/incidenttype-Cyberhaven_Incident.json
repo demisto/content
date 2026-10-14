@@ -1,0 +1,65 @@
+{
+	"id": "Cyberhaven Incident",
+	"version": -1,
+	"vcShouldIgnore": false,
+	"locked": false,
+	"name": "Cyberhaven Incident",
+	"color": "#0171c2",
+	"playbookId": "Synchronize Incident Closure - Cyberhaven",
+	"hours": 0,
+	"days": 0,
+	"weeks": 0,
+	"hoursR": 0,
+	"daysR": 0,
+	"weeksR": 0,
+	"system": false,
+	"readonly": false,
+	"default": false,
+	"autorun": false,
+	"disabled": false,
+	"reputationCalc": 0,
+	"onChangeRepAlg": 0,
+	"layout": "Cyberhaven Incident",
+	"detached": false,
+	"extractSettings": {
+		"mode": "Specific",
+		"fieldCliNameToExtractSettings": {
+			"cyberhavenstartactionhostname": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": true,
+				"extractIndicatorTypesIDs": []
+			},
+			"cyberhavenendactionhostname": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": true,
+				"extractIndicatorTypesIDs": []
+			},
+			"cyberhavenstartcontentfilename": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": true,
+				"extractIndicatorTypesIDs": []
+			},
+			"cyberhavenendcontentfilename": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": true,
+				"extractIndicatorTypesIDs": []
+			},
+			"cyberhavenuserusername": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": true,
+				"extractIndicatorTypesIDs": []
+			},
+			"cyberhavenstarteventjson": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": true,
+				"extractIndicatorTypesIDs": []
+			},
+			"cyberhavenendeventjson": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": true,
+				"extractIndicatorTypesIDs": []
+			}
+		}
+	},
+	"fromVersion": "6.10.0"
+}

@@ -257,7 +257,9 @@ class TestCommandsFunctions:
         Then:
         - Ensure no events are returned and the offset is the same
         """
-        from Akamai_SIEM import FETCH_EVENTS_MAX_PAGE_SIZE as size
+        # Historically this used the removed FETCH_EVENTS_MAX_PAGE_SIZE constant purely as a page-size
+        # value. page_size is now passed explicitly to fetch_events_command, so use its former value.
+        size = 20000
 
         total_events_count = 0
         last_offset = "11111"
@@ -298,7 +300,6 @@ class TestCommandsFunctions:
         Then:
         - Ensure 6 events are returned
         """
-        mocker.patch.object(Akamai_SIEM, "FETCH_EVENTS_MAX_PAGE_SIZE", new=6, autospec=False)
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
         total_events_count = 0
         last_offset = None
@@ -331,7 +332,6 @@ class TestCommandsFunctions:
         Then:
         - Ensure 8 events are returned
         """
-        mocker.patch.object(Akamai_SIEM, "FETCH_EVENTS_MAX_PAGE_SIZE", new=6, autospec=False)
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
         total_events_count = 0
         last_offset = None
@@ -365,7 +365,6 @@ class TestCommandsFunctions:
         - Ensure 2 events are returned
         - Ensure last_offset is the one returned from the last page we pulled events from (the 1st one)
         """
-        mocker.patch.object(Akamai_SIEM, "FETCH_EVENTS_MAX_PAGE_SIZE", new=2, autospec=False)
         mocker.patch.object(Akamai_SIEM, "is_interval_doesnt_have_enough_time_to_run", return_value=(False, 1))
         total_events_count = 0
         last_offset = None
@@ -580,6 +579,134 @@ def test_decode_url_empty_string(headers):
     - An empty dict is returned (guard clause), without attempting to parse.
     """
     assert Akamai_SIEM.decode_url(headers) == {}
+
+
+def test_decode_event_decodes_attack_data_and_http_headers():
+    """
+    Given:
+    - A raw JSON event string containing an attackData section (with base64 rule fields) and an
+      httpMessage section (with URL-encoded request/response headers).
+    When:
+    - Calling decode_event on the raw string.
+    Then:
+    - The attackData rule fields are base64/URL decoded into lists, and the httpMessage headers are
+      decoded into dicts. This characterizes the shared decode logic previously duplicated in
+      fetch_events_command and process_and_send_events_to_xsiam.
+    """
+    request_headers = "Content-Type%3A%20application/json%3Bcharset%3DUTF-8%0Auser%3A%20test%40test.com"
+    raw_event = json.dumps(
+        {
+            "attackData": {"rules": "cnVsZTE=", "ruleMessages": "bXNn"},
+            "httpMessage": {"requestHeaders": request_headers, "responseHeaders": ""},
+        }
+    )
+
+    decoded = Akamai_SIEM.decode_event(raw_event)
+
+    assert decoded["attackData"]["rules"] == ["rule1"]
+    assert decoded["attackData"]["ruleMessages"] == ["msg"]
+    assert decoded["httpMessage"]["requestHeaders"] == {
+        "Content_Type": "application/json;charset=UTF-8",
+        "user": "test@test.com",
+    }
+    assert decoded["httpMessage"]["responseHeaders"] == {}
+
+
+def test_decode_event_returns_raw_string_on_malformed_json():
+    """
+    Given:
+    - A malformed JSON event string that cannot be parsed.
+    When:
+    - Calling decode_event on it.
+    Then:
+    - The original raw string is returned unchanged (no exception), matching the existing
+      "leave malformed event in place" behavior.
+    """
+    malformed = "{not-valid-json"
+
+    assert Akamai_SIEM.decode_event(malformed) == malformed
+
+
+def test_decode_event_without_attack_or_http_sections_is_unchanged():
+    """
+    Given:
+    - A valid JSON event with neither attackData nor httpMessage sections.
+    When:
+    - Calling decode_event on it.
+    Then:
+    - The event is parsed to a dict but its contents are otherwise unchanged.
+    """
+    raw_event = json.dumps({"id": 42, "geo": {"country": "US"}})
+
+    decoded = Akamai_SIEM.decode_event(raw_event)
+
+    assert decoded == {"id": 42, "geo": {"country": "US"}}
+
+
+def test_events_to_ec_builds_expected_entry_context():
+    """
+    Given:
+    - A single raw event containing attackData (with base64 rule fields), httpMessage, and geo sections.
+    When:
+    - Calling events_to_ec.
+    Then:
+    - The returned entry-context, IP-context, and human-readable structures match the expected shapes.
+      This pins the exact output so the internal dict-lookup hoisting refactor is provably byte-identical.
+    """
+    raw_event = {
+        "attackData": {
+            "configId": "50170",
+            "policyId": "pol1",
+            "clientIP": "1.2.3.4",
+            "rules": "cnVsZTE=",
+            "ruleMessages": "bXNn",
+            "ruleActions": "ZGVueQ==",
+        },
+        "httpMessage": {
+            "requestId": "req1",
+            "start": "1488816442",
+            "method": "GET",
+            "host": "example.com",
+            "status": "403",
+        },
+        "geo": {"continent": "NA", "country": "US", "city": "SF", "asn": "123"},
+    }
+
+    events_ec, ip_ec, human_readable = Akamai_SIEM.events_to_ec([raw_event])
+
+    assert events_ec == [
+        {
+            "AttackData": {
+                "ConfigID": "50170",
+                "PolicyID": "pol1",
+                "ClientIP": "1.2.3.4",
+                "Rules": ["rule1"],
+                "RuleMessages": ["msg"],
+                "RuleActions": ["deny"],
+            },
+            "HttpMessage": {
+                "RequestId": "req1",
+                "Start": "1488816442",
+                "Method": "GET",
+                "Host": "example.com",
+                "Status": "403",
+            },
+            "Geo": {"Continent": "NA", "Country": "US", "City": "SF", "Asn": "123"},
+        }
+    ]
+    assert ip_ec == [{"Address": "1.2.3.4", "ASN": "123", "Geo": {"Country": "US"}}]
+    assert human_readable == [
+        {
+            "Attacking IP": "1.2.3.4",
+            "Config ID": "50170",
+            "Policy ID": "pol1",
+            "Rules": ["rule1"],
+            "Rule messages": ["msg"],
+            "Rule actions": ["deny"],
+            "Date occured": Akamai_SIEM.date_format_converter(from_format="epoch", date_before="1488816442"),
+            "Location": {"Country": "US", "City": "SF"},
+        }
+    ]
 
 
 def test_fetch_events_command_decodes_in_place_and_counts_last_page_size(client, mocker):
@@ -1180,29 +1307,73 @@ BASE_MAIN_PARAMS = {
 
 
 @pytest.mark.parametrize(
-    "page_size_param, fetch_limit_param, expected_page_size, expected_limit",
+    "events_fetch_limit_param, expected_page_size, expected_limit",
     [
-        (Akamai_SIEM.FETCH_EVENTS_MAX_PAGE_SIZE + 5000, 80000, Akamai_SIEM.FETCH_EVENTS_MAX_PAGE_SIZE, 80000),
-        (10000, Akamai_SIEM.MAX_ALLOWED_FETCH_LIMIT + 1, 10000, Akamai_SIEM.MAX_ALLOWED_FETCH_LIMIT),
-        (10000, 3000, 3000, 3000),
-        (5000, 40000, 5000, 40000),
+        (80000, Akamai_SIEM.DEFAULT_PAGE_SIZE, 80000),
+        (Akamai_SIEM.MAX_ALLOWED_FETCH_LIMIT + 1, Akamai_SIEM.DEFAULT_PAGE_SIZE, Akamai_SIEM.MAX_ALLOWED_FETCH_LIMIT),
+        (3000, 3000, 3000),
+        (40000, Akamai_SIEM.DEFAULT_PAGE_SIZE, 40000),
     ],
 )
-def test_main_fetch_events_param_clamps(mocker, page_size_param, fetch_limit_param, expected_page_size, expected_limit):
+def test_main_fetch_events_param_clamps(mocker, events_fetch_limit_param, expected_page_size, expected_limit):
     """
     Given:
-    - fetch-events params with various page_size / fetchLimit values (out-of-bounds and in-bounds).
+    - fetch-events params with various eventsFetchLimit values (out-of-bounds and in-bounds).
     When:
     - Running main() for the fetch-events command.
     Then:
-    - Ensure page_size and fetch_limit are clamped correctly (bad path) or left unchanged (good path)
-      before being passed to fetch_events_command.
+    - Ensure page_size defaults to DEFAULT_PAGE_SIZE (lowered to the limit when limit is smaller) and
+      fetch_limit is clamped correctly before being passed to fetch_events_command.
     """
-    params = {**BASE_MAIN_PARAMS, "page_size": page_size_param, "fetchLimit": fetch_limit_param}
+    params = {**BASE_MAIN_PARAMS, "eventsFetchLimit": events_fetch_limit_param}
     result = _run_main_fetch_events(mocker, params, ctx={"offset": "ctx_offset"}, fetch_events_pages=[([], None, 0, False)])
     captured = result["captured_kwargs"]
     assert captured["page_size"] == expected_page_size
     assert captured["fetch_limit"] == expected_limit
+
+
+def test_main_fetch_events_uses_events_default_when_no_limit_set(mocker):
+    """
+    Given:
+    - fetch-events params without eventsFetchLimit or fetchLimit.
+    When:
+    - Running main() for the fetch-events command.
+    Then:
+    - Ensure fetch_limit defaults to DEFAULT_EVENTS_FETCH_LIMIT (60000).
+    """
+    result = _run_main_fetch_events(
+        mocker, {**BASE_MAIN_PARAMS}, ctx={"offset": "ctx_offset"}, fetch_events_pages=[([], None, 0, False)]
+    )
+    assert result["captured_kwargs"]["fetch_limit"] == Akamai_SIEM.DEFAULT_EVENTS_FETCH_LIMIT
+
+
+def test_main_fetch_events_ignores_incident_fetch_limit(mocker):
+    """
+    Given:
+    - fetch-events params with only the incident fetchLimit set (no eventsFetchLimit).
+    When:
+    - Running main() for the fetch-events command.
+    Then:
+    - Ensure fetchLimit (which controls incident fetching only) is ignored for event collection,
+      and the events limit falls back to DEFAULT_EVENTS_FETCH_LIMIT.
+    """
+    params = {**BASE_MAIN_PARAMS, "fetchLimit": 45000}
+    result = _run_main_fetch_events(mocker, params, ctx={"offset": "ctx_offset"}, fetch_events_pages=[([], None, 0, False)])
+    assert result["captured_kwargs"]["fetch_limit"] == Akamai_SIEM.DEFAULT_EVENTS_FETCH_LIMIT
+
+
+def test_main_fetch_events_uses_events_limit_regardless_of_incident_limit(mocker):
+    """
+    Given:
+    - fetch-events params with both eventsFetchLimit and the incident fetchLimit set.
+    When:
+    - Running main() for the fetch-events command.
+    Then:
+    - Ensure eventsFetchLimit controls event collection and the incident fetchLimit has no effect.
+    """
+    params = {**BASE_MAIN_PARAMS, "eventsFetchLimit": 50000, "fetchLimit": 20}
+    result = _run_main_fetch_events(mocker, params, ctx={"offset": "ctx_offset"}, fetch_events_pages=[([], None, 0, False)])
+    assert result["captured_kwargs"]["fetch_limit"] == 50000
 
 
 def test_main_fetch_events_offset_persisted_on_success(mocker):
@@ -1259,12 +1430,12 @@ def test_main_fetch_events_next_trigger(mocker, pages, expected_next_trigger):
     Given:
     - fetch-events runs with different (total_events_count, auto_trigger_next_run) outcomes.
     When:
-    - Running main() with fetchLimit=20.
+    - Running main() with eventsFetchLimit=20.
     Then:
     - Ensure nextTrigger is set to "0" when the interval hit the limit or requested an auto-trigger,
       and is absent otherwise.
     """
-    params = {**BASE_MAIN_PARAMS, "fetchLimit": 20}
+    params = {**BASE_MAIN_PARAMS, "eventsFetchLimit": 20}
     result = _run_main_fetch_events(mocker, params, ctx={"offset": "old"}, fetch_events_pages=pages)
     next_run = result["set_last_run"].call_args[0][0]
     assert next_run.get("nextTrigger") == expected_next_trigger

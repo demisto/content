@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Support for the ***Security And Compliance*** and ***Security And Compliance v2*** integrations was removed from the reported email deletion flow. These brands are no longer available for selection when deleting a reported email."
+}

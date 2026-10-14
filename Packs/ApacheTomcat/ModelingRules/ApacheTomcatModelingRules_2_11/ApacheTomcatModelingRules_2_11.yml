@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: Apache_Tomcat
+name: Apache Tomcat
+rules: ''
+schema: ''
+tags: Apache Tomcat
+supportedModules:
+- xsiam

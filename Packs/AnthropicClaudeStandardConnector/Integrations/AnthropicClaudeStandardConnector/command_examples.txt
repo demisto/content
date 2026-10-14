@@ -1,0 +1,2 @@
+!claude-chat-file-delete file_id=claude_file_01AbCdEfGhIjKlMnOpQrStUv
+!claude-project-document-delete document_id=claude_proj_doc_01AbCdEfGhIjKlMnOpQrStUv

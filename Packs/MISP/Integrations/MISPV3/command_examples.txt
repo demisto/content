@@ -28,3 +28,4 @@
 !misp-add-user email="example@example.com" org_id=1 role_id=1 password=defaultPassword12345++
 !misp-get-organization-info
 !misp-get-role-info
+!ip ip=2001:0db8:85a3:0000:0000:8a2e:0370:7334 accept_v6_ips=true

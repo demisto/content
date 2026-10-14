@@ -1,0 +1,19 @@
+# This pack is intended for XSOAR and XSIAM (marketplacev2) only, and intentionally omits 'platform'.
+[file:pack_metadata.json]
+ignore=BA130
+
+# BA130: see above - the pack intentionally omits 'platform'.
+# IN122: the feed parameters intentionally use pack-specific wording in their 'additionalinfo'.
+[file:HaseenThreatIntel.yml]
+ignore=BA130,IN122
+
+# BA130: see above - the pack intentionally omits 'platform'.
+# PB121: 'incident.id:' is a literal query prefix passed to a concat transformer, not a context reference.
+[file:Haseen_-_Delta_Feed_-_Generic.yml]
+ignore=BA130,PB121
+
+[known_words]
+Haseen
+STIX
+TLP
+IOCs

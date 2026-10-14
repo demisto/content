@@ -308,7 +308,7 @@ script:
     - contextPath: DeCYFIR.File.RawJSON
       description: Raw indicator JSON data.
       type: Unknown
-  dockerimage: demisto/python3:3.12.13.8428455
+  dockerimage: demisto/python3:3.12.13.10116658
   feed: true
   isfetch: false
   longRunning: false

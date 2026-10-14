@@ -33,6 +33,17 @@ configuration:
   required: false
   type: 0
   advanced: true
+- display: Fetch Events
+  name: isFetchEvents
+  required: false
+  type: 8
+  section: Collect
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

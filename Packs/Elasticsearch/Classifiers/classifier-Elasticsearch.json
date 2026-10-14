@@ -1,0 +1,27 @@
+{
+    "description": "Classifies Elasticsearch entities using the deterministic 'elastic_entity_kind' field set by the integration on every fetched incident: 'signal' is classified as Elasticsearch Security Alert, 'securitySolution' is classified as Elasticsearch Case, and any other value falls back to the default Elasticsearch incident type.",
+    "feed": false,
+    "id": "Elasticsearch",
+    "name": "Elasticsearch",
+    "type": "classification",
+    "defaultIncidentType": "Elasticsearch",
+    "keyTypeMap": {
+        "signal": "Elasticsearch Security Alert",
+        "securitySolution": "Elasticsearch Case"
+    },
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "elastic_entity_kind",
+            "transformers": []
+        },
+        "simple": ""
+    },
+    "version": -1,
+    "fromVersion": "6.2.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

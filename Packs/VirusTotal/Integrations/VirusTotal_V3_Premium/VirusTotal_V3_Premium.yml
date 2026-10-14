@@ -3,6 +3,9 @@ provider: Google
 commonfields:
   id: VirusTotal - Premium (API v3)
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - display: API Key (leave empty. Fill in the API key in the password field.)
   displaypassword: API Key
@@ -10,38 +13,65 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   defaultvalue: VirusTotal Intelligence LiveHunt Notification
   name: incidentType
   type: 13
   required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '40'
   name: max_fetch
   display: Maximum number of incidents per fetch
   type: 0
   required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) or a date or epoch timestamp.
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - defaultvalue: ''
   display: "Tag: The ruleset's name or the identifier for the YARA rule matching the file to fetch its notifications. Leave blank to fetch all."
   name: tag
   type: 0
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: Analyse retro hunts, read live hunt notifications and download files from VirusTotal.
 display: VirusTotal - Premium (API v3)
 name: VirusTotal - Premium (API v3)
@@ -1479,7 +1509,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.14.12277297
 defaultmapperin: VirusTotal Intelligence LiveHunt Notification
 fromversion: 5.5.0
 tests:
