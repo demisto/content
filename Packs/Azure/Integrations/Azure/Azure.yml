@@ -4799,6 +4799,8 @@ script:
     - contextPath: Azure.VirtualNetworks.IPGroups.properties.firewallPolicies
       description: A list of references to the firewall policies that use the IP group.
       type: Unknown
+    compliantpolicies:
+    - Domain Blockage
   - name: azure-vn-ip-group-update
     description: "Updates an IP group resource by adding or removing IP addresses and polls until the IP group is fully provisioned. Required permissions: Microsoft.Network/ipGroups/read, Microsoft.Network/ipGroups/write."
     polling: true
