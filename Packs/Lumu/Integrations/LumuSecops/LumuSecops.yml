@@ -1,8 +1,8 @@
+name: LumuSecops
+display: Lumu Secops
 commonfields:
   id: LumuSecops
   version: -1
-name: LumuSecops
-display: Lumu Secops
 category: Utilities
 provider: Lumu
 description: SecOps operations for the new Lumu Defender API. Fetch, investigate, and manage Lumu incidents from Cortex XSOAR with bidirectional mirroring.
@@ -13,23 +13,27 @@ configuration:
   name: url
   required: true
   type: 0
+  additionalinfo: "The URL of the Public Lumu Defender Base URL."
   section: Connect
 - defaultvalue: "false"
   display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  additionalinfo: "Whether to use the system proxy settings for network requests."
   section: Connect
 - defaultvalue: "false"
   display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  additionalinfo: "Whether to trust any SSL certificate, even if it is not secure."
   section: Connect
 - display: API Key
   name: api_key
   required: true
   hiddenusername: true
+  additionalinfo: "The API key used to authenticate with the Lumu Defender API."
   type: 9
   section: Connect
 - defaultvalue: "0"
@@ -37,15 +41,18 @@ configuration:
   name: fetch_offset
   required: false
   type: 0
+  additionalinfo: "The offset to start fetching Lumu incidents from."
   section: Collect
 - defaultvalue: "30"
   display: Size of Lumu incident records per Lumu fetch
+  additionalinfo: "The number of Lumu incident records to fetch per request."
   name: total_items_per_lumu_fetch
   required: false
   type: 0
   section: Collect
 - defaultvalue: "4"
   display: Max Seconds waiting for fetching Lumu incidents
+  additionalinfo: "The maximum number of seconds to wait for fetching Lumu incidents."
   name: max_time_fetching_lumu_incident
   required: false
   type: 0
@@ -61,12 +68,14 @@ configuration:
   name: incidentType
   required: false
   type: 13
+  additionalinfo: "The incident type for Lumu SecOps incidents."
   section: Collect
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
+  additionalinfo: "The interval in minutes at which to fetch Lumu incidents."
   section: Collect
 - additionalinfo: Comments and files tagged with this value are mirrored to Lumu.
   defaultvalue: mirror
@@ -75,7 +84,7 @@ configuration:
   required: false
   type: 0
   section: Collect
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SentinelOne to Cortex XSOAR), Outgoing (from Cortex XSOAR to SentinelOne), or Incoming and Outgoing (from/to Cortex XSOAR and SentinelOne). Cortex XSOAR only parameter.'
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Lumu to Cortex XSOAR), Outgoing (from Cortex XSOAR to Lumu), or Incoming and Outgoing (from/to Cortex XSOAR and Lumu). Cortex XSOAR only parameter.'
   defaultvalue: Incoming And Outgoing
   display: Incident Mirroring Direction
   type: 15

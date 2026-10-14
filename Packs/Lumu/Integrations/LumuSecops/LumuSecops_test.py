@@ -112,10 +112,6 @@ def get_client() -> Client:
     return Client("https://defender.lumu.io", True, False, {"Content-Type": "application/json"}, "api-key")
 
 
-def test_add_prefix_to_comment() -> None:
-    assert add_prefix_to_comment("hello") == "Cortex XSOAR: hello,"
-
-
 @patch.object(Client, "get_all_incidents_request", return_value=INCIDENTS_RESPONSE)
 def test_get_all_incidents_command(mock_request: patch) -> None:
     response = get_all_incidents_command(get_client(), {"page": 1, "items": 1})

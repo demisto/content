@@ -1,5 +1,6 @@
 from copy import deepcopy
 from datetime import datetime, UTC
+import html
 from typing import Any, Final, TypedDict, NewType, cast
 from collections.abc import Generator
 from collections import Counter
@@ -7,6 +8,10 @@ from collections import Counter
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import urllib3
+
+
+class CustomLumuException(Exception):
+    """Custom exception for Lumu integration errors."""
 
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -50,19 +55,14 @@ class UserDictType(TypedDict):
     deactivated: bool
 
 
-params = demisto.params()
-MIRROR_DIRECTION = {
-    "Incoming": "In",
-    "Outgoing": "Out",
-    "Incoming And Outgoing": "Both",
-}.get(params.get("mirror_direction"))
-MIRROR_TAGS = params.get("mirror_tags") or []
-INTEGRATION_INSTANCE = demisto.integrationInstance()
 COMMENT_MARK = "Operated by Lumu Integration with Cortex Xsoar:"
 
 
 def format_description_comment(incident_id: str, first_event_timestamp: str, source_description, adversaries_types: list[str]):
-    adversaries = ", ".join(adversaries_types)
+    adversaries = html.escape(", ".join(adversaries_types))
+    incident_id = html.escape(incident_id)
+    first_event_timestamp = html.escape(first_event_timestamp)
+    source_description = html.escape(source_description)
 
     return f"""<div class=\"sdp-ze-default-wrapper\" style=\"font-family: Roboto, Arial; font-size: 10pt\">
 <div>Lumu has detected an incident of type [{adversaries}] with description: {source_description} at {first_event_timestamp}<br/>
@@ -75,7 +75,10 @@ def format_description_comment(incident_id: str, first_event_timestamp: str, sou
 def format_description_plain_text(
     incident_id: str, first_event_timestamp: str, source_description: str, adversaries_types: list[str]
 ) -> str:
-    adversaries = ", ".join(adversaries_types)
+    adversaries = html.escape(", ".join(adversaries_types))
+    incident_id = html.escape(incident_id)
+    first_event_timestamp = html.escape(first_event_timestamp)
+    source_description = html.escape(source_description)
     return (
         f"Lumu has detected an incident of type [{adversaries}] with description: {source_description} "
         f"at {first_event_timestamp}\n\nSee more at: https://portal.lumu.io/compromise/incidents/show/{incident_id}/detections"
@@ -83,6 +86,10 @@ def format_description_plain_text(
 
 
 def format_comment(event_type: str, username: str, status_timestamp: str, comment: str) -> str:
+    event_type = html.escape(event_type)
+    username = html.escape(username)
+    status_timestamp = html.escape(status_timestamp)
+    comment = html.escape(comment)
     return (
         f"Incident {re.sub('incident', '', event_type, flags=re.IGNORECASE)} "
         f"by {username} on {datetime.fromisoformat(status_timestamp):%B %d, %Y %I:%M %p %Z} "
@@ -91,26 +98,26 @@ def format_comment(event_type: str, username: str, status_timestamp: str, commen
 
 
 def format_updates_comment(incident: dict, labels_cache: dict) -> str:
-    total_events = incident.get("totalEvents", 1)
+    total_events = html.escape(str(incident.get("totalEvents", 1)))
 
     affected_targets_users = {
-        target.get("name", "") for target in incident.get("targetsSamples", []) if target.get("type", "") == "user"
+        html.escape(target.get("name", "")) for target in incident.get("targetsSamples", []) if target.get("type", "") == "user"
     }
     affected_targets_endpoints = {
-        target.get("name", "") for target in incident.get("targetsSamples", []) if target.get("type", "") != "user"
+        html.escape(target.get("name", "")) for target in incident.get("targetsSamples", []) if target.get("type", "") != "user"
     }
 
     affected_environments_users = {
-        target.get("realm", "Unknown Env") for target in incident.get("targetsSamples", []) if target.get("type", "") == "user"
+        html.escape(target.get("realm", "Unknown Env")) for target in incident.get("targetsSamples", []) if target.get("type", "") == "user"
     }
     affected_environments_endpoints = {
-        labels_cache.get(str(target.get("label", "0")), {"name": "Unknown Label"})["name"]
+        html.escape(labels_cache.get(str(target.get("label", "0")), {"name": "Unknown Label"})["name"])
         for target in incident.get("targetsSamples", [])
         if target.get("type", "") != "user"
     }
 
     offenders: set[str] = {offender.get("value") or offender.get("name", "") for offender in incident.get("offendersSamples", [])}
-    offenders = {offender.replace(".", "[.]") for offender in offenders}
+    offenders = {html.escape(offender.replace(".", "[.]")) for offender in offenders}
 
     affected_targets_endpoints_block = f"""
             <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Endpoints: {len(affected_targets_endpoints)} <br/></div>
@@ -384,10 +391,6 @@ def is_msg_from_third_party(comment: str | None) -> bool:
     return bool(comment and comment.startswith(COMMENT_MARK))
 
 
-def add_prefix_to_comment(comment: str | None) -> str:
-    return f"Cortex XSOAR: {comment or ''},"
-
-
 def build_command_results(title: str, output_prefix: str, response: dict[str, Any], outputs: Any = None) -> CommandResults:
     result_outputs = response if outputs is None else outputs
     return CommandResults(
@@ -481,7 +484,7 @@ def get_all_incidents_command(client: Client, args: dict[str, Any]) -> CommandRe
     items = args.get("items")
     status = argToList(args.get("status"))
     adversary_types = argToList(args.get("adversary_types"))
-    labels = [int(label) for label in argToList(args.get("labels"))]
+    labels = [arg_to_number(label) for label in argToList(args.get("labels"))]
     from_date = args.get("from_date")
     to_date = args.get("to_date")
     response = client.get_all_incidents_request(page, items, status, from_date, to_date, adversary_types, labels)
@@ -492,7 +495,7 @@ def get_open_incidents_command(client: Client, args: dict[str, Any]) -> CommandR
     page = args.get("page")
     items = args.get("items")
     adversary_types = argToList(args.get("adversary_types"))
-    labels = [int(label) for label in argToList(args.get("labels"))]
+    labels = [arg_to_number(label) for label in argToList(args.get("labels"))]
     response = client.get_open_incidents_request(page, items, adversary_types, labels)
     return build_command_results("Open Incidents", "LumuSecops.GetOpenIncidents", response, response.get("items", []))
 
@@ -501,7 +504,7 @@ def get_muted_incidents_command(client: Client, args: dict[str, Any]) -> Command
     page = args.get("page")
     items = args.get("items")
     adversary_types = argToList(args.get("adversary_types"))
-    labels = [int(label) for label in argToList(args.get("labels"))]
+    labels = [arg_to_number(label) for label in argToList(args.get("labels"))]
     response = client.get_muted_incidents_request(page, items, adversary_types, labels)
     return build_command_results("Muted Incidents", "LumuSecops.GetMutedIncidents", response, response.get("items", []))
 
@@ -510,7 +513,7 @@ def get_closed_incidents_command(client: Client, args: dict[str, Any]) -> Comman
     page = args.get("page")
     items = args.get("items")
     adversary_types = argToList(args.get("adversary_types"))
-    labels = [int(label) for label in argToList(args.get("labels"))]
+    labels = [arg_to_number(label) for label in argToList(args.get("labels"))]
     response = client.get_closed_incidents_request(page, items, adversary_types, labels)
     return build_command_results("Closed Incidents", "LumuSecops.GetClosedIncidents", response, response.get("items", []))
 
@@ -615,7 +618,7 @@ def get_incident_security_events_details_command(client: Client, args: dict[str,
     )
 
 
-def normalize_incident_record(record: dict[str, Any], event_type: str) -> dict[str, Any]:
+def normalize_incident_record(record: dict[str, Any], event_type: str, integration_instance: str, mirror_direction: str, mirror_tags: list[str]) -> dict[str, Any]:
     incident_id = str(record.get("id", record.get("incidentId", "")))
     normalized = record.copy()
     normalized["lumu_secops_source_name"] = "lumusecops"
@@ -638,19 +641,18 @@ def normalize_incident_record(record: dict[str, Any], event_type: str) -> dict[s
     normalized["lumu_secops_adversary_types"] = normalize_adversary_types(normalized.get("adversaryTypes"))
     normalized["lumu_secops_description"] = str(normalized.get("description") or "")
     normalized.update(extract_latest_action(normalized.get("actions")))
-    normalized["mirror_instance"] = INTEGRATION_INSTANCE
+    normalized["mirror_instance"] = integration_instance
     normalized["mirror_id"] = incident_id
-    normalized["mirror_direction"] = MIRROR_DIRECTION
+    normalized["mirror_direction"] = mirror_direction
     normalized["mirror_last_sync"] = datetime.now().strftime(DATE_FORMAT)
-    normalized["mirror_tags"] = MIRROR_TAGS
-    normalized["severity"] = 2
-    normalized["status"] = 1
+    normalized["mirror_tags"] = mirror_tags
+    normalized["severity"] = IncidentSeverity.MEDIUM
+    normalized["status"] = IncidentStatus.ACTIVE
     return normalized
 
 
 def fetch_incidents(
-    client: Client, first_fetch_offset: str, last_run: dict[str, Any], items: int, max_time: int
-) -> tuple[dict[str, str], list[dict[str, Any]]]:
+    client: Client, first_fetch_offset: str, last_run: dict[str, Any], items: int, max_time: int, integration_instance: str, mirror_direction: str, mirror_tags: list[str]) -> None:
     last_fetch = int(last_run.get("last_fetch") or first_fetch_offset)
     response = client.consult_incidents_updates_request(offset=last_fetch, items=items, time=max_time)
     updates = response.get("updates", [])
@@ -658,6 +660,7 @@ def fetch_incidents(
 
     incidents: list[dict[str, Any]] = []
     incidents_collected: CollectedIncident = {}
+
     incidents_ids: list[str] = []
     now_time = datetime.now().strftime(DATE_FORMAT)
 
@@ -715,7 +718,7 @@ def fetch_incidents(
             incident.get("description") or event_data.get("eventDescription") or "",
         )
 
-        flattened = normalize_incident_record(incident, event_type)
+        flattened = normalize_incident_record(incident, event_type, integration_instance, mirror_direction, mirror_tags)
         if event_payload.get("comment") or event_payload.get("payload"):
             flattened["comment"] = event_payload.get("comment") or event_payload.get("payload", {}).get("comment") or ""
         if event_payload.get("companyId"):
@@ -747,8 +750,14 @@ def fetch_incidents(
         cache["lumu_secops_incident_ids"] = list(known_ids)
         demisto.debug(f'There are {len(cache["cache"])} events queued ready to process their updates')
         set_integration_context(cache)
+        
+    
+    next_run = {"last_fetch": next_offset}
+    demisto.setLastRun(next_run)
+    demisto.incidents(incidents_to_push)
+    count = Counter([inc["dbotMirrorId"] for inc in incidents])
+    demisto.debug(f"total inc found: {len(incidents)}, {count=} {last_run=} {next_run=}")
 
-    return {"last_fetch": next_offset}, incidents_to_push
 
 
 def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
@@ -919,7 +928,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
     except Exception as e:
         demisto.debug(f"get_remote_data_command error {e}")
         if "Rate limit exceeded" in str(e):  # modify this according to the vendor's spesific message
-            return_error("API rate limit")
+            raise CustomLumuException("API rate limit") from e
         return None
 
 
@@ -1049,6 +1058,15 @@ def main() -> None:
     command = demisto.command()
     params = demisto.params()
     args = demisto.args()
+    
+    mirror_direction = {
+        "Incoming": "In",
+        "Outgoing": "Out",
+        "Incoming And Outgoing": "Both",
+    }.get(params.get("mirror_direction"))
+    mirror_tags = params.get("mirror_tags") or []
+    integration_instance = demisto.integrationInstance()
+
 
     url = params.get("url", "")
     verify_certificate = not params.get("insecure", False)
@@ -1056,7 +1074,7 @@ def main() -> None:
     api_key = params.get("api_key", {}).get("credentials", {}).get("password")
 
     offset_set_off = params.get("fetch_offset", "0")
-    items = int(params.get("total_items_per_lumu_fetch", 30))
+    items = arg_to_number(params.get("total_items_per_lumu_fetch", 30))
     time_last = int(params.get("max_time_fetching_lumu_incident", 4))
 
     instance_name: str = get_integration_instance_name() or "default"
@@ -1065,7 +1083,6 @@ def main() -> None:
     headers = {"Content-Type": "application/json", "User-Agent": USER_AGENT}
 
     try:
-        urllib3.disable_warnings()
         client = Client(server_url=url, verify=verify_certificate, proxy=proxy, headers=headers, api_key=api_key)
 
         commands = {
@@ -1096,11 +1113,7 @@ def main() -> None:
         elif command == "fetch-incidents":
             last_run = demisto.getLastRun()
             demisto.info(f"Executing fetch-incidents command, last run: {last_run}")
-            next_run, incidents = fetch_incidents(client, offset_set_off, last_run, items, time_last)
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
-            count = Counter([inc["dbotMirrorId"] for inc in incidents])
-            demisto.debug(f"total inc found: {len(incidents)}, {count=} {last_run=} {next_run=}")
+            fetch_incidents(client, offset_set_off, last_run, items, time_last, integration_instance, mirror_direction, mirror_tags)
 
         elif command == "get-modified-remote-data":
             demisto.info("Executing get-modified-remote-data command")
