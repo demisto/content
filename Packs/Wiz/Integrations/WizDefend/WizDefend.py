@@ -619,7 +619,7 @@ query IssuesTable($filterBy: IssueFilters, $filterScope: IssueFiltersScope, $fir
 $fetchSecurityScoreImpact: Boolean = false, $fetchThreatDetectionDetails: Boolean = false,
 $securityScoreImpactSelection: SecurityScoreImpactSelection, $fetchTotalCount: Boolean = true,
 $fetchActorsAndResourcesGraphEntities: Boolean = false, $fetchCloudAccountsAndCloudOrganizations: Boolean = false,
-$fetchMultipleSourceRules: Boolean = false, $fetchCommentThread: Boolean = false, $fetchThreatCenterActors: Boolean = false,
+$fetchMultipleSourceRules: Boolean = false, $fetchThreatCenterActors: Boolean = false,
 $fetchTdrLogic: Boolean = false, $fetchSecuritySubCategories: Boolean = false) {
   issues: issuesV2(
     filterBy: $filterBy
@@ -763,10 +763,6 @@ $fetchTdrLogic: Boolean = false, $fetchSecuritySubCategories: Boolean = false) {
       applicationServices {
         id
         displayName
-      }
-      commentThread @include(if: $fetchCommentThread) {
-        id
-        hasComments
       }
     }
     pageInfo {
@@ -993,7 +989,6 @@ query IssueComments($id: ID!, $after: String) {
       comments(first: 500, after: $after, orderBy: { field: CREATED_AT, direction: ASC }) {
         nodes {
           id
-          body
         }
         pageInfo {
           hasNextPage
@@ -1584,7 +1579,7 @@ def get_issue_comments(issue_id):
     after = None
     while True:
         issue, _ = get_entries(ISSUE_COMMENTS_QUERY, {"id": issue_id, "after": after}, WizApiResponse.ISSUE)
-        page = ((issue or {}).get("commentThread") or {}).get("comments") or {}
+        page = (issue.get("commentThread") or {}).get("comments") or {}
         comments.extend(page.get("nodes") or [])
         if not (page.get("pageInfo") or {}).get("hasNextPage"):
             return comments
@@ -3577,17 +3572,14 @@ def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolv
     }
     query = UPDATE_ISSUE_QUERY
 
-    response = get_entries(query, variables, WizApiResponse.UPDATE_ISSUE)
-    if response:
-        warning = _note_warning(issue_id, reject_or_resolve_comment)
-        return_results(
-            CommandResults(
-                outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully modified the threat status to {status}.{warning}"
-            )
+    get_entries(query, variables, WizApiResponse.UPDATE_ISSUE)
+    warning = _note_warning(issue_id, reject_or_resolve_comment)
+    return_results(
+        CommandResults(
+            outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully modified the threat status to {status}.{warning}"
         )
-        return None
-    else:
-        return log_and_return_error(f"Failed to {operation} issue with ID {issue_id}. Please check the input parameters.")
+    )
+    return None
 
 
 def validate_threat_detections_issue(issue_id):
@@ -3642,28 +3634,22 @@ def set_issue_note(issue_id, comment, raise_errors=False):
 
     is_valid_id, message = is_valid_issue_id(issue_id)
     if not is_valid_id:
-        return message
+        return return_error(f"Error: {message}")
 
     comment = truncate_note(comment)
     variables = {"input": {"subjectId": issue_id, "subjectType": "ISSUE", "body": comment}}
-    query = CREATE_COMMENT_QUERY
-
-    response = get_entries(query, variables, WizApiResponse.CREATE_COMMENT, raise_errors=raise_errors)
-    if not response:
-        return_error(f"Error: Failed to set note on issue with ID {issue_id}.\n" f"Please check the input parameters.")
-    return response
+    return get_entries(CREATE_COMMENT_QUERY, variables, WizApiResponse.CREATE_COMMENT, raise_errors=raise_errors)
 
 
 def _note_warning(issue_id, note):
     try:
         set_issue_note(issue_id, note, raise_errors=True)
     except Exception as e:
-        demisto.error(f"Status updated but the note could not be added to issue {issue_id}: {e}")
         return f" Warning: the note could not be added: {e}"
     return ""
 
 
-def _reopen_issue(issue_id, reopen_note):
+def _reopen_issue(issue_id):
     """
     Re-open a Wiz Issue
     """
@@ -3674,16 +3660,8 @@ def _reopen_issue(issue_id, reopen_note):
     if not is_valid_id:
         return return_error(message)
 
-    query = UPDATE_ISSUE_QUERY
     variables = {"issueId": issue_id, "patch": {"status": "OPEN"}}
-
-    response = get_entries(query, variables, WizApiResponse.UPDATE_ISSUE)
-    if not response:
-        error_message = f"Failed to reopen issue with ID {issue_id}. Please check the input parameters."
-        demisto.error(error_message)
-        return_error(f"Error: {error_message}")
-
-    return response, _note_warning(issue_id, reopen_note) if reopen_note else ""
+    return get_entries(UPDATE_ISSUE_QUERY, variables, WizApiResponse.UPDATE_ISSUE)
 
 
 def reopen_threat():
@@ -3692,17 +3670,13 @@ def reopen_threat():
     reopen_note = demisto_args.get(WizInputParam.REOPEN_NOTE)
     demisto.debug(f"reopen_threat called with issue_id: {issue_id}, reopen_note: {reopen_note}")
 
-    response, warning = _reopen_issue(issue_id, reopen_note)
-    if response:
-        return_results(
-            CommandResults(
-                outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully reopened the threat with ID {issue_id}.{warning}"
-            )
+    _reopen_issue(issue_id)
+    warning = _note_warning(issue_id, reopen_note) if reopen_note else ""
+    return_results(
+        CommandResults(
+            outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully reopened the threat with ID {issue_id}.{warning}"
         )
-    else:
-        return_error(
-            f"Error: Failed to reopen the threat with ID {issue_id}. " f"Please check the input parameters and try again."
-        )
+    )
 
 
 def set_threat_in_progress():
@@ -3729,17 +3703,12 @@ def set_threat_comment():
     note = demisto_args.get(WizInputParam.NOTE)
     demisto.debug(f"set_threat_note called with issue_id: {issue_id} and note {note}")
 
-    if set_issue_note(issue_id, note):
-        return_results(
-            CommandResults(
-                outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully set {note} as comment to the threat with ID {issue_id}"
-            )
+    set_issue_note(issue_id, note)
+    return_results(
+        CommandResults(
+            outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully set {note} as comment to the threat with ID {issue_id}"
         )
-    else:
-        return_error(
-            f"Error: Failed to set the comment {note} to the threat with ID {issue_id}. "
-            f"Please check the input parameters and try again."
-        )
+    )
 
 
 def clear_threat_comments():
@@ -3754,12 +3723,7 @@ def clear_threat_comments():
         return log_and_return_error(f"Error: Threat with ID {issue_id} was not found.")
 
     for comment in get_issue_comments(issue_id):
-        variables = {"input": {"id": comment["id"]}}
-        if not get_entries(DELETE_COMMENT_QUERY, variables, WizApiResponse.DELETE_COMMENT):
-            return log_and_return_error(
-                f"Error: Failed to delete the comment {comment['body']} from the threat with ID {issue_id}. "
-                f"Please check the input parameters and try again."
-            )
+        get_entries(DELETE_COMMENT_QUERY, {"input": {"id": comment["id"]}}, WizApiResponse.DELETE_COMMENT)
 
     return_results(
         CommandResults(

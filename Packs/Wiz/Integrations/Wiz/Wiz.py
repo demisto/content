@@ -2570,10 +2570,7 @@ def get_issue_comments(issue_id):
     after = None
     while True:
         data = checkAPIerrors(ISSUE_COMMENTS_QUERY, {"id": issue_id, "after": after})
-        issue = (data.get("data") or {}).get("issue")
-        if issue is None:
-            raise Exception(f"Issue {issue_id} was not found.")
-        page = (issue.get("commentThread") or {}).get("comments") or {}
+        page = (data["data"]["issue"]["commentThread"] or {}).get("comments") or {}
         comments.extend(page.get("nodes") or [])
         if not (page.get("pageInfo") or {}).get("hasNextPage"):
             return comments
@@ -2958,14 +2955,12 @@ def get_remote_data_command(args):
     entries: list[dict] = []
     if last_update:  # first sync: don't back-fill the comment history
         try:
-            comments = get_issue_comments(issue_id)
+            entries = _build_new_note_entries(get_issue_comments(issue_id), last_update)
         except Exception as e:
             # Only a missing scope is skipped; other errors must keep lastUpdate unadvanced.
             if "read:comments" not in str(e):
                 raise
             demisto.info(f"get_remote_data: skipping comments for issue {issue_id}: {e}")
-        else:
-            entries = _build_new_note_entries(comments, last_update)
     return GetRemoteDataResponse(issue, entries)
 
 
