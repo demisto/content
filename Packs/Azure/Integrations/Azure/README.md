@@ -3753,7 +3753,7 @@ Gets the properties of an Azure firewall, and displays its rule collections when
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
 | firewall_name | The name of the Azure firewall to retrieve. | Required |
 | rule_type | The rule collection type to display for the firewall. When omitted, the rule collections are not displayed. Possible values are: application_rule, network_rule, nat_rule. | Optional |
 
@@ -3801,7 +3801,7 @@ Lists the rules of an Azure firewall rule collection or a firewall policy rule c
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
 | firewall_name | The name of the Azure firewall that contains the rules. It is mandatory to provide either firewall_name or policy_name. | Optional |
 | policy_name | The name of the Azure firewall policy that contains the rules. It is mandatory to provide either firewall_name or policy_name. | Optional |
 | rule_type | The rule type to retrieve. Required when the firewall_name argument is provided. Possible values are: application_rule, network_rule, nat_rule. | Optional |
@@ -3845,7 +3845,7 @@ Gets the properties of an Azure firewall or firewall policy rule. It is mandator
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
 | firewall_name | The name of the Azure firewall that contains the rule. It is mandatory to provide either firewall_name or policy_name argument. | Optional |
 | policy_name | The name of the Azure firewall policy that contains the rule. It is mandatory to provide either firewall_name or policy_name argument. | Optional |
 | rule_type | The rule type to retrieve. Required when the firewall_name argument is provided. Possible values are: application_rule, network_rule, nat_rule. | Optional |
@@ -3922,7 +3922,7 @@ Lists the rule collection groups of an Azure firewall policy. Required permissio
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
 | policy_name | The name of the Azure firewall policy that contains the rule collection groups. | Required |
 | rule_type | The rule collection type to retrieve. Possible values are: application_rule, network_rule, nat_rule. | Required |
 | next_token | The token for the next set of items to return, used for pagination. The token is the value of Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroupsNextToken from the previous response. | Optional |

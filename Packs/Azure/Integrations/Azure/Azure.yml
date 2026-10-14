@@ -12110,9 +12110,8 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-      required: false
-      required:platform: true
+      description: The name of the resource group.
+      required: true
     - name: firewall_name
       description: "The name of the Azure firewall to retrieve."
       required: true
@@ -12208,9 +12207,8 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-      required: false
-      required:platform: true
+      description: The name of the resource group.
+      required: true
     - name: policy_name
       description: The name of the Azure firewall policy that contains the rule collection groups.
       required: true
@@ -12264,9 +12262,8 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-      required: false
-      required:platform: true
+      description: The name of the resource group.
+      required: true
     - name: firewall_name
       description: The name of the Azure firewall that contains the rules. It is mandatory to provide either firewall_name or policy_name.
       required: false
@@ -12350,9 +12347,8 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-      required: false
-      required:platform: true
+      description: The name of the resource group.
+      required: true
     - name: firewall_name
       description: The name of the Azure firewall that contains the rule. It is mandatory to provide either firewall_name or policy_name argument.
       required: false
