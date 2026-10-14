@@ -331,3 +331,12 @@ Deletes one or more reports. To delete a single report, provide its ID as the on
 >|Report ID|Message|
 >|---|---|
 >| dbc34b32-b957-449a-a357-27cf27df7eab | Report deleted successfully |
+
+## Rate Limits
+
+The Qualys ETM API enforces the following limits per subscription:
+
+- **Rate limit**: 300 API requests per hour.
+- **Concurrency limit**: 2 concurrent API calls.
+
+Note that the ***qualys-etm-report-generate*** command repeatedly polls the report status until the report is complete, and each poll consumes one request from the hourly quota.
