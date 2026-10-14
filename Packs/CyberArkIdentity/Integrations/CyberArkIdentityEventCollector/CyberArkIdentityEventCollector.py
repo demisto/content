@@ -317,7 +317,7 @@ def get_request_params(**kwargs: dict) -> dict:
 
 
 def main(command: str, demisto_params: dict):
-    demisto.debug(f"[main] Command '{command}' started.")
+    demisto.debug(f"[main] Command '{command}' started (build: XSUP-78439 cap+dedup).")
     credentials = Credentials(**demisto_params.get("credentials", {}))
     options = CyberArkIdentityEventsOptions(**demisto_params)
     # On fetch-events we must drain the full backlog, so the configured "limit" must not
