@@ -2349,6 +2349,8 @@ COMMAND_MAP: dict[str, Any] = {
 def main() -> None:
     """Main entry point for KOI integration."""
     demisto.debug(f"{INTEGRATION_NAME} integration started")
+    # TEMP: custom pre-release marker. Remove before the general release.
+    demisto.debug(f"{INTEGRATION_NAME} running custom pre-release build (resume-page fetch fix)")
     command = demisto.command()
 
     try:
