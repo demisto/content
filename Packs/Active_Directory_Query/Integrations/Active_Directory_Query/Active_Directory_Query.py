@@ -358,7 +358,7 @@ def check_if_user_exists_by_attribute(default_base_dn, attr, val):
     :param val: The attribute's value
     :return: True if the user exists, False otherwise.
     """
-    query = f"(&(objectClass=User)(objectCategory=person)({attr}={val}))"
+    query = f"(&(objectClass=User)(objectCategory=person)({attr}={escape_filter_chars(val)}))"
     entries = search_with_paging(query, default_base_dn, attributes=[attr], size_limit=1, page_size=1)
     return bool(entries.get("flat"))
 
@@ -370,7 +370,7 @@ def get_user_activity_by_samaccountname(default_base_dn, samaccountname):
     :return: True if the user active, False otherwise.
     """
     active = False
-    query = f"(&(objectClass=User)(objectCategory=person)(sAMAccountName={samaccountname}))"
+    query = f"(&(objectClass=User)(objectCategory=person)(sAMAccountName={escape_filter_chars(samaccountname)}))"
     entries = search_with_paging(query, default_base_dn, attributes=["userAccountControl"], size_limit=1, page_size=1)
 
     if entries.get("flat"):
@@ -389,7 +389,7 @@ def get_user_dn_by_email(default_base_dn, email):
     """
     dn = ""
     samaccountname = email.split("@")[0]
-    query = f"(&(objectClass=User)(objectCategory=person)(sAMAccountName={samaccountname}))"
+    query = f"(&(objectClass=User)(objectCategory=person)(sAMAccountName={escape_filter_chars(samaccountname)}))"
     entries = search_with_paging(query, default_base_dn, attributes=["sAMAccountName"], size_limit=1, page_size=1)
 
     if entries.get("flat"):
@@ -515,11 +515,16 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
 
 
 def user_dn(sam_account_name, search_base):
+    """Resolve a user's DN by sAMAccountName.
+
+    The input is treated as a literal value: LDAP filter special characters are escaped,
+    so callers must pass the raw, unescaped sAMAccountName.
+    """
     if "\\" in sam_account_name:
         domain_throw_out, sam_account_name = sam_account_name.split("\\", 1)
         demisto.info(f"chopping off domain {domain_throw_out} and using {sam_account_name=}")
 
-    search_filter = f"(&(objectClass=user)(sAMAccountName={sam_account_name}))"
+    search_filter = f"(&(objectClass=user)(sAMAccountName={escape_filter_chars(sam_account_name)}))"
     entries = search(search_filter, search_base)
     if not entries:
         raise Exception(f"Could not get full DN for user with sAMAccountName '{sam_account_name}'")
@@ -528,7 +533,8 @@ def user_dn(sam_account_name, search_base):
 
 
 def computer_dn(compuer_name, search_base):
-    search_filter = f"(&(objectClass=user)(objectCategory=computer)(name={compuer_name}))"
+    """Resolve a computer's DN by name. The input is escaped and treated as a literal value."""
+    search_filter = f"(&(objectClass=user)(objectCategory=computer)(name={escape_filter_chars(compuer_name)}))"
     entries = search(search_filter, search_base)
     if not entries:
         raise Exception(f"Could not get full DN for computer with name '{compuer_name}'")
@@ -735,7 +741,7 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
         user = {k: v for k, v in ad_user.items() if v}
         attributes = list(user.keys())
 
-        query = f"(&(objectClass=User)(objectCategory=person)({default_attribute}={value}))"
+        query = f"(&(objectClass=User)(objectCategory=person)({default_attribute}={escape_filter_chars(value)}))"
         entries = search_with_paging(query, default_base_dn, attributes=attributes, size_limit=1, page_size=1)
 
         if not entries.get("flat"):
@@ -776,19 +782,21 @@ def search_computers(default_base_dn, page_size):
 
     # query by user DN
     if args.get("dn"):
-        query = "(&(objectClass=user)(objectCategory=computer)(distinguishedName={}))".format(args["dn"])
+        dn = escape_filter_chars(args["dn"])
+        query = f"(&(objectClass=user)(objectCategory=computer)(distinguishedName={dn}))"
 
     # query by name
     if args.get("name"):
-        query = "(&(objectClass=user)(objectCategory=computer)(name={}))".format(args["name"])
+        name = escape_filter_chars(args["name"])
+        query = f"(&(objectClass=user)(objectCategory=computer)(name={name}))"
 
     # query by custom object attribute
     if args.get("custom-field-type"):
         if not args.get("custom-field-data"):
             raise Exception('Please specify "custom-field-data" as well when quering by "custom-field-type"')
-        query = "(&(objectClass=user)(objectCategory=computer)({}={}))".format(
-            args["custom-field-type"], args["custom-field-data"]
-        )
+        field_type = escape_filter_chars(args["custom-field-type"])
+        field_data = escape_filter_chars(args["custom-field-data"])
+        query = f"(&(objectClass=user)(objectCategory=computer)({field_type}={field_data}))"
 
     size_limit = int(args.get("limit", "0"))
     page_cookie = args.get("page-cookie")
@@ -854,12 +862,20 @@ def search_group_members(default_base_dn, page_size):
 
     attributes = list(set(custom_attributes + default_attributes))
 
+    # escape special characters in the values; keep the documented "*" (match-all) default for sAMAccountName
+    escaped_group_dn = escape_filter_chars(group_dn)
+    escaped_account_name = account_name if account_name == "*" else escape_filter_chars(account_name)
+    escaped_member_type = escape_filter_chars(member_type)
+
     if member_type == "group":
-        query = f"(&(objectCategory={member_type})(memberOf{nested_search}={group_dn})(sAMAccountName={account_name}))"
+        query = (
+            f"(&(objectCategory={escaped_member_type})(memberOf{nested_search}={escaped_group_dn})"
+            f"(sAMAccountName={escaped_account_name}))"
+        )
     else:
         query = (
-            f"( & (objectCategory={member_type})(objectClass=user)"
-            f"(memberOf{nested_search}={group_dn})(sAMAccountName={account_name}))"
+            f"( & (objectCategory={escaped_member_type})(objectClass=user)"
+            f"(memberOf{nested_search}={escaped_group_dn})(sAMAccountName={escaped_account_name}))"
         )
 
     size_limit = int(args.get("limit", "0"))
@@ -1762,9 +1778,9 @@ def set_password_not_expire(default_base_dn):
     if not sam_account_name:
         raise Exception("Missing argument - You must specify a username (sAMAccountName).")
 
-    # Query by sAMAccountName
-    sam_account_name = escape_filter_chars(sam_account_name)
-    query = f"(&(objectClass=User)(objectCategory=person)(sAMAccountName={sam_account_name}))"
+    # Query by sAMAccountName. Keep sam_account_name raw: user_dn() and check_if_user_exists_by_attribute()
+    # escape it themselves, so escaping it here as well would double-escape names with special characters.
+    query = f"(&(objectClass=User)(objectCategory=person)(sAMAccountName={escape_filter_chars(sam_account_name)}))"
     entries = search_with_paging(query, default_base_dn, attributes="userAccountControl")
 
     if not check_if_user_exists_by_attribute(default_base_dn, "sAMAccountName", sam_account_name):
