@@ -503,7 +503,7 @@ API_FUNCTION_TO_PERMISSIONS = {
     "replace_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/write"],
     "query_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/read"],
     "delete_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/delete"],
-    "resource_graph_list_operations": ["Microsoft.ResourceGraph/operations/read"],
+        "resource_graph_list_operations": ["Microsoft.ResourceGraph/operations/read"],
     "resource_graph_query_resources": ["Microsoft.ResourceGraph/resources/read"],
 }
 
