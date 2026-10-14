@@ -498,6 +498,7 @@ def fetch_indicators_command(client: Client, params: dict[str, Any], last_run: d
     """
     create_relationship = argToBoolean(params.get("createRelationships", True))
     tlp_color = params.get("tlp_color", "WHITE")
+    feed_tags = argToList(params.get("feedTags"))
     reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(params.get("feedReliability", DBotScoreReliability.C))
     now = get_current_utc_time()
     order_by = params.get("fetchBy", "Modified Time")
@@ -542,7 +543,9 @@ def fetch_indicators_command(client: Client, params: dict[str, Any], last_run: d
         for indicator_raw in raw_indicators:
             try:
                 # Parse each raw indicator and calculate its DBot score
-                pending_indicators.append(parse_indicator_for_fetch(indicator_raw, tlp_color, create_relationship, reliability))
+                pending_indicators.append(
+                    parse_indicator_for_fetch(indicator_raw, tlp_color, create_relationship, reliability, feed_tags)
+                )
             except Exception as e:
                 demisto.error(
                     f"{THREAT_STREAM} - Error parsing indicator ID {indicator_raw.get('id')}:{e}. Skipping this indicator."
@@ -621,7 +624,11 @@ def create_relationships(reliability: str, indicator: dict[str, Any]) -> list[di
 
 
 def parse_indicator_for_fetch(
-    indicator: dict[str, Any], tlp_color: str, create_relationship_param: bool, reliability: str
+    indicator: dict[str, Any],
+    tlp_color: str,
+    create_relationship_param: bool,
+    reliability: str,
+    feed_tags: list[str] | None = None,
 ) -> dict[str, Any]:
     """
     Parses a single raw indicator from the API response into a format suitable for Cortex XSOAR's Indicators tab.
@@ -632,6 +639,7 @@ def parse_indicator_for_fetch(
         tlp_color (str): The TLP color to assign to the indicator.
         create_relationship_param (bool): Flag to determine if relationships should be created.
         reliability (str): The reliability score for the indicator source.
+        feed_tags (list[str] | None): Tags configured on the instance (feedTags) to add to the indicator.
 
     Returns:
         dict[str, Any]: An indicator dictionary formatted for Cortex XSOAR's `createIndicators` API.
@@ -669,7 +677,7 @@ def parse_indicator_for_fetch(
         Confidence=str(indicator.get("confidence")),
         Creation=indicator.get("created_ts"),
         Expiration=indicator.get("expires_ts"),
-        Tags=extract_tag_names(indicator),
+        Tags=extract_tag_names(indicator) + (feed_tags or []),
         TrafficLightProtocol=tlp_color,  # Use the configured TLP color
         Location=indicator.get("locations"),
         ASN=indicator.get("asn"),

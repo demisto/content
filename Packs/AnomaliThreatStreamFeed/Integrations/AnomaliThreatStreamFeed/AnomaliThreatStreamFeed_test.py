@@ -1085,15 +1085,35 @@ def test_fetch_indicators_command_parsing_error_skips_indicator(mocker):
                 test_case_data["params"]["tlp_color"],
                 test_case_data["params"]["createRelationships"],
                 test_case_data["params"]["feedReliability"],
+                [],
             ),
             mocker.call(
                 second_indicator_raw,
                 test_case_data["params"]["tlp_color"],
                 test_case_data["params"]["createRelationships"],
                 test_case_data["params"]["feedReliability"],
+                [],
             ),
         ]
     )
+
+
+def test_parse_indicator_for_fetch_adds_feed_tags():
+    """
+    Given:
+        - A raw indicator with its own tags and instance-level feedTags configured.
+    When:
+        - Calling parse_indicator_for_fetch.
+    Then:
+        - The indicator's Tags field contains both the indicator's tags and the configured feedTags.
+    """
+    from AnomaliThreatStreamFeed import parse_indicator_for_fetch
+
+    raw_indicator = {"id": 1, "type": "ip", "value": "1.1.1.1", "tags": [{"name": "apt"}]}
+
+    parsed = parse_indicator_for_fetch(raw_indicator, "WHITE", False, "C - Fairly reliable", ["tag1", "tag2"])
+
+    assert parsed["fields"]["Tags"] == ["apt", "tag1", "tag2"]
 
 
 def test_extract_tag_names_with_valid_tags():
