@@ -4,7 +4,7 @@ Use the Panorays Axis MCP integration to securely connect to the Panorays Axis M
 
 This pack is intended for Cortex Agentic AI.
 
-Connects to the Panorays Axis MCP server to automatically discover tools and expose them as agentic system actions that users can enable for agents.
+This integration connects to the Panorays Axis MCP server to automatically discover tools and expose them as agentic system actions that users can enable for agents.
 
 ## Tools
 
