@@ -10,8 +10,14 @@
     "categories": [
         "Utilities"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "MCP",
+        "Incident Response"
+    ],
+    "useCases": [
+        "Incident Response",
+        "Hunting"
+    ],
     "keywords": [
         "Command Zero",
         "MCP",
