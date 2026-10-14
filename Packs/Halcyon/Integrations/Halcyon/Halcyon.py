@@ -26,8 +26,9 @@ CLIENT_NAME = "Halcyon"
 # Events lookback. The Halcyon events API indexes events late: an event can become queryable
 # minutes after its occurredAt. Every cycle re-reads [now - EVENTS_LOOKBACK, now] and drops the
 # events already sent (tracked in a dedup cache), so late-indexed events are still collected
-# without re-sending the ones we already have.
-EVENTS_LOOKBACK = timedelta(minutes=5)
+# without re-sending the ones we already have. In busy hours Halcyon delivers events up to ~5
+# minutes after occurredAt and the API can lag a few minutes more, so 10 minutes leaves margin.
+EVENTS_LOOKBACK = timedelta(minutes=10)
 # Extra time dedup IDs are kept beyond the window (like SailPoint's lookback + 1 minute), so a query
 # that starts slightly earlier than expected (API rounding of occurredAfter, clock skew between
 # engines) does not re-send events whose IDs were already dropped.
@@ -843,7 +844,8 @@ def log_events_cycle(cycle_start: datetime, new_events: list[dict], stats: dict[
             f"late_indexed={len(late)} future_held_back={len(stats['future'])} no_id_skipped={stats['no_id']} | "
             f"stop: {stats['stop_reason']} | watermark {previous_watermark} -> {summary['watermark_after']} | "
             f"migration_floor={summary['floor']} | dedup cache loaded={summary['cache_loaded']} "
-            f"after_fetch={summary['cache_after_fetch']} saved={summary['cache_saved']} (keeps IDs from {summary['keep_from']}) | "
+            f"after_fetch={summary['cache_after_fetch']} saved={summary['cache_saved']} "
+            f"(keeps IDs from {summary['keep_from']}) | "
             f"next fetch: {summary['next_fetch']} | took {summary['took_seconds']:.1f}s"
         )
     except Exception as e:
