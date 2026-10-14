@@ -116,7 +116,9 @@ class TestClient:
             ]
         }
 
-        mocker.patch.object(mock_client, "_http_request", return_value=mock_response)
+        raw_response = mocker.Mock(status_code=200, headers={}, content=b"{}")
+        raw_response.json.return_value = mock_response
+        mocker.patch.object(mock_client, "_http_request", return_value=raw_response)
 
         result = mock_client.get_events(
             occurred_after="2024-01-01T00:00:00.000Z",
@@ -126,6 +128,58 @@ class TestClient:
 
         assert len(result["data"]) == 2
         assert result["data"][0]["eventId"] == "event-1"
+
+    def test_get_events_logs_header_names_only(self, mock_client, mocker):
+        """First page: every header name is logged, and no header value is."""
+        import demistomock as demisto
+
+        info = mocker.patch.object(demisto, "info")
+        headers = {
+            "X-RateLimit-Remaining": "42",
+            "Date": "Wed, 14 Oct 2026 09:00:00 GMT",
+            "Set-Cookie": "session=abc",
+            "Authorization": "Bearer secret",
+            "Server": "nginx",
+        }
+        raw_response = mocker.Mock(status_code=200, headers=headers, content=b"{}")
+        raw_response.json.return_value = {"data": []}
+        mocker.patch.object(mock_client, "_http_request", return_value=raw_response)
+
+        mock_client.get_events(page=1)
+
+        line = next(str(c.args[0]) for c in info.call_args_list if str(c.args[0]).startswith("HALCYON-EVENTS-HEADERS"))
+        assert "header_names=['Authorization', 'Date', 'Server', 'Set-Cookie', 'X-RateLimit-Remaining']" in line
+        for value in headers.values():
+            assert value not in line
+
+    def test_get_events_does_not_log_headers_after_first_page(self, mock_client, mocker):
+        import demistomock as demisto
+
+        info = mocker.patch.object(demisto, "info")
+        raw_response = mocker.Mock(status_code=200, headers={"Date": "x"}, content=b"{}")
+        raw_response.json.return_value = {"data": []}
+        mocker.patch.object(mock_client, "_http_request", return_value=raw_response)
+
+        mock_client.get_events(page=2)
+
+        assert not any(str(c.args[0]).startswith("HALCYON-EVENTS-HEADERS") for c in info.call_args_list)
+
+    def test_get_events_empty_body_returns_empty_dict(self, mock_client, mocker):
+        raw_response = mocker.Mock(status_code=200, headers={}, content=b"")
+        raw_response.json.side_effect = json.JSONDecodeError("empty", "", 0)
+        mocker.patch.object(mock_client, "_http_request", return_value=raw_response)
+
+        assert mock_client.get_events(page=1) == {}
+
+    def test_header_logging_failure_does_not_fail_fetch(self, mock_client, mocker):
+        import demistomock as demisto
+
+        mocker.patch.object(demisto, "info", side_effect=Exception("log failure"))
+        raw_response = mocker.Mock(status_code=200, headers={"Date": "x"}, content=b"{}")
+        raw_response.json.return_value = {"data": [{"eventId": "e"}]}
+        mocker.patch.object(mock_client, "_http_request", return_value=raw_response)
+
+        assert mock_client.get_events(page=1) == {"data": [{"eventId": "e"}]}
 
 
 class TestHelperFunctions:

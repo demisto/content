@@ -46,6 +46,11 @@ EVENTS_DEDUP_CACHE_KEY = "events_dedup_cache"  # {eventId: occurredAt} of events
 EVENTS_FLOOR_KEY = "events_fetch_floor"  # Set by the migration: never query before the legacy watermark.
 LEGACY_EVENTS_IDS_KEY = "previous_ids_events"  # Legacy dedup list, replaced by EVENTS_DEDUP_CACHE_KEY.
 
+# TEMPORARY DIAGNOSTICS - remove once answered. Logs the /v2/events response header NAMES (first page
+# of each cycle) to see whether the API exposes rate-limit, pagination or volume information there.
+# Header values are never logged.
+EVENTS_HEADERS_LOG_PREFIX = "HALCYON-EVENTS-HEADERS"
+
 """ LOG TYPE ENUM """
 
 
@@ -401,10 +406,35 @@ class Client(ContentClient):
             params["occurredBefore"] = occurred_before
 
         demisto.debug(f"Fetching events with params: {params}")
-        return self._http_request(method="GET", url_suffix="/v2/events", params=params)
+        response = self._http_request(method="GET", url_suffix="/v2/events", params=params, resp_type="response")
+        if page == 1:
+            log_events_response_headers(response)
+        # Same as resp_type="json": an empty body is an empty result, anything else must be valid JSON.
+        try:
+            return response.json()
+        except json.JSONDecodeError:
+            if not response.content:
+                return {}
+            raise
 
 
 """ HELPER FUNCTIONS """
+
+
+def log_events_response_headers(response: Any) -> None:
+    """TEMPORARY DIAGNOSTICS: log the header names of an events response. Never raises.
+
+    Only the names are logged, never the values, so no credential or token can reach the log.
+
+    Args:
+        response: The raw HTTP response of a /v2/events call.
+    """
+    try:
+        headers = getattr(response, "headers", None) or {}
+        header_names = sorted((str(name) for name in headers), key=str.lower)
+        log_events_info(f"{EVENTS_HEADERS_LOG_PREFIX} status={getattr(response, 'status_code', '?')} header_names={header_names}")
+    except Exception as e:
+        demisto.debug(f"{EVENTS_HEADERS_LOG_PREFIX} logging failed, the fetch continues: {e}")
 
 
 def get_log_types_from_titles(event_types_to_fetch: list[str]) -> list[LogType]:
