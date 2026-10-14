@@ -3656,7 +3656,7 @@ def _reopen_issue(issue_id):
 
     is_valid_id, message = is_valid_issue_id(issue_id)
     if not is_valid_id:
-        return return_error(message)
+        return return_error(f"Error: {message}")
 
     variables = {"issueId": issue_id, "patch": {"status": "OPEN"}}
     return get_entries(UPDATE_ISSUE_QUERY, variables, WizApiResponse.UPDATE_ISSUE)

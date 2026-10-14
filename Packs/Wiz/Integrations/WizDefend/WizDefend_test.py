@@ -2703,19 +2703,6 @@ def test_set_threat_in_progress(mock_get_entries, mock_return_results, mock_args
     assert "Successfully set the threat" in mock_return_results.call_args[0][0].outputs
 
 
-@patch.object(demisto, "args", return_value={"issue_id": "not-a-uuid"})
-@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_results")
-@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_error", side_effect=SystemExit)
-@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries")
-def test_set_threat_in_progress_invalid_id_errors(mock_get_entries, mock_return_error, mock_return_results, mock_args):
-    with pytest.raises(SystemExit):
-        set_threat_in_progress()
-
-    assert "UUID format" in mock_return_error.call_args[0][0]
-    mock_get_entries.assert_not_called()
-    mock_return_results.assert_not_called()
-
-
 @patch.object(demisto, "args", return_value={"issue_id": str(uuid.uuid4()), "note": "Test comment"})
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_results")
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_error")
@@ -2728,13 +2715,21 @@ def test_set_threat_comment(mock_get_entries, mock_return_error, mock_return_res
     mock_return_error.assert_not_called()
 
 
+@pytest.mark.parametrize(
+    "command",
+    [
+        pytest.param(set_threat_in_progress, id="set_in_progress"),
+        pytest.param(set_threat_comment, id="set_comment"),
+        pytest.param(reopen_threat, id="reopen"),
+    ],
+)
 @patch.object(demisto, "args", return_value={"issue_id": "not-a-uuid", "note": "Test comment"})
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_results")
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_error", side_effect=SystemExit)
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries")
-def test_set_threat_comment_invalid_id_errors(mock_get_entries, mock_return_error, mock_return_results, mock_args):
+def test_threat_commands_reject_invalid_id(mock_get_entries, mock_return_error, mock_return_results, mock_args, command):
     with pytest.raises(SystemExit):
-        set_threat_comment()
+        command()
 
     assert mock_return_error.call_args[0][0].startswith("Error: Wrong format: The Issue ID should be in UUID format.")
     mock_get_entries.assert_not_called()
