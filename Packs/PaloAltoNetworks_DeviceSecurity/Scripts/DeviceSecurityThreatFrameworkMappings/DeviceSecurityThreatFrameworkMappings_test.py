@@ -35,12 +35,21 @@ def test_missing_incident_fields(mocker: MockerFixture, incidents: list[dict]) -
 
 def test_reads_mapped_incident_fields(mocker: MockerFixture) -> None:
     mapping = {"framework": "ICS", "techniqueId": "T0807", "technique": "Command-Line Interface"}
-    mocker.patch.object(framework_mappings.demisto, "incidents", return_value=[{"CustomFields": {
-        "devicesecuritymitremappingsraw": json.dumps([mapping]),
-        "devicesecurityiecreferences": json.dumps(["IEC 62443-3-3 SR 1.1"]),
-    }}])
+    mocker.patch.object(
+        framework_mappings.demisto,
+        "incidents",
+        return_value=[
+            {
+                "CustomFields": {
+                    "devicesecuritymitremappingsraw": json.dumps([mapping]),
+                    "devicesecurityiecreferences": json.dumps(["IEC 62443-3-3 SR 1.1"]),
+                }
+            }
+        ],
+    )
     assert framework_mappings.get_event_data() == {
-        "mitre_mappings": [mapping], "iec_62443_references": ["IEC 62443-3-3 SR 1.1"],
+        "mitre_mappings": [mapping],
+        "iec_62443_references": ["IEC 62443-3-3 SR 1.1"],
     }
 
 
@@ -49,8 +58,11 @@ def test_technique_table_filters_deduplicates_and_escapes() -> None:
     mappings = [mapping, mapping.copy(), {"framework": "ICS", "techniqueId": "T0807"}, {"framework": "Enterprise"}]
     lines = framework_mappings.create_technique_table("Enterprise", "Enterprise", mappings)
     assert lines == [
-        "#### Enterprise", "| Technique ID | Technique |", "| --- | --- |",
-        "| T1059 | Command\\|Execution Example |", "| N/A | N/A |",
+        "#### Enterprise",
+        "| Technique ID | Technique |",
+        "| --- | --- |",
+        "| T1059 | Command\\|Execution Example |",
+        "| N/A | N/A |",
     ]
 
 
