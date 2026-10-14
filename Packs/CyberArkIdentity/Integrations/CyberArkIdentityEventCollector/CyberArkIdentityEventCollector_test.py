@@ -192,7 +192,7 @@ def test_fetch_events_paginates_full_backlog(mocker):
         - All events are collected and the cursor is the newest event.
     """
     redrock = FakeRedRock([_build_row(i, BASE_MS + i) for i in range(2500)])
-    events, last_run, _, error = _run(mocker, redrock)
+    events, last_run, _, error = _run(mocker, redrock, limit=None)
     assert error is None
     assert redrock.requested_pages == [1, 2, 3]
     assert len(events) == 2500
@@ -357,7 +357,7 @@ def test_row_repeated_across_page_boundary_is_sent_once(mocker):
             redrock.rows.append(_build_row(99999, BASE_MS + 501))
 
     redrock.after_page = insert_late_event
-    events, _, _, error = _run(mocker, redrock)
+    events, _, _, error = _run(mocker, redrock, limit=None)
     assert error is None
     assert redrock.requested_pages == [1, 2]
     assert f"event-{PAGE_SIZE - 1}" in _ids(events)
@@ -511,7 +511,7 @@ def test_fetch_events_redrock_failure_is_raised(mocker, failing_page):
             return REDROCK_FAILURE_RESPONSE
         return {"success": True, "Result": {"Count": PAGE_SIZE, "FullCount": PAGE_SIZE * 2, "Results": first_page}}
 
-    events, last_run, _, error = _run(mocker, redrock)
+    events, last_run, _, error = _run(mocker, redrock, limit=None)
     assert f"page {failing_page}" in error
     assert "Query has failed: query timed out" in error
     assert "test-error-id" in error
