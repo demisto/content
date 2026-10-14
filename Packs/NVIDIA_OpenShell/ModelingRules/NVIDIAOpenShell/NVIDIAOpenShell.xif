@@ -59,7 +59,10 @@ alter
         null),
     xdm.source.ipv4 = tmp_src_ip,
     xdm.source.port = to_integer(tmp_src_port),
-    xdm.target.ipv4 = tmp_dst_ip,
+    xdm.target.ipv4 = if(
+        incidr(tmp_dst_ip, "198.18.0.0/15"), null,
+        tmp_dst_ip != null, tmp_dst_ip,
+        null),
     xdm.target.port = to_integer(tmp_dst_port),
     xdm.target.host.hostname = coalesce(tmp_dst_domain, tmp_url_hostname),
     xdm.network.ip_protocol = if(
@@ -70,11 +73,17 @@ alter
     xdm.network.http.url = tmp_url_full,
     xdm.network.http.response_code = to_string(tmp_http_code),
     xdm.source.process.name = coalesce(tmp_actor_process_name, tmp_target_process_name),
-    xdm.source.process.pid = to_integer(coalesce(tmp_actor_process_pid, tmp_target_process_pid)),
-    xdm.source.process.command_line = coalesce(tmp_actor_process_cmd, tmp_target_process_cmd),
+    xdm.source.process.pid = if(
+        to_integer(coalesce(tmp_actor_process_pid, tmp_target_process_pid)) != 0,
+        to_integer(coalesce(tmp_actor_process_pid, tmp_target_process_pid)),
+        null),
+    xdm.source.process.command_line = if(
+        coalesce(tmp_actor_process_cmd, tmp_target_process_cmd) != "" and coalesce(tmp_actor_process_cmd, tmp_target_process_cmd) != "-",
+        coalesce(tmp_actor_process_cmd, tmp_target_process_cmd),
+        null),
     xdm.network.rule = tmp_rule_name,
-    xdm.observer.name = tmp_gateway_name,
-    xdm.observer.unique_identifier = coalesce(tmp_device_uid, tmp_gateway_name),
+    xdm.observer.name = tmp_device_hostname,
+    xdm.observer.unique_identifier = coalesce(tmp_device_uid, tmp_gateway_name, tmp_device_hostname),
     xdm.event.outcome = if(
         action_id = 2 or disposition_id = 2, XDM_CONST.OUTCOME_FAILED,
         action_id = 1 or disposition_id = 1, XDM_CONST.OUTCOME_SUCCESS,
