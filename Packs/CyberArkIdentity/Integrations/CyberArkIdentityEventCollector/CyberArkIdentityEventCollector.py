@@ -232,7 +232,8 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
         demisto.debug("[_iter_events] Starting event collection.")
         self.client.authenticate()
 
-        fetched_events_ids = demisto.getLastRun().get("ids", [])
+        # A set, so each per-row check below is constant time whatever the size of the saved list.
+        fetched_events_ids = set(demisto.getLastRun().get("ids", []))
         demisto.debug(f"[_iter_events] Loaded {len(fetched_events_ids)} already-fetched event IDs from last run for dedup.")
         page_number = 1
         collected = 0
