@@ -759,10 +759,14 @@ def test_root_attachment_email_parse_only_headers(mocker: MockerFixture, monkeyp
     assert list(tmp_path.iterdir()) == [email_path]
 
 
-def build_root_attachment_email(attached_email_content_type: str) -> tuple[bytes, bytes, bytes]:
-    """Build an email whose top-level part is marked as an attachment by a folded header, with an attached .eml file."""
+def build_root_attachment_email(
+    attached_email_content_type: str, disposition_type: str = "attachment", file_name: str = "report.eml"
+) -> tuple[bytes, bytes, bytes]:
+    """Build an email whose top-level part has a folded Content-Disposition header, with an attached .eml file."""
     headers = b'From: reporter@example.org\r\nContent-Type: multipart/mixed; boundary="boundary"\r\n'
-    disposition_header = b'Content-Disposition: attachment;\r\n\tfilename="report.eml"\r\n'
+    disposition_header = (
+        b"Content-Disposition: " + disposition_type.encode() + b';\r\n\tfilename="' + file_name.encode() + b'"\r\n'
+    )
     rest_of_email = (
         b"Subject: Report\r\n\r\n"
         b"--boundary\r\n"
@@ -774,19 +778,22 @@ def build_root_attachment_email(attached_email_content_type: str) -> tuple[bytes
     return headers, disposition_header, rest_of_email
 
 
+@pytest.mark.parametrize("disposition_type", ["attachment", "Attachment"])
 @pytest.mark.parametrize("attached_email_content_type", ["message/rfc822", "application/octet-stream"])
-def test_remove_root_attachment_disposition_removes_only_the_header(tmp_path: Path, attached_email_content_type: str) -> None:
+def test_remove_root_attachment_disposition_removes_only_the_header(
+    tmp_path: Path, attached_email_content_type: str, disposition_type: str
+) -> None:
     """
     Given:
-        - An email with CRLF line endings, whose top-level part is marked as an attachment by a folded header,
-          with an attached email (message/rfc822, or application/octet-stream named .eml)
-          which is marked as an attachment as well.
+        - An email with CRLF line endings, whose top-level part is marked as an attachment by a folded header
+          (the disposition type is case-insensitive), with an attached email (message/rfc822,
+          or application/octet-stream named .eml) which is marked as an attachment as well.
     When:
         - Removing the Content-Disposition header of the top-level part.
     Then:
         - Ensure a copy of the file is saved, which differs from the file only by the lines of that header.
     """
-    headers, disposition_header, rest_of_email = build_root_attachment_email(attached_email_content_type)
+    headers, disposition_header, rest_of_email = build_root_attachment_email(attached_email_content_type, disposition_type)
     email_path = tmp_path / "email.eml"
     email_path.write_bytes(headers + disposition_header + rest_of_email)
 
@@ -796,18 +803,27 @@ def test_remove_root_attachment_disposition_removes_only_the_header(tmp_path: Pa
     assert Path(copy_path).read_bytes() == headers + rest_of_email
 
 
-def test_remove_root_attachment_disposition_text_file_named_eml_is_not_copied(tmp_path: Path) -> None:
+@pytest.mark.parametrize(
+    "attached_email_content_type, disposition_type, file_name",
+    [
+        ("text/plain", "attachment", "report.eml"),  # a text file named .eml, which the parser does not parse as an email
+        ("message/rfc822", "inline", "attachment.eml"),  # an inline top-level part, whose file name contains "attachment"
+    ],
+)
+def test_remove_root_attachment_disposition_is_not_copied(
+    tmp_path: Path, attached_email_content_type: str, disposition_type: str, file_name: str
+) -> None:
     """
     Given:
         - An email whose top-level part is marked as an attachment, with a text/plain file named .eml,
-          which the parser does not parse as an attached email.
+          or an email with an attached email, whose top-level part is inline.
     When:
         - Removing the Content-Disposition header of the top-level part.
     Then:
         - Ensure the path of the file is returned, and no copy is saved.
     """
     email_path = tmp_path / "email.eml"
-    email_path.write_bytes(b"".join(build_root_attachment_email("text/plain")))
+    email_path.write_bytes(b"".join(build_root_attachment_email(attached_email_content_type, disposition_type, file_name)))
 
     assert remove_root_attachment_disposition(str(email_path)) == str(email_path)
     assert list(tmp_path.iterdir()) == [email_path]
