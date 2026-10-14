@@ -986,6 +986,14 @@ def parse_positive_int(value: Any, field_name: str) -> int:
     return parsed_value
 
 
+def extract_client_secret(value: str | dict[str, Any] | None) -> str:
+    """Read a type 9 credential password or a legacy type 4 secret."""
+    if isinstance(value, dict):
+        password = value.get("password")
+        return password if isinstance(password, str) else ""
+    return value if isinstance(value, str) else ""
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -999,7 +1007,10 @@ def main():
         is_fetch = argToBoolean(params.get("isFetch", False))
         tsg_id = params.get("tsg_id")
         client_id = params.get("client_id")
-        client_secret = params.get("client_secret")
+        client_secret = extract_client_secret(params.get("client_secret"))
+        if not client_secret:
+            return_error("Client Secret is required. Enter the secret in the integration's Client Secret password field.")
+            return
         verify_certificate = not argToBoolean(params.get("insecure", False))
         proxy = argToBoolean(params.get("proxy", False))
         fetch_alerts = argToBoolean(params.get("fetch_alerts", True))

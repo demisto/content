@@ -58,10 +58,11 @@ def test_incident_links_use_production_environment() -> None:
     )
 
 
-def test_main_routes_authentication_and_api(mocker: MockerFixture) -> None:
+@pytest.mark.parametrize("client_secret", ["test-secret", {"identifier": "", "password": "test-secret"}])
+def test_main_routes_authentication_and_api(mocker: MockerFixture, client_secret: Any) -> None:
     from PaloAltoNetworks_DeviceSecurity import main
 
-    mocker.patch("PaloAltoNetworks_DeviceSecurity.demisto.params", return_value={})
+    mocker.patch("PaloAltoNetworks_DeviceSecurity.demisto.params", return_value={"client_secret": client_secret})
     mocker.patch("PaloAltoNetworks_DeviceSecurity.demisto.args", return_value={})
     mocker.patch("PaloAltoNetworks_DeviceSecurity.demisto.command", return_value="test-module")
     token_mock = mocker.patch("PaloAltoNetworks_DeviceSecurity.get_scm_access_token", return_value="test-token")
@@ -72,7 +73,26 @@ def test_main_routes_authentication_and_api(mocker: MockerFixture) -> None:
     main()
     error_mock.assert_not_called()
     assert token_mock.call_args.args[0] == "https://auth.apps.paloaltonetworks.com"
+    assert token_mock.call_args.args[3] == "test-secret"
     assert client_mock.call_args.kwargs["base_url"] == "https://api.strata.paloaltonetworks.com/iot/pub/v1"
+
+
+@pytest.mark.parametrize("client_secret", [None, "", {}, {"password": ""}, {"identifier": "secret"}])
+def test_main_rejects_missing_client_secret(mocker: MockerFixture, client_secret: Any) -> None:
+    from PaloAltoNetworks_DeviceSecurity import main
+
+    mocker.patch("PaloAltoNetworks_DeviceSecurity.demisto.params", return_value={"client_secret": client_secret})
+    mocker.patch("PaloAltoNetworks_DeviceSecurity.demisto.args", return_value={})
+    mocker.patch("PaloAltoNetworks_DeviceSecurity.demisto.command", return_value="test-module")
+    token_mock = mocker.patch("PaloAltoNetworks_DeviceSecurity.get_scm_access_token")
+    error_mock = mocker.patch("PaloAltoNetworks_DeviceSecurity.return_error")
+
+    main()
+
+    token_mock.assert_not_called()
+    error_mock.assert_called_once_with(
+        "Client Secret is required. Enter the secret in the integration's Client Secret password field."
+    )
 
 
 def test_device_security_get_device(
