@@ -794,8 +794,7 @@ def initialize_vulnerability_fetch(
         stime, offset, identifiers = checkpoint["stime"], checkpoint["offset"], checkpoint["seen_ids"]
         if checkpoint["version"] == 2:
             latest_fetch = checkpoint.get("latest_fetch")
-            checkpoint_boundary_ids = checkpoint.get("boundary_ids")
-            latest_boundary_ids = checkpoint_boundary_ids
+            latest_boundary_ids = checkpoint["boundary_ids"]
         else:
             # Version 1 exposed the candidate cursor before completing the scan.
             committed_fetch = None if stime == "-1" else stime

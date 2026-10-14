@@ -53,8 +53,7 @@ def test_incident_links_use_production_environment() -> None:
         f"{expected_base_url}/insights/iot-security/alerts/security-alerts/alert-detail?id=alert-123"
     )
     assert get_scm_vuln_url({"deviceid": "device-123", "vulnerability_name": "Test vulnerability"}) == (
-        f"{expected_base_url}/insights/iot-security/assets/assets/overview/device-123"
-        "?vulnerabilityname=Test%20vulnerability"
+        f"{expected_base_url}/insights/iot-security/assets/assets/overview/device-123" "?vulnerabilityname=Test%20vulnerability"
     )
 
 
@@ -634,7 +633,7 @@ def incident_identifiers(incidents: list[dict]) -> list[str]:
 def mock_vulnerability_inventory(mocker: MockerFixture, client: "Client", rows: list[dict | None]) -> Any:
     def response(**kwargs: Any) -> dict:
         params = kwargs["params"]
-        selected = rows[params["offset"]: params["offset"] + params["pagelength"]]
+        selected = rows[params["offset"] : params["offset"] + params["pagelength"]]
         return {"items": [record for record in selected if record is not None], "total": len(rows)}
 
     return mocker.patch.object(client, "_http_request", side_effect=response)
@@ -827,12 +826,20 @@ def test_no_unsupported_sorting_parameters(mocker: MockerFixture, client: "Clien
         {"version": 1, "stime": FETCH_CURSOR, "offset": 10, "seen_ids": [None]},
         {"version": 2, "stime": FETCH_CURSOR, "offset": 10, "seen_ids": [], "latest_fetch": None},
         {
-            "version": 2, "stime": FETCH_CURSOR, "offset": 10, "seen_ids": [],
-            "latest_fetch": "invalid", "boundary_ids": [],
+            "version": 2,
+            "stime": FETCH_CURSOR,
+            "offset": 10,
+            "seen_ids": [],
+            "latest_fetch": "invalid",
+            "boundary_ids": [],
         },
         {
-            "version": 2, "stime": FETCH_CURSOR, "offset": 10, "seen_ids": [],
-            "latest_fetch": FETCH_NEWER, "boundary_ids": [None],
+            "version": 2,
+            "stime": FETCH_CURSOR,
+            "offset": 10,
+            "seen_ids": [],
+            "latest_fetch": FETCH_NEWER,
+            "boundary_ids": [None],
         },
     ],
 )
