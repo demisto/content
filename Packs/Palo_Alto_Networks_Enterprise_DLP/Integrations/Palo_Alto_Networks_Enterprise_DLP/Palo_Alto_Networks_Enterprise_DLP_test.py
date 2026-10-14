@@ -309,10 +309,18 @@ def test_parse_dlp_report(mocker):
     assert data_profiles[0]["DataPatterns"][1]["OccurrenceHigh"] == 10
 
 
-def test_get_dlp_incidents(requests_mock):
-    requests_mock.get(f"{DLP_URL}public/incident-notifications?regions=us", json={"us": []})
+@pytest.mark.parametrize(
+    "regions_input, expected_query",
+    [
+        ("us", "regions=us"),
+        (["US"], "regions=US"),
+        (["US", "EU"], "regions=US%2CEU"),
+    ],
+)
+def test_get_dlp_incidents(requests_mock, regions_input, expected_query):
+    requests_mock.get(f"{DLP_URL}public/incident-notifications?{expected_query}", json={"us": []})
     client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
-    result, status_code = client.get_dlp_incidents(regions="us")
+    result, status_code = client.get_dlp_incidents(regions=regions_input)
     assert result == {"us": []}
     assert status_code == 200
 

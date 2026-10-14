@@ -225,14 +225,14 @@ class Client(BaseClient):
 
     def get_dlp_incidents(
         self,
-        regions: str,
+        regions: list[str] | str,
         start_time: int | None = None,
         end_time: int | None = None,
     ) -> tuple[dict[str, Any], int]:
         url = INCIDENTS_URL
         params = {}
         if regions:
-            params["regions"] = regions
+            params["regions"] = ",".join(regions) if isinstance(regions, list) else regions
         if start_time:
             params["start_timestamp"] = str(start_time)
         if end_time:
@@ -638,7 +638,7 @@ def _migrate_last_run(last_run: dict[str, Any], start_timestamp: int) -> dict[st
 
 def fetch_notifications(
     client: Client,
-    regions: str,
+    regions: list[str] | str,
     first_fetch_timestamp: int,
     incident_type: str = "Data Loss Prevention",
     max_fetch: int = DEFAULT_MAX_FETCH,
@@ -649,7 +649,8 @@ def fetch_notifications(
 
     Args:
         client (Client): DLP API client.
-        regions (str): Comma-separated DLP regions to fetch from.
+        regions (list[str] | str): DLP regions to fetch from. Accepts a list of region codes
+            (e.g., ["US", "EU"]) or a comma-separated string (e.g., "US,EU").
         first_fetch_timestamp (int): Timestamp to use for first fetch (unix epoch seconds).
         incident_type (str): Type of incident to create (default: "Data Loss Prevention").
         max_fetch (int): Maximum number of incidents to fetch (default: DEFAULT_MAX_FETCH).
