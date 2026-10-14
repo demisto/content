@@ -81,7 +81,7 @@ def remove_root_attachment_disposition(file_path: str) -> str:
     lines = content.splitlines(keepends=True)
     headers_end = next((index for index, line in enumerate(lines) if not HEADER_LINE_REGEX.match(line)), len(lines))
     headers = message_from_bytes(b"".join(lines[:headers_end]))
-    if headers.get_content_maintype() != "multipart" or "attachment" not in str(headers.get("Content-Disposition", "")):
+    if headers.get_content_maintype() != "multipart" or headers.get_content_disposition() != "attachment":
         return file_path
 
     if not any(
