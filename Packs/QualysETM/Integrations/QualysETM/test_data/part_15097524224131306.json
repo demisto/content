@@ -16,6 +16,7 @@
             "asset": {
                 "assetId": "200001",
                 "name": "sample-host-01",
+                "ipAddress": "10.0.0.1",
                 "operatingSystem": "Ubuntu 22.04"
             }
         }

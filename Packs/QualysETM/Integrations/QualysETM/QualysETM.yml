@@ -58,7 +58,7 @@ script:
       description: The number of results to retrieve in a single page. Used together with the page argument.
       type: Number
     - name: limit
-      description: The maximum number of results to return. Used when the page and page_size arguments are not provided.
+      description: The maximum number of results to return. Results are retrieved automatically across multiple API requests as needed. Used when the page and page_size arguments are not provided.
       type: Number
       defaultValue: '50'
     outputs:

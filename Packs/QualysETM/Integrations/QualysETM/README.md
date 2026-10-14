@@ -31,7 +31,7 @@ Lists the active reports in the Qualys ETM subscription. To retrieve the full de
 | --- | --- | --- |
 | page | The page number of the results to retrieve. Minimum value is 1. Used together with the page_size argument. | Optional |
 | page_size | The number of results to retrieve in a single page. Used together with the page argument. | Optional |
-| limit | The maximum number of results to return. Used when the page and page_size arguments are not provided. Default is 50. | Optional |
+| limit | The maximum number of results to return. Results are retrieved automatically across multiple API requests as needed. Used when the page and page_size arguments are not provided. Default is 50. | Optional |
 
 #### Context Output
 
@@ -57,7 +57,7 @@ Lists the active reports in the Qualys ETM subscription. To retrieve the full de
                 "created": "2026-10-01T10:00:00Z",
                 "expirationDate": "2026-10-08T10:00:00Z",
                 "id": "0b127284-e128-4d02-a720-2748240c9f1a",
-                "name": "Ad-hoc Report",
+                "name": "Critical Findings Report",
                 "status": "COMPLETED"
             },
             {
@@ -78,7 +78,7 @@ Lists the active reports in the Qualys ETM subscription. To retrieve the full de
 >
 >|Report ID|Name|Status|Created|Expiration Date|
 >|---|---|---|---|---|
->| 0b127284-e128-4d02-a720-2748240c9f1a | Ad-hoc Report | COMPLETED | 2026-10-01T10:00:00Z | 2026-10-08T10:00:00Z |
+>| 0b127284-e128-4d02-a720-2748240c9f1a | Critical Findings Report | COMPLETED | 2026-10-01T10:00:00Z | 2026-10-08T10:00:00Z |
 >| dbc34b32-b957-449a-a357-27cf27df7eab | Weekly Risk Report | REQUESTED | 2026-10-02T08:30:00Z | 2026-10-09T08:30:00Z |
 
 ### qualys-etm-report-get-details
@@ -132,7 +132,7 @@ Returns the full details of a single report, including the list of its downloada
             "expirationDate": "2026-10-08T10:00:00Z",
             "findingsQql": "finding.severity: 5",
             "id": "0b127284-e128-4d02-a720-2748240c9f1a",
-            "name": "Ad-hoc Report",
+            "name": "Critical Findings Report",
             "reportFormat": "JSON",
             "resources": [
                 "part_15097524224131306.json",
@@ -151,7 +151,7 @@ Returns the full details of a single report, including the list of its downloada
 >
 >|Report ID|Name|Description|Report Format|Status|Asset QQL|Findings QQL|Created|Created By|Updated|Expiration Date|Resources|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 0b127284-e128-4d02-a720-2748240c9f1a | Ad-hoc Report | Critical findings report | JSON | COMPLETED | asset.name: my-host | finding.severity: 5 | 2026-10-01T10:00:00Z | john_doe | 2026-10-01T10:05:00Z | 2026-10-08T10:00:00Z | part_15097524224131306.json, part_15097524224131307.json |
+>| 0b127284-e128-4d02-a720-2748240c9f1a | Critical Findings Report | Critical findings report | JSON | COMPLETED | asset.name: my-host | finding.severity: 5 | 2026-10-01T10:00:00Z | john_doe | 2026-10-01T10:05:00Z | 2026-10-08T10:00:00Z | part_15097524224131306.json, part_15097524224131307.json |
 
 ### qualys-etm-report-download
 
@@ -260,7 +260,7 @@ Submits a new findings report request, polls until the report generation complet
             "expirationDate": "2026-10-08T10:00:00Z",
             "findingsQql": "finding.severity: 5",
             "id": "0b127284-e128-4d02-a720-2748240c9f1a",
-            "name": "Ad-hoc Report",
+            "name": "Critical Findings Report",
             "reportFormat": "JSON",
             "resources": [
                 "part_15097524224131306.json",
@@ -279,7 +279,7 @@ Submits a new findings report request, polls until the report generation complet
 >
 >|Report ID|Name|Description|Report Format|Status|Asset QQL|Findings QQL|Created|Created By|Updated|Expiration Date|Resources|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 0b127284-e128-4d02-a720-2748240c9f1a | Ad-hoc Report | Critical findings report | JSON | COMPLETED | asset.name: my-host | finding.severity: 5 | 2026-10-01T10:00:00Z | john_doe | 2026-10-01T10:05:00Z | 2026-10-08T10:00:00Z | part_15097524224131306.json, part_15097524224131307.json |
+>| 0b127284-e128-4d02-a720-2748240c9f1a | Critical Findings Report | Critical findings report | JSON | COMPLETED | asset.name: my-host | finding.severity: 5 | 2026-10-01T10:00:00Z | john_doe | 2026-10-01T10:05:00Z | 2026-10-08T10:00:00Z | part_15097524224131306.json, part_15097524224131307.json |
 
 The completed report is also returned to the War Room as a ZIP file named `report_<report_id>.zip`.
 

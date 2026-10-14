@@ -13,6 +13,7 @@ from QualysETM import (
     active_reports_list_command,
     build_report_generate_body,
     calculate_pagination,
+    extract_error_message,
     extract_records,
     is_failure_status,
     report_download_command,
@@ -213,6 +214,89 @@ def test_test_module_verifies_etm_access(requests_mock, client):
 
     assert run_test_module(client) == "ok"
     assert list_mock.call_count == 1
+
+
+@pytest.mark.parametrize(
+    "file_name, expected_message",
+    [
+        ("error_401_invalid_credentials.json", "Invalid username or password"),
+        ("error_403_module_access_denied.json", "ETM module access denied"),
+    ],
+)
+def test_extract_error_message_formats(requests_mock, file_name, expected_message):
+    """
+    Given: Qualys error responses in the gateway ("_errorMessage") and ETM module ("error") formats.
+    When: Extracting the vendor error message.
+    Then: The human-readable message is returned for both formats.
+    """
+    import requests
+
+    requests_mock.get("https://example.com/err", status_code=400, json=load_test_data(file_name))
+    assert extract_error_message(requests.get("https://example.com/err")) == expected_message
+
+
+def test_extract_error_message_non_json(requests_mock):
+    """
+    Given: An error response with a non-JSON body.
+    When: Extracting the vendor error message.
+    Then: An empty string is returned.
+    """
+    import requests
+
+    requests_mock.get("https://example.com/err", status_code=500, text="<html>oops</html>")
+    assert extract_error_message(requests.get("https://example.com/err")) == ""
+
+
+def test_403_error_includes_vendor_message(requests_mock, client):
+    """
+    Given: A 403 response in the ETM module error format.
+    When: An API request is performed.
+    Then: The raised error contains both the actionable guidance and the vendor message.
+    """
+    requests_mock.post(AUTH_URL, text="jwt-token")
+    requests_mock.get(
+        f"{API_BASE}/reports/{REPORT_ID}", status_code=403, json=load_test_data("error_403_module_access_denied.json")
+    )
+    with pytest.raises(DemistoException, match="ETM module access denied") as error:
+        client.get_report_details(REPORT_ID)
+    assert "API Access" in str(error.value)
+
+
+def test_active_reports_list_auto_paginates_by_limit(requests_mock, client, mocker):
+    """
+    Given: A limit larger than the maximum page size and an API returning full pages.
+    When: Running the active reports list command with only a limit.
+    Then: Multiple requests are issued with increasing offsets until the limit is reached.
+    """
+    mocker.patch("QualysETM.MAX_PAGE_SIZE", 2)
+    requests_mock.post(AUTH_URL, text="jwt-token")
+    pages = [[{"id": "1"}, {"id": "2"}], [{"id": "3"}, {"id": "4"}], [{"id": "5"}]]
+    list_mock = requests_mock.post(f"{API_BASE}/reports/list", [{"json": page} for page in pages])
+
+    result = active_reports_list_command(client, {"limit": "5"})
+
+    assert [report["id"] for report in result.outputs] == ["1", "2", "3", "4", "5"]
+    assert [request.json() for request in list_mock.request_history] == [
+        {"offset": 0, "limit": 2},
+        {"offset": 2, "limit": 2},
+        {"offset": 4, "limit": 1},
+    ]
+
+
+def test_active_reports_list_auto_pagination_stops_on_short_page(requests_mock, client, mocker):
+    """
+    Given: A limit larger than the number of available reports.
+    When: Running the active reports list command with only a limit.
+    Then: Pagination stops once a page shorter than requested is returned.
+    """
+    mocker.patch("QualysETM.MAX_PAGE_SIZE", 2)
+    requests_mock.post(AUTH_URL, text="jwt-token")
+    list_mock = requests_mock.post(f"{API_BASE}/reports/list", [{"json": [{"id": "1"}, {"id": "2"}]}, {"json": [{"id": "3"}]}])
+
+    result = active_reports_list_command(client, {"limit": "10"})
+
+    assert len(result.outputs) == 3
+    assert list_mock.call_count == 2
 
 
 def test_test_module_missing_etm_module(requests_mock, client):

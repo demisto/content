@@ -9,5 +9,5 @@ This pack enables you to manage the lifecycle of Qualys ETM finding reports dire
 - List the active reports in your subscription.
 - Retrieve the full details of a specific report, including its downloadable resources.
 - Download an individual report resource (part-file) to the War Room.
-- Generate a new findings report asynchronously, filtered by asset and finding QQL, and automatically download it when it completes.
+- Generate a new findings report asynchronously, filtered by asset and finding QQL (Qualys Query Language) queries, and automatically download it when it completes.
 - Delete one or more reports.

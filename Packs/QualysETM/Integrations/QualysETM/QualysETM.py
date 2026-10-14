@@ -20,6 +20,12 @@ INTEGRATION_CONTEXT_EXPIRY_KEY = "jwt_token_expiry"
 
 DEFAULT_LIMIT = 50
 DEFAULT_PAGE = 1
+# Maximum number of records requested in a single API call when paginating automatically by limit.
+MAX_PAGE_SIZE = 100
+
+# Keys under which Qualys returns a human-readable error message. The gateway uses "_errorMessage" /
+# "_errorDetail", while the ETM module endpoints use "error" / "message".
+ERROR_MESSAGE_KEYS = ("_errorMessage", "_errorDetail", "error", "message", "errorMessage")
 
 # Header titles that pascalToSpace cannot derive correctly on its own.
 REPORT_LIST_HEADERS = {"id": "Report ID"}
@@ -104,11 +110,15 @@ class Client(BaseClient):
     @staticmethod
     def _error_handler(response: requests.Response) -> None:
         """Translate Qualys HTTP errors into actionable messages."""
+        vendor_message = extract_error_message(response)
+        details = f"\nQualys response: {vendor_message}" if vendor_message else ""
         if response.status_code == 401:
-            raise DemistoException(CREDENTIALS_ERROR, res=response)
+            raise DemistoException(f"{CREDENTIALS_ERROR}{details}", res=response)
         if response.status_code == 403:
-            raise DemistoException(PERMISSIONS_ERROR, res=response)
-        raise DemistoException(f"Error in API call [{response.status_code}] - {response.reason}\n{response.text}", res=response)
+            raise DemistoException(f"{PERMISSIONS_ERROR}{details}", res=response)
+        raise DemistoException(
+            f"Error in API call [{response.status_code}] - {response.reason}\n{vendor_message or response.text}", res=response
+        )
 
     def etm_request(
         self,
@@ -183,6 +193,31 @@ class Client(BaseClient):
 
 
 """ HELPER FUNCTIONS """
+
+
+def extract_error_message(response: requests.Response) -> str:
+    """Extract the human-readable error message from a Qualys error response.
+
+    Qualys returns errors in more than one format, for example {"_errorMessage": "..."} from the gateway
+    and {"error": "..."} from the ETM module endpoints, so every known key is checked.
+
+    Args:
+        response: The failed HTTP response.
+
+    Returns:
+        The vendor error message, or an empty string when none can be extracted.
+    """
+    try:
+        body = response.json()
+    except ValueError:
+        return ""
+    if not isinstance(body, dict):
+        return ""
+    for key in ERROR_MESSAGE_KEYS:
+        value = body.get(key)
+        if value and isinstance(value, str):
+            return value
+    return ""
 
 
 def extract_records(response: Any) -> list[dict[str, Any]]:
@@ -261,12 +296,38 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
+def fetch_reports_by_limit(client: Client, limit: int) -> list[dict[str, Any]]:
+    """Automatically paginate through the active reports until the limit is reached or no more results exist.
+
+    Args:
+        client: The Qualys ETM client.
+        limit: The total number of reports to retrieve.
+
+    Returns:
+        Up to limit report records.
+    """
+    reports: list[dict[str, Any]] = []
+    offset = 0
+    while len(reports) < limit:
+        batch_size = min(MAX_PAGE_SIZE, limit - len(reports))
+        records = extract_records(client.list_active_reports(offset=offset, limit=batch_size))
+        reports.extend(records)
+        if len(records) < batch_size:
+            break
+        offset += len(records)
+    # The vendor may not honor the requested limit, so the results are truncated client-side as a safety net.
+    return reports[:limit]
+
+
 def active_reports_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List the active reports."""
     offset, limit, pagination_message = calculate_pagination(args)
-    raw_response = client.list_active_reports(offset=offset, limit=limit)
-    # The vendor may not honor the requested limit, so the results are truncated client-side as a safety net.
-    reports = extract_records(raw_response)[:limit]
+    if pagination_message:
+        # Manual pagination mode: retrieve exactly the requested page.
+        reports = extract_records(client.list_active_reports(offset=offset, limit=limit))[:limit]
+    else:
+        reports = fetch_reports_by_limit(client, limit)
+    raw_response = reports
 
     readable_output = tableToMarkdown(
         "Qualys ETM Active Reports",
