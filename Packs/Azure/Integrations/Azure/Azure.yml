@@ -10858,10 +10858,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The name of the resource group.
       type: String
-      required: false
-      required:platform: true
+      required: true
     - name: firewall_name
       description: The name of the Azure Firewall in which to create the network rule collection.
       type: String
@@ -10978,10 +10977,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The name of the resource group.
       type: String
-      required: false
-      required:platform: true
+      required: true
     - name: policy_name
       description: The name of the firewall policy in which to create the rule collection group.
       type: String
@@ -11098,10 +11096,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The name of the resource group.
       type: String
-      required: false
-      required:platform: true
+      required: true
     - name: firewall_name
       description: The name of the Azure Firewall that contains the network rule collection.
       type: String
@@ -11167,10 +11164,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The name of the resource group.
       type: String
-      required: false
-      required:platform: true
+      required: true
     - name: policy_name
       description: The name of the firewall policy that contains the rule collection group.
       type: String
@@ -11236,10 +11232,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The name of the resource group.
       type: String
-      required: false
-      required:platform: true
+      required: true
     - name: firewall_name
       description: The name of the Azure Firewall that contains the network rule collection.
       type: String
@@ -11295,10 +11290,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The name of the resource group.
       type: String
-      required: false
-      required:platform: true
+      required: true
     - name: policy_name
       description: The name of the firewall policy that contains the rule collection group.
       type: String
@@ -11332,10 +11326,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The name of the resource group.
       type: String
-      required: false
-      required:platform: true
+      required: true
     - name: firewall_name
       description: The name of the Azure Firewall that contains the network rule collection.
       type: String
@@ -11440,10 +11433,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The name of the resource group.
       type: String
-      required: false
-      required:platform: true
+      required: true
     - name: policy_name
       description: The name of the firewall policy that contains the rule collection group.
       type: String
@@ -11548,10 +11540,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The name of the resource group.
       type: String
-      required: false
-      required:platform: true
+      required: true
     - name: firewall_name
       description: The name of the Azure Firewall that contains the network rule collection.
       type: String
@@ -11651,10 +11642,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The name of the resource group.
       type: String
-      required: false
-      required:platform: true
+      required: true
     - name: policy_name
       description: The name of the firewall policy that contains the rule collection group.
       type: String
@@ -11754,10 +11744,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The name of the resource group.
       type: String
-      required: false
-      required:platform: true
+      required: true
     - name: firewall_name
       description: The name of the Azure Firewall that contains the network rule collection.
       type: String
@@ -11817,10 +11806,9 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The name of the resource group.
       type: String
-      required: false
-      required:platform: true
+      required: true
     - name: policy_name
       description: The name of the firewall policy that contains the rule collection group.
       type: String

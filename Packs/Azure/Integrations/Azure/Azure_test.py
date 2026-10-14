@@ -6314,7 +6314,7 @@ def test_firewall_rule_collection_groups_create_command(mocker):
     When: firewall_rule_collection_groups_create_command is called.
     Then: The new collection, holding the new rule in the firewall schema, is appended and the firewall is updated.
     """
-    from Azure import AzureClient, firewall_rule_collection_groups_create_command
+    from Azure import firewall_rule_collection_groups_create_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_get.return_value = {"name": "xsoar-firewall", "properties": {"networkRuleCollections": []}}
@@ -6359,7 +6359,7 @@ def test_firewall_policy_rule_collection_groups_create_command(mocker):
     When: firewall_policy_rule_collection_groups_create_command is called.
     Then: A rule collection group holding the new rule in the policy schema is created.
     """
-    from Azure import AzureClient, firewall_policy_rule_collection_groups_create_command
+    from Azure import firewall_policy_rule_collection_groups_create_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_policy_rule_collection_group_get.side_effect = ValueError("not found")
@@ -6406,7 +6406,7 @@ def test_firewall_rule_collection_groups_create_command_already_exists(mocker):
     When: firewall_rule_collection_groups_create_command is called.
     Then: A ValueError is raised and the firewall is not updated.
     """
-    from Azure import AzureClient, firewall_rule_collection_groups_create_command
+    from Azure import firewall_rule_collection_groups_create_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_get.return_value = firewall_with_collection()
@@ -6437,7 +6437,7 @@ def test_firewall_policy_rule_collection_groups_create_command_already_exists(mo
     When: firewall_policy_rule_collection_groups_create_command is called.
     Then: A ValueError is raised and the rule collection group is not created.
     """
-    from Azure import AzureClient, firewall_policy_rule_collection_groups_create_command
+    from Azure import firewall_policy_rule_collection_groups_create_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_policy_rule_collection_group_get.return_value = policy_collection_group()
@@ -6581,7 +6581,7 @@ def test_firewall_rule_collection_groups_create_command_mismatched_source(mocker
     When: firewall_rule_collection_groups_create_command is called.
     Then: A ValueError is raised and the firewall is never read or updated.
     """
-    from Azure import AzureClient, firewall_rule_collection_groups_create_command
+    from Azure import firewall_rule_collection_groups_create_command
 
     client = mocker.Mock(spec=AzureClient)
 
@@ -6612,7 +6612,7 @@ def test_firewall_network_rule_update_command_mismatched_destination(mocker):
     When: firewall_network_rule_update_command is called.
     Then: A ValueError is raised and the firewall is never read or updated.
     """
-    from Azure import AzureClient, firewall_network_rule_update_command
+    from Azure import firewall_network_rule_update_command
 
     client = mocker.Mock(spec=AzureClient)
 
@@ -6653,9 +6653,6 @@ def test_firewall_commands_require_their_target(mocker, command_name, target_arg
     When: Any of the firewall or firewall policy network rule commands is called.
     Then: A KeyError naming the missing target argument is raised and no Azure resource is read or written.
     """
-    import Azure
-    from Azure import AzureClient
-
     client = mocker.Mock(spec=AzureClient)
     command = getattr(Azure, command_name)
 
@@ -6762,7 +6759,7 @@ def test_firewall_rule_collection_groups_create_command_polling_run(mocker):
     When: firewall_rule_collection_groups_create_command is called with first_run turned off.
     Then: The firewall is only read, and the provisioned firewall is returned without scheduling another poll.
     """
-    from Azure import AzureClient, firewall_rule_collection_groups_create_command
+    from Azure import firewall_rule_collection_groups_create_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_get.return_value = firewall_with_collection()
@@ -6788,7 +6785,7 @@ def test_firewall_policy_network_rule_create_command_polling_run(mocker):
     When: firewall_policy_network_rule_create_command is called with first_run turned off.
     Then: The rule collection group is only read, and it is returned without scheduling another poll.
     """
-    from Azure import AzureClient, firewall_policy_network_rule_create_command
+    from Azure import firewall_policy_network_rule_create_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_policy_rule_collection_group_get.return_value = policy_collection_group()
@@ -6815,7 +6812,7 @@ def test_firewall_rule_collection_groups_create_command_failed_provisioning(mock
     When: firewall_rule_collection_groups_create_command is called.
     Then: A ValueError is raised instead of polling until the timeout.
     """
-    from Azure import AzureClient, firewall_rule_collection_groups_create_command
+    from Azure import firewall_rule_collection_groups_create_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_get.return_value = firewall_with_collection(provisioning_state="Failed")
@@ -6867,7 +6864,7 @@ def test_firewall_policy_network_rule_update_command_multiple_collections(mocker
     When: firewall_policy_network_rule_update_command is called for a rule in the second collection.
     Then: Only the matching collection is updated and the other collection is left untouched.
     """
-    from Azure import AzureClient, firewall_policy_network_rule_update_command
+    from Azure import firewall_policy_network_rule_update_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_policy_rule_collection_group_get.return_value = policy_collection_group_with_multiple_collections()
@@ -6897,7 +6894,7 @@ def test_firewall_policy_network_rule_collection_exists_propagates_non_404_error
     When: firewall_policy_network_rule_collection_exists is called.
     Then: The error is propagated instead of being reported as a missing rule collection group.
     """
-    from Azure import AzureClient, firewall_policy_network_rule_collection_exists
+    from Azure import firewall_policy_network_rule_collection_exists
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_policy_rule_collection_group_get.side_effect = ValueError("500 Internal Server Error")
@@ -6918,7 +6915,7 @@ def test_firewall_rule_collection_groups_update_command(mocker):
     When: firewall_rule_collection_groups_update_command is called with a new priority and action.
     Then: The collection properties are updated and the firewall is sent back to Azure.
     """
-    from Azure import AzureClient, firewall_rule_collection_groups_update_command
+    from Azure import firewall_rule_collection_groups_update_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_get.return_value = firewall_with_collection()
@@ -6941,7 +6938,7 @@ def test_firewall_policy_rule_collection_groups_update_command(mocker):
     When: firewall_policy_rule_collection_groups_update_command is called with a new priority.
     Then: The priority is updated on both the rule collection and the rule collection group.
     """
-    from Azure import AzureClient, firewall_policy_rule_collection_groups_update_command
+    from Azure import firewall_policy_rule_collection_groups_update_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_policy_rule_collection_group_get.return_value = policy_collection_group()
@@ -6963,7 +6960,7 @@ def test_firewall_rule_collection_groups_update_command_collection_not_found(moc
     When: firewall_rule_collection_groups_update_command is called.
     Then: A ValueError is raised and the firewall is not updated.
     """
-    from Azure import AzureClient, firewall_rule_collection_groups_update_command
+    from Azure import firewall_rule_collection_groups_update_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_get.return_value = {"name": "xsoar-firewall", "properties": {"networkRuleCollections": []}}
@@ -6981,7 +6978,7 @@ def test_firewall_rule_collection_groups_delete_command(mocker):
     When: firewall_rule_collection_groups_delete_command is called.
     Then: The collection is removed from the firewall and the firewall is sent back to Azure.
     """
-    from Azure import AzureClient, firewall_rule_collection_groups_delete_command
+    from Azure import firewall_rule_collection_groups_delete_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_get.return_value = firewall_with_collection()
@@ -7005,7 +7002,7 @@ def test_firewall_policy_rule_collection_groups_delete_command(mocker):
     When: firewall_policy_rule_collection_groups_delete_command is called.
     Then: The deletion is requested and another poll is scheduled to wait for the deletion to complete.
     """
-    from Azure import AzureClient, firewall_policy_rule_collection_groups_delete_command
+    from Azure import firewall_policy_rule_collection_groups_delete_command
 
     client = mocker.Mock(spec=AzureClient)
     args = {**FIREWALL_ARGS, "policy_name": "my-policy", "collection_name": "my-collection"}
@@ -7026,7 +7023,7 @@ def test_firewall_policy_rule_collection_groups_delete_command_completes(mocker)
     When: firewall_policy_rule_collection_groups_delete_command is called.
     Then: A success message is returned and no further poll is scheduled.
     """
-    from Azure import AzureClient, firewall_policy_rule_collection_groups_delete_command
+    from Azure import firewall_policy_rule_collection_groups_delete_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_policy_rule_collection_group_get.side_effect = ValueError("404 not found")
@@ -7045,7 +7042,7 @@ def test_firewall_policy_rule_collection_groups_delete_command_still_exists(mock
     When: firewall_policy_rule_collection_groups_delete_command is called.
     Then: Another poll is scheduled instead of reporting the deletion as complete.
     """
-    from Azure import AzureClient, firewall_policy_rule_collection_groups_delete_command
+    from Azure import firewall_policy_rule_collection_groups_delete_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_policy_rule_collection_group_get.return_value = policy_collection_group()
@@ -7063,7 +7060,7 @@ def test_firewall_rule_collection_groups_delete_command_collection_not_found(moc
     When: firewall_rule_collection_groups_delete_command is called.
     Then: A ValueError is raised and the firewall is not updated.
     """
-    from Azure import AzureClient, firewall_rule_collection_groups_delete_command
+    from Azure import firewall_rule_collection_groups_delete_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_get.return_value = {"name": "xsoar-firewall", "properties": {"networkRuleCollections": []}}
@@ -7081,7 +7078,7 @@ def test_firewall_network_rule_create_command_firewall(mocker):
     When: firewall_network_rule_create_command is called with a firewall_name.
     Then: The new rule is appended to the collection and the firewall is sent back to Azure.
     """
-    from Azure import AzureClient, firewall_network_rule_create_command
+    from Azure import firewall_network_rule_create_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_get.return_value = firewall_with_collection()
@@ -7116,7 +7113,7 @@ def test_firewall_policy_network_rule_create_command(mocker):
     When: firewall_policy_network_rule_create_command is called.
     Then: The new rule, in the policy schema, is appended to the rule collection.
     """
-    from Azure import AzureClient, firewall_policy_network_rule_create_command
+    from Azure import firewall_policy_network_rule_create_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_policy_rule_collection_group_get.return_value = policy_collection_group()
@@ -7151,7 +7148,7 @@ def test_firewall_network_rule_create_command_rule_already_exists(mocker):
     When: firewall_network_rule_create_command is called.
     Then: A ValueError is raised and the firewall is not updated.
     """
-    from Azure import AzureClient, firewall_network_rule_create_command
+    from Azure import firewall_network_rule_create_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_get.return_value = firewall_with_collection()
@@ -7180,7 +7177,7 @@ def test_firewall_network_rule_update_command_firewall(mocker):
     When: firewall_network_rule_update_command is called with new properties.
     Then: Only the provided properties are replaced on the rule and the firewall is sent back to Azure.
     """
-    from Azure import AzureClient, firewall_network_rule_update_command
+    from Azure import firewall_network_rule_update_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_get.return_value = firewall_with_collection(
@@ -7216,7 +7213,7 @@ def test_firewall_policy_network_rule_update_command(mocker):
     When: firewall_policy_network_rule_update_command is called with a new source and destination.
     Then: The rule is updated using the policy schema fields.
     """
-    from Azure import AzureClient, firewall_policy_network_rule_update_command
+    from Azure import firewall_policy_network_rule_update_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_policy_rule_collection_group_get.return_value = policy_collection_group()
@@ -7250,7 +7247,7 @@ def test_firewall_network_rule_update_command_rule_not_found(mocker):
     When: firewall_network_rule_update_command is called.
     Then: A ValueError is raised and the firewall is not updated.
     """
-    from Azure import AzureClient, firewall_network_rule_update_command
+    from Azure import firewall_network_rule_update_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_get.return_value = firewall_with_collection()
@@ -7274,7 +7271,7 @@ def test_firewall_network_rule_delete_command_firewall(mocker):
     When: firewall_network_rule_delete_command is called with a firewall_name.
     Then: The rules are removed from the collection and the firewall is sent back to Azure.
     """
-    from Azure import AzureClient, firewall_network_rule_delete_command
+    from Azure import firewall_network_rule_delete_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_get.return_value = firewall_with_collection(rules=[{"name": "my-rule"}, {"name": "other-rule"}])
@@ -7300,7 +7297,7 @@ def test_firewall_policy_network_rule_delete_command_partial(mocker):
     When: firewall_policy_network_rule_delete_command is called.
     Then: The existing rules are removed and the missing rule names are reported in the readable output.
     """
-    from Azure import AzureClient, firewall_policy_network_rule_delete_command
+    from Azure import firewall_policy_network_rule_delete_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_policy_rule_collection_group_get.return_value = policy_collection_group(
@@ -7329,7 +7326,7 @@ def test_firewall_network_rule_delete_command_no_rules_found(mocker):
     When: firewall_network_rule_delete_command is called.
     Then: A ValueError is raised and the firewall is not updated.
     """
-    from Azure import AzureClient, firewall_network_rule_delete_command
+    from Azure import firewall_network_rule_delete_command
 
     client = mocker.Mock(spec=AzureClient)
     client.firewall_get.return_value = firewall_with_collection(rules=[{"name": "other-rule"}])
