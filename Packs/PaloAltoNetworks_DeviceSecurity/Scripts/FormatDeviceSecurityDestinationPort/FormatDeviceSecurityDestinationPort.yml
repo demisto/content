@@ -2,6 +2,7 @@ commonfields:
   id: FormatDeviceSecurityDestinationPort
   version: -1
 name: FormatDeviceSecurityDestinationPort
+comment: Formats destination ports and protocols into a comma-separated string for an incident field.
 script: '-'
 type: python
 tags:
@@ -10,6 +11,7 @@ tags:
 enabled: true
 args:
 - name: value
+  description: The connection data containing destination port and optional ipProto values to format.
 scripttarget: 0
 subtype: python3
 runonce: false

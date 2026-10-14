@@ -46,3 +46,19 @@ def test_main_returns_formatted_ports(mocker: MockerFixture) -> None:
     results = mocker.patch.object(destination_port, "return_results")
     destination_port.main()
     results.assert_called_once_with("443 (tcp)")
+
+
+@pytest.mark.parametrize("failure_source", ["args", "format_destination_ports", "return_results"])
+def test_main_handles_unexpected_errors(mocker: MockerFixture, failure_source: str) -> None:
+    args = mocker.patch.object(destination_port.demisto, "args", return_value={"value": {"port": 443}})
+    formatter = mocker.patch.object(destination_port, "format_destination_ports", return_value="443")
+    results = mocker.patch.object(destination_port, "return_results")
+    error = mocker.patch.object(destination_port, "return_error")
+    failing_call = {"args": args, "format_destination_ports": formatter, "return_results": results}[failure_source]
+    failing_call.side_effect = RuntimeError("Unexpected failure")
+
+    destination_port.main()
+
+    error.assert_called_once_with("Failed to execute FormatDeviceSecurityDestinationPort. Error: Unexpected failure")
+    if failure_source != "return_results":
+        results.assert_not_called()

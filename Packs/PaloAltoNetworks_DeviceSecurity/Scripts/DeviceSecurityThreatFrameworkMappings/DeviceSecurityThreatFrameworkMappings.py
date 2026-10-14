@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 
 import json
+import traceback
 from typing import Any
 
 
@@ -247,7 +248,8 @@ def main() -> None:
             )
         )
     except Exception as error:
-        return_error("Failed to render Device Security framework mappings: " f"{error!s}")
+        demisto.error(traceback.format_exc())
+        return_error(f"Failed to render Device Security framework mappings: {error}", error)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

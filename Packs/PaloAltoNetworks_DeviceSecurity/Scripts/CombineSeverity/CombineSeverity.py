@@ -16,17 +16,21 @@ from CommonServerPython import *
 
 
 def main() -> None:
-    # Read the source object containing both severity attributes.
-    value = demisto.args().get("value")
-    if not isinstance(value, dict):
-        return_error("CombineSeverity requires the object containing " "severity and display_severity.")
+    try:
+        # Read the source object containing both severity attributes.
+        value = demisto.args().get("value")
+        if not isinstance(value, dict):
+            return_error("CombineSeverity requires the object containing severity and display_severity.")
+            return
 
-    # Use N/A when either source value is missing or empty.
-    raw_severity = value.get("severity") or "N/A"
-    display_severity = value.get("display_severity") or "N/A"
+        # Use N/A when either source value is missing or empty.
+        raw_severity = value.get("severity") or "N/A"
+        display_severity = value.get("display_severity") or "N/A"
 
-    # Return the combined text for the destination incident field.
-    return_results(f"{raw_severity} / {display_severity}")
+        # Return the combined text for the destination incident field.
+        return_results(f"{raw_severity} / {display_severity}")
+    except Exception as exc:
+        return_error(f"Failed to execute CombineSeverity. Error: {exc}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

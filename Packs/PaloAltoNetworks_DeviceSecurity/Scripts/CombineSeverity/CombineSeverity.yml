@@ -2,6 +2,7 @@ commonfields:
   id: CombineSeverity
   version: -1
 name: CombineSeverity
+comment: Combines raw and display severity values into a single plain-text incident field.
 script: '-'
 type: python
 tags:
@@ -9,6 +10,7 @@ tags:
 enabled: true
 args:
 - name: value
+  description: The source object containing the severity and display_severity values to combine.
 scripttarget: 0
 subtype: python3
 runonce: false

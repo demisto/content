@@ -79,9 +79,16 @@ def test_main_returns_dynamic_section(mocker: MockerFixture) -> None:
 
 
 def test_main_reports_read_failure(mocker: MockerFixture) -> None:
-    mocker.patch.object(framework_mappings.demisto, "incidents", side_effect=ValueError("Incident unavailable"))
+    exception = ValueError("Incident unavailable")
+    mocker.patch.object(framework_mappings.demisto, "incidents", side_effect=exception)
+    log_error = mocker.patch.object(framework_mappings.demisto, "error")
     error = mocker.patch.object(framework_mappings, "return_error")
     results = mocker.patch.object(framework_mappings, "return_results")
     framework_mappings.main()
-    error.assert_called_once_with("Failed to render Device Security framework mappings: Incident unavailable")
+    error.assert_called_once_with("Failed to render Device Security framework mappings: Incident unavailable", exception)
+    log_error.assert_called_once()
+    logged_traceback = log_error.call_args.args[0]
+    assert "Traceback (most recent call last)" in logged_traceback
+    assert "get_event_data" in logged_traceback
+    assert "ValueError: Incident unavailable" in logged_traceback
     results.assert_not_called()

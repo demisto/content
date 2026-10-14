@@ -29,11 +29,23 @@ def test_main_formats_severity(mocker: MockerFixture, value: dict, expected: str
 @pytest.mark.parametrize("value", [None, "high", [], 3])
 def test_main_rejects_non_object_input(mocker: MockerFixture, value: Any) -> None:
     mocker.patch.object(CombineSeverity.demisto, "args", return_value={"value": value})
-    error = mocker.patch.object(CombineSeverity, "return_error", side_effect=ValueError("Invalid input"))
+    error = mocker.patch.object(CombineSeverity, "return_error")
     results = mocker.patch.object(CombineSeverity, "return_results")
 
-    with pytest.raises(ValueError, match="Invalid input"):
-        CombineSeverity.main()
+    CombineSeverity.main()
 
     error.assert_called_once_with("CombineSeverity requires the object containing severity and display_severity.")
     results.assert_not_called()
+
+
+@pytest.mark.parametrize("failure_source", ["args", "return_results"])
+def test_main_handles_unexpected_errors(mocker: MockerFixture, failure_source: str) -> None:
+    args = mocker.patch.object(CombineSeverity.demisto, "args", return_value={"value": {"severity": "high"}})
+    results = mocker.patch.object(CombineSeverity, "return_results")
+    error = mocker.patch.object(CombineSeverity, "return_error")
+    failing_call = args if failure_source == "args" else results
+    failing_call.side_effect = RuntimeError("Unexpected failure")
+
+    CombineSeverity.main()
+
+    error.assert_called_once_with("Failed to execute CombineSeverity. Error: Unexpected failure")

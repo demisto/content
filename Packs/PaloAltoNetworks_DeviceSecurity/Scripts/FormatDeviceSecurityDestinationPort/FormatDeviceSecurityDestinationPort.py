@@ -68,8 +68,11 @@ def format_destination_ports(value: Any) -> str:
 
 
 def main() -> None:
-    value = demisto.args().get("value")
-    return_results(format_destination_ports(value))
+    try:
+        value = demisto.args().get("value")
+        return_results(format_destination_ports(value))
+    except Exception as exc:
+        return_error(f"Failed to execute FormatDeviceSecurityDestinationPort. Error: {exc}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

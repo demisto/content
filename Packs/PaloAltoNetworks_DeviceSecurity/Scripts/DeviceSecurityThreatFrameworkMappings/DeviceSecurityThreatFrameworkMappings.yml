@@ -2,6 +2,7 @@ commonfields:
   id: DeviceSecurityThreatFrameworkMappings
   version: -1
 name: DeviceSecurityThreatFrameworkMappings
+comment: Displays MITRE ATT&CK Enterprise and ICS technique mappings and IEC 62443 references in a dynamic layout section.
 script: '-'
 type: python
 tags:
