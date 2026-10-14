@@ -107,7 +107,7 @@ INCIDENT_NAME_PLACEHOLDER = re.compile(r"\{(\w+)\}")
 
 
 def custom_incident_name_pattern():
-    return (demisto.params().get("customIncidentNamePattern") or "").strip() or None
+    return (demisto.params().get("customIncidentNamePattern") or "").strip()
 
 
 def sanitize_incident_name(name):
@@ -129,7 +129,7 @@ def build_custom_incident_name(alert, pattern):
     return name[: MAX_INCIDENT_NAME_LENGTH - len(TRUNCATION_SUFFIX)].rstrip() + TRUNCATION_SUFFIX
 
 
-def incident_name(alert, pattern=None):
+def incident_name(alert, pattern=""):
     default_name = f"{alert['name']}_{alert['id']}"
     if not pattern:
         return default_name
@@ -139,7 +139,7 @@ def incident_name(alert, pattern=None):
 
 def parse_incident(i, roles=None, name_pattern=None):
     incident = {
-        "name": incident_name(i, name_pattern or custom_incident_name_pattern()),
+        "name": incident_name(i, name_pattern),
         "occurred": datetime.fromtimestamp(i["record_created_at"] / 1000, timezone.utc).isoformat(),  # noqa: UP017
         "severity": parse_severity(i),
         "rawJSON": json.dumps(clean_null_terms(i)),

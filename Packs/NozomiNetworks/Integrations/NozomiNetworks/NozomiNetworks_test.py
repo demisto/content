@@ -818,10 +818,29 @@ def test_incident_name_long_example_is_truncated():
     assert name == "NET:RST-FROM-SLAVE_1af93f46-65c1-4f52-a46a-2a181597fb0c - The slave 10.19..."
 
 
-def test_parse_incident_uses_params():
-    with patch.object(demisto, "params", return_value={"customIncidentNamePattern": "{type_id}_{id}"}):
-        assert parse_incident(CUSTOM_NAME_ALERT)["name"] == "NET:RST-FROM-SLAVE_1af93f46-65c1-4f52-a46a-2a181597fb0c"
-    with patch.object(demisto, "params", return_value={"customIncidentNamePattern": "  "}):
-        assert parse_incident(CUSTOM_NAME_ALERT)["name"] == DEFAULT_NAME
+def test_parse_incident_uses_name_pattern():
+    assert parse_incident(CUSTOM_NAME_ALERT, name_pattern="{type_id}_{id}")["name"] == (
+        "NET:RST-FROM-SLAVE_1af93f46-65c1-4f52-a46a-2a181597fb0c"
+    )
+    assert parse_incident(CUSTOM_NAME_ALERT, name_pattern="  ")["name"] == DEFAULT_NAME
+    assert parse_incident(CUSTOM_NAME_ALERT)["name"] == DEFAULT_NAME
+
+
+def test_custom_incident_name_pattern_from_params():
+    with patch.object(demisto, "params", return_value={"customIncidentNamePattern": "  {type_id}_{id} "}):
+        assert custom_incident_name_pattern() == "{type_id}_{id}"
+    with patch.object(demisto, "params", return_value={"customIncidentNamePattern": "   "}):
+        assert custom_incident_name_pattern() == ""
     with patch.object(demisto, "params", return_value={}):
-        assert parse_incident(CUSTOM_NAME_ALERT)["name"] == DEFAULT_NAME
+        assert custom_incident_name_pattern() == ""
+
+
+def test_incidents_apply_custom_name_pattern_read_once():
+    alerts = [{**CUSTOM_NAME_ALERT, "id": f"id-{n}"} for n in range(3)]
+    with (
+        patch.object(demisto, "params", return_value={"customIncidentNamePattern": "{type_id}_{id}"}) as params,
+        patch("NozomiNetworks.incidents_better_than_time", return_value=alerts),
+    ):
+        parsed, _ = incidents(0, {}, None, False, MagicMock())
+    assert [i["name"] for i in parsed] == [f"NET:RST-FROM-SLAVE_id-{n}" for n in range(3)]
+    assert params.call_count <= 2  # pattern and roles are each read once for the whole batch, not per alert

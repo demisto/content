@@ -18,7 +18,7 @@ This integration is used to gather alert and asset information from Nozomi.
 | incidentPerRun | Specifies the maximum number of incidents to retrieve  | False |
 | customAlertFilter | Custom alert filter. An additional Nozomi query language filter appended to the alerts query, combined with the other fetch filters (for example `where risk >= 8`). The leading `\|` is optional. | False |
 | defaultIncidentRole | Default incident role. The Cortex XSOAR role (or comma-separated roles) assigned to incidents created from fetched alerts. Leave empty to not assign a role. | False |
-| customIncidentNamePattern | Custom incident name pattern                       | False |
+| Custom incident name pattern | The pattern used to build the incident name from Nozomi alert fields, for example `{type_id}_{id} - {description}`. Leave empty to use the default name `{name}_{id}`. See [Custom incident name](#custom-incident-name). | False |
 
 Fetched alerts are mapped to Cortex XSOAR incident severity based on the Nozomi risk: 1-5 Low, 6-7 Medium, 8-9 High, 10 Critical.
 

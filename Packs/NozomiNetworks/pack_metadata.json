@@ -15,7 +15,9 @@
     "beta": false,
     "deprecated": false,
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Nozomi Networks"
+    ],
     "dependencies": {},
     "certification": "certified",
     "marketplaces": [

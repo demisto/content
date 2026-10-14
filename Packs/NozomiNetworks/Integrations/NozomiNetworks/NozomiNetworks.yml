@@ -1,10 +1,11 @@
+name: Nozomi Networks
+display: Nozomi Networks
 commonfields:
   id: Nozomi Networks
   version: -1
-name: Nozomi Networks
-display: Nozomi Networks
 category: Network Security
 provider: Mitsubishi Electric
+supportlevelheader: partner
 fromversion: 5.0.0
 tests:
 - No tests
@@ -109,7 +110,7 @@ configuration:
   type: 0
   section: Collect
   required: false
-  additionalinfo: 'Optional. Builds the incident name by concatenating Nozomi alert fields written as {field} placeholders. For example: {type_id}_{id} - {description}. Missing fields are rendered as empty. The name is limited to 76 characters (longer names are truncated with "..."). Leave empty, or if the result is empty, to use the default name <alert name>_<alert id>.'
+  additionalinfo: 'The pattern used to build the incident name by concatenating Nozomi alert fields written as {field} placeholders. For example: {type_id}_{id} - {description}. Missing fields are rendered as empty. The name is limited to 76 characters (longer names are truncated with "..."). If the pattern is empty, or the resulting name is empty, the default name <alert name>_<alert id> is used.'
 script:
   script: ''
   type: python
