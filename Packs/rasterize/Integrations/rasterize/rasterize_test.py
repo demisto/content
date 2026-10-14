@@ -1999,6 +1999,44 @@ def test_wait_for_page_load_freeze_on_load_defaults_to_true(mocker):
 # endregion
 
 
+# region warn_unless_test_module tests
+
+
+def test_warn_unless_test_module_suppresses_entry_during_test_module(mocker):
+    """
+    Given: The running command is test-module and a non-fatal condition (memory pressure) occurred.
+    When: Calling warn_unless_test_module.
+    Then: No war-room entry is emitted, so test-module keeps returning a single "ok" entry and the
+          debug-log download keeps working. The message is written to the debug log instead.
+    """
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    return_warning_mock = mocker.patch.object(rasterize, "return_warning")
+    debug_mock = mocker.patch.object(demisto, "debug")
+
+    rasterize.warn_unless_test_module("Warning: Rasterize aborted page-load wait due to memory pressure.")
+
+    return_warning_mock.assert_not_called()
+    assert any("memory pressure" in str(call_args) for call_args in debug_mock.call_args_list)
+
+
+@pytest.mark.parametrize("command", ["rasterize", "rasterize-email", "rasterize-html", "rasterize-pdf"])
+def test_warn_unless_test_module_returns_warning_for_other_commands(mocker, command):
+    """
+    Given: The running command is a regular rasterize command and a non-fatal condition occurred.
+    When: Calling warn_unless_test_module.
+    Then: The warning entry is returned as before - the suppression applies only to test-module.
+    """
+    mocker.patch.object(demisto, "command", return_value=command)
+    return_warning_mock = mocker.patch.object(rasterize, "return_warning")
+
+    rasterize.warn_unless_test_module("Warning: some content might be missing.")
+
+    return_warning_mock.assert_called_once_with("Warning: some content might be missing.")
+
+
+# endregion
+
+
 def test_rasterize_extract_command_extraction_error_includes_guidance(mocker):
     """
     Given: A URL that fails extraction with an "Extraction Error:" result
