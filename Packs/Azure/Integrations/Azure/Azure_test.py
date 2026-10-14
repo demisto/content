@@ -3900,7 +3900,7 @@ class TestGetCommandResource:
 @pytest.mark.parametrize(
     "command",
     [
-        "azure-storage-container-list",
+        "azure-storage-containers-list",
         "azure-storage-blob-property-get",
         "azure-storage-blob-property-set",
         "azure-storage-blob-tag-get",
@@ -3912,7 +3912,7 @@ class TestGetCommandResource:
 def test_get_command_and_token_scopes_storage(command):
     """
     Given:
-        A storage-related Azure command name (e.g. 'azure-storage-container-list',
+        A storage-related Azure command name (e.g. 'azure-storage-containers-list',
         'azure-storage-blob-get', etc.).
 
     When:
@@ -3930,7 +3930,7 @@ def test_get_command_and_token_scopes_storage(command):
 @pytest.mark.parametrize(
     "command",
     [
-        "azure-storage-container-list",
+        "azure-storage-containers-list",
         "azure-storage-blob-property-get",
         "azure-storage-blob-property-set",
         "azure-storage-blob-tag-get",
@@ -3942,7 +3942,7 @@ def test_get_command_and_token_scopes_storage(command):
 def test_get_command_resource_storage(command):
     """
     Given:
-        A storage-related Azure command name (e.g. 'azure-storage-container-list',
+        A storage-related Azure command name (e.g. 'azure-storage-containers-list',
         'azure-storage-blob-get', etc.).
 
     When:
@@ -9395,6 +9395,49 @@ def test_storage_blob_container_list_request_invalid_limit_raises(mocker, client
     http_request.assert_not_called()
 
 
+@pytest.mark.parametrize("limit", ["0", "-1", "5001"])
+def test_storage_containers_list_request_invalid_limit_raises(mocker, client, limit):
+    """
+    Given: A limit argument outside the allowed range of 1 to 5000, including 0.
+    When: storage_containers_list_request is called.
+    Then: A DemistoException is raised before any request is sent.
+    """
+    http_request = mocker.patch.object(client, "http_request")
+
+    with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 5000"):
+        client.storage_containers_list_request("mock_account_name", {"limit": limit})
+
+    http_request.assert_not_called()
+
+
+@pytest.mark.parametrize("limit", ["0", "-1", "5001"])
+def test_storage_container_blobs_list_request_invalid_limit_raises(mocker, client, limit):
+    """
+    Given: A limit argument outside the allowed range of 1 to 5000, including 0.
+    When: storage_container_blobs_list_request is called.
+    Then: A DemistoException is raised before any request is sent.
+    """
+    http_request = mocker.patch.object(client, "http_request")
+
+    with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 5000"):
+        client.storage_container_blobs_list_request("mock_account_name", "mock-container-1", {"limit": limit})
+
+    http_request.assert_not_called()
+
+
+def test_storage_containers_list_request_sends_maxresults_for_valid_limit(mocker, client):
+    """
+    Given: A valid limit argument.
+    When: storage_containers_list_request is called.
+    Then: The limit is sent to Azure as the maxresults query parameter.
+    """
+    http_request = mocker.patch.object(client, "http_request", return_value="<EnumerationResults />")
+
+    client.storage_containers_list_request("mock_account_name", {"limit": "2"})
+
+    assert http_request.call_args.kwargs["params"]["maxresults"] == "2"
+
+
 def test_storage_account_list_command_surfaces_next_token(mocker):
     """
     Given: An Azure client mock returning a list of storage accounts with a nextLink.
@@ -9566,6 +9609,67 @@ def test_storage_container_blob_list_command_no_results(mocker):
     result = storage_container_blob_list_command(mock_client, {}, args)
 
     assert result.readable_output == "No blobs were found in container mock-container-1."
+
+
+@pytest.mark.parametrize(
+    "next_marker_xml, expected_token, expect_more_pages_message",
+    [
+        ("<NextMarker>mock-next-marker</NextMarker>", "mock-next-marker", True),
+        ("<NextMarker />", None, False),
+    ],
+)
+def test_storage_container_list_command_empty_page_token_handling(
+    mocker, next_marker_xml, expected_token, expect_more_pages_message
+):
+    """
+    Given: An Azure client whose storage_containers_list_request returns a page with no containers,
+        either with a continuation marker (more pages exist) or without one (last page).
+    When: storage_container_list_command is called.
+    Then: ContainersNextToken is always written (the marker, or None to overwrite a stale token),
+        and the readable output mentions more pages only when a marker is present.
+    """
+    from Azure import storage_container_list_command
+
+    empty_page = f'<?xml version="1.0" encoding="utf-8"?><EnumerationResults><Containers />{next_marker_xml}</EnumerationResults>'
+    mock_client = mocker.Mock()
+    mock_client.storage_containers_list_request.return_value = empty_page
+
+    result = storage_container_list_command(mock_client, {}, {"account_name": "mock_account_name"})
+
+    assert result.outputs["Azure.Storage(true)"]["ContainersNextToken"] == expected_token
+    assert result.readable_output.startswith("No containers were found.")
+    assert ("More pages are available" in result.readable_output) is expect_more_pages_message
+
+
+@pytest.mark.parametrize(
+    "next_marker_xml, expected_token, expect_more_pages_message",
+    [
+        ("<NextMarker>mock-next-marker</NextMarker>", "mock-next-marker", True),
+        ("<NextMarker />", None, False),
+    ],
+)
+def test_storage_container_blob_list_command_empty_page_token_handling(
+    mocker, next_marker_xml, expected_token, expect_more_pages_message
+):
+    """
+    Given: An Azure client whose storage_container_blobs_list_request returns a page with no blobs,
+        either with a continuation marker (more pages exist) or without one (last page).
+    When: storage_container_blob_list_command is called.
+    Then: BlobsNextToken is always written (the marker, or None to overwrite a stale token),
+        and the readable output mentions more pages only when a marker is present.
+    """
+    from Azure import storage_container_blob_list_command
+
+    empty_page = f'<?xml version="1.0" encoding="utf-8"?><EnumerationResults><Blobs />{next_marker_xml}</EnumerationResults>'
+    mock_client = mocker.Mock()
+    mock_client.storage_container_blobs_list_request.return_value = empty_page
+
+    args = {"account_name": "mock_account_name", "container_name": "mock-container-1"}
+    result = storage_container_blob_list_command(mock_client, {}, args)
+
+    assert result.outputs["Azure.Storage(true)"]["BlobsNextToken"] == expected_token
+    assert result.readable_output.startswith("No blobs were found in container mock-container-1.")
+    assert ("More pages are available" in result.readable_output) is expect_more_pages_message
 
 
 def test_storage_container_blob_update_command_success(mocker):

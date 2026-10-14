@@ -3823,14 +3823,14 @@ Deletes a Front Door Web Application Firewall (WAF) policy. Required permission:
 
 There is no context output for this command.
 
-### azure-storage-container-list
+### azure-storage-containers-list
 
 ***
 Lists containers under the specified storage account. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/read.
 
 #### Base Command
 
-`azure-storage-container-list`
+`azure-storage-containers-list`
 
 #### Input
 
@@ -3853,14 +3853,14 @@ Lists containers under the specified storage account. Required permission: Micro
 | Azure.Storage.Container.Property.LeaseState | String | The lease state of the container. |
 | Azure.Storage.ContainersNextToken | String | The continuation token to use when requesting the next set of containers. |
 
-### azure-storage-blob-list
+### azure-storage-blobs-list
 
 ***
 Lists blobs under the specified container. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read.
 
 #### Base Command
 
-`azure-storage-blob-list`
+`azure-storage-blobs-list`
 
 #### Input
 

@@ -6,6 +6,7 @@ from MicrosoftApiModule import *  # noqa: E402
 from COOCApiModule import *
 from requests.exceptions import ConnectionError, Timeout
 import datetime as dt
+import itertools
 import hmac
 import hashlib
 import base64
@@ -110,7 +111,7 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Storage/storageAccounts/blobServices/containers/read": [
         "azure-storage-container-property-get",
         "azure-storage-blob-containers-list",
-        "azure-storage-container-list",
+        "azure-storage-containers-list",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/delete": ["azure-storage-container-delete"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": [
@@ -125,7 +126,7 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-storage-blob-get",
         "azure-storage-container-blob-property-get",
         "azure-storage-blob-property-get",
-        "azure-storage-blob-list",
+        "azure-storage-blobs-list",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete": ["azure-storage-blob-delete"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read": [
@@ -583,7 +584,7 @@ STORAGE_BLOB_SPECIAL_COMMANDS = [
     "azure-storage-blob-create",
     "azure-storage-blob-get",
     "azure-storage-blob-tag-set",
-    "azure-storage-blob-list",
+    "azure-storage-blobs-list",
     "azure-storage-blob-update",
     "azure-storage-blob-delete",
 ]
@@ -1570,7 +1571,8 @@ class AzureClient:
         if next_token:
             demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of containers.")
             params["marker"] = next_token
-        if limit := arg_to_number(args.get("limit")):
+        limit = arg_to_number(args.get("limit"))
+        if limit is not None:
             validate_limit(limit, max_limit=BLOB_CONTAINERS_MAX_PAGE_SIZE)
             params["maxresults"] = str(limit)
 
@@ -1602,7 +1604,8 @@ class AzureClient:
         if next_token:
             demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of blobs.")
             params["marker"] = next_token
-        if limit := arg_to_number(args.get("limit")):
+        limit = arg_to_number(args.get("limit"))
+        if limit is not None:
             validate_limit(limit, max_limit=BLOB_CONTAINERS_MAX_PAGE_SIZE)
             params["maxresults"] = str(limit)
 
@@ -4634,14 +4637,19 @@ def storage_container_list_command(client: AzureClient, params: dict, args: dict
                 properties[attribute.tag] = attribute.text
         containers.append({"name": element.findtext("Name"), "Property": properties})
 
-    if not containers:
-        return CommandResults(readable_output="No containers were found.", raw_response=response)
+    # Azure returns an empty <NextMarker /> on the last page; normalize it to None so a stale token is overwritten.
+    next_token = root.findtext("NextMarker") or None
+    token_output = {"Azure.Storage(true)": {"ContainersNextToken": next_token}}
 
-    next_token = root.findtext("NextMarker")
+    if not containers:
+        readable_output = "No containers were found."
+        if next_token:
+            readable_output += " More pages are available - re-run the command with the next_token argument to continue."
+        return CommandResults(readable_output=readable_output, outputs=token_output, raw_response=response)
 
     outputs = {
-        "Azure.Storage.Container(val.name && val.name == obj.name)": containers,
-        "Azure.Storage(true)": {"ContainersNextToken": next_token},
+        "Azure.Storage.Container(val.name && val.name == obj.name)": remove_empty_elements(containers),
+        **token_output,
     }
 
     readable_output = tableToMarkdown(
@@ -4653,7 +4661,7 @@ def storage_container_list_command(client: AzureClient, params: dict, args: dict
     )
 
     return CommandResults(
-        outputs=remove_empty_elements(outputs),
+        outputs=outputs,
         readable_output=readable_output,
         raw_response=response,
     )
@@ -4687,17 +4695,21 @@ def storage_container_blob_list_command(client: AzureClient, params: dict, args:
                 properties[attribute.tag] = attribute.text
         blobs.append({"name": element.findtext("Name"), "Property": properties})
 
-    if not blobs:
-        return CommandResults(readable_output=f"No blobs were found in container {container_name}.", raw_response=response)
+    # Azure returns an empty <NextMarker /> on the last page; normalize it to None so a stale token is overwritten.
+    next_token = root.findtext("NextMarker") or None
+    token_output = {"Azure.Storage(true)": {"BlobsNextToken": next_token}}
 
-    next_token = root.findtext("NextMarker")
+    if not blobs:
+        readable_output = f"No blobs were found in container {container_name}."
+        if next_token:
+            readable_output += " More pages are available - re-run the command with the next_token argument to continue."
+        return CommandResults(readable_output=readable_output, outputs=token_output, raw_response=response)
 
     outputs = {
-        "Azure.Storage.Blob(val.ContainerName && val.ContainerName == obj.ContainerName)": {
-            "ContainerName": container_name,
-            "Blob": blobs,
-        },
-        "Azure.Storage(true)": {"BlobsNextToken": next_token},
+        "Azure.Storage.Blob(val.ContainerName && val.ContainerName == obj.ContainerName)": remove_empty_elements(
+            {"ContainerName": container_name, "Blob": blobs}
+        ),
+        **token_output,
     }
 
     readable_output = tableToMarkdown(
@@ -4709,7 +4721,7 @@ def storage_container_blob_list_command(client: AzureClient, params: dict, args:
     )
 
     return CommandResults(
-        outputs=remove_empty_elements(outputs),
+        outputs=outputs,
         readable_output=readable_output,
         raw_response=response,
     )
@@ -4775,13 +4787,12 @@ def check_valid_permission(valid_permissions: str, input_permissions: str) -> bo
         bool: True if the given permissions are valid and in the correct order.
 
     """
-    permissions_length = len(input_permissions)
-    if len(valid_permissions) < permissions_length:
+    if not input_permissions or len(input_permissions) > len(valid_permissions):
         return False
-    for i in range(permissions_length - 1):
-        last = valid_permissions.rindex(input_permissions[i])
-        first = valid_permissions.index(input_permissions[i + 1])
-        if last == -1 or first == -1 or last > first:
+    if any(permission not in valid_permissions for permission in input_permissions):
+        return False
+    for current_permission, next_permission in itertools.pairwise(input_permissions):
+        if valid_permissions.index(current_permission) > valid_permissions.index(next_permission):
             return False
     return True
 
@@ -4868,9 +4879,10 @@ def generate_sas_token_command(client: AzureClient, params: dict, args: dict) ->
     if not account_key:
         raise DemistoException("An account key must be given to generate the SAS token.")
 
-    signed_start = (dt.datetime.utcnow() - dt.timedelta(minutes=2)).strftime(DATE_FORMAT)
-    expiry_time = arg_to_number(args["expiry_time"])
-    signed_expiry = (dt.datetime.utcnow() + dt.timedelta(hours=expiry_time)).strftime(DATE_FORMAT)  # type: ignore[arg-type]
+    now = dt.datetime.now(UTC)
+    signed_start = (now - dt.timedelta(minutes=2)).strftime(DATE_FORMAT)
+    expiry_time = arg_to_number(args.get("expiry_time")) or 1
+    signed_expiry = (now + dt.timedelta(hours=expiry_time)).strftime(DATE_FORMAT)
 
     canonicalized_resource = f"/blob/{account_name}/{container_name}"
     url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}"
@@ -7694,8 +7706,8 @@ def main():  # pragma: no cover
             "azure-storage-container-blob-property-set": storage_container_blob_property_set_command,
             "azure-storage-blob-property-set": storage_container_blob_property_set_command,
             "azure-storage-container-public-access-block": storage_container_block_public_access_command,
-            "azure-storage-container-list": storage_container_list_command,
-            "azure-storage-blob-list": storage_container_blob_list_command,
+            "azure-storage-containers-list": storage_container_list_command,
+            "azure-storage-blobs-list": storage_container_blob_list_command,
             "azure-storage-blob-update": storage_container_blob_update_command,
             "azure-storage-blob-delete": storage_container_blob_delete_command,
             "azure-storage-container-sas-create": generate_sas_token_command,

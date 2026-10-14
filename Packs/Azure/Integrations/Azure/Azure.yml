@@ -1253,7 +1253,7 @@ script:
     execution: true
     name: azure-storage-container-delete
 
-  - name: azure-storage-container-list
+  - name: azure-storage-containers-list
     description: "Lists containers under the specified storage account. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/read."
     arguments:
     - name: account_name
@@ -1290,7 +1290,7 @@ script:
       description: The continuation token to use when requesting the next set of containers.
       type: String
 
-  - name: azure-storage-blob-list
+  - name: azure-storage-blobs-list
     description: "Lists blobs under the specified container. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read."
     arguments:
     - name: container_name
