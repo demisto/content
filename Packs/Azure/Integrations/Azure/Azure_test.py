@@ -9584,7 +9584,7 @@ def test_resource_graph_query_resources_command_no_results(mocker):
     """
     Given: An Azure client mock returning no data for a Resource Graph query.
     When: resource_graph_query_resources_command is called.
-    Then: It returns CommandResults with a "no resources found" readable output and no context.
+    Then: It returns CommandResults with a "no resources found" readable output and clears the stale QueryNextToken.
     """
     from Azure import resource_graph_query_resources_command
 
@@ -9593,7 +9593,7 @@ def test_resource_graph_query_resources_command_no_results(mocker):
 
     result = resource_graph_query_resources_command(mock_client, {}, {"query": "Resources | limit 1"})
 
-    assert result.outputs is None
+    assert result.outputs == {QUERY_NEXT_TOKEN_PATH: {"QueryNextToken": None}}
     assert result.readable_output == "No resources were found for the given query."
 
 
