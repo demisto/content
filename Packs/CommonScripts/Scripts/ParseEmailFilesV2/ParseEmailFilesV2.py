@@ -6,6 +6,7 @@ from pathlib import Path
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from parse_emails.handle_eml import get_attachment_filename
 from parse_emails.parse_emails import EmailParser
 
 logger = logging.getLogger("parse-email")  # type: ignore[assignment]
@@ -65,7 +66,8 @@ def remove_root_attachment_disposition(file_path: str) -> str:
     """
     The email parser handles an email whose top-level part is marked as an attachment (`Content-Disposition: attachment`)
     as a single attachment, so the emails attached to it are not parsed.
-    If such an email contains an attached email, saves a copy of the file without the `Content-Disposition` header
+    If such an email contains an attached email (`message/rfc822`, or an `application/octet-stream` file named `.eml`, as the
+    parser identifies attached emails), saves a copy of the file without the `Content-Disposition` header
     of the top-level part, so that the parser handles it as a regular email. The rest of the file is copied as is.
 
     Args:
@@ -82,7 +84,11 @@ def remove_root_attachment_disposition(file_path: str) -> str:
     if headers.get_content_maintype() != "multipart" or "attachment" not in str(headers.get("Content-Disposition", "")):
         return file_path
 
-    if not any(part.get_content_type() == "message/rfc822" for part in message_from_bytes(content).walk()):
+    if not any(
+        part.get_content_type() == "message/rfc822"
+        or (part.get_content_type() == "application/octet-stream" and (get_attachment_filename(part) or "").endswith(".eml"))
+        for part in message_from_bytes(content).walk()
+    ):
         return file_path
 
     header_lines: list[bytes] = []
