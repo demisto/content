@@ -4,7 +4,7 @@ commonfields:
 name: Xporter
 display: Xporter
 category: Utilities
-provider: Palo Alto Networks
+provider: Jon Huebner
 description: Pushes XSOAR 6 or XSOAR 8 incidents to Cortex XSIAM as parsed alerts using the Insert Parsed Alerts API.
 sectionorder:
   - Connect

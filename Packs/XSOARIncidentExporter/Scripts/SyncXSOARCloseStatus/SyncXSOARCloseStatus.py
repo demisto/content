@@ -82,7 +82,7 @@ def main():
     xsiam_url = args.get('xsiam_url', '').rstrip('/')
     xsiam_api_key = args.get('xsiam_api_key', '')
     xsiam_api_key_id = args.get('xsiam_api_key_id', '')
-    verify = not argToBoolean(args.get('insecure', 'true'))
+    verify = not argToBoolean(args.get('insecure', 'false'))
     max_alerts = arg_to_number(args.get('max_alerts')) or 100
 
     if not xsiam_url or not xsiam_api_key or not xsiam_api_key_id:
