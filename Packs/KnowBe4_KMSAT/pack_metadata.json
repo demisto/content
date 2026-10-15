@@ -1,10 +1,10 @@
 {
-    "name": "KMSAT",
-    "description": "KnowBe4 KMSAT Integration",
+    "name": "KSAT",
+    "description": "KnowBe4 KSAT Integration",
     "support": "partner",
-    "currentVersion": "1.0.46",
+    "currentVersion": "1.0.47",
     "author": "KnowBe4",
-    "url": "https://www.knowbe4.com/products/kevin-mitnick-security-awareness-training",
+    "url": "https://www.knowbe4.com/products/security-awareness-training",
     "email": "support@knowbe4.com",
     "categories": [
         "Network Security"
@@ -19,6 +19,7 @@
     "keywords": [
         "KnowBe4",
         "KMSAT",
+        "KSAT",
         "security awareness",
         "Kevin Mitnick",
         "security training",
