@@ -1,6 +1,0 @@
-[INGEST:vendor="nvidia", product="openshell", target_dataset="nvidia_openshell_raw", no_hit=keep]
-// Supports epoch milliseconds (OCSF "time") or the leading UTC timestamp of a supervisor log line, e.g. "2026-10-14T17:19:53.987Z OCSF-JSON {...}".
-filter to_integer(time) != null or coalesce(log, _raw_log) ~= "^\"?\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"
-| alter _time = coalesce(
-    to_timestamp(to_integer(time), "MILLIS"),
-    parse_timestamp("%FT%H:%M:%E*SZ", arrayindex(regextract(coalesce(log, _raw_log), "^\"?(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)"), 0)));
