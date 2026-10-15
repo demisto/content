@@ -96,7 +96,7 @@ def format_comment(event_type: str, username: str, status_timestamp: str, commen
     )
 
 
-def format_updates_comment(incident: dict, labels_cache: dict) -> str:
+def format_updates_comment(client: 'Client', incident: dict, labels_cache: dict) -> str:
     total_events = html.escape(str(incident.get("totalEvents", 1)))
 
     affected_targets_users = {
@@ -111,11 +111,20 @@ def format_updates_comment(incident: dict, labels_cache: dict) -> str:
         for target in incident.get("targetsSamples", [])
         if target.get("type", "") == "user"
     }
-    affected_environments_endpoints = {
-        html.escape(labels_cache.get(str(target.get("label", "0")), {"name": "Unknown Label"})["name"])
-        for target in incident.get("targetsSamples", [])
-        if target.get("type", "") != "user"
-    }
+    
+    affected_environments_endpoints = set()
+    for target in incident.get("targetsSamples", []):
+        if target.get("type", "") != "user":
+            label_id = str(target.get("label", "0"))
+                        
+            if label_id not in labels_cache:
+                demisto.debug(f"Label ID {label_id} not found in cache. Retrieving from API.")
+                labels_cache[label_id] = client.retrieve_a_specific_label_request(label_id=label_id)
+            label_name = labels_cache.get(label_id, {"name": "Unknown Label"})["name"]
+                
+            affected_environments_endpoints.add(
+                html.escape(label_name)
+            )
 
     offenders: set[str] = {offender.get("value") or offender.get("name", "") for offender in incident.get("offendersSamples", [])}
     offenders = {html.escape(offender.replace(".", "[.]")) for offender in offenders}
@@ -795,7 +804,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
         "labels": {},
     }
     if not cache.get("users") or len(cache["users"]) == 1:
-        demisto.info("Initializing users cache with API User and all other users from the system")
+        demisto.info("Initializing users cache with API User only")
         cache["users"] = {
             "0": UserDictType(
                 {
@@ -808,11 +817,10 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
                 }
             )
         }
-        for user in client.list_all_users():
-            cache["users"][str(user["id"])] = cast(UserDictType, user)
+
 
     if not cache.get("labels") or len(cache["labels"]) == 1:
-        demisto.info("Initializing labels cache with Unlabeled activity and all other labels from the system")
+        demisto.info("Initializing labels cache with Unlabeled activity only")
         cache["labels"] = {
             "0": LabelDictType(
                 {
@@ -822,8 +830,6 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
                 }
             )
         }
-        for label in client.list_all_labels():
-            cache["labels"][str(label["id"])] = label
 
     demisto.info(
         f"Retrieved integration context: {cache.keys()}, size: {len(cache)}, {[f'{key}: {len(cache[key])}' for key in cache]}"
@@ -884,6 +890,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
             status_timestamp = details.get("statusTimestamp", datetime.now(UTC).isoformat())
             user_id = user_id or details.get("lastAssignee", 0)
             if not cache["users"].get(str(user_id)):
+                demisto.debug(f"User ID {user_id} not found in cache. Retrieving from API.")
                 cache["users"][str(user_id)] = client.retrieve_a_specific_user_request(user_id=user_id)
             username = cache["users"][str(user_id)]["name"]
             text = format_comment(event_type, username, status_timestamp, comment)
@@ -910,7 +917,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
 
         if event_type in [UPDATE_MESSAGE_TYPE, NEW_MESSAGE_TYPE]:
             label_cache = cache.get("labels") or {}
-            html_text_content = format_updates_comment(details, label_cache)
+            html_text_content = format_updates_comment(client, details, label_cache)
             demisto.info(f"Event: {event_type} - Incident: {incident_id} - posting Content on WarRoom")
             parsed_entries.append(
                 {
@@ -1021,10 +1028,10 @@ def test_module(client: Client, args: dict[str, Any]) -> str:
             "labels": {},
         }
 
-        for label in client.list_all_labels():
+        for label in client.list_all_labels(items_per_page=1, max_pages=1):
             cache["labels"][str(label["id"])] = cast(LabelDictType, label)
 
-        for user in client.list_all_users():
+        for user in client.list_all_users(items_per_page=1, max_pages=1):
             cache["users"][str(user["id"])] = cast(UserDictType, user)
         set_integration_context(cache)
         return "ok"
