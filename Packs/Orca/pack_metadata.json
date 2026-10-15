@@ -23,7 +23,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "Orca Event Collector",
     "supportedModules": [
         "agentix",
         "xsiam",

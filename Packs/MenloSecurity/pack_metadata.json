@@ -30,7 +30,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "Menlo Security",
     "supportedModules": [
         "xsiam"
     ]
