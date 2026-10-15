@@ -5130,6 +5130,252 @@ script:
     - description: The name of the rule to delete.
       name: security_rule_name
       required: true
+  - name: azure-vn-ip-group-create
+    description: "Creates an IP group resource and polls until the IP group is fully provisioned. Required permissions: Microsoft.Network/ipGroups/write, Microsoft.Network/ipGroups/read."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: ip_group_name
+      description: The name of the IP group to create.
+      required: true
+    - name: location
+      description: The Azure region in which to create the IP group.
+      required: true
+    - name: ip_addresses
+      description: A comma-separated list of IP addresses or IP address prefixes to include in the IP group (for example, "10.0.0.1,10.1.0.0/24").
+      isArray: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: '30'
+    - name: polling_timeout
+      description: The time, in seconds, after which polling stops. Must be a positive number.
+      required: false
+      defaultValue: '600'
+    - name: hide_polling_output
+      description: Whether to hide the polling message and display only the final status.
+      hidden: true
+    - name: ip_group_created
+      description: Whether the IP group was already created. If true, the next polling runs only check its provisioning state. For internal use only.
+      hidden: true
+    outputs:
+    - contextPath: Azure.VirtualNetworks.IPGroups.id
+      description: The IP group resource ID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.name
+      description: The name of the IP group resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.location
+      description: The resource location.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.etag
+      description: The ETag of the IP group. The ETag prevents concurrent updates from overwriting each other.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.tags
+      description: A dictionary of the tags assigned to the IP group.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.IPGroups.properties.provisioningState
+      description: The provisioning state of the IP group resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.properties.ipAddresses
+      description: A list of the IP addresses or IP address prefixes in the IP group.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.IPGroups.properties.firewalls
+      description: A list of references to the firewalls that use the IP group.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.IPGroups.properties.firewallPolicies
+      description: A list of references to the firewall policies that use the IP group.
+      type: Unknown
+    compliantpolicies:
+    - Domain Blockage
+  - name: azure-vn-ip-group-update
+    description: "Updates an IP group resource by adding or removing IP addresses and polls until the IP group is fully provisioned. Required permissions: Microsoft.Network/ipGroups/read, Microsoft.Network/ipGroups/write."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: ip_group_name
+      description: The name of the IP group to update.
+      required: true
+    - name: ip_addresses_to_add
+      description: A comma-separated list of IP addresses or IP address prefixes to add to the IP group (for example, "10.0.0.1,10.1.0.0/24"). It is mandatory to provide ip_addresses_to_add, ip_addresses_to_remove, or both.
+      isArray: true
+    - name: ip_addresses_to_remove
+      description: A comma-separated list of IP addresses or IP address prefixes to remove from the IP group (for example, "10.0.0.1,10.1.0.0/24"). Addresses that are not in the IP group are ignored. It is mandatory to provide ip_addresses_to_add, ip_addresses_to_remove, or both.
+      isArray: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: '30'
+    - name: polling_timeout
+      description: The time, in seconds, after which polling stops. Must be a positive number.
+      required: false
+      defaultValue: '600'
+    - name: hide_polling_output
+      description: Whether to hide the polling message and display only the final status.
+      hidden: true
+    - name: ip_group_updated
+      description: Whether the IP group was already updated. If true, the next polling runs only check its provisioning state. For internal use only.
+      hidden: true
+    outputs:
+    - contextPath: Azure.VirtualNetworks.IPGroups.id
+      description: The IP group resource ID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.name
+      description: The name of the IP group resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.location
+      description: The resource location.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.etag
+      description: The ETag of the IP group. The ETag prevents concurrent updates from overwriting each other.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.tags
+      description: A dictionary of the tags assigned to the IP group.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.IPGroups.properties.provisioningState
+      description: The provisioning state of the IP group resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.properties.ipAddresses
+      description: A list of the IP addresses or IP address prefixes in the IP group.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.IPGroups.properties.firewalls
+      description: A list of references to the firewalls that use the IP group.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.IPGroups.properties.firewallPolicies
+      description: A list of references to the firewall policies that use the IP group.
+      type: Unknown
+  - name: azure-vn-ip-group-get
+    description: "Retrieves an IP group resource. Required permissions: Microsoft.Network/ipGroups/read."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: ip_group_name
+      description: The name of the IP group to retrieve.
+      required: true
+    outputs:
+    - contextPath: Azure.VirtualNetworks.IPGroups.id
+      description: The IP group resource ID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.name
+      description: The name of the IP group resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.location
+      description: The resource location.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.etag
+      description: The ETag of the IP group. The ETag prevents concurrent updates from overwriting each other.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.tags
+      description: A dictionary of the tags assigned to the IP group.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.IPGroups.properties.provisioningState
+      description: The provisioning state of the IP group resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.properties.ipAddresses
+      description: A list of the IP addresses or IP address prefixes in the IP group.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.IPGroups.properties.firewalls
+      description: A list of references to the firewalls that use the IP group.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.IPGroups.properties.firewallPolicies
+      description: A list of references to the firewall policies that use the IP group.
+      type: Unknown
+  - name: azure-vn-ip-groups-list
+    description: "Lists the IP groups in a resource group, or in the subscription when no resource group is provided. Use the next_token argument to view the next page of results. Required permissions: Microsoft.Network/ipGroups/read."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group. When not provided, the IP groups are listed for the entire subscription.
+      type: String
+      required: false
+    - name: next_token
+      description: The token for retrieving the next page of results. Use the Azure.VirtualNetworks.IPGroupsNextToken value from the previous response.
+    outputs:
+    - contextPath: Azure.VirtualNetworks.IPGroups.id
+      description: The IP group resource ID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.name
+      description: The name of the IP group resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.location
+      description: The resource location.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.etag
+      description: The ETag of the IP group. The ETag prevents concurrent updates from overwriting each other.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.tags
+      description: A dictionary of the tags assigned to the IP group.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.IPGroups.properties.provisioningState
+      description: The provisioning state of the IP group resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.IPGroups.properties.ipAddresses
+      description: A list of the IP addresses or IP address prefixes in the IP group.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.IPGroups.properties.firewalls
+      description: A list of references to the firewalls that use the IP group.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.IPGroups.properties.firewallPolicies
+      description: A list of references to the firewall policies that use the IP group.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.IPGroupsNextToken
+      description: The URI to use when requesting the next set of IP groups.
+      type: String
+  - name: azure-vn-ip-group-delete
+    description: "Deletes an IP group resource. Required permissions: Microsoft.Network/ipGroups/delete."
+    execution: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: ip_group_name
+      description: The name of the IP group to delete.
+      required: true
   - description: Gets all resource groups for a subscription. The command is deprecated, please use azure-rm-resource-groups-list.
     name: azure-nsg-resource-group-list
     deprecated: true
