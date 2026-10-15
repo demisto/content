@@ -2,6 +2,13 @@ The Nozomi Networks integration enables the collection of alert and asset inform
 
 This integration is used to gather alert and asset information from Nozomi.
 
+## Features
+
+The integration provides the following capabilities:
+
+1. **Fetch Incidents**: Retrieve incidents directly from Nozomi Networks.
+2. **Execute Commands**: Perform actions to gather and update data from Nozomi Networks.
+
 ## Configure Nozomi Networks in Cortex
 
 | **Parameter** | **Description**                                        | **Required** |
