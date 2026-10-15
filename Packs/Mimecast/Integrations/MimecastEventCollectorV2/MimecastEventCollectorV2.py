@@ -676,6 +676,10 @@ async def get_siem_events(
             event_type=EventTypes.SIEM,
         )
         all_events.extend(deduplicated_events)
+        demisto.debug(
+            f"{log_prefix} Fetched {page_number=} with {len(page_events)} events, "
+            f"{len(deduplicated_events)} new after deduplication. Total collected: {len(all_events)}."
+        )
 
         # If number of page events is less than requested page size *or* no next page, assume no more events to fetch
         if len(page_events) < page_size or next_page is None:
