@@ -16,6 +16,7 @@ This integration was integrated and tested with version `1.0.0` of CTM360_Hacker
 | First fetch (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours) | The time the incidents should be fetched starting from. | False |
 | API Key | The CTM360 HackerView API Key to use for fetching data. | True |
 | Maximum Number of Incidents per Fetch | The maximum number of incidents to fetch per run. Maximum is 200. | True |
+| Severities to Fetch | Fetch only these severities. Leave empty to fetch all severities. Applies to Light Scan and Deep Scan. | False |
 | Fetch incidents |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
