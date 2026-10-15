@@ -5,7 +5,7 @@ commonfields:
   version: -1
 category: Network Security
 provider: Mitsubishi Electric
-supportlevelheader: partner
+supportlevelheader: xsoar
 fromversion: 5.0.0
 tests:
 - No tests

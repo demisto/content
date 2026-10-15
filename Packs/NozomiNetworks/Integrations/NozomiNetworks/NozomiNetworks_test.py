@@ -827,20 +827,28 @@ def test_parse_incident_uses_name_pattern():
 
 
 def test_custom_incident_name_pattern_from_params():
-    with patch.object(demisto, "params", return_value={"customIncidentNamePattern": "  {type_id}_{id} "}):
-        assert custom_incident_name_pattern() == "{type_id}_{id}"
-    with patch.object(demisto, "params", return_value={"customIncidentNamePattern": "   "}):
-        assert custom_incident_name_pattern() == ""
-    with patch.object(demisto, "params", return_value={}):
-        assert custom_incident_name_pattern() == ""
+    assert custom_incident_name_pattern({"customIncidentNamePattern": "  {type_id}_{id} "}) == "{type_id}_{id}"
+    assert custom_incident_name_pattern({"customIncidentNamePattern": "   "}) == ""
+    assert custom_incident_name_pattern({"customIncidentNamePattern": None}) == ""
+    assert custom_incident_name_pattern({}) == ""
 
 
-def test_incidents_apply_custom_name_pattern_read_once():
+def test_incidents_apply_custom_name_pattern():
     alerts = [{**CUSTOM_NAME_ALERT, "id": f"id-{n}"} for n in range(3)]
+    with patch("NozomiNetworks.incidents_better_than_time", return_value=alerts):
+        parsed, _ = incidents(0, {}, None, False, MagicMock(), "{type_id}_{id}")
+        default_named, _ = incidents(0, {}, None, False, MagicMock())
+    assert [i["name"] for i in parsed] == [f"NET:RST-FROM-SLAVE_id-{n}" for n in range(3)]
+    assert [i["name"] for i in default_named] == [f"Link RST sent by Slave_id-{n}" for n in range(3)]
+
+
+def test_fetch_incidents_reads_name_pattern_from_params():
+    alerts = [CUSTOM_NAME_ALERT]
+    params = {"customIncidentNamePattern": "{type_id}_{id}", "fetchTime": "7 days"}
     with (
-        patch.object(demisto, "params", return_value={"customIncidentNamePattern": "{type_id}_{id}"}) as params,
+        patch.object(demisto, "params", return_value=params),
+        patch.object(demisto, "getLastRun", return_value={}),
         patch("NozomiNetworks.incidents_better_than_time", return_value=alerts),
     ):
-        parsed, _ = incidents(0, {}, None, False, MagicMock())
-    assert [i["name"] for i in parsed] == [f"NET:RST-FROM-SLAVE_id-{n}" for n in range(3)]
-    assert params.call_count <= 2  # pattern and roles are each read once for the whole batch, not per alert
+        parsed, _ = fetch_incidents(MagicMock(), st="0", last_run={}, test_mode=True)
+    assert parsed[0]["name"] == "NET:RST-FROM-SLAVE_1af93f46-65c1-4f52-a46a-2a181597fb0c"

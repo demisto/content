@@ -106,8 +106,8 @@ TRUNCATION_SUFFIX = "..."
 INCIDENT_NAME_PLACEHOLDER = re.compile(r"\{(\w+)\}")
 
 
-def custom_incident_name_pattern():
-    return (demisto.params().get("customIncidentNamePattern") or "").strip()
+def custom_incident_name_pattern(params):
+    return (params.get("customIncidentNamePattern") or "").strip()
 
 
 def sanitize_incident_name(name):
@@ -254,7 +254,7 @@ def default_incident_roles():
     return argToList(demisto.params().get("defaultIncidentRole"))
 
 
-def incidents(st, last_run, risk, also_n2os_incidents, client):
+def incidents(st, last_run, risk, also_n2os_incidents, client, name_pattern=""):
     def get_incident_name(i):
         return i["name"]
 
@@ -272,7 +272,6 @@ def incidents(st, last_run, risk, also_n2os_incidents, client):
         return [], lft
 
     roles = default_incident_roles()
-    name_pattern = custom_incident_name_pattern()
     parsed_incidents = [parse_incident(i, roles, name_pattern) for i in ibtt]
     parsed_incidents.sort(key=get_incident_name)
 
@@ -363,7 +362,9 @@ def fetch_incidents(client, st=None, last_run=None, risk=None, fetch_also_n2os_i
     risk = risk or demisto.params().get("riskFrom", None)
     fetch_also_n2os_incidents = fetch_also_n2os_incidents or demisto.params().get("fecthAlsoIncidents", False)
 
-    demisto_incidents, last_fetch = incidents(st, last_run, risk, fetch_also_n2os_incidents, client)
+    name_pattern = custom_incident_name_pattern(demisto.params())
+
+    demisto_incidents, last_fetch = incidents(st, last_run, risk, fetch_also_n2os_incidents, client, name_pattern)
 
     if not test_mode:
         next_page = build_next_page(last_run.get("page", 1), len(demisto_incidents))
