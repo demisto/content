@@ -9486,30 +9486,23 @@ def test_virtual_networks_list_command(mocker):
     assert result.outputs_prefix == "Azure.VirtualNetworks.VirtualNetworks"
     assert result.outputs_key_field == "id"
     assert len(result.outputs) == 2
+    assert [item["name"] for item in result.outputs] == ["vnet1", "vnet2"]
 
     first = result.outputs[0]
-    assert first["name"] == "vnet1"
     assert first["id"] == "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1"
     assert first["location"] == "westus"
     assert first["properties"]["addressSpace"]["addressPrefixes"] == ["10.0.0.0/8"]
-
-    mock_client.list_virtual_networks_request.assert_called_with(subscription_id="subid", resource_group_name="rg1")
-
-    names = [item["name"] for item in result.outputs]
-    assert "vnet1" in names
-    assert "vnet2" in names
-
-    for item in result.outputs:
-        assert item["etag"] == "etag"
-
+    assert all(item["etag"] == "etag" for item in result.outputs)
     assert "Virtual Networks List" in result.readable_output
+
+    mock_client.list_virtual_networks_request.assert_called_once_with(subscription_id="subid", resource_group_name="rg1")
 
 
 def test_virtual_networks_list_command_empty_response(mocker):
     """
     Given: An Azure client mock returning a response with no virtual networks.
     When: virtual_networks_list_command is called.
-    Then: It should return empty outputs without raising an error.
+    Then: It should return a human readable message without outputs.
     """
     from Azure import virtual_networks_list_command
 
@@ -9519,9 +9512,26 @@ def test_virtual_networks_list_command_empty_response(mocker):
     params = {"subscription_id": "subid", "resource_group_name": "rg1"}
     result: CommandResults = virtual_networks_list_command(mock_client, params, {})
 
-    assert result.outputs == []
-    assert result.outputs_prefix == "Azure.VirtualNetworks.VirtualNetworks"
-    assert "Virtual Networks List" in result.readable_output
+    assert result.outputs is None
+    assert result.readable_output == "No virtual networks were found in resource group 'rg1'."
+
+
+def test_list_virtual_networks_request_url_and_api_version(mocker, client):
+    """
+    Given: An AzureClient.
+    When: list_virtual_networks_request is called.
+    Then: It should call the virtual networks endpoint with the virtual networks API version.
+    """
+    from Azure import VIRTUAL_NETWORKS_API_VERSION
+
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    client.list_virtual_networks_request(subscription_id="subid", resource_group_name="rg1")
+
+    call_kwargs = mock_http_request.call_args[1]
+    assert call_kwargs["method"] == "GET"
+    assert call_kwargs["full_url"].endswith("subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks")
+    assert call_kwargs["params"] == {"api-version": VIRTUAL_NETWORKS_API_VERSION}
 
 
 def test_list_virtual_networks_request_error(mocker, client):
@@ -9540,138 +9550,6 @@ def test_list_virtual_networks_request_error(mocker, client):
     assert call_kwargs["api_function_name"] == "list_virtual_networks_request"
     assert call_kwargs["resource_type"] == "Virtual Network"
     assert call_kwargs["subscription_id"] == "subid"
-
-
-def test_network_interface_create_command(mocker):
-    """
-    Given: An Azure client mock and the create_network_interface_response.json file.
-    When: network_interface_create_command is called with all optional arguments.
-    Then: It should build the correct request body, and return the created network interface
-          with a cleaned etag under the Azure.VirtualNetworks.NetworkInterfaces prefix.
-    """
-    from Azure import network_interface_create_command
-
-    mock_response = util_load_json("test_data/create_network_interface_response.json")
-
-    mock_client = mocker.Mock()
-    mock_client.create_network_interface_request.return_value = mock_response
-
-    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
-    args = {
-        "nic_name": "test-nic",
-        "vnet_name": "vnet1",
-        "subnet_name": "default",
-        "ip_config_name": "ipconfig1",
-        "location": "eastus",
-        "nsg_name": "test-nsg",
-        "private_ip": "1.1.1.1",
-        "public_ip_address_name": "test-ip",
-    }
-
-    result: CommandResults = network_interface_create_command(mock_client, params, args)
-
-    assert result.outputs_prefix == "Azure.VirtualNetworks.NetworkInterfaces"
-    assert result.outputs_key_field == "id"
-    assert result.outputs["name"] == "test-nic"
-    assert result.outputs["etag"] == "etag"
-    assert "The network interface test-nic was created successfully" in result.readable_output
-
-    call_kwargs = mock_client.create_network_interface_request.call_args[1]
-    assert call_kwargs["nic_name"] == "test-nic"
-    assert call_kwargs["subscription_id"] == "subid"
-    assert call_kwargs["resource_group_name"] == "rg1"
-
-    prefix = "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/"
-    data = call_kwargs["network_interface_data"]
-    assert data["location"] == "eastus"
-    assert data["properties"]["networkSecurityGroup"]["id"] == f"{prefix}networkSecurityGroups/test-nsg"
-
-    ip_config = data["properties"]["ipConfigurations"][0]
-    assert ip_config["name"] == "ipconfig1"
-    assert ip_config["properties"]["subnet"]["id"] == f"{prefix}virtualNetworks/vnet1/subnets/default"
-    assert ip_config["properties"]["privateIPAddress"] == "1.1.1.1"
-    assert ip_config["properties"]["publicIPAddress"]["id"] == f"{prefix}publicIPAddresses/test-ip"
-
-
-def test_network_interface_create_command_without_optional_args(mocker):
-    """
-    Given: An Azure client mock and only the required arguments for creating a network interface.
-    When: network_interface_create_command is called.
-    Then: The optional networkSecurityGroup, privateIPAddress and publicIPAddress keys should be None
-          so they are stripped by remove_empty_elements in the client layer.
-    """
-    from Azure import network_interface_create_command
-
-    mock_response = util_load_json("test_data/create_network_interface_response.json")
-
-    mock_client = mocker.Mock()
-    mock_client.create_network_interface_request.return_value = mock_response
-
-    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
-    args = {
-        "nic_name": "test-nic",
-        "vnet_name": "vnet1",
-        "subnet_name": "default",
-        "ip_config_name": "ipconfig1",
-        "location": "eastus",
-    }
-
-    network_interface_create_command(mock_client, params, args)
-
-    data = mock_client.create_network_interface_request.call_args[1]["network_interface_data"]
-    assert data["properties"]["networkSecurityGroup"] is None
-
-    ip_config_properties = data["properties"]["ipConfigurations"][0]["properties"]
-    assert ip_config_properties["privateIPAddress"] is None
-    assert ip_config_properties["publicIPAddress"] is None
-    assert ip_config_properties["subnet"]["id"].endswith("virtualNetworks/vnet1/subnets/default")
-
-
-def test_create_network_interface_request_error(mocker, client):
-    """
-    Given: An AzureClient whose http_request raises a permission error.
-    When: create_network_interface_request is called.
-    Then: It should delegate the error to handle_azure_error with the matching api_function_name.
-    """
-    mocker.patch.object(client, "http_request", side_effect=Exception("403 Forbidden"))
-    mock_handle_error = mocker.patch.object(client, "handle_azure_error")
-
-    client.create_network_interface_request(
-        subscription_id="subid",
-        resource_group_name="rg1",
-        nic_name="test-nic",
-        network_interface_data={"location": "eastus"},
-    )
-
-    mock_handle_error.assert_called_once()
-    call_kwargs = mock_handle_error.call_args[1]
-    assert call_kwargs["api_function_name"] == "create_network_interface_request"
-    assert call_kwargs["resource_type"] == "Network Interface"
-    assert call_kwargs["resource_name"] == "test-nic"
-
-
-def test_create_network_interface_request_removes_empty_elements(mocker, client):
-    """
-    Given: An AzureClient and a network interface body containing None values.
-    When: create_network_interface_request is called.
-    Then: The None values should be stripped from the request body before it is sent.
-    """
-    mock_http_request = mocker.patch.object(client, "http_request", return_value={})
-
-    client.create_network_interface_request(
-        subscription_id="subid",
-        resource_group_name="rg1",
-        nic_name="test-nic",
-        network_interface_data={
-            "location": "eastus",
-            "properties": {"networkSecurityGroup": None, "ipConfigurations": [{"name": "ipconfig1"}]},
-        },
-    )
-
-    sent_body = mock_http_request.call_args[1]["json_data"]
-    assert "networkSecurityGroup" not in sent_body["properties"]
-    assert sent_body["location"] == "eastus"
-    assert mock_http_request.call_args[1]["method"] == "PUT"
 
 
 def test_subscriptions_list_command(mocker):
@@ -9699,15 +9577,16 @@ def test_subscriptions_list_command(mocker):
     assert first["subscriptionId"] == "11111111-1111-1111-1111-111111111111"
     assert first["displayName"] == "Test Subscription 1"
     assert first["state"] == "Enabled"
-
     assert "Subscriptions List" in result.readable_output
+
+    mock_client.list_subscriptions_request.assert_called_once_with()
 
 
 def test_subscriptions_list_command_empty_response(mocker):
     """
     Given: An Azure client mock returning a response with no subscriptions.
     When: subscriptions_list_command is called.
-    Then: It should return empty outputs without raising an error.
+    Then: It should return a human readable message without outputs.
     """
     from Azure import subscriptions_list_command
 
@@ -9716,9 +9595,8 @@ def test_subscriptions_list_command_empty_response(mocker):
 
     result: CommandResults = subscriptions_list_command(mock_client, {}, {})
 
-    assert result.outputs == []
-    assert result.outputs_prefix == "Azure.ResourceManagement.Subscriptions"
-    assert "Subscriptions List" in result.readable_output
+    assert result.outputs is None
+    assert result.readable_output == "No subscriptions were found."
 
 
 def test_list_subscriptions_request_url_is_tenant_level(mocker, client):
