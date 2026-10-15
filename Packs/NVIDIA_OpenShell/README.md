@@ -8,7 +8,7 @@ NVIDIA OpenShell runs AI coding agents in isolated sandboxes with policy-enforce
 
 Data normalization capabilities:
 
-* Rules for parsing and modeling NVIDIA OpenShell OCSF logs that are ingested via the HTTP Log Collector into Cortex XSIAM.
+* Rules for parsing and modeling NVIDIA OpenShell OCSF logs that are ingested via the HTTP Log Collector into Cortex XSIAM, from supervisor container logs or JSONL files.
   * The ingested logs can be queried in XQL Search using the *`nvidia_openshell_raw`* dataset.
 * A dashboard summarizing sandbox egress, policy decisions and event volume.
 
@@ -54,27 +54,38 @@ For more information, see this [doc](https://docs-cortex.paloaltonetworks.com/r/
 
 ### NVIDIA OpenShell side
 
-Enable OCSF JSON export on the sandbox supervisors:
+1. Enable OCSF JSON output on the sandbox supervisors (OpenShell 0.1.3 or later). The setting takes effect within about 10 seconds, without a restart:
 
-```shell
-openshell settings set --global --key ocsf_json_enabled --value true
-```
+    ```shell
+    openshell settings set --global --key ocsf_json_enabled --value true
+    ```
 
-Each supervisor then writes OCSF JSONL to `/var/log/openshell-ocsf.YYYY-MM-DD.log` in its own filesystem. The location depends on the compute driver:
+2. Collect the supervisor container logs (recommended). Each supervisor writes one line per event to its container stderr, in the format `<UTC timestamp> OCSF-JSON <compact OCSF JSON>`. This works regardless of writable log storage. Read it through the platform log interface or a container log collector:
 
-| Compute driver  | Supervisor log location                                   |
-|:----------------|:----------------------------------------------------------|
-| Kubernetes      | `/var/log` in the supervisor pod's `supervisor` container |
-| Docker / Podman | `/var/log` in the supervisor container                    |
-| VM              | `/var/log` on the host running the supervisor             |
+    ```shell
+    docker logs <supervisor-container>
+    podman logs <supervisor-container>
+    kubectl logs <supervisor-pod> -c supervisor
+    ```
 
-Forward these files to the HTTP Log Collector with a log shipper such as Fluent Bit, using the API URL and token from the Cortex XSIAM side. Configure the shipper to follow daily file rotation.
+    Supervisors also write a shorthand copy of each event and diagnostic lines to stderr. Configure the log collector to forward only records whose line contains `OCSF-JSON`, as NVIDIA recommends; shorthand and diagnostic lines, if forwarded, are stored in the dataset but not modeled. Send the records to the HTTP Log Collector using the API URL and token from the Cortex XSIAM side. Each record must be a JSON object, such as a Docker json-file record (`{"log":"<line>","stream":"stderr","time":"..."}`) or the line encoded as a JSON string.
 
-For details, refer to the [OpenShell Accessing Logs](https://docs.nvidia.com/openshell/dev/observability/accessing-logs) and [OCSF JSON Export](https://docs.nvidia.com/openshell/dev/observability/ocsf-json-export) documentation.
+3. Alternatively, forward the supervisor JSONL files. Each supervisor also writes OCSF JSONL to `/var/log/openshell-ocsf.YYYY-MM-DD.log` in its own filesystem. The location depends on the compute driver:
+
+    | Compute driver  | Supervisor log location                                   |
+    |:----------------|:----------------------------------------------------------|
+    | Kubernetes      | `/var/log` in the supervisor pod's `supervisor` container |
+    | Docker / Podman | `/var/log` in the supervisor container                    |
+    | VM              | `/var/log` on the host running the supervisor             |
+
+    On Kubernetes (emptyDir) and Docker / Podman (tmpfs) these files are on ephemeral storage, and the supervisor image has no shell or `tar`.
+
+For details, refer to the [OpenShell Accessing Logs](https://docs.nvidia.com/openshell/latest/observability/accessing-logs) and [OCSF JSON Export](https://docs.nvidia.com/openshell/latest/observability/ocsf-json-export) documentation.
 
 #### Remarks
 
-* Supervisor logs on Kubernetes and Docker are stored on ephemeral volumes and are removed with the sandbox. Run the shipper alongside the supervisor so events are forwarded before teardown.
+* The HTTP Log Collector rejects records that are not JSON. Send one JSON object per record.
+* Console output is best-effort: it uses a bounded queue of 1,024 lines, and new lines are dropped when it is full. Collect continuously.
 * Sandbox attribution relies on the OCSF `container` object. Keep the export at OCSF v1.8.0; downgrading to an earlier version removes it.
 
 </~XSIAM>
