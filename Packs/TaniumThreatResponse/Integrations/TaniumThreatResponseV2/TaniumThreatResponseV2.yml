@@ -1931,7 +1931,7 @@ script:
     - contextPath: Tanium.ResponseActions.eid
       description: ''
       type: String
-  dockerimage: demisto/lxml:1.0.0.12844876
+  dockerimage: demisto/lxml:1.0.0.13531018
   isfetch: true
   script: ''
   subtype: python3

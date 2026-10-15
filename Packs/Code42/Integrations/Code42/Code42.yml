@@ -503,7 +503,7 @@ script:
       - all
       - incident
       - searches
-  dockerimage: demisto/py42:1.0.0.12844876
+  dockerimage: demisto/py42:1.0.0.13531018
   isfetch: true
   runonce: false
   script: '-'

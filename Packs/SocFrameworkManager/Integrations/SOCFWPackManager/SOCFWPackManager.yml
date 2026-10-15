@@ -47,7 +47,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/demisto-sdk:1.39.10.13226002
+  dockerimage: demisto/demisto-sdk:1.39.10.13712671
   runonce: false
   commands:
   - name: socfw-install-pack
