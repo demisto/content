@@ -57,9 +57,6 @@ Gets a paginated list of all the labels created for the company and its details 
 ***
 Gets details such as id, name and business relevance from a specific label.
 
-| `{label-id}` | ID of the specific label |
-|---|---|
-
 #### Base Command
 
 `lumusecops-retrieve-a-specific-label`

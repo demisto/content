@@ -151,11 +151,7 @@ script:
     - contextPath: LumuSecops.RetrieveASpecificLabel.relevance
       description: "The label relevance."
       type: Number
-    description: |-
-      Gets details such as id, name and business relevance from a specific label.
-
-      | `{label-id}` | ID of the specific label |
-      |---|---|
+    description: "Gets details such as id, name and business relevance from a specific label."
 
   - name: lumusecops-get-all-incidents
     description: Gets a paginated list of all incidents.

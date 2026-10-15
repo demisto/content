@@ -1157,7 +1157,7 @@ def main() -> None:
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
     except Exception as e:
-        return_error(str(e))
+        return_error(e)
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:
