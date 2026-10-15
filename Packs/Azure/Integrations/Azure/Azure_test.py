@@ -9483,19 +9483,47 @@ def test_virtual_networks_list_command(mocker):
 
     result: CommandResults = virtual_networks_list_command(mock_client, params, {})
 
-    assert result.outputs_prefix == "Azure.VirtualNetworks.VirtualNetworks"
-    assert result.outputs_key_field == "id"
-    assert len(result.outputs) == 2
-    assert [item["name"] for item in result.outputs] == ["vnet1", "vnet2"]
+    vnets = result.outputs["Azure.VirtualNetworks.VirtualNetworks(val.id && val.id == obj.id)"]
+    assert len(vnets) == 2
+    assert [item["name"] for item in vnets] == ["vnet1", "vnet2"]
 
-    first = result.outputs[0]
+    first = vnets[0]
     assert first["id"] == "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/vnet1"
     assert first["location"] == "westus"
     assert first["properties"]["addressSpace"]["addressPrefixes"] == ["10.0.0.0/8"]
-    assert all(item["etag"] == "etag" for item in result.outputs)
+    assert all(item["etag"] == "etag" for item in vnets)
+    assert result.outputs["Azure.VirtualNetworks(true)"] == {"VirtualNetworksNextToken": None}
     assert "Virtual Networks List" in result.readable_output
 
-    mock_client.list_virtual_networks_request.assert_called_once_with(subscription_id="subid", resource_group_name="rg1")
+    mock_client.list_virtual_networks_request.assert_called_once_with(
+        subscription_id="subid", resource_group_name="rg1", next_token=""
+    )
+
+
+def test_virtual_networks_list_command_with_next_token(mocker):
+    """
+    Given: An Azure client mock returning a page with a nextLink, and a next_token argument.
+    When: virtual_networks_list_command is called.
+    Then:
+          1. The next_token argument should be passed to the client.
+          2. The nextLink of the response should be returned as VirtualNetworksNextToken.
+    """
+    from Azure import virtual_networks_list_command
+
+    next_link = "https://management.azure.com/subscriptions/subid/providers/Microsoft.Network/virtualNetworks?page=3"
+    mock_client = mocker.Mock()
+    mock_client.list_virtual_networks_request.return_value = {
+        "value": [{"name": "vnet3", "id": "vnet3-id", "etag": 'W/"etag"'}],
+        "nextLink": next_link,
+    }
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    result: CommandResults = virtual_networks_list_command(mock_client, params, {"next_token": "page2"})
+
+    assert result.outputs["Azure.VirtualNetworks(true)"] == {"VirtualNetworksNextToken": next_link}
+    mock_client.list_virtual_networks_request.assert_called_once_with(
+        subscription_id="subid", resource_group_name="rg1", next_token="page2"
+    )
 
 
 def test_virtual_networks_list_command_empty_response(mocker):
@@ -9534,6 +9562,38 @@ def test_list_virtual_networks_request_url_and_api_version(mocker, client):
     assert call_kwargs["params"] == {"api-version": VIRTUAL_NETWORKS_API_VERSION}
 
 
+def test_list_virtual_networks_request_with_next_token(mocker, client):
+    """
+    Given: An AzureClient and a valid next_token.
+    When: list_virtual_networks_request is called.
+    Then: It should call the next_token URL as is, without injecting the api-version parameter.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+    next_link = "https://management.azure.com/subscriptions/subid/providers/Microsoft.Network/virtualNetworks?page=2"
+
+    client.list_virtual_networks_request(subscription_id="subid", resource_group_name="rg1", next_token=next_link)
+
+    call_kwargs = mock_http_request.call_args[1]
+    assert call_kwargs["full_url"] == next_link
+    assert call_kwargs["params"] == {}
+
+
+def test_list_virtual_networks_request_invalid_next_token(mocker, client):
+    """
+    Given: An AzureClient and a next_token pointing to an unexpected host.
+    When: list_virtual_networks_request is called.
+    Then: It should raise a DemistoException without sending the request.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request")
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.list_virtual_networks_request(
+            subscription_id="subid", resource_group_name="rg1", next_token="https://evil.example.com/page2"
+        )
+
+    mock_http_request.assert_not_called()
+
+
 def test_list_virtual_networks_request_error(mocker, client):
     """
     Given: An AzureClient whose http_request raises a permission error.
@@ -9569,17 +9629,40 @@ def test_subscriptions_list_command(mocker):
 
     result: CommandResults = subscriptions_list_command(mock_client, {}, {})
 
-    assert result.outputs_prefix == "Azure.ResourceManagement.Subscriptions"
-    assert result.outputs_key_field == "id"
-    assert len(result.outputs) == 2
+    subscriptions = result.outputs["Azure.ResourceManagement.Subscriptions(val.id && val.id == obj.id)"]
+    assert len(subscriptions) == 2
 
-    first = result.outputs[0]
+    first = subscriptions[0]
     assert first["subscriptionId"] == "11111111-1111-1111-1111-111111111111"
     assert first["displayName"] == "Test Subscription 1"
     assert first["state"] == "Enabled"
+    assert result.outputs["Azure.ResourceManagement(true)"] == {"SubscriptionsNextToken": None}
     assert "Subscriptions List" in result.readable_output
 
-    mock_client.list_subscriptions_request.assert_called_once_with()
+    mock_client.list_subscriptions_request.assert_called_once_with(next_token="")
+
+
+def test_subscriptions_list_command_with_next_token(mocker):
+    """
+    Given: An Azure client mock returning a page with a nextLink, and a next_token argument.
+    When: subscriptions_list_command is called.
+    Then:
+          1. The next_token argument should be passed to the client.
+          2. The nextLink of the response should be returned as SubscriptionsNextToken.
+    """
+    from Azure import subscriptions_list_command
+
+    next_link = "https://management.azure.com/subscriptions?api-version=2022-12-01&$skiptoken=abc"
+    mock_client = mocker.Mock()
+    mock_client.list_subscriptions_request.return_value = {
+        "value": [{"id": "/subscriptions/sub3", "subscriptionId": "sub3"}],
+        "nextLink": next_link,
+    }
+
+    result: CommandResults = subscriptions_list_command(mock_client, {}, {"next_token": "page2"})
+
+    assert result.outputs["Azure.ResourceManagement(true)"] == {"SubscriptionsNextToken": next_link}
+    mock_client.list_subscriptions_request.assert_called_once_with(next_token="page2")
 
 
 def test_subscriptions_list_command_empty_response(mocker):
@@ -9616,6 +9699,36 @@ def test_list_subscriptions_request_url_is_tenant_level(mocker, client):
     assert call_kwargs["method"] == "GET"
     assert call_kwargs["full_url"] == "https://management.azure.com/subscriptions"
     assert call_kwargs["params"] == {"api-version": SUBSCRIPTIONS_API_VERSION}
+
+
+def test_list_subscriptions_request_with_next_token(mocker, client):
+    """
+    Given: An AzureClient and a valid next_token.
+    When: list_subscriptions_request is called.
+    Then: It should call the next_token URL as is, without injecting the api-version parameter.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+    next_link = "https://management.azure.com/subscriptions?api-version=2022-12-01&$skiptoken=abc"
+
+    client.list_subscriptions_request(next_token=next_link)
+
+    call_kwargs = mock_http_request.call_args[1]
+    assert call_kwargs["full_url"] == next_link
+    assert call_kwargs["params"] == {}
+
+
+def test_list_subscriptions_request_invalid_next_token(mocker, client):
+    """
+    Given: An AzureClient and a next_token pointing to an unexpected host.
+    When: list_subscriptions_request is called.
+    Then: It should raise a DemistoException without sending the request.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request")
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.list_subscriptions_request(next_token="https://evil.example.com/subscriptions")
+
+    mock_http_request.assert_not_called()
 
 
 def test_list_subscriptions_request_error(mocker, client):

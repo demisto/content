@@ -4980,7 +4980,14 @@ script:
       type: String
       required: false
       required:platform: true
+    - description: The URI to fetch the next page of results as returned in the Azure.VirtualNetworks.VirtualNetworksNextToken output of a previous run.
+      name: next_token
+      type: String
+      required: false
     outputs:
+    - contextPath: Azure.VirtualNetworks.VirtualNetworksNextToken
+      description: The URI to fetch the next page of virtual networks. Run the same command with the next_token argument to get the next page.
+      type: String
     - contextPath: Azure.VirtualNetworks.VirtualNetworks.name
       description: The virtual network's name.
       type: String
@@ -5028,7 +5035,14 @@ script:
       type: String
       required: false
       required:platform: true
+    - description: The URI to fetch the next page of results as returned in the Azure.ResourceManagement.SubscriptionsNextToken output of a previous run.
+      name: next_token
+      type: String
+      required: false
     outputs:
+    - contextPath: Azure.ResourceManagement.SubscriptionsNextToken
+      description: The URI to fetch the next page of subscriptions. Run the same command with the next_token argument to get the next page.
+      type: String
     - contextPath: Azure.ResourceManagement.Subscriptions.id
       description: The unique identifier of the subscription.
       type: String

@@ -2473,13 +2473,14 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def list_virtual_networks_request(self, subscription_id: str, resource_group_name: str):
+    def list_virtual_networks_request(self, subscription_id: str, resource_group_name: str, next_token: str = ""):
         """
         List all virtual networks in a specific resource group.
 
         Args:
             subscription_id: The Azure subscription ID.
             resource_group_name: The resource group containing the virtual networks.
+            next_token: The URI to fetch the next page of results.
 
         Return:
             A dictionary containing the list of virtual networks.
@@ -2487,12 +2488,18 @@ class AzureClient:
         Docs:
             https://learn.microsoft.com/en-us/rest/api/virtualnetwork/virtual-networks/list
         """
-        full_url = (
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
-            f"providers/Microsoft.Network/virtualNetworks"
-        )
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of virtual networks.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
+            parameters: dict[str, Any] = {}
+        else:
+            full_url = (
+                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
+                f"providers/Microsoft.Network/virtualNetworks"
+            )
+            parameters = {"api-version": VIRTUAL_NETWORKS_API_VERSION}
         try:
-            return self.http_request(method="GET", full_url=full_url, params={"api-version": VIRTUAL_NETWORKS_API_VERSION})
+            return self.http_request(method="GET", full_url=full_url, params=parameters)
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -2503,7 +2510,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def list_subscriptions_request(self):
+    def list_subscriptions_request(self, next_token: str = ""):
         """
         List all subscriptions the authenticated identity has access to in the tenant.
 
@@ -2512,15 +2519,24 @@ class AzureClient:
             includes a subscription ID path segment. The base URL is derived from PREFIX_URL_AZURE so
             the command keeps working after switch_to_gov_account() rebinds the global.
 
+        Args:
+            next_token: The URI to fetch the next page of results.
+
         Return:
             A dictionary containing the list of subscriptions.
 
         Docs:
             https://learn.microsoft.com/en-us/rest/api/resources/subscriptions/list?view=rest-resources-2022-12-01
         """
-        full_url = f"{PREFIX_URL_AZURE.rstrip('/')}"
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of subscriptions.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
+            parameters: dict[str, Any] = {}
+        else:
+            full_url = f"{PREFIX_URL_AZURE.rstrip('/')}"
+            parameters = {"api-version": SUBSCRIPTIONS_API_VERSION}
         try:
-            return self.http_request(method="GET", full_url=full_url, params={"api-version": SUBSCRIPTIONS_API_VERSION})
+            return self.http_request(method="GET", full_url=full_url, params=parameters)
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -5596,10 +5612,15 @@ def virtual_networks_list_command(client: AzureClient, params: dict[str, Any], a
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    next_token = args.get("next_token", "")
+    demisto.debug(f"[Azure] Listing virtual networks with {bool(next_token)=}")
 
-    response = client.list_virtual_networks_request(subscription_id=subscription_id, resource_group_name=resource_group_name)
+    response = client.list_virtual_networks_request(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, next_token=next_token
+    )
     data_from_response = response.get("value") or []
-    demisto.debug(f"[Azure] Retrieved {len(data_from_response)} virtual networks")
+    next_token = response.get("nextLink") or ""
+    demisto.debug(f"[Azure] Retrieved {len(data_from_response)} virtual networks, {bool(next_token)=}")
 
     if not data_from_response:
         return CommandResults(readable_output=f"No virtual networks were found in resource group '{resource_group_name}'.")
@@ -5607,6 +5628,12 @@ def virtual_networks_list_command(client: AzureClient, params: dict[str, Any], a
     # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
     for data in data_from_response:
         data["etag"] = data.get("etag", "")[3:-1]
+
+    # The token is always written, as null on the last page, so a stale token is cleared from the context.
+    outputs = {
+        "Azure.VirtualNetworks.VirtualNetworks(val.id && val.id == obj.id)": data_from_response,
+        "Azure.VirtualNetworks(true)": {"VirtualNetworksNextToken": next_token or None},
+    }
 
     readable_output = tableToMarkdown(
         name="Virtual Networks List",
@@ -5617,9 +5644,7 @@ def virtual_networks_list_command(client: AzureClient, params: dict[str, Any], a
     )
 
     return CommandResults(
-        outputs_prefix="Azure.VirtualNetworks.VirtualNetworks",
-        outputs_key_field="id",
-        outputs=data_from_response,
+        outputs=outputs,
         raw_response=response,
         readable_output=readable_output,
     )
@@ -5635,12 +5660,22 @@ def subscriptions_list_command(client: AzureClient, params: dict[str, Any], args
     Returns:
         Command results with raw response, outputs and readable outputs.
     """
-    response = client.list_subscriptions_request()
+    next_token = args.get("next_token", "")
+    demisto.debug(f"[Azure] Listing subscriptions with {bool(next_token)=}")
+
+    response = client.list_subscriptions_request(next_token=next_token)
     data_from_response = response.get("value") or []
-    demisto.debug(f"[Azure] Retrieved {len(data_from_response)} subscriptions")
+    next_token = response.get("nextLink") or ""
+    demisto.debug(f"[Azure] Retrieved {len(data_from_response)} subscriptions, {bool(next_token)=}")
 
     if not data_from_response:
         return CommandResults(readable_output="No subscriptions were found.")
+
+    # The token is always written, as null on the last page, so a stale token is cleared from the context.
+    outputs = {
+        "Azure.ResourceManagement.Subscriptions(val.id && val.id == obj.id)": data_from_response,
+        "Azure.ResourceManagement(true)": {"SubscriptionsNextToken": next_token or None},
+    }
 
     readable_output = tableToMarkdown(
         name="Subscriptions List",
@@ -5651,9 +5686,7 @@ def subscriptions_list_command(client: AzureClient, params: dict[str, Any], args
     )
 
     return CommandResults(
-        outputs_prefix="Azure.ResourceManagement.Subscriptions",
-        outputs_key_field="id",
-        outputs=data_from_response,
+        outputs=outputs,
         raw_response=response,
         readable_output=readable_output,
     )

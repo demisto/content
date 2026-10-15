@@ -3838,11 +3838,13 @@ Gets virtual networks in a resource group. Required permissions: Microsoft.Netwo
 | --- | --- | --- |
 | resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| next_token | The URI to fetch the next page of results as returned in the Azure.VirtualNetworks.VirtualNetworksNextToken output of a previous run. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| Azure.VirtualNetworks.VirtualNetworksNextToken | String | The URI to fetch the next page of virtual networks. Run the same command with the next_token argument to get the next page. |
 | Azure.VirtualNetworks.VirtualNetworks.name | String | The virtual network's name. |
 | Azure.VirtualNetworks.VirtualNetworks.id | String | The virtual network's ID. |
 | Azure.VirtualNetworks.VirtualNetworks.etag | String | The virtual network's ETag. |
@@ -3871,11 +3873,13 @@ Gets all subscriptions for a tenant. Required permissions: Microsoft.Resources/s
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID used to authenticate the request. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| next_token | The URI to fetch the next page of results as returned in the Azure.ResourceManagement.SubscriptionsNextToken output of a previous run. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| Azure.ResourceManagement.SubscriptionsNextToken | String | The URI to fetch the next page of subscriptions. Run the same command with the next_token argument to get the next page. |
 | Azure.ResourceManagement.Subscriptions.id | String | The unique identifier of the subscription. |
 | Azure.ResourceManagement.Subscriptions.subscriptionId | String | The ID of the subscription. |
 | Azure.ResourceManagement.Subscriptions.tenantId | String | The ID of the tenant associated with the subscription. |
