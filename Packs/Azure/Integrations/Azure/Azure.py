@@ -534,7 +534,7 @@ API_FUNCTION_TO_PERMISSIONS = {
     "firewall_policy_rule_collection_list_request": ["Microsoft.Network/firewallPolicies/ruleCollectionGroups/read"],
     "firewall_policy_rule_collection_get_request": ["Microsoft.Network/firewallPolicies/ruleCollectionGroups/read"],
     "firewall_service_tag_list_request": ["Microsoft.Network/locations/serviceTagDetails/read"],
-        "resource_graph_list_operations": ["Microsoft.ResourceGraph/operations/read"],
+    "resource_graph_list_operations": ["Microsoft.ResourceGraph/operations/read"],
     "resource_graph_query_resources": ["Microsoft.ResourceGraph/resources/read"],
 }
 
@@ -4354,6 +4354,7 @@ class AzureClient:
                 resource_type="Resource Graph Query",
                 api_function_name="resource_graph_query_resources",
             )
+
 
 """ HELPER FUNCTIONS """
 
@@ -8339,6 +8340,7 @@ def firewall_service_tag_list_command(client: AzureClient, params: dict[str, Any
         readable_output=readable_output,
         raw_response=response,
     )
+
 
 def resource_graph_list_operations_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """

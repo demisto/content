@@ -4507,7 +4507,6 @@ Lists the rule collection groups of an Azure firewall policy. Required permissio
 | Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.size | String | The size of the rule collection group in kilobytes. |
 | Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroupsNextToken | String | The URI used to fetch the next page of rule collection groups. Run the same command with the next_token argument to get the next page of rule collection groups. |
 
-
 ### azure-rg-list-operations
 
 ***
