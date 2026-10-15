@@ -6,6 +6,10 @@ from MicrosoftApiModule import *  # noqa: E402
 from COOCApiModule import *
 from requests.exceptions import ConnectionError, Timeout
 import datetime as dt
+import itertools
+import hmac
+import hashlib
+import base64
 import defusedxml.ElementTree as defused_ET
 import urllib.parse
 from urllib.parse import parse_qs, urlparse, urlencode, urlunparse
@@ -32,6 +36,9 @@ DEFAULT_LIMIT = "50"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 STORAGE_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
 API_VERSION = "2022-09-01"
+# Azure Storage data-plane (Blob service) REST API version, used for both the x-ms-version
+# request header and the SAS token signed version (sv) so the two always stay in sync.
+STORAGE_API_VERSION = "2023-11-03"
 NEW_API_VERSION_PARAMS = {"api-version": "2024-05-01"}
 BLOB_CONTAINERS_MAX_PAGE_SIZE = 5000
 GRANT_BY_CONNECTION = {
@@ -113,6 +120,7 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Storage/storageAccounts/blobServices/containers/read": [
         "azure-storage-container-property-get",
         "azure-storage-blob-containers-list",
+        "azure-storage-containers-list",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/delete": ["azure-storage-container-delete"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": [
@@ -120,13 +128,17 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-storage-blob-create",
         "azure-storage-container-blob-property-set",
         "azure-storage-blob-property-set",
+        "azure-storage-blob-update",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read": [
         "azure-storage-container-blob-get",
         "azure-storage-blob-get",
         "azure-storage-container-blob-property-get",
         "azure-storage-blob-property-get",
+        "azure-storage-blobs-list",
+        "azure-storage-blob-update",
     ],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete": ["azure-storage-blob-delete"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read": [
         "azure-storage-container-blob-tag-get",
         "azure-storage-blob-tag-get",
@@ -338,6 +350,12 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-aks-managed-cluster-addon-update",
     ],
     "Microsoft.ContainerService/managedClusters/write": ["azure-aks-managed-cluster-addon-update"],
+    "Microsoft.Network/firewallPolicies/ruleCollectionGroups/read": [
+        "azure-vn-firewall-policy-rule-collection-groups-list",
+        "azure-firewall-rules-list",
+        "azure-firewall-rule-get",
+    ],
+    "Microsoft.Network/locations/serviceTagDetails/read": ["azure-firewall-service-tags-information-list"],
     "Microsoft.Consumption/usageDetails/read": ["azure-billing-usage-list"],
     "Microsoft.Consumption/budgets/read": ["azure-billing-budgets-list"],
     "Microsoft.CostManagement/forecast/read": ["azure-billing-forecast-list"],
@@ -372,7 +390,14 @@ PERMISSIONS_TO_COMMANDS = {
     ],
     "Microsoft.Network/firewallPolicies/delete": ["azure-vn-firewall-policy-delete"],
     "Microsoft.Network/firewallPolicies/join/action": ["azure-firewall-policy-attach"],
-    "Microsoft.Network/azureFirewalls/read": ["azure-firewall-policy-attach", "azure-firewall-policy-detach"],
+    "Microsoft.Network/azureFirewalls/read": [
+        "azure-firewall-policy-attach",
+        "azure-firewall-policy-detach",
+        "azure-firewall-list",
+        "azure-firewall-get",
+        "azure-firewall-rules-list",
+        "azure-firewall-rule-get",
+    ],
     "Microsoft.Network/azureFirewalls/write": ["azure-firewall-policy-attach", "azure-firewall-policy-detach"],
     "Microsoft.Storage/storageAccounts/tableServices/tables/write": ["azure-storage-table-create"],
     "Microsoft.Storage/storageAccounts/tableServices/tables/delete": ["azure-storage-table-delete"],
@@ -384,6 +409,14 @@ PERMISSIONS_TO_COMMANDS = {
     ],
     "Microsoft.Storage/storageAccounts/tableServices/tables/entities/read": ["azure-storage-table-entity-query"],
     "Microsoft.Storage/storageAccounts/tableServices/tables/entities/delete": ["azure-storage-table-entity-delete"],
+    "Microsoft.Network/ipGroups/read": [
+        "azure-vn-ip-group-get",
+        "azure-vn-ip-groups-list",
+        "azure-vn-ip-group-create",
+        "azure-vn-ip-group-update",
+    ],
+    "Microsoft.Network/ipGroups/write": ["azure-vn-ip-group-create", "azure-vn-ip-group-update"],
+    "Microsoft.Network/ipGroups/delete": ["azure-vn-ip-group-delete"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -449,6 +482,9 @@ API_FUNCTION_TO_PERMISSIONS = {
     "storage_container_blob_property_get_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"],
     "storage_container_blob_properties_set_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write"],
     "storage_container_block_public_access_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action"],
+    "storage_containers_list_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/read"],
+    "storage_container_blobs_list_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"],
+    "storage_container_blob_delete_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete"],
     "get_rule": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
     "update_webapp_auth": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
     "set_webapp_config": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
@@ -498,6 +534,16 @@ API_FUNCTION_TO_PERMISSIONS = {
     "replace_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/write"],
     "query_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/read"],
     "delete_entity_request": ["Microsoft.Storage/storageAccounts/tableServices/tables/entities/delete"],
+    "ip_group_create": ["Microsoft.Network/ipGroups/write"],
+    "ip_group_update": ["Microsoft.Network/ipGroups/read", "Microsoft.Network/ipGroups/write"],
+    "ip_group_get": ["Microsoft.Network/ipGroups/read"],
+    "ip_group_list": ["Microsoft.Network/ipGroups/read"],
+    "ip_group_delete": ["Microsoft.Network/ipGroups/delete"],
+    "firewall_list_request": ["Microsoft.Network/azureFirewalls/read"],
+    "firewall_get_request": ["Microsoft.Network/azureFirewalls/read"],
+    "firewall_policy_rule_collection_list_request": ["Microsoft.Network/firewallPolicies/ruleCollectionGroups/read"],
+    "firewall_policy_rule_collection_get_request": ["Microsoft.Network/firewallPolicies/ruleCollectionGroups/read"],
+    "firewall_service_tag_list_request": ["Microsoft.Network/locations/serviceTagDetails/read"],
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
@@ -515,6 +561,7 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Storage/storageAccounts/blobServices/containers/read",
     "Microsoft.Storage/storageAccounts/blobServices/containers/delete",
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read",
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete",
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read",
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write",
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write",
@@ -552,6 +599,8 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.ContainerService/managedClusters/write",
     "Microsoft.Resources/subscriptions/read",
     "Microsoft.Resources/subscriptions/resourceGroups/read",
+    "Microsoft.Network/firewallPolicies/ruleCollectionGroups/read",
+    "Microsoft.Network/locations/serviceTagDetails/read",
     "Microsoft.Consumption/usageDetails/read",
     "Microsoft.Consumption/budgets/read",
     "Microsoft.CostManagement/forecast/read",
@@ -573,6 +622,9 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Storage/storageAccounts/tableServices/tables/entities/read",
     "Microsoft.Storage/storageAccounts/tableServices/tables/entities/write",
     "Microsoft.Storage/storageAccounts/tableServices/tables/entities/delete",
+    "Microsoft.Network/ipGroups/read",
+    "Microsoft.Network/ipGroups/write",
+    "Microsoft.Network/ipGroups/delete",
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -607,6 +659,17 @@ FIREWALL_API_VERSION = "2025-09-01"
 STORAGE_ACCOUNT_API_VERSION = "2026-06-01"
 AKS_API_VERSION = "2026-06-01"
 
+IP_GROUPS_API_VERSION = "2025-09-01"
+
+# Polling settings for the IP group create and update commands.
+DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval between polling attempts for the IP group polling commands.
+DEFAULT_TIMEOUT_POLLING_COMMAND = 600  # Default timeout for the IP group polling commands.
+PROVISIONING_STATE_SUCCEEDED = "Succeeded"  # The terminal success state of an Azure resource provisioning operation.
+PROVISIONING_STATE_FAILED = "Failed"  # The terminal failure state of an Azure resource provisioning operation.
+IP_GROUP_TABLE_HEADERS = ["name", "id", "location", "type"]
+# Commands decorated with @polling_function. The decorator requires the command arguments to be passed as the
+# first positional argument, so main() dispatches these commands differently from the regular ones.
+POLLING_COMMANDS = {"azure-vn-ip-group-create", "azure-vn-ip-group-update"}
 
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
 # get_command_and_token_scopes.
@@ -625,6 +688,9 @@ STORAGE_BLOB_SPECIAL_COMMANDS = [
     "azure-storage-table-entity-replace",
     "azure-storage-table-entity-query",
     "azure-storage-table-entity-delete",
+    "azure-storage-blobs-list",
+    "azure-storage-blob-update",
+    "azure-storage-blob-delete",
 ]
 
 COMMANDS_TO_OUTPUTS_PREFIX = {
@@ -1353,7 +1419,7 @@ class AzureClient:
             custom_headers (dict, optional): Custom headers to be added to the request.
         """
         request_headers = {
-            "x-ms-version": "2023-11-03",
+            "x-ms-version": STORAGE_API_VERSION,
             "x-ms-date": dt.datetime.utcnow().strftime(STORAGE_DATE_FORMAT),
         }
         if self.headers:
@@ -1813,6 +1879,113 @@ class AzureClient:
         self.storage_container_set_headers()
 
         response = self.http_request(method="PUT", full_url=full_url, params=params, resp_type="response")
+
+        return response
+
+    def storage_containers_list_request(self, account_name: str, args: dict):
+        """
+        List Containers under the specified storage account.
+
+        Args:
+            account_name (str): Storage account name.
+            args (dict): The user arguments (like prefix, limit, next_token).
+
+        Returns:
+            str: API response from Azure.
+
+        """
+        next_token = args.get("next_token", "")
+        params: dict = {"comp": "list"}
+        if prefix := args.get("prefix"):
+            params["prefix"] = prefix
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of containers.")
+            params["marker"] = next_token
+        limit = arg_to_number(args.get("limit"))
+        if limit is not None:
+            validate_limit(limit, max_limit=BLOB_CONTAINERS_MAX_PAGE_SIZE)
+            params["maxresults"] = str(limit)
+
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/"
+        self.storage_container_set_headers()
+
+        demisto.debug(f'Listing containers under account "{account_name}".')
+        response = self.http_request(method="GET", full_url=full_url, params=params, resp_type="text")
+
+        return response
+
+    def storage_container_blobs_list_request(self, account_name: str, container_name: str, args: dict):
+        """
+        List Blobs under the specified container.
+
+        Args:
+            account_name (str): Storage account name.
+            container_name (str): Container name.
+            args (dict): The user arguments (like prefix, limit, next_token).
+
+        Returns:
+            str: API response from Azure.
+
+        """
+        next_token = args.get("next_token", "")
+        params: dict = {"restype": "container", "comp": "list"}
+        if prefix := args.get("prefix"):
+            params["prefix"] = prefix
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of blobs.")
+            params["marker"] = next_token
+        limit = arg_to_number(args.get("limit"))
+        if limit is not None:
+            validate_limit(limit, max_limit=BLOB_CONTAINERS_MAX_PAGE_SIZE)
+            params["maxresults"] = str(limit)
+
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}"
+        self.storage_container_set_headers()
+
+        demisto.debug(f'Listing blobs under container "{container_name}" in account "{account_name}".')
+        response = self.http_request(method="GET", full_url=full_url, params=params, resp_type="text")
+
+        return response
+
+    def storage_container_blob_exists(self, container_name: str, blob_name: str, account_name: str) -> bool:
+        """
+        Check whether a Blob exists under the specified Container.
+
+        Args:
+            container_name (str): Container name.
+            blob_name (str): Blob name.
+            account_name (str): Storage account name.
+
+        Returns:
+            bool: True if the blob exists, False if Azure returns 404 (blob or container not found).
+
+        """
+        try:
+            self.storage_container_blob_property_get_request(container_name, blob_name, account_name)
+        except DemistoException as e:
+            if e.res is not None and e.res.status_code == 404:
+                demisto.debug(f'[Azure] Blob "{blob_name}" was not found in container "{container_name}".')
+                return False
+            raise
+        return True
+
+    def storage_container_blob_delete_request(self, container_name: str, blob_name: str, account_name: str):
+        """
+        Delete Blob from the specified Container.
+
+        Args:
+            container_name (str): Container name.
+            blob_name (str): Blob name.
+            account_name (str): Storage account name.
+
+        Returns:
+            Response: API response from Azure.
+
+        """
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}/{blob_name}"
+        self.storage_container_set_headers()
+
+        response = self.http_request(method="DELETE", full_url=full_url, resp_type="response")
 
         return response
 
@@ -2806,6 +2979,177 @@ class AzureClient:
                 resource_name=f"{security_group_name}/{security_rule_name}",
                 resource_type="Security Group",
                 api_function_name="delete_rule",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def ip_group_create(
+        self, subscription_id: str, resource_group_name: str, ip_group_name: str, location: str, ip_addresses: list
+    ):
+        """
+        Create or update an IP group resource.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group name.
+            ip_group_name: The name of the IP group.
+            location: The location of the IP group resource.
+            ip_addresses: IP addresses or IP address prefixes in the IP group resource.
+
+        Return:
+            A dictionary containing the IP group information.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/ip-groups/create-or-update?view=rest-virtualnetwork-2025-09-01
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/ipGroups/{ip_group_name}"
+        )
+        json_data = remove_empty_elements({"location": location, "properties": {"ipAddresses": ip_addresses}})
+        try:
+            return self.http_request(
+                method="PUT", full_url=full_url, json_data=json_data, params={"api-version": IP_GROUPS_API_VERSION}
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=ip_group_name,
+                resource_type="IP Group",
+                api_function_name="ip_group_create",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def ip_group_update(self, subscription_id: str, resource_group_name: str, ip_group_name: str, ip_group_data: dict):
+        """
+        Update an IP group resource.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group name.
+            ip_group_name: The name of the IP group to update.
+            ip_group_data: The IP group resource JSON information.
+
+        Return:
+            A dictionary containing the updated IP group information.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/ip-groups/create-or-update?view=rest-virtualnetwork-2025-09-01
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/ipGroups/{ip_group_name}"
+        )
+        try:
+            return self.http_request(
+                method="PUT", full_url=full_url, json_data=ip_group_data, params={"api-version": IP_GROUPS_API_VERSION}
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=ip_group_name,
+                resource_type="IP Group",
+                api_function_name="ip_group_update",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def ip_group_get(self, subscription_id: str, resource_group_name: str, ip_group_name: str):
+        """
+        Retrieve an IP group resource.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group name.
+            ip_group_name: The name of the IP group to retrieve.
+
+        Return:
+            A dictionary containing the IP group information.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/ip-groups/get?view=rest-virtualnetwork-2025-09-01
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/ipGroups/{ip_group_name}"
+        )
+        try:
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": IP_GROUPS_API_VERSION})
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=ip_group_name,
+                resource_type="IP Group",
+                api_function_name="ip_group_get",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def ip_group_list(self, subscription_id: str, resource_group_name: str, next_token: str):
+        """
+        List the IP groups in a resource group, or in the subscription when no resource group is provided.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the IP groups. When empty, lists by subscription.
+            next_token: The URL to fetch the next page of results.
+
+        Return:
+            A dictionary containing the list of IP groups.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/ip-groups/list-by-resource-group?view=rest-virtualnetwork-2025-09-01
+        """
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of IP groups.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
+            params: dict[str, Any] = {}
+        else:
+            resource_group_path = f"/resourceGroups/{resource_group_name}" if resource_group_name else ""
+            full_url = f"{PREFIX_URL_AZURE}{subscription_id}{resource_group_path}/providers/Microsoft.Network/ipGroups"
+            params = {"api-version": IP_GROUPS_API_VERSION}
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_group_name or subscription_id,
+                resource_type="IP Groups",
+                api_function_name="ip_group_list",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def ip_group_delete(self, subscription_id: str, resource_group_name: str, ip_group_name: str):
+        """
+        Delete an IP group resource.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group name.
+            ip_group_name: The name of the IP group to delete.
+
+        Return:
+            The HTTP response object from the delete operation.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/ip-groups/delete?view=rest-virtualnetwork-2025-09-01
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/ipGroups/{ip_group_name}"
+        )
+        try:
+            return self.http_request(
+                method="DELETE", full_url=full_url, params={"api-version": IP_GROUPS_API_VERSION}, resp_type="response"
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=ip_group_name,
+                resource_type="IP Group",
+                api_function_name="ip_group_delete",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -3889,6 +4233,185 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
+    def firewall_list_request(self, subscription_id: str, resource_group_name: str, resource: str, next_token: str):
+        """
+        Lists the Azure firewalls in a resource group or in the whole subscription.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group containing the firewalls.
+            resource (str): The scope to list the firewalls from, either "resource_group" or "subscription".
+            next_token (str): The URL to fetch the next page of results.
+
+        Returns:
+            A dictionary containing the list of Azure firewalls.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/firewall/azure-firewalls/list
+        """
+        if next_token:
+            demisto.debug(f"using {next_token=} for retrieving the next page of results.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
+            parameters = {}
+        elif resource == "subscription":
+            full_url = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.Network/azureFirewalls"
+            parameters = {"api-version": FIREWALL_API_VERSION}
+        else:
+            full_url = (
+                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
+                f"providers/Microsoft.Network/azureFirewalls"
+            )
+            parameters = {"api-version": FIREWALL_API_VERSION}
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=parameters)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_group_name if resource == "resource_group" else subscription_id,
+                resource_type="Firewalls",
+                api_function_name="firewall_list_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def firewall_get_request(self, subscription_id: str, resource_group_name: str, firewall_name: str):
+        """
+        Retrieves the information of a specific Azure firewall.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group containing the firewall.
+            firewall_name (str): The name of the Azure firewall to retrieve.
+
+        Returns:
+            A dictionary containing the Azure firewall information.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/firewall/azure-firewalls/get
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
+            f"providers/Microsoft.Network/azureFirewalls/{firewall_name}"
+        )
+        try:
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": FIREWALL_API_VERSION})
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=firewall_name,
+                resource_type="Firewall",
+                api_function_name="firewall_get_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def firewall_policy_rule_collection_list_request(
+        self, subscription_id: str, resource_group_name: str, policy_name: str, next_token: str
+    ):
+        """
+        Lists the rule collection groups of a firewall policy.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group containing the policy.
+            policy_name (str): The name of the firewall policy containing the rule collection groups.
+            next_token (str): The URL to fetch the next page of results.
+
+        Returns:
+            A dictionary containing the list of the policy rule collection groups.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/firewall-policy-rule-collection-groups/list?view=rest-virtualnetwork-2025-09-01&tabs=HTTP
+        """
+        if next_token:
+            demisto.debug(f"using {next_token=} for retrieving the next page of results.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
+            parameters = {}
+        else:
+            full_url = (
+                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
+                f"providers/Microsoft.Network/firewallPolicies/{policy_name}/ruleCollectionGroups"
+            )
+            parameters = {"api-version": FIREWALL_API_VERSION}
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=parameters)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=policy_name,
+                resource_type="Firewall Policy Rule Collection Groups",
+                api_function_name="firewall_policy_rule_collection_list_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def firewall_policy_rule_collection_get_request(
+        self, subscription_id: str, resource_group_name: str, policy_name: str, collection_name: str
+    ):
+        """
+        Retrieves the information of a specific firewall policy rule collection group.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group containing the policy.
+            policy_name (str): The name of the firewall policy containing the rule collection group.
+            collection_name (str): The name of the rule collection group to retrieve.
+
+        Returns:
+            A dictionary containing the policy rule collection group information.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/firewall-policy-rule-collection-groups/get?view=rest-virtualnetwork-2025-09-01&tabs=HTTP
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
+            f"providers/Microsoft.Network/firewallPolicies/{policy_name}/ruleCollectionGroups/{collection_name}"
+        )
+        try:
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": FIREWALL_API_VERSION})
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{policy_name}/{collection_name}",
+                resource_type="Firewall Policy Rule Collection Group",
+                api_function_name="firewall_policy_rule_collection_get_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def firewall_service_tag_list_request(self, subscription_id: str, location: str, next_token: str):
+        """
+        Lists the service tag information resources of a given location.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            location (str): The location that is used as a reference for the service tags version.
+            next_token (str): The URL to fetch the next page of results.
+
+        Returns:
+            A dictionary containing the list of service tags.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/service-tag-information/list
+        """
+        if next_token:
+            demisto.debug(f"using {next_token=} for retrieving the next page of results.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
+            parameters = {}
+        else:
+            full_url = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.Network/locations/{location}/serviceTagDetails"
+            parameters = {"api-version": FIREWALL_API_VERSION}
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=parameters)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=location,
+                resource_type="Service Tags",
+                api_function_name="firewall_service_tag_list_request",
+                subscription_id=subscription_id,
+            )
+
 
 """ HELPER FUNCTIONS """
 
@@ -4151,6 +4674,158 @@ def build_waf_policy_body(args: dict[str, Any], upsert_params: dict[str, str]) -
                 value = raw_value
         parse_nested_keys_to_dict(base_dict=body, keys=body_path.split("."), value=value)
     return body
+
+
+def filter_policy_rule_collections(rule_collection_groups: list, rule_type: str) -> list:
+    """
+    Filters firewall policy rule collection groups by the given rule type.
+
+    Args:
+        rule_collection_groups (list): The rule collection groups from the API response.
+        rule_type (str): The rule type to filter by.
+
+    Returns:
+        list: The rule collection groups matching the given rule type.
+    """
+    collection_type = {
+        "network_rule": "FirewallPolicyFilterRuleCollection",
+        "application_rule": "FirewallPolicyFilterRuleCollection",
+        "nat_rule": "FirewallPolicyNatRuleCollection",
+    }.get(rule_type, "")
+    rule_key = {"network_rule": "NetworkRule", "application_rule": "ApplicationRule", "nat_rule": "NatRule"}.get(rule_type, "")
+    filtered = []
+
+    for collection_group in rule_collection_groups:
+        rule_collections = dict_safe_get(collection_group, ["properties", "ruleCollections"], [])
+        if not isinstance(rule_collections, list) or not rule_collections:
+            continue
+        # A rule collection group can hold several rule collections, so all of them are checked for a match.
+        if any(
+            rule_collection.get("ruleCollectionType") == collection_type
+            and any(rule.get("ruleType") == rule_key for rule in rule_collection.get("rules") or [])
+            for rule_collection in rule_collections
+        ):
+            filtered.append(collection_group)
+
+    return filtered
+
+
+def validate_firewall_or_policy_provided(firewall_name: str, policy_name: str) -> None:
+    """
+    Validates that exactly one of the firewall name or the policy name was provided.
+
+    Args:
+        firewall_name (str): The name of the Azure firewall given in the command arguments.
+        policy_name (str): The name of the Azure firewall policy given in the command arguments.
+
+    Raises:
+        DemistoException: If none of the arguments or both of them were provided.
+    """
+    if not firewall_name and not policy_name:
+        raise DemistoException("One of the arguments 'firewall_name' or 'policy_name' must be provided.")
+
+    if firewall_name and policy_name:
+        raise DemistoException("Only one of the arguments 'firewall_name' or 'policy_name' can be provided.")
+
+
+def get_rules_of_collection(rule_collections: list, collection_name: str) -> list:
+    """
+    Retrieves the rules of the firewall rule collection with the given name.
+
+    Args:
+        rule_collections (list): The firewall rule collections from the API response.
+        collection_name (str): The name of the rule collection containing the rules.
+
+    Returns:
+        list: The rules of the matching rule collection, or an empty list if there is no such collection.
+    """
+    return next(
+        (
+            dict_safe_get(collection, ["properties", "rules"], [])
+            for collection in rule_collections
+            if collection.get("name") == collection_name
+        ),
+        [],
+    )
+
+
+def get_firewall_rule_collections(firewall: dict, rule_type: str) -> list:
+    """
+    Extracts the rule collections of the given type from an Azure firewall response.
+
+    Args:
+        firewall (dict): The Azure firewall from the API response.
+        rule_type (str): The rule collection type to retrieve.
+
+    Returns:
+        list: The matching rule collections.
+    """
+    rule_collection_key = {
+        "network_rule": "networkRuleCollections",
+        "application_rule": "applicationRuleCollections",
+        "nat_rule": "natRuleCollections",
+    }.get(rule_type, "")
+
+    return dict_safe_get(firewall, ["properties", rule_collection_key], [])
+
+
+def get_policy_rule_collection_rules(
+    client: AzureClient, subscription_id: str, resource_group_name: str, policy_name: str, collection_name: str
+) -> tuple[dict, list]:
+    """
+    Retrieves the rules of a firewall policy rule collection group.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        subscription_id (str): The ID of the Azure subscription.
+        resource_group_name (str): The name of the resource group containing the policy.
+        policy_name (str): The name of the policy containing the rule collection group.
+        collection_name (str): The name of the rule collection group containing the rules.
+
+    Returns:
+        tuple[dict, list]: The API response and the rules of the rule collection group.
+    """
+    response = client.firewall_policy_rule_collection_get_request(
+        subscription_id, resource_group_name, policy_name, collection_name
+    )
+    rules: list = []
+    rule_collections = dict_safe_get(response, ["properties", "ruleCollections"], [])
+
+    if isinstance(rule_collections, list):
+        # A rule collection group can hold several rule collections, so the rules of all of them are aggregated.
+        for rule_collection in rule_collections:
+            rules.extend(rule_collection.get("rules") or [])
+
+    return response, rules
+
+
+def build_firewall_readable_data(firewalls: list) -> list:
+    """
+    Builds the human readable rows of the Azure firewall commands.
+
+    Args:
+        firewalls (list): The Azure firewalls from the API response.
+
+    Returns:
+        list: The rows to display in the war room.
+    """
+    readable_data = []
+    for firewall in firewalls:
+        properties = firewall.get("properties", {})
+        ip_configurations = properties.get("ipConfigurations") or [{}]
+        readable_data.append(
+            {
+                "name": firewall.get("name"),
+                "id": firewall.get("id"),
+                "location": firewall.get("location"),
+                "subnet": dict_safe_get(ip_configurations[0], ["properties", "subnet", "id"]),
+                "threatIntelMode": properties.get("threatIntelMode"),
+                "privateIPAddress": dict_safe_get(ip_configurations[0], ["properties", "privateIPAddress"]),
+                "provisioningState": properties.get("provisioningState"),
+            }
+        )
+
+    return readable_data
 
 
 """ COMMAND FUNCTIONS """
@@ -5248,6 +5923,308 @@ def delete_entity_command(client: AzureClient, params: dict, args: dict) -> Comm
     return CommandResults(readable_output=f"Entity in {table_name} table successfully deleted.")
 
 
+def storage_container_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    List Containers under the specified storage account.
+
+    Args:
+        client (AzureClient): Azure Blob Storage API client.
+        params (dict): The configuration parameters.
+        args (dict): Command arguments (account_name, prefix, limit, next_token).
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+
+    """
+    account_name = args.get("account_name", "")
+
+    response = client.storage_containers_list_request(account_name, args)
+
+    root = defused_ET.fromstring(response)
+
+    containers = []
+    for element in root.iter("Container"):
+        properties = {}
+        for container_property in element.findall("Properties"):
+            for attribute in container_property:
+                properties[attribute.tag] = attribute.text
+        containers.append({"name": element.findtext("Name"), "Property": properties})
+
+    # Azure returns an empty <NextMarker /> on the last page; normalize it to None so a stale token is overwritten.
+    next_token = root.findtext("NextMarker") or None
+    token_output = {"Azure.Storage(true)": {"ContainersNextToken": next_token}}
+
+    if not containers:
+        readable_output = "No containers were found."
+        if next_token:
+            readable_output += " More pages are available - re-run the command with the next_token argument to continue."
+        return CommandResults(readable_output=readable_output, outputs=token_output, raw_response=response)
+
+    outputs = {
+        "Azure.Storage.Container(val.name && val.name == obj.name)": remove_empty_elements(containers),
+        **token_output,
+    }
+
+    readable_output = tableToMarkdown(
+        f"Containers List in account {account_name}:",
+        containers,
+        headers=["name"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def storage_container_blob_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    List Blobs under the specified container.
+
+    Args:
+        client (AzureClient): Azure Blob Storage API client.
+        params (dict): The configuration parameters.
+        args (dict): Command arguments (account_name, container_name, prefix, limit, next_token).
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+
+    """
+    account_name = args.get("account_name", "")
+    container_name = args["container_name"]
+
+    response = client.storage_container_blobs_list_request(account_name, container_name, args)
+
+    root = defused_ET.fromstring(response)
+
+    blobs = []
+    for element in root.iter("Blob"):
+        properties = {}
+        for blob_property in element.findall("Properties"):
+            for attribute in blob_property:
+                properties[attribute.tag] = attribute.text
+        blobs.append({"name": element.findtext("Name"), "ContainerName": container_name, "Property": properties})
+
+    # Azure returns an empty <NextMarker /> on the last page; normalize it to None so a stale token is overwritten.
+    next_token = root.findtext("NextMarker") or None
+    token_output = {"Azure.Storage(true)": {"BlobsNextToken": next_token}}
+
+    if not blobs:
+        readable_output = f"No blobs were found in container {container_name}."
+        if next_token:
+            readable_output += " More pages are available - re-run the command with the next_token argument to continue."
+        return CommandResults(readable_output=readable_output, outputs=token_output, raw_response=response)
+
+    outputs = {
+        "Azure.Storage.Blob(val.name && val.name == obj.name && val.ContainerName == obj.ContainerName)": remove_empty_elements(
+            blobs
+        ),
+        **token_output,
+    }
+
+    readable_output = tableToMarkdown(
+        f"Blobs List in container {container_name}:",
+        blobs,
+        headers=["name"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def storage_container_blob_update_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Update the content of an existing Blob under the specified Container.
+
+    Args:
+        client (AzureClient): Azure Blob Storage API client.
+        params (dict): The configuration parameters.
+        args (dict): Command arguments (account_name, container_name, file_entry_id, blob_name).
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+
+    """
+    container_name = args["container_name"]
+    account_name = args.get("account_name", "")
+    file_entry_id = args["file_entry_id"]
+    blob_name = args["blob_name"]
+
+    # The upload API creates the blob when it is missing, so check first to keep this an update of an existing blob.
+    if not client.storage_container_blob_exists(container_name, blob_name, account_name):
+        raise DemistoException(
+            f"Blob {blob_name} does not exist in container {container_name}. "
+            "Use the azure-storage-blob-create command to create a new blob."
+        )
+
+    file_data = demisto.getFilePath(file_entry_id)  # Retrieve system file path and name, given file entry ID.
+    system_file_path = file_data["path"]
+
+    client.storage_container_create_blob_request(container_name, account_name, file_entry_id, blob_name, system_file_path)
+
+    return CommandResults(readable_output=f"Blob {blob_name} successfully updated.")
+
+
+def storage_container_blob_delete_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Delete Blob from the specified Container.
+
+    Args:
+        client (AzureClient): Azure Blob Storage API client.
+        params (dict): The configuration parameters.
+        args (dict): Command arguments (account_name, container_name, blob_name).
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+
+    """
+    container_name = args["container_name"]
+    blob_name = args["blob_name"]
+    account_name = args.get("account_name", "")
+
+    client.storage_container_blob_delete_request(container_name, blob_name, account_name)
+
+    return CommandResults(readable_output=f"Blob {blob_name} successfully deleted.")
+
+
+def check_valid_permission(valid_permissions: str, input_permissions: str) -> bool:
+    """
+    Check the permissions follow a valid permission order.
+
+    Args:
+        valid_permissions (str): Valid permissions order.
+        input_permissions (str): Permissions given.
+
+    Returns:
+        bool: True if the given permissions are valid and in the correct order.
+
+    """
+    if not input_permissions or len(input_permissions) > len(valid_permissions):
+        return False
+    if any(permission not in valid_permissions for permission in input_permissions):
+        return False
+    for current_permission, next_permission in itertools.pairwise(input_permissions):
+        if valid_permissions.index(current_permission) > valid_permissions.index(next_permission):
+            return False
+    return True
+
+
+def generate_sas_signature(
+    account_key: str,
+    canonicalized_resource: str,
+    signed_permissions: str,
+    signed_start: str,
+    signed_expiry: str,
+    signed_resource: str,
+    api_version: str,
+    signed_ip: str = "",
+) -> str:
+    """
+    Generate a SAS token for a Container.
+
+    Args:
+        account_key (str): Account key of the storage account.
+        canonicalized_resource (str): Canonicalized resource.
+        signed_permissions (str): Signed permissions.
+        signed_start (str): Start time for the SAS token.
+        signed_expiry (str): Expiry time for the SAS token.
+        signed_resource (str): Signed resource type.
+        api_version (str): The signed version.
+        signed_ip (str): Public IP address or range from which to accept requests.
+
+    Returns:
+        str: The URL-encoded SAS token.
+
+    """
+    if signed_ip is None:
+        signed_ip = ""
+    string_to_sign = (
+        f"{signed_permissions}\n{signed_start}\n{signed_expiry}\n{canonicalized_resource}\n\n"
+        f"{signed_ip}\nhttps\n{api_version}\n{signed_resource}\n\n\n\n\n\n"
+    ).encode()
+    signed_hmac_sha256 = hmac.new(base64.b64decode(account_key), string_to_sign, hashlib.sha256)
+    sig = base64.b64encode(signed_hmac_sha256.digest())
+
+    token = {
+        "sp": signed_permissions,
+        "st": signed_start,
+        "se": signed_expiry,
+        "sip": signed_ip,
+        "spr": "https",
+        "sv": api_version,
+        "sr": signed_resource,
+        "sig": sig,
+    }
+    remove_nulls_from_dictionary(token)
+
+    return urllib.parse.urlencode(token)
+
+
+def generate_sas_token_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Generate a SAS URL for a Container.
+
+    Args:
+        client (AzureClient): Azure Blob Storage API client.
+        params (dict): The configuration parameters.
+        args (dict): Command arguments (account_name, container_name, expiry_time, signed_resources,
+            signed_permissions, signed_ip, account_key).
+
+    Returns:
+        CommandResults: outputs and raw response.
+
+    """
+    account_name = args.get("account_name", "")
+    container_name = args["container_name"]
+    signed_resource = args["signed_resources"]
+    signed_permissions = args["signed_permissions"]
+    signed_ip = args.get("signed_ip", "")
+    valid_permissions = "racwdxltmeop"
+    api_version = STORAGE_API_VERSION
+
+    if not check_valid_permission(valid_permissions, signed_permissions):
+        raise DemistoException(
+            "Permissions are invalid or in the wrong order. The correct order for permissions is 'racwdxltmeop'."
+        )
+
+    account_key = args["account_key"]
+
+    now = dt.datetime.now(UTC)
+    signed_start = (now - dt.timedelta(minutes=2)).strftime(DATE_FORMAT)
+    expiry_time = arg_to_number(args.get("expiry_time")) or 1
+    signed_expiry = (now + dt.timedelta(hours=expiry_time)).strftime(DATE_FORMAT)
+
+    canonicalized_resource = f"/blob/{account_name}/{container_name}"
+    url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}"
+
+    sas_token = generate_sas_signature(
+        account_key,
+        canonicalized_resource,
+        signed_permissions,
+        signed_start,
+        signed_expiry,
+        signed_resource,
+        api_version,
+        signed_ip,
+    )
+    sas_url = f"{url}?{sas_token}"
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Azure Storage Container SAS URL", {"SAS URL": sas_url}, headerTransform=pascalToSpace),
+        outputs_prefix="Azure.Storage.Container.SAS",
+        outputs_key_field="name",
+        outputs={"name": container_name, "SASURL": sas_url},
+    )
+
+
 def create_policy_assignment_command(client: AzureClient, params: dict, args: dict):
     """
         Creates a policy assignment.
@@ -6204,6 +7181,348 @@ def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any]
     return CommandResults(readable_output=message)
 
 
+def validate_ip_group_polling_args(args: dict[str, Any]) -> None:
+    """
+    Validates the polling arguments of the IP group create and update commands.
+
+    Args:
+        args: The command arguments, optionally including 'interval_in_seconds' and 'polling_timeout'.
+
+    Raises:
+        DemistoException: If 'interval_in_seconds' or 'polling_timeout' is not a positive number.
+    """
+    # The values are read with an explicit "is None" check rather than "or", so that an explicit 0 is
+    # validated and rejected instead of being silently replaced by the default.
+    interval = arg_to_number(args.get("interval_in_seconds"))
+    interval = DEFAULT_INTERVAL_IN_SECONDS if interval is None else interval
+    timeout = arg_to_number(args.get("polling_timeout"))
+    timeout = DEFAULT_TIMEOUT_POLLING_COMMAND if timeout is None else timeout
+
+    if interval <= 0:
+        raise DemistoException(f"The interval_in_seconds argument must be a positive number. Currently the value is {interval}")
+    if timeout <= 0:
+        raise DemistoException(f"The polling_timeout argument must be a positive number. Currently the value is {timeout}")
+
+
+def ip_group_poll_result(
+    client: AzureClient,
+    subscription_id: str,
+    resource_group_name: str,
+    ip_group_name: str,
+    command_name: str,
+    success_message: str,
+) -> PollResult:
+    """
+    Retrieves an IP group and keeps polling while its provisioning has not reached a terminal state.
+
+    As long as the provisioning state is neither 'Succeeded' nor 'Failed', the returned PollResult instructs the
+    ``polling_function`` decorator to schedule another run of the command.
+
+    Args:
+        client: The AzureClient.
+        subscription_id: The Azure subscription ID.
+        resource_group_name: The resource group name.
+        ip_group_name: The name of the IP group being provisioned.
+        command_name: The command name, used for debug logging.
+        success_message: The readable output title used once provisioning succeeded.
+
+    Returns:
+        PollResult: The provisioned IP group, or an indication to poll again.
+
+    Raises:
+        DemistoException: If the provisioning of the IP group failed.
+    """
+    response = client.ip_group_get(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, ip_group_name=ip_group_name
+    )
+    provisioning_state = dict_safe_get(response, ["properties", "provisioningState"])
+    demisto.debug(f"[Azure] {command_name}: IP group {ip_group_name} provisioning state is {provisioning_state}")
+
+    if provisioning_state == PROVISIONING_STATE_FAILED:
+        raise DemistoException(f"The provisioning of IP group {ip_group_name} failed.")
+
+    if provisioning_state != PROVISIONING_STATE_SUCCEEDED:
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            partial_result=CommandResults(
+                readable_output=(f"Waiting for IP group {ip_group_name} to be provisioned. Current state: {provisioning_state}.")
+            ),
+        )
+
+    hr = tableToMarkdown(
+        name=success_message,
+        t=response,
+        removeNull=True,
+        headers=IP_GROUP_TABLE_HEADERS,
+        headerTransform=pascalToSpace,
+    )
+
+    return PollResult(
+        response=CommandResults(
+            outputs_prefix="Azure.VirtualNetworks.IPGroups",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=hr,
+            raw_response=response,
+        ),
+        continue_to_poll=False,
+    )
+
+
+@polling_function(
+    name="azure-vn-ip-group-create",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def ip_group_create_command(args: dict[str, Any], client: AzureClient, params: dict[str, Any]) -> PollResult:
+    """
+    Creates an IP group resource and polls until it is fully provisioned.
+    Args:
+        args: args dictionary.
+        client: The AzureClient
+        params: configuration parameters
+    Returns:
+        PollResult: The created IP group, or an indication to poll again.
+    """
+    validate_ip_group_polling_args(args)
+
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    ip_group_name = args.get("ip_group_name", "")
+
+    # On the first run the IP group is created, and on every scheduled run afterwards only its provisioning
+    # state is polled, so that the create request is not sent again on each poll.
+    if not argToBoolean(args.get("ip_group_created", False)):
+        location = args.get("location", "")
+        ip_addresses = argToList(args.get("ip_addresses"))
+
+        response = client.ip_group_create(
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            ip_group_name=ip_group_name,
+            location=location,
+            ip_addresses=ip_addresses,
+        )
+        provisioning_state = dict_safe_get(response, ["properties", "provisioningState"])
+        demisto.debug(f"[Azure] created IP group {response.get('name')=} {response.get('id')=} {provisioning_state=}")
+        args["ip_group_created"] = True
+
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            partial_result=CommandResults(
+                readable_output=f"The creation of IP group {ip_group_name} has started. Current state: {provisioning_state}."
+            ),
+            args_for_next_run=args,
+        )
+
+    return ip_group_poll_result(
+        client=client,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        ip_group_name=ip_group_name,
+        command_name="azure-vn-ip-group-create",
+        success_message=f"The IP group {ip_group_name} was created successfully",
+    )
+
+
+@polling_function(
+    name="azure-vn-ip-group-update",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def ip_group_update_command(args: dict[str, Any], client: AzureClient, params: dict[str, Any]) -> PollResult:
+    """
+    Updates an IP group resource by adding or removing IP addresses, and polls until it is fully provisioned.
+    Args:
+        args: args dictionary.
+        client: The AzureClient
+        params: configuration parameters
+    Returns:
+        PollResult: The updated IP group, or an indication to poll again.
+    """
+    validate_ip_group_polling_args(args)
+
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    ip_group_name = args.get("ip_group_name", "")
+    ip_addresses_to_add = argToList(args.get("ip_addresses_to_add"))
+    ip_addresses_to_remove = argToList(args.get("ip_addresses_to_remove"))
+
+    if not ip_addresses_to_add and not ip_addresses_to_remove:
+        raise DemistoException("One of the arguments: `ip_addresses_to_add` or `ip_addresses_to_remove` must be provided.")
+
+    # On the first run the IP group is updated, and on every scheduled run afterwards only its provisioning
+    # state is polled, so that the update request is not sent again on each poll.
+    if not argToBoolean(args.get("ip_group_updated", False)):
+        ip_group_data = client.ip_group_get(
+            subscription_id=subscription_id, resource_group_name=resource_group_name, ip_group_name=ip_group_name
+        )
+        # The updated list is assigned back explicitly rather than mutated in place, so that an IP group with no
+        # "ipAddresses" key yet (an empty group) still receives the added addresses instead of silently dropping them.
+        existing_ip_addresses = dict_safe_get(ip_group_data, ["properties", "ipAddresses"], []) or []
+        # dict.fromkeys merges the existing and the added addresses while preserving their order and dropping
+        # duplicates, so re-adding an address that is already in the group does not create a duplicate entry.
+        ip_addresses = list(dict.fromkeys(existing_ip_addresses + ip_addresses_to_add))
+        ip_addresses = [ip_address for ip_address in ip_addresses if ip_address not in ip_addresses_to_remove]
+        # "properties" is read with "or {}" rather than setdefault, so that an explicit null value is replaced as well.
+        properties = ip_group_data.get("properties") or {}
+        properties["ipAddresses"] = ip_addresses
+        ip_group_data["properties"] = properties
+        demisto.debug(f"[Azure] updating IP group {ip_group_name} with {len(ip_addresses)} IP addresses.")
+
+        response = client.ip_group_update(
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            ip_group_name=ip_group_name,
+            ip_group_data=ip_group_data,
+        )
+        provisioning_state = dict_safe_get(response, ["properties", "provisioningState"])
+        demisto.debug(f"[Azure] updated IP group {response.get('name')=} {response.get('id')=} {provisioning_state=}")
+        args["ip_group_updated"] = True
+
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            partial_result=CommandResults(
+                readable_output=f"The update of IP group {ip_group_name} has started. Current state: {provisioning_state}."
+            ),
+            args_for_next_run=args,
+        )
+
+    return ip_group_poll_result(
+        client=client,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        ip_group_name=ip_group_name,
+        command_name="azure-vn-ip-group-update",
+        success_message=f"The IP group {ip_group_name} was updated successfully",
+    )
+
+
+def ip_group_get_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves an IP group resource.
+    Args:
+        client: The AzureClient
+        params: configuration parameters
+        args: args dictionary.
+    Returns:
+        CommandResults: The requested IP group.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    ip_group_name = args.get("ip_group_name", "")
+
+    response = client.ip_group_get(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, ip_group_name=ip_group_name
+    )
+    demisto.debug(f"[Azure] retrieved IP group {response.get('name')=} {response.get('id')=}")
+
+    hr = tableToMarkdown(
+        name=f"IP Group {ip_group_name}",
+        t=response,
+        removeNull=True,
+        headers=["name", "id", "location", "type"],
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.VirtualNetworks.IPGroups",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=hr,
+        raw_response=response,
+    )
+
+
+def ip_group_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Lists the IP groups in a resource group, or in the subscription when no resource group is provided.
+    Args:
+        client: The AzureClient
+        params: configuration parameters
+        args: args dictionary.
+    Returns:
+        CommandResults: The list of IP groups.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    # The instance default resource group is deliberately not used as a fallback here, so that omitting the
+    # argument lists the IP groups of the whole subscription even when a default resource group is configured.
+    resource_group_name = args.get("resource_group_name", "")
+    next_token = args.get("next_token", "")
+
+    response = client.ip_group_list(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, next_token=next_token
+    )
+    ip_groups = response.get("value", [])
+    next_link = response.get("nextLink")
+    demisto.debug(f"[Azure] listed IP groups {len(ip_groups)=} {bool(next_link)=}")
+
+    if not ip_groups:
+        scope = f"resource group '{resource_group_name}'" if resource_group_name else f"subscription '{subscription_id}'"
+        return CommandResults(readable_output=f"No IP groups were found in {scope}.")
+
+    # The next token is written even when it is None, so that a stale token from a previous page is cleared
+    # from the context instead of lingering. remove_empty_elements must not be applied to these outputs.
+    outputs = {
+        "Azure.VirtualNetworks.IPGroups(val.id && val.id == obj.id)": ip_groups,
+        "Azure.VirtualNetworks(true)": {"IPGroupsNextToken": next_link},
+    }
+
+    hr = tableToMarkdown(
+        name="IP Groups List",
+        t=ip_groups,
+        removeNull=True,
+        headers=["name", "id", "location", "type"],
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs=outputs,
+        readable_output=hr,
+        raw_response=response,
+    )
+
+
+def ip_group_delete_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes an IP group resource.
+    Args:
+        client: The AzureClient
+        params: configuration parameters
+        args: args dictionary.
+    Returns:
+        CommandResults: Message that the IP group was deleted.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    ip_group_name = args.get("ip_group_name", "")
+
+    ip_group_deleted = client.ip_group_delete(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, ip_group_name=ip_group_name
+    )
+    message = ""
+    if ip_group_deleted.status_code == 202:
+        message = (
+            f"The delete request for IP group {ip_group_name} with resource group "
+            f"{resource_group_name} and subscription ID {subscription_id} "
+            f"was accepted and the operation will complete asynchronously."
+        )
+    elif ip_group_deleted.status_code == 204:
+        message = (
+            f"IP group {ip_group_name} with resource group "
+            f"{resource_group_name} and subscription ID {subscription_id} was not found."
+        )
+    else:
+        message = f"IP group {ip_group_name} was successfully deleted."
+
+    return CommandResults(readable_output=message)
+
+
 def nsg_resource_group_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
     List all resource groups in the subscription.
@@ -7036,6 +8355,349 @@ def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: 
         readable_output=readable,
         outputs=outputs,
         raw_response=res,
+    )
+
+
+def firewall_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Lists the Azure firewalls in a resource group or in the whole subscription.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: A CommandResults object containing the list of Azure firewalls.
+    """
+    # The subscription scopes the request in both scopes, so it is always resolved and validated as non-empty.
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
+    resource = args.get("resource", "resource_group")
+    next_token = args.get("next_token", "")
+    # The resource group scopes the request only when listing a resource group, so it is resolved - and
+    # validated as non-empty - only in that scope.
+    resource_group_name = (
+        get_from_args_or_params(args=args, params=params, key="resource_group_name") if resource == "resource_group" else ""
+    )
+
+    demisto.debug(f"[Azure] Listing firewalls with {subscription_id=}, {resource=}, {resource_group_name=}")
+    response = client.firewall_list_request(subscription_id, resource_group_name, resource, next_token)
+    firewalls = response.get("value", [])
+    demisto.debug(f"[Azure] Received {len(firewalls)} firewalls, {bool(response.get('nextLink'))=}")
+
+    if not firewalls:
+        scope = f"resource group '{resource_group_name}'" if resource == "resource_group" else f"subscription '{subscription_id}'"
+        return CommandResults(readable_output=f"No Azure firewalls were found in the {scope}.")
+
+    outputs = {
+        "Azure.Firewall.Firewalls(val.id && val.id == obj.id)": firewalls,
+        "Azure.Firewall(true)": {"FirewallsNextToken": response.get("nextLink")},
+    }
+    readable_output = tableToMarkdown(
+        "Azure Firewalls List",
+        build_firewall_readable_data(firewalls),
+        headers=["name", "id", "location", "subnet", "threatIntelMode", "privateIPAddress", "provisioningState"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def firewall_get_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the information of a specific Azure firewall, and optionally its rule collections of a given type.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: A CommandResults object containing the Azure firewall information.
+    """
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
+    resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
+    firewall_name = args.get("firewall_name", "")
+    rule_type = args.get("rule_type", "")
+
+    demisto.debug(f"[Azure] Getting firewall with {subscription_id=}, {resource_group_name=}, {firewall_name=}, {rule_type=}")
+    response = client.firewall_get_request(subscription_id, resource_group_name, firewall_name)
+
+    readable_output = tableToMarkdown(
+        f"Azure Firewall {firewall_name} Information",
+        build_firewall_readable_data([response]),
+        headers=["name", "id", "location", "subnet", "threatIntelMode", "privateIPAddress", "provisioningState"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    if rule_type:
+        # The rule collections are nested in the firewall response, so they are displayed in their own table.
+        rule_collections = get_firewall_rule_collections(response, rule_type)
+        demisto.debug(f"[Azure] Received {len(rule_collections)} rule collections of {rule_type=}")
+        readable_output += tableToMarkdown(
+            f"Azure Firewall {firewall_name} {rule_type} Rule Collections",
+            [
+                {
+                    "name": collection.get("name"),
+                    "action": dict_safe_get(collection, ["properties", "action", "type"]),
+                    "priority": dict_safe_get(collection, ["properties", "priority"]),
+                }
+                for collection in rule_collections
+            ],
+            headers=["name", "action", "priority"],
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+
+    return CommandResults(
+        outputs_prefix="Azure.Firewall.Firewalls",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def firewall_policy_rule_collection_groups_list_command(
+    client: AzureClient, params: dict[str, Any], args: dict[str, Any]
+) -> CommandResults:
+    """
+    Lists the rule collection groups of an Azure firewall policy.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: A CommandResults object containing the list of rule collection groups.
+    """
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
+    resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
+    policy_name: str = args.get("policy_name", "")
+    rule_type = args.get("rule_type", "")
+    next_token = args.get("next_token", "")
+
+    demisto.debug(
+        f"[Azure] Listing policy rule collection groups with {subscription_id=}, {resource_group_name=}, "
+        f"{policy_name=}, {rule_type=}"
+    )
+    response = client.firewall_policy_rule_collection_list_request(subscription_id, resource_group_name, policy_name, next_token)
+    collection_groups = filter_policy_rule_collections(response.get("value", []), rule_type)
+    next_link = response.get("nextLink")
+    demisto.debug(f"[Azure] Received {len(collection_groups)} rule collection groups, {bool(next_link)=}")
+
+    if not collection_groups:
+        # A page can hold no rule collection groups of the requested type while later pages still hold some, so the
+        # token is returned to let the user keep paging, and is set to None otherwise to clear a stale token.
+        readable_output = f"No {rule_type} rule collection groups were found in '{policy_name}'."
+        if next_link:
+            readable_output += " More pages of results are available. Run the command with the next_token argument to view them."
+        return CommandResults(
+            outputs={"Azure.VirtualNetworks(true)": {"FirewallPolicyRuleCollectionGroupsNextToken": next_link}},
+            readable_output=readable_output,
+        )
+
+    readable_data = []
+    for collection_group in collection_groups:
+        # A rule collection group can hold several rule collections, so a row is displayed for each one of them.
+        for rule_collection in dict_safe_get(collection_group, ["properties", "ruleCollections"], []):
+            readable_data.append(
+                {
+                    "name": rule_collection.get("name"),
+                    "action": dict_safe_get(rule_collection, ["action", "type"]),
+                    "priority": rule_collection.get("priority"),
+                }
+            )
+
+    outputs = {
+        "Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups(val.id && val.id == obj.id)": collection_groups,
+        "Azure.VirtualNetworks(true)": {"FirewallPolicyRuleCollectionGroupsNextToken": next_link},
+    }
+    readable_output = tableToMarkdown(
+        f"{policy_name} Rule Collection Groups List",
+        readable_data,
+        headers=["name", "action", "priority"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def firewall_rule_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Lists the rules of an Azure firewall rule collection or of a firewall policy rule collection group.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: A CommandResults object containing the list of rules.
+    """
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
+    resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
+    firewall_name: str = args.get("firewall_name", "")
+    policy_name: str = args.get("policy_name", "")
+    rule_type = args.get("rule_type", "")
+    collection_name = args.get("collection_name", "")
+
+    validate_firewall_or_policy_provided(firewall_name, policy_name)
+
+    demisto.debug(
+        f"[Azure] Listing rules with {subscription_id=}, {resource_group_name=}, "
+        f"{firewall_name=}, {policy_name=}, {rule_type=}, {collection_name=}"
+    )
+    if firewall_name:
+        if not rule_type:
+            raise DemistoException("The 'rule_type' argument must be provided when the 'firewall_name' argument is used.")
+
+        response = client.firewall_get_request(subscription_id, resource_group_name, firewall_name)
+        rules = get_rules_of_collection(get_firewall_rule_collections(response, rule_type), collection_name)
+    else:
+        response, rules = get_policy_rule_collection_rules(
+            client, subscription_id, resource_group_name, policy_name, collection_name
+        )
+    demisto.debug(f"[Azure] Received {len(rules)} rules.")
+
+    if not rules:
+        return CommandResults(
+            readable_output=(
+                f"No rules were found in the '{collection_name}' rule collection of '{firewall_name or policy_name}'."
+            )
+        )
+
+    readable_output = tableToMarkdown(
+        f"{firewall_name or policy_name} {collection_name} Rules List",
+        rules,
+        headers=["name", "ruleType"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.Firewall.Rules",
+        outputs_key_field="name",
+        outputs=rules,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def firewall_rule_get_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the information of a specific Azure firewall or firewall policy rule.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: A CommandResults object containing the rule information.
+    """
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
+    resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
+    firewall_name: str = args.get("firewall_name", "")
+    policy_name: str = args.get("policy_name", "")
+    rule_type = args.get("rule_type", "")
+    collection_name = args.get("collection_name", "")
+    rule_name = args.get("rule_name", "")
+
+    validate_firewall_or_policy_provided(firewall_name, policy_name)
+
+    demisto.debug(
+        f"[Azure] Getting rule with {subscription_id=}, {resource_group_name=}, "
+        f"{firewall_name=}, {policy_name=}, {rule_type=}, {collection_name=}, {rule_name=}"
+    )
+    if firewall_name:
+        if not rule_type:
+            raise DemistoException("The 'rule_type' argument must be provided when the 'firewall_name' argument is used.")
+
+        response = client.firewall_get_request(subscription_id, resource_group_name, firewall_name)
+        rules = get_rules_of_collection(get_firewall_rule_collections(response, rule_type), collection_name)
+    else:
+        response, rules = get_policy_rule_collection_rules(
+            client, subscription_id, resource_group_name, policy_name, collection_name
+        )
+
+    rule = next((rule for rule in rules if rule.get("name") == rule_name), None)
+
+    if not rule:
+        raise DemistoException(
+            f"The rule '{rule_name}' was not found in the '{collection_name}' rule collection "
+            f"of '{firewall_name or policy_name}'."
+        )
+
+    readable_output = tableToMarkdown(
+        f"Rule {rule_name} Information",
+        rule,
+        headers=["name", "ruleType"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.Firewall.Rules",
+        outputs_key_field="name",
+        outputs=rule,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def firewall_service_tag_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Lists the service tag information resources of a given location.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: A CommandResults object containing the list of service tags.
+    """
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
+    location = args.get("location", "")
+    next_token = args.get("next_token", "")
+
+    demisto.debug(f"[Azure] Listing service tags with {subscription_id=}, {location=}")
+    response = client.firewall_service_tag_list_request(subscription_id, location, next_token)
+    service_tags = response.get("value", [])
+    demisto.debug(f"[Azure] Received {len(service_tags)} service tags, {bool(response.get('nextLink'))=}")
+
+    if not service_tags:
+        return CommandResults(readable_output=f"No service tags were found in the '{location}' location.")
+
+    outputs = {
+        "Azure.VirtualNetworks.ServiceTagsInformation(val.id && val.id == obj.id)": service_tags,
+        "Azure.VirtualNetworks(true)": {"ServiceTagsInformationNextToken": response.get("nextLink")},
+    }
+    readable_output = tableToMarkdown(
+        "Azure Service Tags List",
+        service_tags,
+        headers=["name", "id"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
     )
 
 
@@ -8128,6 +9790,11 @@ def main():  # pragma: no cover
             "azure-storage-table-entity-replace": replace_entity_command,
             "azure-storage-table-entity-query": query_entity_command,
             "azure-storage-table-entity-delete": delete_entity_command,
+            "azure-storage-containers-list": storage_container_list_command,
+            "azure-storage-blobs-list": storage_container_blob_list_command,
+            "azure-storage-blob-update": storage_container_blob_update_command,
+            "azure-storage-blob-delete": storage_container_blob_delete_command,
+            "azure-storage-container-sas-create": generate_sas_token_command,
             "azure-policy-assignment-create": create_policy_assignment_command,
             "azure-postgres-config-set": set_postgres_config_command,
             "azure-postgres-server-update": postgres_server_update_command,
@@ -8169,6 +9836,9 @@ def main():  # pragma: no cover
             "azure-vn-security-rule-create": nsg_security_rule_create_command,
             "azure-nsg-security-rule-delete": nsg_security_rule_delete_command,
             "azure-vn-security-rule-delete": nsg_security_rule_delete_command,
+            "azure-vn-ip-group-get": ip_group_get_command,
+            "azure-vn-ip-groups-list": ip_group_list_command,
+            "azure-vn-ip-group-delete": ip_group_delete_command,
             "azure-nsg-resource-group-list": nsg_resource_group_list_command,
             "azure-rm-resource-groups-list": nsg_resource_group_list_command,
             "azure-nsg-network-interfaces-list": nsg_network_interfaces_list_command,
@@ -8243,6 +9913,14 @@ def main():  # pragma: no cover
             "azure-vn-firewall-policy-list": firewall_policy_list_command,
             "azure-firewall-policy-attach": firewall_policy_attach_command,
             "azure-firewall-policy-detach": firewall_policy_detach_command,
+            "azure-vn-ip-group-create": ip_group_create_command,
+            "azure-vn-ip-group-update": ip_group_update_command,
+            "azure-firewall-list": firewall_list_command,
+            "azure-firewall-get": firewall_get_command,
+            "azure-vn-firewall-policy-rule-collection-groups-list": firewall_policy_rule_collection_groups_list_command,
+            "azure-firewall-rules-list": firewall_rule_list_command,
+            "azure-firewall-rule-get": firewall_rule_get_command,
+            "azure-firewall-service-tags-information-list": firewall_service_tag_list_command,
         }
 
         azure_ad_endpoint = params.get("azure_ad_endpoint") or DEFAULT_AZURE_AD_ENDPOINT
@@ -8277,6 +9955,10 @@ def main():  # pragma: no cover
             return_results(test_connection(client))
         elif command == "azure-generate-login-url":
             return_results(generate_login_url(_get_ms_client(client), azure_ad_endpoint))
+        elif command in POLLING_COMMANDS:
+            # Polling commands are decorated with @polling_function and therefore take args as their first
+            # positional argument instead of receiving it as a keyword argument.
+            return_results(commands_with_params_and_args[command](args, client=client, params=params))
         elif command in commands_with_params_and_args:
             return_results(commands_with_params_and_args[command](client=client, params=params, args=args))
         else:
