@@ -1,5 +1,9 @@
 {
     "nvidia_openshell_raw": {
+        "_raw_log": {
+            "type": "string",
+            "is_array": false
+        },
         "action": {
             "type": "string",
             "is_array": false
@@ -108,6 +112,10 @@
             "type": "int",
             "is_array": false
         },
+        "log": {
+            "type": "string",
+            "is_array": false
+        },
         "message": {
             "type": "string",
             "is_array": false
@@ -182,6 +190,10 @@
         },
         "status_id": {
             "type": "int",
+            "is_array": false
+        },
+        "stream": {
+            "type": "string",
             "is_array": false
         },
         "time": {
