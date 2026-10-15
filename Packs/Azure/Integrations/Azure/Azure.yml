@@ -13571,6 +13571,362 @@ script:
       - contextPath: Azure.VirtualNetworks.ServiceTagsInformationNextToken
         description: The URI used to fetch the next page of service tags. Run the same command with the next_token argument to get the next page of service tags.
         type: String
+  - name: azure-compute-vm-create
+    description: "Creates a virtual machine instance with the specified OS image. Required permissions: Microsoft.Compute/virtualMachines/write."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group to which the new virtual machine will belong.
+      required: true
+    - name: virtual_machine_name
+      description: The name of the virtual machine to create.
+      required: true
+    - name: virtual_machine_location
+      description: The location in which to create the virtual machine.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - westus2
+      - westus
+      - westindia
+      - westeurope
+      - westcentralus
+      - uksouth
+      - ukwest
+      - southeastasia
+      - northcentralus
+      - northeurope
+      - southcentralus
+      - southindia
+      - francesouth
+      - francecentral
+      - japaneast
+      - japanwest
+      - koreacentral
+      - koreasouth
+      - brazilsouth
+      - canadacentral
+      - canadaeast
+      - centralindia
+      - eastus2
+      - eastasia
+      - centralus
+      - eastus
+      - australiacentral
+      - australiacentral2
+      - australiaeast
+      - australiasoutheast
+    - name: nic_name
+      description: The name of the Network Interface to link the virtual machine. Note that the virtual machine's location property must match that of the Network Interface to which it is linked.
+      required: true
+    - name: vm_size
+      description: The name of a VirtualMachineSize object, which determines the size of the deployed virtual machine.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Standard_D1_v2
+      - Standard_D2_v2
+      - Standard_D2s_v3
+      - Standard_B1ms
+      - Standard_B1s
+      - Standard_B2s
+      - Standard_B4ms
+      - Standard_D4s_v3
+      - Standard_DS1_v2
+      - Standard_DS2_v2
+      - Standard_DS3_v2
+      - Promo_DS2_v2
+      - Promo_DS3_v2
+    - name: os_image
+      description: The base operating system image of the virtual machine. It is mandatory to provide either this argument or the sku, publisher, version, and offer arguments.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Ubuntu Server 14.04 LTS
+      - Ubuntu Server 16.04 LTS
+      - Ubuntu Server 18.04 LTS
+      - Red Hat Enterprise Linux 7.6
+      - CentOS-based 7.5
+      - Windows Server 2012 R2 Datacenter
+      - Windows Server 2016 Datacenter
+      - Windows 10 Pro Version 1803
+      - Windows 10 Pro Version 1809
+    - name: sku
+      description: The SKU of the OS image to use.
+      required: false
+      defaultValue: 2016-Datacenter
+    - name: publisher
+      description: The name of the publisher of the OS image.
+      required: false
+      defaultValue: MicrosoftWindowsServer
+    - name: version
+      description: The version of the image to use. Supported formats are Major.Minor.Build or latest.
+      required: false
+      defaultValue: latest
+    - name: offer
+      description: The offer of the platform image or marketplace image used to create the virtual machine.
+      required: false
+      defaultValue: WindowsServer
+    - name: admin_username
+      description: The admin username to use when creating the virtual machine.
+      required: false
+    - name: admin_password
+      description: The admin password to use when creating the virtual machine.
+      required: false
+      secret: true
+    outputs:
+      - contextPath: Azure.Compute.VirtualMachines.id
+        description: The ID of the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.name
+        description: The name of the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.type
+        description: The type of the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.location
+        description: The location of the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.tags
+        description: The tags of the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.etag
+        description: The ETag of the virtual machine, used to prevent overwriting concurrent updates.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.extendedLocation
+        description: The extended location of the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.identity
+        description: The identity of the virtual machine, if configured.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.managedBy
+        description: The ARM resource ID of the Virtual Machine Scale Set (VMSS) that manages the virtual machine, if applicable.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.placement
+        description: The user-defined constraints for virtual machine hardware placement. This property cannot be changed once the virtual machine is provisioned.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.plan
+        description: The information about the marketplace image used to create the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.plan.name
+        description: The plan name.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.plan.publisher
+        description: The publisher of the plan.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.plan.product
+        description: The product of the plan.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.plan.promotionCode
+        description: The promotion code of the plan.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.systemData
+        description: The Azure Resource Manager metadata containing the createdBy and modifiedBy information.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.zones
+        description: The availability zones of the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.resources
+        description: The virtual machine child extension resources.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.vmId
+        description: The unique ID of the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.provisioningState
+        description: The provisioning state, which only appears in the response.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.timeCreated
+        description: The time when the virtual machine was created.
+        type: Date
+      - contextPath: Azure.Compute.VirtualMachines.properties.hardwareProfile
+        description: The hardware settings for the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.storageProfile
+        description: The storage settings for the virtual machine disks.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.osProfile
+        description: The operating system settings for the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.networkProfile
+        description: The network interfaces of the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.additionalCapabilities
+        description: The additional capabilities enabled or disabled on the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.securityProfile
+        description: The security settings for the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.diagnosticsProfile
+        description: The boot diagnostic settings state.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.availabilitySet
+        description: The availability set that the virtual machine is in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.virtualMachineScaleSet
+        description: The virtual machine scale set that the virtual machine is in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.proximityPlacementGroup
+        description: The proximity placement group that the virtual machine is in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.scheduledEventsPolicy
+        description: The Redeploy, Reboot, and ScheduledEventsAdditionalPublishingTargets Scheduled Event related configurations for the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.scheduledEventsProfile
+        description: The scheduled event related configurations.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.priority
+        description: The priority for the virtual machine. Possible values are Regular, Low, or Spot.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.evictionPolicy
+        description: The eviction policy for the Azure Spot virtual machine. Possible values are Deallocate or Delete.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.billingProfile
+        description: The billing related details of an Azure Spot virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.host
+        description: The dedicated host that the virtual machine resides in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.hostGroup
+        description: The dedicated host group that the virtual machine resides in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.licenseType
+        description: The license type for the bring your own license scenario.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.extensionsTimeBudget
+        description: The time allotted for all extensions to start, in ISO 8601 format.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.platformFaultDomain
+        description: The scale set logical fault domain into which the virtual machine is created.
+        type: Number
+      - contextPath: Azure.Compute.VirtualMachines.properties.userData
+        description: The user data for the virtual machine, which must be base-64 encoded.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.capacityReservation
+        description: The capacity reservation related details of the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.applicationProfile
+        description: The gallery applications that should be made available to the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.instanceView
+        description: The virtual machine instance view.
+        type: Unknown
+  - name: azure-compute-vm-delete
+    description: "Deallocates and deletes a specified virtual machine. Required permissions: Microsoft.Compute/virtualMachines/deallocate/action, Microsoft.Compute/virtualMachines/delete."
+    execution: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group to which the virtual machine belongs.
+      required: true
+    - name: virtual_machine_name
+      description: The name of the virtual machine to delete. To see all the virtual machines with their associated names for a specific resource group, run the azure-compute-vm-list command.
+      required: true
+    outputs: []
+  - name: azure-vn-network-interface-create
+    description: "Creates a virtual machine network interface. Required permissions: Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/networkSecurityGroups/join/action."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group to which the new network interface will belong.
+      required: true
+    - name: nic_name
+      description: The network interface name.
+      required: true
+    - name: nic_location
+      description: The location in which to create the network interface.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - westus2
+      - westus
+      - westindia
+      - westeurope
+      - westcentralus
+      - uksouth
+      - ukwest
+      - southeastasia
+      - northcentralus
+      - northeurope
+      - southcentralus
+      - southindia
+      - francesouth
+      - francecentral
+      - japaneast
+      - japanwest
+      - koreacentral
+      - koreasouth
+      - brazilsouth
+      - canadacentral
+      - canadaeast
+      - centralindia
+      - eastus2
+      - eastasia
+      - centralus
+      - eastus
+      - australiacentral
+      - australiacentral2
+      - australiaeast
+      - australiasoutheast
+    - name: vnet_name
+      description: The name of the virtual network of the network interface.
+      required: true
+    - name: subnet_name
+      description: The name of the subnet of the network interface.
+      required: true
+    - name: address_assignment_method
+      description: The address assignment method.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Static
+      - Dynamic
+      defaultValue: Dynamic
+    - name: private_ip_address
+      description: The private IP address of the network interface. Required if the address_assignment_method argument is set to Static.
+      required: false
+    - name: ip_config_name
+      description: The name of the IP address configuration.
+      required: true
+    - name: network_security_group
+      description: The network security group of the network interface.
+      required: false
+    outputs:
+      - contextPath: Azure.VirtualNetworks.NetworkInterfaces.id
+        description: The ID of the network interface.
+        type: String
+      - contextPath: Azure.VirtualNetworks.NetworkInterfaces.name
+        description: The name of the network interface.
+        type: String
+      - contextPath: Azure.VirtualNetworks.NetworkInterfaces.etag
+        description: The unique read-only string that changes whenever the network interface is updated.
+        type: String
+      - contextPath: Azure.VirtualNetworks.NetworkInterfaces.location
+        description: The location of the network interface.
+        type: String
+      - contextPath: Azure.VirtualNetworks.NetworkInterfaces.tags
+        description: The tags of the network interface.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.provisioningState
+        description: The provisioning state, which only appears in the response.
+        type: String
+      - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations
+        description: The IP configurations of the network interface, containing the name, id, and properties fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.networkSecurityGroup
+        description: The network security group attached to the network interface.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.dnsSettings
+        description: The DNS settings of the network interface.
+        type: Unknown
   isfetch: false
   runonce: false
   script: '-'
