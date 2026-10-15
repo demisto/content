@@ -728,6 +728,12 @@ script:
     - contextPath: Censys.IP.third_party.mallory.last_seen_at
       description: The time the IP address was last seen by MalloryAI.
       type: Date
+    - contextPath: Censys.IP.third_party.mallory.created_at
+      description: The time the MalloryAI record of the IP address was created.
+      type: Date
+    - contextPath: Censys.IP.third_party.mallory.updated_at
+      description: The time the MalloryAI record of the IP address was last updated.
+      type: Date
     - contextPath: Censys.IP.third_party.mallory.source_count
       description: The number of MalloryAI sources that reported the IP address.
       type: Number
@@ -737,6 +743,9 @@ script:
     - contextPath: Censys.IP.third_party.mallory.verdict_summary.suspicious
       description: The number of MalloryAI sources that reported the IP address as suspicious.
       type: Number
+    - contextPath: Censys.IP.third_party.mallory.observable.uuid
+      description: The UUID of the MalloryAI observable of the IP address.
+      type: String
     - contextPath: Censys.IP.third_party.mallory.observable.name
       description: The name of the MalloryAI observable of the IP address.
       type: String
@@ -745,6 +754,18 @@ script:
       type: String
     - contextPath: Censys.IP.third_party.mallory.observable.description
       description: The description of the MalloryAI observable of the IP address.
+      type: String
+    - contextPath: Censys.IP.third_party.mallory.observable.attributes
+      description: The attributes of the MalloryAI observable of the IP address.
+      type: String
+    - contextPath: Censys.IP.third_party.mallory.observable.created_at
+      description: The time the MalloryAI observable of the IP address was created.
+      type: Date
+    - contextPath: Censys.IP.third_party.mallory.observable.updated_at
+      description: The time the MalloryAI observable of the IP address was last updated.
+      type: Date
+    - contextPath: Censys.IP.third_party.mallory.opinions.uuid
+      description: The UUID of the MalloryAI opinion of the IP address.
       type: String
     - contextPath: Censys.IP.third_party.mallory.opinions.verdict
       description: The verdict of the MalloryAI opinion of the IP address.
@@ -764,6 +785,18 @@ script:
     - contextPath: Censys.IP.third_party.mallory.opinions.reference_url
       description: The reference URL of the MalloryAI opinion of the IP address.
       type: String
+    - contextPath: Censys.IP.third_party.mallory.opinions.reference_uuid
+      description: The reference UUID of the MalloryAI opinion of the IP address.
+      type: String
+    - contextPath: Censys.IP.third_party.mallory.opinions.reference_source_slug
+      description: The reference source slug of the MalloryAI opinion of the IP address.
+      type: String
+    - contextPath: Censys.IP.third_party.mallory.opinions.created_at
+      description: The time the MalloryAI opinion of the IP address was created.
+      type: Date
+    - contextPath: Censys.IP.third_party.mallory.opinions.updated_at
+      description: The time the MalloryAI opinion of the IP address was last updated.
+      type: Date
     - contextPath: Censys.IP.third_party.mallory.opinions.attributes.tags
       description: The tags of the MalloryAI opinion of the IP address.
       type: String
@@ -775,18 +808,6 @@ script:
       type: String
     - contextPath: Censys.IP.third_party.mallory.opinions.attributes.associated_vulnerabilities
       description: The vulnerabilities associated with the MalloryAI opinion of the IP address.
-      type: String
-    - contextPath: Censys.IP.dns.forward_dns.additionalProp.name
-      description: The forward DNS name resolved for the IP address.
-      type: String
-    - contextPath: Censys.IP.dns.forward_dns.additionalProp.record_type
-      description: The record type of the forward DNS resolution of the IP address.
-      type: String
-    - contextPath: Censys.IP.dns.forward_dns.additionalProp.resolve_time
-      description: The time the forward DNS name of the IP address was resolved.
-      type: Date
-    - contextPath: Censys.IP.dns.forward_dns.additionalProp.server
-      description: The server that resolved the forward DNS name of the IP address.
       type: String
     - contextPath: Censys.IP.dns.reverse_dns.resolve_time
       description: The time the reverse DNS names of the IP address were resolved.
@@ -1085,39 +1106,6 @@ script:
     - contextPath: Censys.IP.whois.organization.tech_contacts.email
       description: The email address of the WHOIS technical contact associated with the IP address.
       type: String
-    - contextPath: Censys.IP.third_party.mallory.created_at
-      description: The time the MalloryAI record of the IP address was created.
-      type: Date
-    - contextPath: Censys.IP.third_party.mallory.updated_at
-      description: The time the MalloryAI record of the IP address was last updated.
-      type: Date
-    - contextPath: Censys.IP.third_party.mallory.observable.uuid
-      description: The UUID of the MalloryAI observable of the IP address.
-      type: String
-    - contextPath: Censys.IP.third_party.mallory.observable.attributes
-      description: The attributes of the MalloryAI observable of the IP address.
-      type: String
-    - contextPath: Censys.IP.third_party.mallory.observable.created_at
-      description: The time the MalloryAI observable of the IP address was created.
-      type: Date
-    - contextPath: Censys.IP.third_party.mallory.observable.updated_at
-      description: The time the MalloryAI observable of the IP address was last updated.
-      type: Date
-    - contextPath: Censys.IP.third_party.mallory.opinions.uuid
-      description: The UUID of the MalloryAI opinion of the IP address.
-      type: String
-    - contextPath: Censys.IP.third_party.mallory.opinions.reference_uuid
-      description: The reference UUID of the MalloryAI opinion of the IP address.
-      type: String
-    - contextPath: Censys.IP.third_party.mallory.opinions.reference_source_slug
-      description: The reference source slug of the MalloryAI opinion of the IP address.
-      type: String
-    - contextPath: Censys.IP.third_party.mallory.opinions.created_at
-      description: The time the MalloryAI opinion of the IP address was created.
-      type: Date
-    - contextPath: Censys.IP.third_party.mallory.opinions.updated_at
-      description: The time the MalloryAI opinion of the IP address was last updated.
-      type: Date
     - contextPath: Censys.IP.HostEnrichmentUsed
       description: Whether the host enrichment API was used to retrieve the data.
       type: Boolean
@@ -1895,6 +1883,12 @@ script:
     - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.last_seen_at
       description: The time the rescanned host was last seen by MalloryAI.
       type: Date
+    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.created_at
+      description: The time the MalloryAI record of the rescanned host was created.
+      type: Date
+    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.updated_at
+      description: The time the MalloryAI record of the rescanned host was last updated.
+      type: Date
     - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.source_count
       description: The number of MalloryAI sources that reported the rescanned host.
       type: Number
@@ -1904,6 +1898,9 @@ script:
     - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.verdict_summary.suspicious
       description: The number of MalloryAI sources that reported the rescanned host as suspicious.
       type: Number
+    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.observable.uuid
+      description: The UUID of the MalloryAI observable of the rescanned host.
+      type: String
     - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.observable.name
       description: The name of the MalloryAI observable of the rescanned host.
       type: String
@@ -1912,6 +1909,18 @@ script:
       type: String
     - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.observable.description
       description: The description of the MalloryAI observable of the rescanned host.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.observable.attributes
+      description: The attributes of the MalloryAI observable of the rescanned host.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.observable.created_at
+      description: The time the MalloryAI observable of the rescanned host was created.
+      type: Date
+    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.observable.updated_at
+      description: The time the MalloryAI observable of the rescanned host was last updated.
+      type: Date
+    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.opinions.uuid
+      description: The UUID of the MalloryAI opinion of the rescanned host.
       type: String
     - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.opinions.verdict
       description: The verdict of the MalloryAI opinion of the rescanned host.
@@ -1931,6 +1940,18 @@ script:
     - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.opinions.reference_url
       description: The reference URL of the MalloryAI opinion of the rescanned host.
       type: String
+    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.opinions.reference_uuid
+      description: The reference UUID of the MalloryAI opinion of the rescanned host.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.opinions.reference_source_slug
+      description: The reference source slug of the MalloryAI opinion of the rescanned host.
+      type: String
+    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.opinions.created_at
+      description: The time the MalloryAI opinion of the rescanned host was created.
+      type: Date
+    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.opinions.updated_at
+      description: The time the MalloryAI opinion of the rescanned host was last updated.
+      type: Date
     - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.opinions.attributes.tags
       description: The tags of the MalloryAI opinion of the rescanned host.
       type: String
@@ -1942,18 +1963,6 @@ script:
       type: String
     - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.opinions.attributes.associated_vulnerabilities
       description: The vulnerabilities associated with the MalloryAI opinion of the rescanned host.
-      type: String
-    - contextPath: Censys.Rescan.enrichment_data.dns.forward_dns.additionalProp.name
-      description: The forward DNS name resolved for the rescanned host.
-      type: String
-    - contextPath: Censys.Rescan.enrichment_data.dns.forward_dns.additionalProp.record_type
-      description: The record type of the forward DNS resolution of the rescanned host.
-      type: String
-    - contextPath: Censys.Rescan.enrichment_data.dns.forward_dns.additionalProp.resolve_time
-      description: The time the forward DNS name of the rescanned host was resolved.
-      type: Date
-    - contextPath: Censys.Rescan.enrichment_data.dns.forward_dns.additionalProp.server
-      description: The server that resolved the forward DNS name of the rescanned host.
       type: String
     - contextPath: Censys.Rescan.enrichment_data.dns.reverse_dns.server
       description: The server that resolved the reverse DNS names of the rescanned host.
@@ -2231,39 +2240,6 @@ script:
     - contextPath: Censys.Rescan.enrichment_data.whois.organization.tech_contacts.email
       description: The email address of the WHOIS technical contact associated with the rescanned host.
       type: String
-    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.created_at
-      description: The time the MalloryAI record of the rescanned host was created.
-      type: Date
-    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.updated_at
-      description: The time the MalloryAI record of the rescanned host was last updated.
-      type: Date
-    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.observable.uuid
-      description: The UUID of the MalloryAI observable of the rescanned host.
-      type: String
-    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.observable.attributes
-      description: The attributes of the MalloryAI observable of the rescanned host.
-      type: String
-    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.observable.created_at
-      description: The time the MalloryAI observable of the rescanned host was created.
-      type: Date
-    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.observable.updated_at
-      description: The time the MalloryAI observable of the rescanned host was last updated.
-      type: Date
-    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.opinions.uuid
-      description: The UUID of the MalloryAI opinion of the rescanned host.
-      type: String
-    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.opinions.reference_uuid
-      description: The reference UUID of the MalloryAI opinion of the rescanned host.
-      type: String
-    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.opinions.reference_source_slug
-      description: The reference source slug of the MalloryAI opinion of the rescanned host.
-      type: String
-    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.opinions.created_at
-      description: The time the MalloryAI opinion of the rescanned host was created.
-      type: Date
-    - contextPath: Censys.Rescan.enrichment_data.third_party.mallory.opinions.updated_at
-      description: The time the MalloryAI opinion of the rescanned host was last updated.
-      type: Date
     - contextPath: IP.Address
       description: The IP address.
       type: String

@@ -1655,26 +1655,33 @@ Runs reputation on IPs.
 | Censys.IP.third_party.mallory.uuid | String | The UUID of the MalloryAI record of the IP address. |
 | Censys.IP.third_party.mallory.first_seen_at | Date | The time the IP address was first seen by MalloryAI. |
 | Censys.IP.third_party.mallory.last_seen_at | Date | The time the IP address was last seen by MalloryAI. |
+| Censys.IP.third_party.mallory.created_at | Date | The time the MalloryAI record of the IP address was created. |
+| Censys.IP.third_party.mallory.updated_at | Date | The time the MalloryAI record of the IP address was last updated. |
 | Censys.IP.third_party.mallory.source_count | Number | The number of MalloryAI sources that reported the IP address. |
 | Censys.IP.third_party.mallory.verdict_summary.malicious | Number | The number of MalloryAI sources that reported the IP address as malicious. |
 | Censys.IP.third_party.mallory.verdict_summary.suspicious | Number | The number of MalloryAI sources that reported the IP address as suspicious. |
+| Censys.IP.third_party.mallory.observable.uuid | String | The UUID of the MalloryAI observable of the IP address. |
 | Censys.IP.third_party.mallory.observable.name | String | The name of the MalloryAI observable of the IP address. |
 | Censys.IP.third_party.mallory.observable.type | String | The type of the MalloryAI observable of the IP address. |
 | Censys.IP.third_party.mallory.observable.description | String | The description of the MalloryAI observable of the IP address. |
+| Censys.IP.third_party.mallory.observable.attributes | String | The attributes of the MalloryAI observable of the IP address. |
+| Censys.IP.third_party.mallory.observable.created_at | Date | The time the MalloryAI observable of the IP address was created. |
+| Censys.IP.third_party.mallory.observable.updated_at | Date | The time the MalloryAI observable of the IP address was last updated. |
+| Censys.IP.third_party.mallory.opinions.uuid | String | The UUID of the MalloryAI opinion of the IP address. |
 | Censys.IP.third_party.mallory.opinions.verdict | String | The verdict of the MalloryAI opinion of the IP address. |
 | Censys.IP.third_party.mallory.opinions.confidence | String | The confidence of the MalloryAI opinion of the IP address. |
 | Censys.IP.third_party.mallory.opinions.source | String | The source of the MalloryAI opinion of the IP address. |
 | Censys.IP.third_party.mallory.opinions.description | String | The description of the MalloryAI opinion of the IP address. |
 | Censys.IP.third_party.mallory.opinions.published_at | Date | The time the MalloryAI opinion of the IP address was published. |
 | Censys.IP.third_party.mallory.opinions.reference_url | String | The reference URL of the MalloryAI opinion of the IP address. |
+| Censys.IP.third_party.mallory.opinions.reference_uuid | String | The reference UUID of the MalloryAI opinion of the IP address. |
+| Censys.IP.third_party.mallory.opinions.reference_source_slug | String | The reference source slug of the MalloryAI opinion of the IP address. |
+| Censys.IP.third_party.mallory.opinions.created_at | Date | The time the MalloryAI opinion of the IP address was created. |
+| Censys.IP.third_party.mallory.opinions.updated_at | Date | The time the MalloryAI opinion of the IP address was last updated. |
 | Censys.IP.third_party.mallory.opinions.attributes.tags | String | The tags of the MalloryAI opinion of the IP address. |
 | Censys.IP.third_party.mallory.opinions.attributes.associated_malware | String | The malware associated with the MalloryAI opinion of the IP address. |
 | Censys.IP.third_party.mallory.opinions.attributes.associated_threat_actors | String | The threat actors associated with the MalloryAI opinion of the IP address. |
 | Censys.IP.third_party.mallory.opinions.attributes.associated_vulnerabilities | String | The vulnerabilities associated with the MalloryAI opinion of the IP address. |
-| Censys.IP.dns.forward_dns.additionalProp.name | String | The forward DNS name resolved for the IP address. |
-| Censys.IP.dns.forward_dns.additionalProp.record_type | String | The record type of the forward DNS resolution of the IP address. |
-| Censys.IP.dns.forward_dns.additionalProp.resolve_time | Date | The time the forward DNS name of the IP address was resolved. |
-| Censys.IP.dns.forward_dns.additionalProp.server | String | The server that resolved the forward DNS name of the IP address. |
 | Censys.IP.dns.reverse_dns.resolve_time | Date | The time the reverse DNS names of the IP address were resolved. |
 | Censys.IP.dns.reverse_dns.server | String | The server that resolved the reverse DNS names of the IP address. |
 | Censys.IP.labels.value | String | The value of the label associated with the IP address. |
@@ -1774,17 +1781,6 @@ Runs reputation on IPs.
 | Censys.IP.whois.organization.tech_contacts.handle | String | The handle identifier of the WHOIS technical contact associated with the IP address. |
 | Censys.IP.whois.organization.tech_contacts.name | String | The name of the WHOIS technical contact associated with the IP address. |
 | Censys.IP.whois.organization.tech_contacts.email | String | The email address of the WHOIS technical contact associated with the IP address. |
-| Censys.IP.third_party.mallory.created_at | Date | The time the MalloryAI record of the IP address was created. |
-| Censys.IP.third_party.mallory.updated_at | Date | The time the MalloryAI record of the IP address was last updated. |
-| Censys.IP.third_party.mallory.observable.uuid | String | The UUID of the MalloryAI observable of the IP address. |
-| Censys.IP.third_party.mallory.observable.attributes | String | The attributes of the MalloryAI observable of the IP address. |
-| Censys.IP.third_party.mallory.observable.created_at | Date | The time the MalloryAI observable of the IP address was created. |
-| Censys.IP.third_party.mallory.observable.updated_at | Date | The time the MalloryAI observable of the IP address was last updated. |
-| Censys.IP.third_party.mallory.opinions.uuid | String | The UUID of the MalloryAI opinion of the IP address. |
-| Censys.IP.third_party.mallory.opinions.reference_uuid | String | The reference UUID of the MalloryAI opinion of the IP address. |
-| Censys.IP.third_party.mallory.opinions.reference_source_slug | String | The reference source slug of the MalloryAI opinion of the IP address. |
-| Censys.IP.third_party.mallory.opinions.created_at | Date | The time the MalloryAI opinion of the IP address was created. |
-| Censys.IP.third_party.mallory.opinions.updated_at | Date | The time the MalloryAI opinion of the IP address was last updated. |
 | Censys.IP.HostEnrichmentUsed | Boolean | Whether the host enrichment API was used to retrieve the data. |
 | IP.Address | unknown | The IP address. |
 | IP.ASN | unknown | The IP ASN. |
@@ -2393,26 +2389,33 @@ Initiate a live rescan for a known host service at a specific IP and port (ip:po
 | Censys.Rescan.enrichment_data.third_party.mallory.uuid | String | The UUID of the MalloryAI record of the rescanned host. |
 | Censys.Rescan.enrichment_data.third_party.mallory.first_seen_at | Date | The time the rescanned host was first seen by MalloryAI. |
 | Censys.Rescan.enrichment_data.third_party.mallory.last_seen_at | Date | The time the rescanned host was last seen by MalloryAI. |
+| Censys.Rescan.enrichment_data.third_party.mallory.created_at | Date | The time the MalloryAI record of the rescanned host was created. |
+| Censys.Rescan.enrichment_data.third_party.mallory.updated_at | Date | The time the MalloryAI record of the rescanned host was last updated. |
 | Censys.Rescan.enrichment_data.third_party.mallory.source_count | Number | The number of MalloryAI sources that reported the rescanned host. |
 | Censys.Rescan.enrichment_data.third_party.mallory.verdict_summary.malicious | Number | The number of MalloryAI sources that reported the rescanned host as malicious. |
 | Censys.Rescan.enrichment_data.third_party.mallory.verdict_summary.suspicious | Number | The number of MalloryAI sources that reported the rescanned host as suspicious. |
+| Censys.Rescan.enrichment_data.third_party.mallory.observable.uuid | String | The UUID of the MalloryAI observable of the rescanned host. |
 | Censys.Rescan.enrichment_data.third_party.mallory.observable.name | String | The name of the MalloryAI observable of the rescanned host. |
 | Censys.Rescan.enrichment_data.third_party.mallory.observable.type | String | The type of the MalloryAI observable of the rescanned host. |
 | Censys.Rescan.enrichment_data.third_party.mallory.observable.description | String | The description of the MalloryAI observable of the rescanned host. |
+| Censys.Rescan.enrichment_data.third_party.mallory.observable.attributes | String | The attributes of the MalloryAI observable of the rescanned host. |
+| Censys.Rescan.enrichment_data.third_party.mallory.observable.created_at | Date | The time the MalloryAI observable of the rescanned host was created. |
+| Censys.Rescan.enrichment_data.third_party.mallory.observable.updated_at | Date | The time the MalloryAI observable of the rescanned host was last updated. |
+| Censys.Rescan.enrichment_data.third_party.mallory.opinions.uuid | String | The UUID of the MalloryAI opinion of the rescanned host. |
 | Censys.Rescan.enrichment_data.third_party.mallory.opinions.verdict | String | The verdict of the MalloryAI opinion of the rescanned host. |
 | Censys.Rescan.enrichment_data.third_party.mallory.opinions.confidence | String | The confidence of the MalloryAI opinion of the rescanned host. |
 | Censys.Rescan.enrichment_data.third_party.mallory.opinions.source | String | The source of the MalloryAI opinion of the rescanned host. |
 | Censys.Rescan.enrichment_data.third_party.mallory.opinions.description | String | The description of the MalloryAI opinion of the rescanned host. |
 | Censys.Rescan.enrichment_data.third_party.mallory.opinions.published_at | Date | The time the MalloryAI opinion of the rescanned host was published. |
 | Censys.Rescan.enrichment_data.third_party.mallory.opinions.reference_url | String | The reference URL of the MalloryAI opinion of the rescanned host. |
+| Censys.Rescan.enrichment_data.third_party.mallory.opinions.reference_uuid | String | The reference UUID of the MalloryAI opinion of the rescanned host. |
+| Censys.Rescan.enrichment_data.third_party.mallory.opinions.reference_source_slug | String | The reference source slug of the MalloryAI opinion of the rescanned host. |
+| Censys.Rescan.enrichment_data.third_party.mallory.opinions.created_at | Date | The time the MalloryAI opinion of the rescanned host was created. |
+| Censys.Rescan.enrichment_data.third_party.mallory.opinions.updated_at | Date | The time the MalloryAI opinion of the rescanned host was last updated. |
 | Censys.Rescan.enrichment_data.third_party.mallory.opinions.attributes.tags | String | The tags of the MalloryAI opinion of the rescanned host. |
 | Censys.Rescan.enrichment_data.third_party.mallory.opinions.attributes.associated_malware | String | The malware associated with the MalloryAI opinion of the rescanned host. |
 | Censys.Rescan.enrichment_data.third_party.mallory.opinions.attributes.associated_threat_actors | String | The threat actors associated with the MalloryAI opinion of the rescanned host. |
 | Censys.Rescan.enrichment_data.third_party.mallory.opinions.attributes.associated_vulnerabilities | String | The vulnerabilities associated with the MalloryAI opinion of the rescanned host. |
-| Censys.Rescan.enrichment_data.dns.forward_dns.additionalProp.name | String | The forward DNS name resolved for the rescanned host. |
-| Censys.Rescan.enrichment_data.dns.forward_dns.additionalProp.record_type | String | The record type of the forward DNS resolution of the rescanned host. |
-| Censys.Rescan.enrichment_data.dns.forward_dns.additionalProp.resolve_time | Date | The time the forward DNS name of the rescanned host was resolved. |
-| Censys.Rescan.enrichment_data.dns.forward_dns.additionalProp.server | String | The server that resolved the forward DNS name of the rescanned host. |
 | Censys.Rescan.enrichment_data.dns.reverse_dns.server | String | The server that resolved the reverse DNS names of the rescanned host. |
 | Censys.Rescan.enrichment_data.labels.value | String | The value of the label associated with the rescanned host. |
 | Censys.Rescan.enrichment_data.labels.confidence | Number | The confidence of the label associated with the rescanned host. |
@@ -2505,17 +2508,6 @@ Initiate a live rescan for a known host service at a specific IP and port (ip:po
 | Censys.Rescan.enrichment_data.whois.organization.tech_contacts.handle | String | The handle identifier of the WHOIS technical contact associated with the rescanned host. |
 | Censys.Rescan.enrichment_data.whois.organization.tech_contacts.name | String | The name of the WHOIS technical contact associated with the rescanned host. |
 | Censys.Rescan.enrichment_data.whois.organization.tech_contacts.email | String | The email address of the WHOIS technical contact associated with the rescanned host. |
-| Censys.Rescan.enrichment_data.third_party.mallory.created_at | Date | The time the MalloryAI record of the rescanned host was created. |
-| Censys.Rescan.enrichment_data.third_party.mallory.updated_at | Date | The time the MalloryAI record of the rescanned host was last updated. |
-| Censys.Rescan.enrichment_data.third_party.mallory.observable.uuid | String | The UUID of the MalloryAI observable of the rescanned host. |
-| Censys.Rescan.enrichment_data.third_party.mallory.observable.attributes | String | The attributes of the MalloryAI observable of the rescanned host. |
-| Censys.Rescan.enrichment_data.third_party.mallory.observable.created_at | Date | The time the MalloryAI observable of the rescanned host was created. |
-| Censys.Rescan.enrichment_data.third_party.mallory.observable.updated_at | Date | The time the MalloryAI observable of the rescanned host was last updated. |
-| Censys.Rescan.enrichment_data.third_party.mallory.opinions.uuid | String | The UUID of the MalloryAI opinion of the rescanned host. |
-| Censys.Rescan.enrichment_data.third_party.mallory.opinions.reference_uuid | String | The reference UUID of the MalloryAI opinion of the rescanned host. |
-| Censys.Rescan.enrichment_data.third_party.mallory.opinions.reference_source_slug | String | The reference source slug of the MalloryAI opinion of the rescanned host. |
-| Censys.Rescan.enrichment_data.third_party.mallory.opinions.created_at | Date | The time the MalloryAI opinion of the rescanned host was created. |
-| Censys.Rescan.enrichment_data.third_party.mallory.opinions.updated_at | Date | The time the MalloryAI opinion of the rescanned host was last updated. |
 | IP.Address | String | The IP address. |
 | IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". |
 | IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude. |
