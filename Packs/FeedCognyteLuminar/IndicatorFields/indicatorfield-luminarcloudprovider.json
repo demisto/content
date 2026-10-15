@@ -36,6 +36,8 @@
         "Registry Key",
         "MUTEX",
         "AS",
-        "Host"
+        "Host",
+        "Account",
+        "CVE"
     ]
 }

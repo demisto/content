@@ -26,6 +26,19 @@
     "fromVersion": "6.9.0",
     "associatedTypes": [
         "Account",
-        "Luminar Incident"
+        "Luminar Incident",
+        "IP",
+        "IPv6",
+        "CIDR",
+        "IPv6CIDR",
+        "URL",
+        "Domain",
+        "Email",
+        "File",
+        "Registry Key",
+        "MUTEX",
+        "AS",
+        "Host",
+        "CVE"
     ]
 }
