@@ -84,35 +84,6 @@ def handle_port_range(args: dict) -> tuple:
     return from_port, to_port
 
 
-def validate_security_group_rule_args(args: dict) -> None:
-    """Validate arguments for security group ingress and egress rule commands.
-
-    Rules:
-    - ip_permissions and simple rule arguments (protocol, from_port, to_port, cidr)
-      are mutually exclusive.
-    - If any simple rule argument is provided, all simple rule arguments
-      (protocol, from_port, to_port, cidr) must be provided.
-    """
-    simple_arg_names = ["protocol", "from_port", "to_port", "cidr"]
-    provided_simple_args = [name for name in simple_arg_names if args.get(name) is not None]
-
-    if args.get("ip_permissions") and provided_simple_args:
-        raise CortexConflictingArgsError(
-            arguments=["ip_permissions"] + provided_simple_args,
-            reason="Cannot combine 'ip_permissions' with simple rule arguments.",
-            resolution="Provide either 'ip_permissions' for complex rules or the simple rule arguments (protocol, from_port, to_port, cidr), but not both.",
-            override_message=f"Conflicting arguments: 'ip_permissions' cannot be combined with {', '.join(provided_simple_args)}."
-        )
-
-    if provided_simple_args:
-        missing_required = [req for req in simple_arg_names if args.get(req) is None]
-        if missing_required:
-            raise CortexMissingArgError(
-                missing_required[0] if len(missing_required) == 1 else missing_required,
-                override_message=f"Missing required simple rule argument(s): {', '.join(missing_required)}."
-            )
-
-
 def serialize_response_with_datetime_encoding(response: Dict[str, Any]) -> Dict[str, Any]:
     """
     Serialize AWS API response with proper datetime encoding for JSON compatibility.
@@ -2552,7 +2523,6 @@ class EC2:
         1. Simple mode: using protocol, port, and cidr arguments
         2. Full mode: using ip_permissions for complex configurations
         """
-        validate_security_group_rule_args(args)
 
         kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
         kwargs["FromPort"], kwargs["ToPort"] = handle_port_range(args)
@@ -2591,7 +2561,6 @@ class EC2:
         1) Full mode: use `ip_permissions` JSON
         2) Simple mode: protocol, port, cidr → build IpPermissions
         """
-        validate_security_group_rule_args(args)
         group_id = args.get("group_id")
         ip_permissions_arg = args.get("ip_permissions")
 
@@ -3940,7 +3909,6 @@ class EC2:
         1. Simple mode: using protocol, port, and cidr arguments
         2. Full mode: using ip_permissions for complex configurations
         """
-        validate_security_group_rule_args(args)
 
         kwargs: Dict[str, Any] = {"GroupId": args.get("group_id")}
         from_port = arg_to_number(args.get("from_port"))

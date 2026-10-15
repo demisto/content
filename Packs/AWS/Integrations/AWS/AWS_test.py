@@ -920,7 +920,7 @@ def test_ec2_revoke_security_group_ingress_command_success(mocker):
         "Return": True,
     }
 
-    args = {"group_id": "sg-test", "protocol": "tcp", "from_port": "80", "to_port": "80", "cidr": "0.0.0.0/0"}
+    args = {"group_id": "sg-test", "protocol": "tcp", "port": "80", "cidr": "0.0.0.0/0"}
 
     result = EC2.revoke_security_group_ingress_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -964,7 +964,7 @@ def test_ec2_authorize_security_group_ingress_command_success(mocker):
         "Return": True,
     }
 
-    args = {"group_id": "sg-test", "protocol": "tcp", "from_port": "443", "to_port": "443", "cidr": "10.0.0.0/8"}
+    args = {"group_id": "sg-test", "protocol": "tcp", "port": "443", "cidr": "10.0.0.0/8"}
 
     result = EC2.authorize_security_group_ingress_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -982,7 +982,7 @@ def test_ec2_authorize_security_group_ingress_command_duplicate_rule(mocker):
     mock_client = mocker.Mock()
     mock_client.authorize_security_group_ingress.side_effect = Exception("InvalidPermission.Duplicate")
 
-    args = {"group_id": "sg-test", "protocol": "tcp", "from_port": "80", "to_port": "80", "cidr": "0.0.0.0/0"}
+    args = {"group_id": "sg-test", "protocol": "tcp", "port": "80", "cidr": "0.0.0.0/0"}
 
     with pytest.raises(DemistoException, match="already exists"):
         EC2.authorize_security_group_ingress_command(mock_client, args)
@@ -1003,7 +1003,7 @@ def test_ec2_revoke_security_group_egress_command_success(mocker):
         "RevokedSecurityGroupRules": [{"SecurityGroupRuleId": "SecurityGroupRuleId"}],
     }
 
-    args = {"group_id": "sg-test", "protocol": "tcp", "from_port": "80", "to_port": "443", "cidr": "0.0.0.0/0"}
+    args = {"group_id": "sg-test", "protocol": "tcp", "port": "80-443", "cidr": "0.0.0.0/0"}
 
     result = EC2.revoke_security_group_egress_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -7047,18 +7047,23 @@ def test_ec2_authorize_security_group_egress_command_unexpected_response(mocker)
 def test_ec2_authorize_security_group_egress_command_without_port(mocker):
     """
     Given: A mocked boto3 EC2 client and egress arguments without port specification.
-    When: authorize_security_group_egress_command is called without from_port/to_port.
-    Then: It should raise CortexMissingArgError since all simple rule args are required.
+    When: authorize_security_group_egress_command is called without port parameter.
+    Then: It should return CommandResults and handle None port values properly.
     """
     from AWS import EC2
-    from CommonServerPython import CortexMissingArgError
 
     mock_client = mocker.Mock()
+    mock_client.authorize_security_group_egress.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Return": True,
+        "SecurityGroupRules": [{"SecurityGroupRuleId": "id"}],
+    }
 
-    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "cidr": "10.0.0.0/8"}
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "protocol", "cidr": "cidr"}
 
-    with pytest.raises(CortexMissingArgError, match="Missing required simple rule argument"):
-        EC2.authorize_security_group_egress_command(mock_client, args)
+    result = EC2.authorize_security_group_egress_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "The Security Group egress rule was authorized" in result.readable_output
 
 
 def test_handle_port_range_with_both_from_and_to_port():
@@ -22258,60 +22263,6 @@ def test_update_logging_configuration_command_api_error(mocker):
 
     mock_error_handler.assert_called_once()
 
-def test_validate_security_group_rule_args_conflicting(mocker):
-    """
-    Given: Both ip_permissions and simple rule args (protocol/cidr).
-    When: validate_security_group_rule_args is called.
-    Then: CortexConflictingArgsError should be raised.
-    """
-    from AWS import validate_security_group_rule_args
-    from CommonServerPython import CortexConflictingArgsError
-
-    args = {"ip_permissions": "[{}]", "protocol": "tcp", "cidr": "0.0.0.0/0"}
-    with pytest.raises(CortexConflictingArgsError, match="Conflicting arguments"):
-        validate_security_group_rule_args(args)
-
-
-def test_validate_security_group_rule_args_missing_cidr(mocker):
-    """
-    Given: Simple rule args with protocol and from_port but missing cidr.
-    When: validate_security_group_rule_args is called.
-    Then: CortexMissingArgError should be raised.
-    """
-    from AWS import validate_security_group_rule_args
-    from CommonServerPython import CortexMissingArgError
-
-    args = {"protocol": "tcp", "from_port": "80", "to_port": "80"}
-    with pytest.raises(CortexMissingArgError, match="Missing required simple rule argument"):
-        validate_security_group_rule_args(args)
-
-
-def test_validate_security_group_rule_args_missing_protocol(mocker):
-    """
-    Given: Simple rule args with cidr but missing protocol.
-    When: validate_security_group_rule_args is called.
-    Then: CortexMissingArgError should be raised.
-    """
-    from AWS import validate_security_group_rule_args
-    from CommonServerPython import CortexMissingArgError
-
-    args = {"cidr": "10.0.0.0/16"}
-    with pytest.raises(CortexMissingArgError, match="Missing required simple rule argument"):
-        validate_security_group_rule_args(args)
-
-
-def test_validate_security_group_rule_args_missing_from_or_to_port(mocker):
-    """
-    Given: Simple rule args missing from_port or to_port.
-    When: validate_security_group_rule_args is called.
-    Then: CortexMissingArgError should be raised.
-    """
-    from AWS import validate_security_group_rule_args
-    from CommonServerPython import CortexMissingArgError
-
-    args = {"protocol": "tcp", "cidr": "10.0.0.0/8", "from_port": "80"}
-    with pytest.raises(CortexMissingArgError, match="Missing required simple rule argument"):
-        validate_security_group_rule_args(args)
 
 # ---------------------------------------------------------------------------
 # YML <-> PY wiring assertion tests
