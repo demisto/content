@@ -19,7 +19,6 @@ This integration was integrated and tested with January 2023 release of Tenable.
     | Secret Key | Tenable API secret key. | True |
     | Events Fetch Interval | Fetch interval in minutes for events. | False |
     | Assets Fetch Interval | Fetch interval in minutes for assets and vulnerabilities. | False |
-    | Severity | The severity of the vulnerabilities to include in the export. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Max Fetch | The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section. | False |
     | Trust any certificate (not secure) |  | False |
@@ -55,7 +54,8 @@ This integration was integrated and tested with January 2023 release of Tenable.
 
 ## Notes
 
-- ***Fetch assets and vulnerabilities (Beta)*** command fetches assets and vulnerabilities from the last 90 days only.
+- ***Fetch assets and vulnerabilities (Beta)*** command fetches assets from the last 90 days and vulnerabilities that were last found in the last 3 days. A vulnerability is collected only after a scan detects it within that 3-day window, so findings from scans that run less often (for example, weekly credentialed scans) appear after the next scan.
+- In Cortex XSIAM, it is recommended to configure two instances with the same URL and API keys: one with only **Fetch events** selected and one with only **Fetch assets and vulnerabilities** selected. Enabling both on the same instance can cause the assets and vulnerabilities fetch to not run.
 
 ## Commands
 

@@ -10,6 +10,12 @@ The method to generate API keys varies depending on the role assigned to your us
 ***Fetch events*** command fetches audit logs.
 
 #### Fetch assets and vulnerabilities
-***Fetch assets and vulnerabilities*** command fetches assets and vulnerabilities from the last 90 days. With fetch interval 1 hour minimum.
+***Fetch assets and vulnerabilities*** command fetches assets from the last 90 days and vulnerabilities that were last found in the last 3 days. With fetch interval 1 hour minimum.
+A vulnerability is collected only after a scan detects it within that 3-day window, so findings from scans that run less often (for example, weekly credentialed scans) appear after the next scan.
+
+#### Recommended setup: separate instances
+To avoid scheduling conflicts between the two fetch types, configure two instances with the same URL and API keys:
+- One instance with only ***Fetch events*** selected.
+- One instance with only ***Fetch assets and vulnerabilities*** selected.
 
 </~XSIAM>
