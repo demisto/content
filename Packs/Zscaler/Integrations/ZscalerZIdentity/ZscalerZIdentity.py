@@ -1,7 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+import html
 import re
+import traceback
 
 """ CONSTANTS """
 
@@ -39,6 +41,39 @@ AUTO_ACTIVATE_CHANGES_COMMANDS = (
 
 """ HANDLE PROXY """
 handle_proxy()
+
+
+def _sanitize_url_entry(value: Any) -> Any:
+    """Decodes HTML entities in a URL entry for the Zscaler ZIA API.
+
+    Used as a fallback in update_url_category when Zscaler rejects a URL
+    category PUT with:
+        INVALID_INPUT_ARGUMENT: URLs must not contain HTML content
+    Zscaler now blocks any payload that contains HTML entity-encoded markup
+    (for example &amp;). Because update_url_category re-sends every existing
+    URL stored in the category, a single legacy entry already stored with such
+    an entity breaks every subsequent update until it is cleaned up.
+
+    Args:
+        value: A URL or IP range entry as a string.
+
+    Returns:
+        The decoded string, or the original value unchanged when it is not a string.
+    """
+    if not isinstance(value, str):
+        return value
+    return html.unescape(value)
+
+
+def _sanitize_url_list(values: list | None) -> list:
+    if not values:
+        return []
+    return [_sanitize_url_entry(v) for v in values]
+
+
+def _is_html_content_error(exc: Exception) -> bool:
+    message = str(exc)
+    return "INVALID_INPUT_ARGUMENT" in message and "URLs must not contain HTML content" in message
 
 
 """ CLIENT CLASS """
@@ -433,7 +468,18 @@ class Client(BaseClient):
         if ip_ranges_retaining_parent_category is not None:
             payload["ipRangesRetainingParentCategory"] = ip_ranges_retaining_parent_category
 
-        self.api_request("PUT", f"/urlCategories/{category_id}", data=payload, resp_type="response")
+        try:
+            self.api_request("PUT", f"/urlCategories/{category_id}", data=payload, resp_type="response")
+        except DemistoException as e:
+            if not _is_html_content_error(e):
+                raise
+            demisto.debug(traceback.format_exc())
+            demisto.debug(
+                "Zscaler rejected the URL category update with 'URLs must not contain HTML content'. "
+                "Retrying once with HTML entities decoded in the URL list."
+            )
+            payload["urls"] = _sanitize_url_list(payload["urls"])
+            self.api_request("PUT", f"/urlCategories/{category_id}", data=payload, resp_type="response")
 
     # ---- URL Quota ----
 
