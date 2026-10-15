@@ -3851,10 +3851,10 @@ Gets virtual networks in a resource group. Required permissions: Microsoft.Netwo
 | Azure.VirtualNetworks.VirtualNetworks.tags | Unknown | The tags associated with the virtual network. |
 | Azure.VirtualNetworks.VirtualNetworks.properties.provisioningState | String | The provisioning state of the virtual network resource. Possible values are Succeeded, Updating, Deleting, or Failed. |
 | Azure.VirtualNetworks.VirtualNetworks.properties.resourceGuid | String | The resource GUID property of the virtual network resource. |
-| Azure.VirtualNetworks.VirtualNetworks.properties.addressSpace | Unknown | The address space object of the virtual network, containing the addressPrefixes field which is a list of address blocks reserved for this virtual network in CIDR notation. |
-| Azure.VirtualNetworks.VirtualNetworks.properties.subnets | Unknown | The list of subnets in the virtual network, each containing the name, id, and properties fields. |
+| Azure.VirtualNetworks.VirtualNetworks.properties.addressSpace | Unknown | The address space object of the virtual network. Contains the addressPrefixes field, which is a list of address blocks reserved for this virtual network in CIDR notation. |
+| Azure.VirtualNetworks.VirtualNetworks.properties.subnets | Unknown | The list of subnets in the virtual network. Each subnet contains the name, ID, and properties fields. |
 | Azure.VirtualNetworks.VirtualNetworks.properties.virtualNetworkPeerings | Unknown | The list of peerings in the virtual network. |
-| Azure.VirtualNetworks.VirtualNetworks.properties.dhcpOptions | Unknown | The dhcpOptions object of the virtual network, containing the dnsServers field which is a list of DNS servers IP addresses. |
+| Azure.VirtualNetworks.VirtualNetworks.properties.dhcpOptions | Unknown | The dhcpOptions object of the virtual network. Contains the dnsServers field, which is a list of DNS servers IP addresses. |
 | Azure.VirtualNetworks.VirtualNetworks.properties.enableDdosProtection | Boolean | Whether DDoS protection is enabled for all the protected resources in the virtual network. |
 
 ### azure-rm-subscriptions-list

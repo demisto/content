@@ -5006,16 +5006,16 @@ script:
       description: The resource GUID property of the virtual network resource.
       type: String
     - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.addressSpace
-      description: The address space object of the virtual network, containing the addressPrefixes field which is a list of address blocks reserved for this virtual network in CIDR notation.
+      description: The address space object of the virtual network. Contains the addressPrefixes field, which is a list of address blocks reserved for this virtual network in CIDR notation.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.subnets
-      description: The list of subnets in the virtual network, each containing the name, id, and properties fields.
+      description: The list of subnets in the virtual network. Each subnet contains the name, ID, and properties fields.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.virtualNetworkPeerings
       description: The list of peerings in the virtual network.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.dhcpOptions
-      description: The dhcpOptions object of the virtual network, containing the dnsServers field which is a list of DNS servers IP addresses.
+      description: The dhcpOptions object of the virtual network. Contains the dnsServers field, which is a list of DNS servers IP addresses.
       type: Unknown
     - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.enableDdosProtection
       description: Whether DDoS protection is enabled for all the protected resources in the virtual network.
