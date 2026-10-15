@@ -6,6 +6,10 @@ from MicrosoftApiModule import *  # noqa: E402
 from COOCApiModule import *
 from requests.exceptions import ConnectionError, Timeout
 import datetime as dt
+import itertools
+import hmac
+import hashlib
+import base64
 import defusedxml.ElementTree as defused_ET
 import urllib.parse
 from urllib.parse import parse_qs, urlparse, urlencode, urlunparse
@@ -32,6 +36,9 @@ DEFAULT_LIMIT = "50"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 STORAGE_DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
 API_VERSION = "2022-09-01"
+# Azure Storage data-plane (Blob service) REST API version, used for both the x-ms-version
+# request header and the SAS token signed version (sv) so the two always stay in sync.
+STORAGE_API_VERSION = "2023-11-03"
 NEW_API_VERSION_PARAMS = {"api-version": "2024-05-01"}
 BLOB_CONTAINERS_MAX_PAGE_SIZE = 5000
 GRANT_BY_CONNECTION = {
@@ -97,7 +104,10 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-vn-network-interfaces-list",
         "azure-vn-network-interface-get",
     ],
-    "Microsoft.Network/networkInterfaces/write": ["azure-vn-network-interface-update"],
+    "Microsoft.Network/networkInterfaces/write": [
+        "azure-vn-network-interface-update",
+        "azure-vn-network-interface-create",
+    ],
     "Microsoft.Network/publicIPAddresses/read": [
         "azure-nsg-public-ip-addresses-list",
         "azure-vm-public-ip-details-get",
@@ -113,6 +123,7 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Storage/storageAccounts/blobServices/containers/read": [
         "azure-storage-container-property-get",
         "azure-storage-blob-containers-list",
+        "azure-storage-containers-list",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/delete": ["azure-storage-container-delete"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": [
@@ -120,13 +131,17 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-storage-blob-create",
         "azure-storage-container-blob-property-set",
         "azure-storage-blob-property-set",
+        "azure-storage-blob-update",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read": [
         "azure-storage-container-blob-get",
         "azure-storage-blob-get",
         "azure-storage-container-blob-property-get",
         "azure-storage-blob-property-get",
+        "azure-storage-blobs-list",
+        "azure-storage-blob-update",
     ],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete": ["azure-storage-blob-delete"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read": [
         "azure-storage-container-blob-tag-get",
         "azure-storage-blob-tag-get",
@@ -275,6 +290,9 @@ PERMISSIONS_TO_COMMANDS = {
     ],
     "Microsoft.Compute/virtualMachines/start/action": ["azure-vm-instance-start", "azure-compute-vm-start"],
     "Microsoft.Compute/virtualMachines/poweroff/action": ["azure-vm-instance-power-off", "azure-compute-vm-power-off"],
+    "Microsoft.Compute/virtualMachines/write": ["azure-compute-vm-create"],
+    "Microsoft.Compute/virtualMachines/deallocate/action": ["azure-compute-vm-delete"],
+    "Microsoft.Compute/virtualMachines/delete": ["azure-compute-vm-delete"],
     "Microsoft.ContainerRegistry/registries/read": [
         "azure-acr-update",
         "azure-acr-disable-public-private-access-quick-action",
@@ -470,6 +488,9 @@ API_FUNCTION_TO_PERMISSIONS = {
     "storage_container_blob_property_get_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"],
     "storage_container_blob_properties_set_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write"],
     "storage_container_block_public_access_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action"],
+    "storage_containers_list_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/read"],
+    "storage_container_blobs_list_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"],
+    "storage_container_blob_delete_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete"],
     "get_rule": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
     "update_webapp_auth": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
     "set_webapp_config": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
@@ -478,6 +499,16 @@ API_FUNCTION_TO_PERMISSIONS = {
     "poweroff_vm_request": ["Microsoft.Compute/virtualMachines/read", "Microsoft.Compute/virtualMachines/poweroff/action"],
     "get_vm_request": ["Microsoft.Compute/virtualMachines/read"],
     "list_vm_request": ["Microsoft.Compute/virtualMachines/read"],
+    "create_vm_request": ["Microsoft.Compute/virtualMachines/write"],
+    "delete_vm_request": [
+        "Microsoft.Compute/virtualMachines/deallocate/action",
+        "Microsoft.Compute/virtualMachines/delete",
+    ],
+    "create_network_interface_request": [
+        "Microsoft.Network/networkInterfaces/write",
+        "Microsoft.Network/virtualNetworks/subnets/join/action",
+        "Microsoft.Network/networkSecurityGroups/join/action",
+    ],
     "get_network_interface_request": ["Microsoft.Network/networkInterfaces/read"],
     "update_network_interface_request": [
         "Microsoft.Network/networkInterfaces/read",
@@ -546,6 +577,7 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Storage/storageAccounts/blobServices/containers/read",
     "Microsoft.Storage/storageAccounts/blobServices/containers/delete",
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read",
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete",
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read",
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write",
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write",
@@ -569,6 +601,12 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Compute/virtualMachines/read",
     "Microsoft.Compute/virtualMachines/start/action",
     "Microsoft.Compute/virtualMachines/poweroff/action",
+    "Microsoft.Compute/virtualMachines/write",
+    "Microsoft.Compute/virtualMachines/deallocate/action",
+    "Microsoft.Compute/virtualMachines/delete",
+    "Microsoft.Network/networkInterfaces/write",
+    "Microsoft.Network/virtualNetworks/subnets/join/action",
+    "Microsoft.Network/networkSecurityGroups/join/action",
     "Microsoft.ContainerRegistry/registries/read",
     "Microsoft.ContainerRegistry/registries/write",
     "Microsoft.KeyVault/vaults/read",
@@ -626,6 +664,7 @@ SQL_DB_API_VERSION = "2021-11-01"
 COSMOS_DB_API_VERSION = "2024-11-15"
 PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
+NETWORK_INTERFACE_API_VERSION = "2026-01-01"
 NSG_API_VERSION = "2025-01-01"
 # Application Gateway and Front Door WAF policies are served by two separate resource providers,
 # each with its own independently released API version, so these two versions intentionally differ.
@@ -655,6 +694,39 @@ IP_GROUP_TABLE_HEADERS = ["name", "id", "location", "type"]
 # first positional argument, so main() dispatches these commands differently from the regular ones.
 POLLING_COMMANDS = {"azure-vn-ip-group-create", "azure-vn-ip-group-update"}
 
+# Image options to be used in the create_vm_command
+IMAGES = {
+    "ubuntu server 14.04 lts": {"publisher": "Canonical", "offer": "UbuntuServer", "sku": "14.04-LTS", "version": "latest"},
+    "ubuntu server 16.04 lts": {"publisher": "Canonical", "offer": "UbuntuServer", "sku": "16.04-LTS", "version": "latest"},
+    "ubuntu server 18.04 lts": {"publisher": "Canonical", "offer": "UbuntuServer", "sku": "18.04-LTS", "version": "latest"},
+    "red hat enterprise linux 7.6": {"publisher": "RedHat", "offer": "RHEL", "sku": "7-RAW", "version": "latest"},
+    "centos-based 7.5": {"publisher": "OpenLogic", "offer": "CentOS", "sku": "7.5", "version": "latest"},
+    "windows server 2012 r2 datacenter": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2012-R2-Datacenter",
+        "version": "latest",
+    },
+    "windows server 2016 datacenter": {
+        "publisher": "MicrosoftWindowsServer",
+        "offer": "WindowsServer",
+        "sku": "2016-Datacenter",
+        "version": "latest",
+    },
+    "windows 10 pro version 1803": {
+        "publisher": "MicrosoftWindowsDesktop",
+        "offer": "Windows-10",
+        "sku": "rs4-pro",
+        "version": "latest",
+    },
+    "windows 10 pro version 1809": {
+        "publisher": "MicrosoftWindowsDesktop",
+        "offer": "Windows-10",
+        "sku": "rs5-pro",
+        "version": "latest",
+    },
+}
+
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
 # get_command_and_token_scopes.
 STORAGE_BLOB_SPECIAL_COMMANDS = [
@@ -672,6 +744,9 @@ STORAGE_BLOB_SPECIAL_COMMANDS = [
     "azure-storage-table-entity-replace",
     "azure-storage-table-entity-query",
     "azure-storage-table-entity-delete",
+    "azure-storage-blobs-list",
+    "azure-storage-blob-update",
+    "azure-storage-blob-delete",
 ]
 
 COMMANDS_TO_OUTPUTS_PREFIX = {
@@ -685,6 +760,8 @@ COMMANDS_TO_OUTPUTS_PREFIX = {
     "azure-compute-vm-power-off": "Azure.Compute.VirtualMachines",
     "azure-vm-instance-start": "Azure.Compute",
     "azure-compute-vm-start": "Azure.Compute.VirtualMachines",
+    "azure-compute-vm-create": "Azure.Compute.VirtualMachines",
+    "azure-vn-network-interface-create": "Azure.VirtualNetworks.NetworkInterfaces",
     "azure-cosmos-db-update": "Azure.CosmosDB",
     "azure-cosmosdb-db-account-update": "Azure.CosmosDB.DBAccounts",
     "azure-key-vault-update": "Azure.KeyVault",
@@ -1400,7 +1477,7 @@ class AzureClient:
             custom_headers (dict, optional): Custom headers to be added to the request.
         """
         request_headers = {
-            "x-ms-version": "2023-11-03",
+            "x-ms-version": STORAGE_API_VERSION,
             "x-ms-date": dt.datetime.utcnow().strftime(STORAGE_DATE_FORMAT),
         }
         if self.headers:
@@ -1860,6 +1937,113 @@ class AzureClient:
         self.storage_container_set_headers()
 
         response = self.http_request(method="PUT", full_url=full_url, params=params, resp_type="response")
+
+        return response
+
+    def storage_containers_list_request(self, account_name: str, args: dict):
+        """
+        List Containers under the specified storage account.
+
+        Args:
+            account_name (str): Storage account name.
+            args (dict): The user arguments (like prefix, limit, next_token).
+
+        Returns:
+            str: API response from Azure.
+
+        """
+        next_token = args.get("next_token", "")
+        params: dict = {"comp": "list"}
+        if prefix := args.get("prefix"):
+            params["prefix"] = prefix
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of containers.")
+            params["marker"] = next_token
+        limit = arg_to_number(args.get("limit"))
+        if limit is not None:
+            validate_limit(limit, max_limit=BLOB_CONTAINERS_MAX_PAGE_SIZE)
+            params["maxresults"] = str(limit)
+
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/"
+        self.storage_container_set_headers()
+
+        demisto.debug(f'Listing containers under account "{account_name}".')
+        response = self.http_request(method="GET", full_url=full_url, params=params, resp_type="text")
+
+        return response
+
+    def storage_container_blobs_list_request(self, account_name: str, container_name: str, args: dict):
+        """
+        List Blobs under the specified container.
+
+        Args:
+            account_name (str): Storage account name.
+            container_name (str): Container name.
+            args (dict): The user arguments (like prefix, limit, next_token).
+
+        Returns:
+            str: API response from Azure.
+
+        """
+        next_token = args.get("next_token", "")
+        params: dict = {"restype": "container", "comp": "list"}
+        if prefix := args.get("prefix"):
+            params["prefix"] = prefix
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of blobs.")
+            params["marker"] = next_token
+        limit = arg_to_number(args.get("limit"))
+        if limit is not None:
+            validate_limit(limit, max_limit=BLOB_CONTAINERS_MAX_PAGE_SIZE)
+            params["maxresults"] = str(limit)
+
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}"
+        self.storage_container_set_headers()
+
+        demisto.debug(f'Listing blobs under container "{container_name}" in account "{account_name}".')
+        response = self.http_request(method="GET", full_url=full_url, params=params, resp_type="text")
+
+        return response
+
+    def storage_container_blob_exists(self, container_name: str, blob_name: str, account_name: str) -> bool:
+        """
+        Check whether a Blob exists under the specified Container.
+
+        Args:
+            container_name (str): Container name.
+            blob_name (str): Blob name.
+            account_name (str): Storage account name.
+
+        Returns:
+            bool: True if the blob exists, False if Azure returns 404 (blob or container not found).
+
+        """
+        try:
+            self.storage_container_blob_property_get_request(container_name, blob_name, account_name)
+        except DemistoException as e:
+            if e.res is not None and e.res.status_code == 404:
+                demisto.debug(f'[Azure] Blob "{blob_name}" was not found in container "{container_name}".')
+                return False
+            raise
+        return True
+
+    def storage_container_blob_delete_request(self, container_name: str, blob_name: str, account_name: str):
+        """
+        Delete Blob from the specified Container.
+
+        Args:
+            container_name (str): Container name.
+            blob_name (str): Blob name.
+            account_name (str): Storage account name.
+
+        Returns:
+            Response: API response from Azure.
+
+        """
+        full_url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}/{blob_name}"
+        self.storage_container_set_headers()
+
+        response = self.http_request(method="DELETE", full_url=full_url, resp_type="response")
 
         return response
 
@@ -3266,6 +3450,88 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
+    def create_vm_request(self, subscription_id: str, resource_group_name: str, vm_name: str, virtual_machine_data: dict):
+        """
+        Creates or updates a virtual machine in the specified resource group.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group in which to create the virtual machine.
+            vm_name (str): The name of the virtual machine to create.
+            virtual_machine_data (dict): The virtual machine object to create.
+
+        Returns:
+            The created virtual machine object.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines/create-or-update?view=rest-azure-2024-04-01
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
+            f"virtualMachines/{vm_name}"
+        )
+        try:
+            return self.http_request(
+                method="PUT",
+                full_url=full_url,
+                params={"api-version": VM_API_VERSION},
+                json_data=virtual_machine_data,
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{resource_group_name}/{vm_name}",
+                resource_type="Virtual Machines",
+                api_function_name="create_vm_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def delete_vm_request(self, subscription_id: str, resource_group_name: str, vm_name: str):
+        """
+        Deallocates and then deletes the specified virtual machine in a given resource group.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group containing the virtual machine.
+            vm_name (str): The name of the virtual machine to delete.
+
+        Returns:
+            The HTTP response object of the delete request.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines/delete?view=rest-azure-2024-04-01
+        """
+        base_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
+            f"virtualMachines/{vm_name}"
+        )
+        try:
+            demisto.debug(f"Deallocating vm {vm_name} before deletion.")
+            self.http_request(
+                method="POST",
+                full_url=f"{base_url}/deallocate",
+                params={"api-version": VM_API_VERSION},
+                resp_type="response",
+            )
+            response = self.http_request(
+                method="DELETE", full_url=base_url, params={"api-version": VM_API_VERSION}, resp_type="response"
+            )
+            if response.status_code in (200, 202, 204):  # type: ignore[union-attr]
+                return response
+            else:
+                demisto.debug(f"Failed to delete vm {vm_name}.")
+                response.raise_for_status()  # type: ignore[union-attr]
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{resource_group_name}/{vm_name}",
+                resource_type="Virtual Machines",
+                api_function_name="delete_vm_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
     def validate_provisioning_state(self, subscription_id, resource_group, vm_name):
         """
         Ensure that the provisioning state of a VM is 'Succeeded'
@@ -3396,6 +3662,49 @@ class AzureClient:
                 resource_name=f"{resource_group_name}/{interface_name}",
                 resource_type="Network Interfaces",
                 api_function_name="update_network_interface_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def create_network_interface_request(
+        self,
+        subscription_id: str,
+        resource_group_name: str,
+        interface_name: str,
+        network_interface_data: dict,
+    ):
+        """
+        Creates a network interface in the specified resource group.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group in which to create the network interface.
+            interface_name (str): The name of the network interface to create.
+            network_interface_data (dict): The network interface object to create.
+
+        Returns:
+            The created network interface object.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-interfaces/create-or-update
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/"
+            f"networkInterfaces/{interface_name}"
+        )
+        try:
+            return self.http_request(
+                method="PUT",
+                full_url=full_url,
+                params={"api-version": NETWORK_INTERFACE_API_VERSION},
+                json_data=network_interface_data,
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{resource_group_name}/{interface_name}",
+                resource_type="Network Interfaces",
+                api_function_name="create_network_interface_request",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -5797,6 +6106,308 @@ def delete_entity_command(client: AzureClient, params: dict, args: dict) -> Comm
     return CommandResults(readable_output=f"Entity in {table_name} table successfully deleted.")
 
 
+def storage_container_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    List Containers under the specified storage account.
+
+    Args:
+        client (AzureClient): Azure Blob Storage API client.
+        params (dict): The configuration parameters.
+        args (dict): Command arguments (account_name, prefix, limit, next_token).
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+
+    """
+    account_name = args.get("account_name", "")
+
+    response = client.storage_containers_list_request(account_name, args)
+
+    root = defused_ET.fromstring(response)
+
+    containers = []
+    for element in root.iter("Container"):
+        properties = {}
+        for container_property in element.findall("Properties"):
+            for attribute in container_property:
+                properties[attribute.tag] = attribute.text
+        containers.append({"name": element.findtext("Name"), "Property": properties})
+
+    # Azure returns an empty <NextMarker /> on the last page; normalize it to None so a stale token is overwritten.
+    next_token = root.findtext("NextMarker") or None
+    token_output = {"Azure.Storage(true)": {"ContainersNextToken": next_token}}
+
+    if not containers:
+        readable_output = "No containers were found."
+        if next_token:
+            readable_output += " More pages are available - re-run the command with the next_token argument to continue."
+        return CommandResults(readable_output=readable_output, outputs=token_output, raw_response=response)
+
+    outputs = {
+        "Azure.Storage.Container(val.name && val.name == obj.name)": remove_empty_elements(containers),
+        **token_output,
+    }
+
+    readable_output = tableToMarkdown(
+        f"Containers List in account {account_name}:",
+        containers,
+        headers=["name"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def storage_container_blob_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    List Blobs under the specified container.
+
+    Args:
+        client (AzureClient): Azure Blob Storage API client.
+        params (dict): The configuration parameters.
+        args (dict): Command arguments (account_name, container_name, prefix, limit, next_token).
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+
+    """
+    account_name = args.get("account_name", "")
+    container_name = args["container_name"]
+
+    response = client.storage_container_blobs_list_request(account_name, container_name, args)
+
+    root = defused_ET.fromstring(response)
+
+    blobs = []
+    for element in root.iter("Blob"):
+        properties = {}
+        for blob_property in element.findall("Properties"):
+            for attribute in blob_property:
+                properties[attribute.tag] = attribute.text
+        blobs.append({"name": element.findtext("Name"), "ContainerName": container_name, "Property": properties})
+
+    # Azure returns an empty <NextMarker /> on the last page; normalize it to None so a stale token is overwritten.
+    next_token = root.findtext("NextMarker") or None
+    token_output = {"Azure.Storage(true)": {"BlobsNextToken": next_token}}
+
+    if not blobs:
+        readable_output = f"No blobs were found in container {container_name}."
+        if next_token:
+            readable_output += " More pages are available - re-run the command with the next_token argument to continue."
+        return CommandResults(readable_output=readable_output, outputs=token_output, raw_response=response)
+
+    outputs = {
+        "Azure.Storage.Blob(val.name && val.name == obj.name && val.ContainerName == obj.ContainerName)": remove_empty_elements(
+            blobs
+        ),
+        **token_output,
+    }
+
+    readable_output = tableToMarkdown(
+        f"Blobs List in container {container_name}:",
+        blobs,
+        headers=["name"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def storage_container_blob_update_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Update the content of an existing Blob under the specified Container.
+
+    Args:
+        client (AzureClient): Azure Blob Storage API client.
+        params (dict): The configuration parameters.
+        args (dict): Command arguments (account_name, container_name, file_entry_id, blob_name).
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+
+    """
+    container_name = args["container_name"]
+    account_name = args.get("account_name", "")
+    file_entry_id = args["file_entry_id"]
+    blob_name = args["blob_name"]
+
+    # The upload API creates the blob when it is missing, so check first to keep this an update of an existing blob.
+    if not client.storage_container_blob_exists(container_name, blob_name, account_name):
+        raise DemistoException(
+            f"Blob {blob_name} does not exist in container {container_name}. "
+            "Use the azure-storage-blob-create command to create a new blob."
+        )
+
+    file_data = demisto.getFilePath(file_entry_id)  # Retrieve system file path and name, given file entry ID.
+    system_file_path = file_data["path"]
+
+    client.storage_container_create_blob_request(container_name, account_name, file_entry_id, blob_name, system_file_path)
+
+    return CommandResults(readable_output=f"Blob {blob_name} successfully updated.")
+
+
+def storage_container_blob_delete_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Delete Blob from the specified Container.
+
+    Args:
+        client (AzureClient): Azure Blob Storage API client.
+        params (dict): The configuration parameters.
+        args (dict): Command arguments (account_name, container_name, blob_name).
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response.
+
+    """
+    container_name = args["container_name"]
+    blob_name = args["blob_name"]
+    account_name = args.get("account_name", "")
+
+    client.storage_container_blob_delete_request(container_name, blob_name, account_name)
+
+    return CommandResults(readable_output=f"Blob {blob_name} successfully deleted.")
+
+
+def check_valid_permission(valid_permissions: str, input_permissions: str) -> bool:
+    """
+    Check the permissions follow a valid permission order.
+
+    Args:
+        valid_permissions (str): Valid permissions order.
+        input_permissions (str): Permissions given.
+
+    Returns:
+        bool: True if the given permissions are valid and in the correct order.
+
+    """
+    if not input_permissions or len(input_permissions) > len(valid_permissions):
+        return False
+    if any(permission not in valid_permissions for permission in input_permissions):
+        return False
+    for current_permission, next_permission in itertools.pairwise(input_permissions):
+        if valid_permissions.index(current_permission) > valid_permissions.index(next_permission):
+            return False
+    return True
+
+
+def generate_sas_signature(
+    account_key: str,
+    canonicalized_resource: str,
+    signed_permissions: str,
+    signed_start: str,
+    signed_expiry: str,
+    signed_resource: str,
+    api_version: str,
+    signed_ip: str = "",
+) -> str:
+    """
+    Generate a SAS token for a Container.
+
+    Args:
+        account_key (str): Account key of the storage account.
+        canonicalized_resource (str): Canonicalized resource.
+        signed_permissions (str): Signed permissions.
+        signed_start (str): Start time for the SAS token.
+        signed_expiry (str): Expiry time for the SAS token.
+        signed_resource (str): Signed resource type.
+        api_version (str): The signed version.
+        signed_ip (str): Public IP address or range from which to accept requests.
+
+    Returns:
+        str: The URL-encoded SAS token.
+
+    """
+    if signed_ip is None:
+        signed_ip = ""
+    string_to_sign = (
+        f"{signed_permissions}\n{signed_start}\n{signed_expiry}\n{canonicalized_resource}\n\n"
+        f"{signed_ip}\nhttps\n{api_version}\n{signed_resource}\n\n\n\n\n\n"
+    ).encode()
+    signed_hmac_sha256 = hmac.new(base64.b64decode(account_key), string_to_sign, hashlib.sha256)
+    sig = base64.b64encode(signed_hmac_sha256.digest())
+
+    token = {
+        "sp": signed_permissions,
+        "st": signed_start,
+        "se": signed_expiry,
+        "sip": signed_ip,
+        "spr": "https",
+        "sv": api_version,
+        "sr": signed_resource,
+        "sig": sig,
+    }
+    remove_nulls_from_dictionary(token)
+
+    return urllib.parse.urlencode(token)
+
+
+def generate_sas_token_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Generate a SAS URL for a Container.
+
+    Args:
+        client (AzureClient): Azure Blob Storage API client.
+        params (dict): The configuration parameters.
+        args (dict): Command arguments (account_name, container_name, expiry_time, signed_resources,
+            signed_permissions, signed_ip, account_key).
+
+    Returns:
+        CommandResults: outputs and raw response.
+
+    """
+    account_name = args.get("account_name", "")
+    container_name = args["container_name"]
+    signed_resource = args["signed_resources"]
+    signed_permissions = args["signed_permissions"]
+    signed_ip = args.get("signed_ip", "")
+    valid_permissions = "racwdxltmeop"
+    api_version = STORAGE_API_VERSION
+
+    if not check_valid_permission(valid_permissions, signed_permissions):
+        raise DemistoException(
+            "Permissions are invalid or in the wrong order. The correct order for permissions is 'racwdxltmeop'."
+        )
+
+    account_key = args["account_key"]
+
+    now = dt.datetime.now(UTC)
+    signed_start = (now - dt.timedelta(minutes=2)).strftime(DATE_FORMAT)
+    expiry_time = arg_to_number(args.get("expiry_time")) or 1
+    signed_expiry = (now + dt.timedelta(hours=expiry_time)).strftime(DATE_FORMAT)
+
+    canonicalized_resource = f"/blob/{account_name}/{container_name}"
+    url = f"https://{account_name}.{BLOB_SERVICE_PREFIX}/{container_name}"
+
+    sas_token = generate_sas_signature(
+        account_key,
+        canonicalized_resource,
+        signed_permissions,
+        signed_start,
+        signed_expiry,
+        signed_resource,
+        api_version,
+        signed_ip,
+    )
+    sas_url = f"{url}?{sas_token}"
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Azure Storage Container SAS URL", {"SAS URL": sas_url}, headerTransform=pascalToSpace),
+        outputs_prefix="Azure.Storage.Container.SAS",
+        outputs_key_field="name",
+        outputs={"name": container_name, "SASURL": sas_url},
+    )
+
+
 def create_policy_assignment_command(client: AzureClient, params: dict, args: dict):
     """
         Creates a policy assignment.
@@ -7442,6 +8053,267 @@ def list_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str,
 
     return CommandResults(
         outputs=outputs,
+        readable_output=human_readable,
+        raw_response=response,
+    )
+
+
+def assign_image_attributes(image: str) -> tuple[Any, Any, Any, Any]:
+    """
+    Retrieves the image properties determined by the chosen OS image.
+
+    Args:
+        image (str): The name of the base operating system image.
+
+    Returns:
+        tuple: The image properties as (sku, publisher, offer, version).
+    """
+    image_properties = IMAGES.get(image.lower())
+    if not image_properties:
+        raise DemistoException(
+            f"Invalid value '{image}' entered for the 'os_image' argument. Valid values are: {list(IMAGES.keys())}."
+        )
+    return (
+        image_properties.get("sku"),
+        image_properties.get("publisher"),
+        image_properties.get("offer"),
+        image_properties.get("version"),
+    )
+
+
+def create_vm_parameters(args: dict[str, Any], subscription_id: str, resource_group_name: str) -> dict[str, Any]:
+    """
+    Constructs the virtual machine object sent in the body of the create virtual machine request.
+
+    Args:
+        args (dict): Command arguments.
+        subscription_id (str): The ID of the Azure subscription.
+        resource_group_name (str): The name of the resource group in which to create the virtual machine.
+
+    Returns:
+        dict: The virtual machine object.
+    """
+    image = args.get("os_image")
+    sku = args.get("sku")
+    publisher = args.get("publisher")
+    version = args.get("version")
+    offer = args.get("offer")
+    vm_name = args["virtual_machine_name"]
+    nic_name = args["nic_name"]
+
+    if not image and not (sku and publisher and version and offer):
+        raise DemistoException(
+            "You must enter a value for the 'os_image' argument or the group of arguments, "
+            "'sku', 'publisher', 'version', and 'offer'."
+        )
+
+    if image:
+        sku, publisher, offer, version = assign_image_attributes(image)
+
+    full_nic_id = (
+        f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/"
+        f"networkInterfaces/{nic_name}"
+    )
+
+    return remove_empty_elements(
+        {
+            "location": args.get("virtual_machine_location"),
+            "properties": {
+                "hardwareProfile": {"vmSize": args.get("vm_size")},
+                "storageProfile": {
+                    "imageReference": {"sku": sku, "publisher": publisher, "version": version, "offer": offer},
+                    "osDisk": {
+                        "caching": "ReadWrite",
+                        "managedDisk": {"storageAccountType": "Standard_LRS"},
+                        "name": vm_name,
+                        "createOption": "FromImage",
+                    },
+                },
+                "osProfile": {
+                    "adminUsername": args.get("admin_username"),
+                    "computerName": vm_name,
+                    "adminPassword": args.get("admin_password"),
+                },
+                "networkProfile": {"networkInterfaces": [{"id": full_nic_id, "properties": {"primary": "true"}}]},
+            },
+            "name": vm_name,
+        }
+    )
+
+
+def create_nic_parameters(args: dict[str, Any], subscription_id: str, resource_group_name: str) -> dict[str, Any]:
+    """
+    Constructs the network interface object sent in the body of the create network interface request.
+
+    Args:
+        args (dict): Command arguments.
+        subscription_id (str): The ID of the Azure subscription.
+        resource_group_name (str): The name of the resource group in which to create the network interface.
+
+    Returns:
+        dict: The network interface object.
+    """
+    address_assignment_method = args.get("address_assignment_method", "Dynamic")
+    private_ip_address = args.get("private_ip_address")
+    network_security_group = args.get("network_security_group")
+
+    if address_assignment_method == "Static" and not private_ip_address:
+        raise DemistoException(
+            'You have chosen to assign a "Static" IP address value to the interface, '
+            'so you must enter a value for the "private_ip_address" argument.'
+        )
+
+    subnet_id = (
+        f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/"
+        f"virtualNetworks/{args['vnet_name']}/subnets/{args['subnet_name']}"
+    )
+    network_security_group_id = (
+        f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/"
+        f"networkSecurityGroups/{network_security_group}"
+        if network_security_group
+        else None
+    )
+
+    return remove_empty_elements(
+        {
+            "location": args.get("nic_location"),
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": args.get("ip_config_name"),
+                        "properties": {
+                            "privateIPAllocationMethod": address_assignment_method,
+                            "privateIPAddress": private_ip_address,
+                            "subnet": {"id": subnet_id},
+                        },
+                    }
+                ],
+                "networkSecurityGroup": {"id": network_security_group_id},
+            },
+        }
+    )
+
+
+def create_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Creates an Azure Virtual Machine (VM) instance with the specified OS image.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: A CommandResults object containing the created Virtual Machine details.
+    """
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
+    resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
+    vm_name = args.get("virtual_machine_name", "")
+
+    virtual_machine_data = create_vm_parameters(args, subscription_id, resource_group_name)
+    demisto.debug(f"[Azure] create_vm_request payload keys: {list(virtual_machine_data.keys())} for {vm_name=}")
+    response = client.create_vm_request(subscription_id, resource_group_name, vm_name, virtual_machine_data)
+
+    properties = response.get("properties", {})
+    os_disk = properties.get("storageProfile", {}).get("osDisk", {})
+
+    readable_vm = {
+        "Name": response.get("name", vm_name),
+        "ID": properties.get("vmId"),
+        "Size": os_disk.get("diskSizeGB"),
+        "OS": os_disk.get("osType"),
+        "ProvisioningState": properties.get("provisioningState"),
+        "Location": response.get("location"),
+        "ResourceGroup": resource_group_name,
+    }
+
+    title = f'Created Virtual Machine "{readable_vm.get("Name")}"'
+    table_headers = ["Name", "ID", "Size", "OS", "ProvisioningState", "Location", "ResourceGroup"]
+    human_readable = tableToMarkdown(title, readable_vm, headers=table_headers, removeNull=True, headerTransform=pascalToSpace)
+
+    command = demisto.command()
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Compute.VirtualMachines")
+
+    return CommandResults(
+        outputs_prefix=outputs_prefix,
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=human_readable,
+        raw_response=response,
+    )
+
+
+def delete_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Deallocates and deletes a specific Azure Virtual Machine (VM).
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: A CommandResults object indicating that the deletion has been successfully initiated.
+    """
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
+    resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
+    vm_name = args.get("virtual_machine_name", "")
+
+    client.delete_vm_request(subscription_id, resource_group_name, vm_name)
+
+    return CommandResults(readable_output=f'"{vm_name}" VM Deletion Successfully Initiated')
+
+
+def create_network_interface_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Creates an Azure Network Interface (NIC) with the specified interface parameters.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: A CommandResults object containing the created Network Interface details.
+    """
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
+    resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
+    interface_name = args.get("nic_name", "")
+
+    network_interface_data = create_nic_parameters(args, subscription_id, resource_group_name)
+    demisto.debug(
+        f"[Azure] create_network_interface_request payload keys: {list(network_interface_data.keys())} " f"for {interface_name=}"
+    )
+    response = client.create_network_interface_request(
+        subscription_id, resource_group_name, interface_name, network_interface_data
+    )
+
+    properties = response.get("properties", {})
+    ip_configurations = properties.get("ipConfigurations", [])
+
+    readable_nic = {
+        "Name": response.get("name", interface_name),
+        "ID": response.get("id"),
+        "PrivateIPAddresses": [
+            ip_configuration.get("properties", {}).get("privateIPAddress") for ip_configuration in ip_configurations
+        ],
+        "NetworkSecurityGroup": properties.get("networkSecurityGroup", {}).get("id"),
+        "ProvisioningState": properties.get("provisioningState"),
+        "Location": response.get("location"),
+        "ResourceGroup": resource_group_name,
+    }
+
+    title = f'Created Network Interface "{readable_nic.get("Name")}"'
+    table_headers = ["Name", "ID", "PrivateIPAddresses", "NetworkSecurityGroup", "ProvisioningState", "Location"]
+    human_readable = tableToMarkdown(title, readable_nic, headers=table_headers, removeNull=True, headerTransform=pascalToSpace)
+
+    command = demisto.command()
+    outputs_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.VirtualNetworks.NetworkInterfaces")
+
+    return CommandResults(
+        outputs_prefix=outputs_prefix,
+        outputs_key_field="id",
+        outputs=response,
         readable_output=human_readable,
         raw_response=response,
     )
@@ -9362,6 +10234,11 @@ def main():  # pragma: no cover
             "azure-storage-table-entity-replace": replace_entity_command,
             "azure-storage-table-entity-query": query_entity_command,
             "azure-storage-table-entity-delete": delete_entity_command,
+            "azure-storage-containers-list": storage_container_list_command,
+            "azure-storage-blobs-list": storage_container_blob_list_command,
+            "azure-storage-blob-update": storage_container_blob_update_command,
+            "azure-storage-blob-delete": storage_container_blob_delete_command,
+            "azure-storage-container-sas-create": generate_sas_token_command,
             "azure-policy-assignment-create": create_policy_assignment_command,
             "azure-postgres-config-set": set_postgres_config_command,
             "azure-postgres-server-update": postgres_server_update_command,
@@ -9418,8 +10295,11 @@ def main():  # pragma: no cover
             "azure-compute-vm-power-off": poweroff_vm_command,
             "azure-vm-instance-details-get": get_vm_command,
             "azure-compute-vm-list": list_vm_command,
+            "azure-compute-vm-create": create_vm_command,
+            "azure-compute-vm-delete": delete_vm_command,
             "azure-vm-network-interface-details-get": get_network_interface_command,
             "azure-vn-network-interface-update": network_interface_update_command,
+            "azure-vn-network-interface-create": create_network_interface_command,
             "azure-compute-vm-get": get_vm_command,
             "azure-vn-network-interface-get": get_network_interface_command,
             "azure-vm-public-ip-details-get": get_public_ip_details_command,
