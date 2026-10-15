@@ -1,0 +1,25 @@
+category: Utilities
+commonfields:
+  id: TCTNoConnector
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+description: Test integration with no connector (CIAC-18570).
+display: TCT No Connector
+name: TCTNoConnector
+excludefromtightlycoupled: true
+script:
+  commands:
+  - name: tct-no-connector-ping
+    description: Returns pong.
+    arguments: []
+  script: ''
+  subtype: python3
+  type: python
+  dockerimage: demisto/python3:3.12.13.10404775
+fromversion: 6.10.0
+tests:
+- No tests
