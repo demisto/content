@@ -37,7 +37,10 @@ QIDS_BATCH_SIZE = 500
 # Batch size for the by-date streamed sends. The by-date assets and vulnerabilities responses are streamed and
 # flushed in fixed-size batches into a single snapshot, keeping peak memory ~O(batch) instead of ~O(full response).
 VULNERABILITIES_SEND_BATCH_SIZE = 5000
-ASSETS_SEND_BATCH_SIZE = 5000
+# Hosts per commit: their detections are sent together, then the last run is saved with the next host ID as cursor.
+ASSETS_COMMIT_HOSTS_BATCH_SIZE = 100
+# Runs in a row that may fail mid-page with nothing committed before the error is raised (fetch shows as failed).
+ASSETS_MAX_CONSECUTIVE_FAILURES = 5
 # Retry configuration for Qualys rate-limit (HTTP 409, Error Code 1965) responses.
 RATE_LIMIT_STATUS_CODE = 409
 RATE_LIMIT_TO_WAIT_HEADER = "X-RateLimit-ToWait-Sec"
@@ -3551,16 +3554,15 @@ def fetch_and_send_vulnerabilities_streamed(client: Client, last_run: dict[str, 
 
 
 def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> tuple[dict[str, Any], bool]:
-    """Fetches one assets page (host list detections) and sends it to XSIAM in bounded batches.
+    """Fetches one assets page (host list detections) and sends it to XSIAM, committing every few hosts.
 
-    Streams the page's hosts, fans them out to detection rows lazily, and flushes every ``ASSETS_SEND_BATCH_SIZE``
-    rows into the *same* assets snapshot, so peak memory is proportional to the batch size rather than the total
-    number of detections in the page (the per-request ``truncation_limit`` only bounds *hosts*, not detections).
+    Every ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts, their detections are sent into the same snapshot (``items_count=1``,
+    unsealed) and the last run is saved with ``next_page`` set to the next host ID. Only the final send of the final
+    page declares the cumulative ``total_assets`` to seal the snapshot.
 
-    Snapshot sealing follows the existing cross-page contract: every non-final send carries ``items_count=1``
-    (unsealed), and only the single final send of the final page (no next page) declares the cumulative
-    ``total_assets`` to seal the snapshot. On a read timeout / concurrency limit the page defers to the next fetch
-    with a reduced limit (``set_new_limit``) and nothing is sent, exactly like the non-streaming path.
+    On any error mid-page (closed socket, parse error, failed send, etc.) the last commit is kept and the run ends
+    normally, so the next fetch resumes from the first uncommitted host. If nothing was committed in this run, or the
+    request timed out / hit the concurrency limit, ``set_new_limit`` is returned so the caller reduces the limit.
 
     Args:
         client (Client): Qualys client.
@@ -3580,7 +3582,7 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
     if set_new_limit:
         demisto.debug("Host list detection request needs a reduced limit; deferring to next fetch without sending.")
         # Only signal the reduction; the caller (fetch_assets_and_vulnerabilities_by_date) is the single place that
-        # builds the reduced-limit last run, so it is not computed twice (it also handles the ExecutionTimeout case).
+        # builds the reduced-limit last run, so it is not computed twice.
         return last_run, True
 
     stream_state: dict = {}
@@ -3599,31 +3601,65 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
             should_update_health_module=False,
         )
 
-    hosts = iter_host_list_detections(raw_response, stream_state)
-    for asset in iter_detections_from_hosts(hosts):
-        batch.append(asset)
-        if len(batch) >= ASSETS_SEND_BATCH_SIZE:
+    hosts_in_batch = 0
+    committed_run: Optional[dict[str, Any]] = None
+    try:
+        for host in iter_host_list_detections(raw_response, stream_state):
+            batch.extend(iter_detections_from_hosts([host]))
+            hosts_in_batch += 1
+            host_id = arg_to_number(host.get("ID"))
+            if hosts_in_batch < ASSETS_COMMIT_HOSTS_BATCH_SIZE or host_id is None:
+                continue
+
             add_fields_to_events(batch, ["DETECTION", "FIRST_FOUND_DATETIME"], "host_list_detection")
-            flush(batch, 1)  # unsealed: more rows (and possibly more pages) may follow
+            flush(batch, 1)
             page_assets_count += len(batch)
-            batch = []
+            batch, hosts_in_batch = [], 0
 
-    # The next-page URL and any API error are known only after the stream is fully consumed.
-    next_run_page = get_next_page_from_url(stream_state.get("next_url", ""), "id_min")
-    is_last_page = not next_run_page
-    page_assets_count += len(batch)
-    total_assets += page_assets_count
+            # Host IDs are ascending and `id_min` is inclusive, so the next run resumes right after this host.
+            committed_run = {
+                "stage": "assets",
+                "next_page": str(host_id + 1),
+                "total_assets": total_assets + page_assets_count,
+                "since_datetime": since_datetime,
+                "snapshot_id": snapshot_id,
+                "limit": limit,
+                "nextTrigger": "0",
+                "type": FETCH_COMMAND.get("assets"),
+            }
+            demisto.setAssetsLastRun(committed_run)
+            demisto.debug(f"[Assets] Committed hosts up to ID {host_id}. Cumulative: {committed_run['total_assets']}.")
 
-    # Flush the final (remainder) batch. On the last page this is the single sealing send (cumulative total);
-    # otherwise it stays unsealed (items_count=1). If the last page's rows divided evenly (empty remainder) but it
-    # is the last page, still send a sealing signal so the snapshot closes with the correct cumulative count.
-    if is_last_page:
-        add_fields_to_events(batch, ["DETECTION", "FIRST_FOUND_DATETIME"], "host_list_detection")
-        batch, seal_count = close_snapshot_if_empty(batch, total_assets, snapshot_id, "assets")
-        flush(batch, seal_count)
-    elif batch:
-        add_fields_to_events(batch, ["DETECTION", "FIRST_FOUND_DATETIME"], "host_list_detection")
-        flush(batch, 1)
+        # The next-page URL and any API error are known only after the stream is fully consumed.
+        next_run_page = get_next_page_from_url(stream_state.get("next_url", ""), "id_min")
+        is_last_page = not next_run_page
+        page_assets_count += len(batch)
+        total_assets += page_assets_count
+
+        # On the last page this is the single sealing send (cumulative total); an empty remainder still sends a
+        # closing signal. Otherwise the remainder stays unsealed (items_count=1).
+        if is_last_page:
+            add_fields_to_events(batch, ["DETECTION", "FIRST_FOUND_DATETIME"], "host_list_detection")
+            batch, seal_count = close_snapshot_if_empty(batch, total_assets, snapshot_id, "assets")
+            flush(batch, seal_count)
+        elif batch:
+            add_fields_to_events(batch, ["DETECTION", "FIRST_FOUND_DATETIME"], "host_list_detection")
+            flush(batch, 1)
+    except Exception as e:
+        error_message = f"Assets fetch stopped mid-page; the next fetch resumes from the last committed host. Error: {e}"
+        demisto.error(f"[Assets] {error_message}\n{traceback.format_exc()}")
+        if committed_run is not None:
+            return committed_run, False
+
+        consecutive_failures = last_run.get("consecutive_failures", 0) + 1
+        if consecutive_failures >= ASSETS_MAX_CONSECUTIVE_FAILURES:
+            raise DemistoException(
+                f"Assets fetch failed {consecutive_failures} times in a row without progress. Last error: {e}"
+            ) from e
+        return {**last_run, "consecutive_failures": consecutive_failures}, True
+    finally:
+        if raw_response is not None:
+            raw_response.close()
 
     # Mirror the non-streaming `fetch_assets` last run exactly: on the last page, move to the "vulnerabilities"
     # stage while keeping `since_datetime`/`snapshot_id`; otherwise continue paging the "assets" stage.
@@ -3865,22 +3901,20 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
     if fetch_stage == "assets":
         demisto.debug(f"Starting fetch for assets, {EXECUTION_START_TIME=}")
 
-        # If assets request read timeout (set_new_limit flag is True) or exceeded max execution time, make next API call smaller.
-        # Initialize to True, could be changed to False via internal functions.
-        set_new_limit = True
-
         # Fetch, parse, and send one page in bounded batches (peak memory ~O(batch), not O(page)).
-        # The page is fetched and sent inside the function; the timeout guard still reduces the limit on overrun.
-        with ExecutionTimeout(FETCH_ASSETS_COMMAND_TIME_OUT):
-            new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
-            demisto.debug("Finished streamed fetch for assets.")
+        # No execution timeout here: batches are sent while the page streams, so interrupting the block mid-page would
+        # re-send already-sent batches on the next run. The request itself is bounded by its connect/read timeouts.
+        new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+        demisto.debug("Finished streamed fetch for assets.")
 
+        # Nothing was committed in this run (request timeout, concurrency limit, or a failure before the first commit);
+        # make the next API call smaller.
         if set_new_limit:
             demisto.debug(
-                f"Reducing limit for assets next run due to exceeding timeout: {FETCH_ASSETS_COMMAND_TIME_OUT}. "
+                f"Reducing limit for assets next run since nothing was committed in this run. "
                 f"Elapsed time: {time.time() - EXECUTION_START_TIME}."
             )
-            new_last_run = set_assets_last_run_with_new_limit(last_run, last_run.get("limit", HOST_LIMIT))
+            new_last_run = set_assets_last_run_with_new_limit(new_last_run, new_last_run.get("limit", HOST_LIMIT))
 
         demisto.setAssetsLastRun(new_last_run)
 

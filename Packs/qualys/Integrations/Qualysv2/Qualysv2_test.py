@@ -2035,39 +2035,39 @@ def test_iter_host_list_detections_matches_handle_host_list_detection_result(moc
 def test_fetch_and_send_assets_streamed_last_page_seals_snapshot(mocker: MockerFixture, client: Client):
     """
     Given:
-        - A last page (no next page) of assets streamed in multiple batches (batch size 2, 5 rows).
+        - A last page (no next page) of 5 hosts with 1 detection each, committed every 2 hosts.
 
     When:
         - Calling fetch_and_send_assets_streamed.
 
     Assert:
-        - All non-final batches send items_count=1 (unsealed); only the final batch seals with the cumulative total.
+        - Each commit sends items_count=1 (unsealed); only the final send seals with the cumulative total.
         - Every send uses the same snapshot_id, product "assets", and should_update_health_module=False.
         - The returned last run moves to the "vulnerabilities" stage, keeping since_datetime and snapshot_id.
     """
     last_run = {"stage": "assets", "total_assets": 10, "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
-    expected_assets = [{"ID": f"a{i}", "DETECTION": {"FIRST_FOUND_DATETIME": "2025-01-01T00:00:00Z"}} for i in range(5)]
+    hosts = [_make_host(str(100 + i), 1) for i in range(5)]
 
     mocker.patch.object(client, "get_host_list_detection", return_value=(Mock(), False))
-    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter([]))
-    mocker.patch("Qualysv2.iter_detections_from_hosts", return_value=iter(expected_assets))
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter(hosts))
     mocker.patch("Qualysv2.get_next_page_from_url", return_value="")  # last page
     mock_send = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
     mock_health = mocker.patch("Qualysv2.demisto.updateModuleHealth")
-    mocker.patch("Qualysv2.ASSETS_SEND_BATCH_SIZE", 2)
+    mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 2)
 
     new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
 
     assert set_new_limit is False
-    # 5 rows, batch size 2 => 2 full batches (items_count=1) + 1 sealing batch (cumulative total).
+    # 5 hosts, 2 hosts per commit => 2 commits (items_count=1) + 1 sealing send (cumulative total).
     assert mock_send.call_count == 3
-    sent_assets: list = []
+    sent_host_ids: list = []
     for call in mock_send.call_args_list:
-        sent_assets.extend(call.args[0])
+        sent_host_ids.extend(row["ID"] for row in call.args[0])
         assert call.kwargs["product"] == "assets"
         assert call.kwargs["snapshot_id"] == SNAPSHOT_ID
         assert call.kwargs["should_update_health_module"] is False
-    assert sent_assets == expected_assets
+    assert sent_host_ids == [host["ID"] for host in hosts]
 
     cumulative_total = 10 + 5
     assert mock_send.call_args_list[0].kwargs["items_count"] == "1"
@@ -2080,6 +2080,356 @@ def test_fetch_and_send_assets_streamed_last_page_seals_snapshot(mocker: MockerF
     assert new_last_run["total_assets"] == cumulative_total
     assert new_last_run["since_datetime"] == "2024-10-03"
     assert new_last_run["snapshot_id"] == SNAPSHOT_ID
+
+
+@freeze_time("2025-01-01 00:00:00 UTC")
+def test_fetch_and_send_assets_streamed_commits_last_run_after_each_hosts_batch(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A page of 4 hosts (IDs 100-103) with 2 detections each, committed every 2 hosts.
+
+    When:
+        - Calling fetch_and_send_assets_streamed.
+
+    Assert:
+        - After each commit the last run is saved with next_page set to the last sent host ID + 1, the cumulative total
+          of rows sent so far, the same snapshot ID, and the current limit (so a resumed request uses the same page size).
+    """
+    last_run = {"stage": "assets", "total_assets": 10, "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID, "limit": 50}
+    hosts = [_make_host(str(100 + i), 2) for i in range(4)]
+
+    mocker.patch.object(client, "get_host_list_detection", return_value=(Mock(), False))
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter(hosts))
+    mocker.patch("Qualysv2.get_next_page_from_url", return_value="500")
+    mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+    mock_set_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 2)
+
+    new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+
+    committed_runs = [call.args[0] for call in mock_set_last_run.call_args_list]
+    assert [run["next_page"] for run in committed_runs] == ["102", "104"]
+    assert [run["total_assets"] for run in committed_runs] == [14, 18]
+    assert all(run["snapshot_id"] == SNAPSHOT_ID and run["stage"] == "assets" for run in committed_runs)
+    assert all(run["limit"] == 50 for run in committed_runs)
+    # The page completed, so the returned last run moves to the next page from the Qualys response.
+    assert set_new_limit is False
+    assert new_last_run["next_page"] == "500"
+    assert new_last_run["total_assets"] == 18
+
+
+@freeze_time("2025-01-01 00:00:00 UTC")
+def test_fetch_and_send_assets_streamed_error_after_commit_resumes_from_last_commit(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A page whose stream breaks (e.g. the socket is closed) after 3 hosts, committed every 2 hosts.
+
+    When:
+        - Calling fetch_and_send_assets_streamed.
+
+    Assert:
+        - The error does not propagate, and the response is closed.
+        - Only the committed hosts were sent (the uncommitted third host is not sent).
+        - The last commit is returned without a limit reduction, so the next fetch resumes from the next host ID.
+    """
+    last_run = {"stage": "assets", "total_assets": 10, "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
+    hosts = [_make_host(str(100 + i), 1) for i in range(3)]
+
+    def broken_stream(*_args, **_kwargs):
+        yield from hosts
+        raise requests.exceptions.ChunkedEncodingError("Connection broken")
+
+    raw_response = Mock()
+    mocker.patch.object(client, "get_host_list_detection", return_value=(raw_response, False))
+    mocker.patch("Qualysv2.iter_host_list_detections", side_effect=broken_stream)
+    mock_send = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+    mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+    mock_error = mocker.patch("Qualysv2.demisto.error")
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 2)
+
+    new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+
+    assert set_new_limit is False
+    assert mock_send.call_count == 1
+    assert [row["ID"] for row in mock_send.call_args.args[0]] == ["100", "101"]
+    assert new_last_run["next_page"] == "102"
+    assert new_last_run["total_assets"] == 12
+    assert new_last_run["snapshot_id"] == SNAPSHOT_ID
+    raw_response.close.assert_called_once()
+    assert "Connection broken" in mock_error.call_args.args[0]
+
+
+@freeze_time("2025-01-01 00:00:00 UTC")
+def test_fetch_and_send_assets_streamed_send_failure_before_commit_reduces_limit(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A page where the first send to XSIAM fails, so nothing was committed in this run.
+
+    When:
+        - Calling fetch_and_send_assets_streamed.
+
+    Assert:
+        - The error does not propagate, the last run is returned with the consecutive failures counter incremented,
+          and set_new_limit=True so the caller retries the same page with a reduced limit.
+    """
+    last_run = {"stage": "assets", "total_assets": 10, "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
+    hosts = [_make_host(str(100 + i), 1) for i in range(2)]
+
+    mocker.patch.object(client, "get_host_list_detection", return_value=(Mock(), False))
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter(hosts))
+    mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam", side_effect=DemistoException("XSIAM unavailable"))
+    mock_set_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+    mock_error = mocker.patch("Qualysv2.demisto.error")
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 2)
+
+    new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+
+    assert set_new_limit is True
+    assert new_last_run == {**last_run, "consecutive_failures": 1}
+    mock_set_last_run.assert_not_called()
+    mock_error.assert_called_once()
+
+
+@freeze_time("2025-01-01 00:00:00 UTC")
+def test_fetch_and_send_assets_streamed_last_page_divides_evenly_sends_closing_signal(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A last page of 4 hosts with 1 detection each, committed every 2 hosts (no remainder after the commits).
+
+    When:
+        - Calling fetch_and_send_assets_streamed.
+
+    Assert:
+        - Both commits are sent unsealed, then a closing signal ([{}] with total + 1) seals the snapshot.
+    """
+    last_run = {"stage": "assets", "total_assets": 10, "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
+    hosts = [_make_host(str(100 + i), 1) for i in range(4)]
+
+    mocker.patch.object(client, "get_host_list_detection", return_value=(Mock(), False))
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter(hosts))
+    mocker.patch("Qualysv2.get_next_page_from_url", return_value="")  # last page
+    mock_send = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+    mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 2)
+
+    new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+
+    assert set_new_limit is False
+    assert [call.kwargs["items_count"] for call in mock_send.call_args_list] == ["1", "1", str(14 + 1)]
+    assert mock_send.call_args_list[-1].args[0] == [{}]
+    assert new_last_run["stage"] == "vulnerabilities"
+    assert new_last_run["total_assets"] == 14
+
+
+@freeze_time("2025-01-01 00:00:00 UTC")
+def test_fetch_and_send_assets_streamed_sealing_send_failure_keeps_last_commit(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A last page of 3 hosts committed every 2 hosts, where the final (sealing) send fails.
+
+    When:
+        - Calling fetch_and_send_assets_streamed.
+
+    Assert:
+        - The error does not propagate; the last commit is returned (stage "assets", next host ID), so the next fetch
+          resumes with the uncommitted host and seals the snapshot then.
+    """
+    last_run = {"stage": "assets", "total_assets": 10, "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
+    hosts = [_make_host(str(100 + i), 1) for i in range(3)]
+
+    mocker.patch.object(client, "get_host_list_detection", return_value=(Mock(), False))
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter(hosts))
+    mocker.patch("Qualysv2.get_next_page_from_url", return_value="")  # last page
+    mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam", side_effect=[None, DemistoException("XSIAM unavailable")])
+    mock_health = mocker.patch("Qualysv2.demisto.updateModuleHealth")
+    mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+    mocker.patch("Qualysv2.demisto.error")
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 2)
+
+    new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+
+    assert set_new_limit is False
+    assert new_last_run["stage"] == "assets"
+    assert new_last_run["next_page"] == "102"
+    assert new_last_run["total_assets"] == 12
+    mock_health.assert_not_called()
+
+
+def test_fetch_and_send_assets_streamed_api_error_without_commit_reduces_limit(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A response whose Qualys error envelope is only detected at the end of the stream (before any commit).
+
+    When:
+        - Calling fetch_and_send_assets_streamed.
+
+    Assert:
+        - Nothing is sent, the error does not propagate, and set_new_limit=True with the failures counter incremented.
+    """
+    last_run = {"stage": "assets", "total_assets": 10, "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
+
+    def stream_with_api_error(*_args, **_kwargs):
+        yield _make_host("100", 1)
+        raise DemistoException("Qualys API error. Code: 999")
+
+    mocker.patch.object(client, "get_host_list_detection", return_value=(Mock(), False))
+    mocker.patch("Qualysv2.iter_host_list_detections", side_effect=stream_with_api_error)
+    mock_send = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+    mock_error = mocker.patch("Qualysv2.demisto.error")
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 2)
+
+    new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+
+    assert set_new_limit is True
+    assert new_last_run["consecutive_failures"] == 1
+    mock_send.assert_not_called()
+    assert "Code: 999" in mock_error.call_args.args[0]
+
+
+def test_fetch_and_send_assets_streamed_raises_after_max_consecutive_failures(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A last run that already failed ASSETS_MAX_CONSECUTIVE_FAILURES - 1 times in a row without progress.
+
+    When:
+        - Calling fetch_and_send_assets_streamed and the send fails again before any commit.
+
+    Assert:
+        - The error is raised (so the fetch shows as failed) and the response is still closed.
+    """
+    last_run = {
+        "stage": "assets",
+        "total_assets": 10,
+        "since_datetime": "2024-10-03",
+        "snapshot_id": SNAPSHOT_ID,
+        "consecutive_failures": Qualysv2.ASSETS_MAX_CONSECUTIVE_FAILURES - 1,
+    }
+    raw_response = Mock()
+    mocker.patch.object(client, "get_host_list_detection", return_value=(raw_response, False))
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter([_make_host("100", 1), _make_host("101", 1)]))
+    mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam", side_effect=DemistoException("XSIAM unavailable"))
+    mocker.patch("Qualysv2.demisto.error")
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 2)
+
+    with pytest.raises(DemistoException, match="failed 5 times in a row"):
+        fetch_and_send_assets_streamed(client, last_run)
+
+    raw_response.close.assert_called_once()
+
+
+@freeze_time("2025-01-01 00:00:00 UTC")
+def test_fetch_and_send_assets_streamed_commit_resets_consecutive_failures(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A last run with previous consecutive failures, and a page that commits before failing.
+
+    When:
+        - Calling fetch_and_send_assets_streamed.
+
+    Assert:
+        - The returned commit has no failures counter (progress resets it), and no limit reduction is requested.
+    """
+    last_run = {
+        "stage": "assets",
+        "total_assets": 10,
+        "since_datetime": "2024-10-03",
+        "snapshot_id": SNAPSHOT_ID,
+        "consecutive_failures": 3,
+    }
+
+    def broken_stream(*_args, **_kwargs):
+        yield from [_make_host("100", 1), _make_host("101", 1), _make_host("102", 1)]
+        raise requests.exceptions.ChunkedEncodingError("Connection broken")
+
+    mocker.patch.object(client, "get_host_list_detection", return_value=(Mock(), False))
+    mocker.patch("Qualysv2.iter_host_list_detections", side_effect=broken_stream)
+    mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+    mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+    mocker.patch("Qualysv2.demisto.error")
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 2)
+
+    new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+
+    assert set_new_limit is False
+    assert "consecutive_failures" not in new_last_run
+    assert new_last_run["next_page"] == "102"
+
+
+def test_fetch_assets_and_vulnerabilities_by_date_halves_limit_and_keeps_failures_counter(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - The "assets" stage where the streamed fetch failed before any commit and incremented the failures counter.
+
+    When:
+        - Calling fetch_assets_and_vulnerabilities_by_date (the orchestrator).
+
+    Assert:
+        - The saved last run has the halved limit and keeps the incremented failures counter.
+    """
+    last_run = {"stage": "assets", "total_assets": 10, "snapshot_id": SNAPSHOT_ID, "limit": HOST_LIMIT}
+    failed_run = {**last_run, "consecutive_failures": 2}
+
+    mocker.patch("Qualysv2.fetch_and_send_assets_streamed", return_value=(failed_run, True))
+    mock_set_assets_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+
+    fetch_assets_and_vulnerabilities_by_date(client, last_run)
+
+    saved_last_run = mock_set_assets_last_run.call_args.args[0]
+    assert saved_last_run["limit"] == HOST_LIMIT // 2
+    assert saved_last_run["consecutive_failures"] == 2
+
+
+@freeze_time("2025-01-01 00:00:00 UTC")
+def test_fetch_and_send_assets_streamed_host_without_id_does_not_commit(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A page where the host completing a commit group has no ID, followed by a host with an ID.
+
+    When:
+        - Calling fetch_and_send_assets_streamed with commits every 2 hosts.
+
+    Assert:
+        - The commit is deferred to the next host with an ID, so the cursor is always a valid host ID + 1.
+    """
+    last_run = {"stage": "assets", "total_assets": 0, "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
+    host_without_id = _make_host("101", 1)
+    host_without_id.pop("ID")
+    hosts = [_make_host("100", 1), host_without_id, _make_host("102", 1)]
+
+    mocker.patch.object(client, "get_host_list_detection", return_value=(Mock(), False))
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter(hosts))
+    mocker.patch("Qualysv2.get_next_page_from_url", return_value="500")
+    mock_send = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+    mock_set_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 2)
+
+    fetch_and_send_assets_streamed(client, last_run)
+
+    mock_set_last_run.assert_called_once()
+    assert mock_set_last_run.call_args.args[0]["next_page"] == "103"
+    assert len(mock_send.call_args_list[0].args[0]) == 3  # all 3 hosts sent in the deferred commit
+
+
+def test_fetch_assets_and_vulnerabilities_by_date_saves_last_commit_after_mid_page_error(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - The "assets" stage where the streamed fetch failed mid-page after a commit (set_new_limit=False).
+
+    When:
+        - Calling fetch_assets_and_vulnerabilities_by_date (the orchestrator).
+
+    Assert:
+        - The committed last run is saved as-is (no limit reduction), so the next fetch resumes from it.
+    """
+    last_run = {"stage": "assets", "total_assets": 10, "snapshot_id": SNAPSHOT_ID, "limit": HOST_LIMIT}
+    committed_run = {**last_run, "next_page": "102", "total_assets": 12}
+
+    mocker.patch("Qualysv2.fetch_and_send_assets_streamed", return_value=(committed_run, False))
+    mock_set_assets_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+
+    fetch_assets_and_vulnerabilities_by_date(client, last_run)
+
+    mock_set_assets_last_run.assert_called_once_with(committed_run)
 
 
 @freeze_time("2025-01-01 00:00:00 UTC")
@@ -2096,11 +2446,10 @@ def test_fetch_and_send_assets_streamed_not_last_page_keeps_unsealed(mocker: Moc
           and the returned last run continues the "assets" stage with the next page.
     """
     last_run = {"stage": "assets", "total_assets": 10, "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
-    expected_assets = [{"ID": f"a{i}", "DETECTION": {"FIRST_FOUND_DATETIME": "2025-01-01T00:00:00Z"}} for i in range(3)]
+    hosts = [_make_host(str(100 + i), 1) for i in range(3)]
 
     mocker.patch.object(client, "get_host_list_detection", return_value=(Mock(), False))
-    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter([]))
-    mocker.patch("Qualysv2.iter_detections_from_hosts", return_value=iter(expected_assets))
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter(hosts))
     mocker.patch("Qualysv2.get_next_page_from_url", return_value="42")  # has next page
     mock_send = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
     mock_health = mocker.patch("Qualysv2.demisto.updateModuleHealth")
@@ -2135,7 +2484,6 @@ def test_fetch_and_send_assets_streamed_empty_last_page(mocker: MockerFixture, c
 
     mocker.patch.object(client, "get_host_list_detection", return_value=(Mock(), False))
     mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter([]))
-    mocker.patch("Qualysv2.iter_detections_from_hosts", return_value=iter([]))
     mocker.patch("Qualysv2.get_next_page_from_url", return_value="")  # last page
     mock_send = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
 
