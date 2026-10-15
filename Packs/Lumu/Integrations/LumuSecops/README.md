@@ -52,6 +52,101 @@ Gets a paginated list of all the labels created for the company and its details 
 | LumuSecops.RetrieveLabels.paginationInfo.next | Number | The next page. | 
 | LumuSecops.RetrieveLabels.paginationInfo.prev | Number | The previous page. | 
 
+#### Command example
+
+```!lumusecops-retrieve-labels```
+
+#### Context Example
+
+```json
+{
+    "LumuSecops": {
+        "RetrieveLabels": {
+            "labels": [
+                {
+                    "id": 51,
+                    "name": "Mi Ofi",
+                    "relevance": 1
+                },
+                {
+                    "id": 112,
+                    "name": "Lab1",
+                    "relevance": 1
+                },
+                {
+                    "id": 113,
+                    "name": "Lab2",
+                    "relevance": 1
+                },
+                {
+                    "id": 134,
+                    "name": "cd test",
+                    "relevance": 1
+                },
+                {
+                    "id": 147,
+                    "name": "cd",
+                    "relevance": 1
+                },
+                {
+                    "id": 173,
+                    "name": "VA 3.1.2 Test",
+                    "relevance": 1
+                },
+                {
+                    "id": 218,
+                    "name": "acastaneda",
+                    "relevance": 1
+                },
+                {
+                    "id": 227,
+                    "name": "VA 1.3.3 Label",
+                    "relevance": 1
+                },
+                {
+                    "id": 280,
+                    "name": "client test",
+                    "relevance": 1
+                },
+                {
+                    "id": 331,
+                    "name": "VA 3.1.3",
+                    "relevance": 1
+                }
+            ],
+            "paginationInfo": {
+                "items": 10,
+                "next": 2,
+                "page": 1
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Labels
+>
+>| Id  | Name           | Relevance |
+>| --- | -------------- | --------- |
+>| 51  | Mi Ofi         | 1         |
+>| 112 | Lab1           | 1         |
+>| 113 | Lab2           | 1         |
+>| 134 | cd test        | 1         |
+>| 147 | cd             | 1         |
+>| 173 | VA 3.1.2 Test  | 1         |
+>| 218 | acastaneda     | 3         |
+>| 227 | VA 1.3.3 Label | 1         |
+>| 280 | client test    | 1         |
+>| 331 | VA 3.1.3       | 1         |
+>
+>### paginationInfo
+>
+>|Items|Next|Page|
+>|---|---|---|
+>| 10 | 2 | 1 |
+
 ### lumusecops-retrieve-a-specific-label
 
 ***
@@ -74,6 +169,32 @@ Gets details such as id, name and business relevance from a specific label.
 | LumuSecops.RetrieveASpecificLabel.id | Number | The label ID. | 
 | LumuSecops.RetrieveASpecificLabel.name | String | The label name. | 
 | LumuSecops.RetrieveASpecificLabel.relevance | Number | The label relevance. | 
+
+#### Command example
+
+```!lumusecops-retrieve-a-specific-label label_id=51```
+
+#### Context Example
+
+```json
+{
+    "LumuSecops": {
+        "RetrieveASpecificLabel": {
+            "id": 51,
+            "name": "Mi Ofi",
+            "relevance": 1
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Label
+>
+>|Id|Name|Relevance|
+>|---|---|---|
+>| 51 | Mi Ofi | 1 |
 
 ### lumusecops-get-all-incidents
 
@@ -472,6 +593,27 @@ Marks an incident as read.
 | LumuSecops.MarkIncidentAsRead.statusCode | Number | The HTTP-like status code. | 
 | LumuSecops.MarkIncidentAsRead.message | String | The operation result message. | 
 
+#### Command example
+
+```!lumusecops-mark-incident-as-read incident_id=17379140-c8a6-11f1-9a05-eba7016fc3f9```
+
+#### Context Example
+
+```json
+{
+    "LumuSecops": {
+        "MarkIncidentAsRead": {
+            "response": "Incident marked as read successfully. Visit Lumu",
+            "statusCode": 200
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Incident marked as read successfully. Visit Lumu
+
 ### lumusecops-begin-incident-work
 
 ***
@@ -493,6 +635,27 @@ Begins work on an incident.
 | --- | --- | --- |
 | LumuSecops.BeginIncidentWork.statusCode | Number | The HTTP-like status code. | 
 | LumuSecops.BeginIncidentWork.message | String | The operation result message. | 
+
+#### Command example
+
+```!lumusecops-begin-incident-work incident_id=17379140-c8a6-11f1-9a05-eba7016fc3f9```
+
+#### Context Example
+
+```json
+{
+    "LumuSecops": {
+        "BeginIncidentWork": {
+            "response": "Incident work started successfully. Visit Lumu",
+            "statusCode": 200
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Incident work started successfully. Visit Lumu
 
 ### lumusecops-comment-incident
 
@@ -517,6 +680,27 @@ Adds a comment to an incident.
 | LumuSecops.CommentIncident.statusCode | Number | The HTTP-like status code. | 
 | LumuSecops.CommentIncident.message | String | The operation result message. | 
 
+#### Command example
+
+```!lumusecops-comment-incident incident_id=17379140-c8a6-11f1-9a05-eba7016fc3f9 comment="test comment"```
+
+#### Context Example
+
+```json
+{
+    "LumuSecops": {
+        "CommentIncident": {
+            "response": "Comment added successfully. Visit Lumu",
+            "statusCode": 200
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Comment added successfully. Visit Lumu
+
 ### lumusecops-mute-incident
 
 ***
@@ -539,6 +723,27 @@ Mutes an incident.
 | --- | --- | --- |
 | LumuSecops.MuteIncident.statusCode | Number | The HTTP-like status code. | 
 | LumuSecops.MuteIncident.message | String | The operation result message. | 
+
+#### Command example
+
+```!lumusecops-mute-incident incident_id=17379140-c8a6-11f1-9a05-eba7016fc3f9 comment="manual test"```
+
+#### Context Example
+
+```json
+{
+    "LumuSecops": {
+        "MuteIncident": {
+            "response": "Incident muted successfully. Visit Lumu",
+            "statusCode": 200
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Incident muted successfully. Visit Lumu
 
 ### lumusecops-unmute-incident
 
@@ -563,6 +768,27 @@ Unmutes an incident.
 | LumuSecops.UnmuteIncident.statusCode | Number | The HTTP-like status code. | 
 | LumuSecops.UnmuteIncident.message | String | The operation result message. | 
 
+#### Command example
+
+```!lumusecops-unmute-incident incident_id=17379140-c8a6-11f1-9a05-eba7016fc3f9 comment="manual test"```
+
+#### Context Example
+
+```json
+{
+    "LumuSecops": {
+        "UnmuteIncident": {
+            "response": "Incident unmuted successfully. Visit Lumu",
+            "statusCode": 200
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Incident unmuted successfully. Visit Lumu
+
 ### lumusecops-close-incident
 
 ***
@@ -585,6 +811,27 @@ Closes an incident.
 | --- | --- | --- |
 | LumuSecops.CloseIncident.statusCode | Number | The HTTP-like status code. | 
 | LumuSecops.CloseIncident.message | String | The operation result message. | 
+
+#### Command example
+
+```!lumusecops-close-incident incident_id=17379140-c8a6-11f1-9a05-eba7016fc3f9 comment="manual test"```
+
+#### Context Example
+
+```json
+{
+    "LumuSecops": {
+        "CloseIncident": {
+            "response": "Incident closed successfully. Visit Lumu",
+            "statusCode": 200
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Incident closed successfully. Visit Lumu
 
 ### lumusecops-consult-incidents-updates
 
