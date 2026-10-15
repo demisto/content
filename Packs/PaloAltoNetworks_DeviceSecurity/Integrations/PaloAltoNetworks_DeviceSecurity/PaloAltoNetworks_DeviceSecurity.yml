@@ -24,7 +24,7 @@ configuration:
   required: true
 - section: Connect
   name: client_secret
-  type: 9
+  type: 4
   required: true
   displaypassword: Client Secret
   hiddenusername: true

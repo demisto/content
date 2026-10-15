@@ -57,11 +57,10 @@ def test_incident_links_use_production_environment() -> None:
     )
 
 
-@pytest.mark.parametrize("client_secret", ["test-secret", {"identifier": "", "password": "test-secret"}])
-def test_main_routes_authentication_and_api(mocker: MockerFixture, client_secret: Any) -> None:
+def test_main_routes_authentication_and_api(mocker: MockerFixture) -> None:
     from PaloAltoNetworks_DeviceSecurity import main
 
-    mocker.patch("PaloAltoNetworks_DeviceSecurity.demisto.params", return_value={"client_secret": client_secret})
+    mocker.patch("PaloAltoNetworks_DeviceSecurity.demisto.params", return_value={"client_secret": "test-secret"})
     mocker.patch("PaloAltoNetworks_DeviceSecurity.demisto.args", return_value={})
     mocker.patch("PaloAltoNetworks_DeviceSecurity.demisto.command", return_value="test-module")
     token_mock = mocker.patch("PaloAltoNetworks_DeviceSecurity.get_scm_access_token", return_value="test-token")
@@ -76,8 +75,8 @@ def test_main_routes_authentication_and_api(mocker: MockerFixture, client_secret
     assert client_mock.call_args.kwargs["base_url"] == "https://api.strata.paloaltonetworks.com/iot/pub/v1"
 
 
-@pytest.mark.parametrize("client_secret", [None, "", {}, {"password": ""}, {"identifier": "secret"}])
-def test_main_rejects_missing_client_secret(mocker: MockerFixture, client_secret: Any) -> None:
+@pytest.mark.parametrize("client_secret", [None, ""])
+def test_main_rejects_missing_client_secret(mocker: MockerFixture, client_secret: str | None) -> None:
     from PaloAltoNetworks_DeviceSecurity import main
 
     mocker.patch("PaloAltoNetworks_DeviceSecurity.demisto.params", return_value={"client_secret": client_secret})
