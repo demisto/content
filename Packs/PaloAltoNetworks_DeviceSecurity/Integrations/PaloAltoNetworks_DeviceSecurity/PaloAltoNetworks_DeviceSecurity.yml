@@ -23,6 +23,7 @@ configuration:
   type: 0
   required: true
 - section: Connect
+  display: Client Secret
   name: client_secret
   type: 4
   required: true
