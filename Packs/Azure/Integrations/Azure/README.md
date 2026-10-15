@@ -1885,7 +1885,7 @@ Creates a virtual machine instance with the specified OS image. Required permiss
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group to which the new virtual machine will belong. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group to which the new virtual machine will belong. | Required |
 | virtual_machine_name | The name of the virtual machine to create. | Required |
 | virtual_machine_location | The location in which to create the virtual machine. Possible values are: westus2, westus, westindia, westeurope, westcentralus, uksouth, ukwest, southeastasia, northcentralus, northeurope, southcentralus, southindia, francesouth, francecentral, japaneast, japanwest, koreacentral, koreasouth, brazilsouth, canadacentral, canadaeast, centralindia, eastus2, eastasia, centralus, eastus, australiacentral, australiacentral2, australiaeast, australiasoutheast. | Required |
 | nic_name | The name of the Network Interface to link the virtual machine. Note that the virtual machine's location property must match that of the Network Interface to which it is linked. | Required |
@@ -1907,12 +1907,46 @@ Creates a virtual machine instance with the specified OS image. Required permiss
 | Azure.Compute.VirtualMachines.type | String | The type of the virtual machine. |
 | Azure.Compute.VirtualMachines.location | String | The location of the virtual machine. |
 | Azure.Compute.VirtualMachines.tags | Unknown | The tags of the virtual machine. |
+| Azure.Compute.VirtualMachines.etag | String | The ETag of the virtual machine, used to prevent overwriting concurrent updates. |
+| Azure.Compute.VirtualMachines.extendedLocation | Unknown | The extended location of the virtual machine. |
+| Azure.Compute.VirtualMachines.identity | Unknown | The identity of the virtual machine, if configured. |
+| Azure.Compute.VirtualMachines.managedBy | String | The ARM resource ID of the Virtual Machine Scale Set \(VMSS\) that manages the virtual machine, if applicable. |
+| Azure.Compute.VirtualMachines.placement | Unknown | The user-defined constraints for virtual machine hardware placement. This property cannot be changed once the virtual machine is provisioned. |
+| Azure.Compute.VirtualMachines.plan | Unknown | The information about the marketplace image used to create the virtual machine. |
+| Azure.Compute.VirtualMachines.plan.name | String | The plan name. |
+| Azure.Compute.VirtualMachines.plan.publisher | String | The publisher of the plan. |
+| Azure.Compute.VirtualMachines.plan.product | String | The product of the plan. |
+| Azure.Compute.VirtualMachines.plan.promotionCode | String | The promotion code of the plan. |
+| Azure.Compute.VirtualMachines.systemData | Unknown | The Azure Resource Manager metadata containing the createdBy and modifiedBy information. |
+| Azure.Compute.VirtualMachines.zones | Unknown | The availability zones of the virtual machine. |
+| Azure.Compute.VirtualMachines.resources | Unknown | The virtual machine child extension resources. |
 | Azure.Compute.VirtualMachines.properties.vmId | String | The unique ID of the virtual machine. |
 | Azure.Compute.VirtualMachines.properties.provisioningState | String | The provisioning state, which only appears in the response. |
+| Azure.Compute.VirtualMachines.properties.timeCreated | Date | The time when the virtual machine was created. |
 | Azure.Compute.VirtualMachines.properties.hardwareProfile | Unknown | The hardware settings for the virtual machine. |
 | Azure.Compute.VirtualMachines.properties.storageProfile | Unknown | The storage settings for the virtual machine disks. |
 | Azure.Compute.VirtualMachines.properties.osProfile | Unknown | The operating system settings for the virtual machine. |
 | Azure.Compute.VirtualMachines.properties.networkProfile | Unknown | The network interfaces of the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.additionalCapabilities | Unknown | The additional capabilities enabled or disabled on the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.securityProfile | Unknown | The security settings for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.diagnosticsProfile | Unknown | The boot diagnostic settings state. |
+| Azure.Compute.VirtualMachines.properties.availabilitySet | Unknown | The availability set that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.virtualMachineScaleSet | Unknown | The virtual machine scale set that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.proximityPlacementGroup | Unknown | The proximity placement group that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.scheduledEventsPolicy | Unknown | The Redeploy, Reboot, and ScheduledEventsAdditionalPublishingTargets Scheduled Event related configurations for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.scheduledEventsProfile | Unknown | The scheduled event related configurations. |
+| Azure.Compute.VirtualMachines.properties.priority | String | The priority for the virtual machine. Possible values are Regular, Low, or Spot. |
+| Azure.Compute.VirtualMachines.properties.evictionPolicy | String | The eviction policy for the Azure Spot virtual machine. Possible values are Deallocate or Delete. |
+| Azure.Compute.VirtualMachines.properties.billingProfile | Unknown | The billing related details of an Azure Spot virtual machine. |
+| Azure.Compute.VirtualMachines.properties.host | Unknown | The dedicated host that the virtual machine resides in. |
+| Azure.Compute.VirtualMachines.properties.hostGroup | Unknown | The dedicated host group that the virtual machine resides in. |
+| Azure.Compute.VirtualMachines.properties.licenseType | String | The license type for the bring your own license scenario. |
+| Azure.Compute.VirtualMachines.properties.extensionsTimeBudget | String | The time allotted for all extensions to start, in ISO 8601 format. |
+| Azure.Compute.VirtualMachines.properties.platformFaultDomain | Number | The scale set logical fault domain into which the virtual machine is created. |
+| Azure.Compute.VirtualMachines.properties.userData | String | The user data for the virtual machine, which must be base-64 encoded. |
+| Azure.Compute.VirtualMachines.properties.capacityReservation | Unknown | The capacity reservation related details of the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.applicationProfile | Unknown | The gallery applications that should be made available to the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.instanceView | Unknown | The virtual machine instance view. |
 
 ### azure-compute-vm-delete
 
@@ -1928,7 +1962,7 @@ Deallocates and deletes a specified virtual machine. Required permissions: Micro
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group to which the virtual machine belongs. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group to which the virtual machine belongs. | Required |
 | virtual_machine_name | The name of the virtual machine to delete. To see all the virtual machines with their associated names for a specific resource group, run the azure-compute-vm-list command. | Required |
 
 #### Context Output
@@ -2486,7 +2520,7 @@ Creates a virtual machine network interface. Required permissions: Microsoft.Net
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group to which the new network interface will belong. Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group to which the new network interface will belong. | Required |
 | nic_name | The network interface name. | Required |
 | nic_location | The location in which to create the network interface. Possible values are: westus2, westus, westindia, westeurope, westcentralus, uksouth, ukwest, southeastasia, northcentralus, northeurope, southcentralus, southindia, francesouth, francecentral, japaneast, japanwest, koreacentral, koreasouth, brazilsouth, canadacentral, canadaeast, centralindia, eastus2, eastasia, centralus, eastus, australiacentral, australiacentral2, australiaeast, australiasoutheast. | Required |
 | vnet_name | The name of the virtual network of the network interface. | Required |

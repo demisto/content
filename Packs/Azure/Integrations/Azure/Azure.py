@@ -566,6 +566,7 @@ SQL_DB_API_VERSION = "2021-11-01"
 COSMOS_DB_API_VERSION = "2024-11-15"
 PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
+NETWORK_INTERFACE_API_VERSION = "2026-01-01"
 NSG_API_VERSION = "2025-01-01"
 # Application Gateway and Front Door WAF policies are served by two separate resource providers,
 # each with its own independently released API version, so these two versions intentionally differ.
@@ -2919,7 +2920,7 @@ class AzureClient:
             return self.http_request(
                 method="PUT",
                 full_url=full_url,
-                params={"api-version": "2023-05-01"},
+                params={"api-version": NETWORK_INTERFACE_API_VERSION},
                 json_data=network_interface_data,
             )
         except Exception as e:

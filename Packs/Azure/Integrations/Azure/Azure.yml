@@ -12311,9 +12311,8 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group to which the new virtual machine will belong. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-      required: false
-      required:platform: true
+      description: The name of the resource group to which the new virtual machine will belong.
+      required: true
     - name: virtual_machine_name
       description: The name of the virtual machine to create.
       required: true
@@ -12426,12 +12425,54 @@ script:
       - contextPath: Azure.Compute.VirtualMachines.tags
         description: The tags of the virtual machine.
         type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.etag
+        description: The ETag of the virtual machine, used to prevent overwriting concurrent updates.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.extendedLocation
+        description: The extended location of the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.identity
+        description: The identity of the virtual machine, if configured.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.managedBy
+        description: The ARM resource ID of the Virtual Machine Scale Set (VMSS) that manages the virtual machine, if applicable.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.placement
+        description: The user-defined constraints for virtual machine hardware placement. This property cannot be changed once the virtual machine is provisioned.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.plan
+        description: The information about the marketplace image used to create the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.plan.name
+        description: The plan name.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.plan.publisher
+        description: The publisher of the plan.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.plan.product
+        description: The product of the plan.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.plan.promotionCode
+        description: The promotion code of the plan.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.systemData
+        description: The Azure Resource Manager metadata containing the createdBy and modifiedBy information.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.zones
+        description: The availability zones of the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.resources
+        description: The virtual machine child extension resources.
+        type: Unknown
       - contextPath: Azure.Compute.VirtualMachines.properties.vmId
         description: The unique ID of the virtual machine.
         type: String
       - contextPath: Azure.Compute.VirtualMachines.properties.provisioningState
         description: The provisioning state, which only appears in the response.
         type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.timeCreated
+        description: The time when the virtual machine was created.
+        type: Date
       - contextPath: Azure.Compute.VirtualMachines.properties.hardwareProfile
         description: The hardware settings for the virtual machine.
         type: Unknown
@@ -12444,6 +12485,66 @@ script:
       - contextPath: Azure.Compute.VirtualMachines.properties.networkProfile
         description: The network interfaces of the virtual machine.
         type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.additionalCapabilities
+        description: The additional capabilities enabled or disabled on the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.securityProfile
+        description: The security settings for the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.diagnosticsProfile
+        description: The boot diagnostic settings state.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.availabilitySet
+        description: The availability set that the virtual machine is in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.virtualMachineScaleSet
+        description: The virtual machine scale set that the virtual machine is in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.proximityPlacementGroup
+        description: The proximity placement group that the virtual machine is in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.scheduledEventsPolicy
+        description: The Redeploy, Reboot, and ScheduledEventsAdditionalPublishingTargets Scheduled Event related configurations for the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.scheduledEventsProfile
+        description: The scheduled event related configurations.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.priority
+        description: The priority for the virtual machine. Possible values are Regular, Low, or Spot.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.evictionPolicy
+        description: The eviction policy for the Azure Spot virtual machine. Possible values are Deallocate or Delete.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.billingProfile
+        description: The billing related details of an Azure Spot virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.host
+        description: The dedicated host that the virtual machine resides in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.hostGroup
+        description: The dedicated host group that the virtual machine resides in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.licenseType
+        description: The license type for the bring your own license scenario.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.extensionsTimeBudget
+        description: The time allotted for all extensions to start, in ISO 8601 format.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.platformFaultDomain
+        description: The scale set logical fault domain into which the virtual machine is created.
+        type: Number
+      - contextPath: Azure.Compute.VirtualMachines.properties.userData
+        description: The user data for the virtual machine, which must be base-64 encoded.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.capacityReservation
+        description: The capacity reservation related details of the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.applicationProfile
+        description: The gallery applications that should be made available to the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.instanceView
+        description: The virtual machine instance view.
+        type: Unknown
   - name: azure-compute-vm-delete
     description: "Deallocates and deletes a specified virtual machine. Required permissions: Microsoft.Compute/virtualMachines/deallocate/action, Microsoft.Compute/virtualMachines/delete."
     execution: true
@@ -12453,9 +12554,8 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group to which the virtual machine belongs. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-      required: false
-      required:platform: true
+      description: The name of the resource group to which the virtual machine belongs.
+      required: true
     - name: virtual_machine_name
       description: The name of the virtual machine to delete. To see all the virtual machines with their associated names for a specific resource group, run the azure-compute-vm-list command.
       required: true
@@ -12468,9 +12568,8 @@ script:
       required: false
       required:platform: true
     - name: resource_group_name
-      description: The name of the resource group to which the new network interface will belong. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-      required: false
-      required:platform: true
+      description: The name of the resource group to which the new network interface will belong.
+      required: true
     - name: nic_name
       description: The network interface name.
       required: true
