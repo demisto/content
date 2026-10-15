@@ -895,16 +895,14 @@ Run a shell command on one or more Elastic Defend endpoints.
     "Elasticsearch": {
         "Kibana": {
             "EndpointExecuteCommandAction": {
-                "data": {
-                    "id": "action-1",
-                    "agents": ["agent-1"],
-                    "agentType": "endpoint",
-                    "command": "execute",
-                    "parameters": {"command": "ls -al", "timeout": 600},
-                    "isComplete": false,
-                    "status": "pending",
-                    "wasSuccessful": false
-                }
+                "id": "action-1",
+                "agents": ["agent-1"],
+                "agentType": "endpoint",
+                "command": "execute",
+                "parameters": {"command": "ls -al", "timeout": 600},
+                "isComplete": false,
+                "status": "pending",
+                "wasSuccessful": false
             }
         }
     }
@@ -967,16 +965,14 @@ Retrieve the details of a response action by its ID.
     "Elasticsearch": {
         "Kibana": {
             "EndpointGetActionDetails": {
-                "data": {
-                    "id": "action-1",
-                    "agents": ["agent-1"],
-                    "agentType": "endpoint",
-                    "command": "execute",
-                    "parameters": {"command": "ls -al", "timeout": 600},
-                    "isComplete": true,
-                    "status": "completed",
-                    "wasSuccessful": true
-                }
+                "id": "action-1",
+                "agents": ["agent-1"],
+                "agentType": "endpoint",
+                "command": "execute",
+                "parameters": {"command": "ls -al", "timeout": 600},
+                "isComplete": true,
+                "status": "completed",
+                "wasSuccessful": true
             }
         }
     }
@@ -1131,6 +1127,7 @@ Isolate an endpoint from the network. The endpoint remains isolated until it's r
 | Elasticsearch.Kibana.EndpointIsolationAction.completedAt | String | The response action completion time. |
 | Elasticsearch.Kibana.EndpointIsolationAction.createdBy | String | The user who created the response action. |
 | Elasticsearch.Kibana.EndpointIsolationAction.hosts | Unknown | The host names associated with the agent IDs. |
+| Elasticsearch.Kibana.EndpointIsolationAction.id | String | The response action ID. |
 | Elasticsearch.Kibana.EndpointIsolationAction.isComplete | Boolean | Whether the response action is complete. |
 | Elasticsearch.Kibana.EndpointIsolationAction.isExpired | Boolean | Whether the response action is expired. |
 | Elasticsearch.Kibana.EndpointIsolationAction.outputs | Unknown | The response action outputs for each agent ID. |
@@ -1150,15 +1147,13 @@ Isolate an endpoint from the network. The endpoint remains isolated until it's r
     "Elasticsearch": {
         "Kibana": {
             "EndpointIsolationAction": {
-                "action": "action-1",
-                "data": {
-                    "agents": ["endpoint-1", "endpoint-2"],
-                    "agentType": "endpoint",
-                    "command": "isolate",
-                    "isComplete": false,
-                    "status": "pending",
-                    "wasSuccessful": false
-                }
+                "id": "action-1",
+                "agents": ["endpoint-1", "endpoint-2"],
+                "agentType": "endpoint",
+                "command": "isolate",
+                "isComplete": false,
+                "status": "pending",
+                "wasSuccessful": false
             }
         }
     }
@@ -1204,6 +1199,7 @@ Release an isolated endpoint so it can rejoin the network.
 | Elasticsearch.Kibana.EndpointUnisolationAction.completedAt | String | The response action completion time. |
 | Elasticsearch.Kibana.EndpointUnisolationAction.createdBy | String | The user who created the action. |
 | Elasticsearch.Kibana.EndpointUnisolationAction.hosts | Unknown | Host names associated with the agents. |
+| Elasticsearch.Kibana.EndpointUnisolationAction.id | String | The response action ID. |
 | Elasticsearch.Kibana.EndpointUnisolationAction.isComplete | Boolean | Whether the action is complete. |
 | Elasticsearch.Kibana.EndpointUnisolationAction.isExpired | Boolean | Whether the action is expired. |
 | Elasticsearch.Kibana.EndpointUnisolationAction.outputs | Unknown | Outputs for each agent. |
@@ -1223,15 +1219,13 @@ Release an isolated endpoint so it can rejoin the network.
     "Elasticsearch": {
         "Kibana": {
             "EndpointUnisolationAction": {
-                "action": "action-2",
-                "data": {
-                    "agents": ["endpoint-1", "endpoint-2"],
-                    "agentType": "endpoint",
-                    "command": "unisolate",
-                    "isComplete": true,
-                    "status": "completed",
-                    "wasSuccessful": true
-                }
+                "id": "action-1",
+                "agents": ["endpoint-1", "endpoint-2"],
+                "agentType": "endpoint",
+                "command": "unisolate",
+                "isComplete": true,
+                "status": "completed",
+                "wasSuccessful": true
             }
         }
     }

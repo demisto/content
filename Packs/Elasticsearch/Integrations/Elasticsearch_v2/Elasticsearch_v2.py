@@ -2665,13 +2665,17 @@ def update_http_body(
     body: Dict[str, Any], args: Dict[str, Any], array_fields: Set[str], string_fields: Set[str]
 ) -> Dict[str, Any]:
     """Updates the HTTP body with array and string fields from the arguments."""
+    updated_body = body.copy()
+
     for field in array_fields:
         if args.get(field):
-            body[field] = argToList(args[field])
+            updated_body[field] = argToList(args[field])
+
     for field in string_fields:
         if args.get(field):
-            body[field] = args[field]
-    return body
+            updated_body[field] = args[field]
+
+    return updated_body
 
 
 """KIBANA SECURITY ELASTIC ENDPOINT MANAGEMENT COMMANDS"""

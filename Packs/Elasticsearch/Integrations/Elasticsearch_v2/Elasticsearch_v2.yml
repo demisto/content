@@ -1622,6 +1622,9 @@ script:
     - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.hosts
       description: The host names associated with the agent IDs.
       type: Unknown
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.id
+      description: The response action ID.
+      type: String
     - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.isComplete
       description: Whether the response action is complete.
       type: Boolean
@@ -1692,6 +1695,9 @@ script:
     - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.hosts
       description: The host names associated with the agent IDs.
       type: Unknown
+    - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.id
+      description: The response action ID.
+      type: String
     - contextPath: Elasticsearch.Kibana.EndpointUnisolationAction.isComplete
       description: Whether the response action is complete.
       type: Boolean

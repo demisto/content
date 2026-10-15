@@ -1446,18 +1446,18 @@ def test_search_command_with_query_esql(mocker):
 
 
 def test_update_http_body():
-    import Elasticsearch_v2
+    original_body = {"endpoint_ids": ["agent-1"]}
 
-    body = {"endpoint_ids": ["agent-1"]}
     result = Elasticsearch_v2.update_http_body(
-        body,
+        original_body,
         {"alert_ids": "alert-1,alert-2", "comment": "investigation", "agent_type": ""},
         array_fields={"alert_ids", "case_ids"},
         string_fields={"agent_type", "comment"},
     )
 
-    assert result is body
-    assert body == {
+    assert result is not original_body
+    assert original_body == {"endpoint_ids": ["agent-1"]}
+    assert result == {
         "endpoint_ids": ["agent-1"],
         "alert_ids": ["alert-1", "alert-2"],
         "comment": "investigation",
