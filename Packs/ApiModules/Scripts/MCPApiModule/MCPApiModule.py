@@ -428,6 +428,46 @@ class OAuthHandler:
 # --- Client Class (MCP and Authentication Orchestration) ---
 
 
+def _flatten_nullable_type(schema: dict[str, Any]) -> None:
+    """Replace a list-valued JSON Schema "type" such as ["string", "null"] with its first non-null entry.
+
+    A type list that holds only "null" is removed. Any other form (a plain string, anyOf, oneOf) is left alone.
+    """
+    declared = schema.get("type")
+    if not isinstance(declared, list):
+        return
+    concrete = next((entry for entry in declared if isinstance(entry, str) and entry != "null"), None)
+    if concrete:
+        schema["type"] = concrete
+    else:
+        schema.pop("type", None)
+
+
+def normalize_tool_schemas(tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Make the list-tools output readable by the platform's MCP tool discovery. Modifies the tools in place.
+
+    The platform reads every property "type" as a single string, so one nullable type such as ["string", "null"]
+    makes it drop the whole server's tool list. It also rejects an output property that has no description.
+    Only these two cases are changed; schemas the platform already reads are returned as they are.
+    """
+    for tool in tools:
+        for schema_key in ("inputSchema", "outputSchema"):
+            schema = tool.get(schema_key)
+            if not isinstance(schema, dict):
+                continue
+            _flatten_nullable_type(schema)
+            properties = schema.get("properties")
+            if not isinstance(properties, dict):
+                continue
+            for name, prop in properties.items():
+                if not isinstance(prop, dict):
+                    continue
+                _flatten_nullable_type(prop)
+                if schema_key == "outputSchema" and not prop.get("description"):
+                    prop["description"] = prop.get("title") or name
+    return tools
+
+
 class Client:
     """
     Client for interacting with the MCP server, responsible for:
@@ -600,7 +640,7 @@ class Client:
 
         # by_alias keeps the camelCase wire names (inputSchema, not input_schema).
         tools_dump = tools.model_dump(mode="json", by_alias=True)
-        outputs = {"server_name": server_name, "Tools": tools_dump.get("tools", [])}
+        outputs = {"server_name": server_name, "Tools": normalize_tool_schemas(tools_dump.get("tools", []))}
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix="ListTools",
