@@ -647,7 +647,7 @@ def minute_cycles(start_minute: int, count: int) -> list[str]:
 
 
 class TestEventsLookback:
-    """Events re-read the last 10 minutes every cycle and are deduplicated against earlier cycles."""
+    """Events re-read the last 11 minutes every cycle and are deduplicated against earlier cycles."""
 
     def test_late_indexed_event_is_collected_once(self, mock_client, mocker):
         """An event indexed 3 minutes late, behind events we already sent, is still collected - once."""
@@ -661,15 +661,24 @@ class TestEventsLookback:
         assert dict(sent) == {"on-time": 1, "late": 1, "after": 1}
 
     def test_query_reads_lookback_window_up_to_now(self, mock_client, mocker):
-        """Each cycle queries from now - 10 minutes up to now, not up to now - 10 minutes."""
+        """Each cycle queries from now - 11 minutes up to now, not up to now - 11 minutes."""
         api = FakeHalcyonEventsApi()
-        api.add("fresh", "2026-10-05T07:09:59Z")
+        api.add("fresh", "2026-10-05T07:10:59Z")
 
-        sent, _ = run_cycles(mock_client, mocker, api, ["2026-10-05T07:10:00.000000Z"])
+        sent, _ = run_cycles(mock_client, mocker, api, ["2026-10-05T07:11:00.000000Z"])
 
         assert sent == {"fresh": 1}
         assert api.calls[0]["occurred_after"] == "2026-10-05T07:00:00.000000Z"
-        assert api.calls[0]["occurred_before"] == "2026-10-05T07:10:00.000000Z"
+        assert api.calls[0]["occurred_before"] == "2026-10-05T07:11:00.000000Z"
+
+    def test_event_indexed_ten_minutes_late_is_collected(self, mock_client, mocker):
+        """An event indexed ~10 minutes late (missed by the old 10-minute lookback on a customer tenant) is collected once."""
+        api = FakeHalcyonEventsApi()
+        api.add("ten-minutes-late", "2026-10-05T07:00:10Z", indexed_at="2026-10-05T07:10:30Z")
+
+        sent, _ = run_cycles(mock_client, mocker, api, minute_cycles(1, 14))
+
+        assert dict(sent) == {"ten-minutes-late": 1}
 
     def test_event_indexed_within_lookback_is_collected(self, mock_client, mocker):
         """An event indexed 6 minutes late (beyond the old 5-minute lookback) is collected once."""
@@ -681,11 +690,11 @@ class TestEventsLookback:
         assert dict(sent) == {"six-minutes-late": 1}
 
     def test_event_indexed_after_lookback_is_lost(self, mock_client, mocker):
-        """Documents the limit: an event indexed more than 10 minutes after it occurred is not collected."""
+        """Documents the limit: an event indexed more than 11 minutes after it occurred is not collected."""
         api = FakeHalcyonEventsApi()
-        api.add("too-late", "2026-10-05T07:00:10Z", indexed_at="2026-10-05T07:11:30Z")
+        api.add("too-late", "2026-10-05T07:00:10Z", indexed_at="2026-10-05T07:12:30Z")
 
-        sent, _ = run_cycles(mock_client, mocker, api, minute_cycles(1, 13))
+        sent, _ = run_cycles(mock_client, mocker, api, minute_cycles(1, 14))
 
         assert "too-late" not in sent
 
@@ -696,16 +705,16 @@ class TestEventsLookback:
 
         _, last_run = run_cycles(mock_client, mocker, api, minute_cycles(1, 20))
 
-        # Last cycle 07:20 -> next window starts 07:10:00, minus the 1-minute margin = 07:09:00.
-        assert sorted(last_run["events_dedup_cache"], key=lambda k: int(k.split("-")[1])) == [f"evt-{m}" for m in range(9, 20)]
+        # Last cycle 07:20 -> next window starts 07:09:00, minus the 1-minute margin = 07:08:00.
+        assert sorted(last_run["events_dedup_cache"], key=lambda k: int(k.split("-")[1])) == [f"evt-{m}" for m in range(8, 20)]
         assert last_run["last_fetch_events"] == "2026-10-05T07:20:00.000000Z"
 
     def test_margin_prevents_duplicates_when_next_query_starts_early(self, mock_client, mocker):
         """If a query starts a bit earlier than expected (API rounding or clock skew), events just
         before the window are still recognized as sent and are not sent again.
 
-        Without the margin, the 07:14:55 cycle trims the cache at 07:04:55 and drops "edge"
-        (07:04:50). The 07:15:00 cycle's query, starting 30 seconds early at 07:04:30, then
+        Without the margin, the 07:15:55 cycle trims the cache at 07:04:55 and drops "edge"
+        (07:04:50). The 07:16:00 cycle's query, starting 30 seconds early at 07:04:30, then
         returns "edge" again and it would be sent twice.
         """
         api = FakeHalcyonEventsApi()
@@ -719,7 +728,7 @@ class TestEventsLookback:
             return original_get_events(occurred_after=early_start, **kwargs)
 
         api.get_events = get_events_starting_early  # type: ignore[method-assign]
-        cycles = ["2026-10-05T07:05:00.000000Z", "2026-10-05T07:14:55.000000Z", "2026-10-05T07:15:00.000000Z"]
+        cycles = ["2026-10-05T07:05:00.000000Z", "2026-10-05T07:15:55.000000Z", "2026-10-05T07:16:00.000000Z"]
         sent, _ = run_cycles(mock_client, mocker, api, cycles)
 
         assert dict(sent) == {"edge": 1}

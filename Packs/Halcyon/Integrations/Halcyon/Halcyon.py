@@ -27,8 +27,9 @@ CLIENT_NAME = "Halcyon"
 # minutes after its occurredAt. Every cycle re-reads [now - EVENTS_LOOKBACK, now] and drops the
 # events already sent (tracked in a dedup cache), so late-indexed events are still collected
 # without re-sending the ones we already have. In busy hours Halcyon delivers events up to ~5
-# minutes after occurredAt and the API can lag a few minutes more, so 10 minutes leaves margin.
-EVENTS_LOOKBACK = timedelta(minutes=10)
+# minutes after occurredAt and the API can lag a few minutes more. On a customer tenant some
+# events became queryable ~10 minutes after occurredAt, so 11 minutes leaves margin.
+EVENTS_LOOKBACK = timedelta(minutes=11)
 # Extra time dedup IDs are kept beyond the window (like SailPoint's lookback + 1 minute), so a query
 # that starts slightly earlier than expected (API rounding of occurredAfter, clock skew between
 # engines) does not re-send events whose IDs were already dropped.
