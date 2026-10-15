@@ -3,12 +3,15 @@ from io import BytesIO
 from unittest import mock
 
 import demistomock as demisto
+import pytest
 from ValidateContent import (
     HOOK_ID_TO_PATTERN,
     ValidationResult,
     extract_hook_id,
     get_pack_name,
     parse_pre_commit_output,
+    prepare_content_pack_for_validation,
+    prepare_single_content_item_for_validation,
     read_validate_results,
     resolve_entity_type,
     strip_ansi_codes,
@@ -212,3 +215,68 @@ def test_read_validate_results(tmp_path):
     assert results[0].filePath.endswith("Packs/TestPack/Scripts/TestScript/TestScript.yml")
     assert results[0].errorCode == "ST001"
     assert results[0].message == "Test error message"
+
+
+@pytest.mark.parametrize(
+    "file_name",
+    [
+        "integration-Test.json",
+        "../../../integration-Test.json",
+        "/some/absolute/dir/integration-Test.json",
+    ],
+)
+def test_prepare_single_content_item_for_validation_when_filename_has_directory_part_writes_inside_pack(
+    mocker, tmp_path, file_name
+):
+    """
+    Given:
+        - A filename that is either plain or contains directory components.
+    When:
+        - Calling prepare_single_content_item_for_validation.
+    Then:
+        - The file is written inside the TmpPack directory using only the base name.
+        - No file is written to the location the directory components point to.
+    """
+    # Given
+    mocker.patch("demisto_sdk.commands.init.contribution_converter.ContributionConverter")
+    mocker.patch("ValidateContent.find_type", return_value=None)
+    packs_path = tmp_path / "a" / "b" / "Packs"
+    packs_path.mkdir(parents=True)
+
+    # When
+    result_path = prepare_single_content_item_for_validation(file_name, b'{"key": "value"}', str(packs_path))
+
+    # Then
+    written_file = tmp_path / result_path
+    assert written_file.name == "integration-Test.json"
+    assert written_file.resolve().parent.parent == (packs_path / "TmpPack").resolve()
+    assert json.loads(written_file.read_text()) == {"key": "value"}
+    assert not (tmp_path / "a" / "b" / "integration-Test.json").exists()
+
+
+@pytest.mark.parametrize("file_name", ["pack.zip", "../../pack.zip", "/some/absolute/dir/pack.zip"])
+def test_prepare_content_pack_for_validation_when_filename_has_directory_part_writes_inside_content_dir(
+    mocker, tmp_path, file_name
+):
+    """
+    Given:
+        - A ZIP filename that is either plain or contains directory components.
+    When:
+        - Calling prepare_content_pack_for_validation.
+    Then:
+        - The ZIP file is written directly inside the content directory using only the base name.
+    """
+    # Given
+    mocker.patch("demisto_sdk.commands.init.contribution_converter.ContributionConverter")
+    mocker.patch("ValidateContent.convert_contribution_to_pack")
+    mock_get_pack_name = mocker.patch("ValidateContent.get_pack_name", return_value="TestPack")
+    content_dir = tmp_path / "a" / "b" / "content"
+    content_dir.mkdir(parents=True)
+
+    # When
+    prepare_content_pack_for_validation(file_name, b"zip-bytes", str(content_dir))
+
+    # Then
+    written_zip_path = mock_get_pack_name.call_args[0][0]
+    assert written_zip_path == str(content_dir / "pack.zip")
+    assert not (tmp_path / "a" / "pack.zip").exists()
