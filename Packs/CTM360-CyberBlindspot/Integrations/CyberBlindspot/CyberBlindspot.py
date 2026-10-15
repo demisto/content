@@ -211,6 +211,10 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 """ CLIENT CLASS """
 
 
+class CursorRejectedError(DemistoException):
+    """The API refused the stored search_after cursor, so the fetch must restart from a timestamp."""
+
+
 class Client(BaseClient):
     """Client class to interact with the service API
 
@@ -258,6 +262,37 @@ class Client(BaseClient):
         log(DEBUG, f"{response=}")
         return response.get("results", []) or []  # Return empty list if results is None
 
+    def fetch_incident_page(self, params: dict[str, Any]) -> dict[str, Any]:
+        """Fetch one incidents page, including search_after cursor fields when the API sends them.
+
+        A 400 on a request that carries a cursor is the API refusing the token itself,
+        so it is not retried and is raised as CursorRejectedError for the caller to recover from.
+        """
+        cursor_request = bool(params.get("cursor"))
+        try:
+            response = self._http_request(
+                method="GET",
+                retries=MAX_RETRIES,
+                backoff_factor=10,
+                status_list_to_retry=[429, 500] if cursor_request else [400, 429, 500],
+                url_suffix=CBS_API_ENDPOINT + API.get("FETCH", ""),
+                params=params,
+            )
+        except DemistoException as error:
+            if cursor_request and getattr(error.res, "status_code", None) == 400:
+                raise CursorRejectedError(str(error), res=error.res) from error
+            raise
+        log(DEBUG, "at client's fetch function")
+        if response.get("statusCode") != 200:
+            raise DemistoException(f'Error received: {response.get("message")}')
+
+        return {
+            "hits": response.get("hits", []) or [],
+            "has_more": bool(response.get("has_more")),
+            "next_cursor": response.get("next_cursor"),
+            "cursor_mode": "has_more" in response or "next_cursor" in response,
+        }
+
     def fetch_incidents(self, params: dict[str, Any]) -> list[dict[str, Any]]:
         """Send request to fetch list of incidents
 
@@ -266,20 +301,7 @@ class Client(BaseClient):
         :return: List containing the incidents
         :rtype: List[dict[str, Any]]
         """
-        response = self._http_request(
-            method="GET",
-            retries=MAX_RETRIES,
-            backoff_factor=10,
-            status_list_to_retry=[400, 429, 500],
-            url_suffix=CBS_API_ENDPOINT + API.get("FETCH", ""),
-            params=params,
-        )
-        log(DEBUG, "at client's fetch function")
-        if response.get("statusCode") != 200:
-            raise DemistoException(f'Error received: {response.get("message")}')
-
-        incident_list = response.get("hits", [])
-        return incident_list
+        return self.fetch_incident_page(params)["hits"]
 
     def fetch_incident(self, params: dict[str, Any]) -> dict[str, Any]:
         """Send a request to fetch a certain incident
@@ -628,12 +650,23 @@ def fetch_incidents(
     Returns:
         tuple[dict, list[dict]]: The next run object and the list of incidents minus incidents from last run
     """
-    incidents = client.fetch_incidents(params)
+    try:
+        page = client.fetch_incident_page(params)
+    except CursorRejectedError as error:
+        log(INFO, f"The API rejected the stored fetch cursor ({error}). Restarting from the last fetched timestamp.")
+        params = {key: value for key, value in params.items() if key != "cursor"}
+        restart_from = last_run.get("last_fetched_timestamp")
+        if restart_from not in ("", None):
+            params["date_from"] = normalize_timestamp(restart_from)
+        last_run = {key: value for key, value in last_run.items() if key not in ("query_date_from", "fetch_cursor")}
+        page = client.fetch_incident_page(params)
+    incidents = list(page.get("hits") or [])
 
-    max_fetch = arg_to_number(params.get("max_hits")) or MAX_FETCH
-    if max_fetch and len(incidents) > max_fetch:
-        log(INFO, f"Incidents fetched exceed the limit, removing the excess {len(incidents) - max_fetch} incidents.")
-        incidents = incidents[:: max_fetch - 1]
+    if not page.get("cursor_mode"):
+        max_fetch = arg_to_number(params.get("max_hits")) or MAX_FETCH
+        if max_fetch and len(incidents) > max_fetch:
+            log(INFO, f"Incidents fetched exceed the limit, removing the excess {len(incidents) - max_fetch} incidents.")
+            incidents = incidents[:: max_fetch - 1]
 
     if not incidents and not last_run:
         log(INFO, "No incidents returned, and no last run data was found")
@@ -651,12 +684,40 @@ def fetch_incidents(
     last_fetched_timestamp = dates[-1] if dates else last_run.get("last_fetched_timestamp")
 
     log(INFO, f"setting last fetched timestamp - {last_fetched_timestamp=}")
-    next_run = {"last_fetched_timestamp": last_fetched_timestamp, "last_fetch_ids": incident_ids}
+    next_run: dict[str, Any] = {"last_fetched_timestamp": last_fetched_timestamp, "last_fetch_ids": incident_ids}
+    if page.get("cursor_mode"):
+        query_date_from = last_run.get("query_date_from")
+        if query_date_from in ("", None):
+            query_date_from = params.get("date_from")
+        next_run["query_date_from"] = query_date_from
+        next_cursor = page.get("next_cursor")
+        if next_cursor:
+            next_run["fetch_cursor"] = next_cursor
+        elif last_run.get("fetch_cursor"):
+            next_run["fetch_cursor"] = last_run.get("fetch_cursor")
     return next_run, unique_incidents
+
+
+def severity_query_value(raw: Any) -> list[str]:
+    """Turn the multi-select instance parameter into repeated severity query values.
+
+    The API accepts one severity per query parameter. A single comma-separated
+    value is rejected.
+    """
+    if raw in (None, "", []):
+        return []
+    values = raw if isinstance(raw, list) else str(raw).split(",")
+    selected: list[str] = []
+    for value in values:
+        token = str(value).strip().lower()
+        if token and token not in selected:
+            selected.append(token)
+    return selected
 
 
 def build_fetch_params(demisto_params: dict[str, Any], last_run: dict[str, Any]) -> dict[str, Any]:
     """Build API params for fetch-incidents."""
+    query_date_from = last_run.get("query_date_from")
     last_fetched_timestamp = last_run.get("last_fetched_timestamp", "")
     if last_fetched_timestamp not in ("", None):
         last_fetched_timestamp = normalize_timestamp(last_fetched_timestamp)
@@ -667,19 +728,29 @@ def build_fetch_params(demisto_params: dict[str, Any], last_run: dict[str, Any])
         log(DEBUG, "first_fetch is not parsable, setting to `7 days`")
         first_fetch = "7 days"
 
-    if not last_fetched_timestamp:
+    if query_date_from not in ("", None):
+        date_from = normalize_timestamp(query_date_from)
+    elif last_fetched_timestamp:
+        date_from = last_fetched_timestamp
+    else:
         log(DEBUG, f"Fetch is set to fetch from the {first_fetch} ago.")
+        date_from = convert_time_string(f"{first_fetch} UTC", "", timestamp=True)
 
     params: dict[str, Any] = {
         "date_field": "@timestamp",
         "order": "asc",
         "max_hits": MAX_FETCH,
         "module_type": INSTANCE.module,
-        "date_from": last_fetched_timestamp
-        if last_fetched_timestamp
-        else convert_time_string(f"{first_fetch} UTC", "", timestamp=True),
+        "date_from": date_from,
+        "paginate": "search_after",
         "t": datetime.now().timestamp() * 1000,
     }
+    if last_run.get("fetch_cursor"):
+        params["cursor"] = last_run.get("fetch_cursor")
+    if INSTANCE.module == "incidents":
+        severity = severity_query_value(demisto_params.get("severity"))
+        if severity:
+            params["severity"] = severity
     if "domain_infringement" in INSTANCE.module:
         params["finding_status"] = demisto_params.get("finding_status", "")
         params["risk_score_min"] = demisto_params.get("risk_score_min", "")
@@ -782,15 +853,29 @@ def get_modified_remote_data_command(client: Client, args):
     last_timestamp = convert_time_string(remote_args.last_update, "", timestamp=True)
     log(DEBUG, f"Performing get-modified-remote-data command with : {last_timestamp}({remote_args.last_update})")
 
-    params = {
-        "date_field": "last_seen",
-        "order": "asc",
-        "date_from": last_timestamp,
-        "max_hits": ABSOLUTE_MAX_FETCH,
-        "module_type": INSTANCE.module,
-        "t": datetime.now().timestamp() * 1000,
-    }
-    modified_incident_ids.extend(item["id"] for item in client.fetch_incidents(params))
+    cursor = None
+    while len(modified_incident_ids) < MIRROR_LIMIT:
+        params = {
+            "date_field": "last_seen",
+            "order": "asc",
+            "date_from": last_timestamp,
+            "max_hits": ABSOLUTE_MAX_FETCH,
+            "module_type": INSTANCE.module,
+            "paginate": "search_after",
+            "t": datetime.now().timestamp() * 1000,
+        }
+        if cursor:
+            params["cursor"] = cursor
+        page = client.fetch_incident_page(params)
+        hits = page.get("hits") or []
+        for item in hits:
+            if len(modified_incident_ids) >= MIRROR_LIMIT:
+                break
+            modified_incident_ids.append(item["id"])
+        next_cursor = page.get("next_cursor")
+        if not page.get("has_more") or not next_cursor or not hits:
+            break
+        cursor = next_cursor
     if len(modified_incident_ids) >= MIRROR_LIMIT:
         log(INFO, f"Warning: More than {MIRROR_LIMIT} incidents have been modified since the last update.")
     return GetModifiedRemoteDataResponse(modified_incident_ids=modified_incident_ids)

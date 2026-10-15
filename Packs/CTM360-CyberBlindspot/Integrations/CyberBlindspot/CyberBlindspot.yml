@@ -69,6 +69,18 @@ configuration:
   defaultvalue: "25"
   additionalinfo: Default is 25. Maximum is 200.
   advanced: true
+- display: Severities to Fetch
+  name: severity
+  type: 16
+  required: false
+  section: Collect
+  additionalinfo: Used only when Module To Use is Incidents. A selection is ignored for every other module. Leave empty to fetch every incident severity. Keep the selection unchanged while a fetch cursor is in progress.
+  options:
+  - Critical
+  - High
+  - Medium
+  - Low
+  - Informational
 - display: Fetch incidents
   name: isFetch
   type: 8

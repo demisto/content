@@ -54,6 +54,18 @@ configuration:
   defaultvalue: "25"
   additionalinfo: The maximum number of incidents to fetch per run. Maximum is 200.
   advanced: true
+- display: Severities to Fetch
+  name: severity
+  type: 16
+  required: false
+  section: Collect
+  additionalinfo: Fetch only these severities. Leave empty to fetch every severity. Applies to Light Scan and Deep Scan. Keep the selection unchanged while a fetch cursor is in progress.
+  options:
+  - Critical
+  - High
+  - Medium
+  - Low
+  - Informational
 - display: Fetch incidents
   name: isFetch
   type: 8
