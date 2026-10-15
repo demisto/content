@@ -1,0 +1,426 @@
+category: Data Enrichment & Threat Intelligence
+provider: KELA
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: KELAIdentityGuard
+  version: -1
+configuration:
+- defaultvalue: https://api.ke-la.com/bots-client-api/v1
+  display: Server URL (e.g., https://api.ke-la.com/bots-client-api/v1)
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: API Key
+  name: credentials
+  required: true
+  type: 9
+  hiddenusername: true
+  section: Connect
+  additionalinfo: The KELA Identity Guard API token, generated through the platform. Sent as the "apiToken" query parameter on every request (not an auth header).
+- display: Default Workspace ID
+  name: workspace_id
+  type: 0
+  required: false
+  section: Connect
+  additionalinfo: Used when a command is called without an explicit workspace_id argument, and required for Fetch incidents.
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  section: Collect
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Connect
+  required: false
+- defaultvalue: '50'
+  display: Maximum number of incidents per fetch (per source)
+  name: max_fetch
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: Applied separately to each enabled source (general incidents, bot-market alerts, cookie incidents), so up to 3x this number of incidents can be created per fetch cycle.
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  additionalinfo: 'How far back to look for incidents on the very first fetch (applies to all enabled sources). Accepts a relative time, e.g. "3 days", "1 month", or an exact date.'
+  type: 0
+  section: Collect
+  required: false
+- defaultvalue: '0 - low'
+  display: Minimum severity to fetch
+  name: min_severity
+  type: 15
+  section: Collect
+  required: false
+  additionalinfo: Applies to general incidents and cookie incidents. Bot-market alerts have no severity field in the API and are always fetched regardless of this setting (when enabled below).
+  options:
+  - 0 - low
+  - 1 - medium
+  - 2 - high
+  - 3 - critical
+- defaultvalue: 'true'
+  display: Fetch bot-market alerts (bots/webmails for sale)
+  name: fetch_bot_markets
+  type: 8
+  section: Collect
+  required: false
+- defaultvalue: 'true'
+  display: Fetch compromised session-cookie incidents
+  name: fetch_cookie_incidents
+  type: 8
+  section: Collect
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: Search KELA Identity Guard incidents - compromised credentials detected on infostealer-infected machines, leaked credential lists, data breaches and cybercrime chatter; bot-market alerts; and compromised session-cookie incidents. Automatically fetches all three (each independently toggleable) into Cortex XSOAR.
+display: KELA Identity Guard
+name: KELAIdentityGuard
+script:
+  commands:
+  - name: kela-identityguard-search-incidents
+    description: Search Identity Guard incidents for a workspace, with rich filtering, sorting and pagination.
+    arguments:
+    - name: workspace_id
+      description: Workspace ID to search. Defaults to the instance's Default Workspace ID.
+    - name: search_term
+      description: Free-text search term.
+    - name: severity
+      description: Filter by severity.
+      auto: PREDEFINED
+      predefined:
+      - low
+      - medium
+      - high
+      - critical
+    - name: status
+      description: Filter by resolution status.
+      auto: PREDEFINED
+      predefined:
+      - RESOLVED
+      - UNRESOLVED
+    - name: source_types
+      description: Comma-separated list of source types.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - infectedBots
+      - credentialsLists
+    - name: source_category
+      description: Comma-separated list of source categories.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - infostealers
+      - dataBreaches
+      - chatters
+    - name: archived
+      description: Comma-separated archived-state filter.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - archived
+      - unarchived
+    - name: deleted
+      description: Only return deleted/non-deleted incidents.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: created_date_start
+      description: ISO 8601 date-time or relative date (e.g., "7 days ago") for the created-date range start.
+    - name: created_date_end
+      description: ISO 8601 date-time or relative date for the created-date range end.
+    - name: updated_date_start
+      description: ISO 8601 date-time or relative date for the updated-date range start.
+    - name: updated_date_end
+      description: ISO 8601 date-time or relative date for the updated-date range end.
+    - name: sort_by
+      description: Field to sort by.
+      defaultValue: updatedDate
+      auto: PREDEFINED
+      predefined:
+      - createdDate
+      - updatedDate
+      - sourceDate
+    - name: order
+      description: Sort order.
+      defaultValue: desc
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    - name: limit
+      description: Maximum number of incidents to return (page size).
+      defaultValue: '50'
+    - name: offset
+      description: Pagination offset.
+      defaultValue: '0'
+    outputs:
+    - contextPath: KELA.IdentityGuard.Incident.incidentId
+      description: The incident ID.
+      type: String
+    - contextPath: KELA.IdentityGuard.Incident.severity
+      description: The incident severity.
+      type: String
+    - contextPath: KELA.IdentityGuard.Incident.status
+      description: The incident status (RESOLVED/UNRESOLVED).
+      type: String
+    - contextPath: KELA.IdentityGuard.Incident.sourceType
+      description: The source type the incident was detected from.
+      type: String
+    - contextPath: KELA.IdentityGuard.Incident.sourceCategory
+      description: The source category the incident was detected from.
+      type: String
+    - contextPath: KELA.IdentityGuard.Incident.createdDate
+      description: When the incident was created in KELA.
+      type: Date
+    - contextPath: KELA.IdentityGuard.Incident.updatedDate
+      description: When the incident was last updated.
+      type: Date
+    - contextPath: KELA.IdentityGuard.Incident.sourceDate
+      description: When the underlying leak/detection occurred.
+      type: Date
+    - contextPath: KELA.IdentityGuard.Incident.accountUserName
+      description: The compromised username, if any.
+      type: String
+    - contextPath: KELA.IdentityGuard.Incident.accountPassword
+      description: The compromised password, if any.
+      type: String
+    - contextPath: KELA.IdentityGuard.Incident.accountServiceName
+      description: The targeted service name.
+      type: String
+    - contextPath: KELA.IdentityGuard.Incident.accountServiceHostname
+      description: The targeted service hostname, if any.
+      type: String
+    - contextPath: KELA.IdentityGuard.Incident.botName
+      description: The name/family of the infostealer bot behind the incident, if any.
+      type: String
+    - contextPath: KELA.IdentityGuard.Incident.botIp
+      description: The IP address of the infected machine, if any.
+      type: String
+    - contextPath: KELA.IdentityGuard.Incident.link
+      description: A link to the incident in the KELA platform.
+      type: String
+  - name: kela-identityguard-search-bot-markets
+    description: Search Identity Guard bot-market alerts (bots/webmails offered for sale) for a workspace.
+    arguments:
+    - name: workspace_id
+      description: Workspace ID to search. Defaults to the instance's Default Workspace ID.
+    - name: search_term
+      description: Free-text search term.
+    - name: statuses
+      description: Comma-separated list of takedown request statuses.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - pending
+      - takedown
+      - canceled
+      - failed
+      - untagged
+    - name: availability_issues
+      description: Comma-separated list of availability issues.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - notAvailable
+      - available
+      - untagged
+    - name: incident_status
+      description: Comma-separated list of incident statuses.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - unresolved
+      - resolved
+    - name: services
+      description: Comma-separated list of marketplace names to filter by (e.g. RussianMarket).
+      isArray: true
+    - name: is_archived
+      description: Filter by archived state.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: is_deleted
+      description: Filter by deleted state.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: sort_by
+      description: Field to sort by.
+      defaultValue: updatedDate
+      auto: PREDEFINED
+      predefined:
+      - createdDate
+      - updatedDate
+      - postedDate
+    - name: order
+      description: Sort order.
+      defaultValue: desc
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    - name: limit
+      description: Maximum number of results to return (page size).
+      defaultValue: '50'
+    - name: offset
+      description: Pagination offset.
+      defaultValue: '0'
+    outputs:
+    - contextPath: KELA.IdentityGuard.BotMarket.alertId
+      description: The bot-market alert ID.
+      type: String
+    - contextPath: KELA.IdentityGuard.BotMarket.marketBotName
+      description: The bot's name/identifier on the marketplace.
+      type: String
+    - contextPath: KELA.IdentityGuard.BotMarket.marketName
+      description: The marketplace name (e.g. "RussianMarket").
+      type: String
+    - contextPath: KELA.IdentityGuard.BotMarket.requestStatus
+      description: The takedown request status.
+      type: String
+    - contextPath: KELA.IdentityGuard.BotMarket.availabilityStatus
+      description: The availability status.
+      type: String
+    - contextPath: KELA.IdentityGuard.BotMarket.module
+      description: The malware family/botnet type.
+      type: String
+    - contextPath: KELA.IdentityGuard.BotMarket.price
+      description: The listed price.
+      type: String
+    - contextPath: KELA.IdentityGuard.BotMarket.postedDate
+      description: When the item was posted for sale.
+      type: Date
+    - contextPath: KELA.IdentityGuard.BotMarket.linkAlert
+      description: A link to the alert in the KELA platform.
+      type: String
+  - name: kela-identityguard-search-cookie-incidents
+    description: Search Identity Guard compromised session-cookie incidents for a workspace. Requires the "cookies" permission on Identity Guard.
+    arguments:
+    - name: workspace_id
+      description: Workspace ID to search. Defaults to the instance's Default Workspace ID.
+    - name: search_term
+      description: Free-text search term.
+    - name: severity
+      description: Filter by severity.
+      auto: PREDEFINED
+      predefined:
+      - CRITICAL
+      - NON_CRITICAL
+    - name: status
+      description: Filter by resolution status.
+      auto: PREDEFINED
+      predefined:
+      - RESOLVED
+      - UNRESOLVED
+    - name: cookie_category
+      description: Comma-separated list of cookie categories.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - sso
+      - web_sessions
+      - access_tokens
+      - refresh_tokens
+      - persist_auth
+      - mfa_and_device_tokens
+    - name: service_hostname
+      description: Comma-separated list of service hostnames to filter by.
+      isArray: true
+    - name: geographies
+      description: Comma-separated list of geographies to filter by.
+      isArray: true
+    - name: incident_hash
+      description: Filter by a specific incident hash.
+    - name: session_hash
+      description: Filter by a specific session hash.
+    - name: linked_usernames
+      description: Only return incidents linked to usernames.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: archived
+      description: Filter by archived state.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: sort_by
+      description: Field to sort by.
+      defaultValue: updatedDate
+      auto: PREDEFINED
+      predefined:
+      - createdDate
+      - sourceDate
+      - updatedDate
+    - name: order
+      description: Sort order.
+      defaultValue: desc
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    - name: limit
+      description: Maximum number of results to return (page size).
+      defaultValue: '50'
+    - name: offset
+      description: Pagination offset.
+      defaultValue: '0'
+    outputs:
+    - contextPath: KELA.IdentityGuard.CookieIncident.incidentId
+      description: The cookie incident ID.
+      type: String
+    - contextPath: KELA.IdentityGuard.CookieIncident.sessionHash
+      description: The session hash.
+      type: String
+    - contextPath: KELA.IdentityGuard.CookieIncident.severity
+      description: The cookie incident severity (critical/non-critical).
+      type: String
+    - contextPath: KELA.IdentityGuard.CookieIncident.status
+      description: The cookie incident status.
+      type: String
+    - contextPath: KELA.IdentityGuard.CookieIncident.cookieCategory
+      description: The cookie category/categories.
+      type: String
+    - contextPath: KELA.IdentityGuard.CookieIncident.cookieName
+      description: The cookie name.
+      type: String
+    - contextPath: KELA.IdentityGuard.CookieIncident.expirationDate
+      description: The cookie's expiration date.
+      type: Date
+    - contextPath: KELA.IdentityGuard.CookieIncident.hasLinkedUsernames
+      description: Whether the incident has linked usernames.
+      type: Boolean
+    - contextPath: KELA.IdentityGuard.CookieIncident.botCountry
+      description: The country of the infected machine.
+      type: String
+    - contextPath: KELA.IdentityGuard.CookieIncident.botOS
+      description: The OS of the infected machine.
+      type: String
+  dockerimage: demisto/python3:3.12.8.3296088
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
