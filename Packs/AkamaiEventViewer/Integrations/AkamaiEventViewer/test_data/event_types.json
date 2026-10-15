@@ -1,0 +1,34 @@
+[
+  {
+    "eventTypeId": "16",
+    "eventTypeName": "All Logins",
+    "eventDefinitions": [
+      {
+        "eventDefinitionId": "415195",
+        "eventName": "Login",
+        "eventDescription": "A user logged in."
+      }
+    ]
+  },
+  {
+    "eventTypeId": "198",
+    "eventTypeName": "API Definition",
+    "eventDefinitions": [
+      {
+        "eventDefinitionId": "800313",
+        "eventName": "Update an Endpoint Resources Details",
+        "eventDescription": "Update an Endpoint Resources Details."
+      },
+      {
+        "eventDefinitionId": "892355",
+        "eventName": "Create an Endpoint",
+        "eventDescription": "Add a new Endpoint"
+      },
+      {
+        "eventDefinitionId": "913159",
+        "eventName": "Delete Endpoint Resource",
+        "eventDescription": "Deletes an endpoint resource details."
+      }
+    ]
+  }
+]
