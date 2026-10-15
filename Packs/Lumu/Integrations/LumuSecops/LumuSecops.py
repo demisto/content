@@ -490,8 +490,8 @@ def retrieve_a_specific_label_command(client: Client, args: dict[str, Any]) -> C
 
 
 def get_all_incidents_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    page = args.get("page")
-    items = args.get("items")
+    page = arg_to_number(args.get("page"))
+    items = arg_to_number(args.get("items"))
     status = argToList(args.get("status"))
     adversary_types = argToList(args.get("adversary_types"))
     labels = [arg_to_number(label) for label in argToList(args.get("labels"))]
@@ -502,8 +502,8 @@ def get_all_incidents_command(client: Client, args: dict[str, Any]) -> CommandRe
 
 
 def get_open_incidents_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    page = args.get("page")
-    items = args.get("items")
+    page = arg_to_number(args.get("page"))
+    items = arg_to_number(args.get("items"))
     adversary_types = argToList(args.get("adversary_types"))
     labels = [arg_to_number(label) for label in argToList(args.get("labels"))]
     response = client.get_open_incidents_request(page, items, adversary_types, labels)
@@ -511,8 +511,8 @@ def get_open_incidents_command(client: Client, args: dict[str, Any]) -> CommandR
 
 
 def get_muted_incidents_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    page = args.get("page")
-    items = args.get("items")
+    page = arg_to_number(args.get("page"))
+    items = arg_to_number(args.get("items"))
     adversary_types = argToList(args.get("adversary_types"))
     labels = [arg_to_number(label) for label in argToList(args.get("labels"))]
     response = client.get_muted_incidents_request(page, items, adversary_types, labels)
@@ -520,8 +520,8 @@ def get_muted_incidents_command(client: Client, args: dict[str, Any]) -> Command
 
 
 def get_closed_incidents_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    page = args.get("page")
-    items = args.get("items")
+    page = arg_to_number(args.get("page"))
+    items = arg_to_number(args.get("items"))
     adversary_types = argToList(args.get("adversary_types"))
     labels = [arg_to_number(label) for label in argToList(args.get("labels"))]
     response = client.get_closed_incidents_request(page, items, adversary_types, labels)
@@ -530,8 +530,8 @@ def get_closed_incidents_command(client: Client, args: dict[str, Any]) -> Comman
 
 def get_incident_events_groupings_command(client: Client, args: dict[str, Any]) -> CommandResults:
     incident_id = args.get("incident_id", "")
-    page = args.get("page")
-    items = args.get("items")
+    page = arg_to_number(args.get("page"))
+    items = arg_to_number(args.get("items"))
     status = argToList(args.get("status"))
     response = client.get_incident_events_groupings_request(incident_id, page, items, status)
     return build_command_results(
