@@ -1275,7 +1275,7 @@ script:
       description: The container name.
       type: String
     - contextPath: Azure.Storage.Container.Property.Last-Modified
-      description: The date and time the container was last modified, in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
+      description: The date and time the container was last modified, in RFC 1123 format (for example, Wed, 14 Aug 2024 10:00:00 GMT).
       type: Date
     - contextPath: Azure.Storage.Container.Property.Etag
       description: The entity tag for the container.
@@ -1325,7 +1325,7 @@ script:
       type: String
 
   - name: azure-storage-blob-update
-    description: "Updates the content of an existing blob. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
+    description: "Updates the content of an existing blob. Fails if the blob does not exist. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read, Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
     arguments:
     - name: container_name
       description: The name of the container.

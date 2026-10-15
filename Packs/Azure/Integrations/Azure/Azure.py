@@ -127,6 +127,7 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-storage-container-blob-property-get",
         "azure-storage-blob-property-get",
         "azure-storage-blobs-list",
+        "azure-storage-blob-update",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete": ["azure-storage-blob-delete"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read": [
@@ -1616,6 +1617,28 @@ class AzureClient:
         response = self.http_request(method="GET", full_url=full_url, params=params, resp_type="text")
 
         return response
+
+    def storage_container_blob_exists(self, container_name: str, blob_name: str, account_name: str) -> bool:
+        """
+        Check whether a Blob exists under the specified Container.
+
+        Args:
+            container_name (str): Container name.
+            blob_name (str): Blob name.
+            account_name (str): Storage account name.
+
+        Returns:
+            bool: True if the blob exists, False if Azure returns 404 (blob or container not found).
+
+        """
+        try:
+            self.storage_container_blob_property_get_request(container_name, blob_name, account_name)
+        except DemistoException as e:
+            if e.res is not None and e.res.status_code == 404:
+                demisto.debug(f'[Azure] Blob "{blob_name}" was not found in container "{container_name}".')
+                return False
+            raise
+        return True
 
     def storage_container_blob_delete_request(self, container_name: str, blob_name: str, account_name: str):
         """
@@ -4744,6 +4767,13 @@ def storage_container_blob_update_command(client: AzureClient, params: dict, arg
     account_name = args.get("account_name", "")
     file_entry_id = args["file_entry_id"]
     blob_name = args["blob_name"]
+
+    # The upload API creates the blob when it is missing, so check first to keep this an update of an existing blob.
+    if not client.storage_container_blob_exists(container_name, blob_name, account_name):
+        raise DemistoException(
+            f"Blob {blob_name} does not exist in container {container_name}. "
+            "Use the azure-storage-blob-create command to create a new blob."
+        )
 
     file_data = demisto.getFilePath(file_entry_id)  # Retrieve system file path and name, given file entry ID.
     system_file_path = file_data["path"]

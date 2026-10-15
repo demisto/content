@@ -9676,11 +9676,12 @@ def test_storage_container_blob_update_command_success(mocker):
     """
     Given: An Azure client and a request to update an existing blob's content.
     When: storage_container_blob_update_command is called with valid snake_case args.
-    Then: It calls storage_container_create_blob_request and returns a success message.
+    Then: It checks that the blob exists, calls storage_container_create_blob_request and returns a success message.
     """
     from Azure import storage_container_blob_update_command
 
     mock_client = mocker.Mock()
+    mock_client.storage_container_blob_exists.return_value = True
     mocker.patch.object(demisto, "getFilePath", return_value={"path": "/tmp/mock_file.txt", "name": "mock_file.txt"})
 
     args = {
@@ -9691,10 +9692,36 @@ def test_storage_container_blob_update_command_success(mocker):
     }
     result = storage_container_blob_update_command(mock_client, {}, args)
 
+    mock_client.storage_container_blob_exists.assert_called_once_with("mock-container-1", "mock-blob-1.txt", "mock_account_name")
     mock_client.storage_container_create_blob_request.assert_called_once_with(
         "mock-container-1", "mock_account_name", "mock_file_entry_id", "mock-blob-1.txt", "/tmp/mock_file.txt"
     )
     assert result.readable_output == "Blob mock-blob-1.txt successfully updated."
+
+
+def test_storage_container_blob_update_command_blob_does_not_exist(mocker):
+    """
+    Given: An Azure client reporting that the target blob does not exist.
+    When: storage_container_blob_update_command is called.
+    Then: It raises a DemistoException and never uploads, so no new blob is created.
+    """
+    from Azure import storage_container_blob_update_command
+
+    mock_client = mocker.Mock()
+    mock_client.storage_container_blob_exists.return_value = False
+    get_file_path = mocker.patch.object(demisto, "getFilePath")
+
+    args = {
+        "account_name": "mock_account_name",
+        "container_name": "mock-container-1",
+        "file_entry_id": "mock_file_entry_id",
+        "blob_name": "missing-blob.txt",
+    }
+    with pytest.raises(DemistoException, match="Blob missing-blob.txt does not exist in container mock-container-1"):
+        storage_container_blob_update_command(mock_client, {}, args)
+
+    mock_client.storage_container_create_blob_request.assert_not_called()
+    get_file_path.assert_not_called()
 
 
 def test_storage_container_blob_update_command_error(mocker):
@@ -9706,6 +9733,7 @@ def test_storage_container_blob_update_command_error(mocker):
     from Azure import storage_container_blob_update_command
 
     mock_client = mocker.Mock()
+    mock_client.storage_container_blob_exists.return_value = True
     mocker.patch.object(demisto, "getFilePath", return_value={"path": "/tmp/mock_file.txt", "name": "mock_file.txt"})
     mock_client.storage_container_create_blob_request.side_effect = DemistoException("Unable to read file")
 
@@ -9717,6 +9745,41 @@ def test_storage_container_blob_update_command_error(mocker):
     }
     with pytest.raises(DemistoException, match="Unable to read file"):
         storage_container_blob_update_command(mock_client, {}, args)
+
+
+@pytest.mark.parametrize("status_code, expected", [(200, True), (404, False)])
+def test_storage_container_blob_exists(mocker, client, status_code, expected):
+    """
+    Given: A blob properties (HEAD) request that succeeds or returns 404.
+    When: storage_container_blob_exists is called.
+    Then: It returns True on success and False on 404.
+    """
+    if status_code == 404:
+        mocker.patch.object(
+            client,
+            "storage_container_blob_property_get_request",
+            side_effect=DemistoException("Not Found", res=mocker.Mock(status_code=404)),
+        )
+    else:
+        mocker.patch.object(client, "storage_container_blob_property_get_request", return_value=mocker.Mock(status_code=200))
+
+    assert client.storage_container_blob_exists("mock-container-1", "mock-blob-1.txt", "mock_account_name") is expected
+
+
+def test_storage_container_blob_exists_raises_on_other_errors(mocker, client):
+    """
+    Given: A blob properties (HEAD) request that fails with a non-404 error, such as 403.
+    When: storage_container_blob_exists is called.
+    Then: The error is raised instead of being treated as a missing blob.
+    """
+    mocker.patch.object(
+        client,
+        "storage_container_blob_property_get_request",
+        side_effect=DemistoException("Forbidden", res=mocker.Mock(status_code=403)),
+    )
+
+    with pytest.raises(DemistoException, match="Forbidden"):
+        client.storage_container_blob_exists("mock-container-1", "mock-blob-1.txt", "mock_account_name")
 
 
 def test_storage_container_blob_delete_command_success(mocker):

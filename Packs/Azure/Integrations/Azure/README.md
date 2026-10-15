@@ -3847,7 +3847,7 @@ Lists containers under the specified storage account. Required permission: Micro
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Azure.Storage.Container.name | String | The container name. |
-| Azure.Storage.Container.Property.Last-Modified | Date | The date and time the container was last modified, in ISO 8601 format \(for example, 2024-01-15T12:34:56Z\). |
+| Azure.Storage.Container.Property.Last-Modified | Date | The date and time the container was last modified, in RFC 1123 format \(for example, Wed, 14 Aug 2024 10:00:00 GMT\). |
 | Azure.Storage.Container.Property.Etag | String | The entity tag for the container. |
 | Azure.Storage.Container.Property.LeaseStatus | String | The lease status of the container. |
 | Azure.Storage.Container.Property.LeaseState | String | The lease state of the container. |
@@ -3885,7 +3885,7 @@ Lists blobs under the specified container. Required permission: Microsoft.Storag
 ### azure-storage-blob-update
 
 ***
-Updates the content of an existing blob. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write.
+Updates the content of an existing blob. Fails if the blob does not exist. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read, Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write.
 
 #### Base Command
 
