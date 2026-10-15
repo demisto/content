@@ -7,7 +7,6 @@ from collections import Counter
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import urllib3
 
 
 class CustomLumuException(Exception):
@@ -108,7 +107,9 @@ def format_updates_comment(incident: dict, labels_cache: dict) -> str:
     }
 
     affected_environments_users = {
-        html.escape(target.get("realm", "Unknown Env")) for target in incident.get("targetsSamples", []) if target.get("type", "") == "user"
+        html.escape(target.get("realm", "Unknown Env"))
+        for target in incident.get("targetsSamples", [])
+        if target.get("type", "") == "user"
     }
     affected_environments_endpoints = {
         html.escape(labels_cache.get(str(target.get("label", "0")), {"name": "Unknown Label"})["name"])
@@ -618,7 +619,9 @@ def get_incident_security_events_details_command(client: Client, args: dict[str,
     )
 
 
-def normalize_incident_record(record: dict[str, Any], event_type: str, integration_instance: str, mirror_direction: str, mirror_tags: list[str]) -> dict[str, Any]:
+def normalize_incident_record(
+    record: dict[str, Any], event_type: str, integration_instance: str, mirror_direction: str, mirror_tags: list[str]
+) -> dict[str, Any]:
     incident_id = str(record.get("id", record.get("incidentId", "")))
     normalized = record.copy()
     normalized["lumu_secops_source_name"] = "lumusecops"
@@ -652,7 +655,15 @@ def normalize_incident_record(record: dict[str, Any], event_type: str, integrati
 
 
 def fetch_incidents(
-    client: Client, first_fetch_offset: str, last_run: dict[str, Any], items: int, max_time: int, integration_instance: str, mirror_direction: str, mirror_tags: list[str]) -> None:
+    client: Client,
+    first_fetch_offset: str,
+    last_run: dict[str, Any],
+    items: int,
+    max_time: int,
+    integration_instance: str,
+    mirror_direction: str,
+    mirror_tags: list[str],
+) -> None:
     last_fetch = int(last_run.get("last_fetch") or first_fetch_offset)
     response = client.consult_incidents_updates_request(offset=last_fetch, items=items, time=max_time)
     updates = response.get("updates", [])
@@ -750,14 +761,12 @@ def fetch_incidents(
         cache["lumu_secops_incident_ids"] = list(known_ids)
         demisto.debug(f'There are {len(cache["cache"])} events queued ready to process their updates')
         set_integration_context(cache)
-        
-    
+
     next_run = {"last_fetch": next_offset}
     demisto.setLastRun(next_run)
     demisto.incidents(incidents_to_push)
     count = Counter([inc["dbotMirrorId"] for inc in incidents])
     demisto.debug(f"total inc found: {len(incidents)}, {count=} {last_run=} {next_run=}")
-
 
 
 def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
@@ -1028,10 +1037,15 @@ test_module.__test__ = False  # type: ignore[attr-defined]
 
 
 def clear_cache_command():
-    cache: dict = {}
-    cache["cache"] = []
-    cache["lumu_incidentsId"] = []
+    cache: dict = {
+        "cache": [],
+        "lumu_secops_incident_ids": [],
+        "source_records": {},
+        "users": {},
+        "labels": {},
+    }
     set_integration_context(cache)
+
     command_results = CommandResults(
         outputs_prefix="LumuSecops.ClearCache",
         outputs=f"cache cleared {get_integration_context()=}",
@@ -1058,7 +1072,7 @@ def main() -> None:
     command = demisto.command()
     params = demisto.params()
     args = demisto.args()
-    
+
     mirror_direction = {
         "Incoming": "In",
         "Outgoing": "Out",
@@ -1066,7 +1080,6 @@ def main() -> None:
     }.get(params.get("mirror_direction"))
     mirror_tags = params.get("mirror_tags") or []
     integration_instance = demisto.integrationInstance()
-
 
     url = params.get("url", "")
     verify_certificate = not params.get("insecure", False)
@@ -1113,7 +1126,9 @@ def main() -> None:
         elif command == "fetch-incidents":
             last_run = demisto.getLastRun()
             demisto.info(f"Executing fetch-incidents command, last run: {last_run}")
-            fetch_incidents(client, offset_set_off, last_run, items, time_last, integration_instance, mirror_direction, mirror_tags)
+            fetch_incidents(
+                client, offset_set_off, last_run, items, time_last, integration_instance, mirror_direction, mirror_tags
+            )
 
         elif command == "get-modified-remote-data":
             demisto.info("Executing get-modified-remote-data command")

@@ -183,13 +183,13 @@ script:
       description: Incident ID.
     - contextPath: LumuSecops.GetAllIncidents.statusTimestamp
       type: Date
-      description: Incident status update timestamp.
+      description: The date the incident status was updated in ISO 8601 format (e.g., 2026-01-15T12:34:56Z)..
     - contextPath: LumuSecops.GetAllIncidents.status
       type: String
       description: Incident status.
     - contextPath: LumuSecops.GetAllIncidents.timestamp
       type: Date
-      description: Incident creation time.
+      description: The date the incident was created in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetAllIncidents.detectorType
       type: String
       description: Detector type.
@@ -201,13 +201,13 @@ script:
       description: Total number of events.
     - contextPath: LumuSecops.GetAllIncidents.firstEvent.timestamp
       type: Date
-      description: First related event timestamp.
+      description: The date the first related event occurred in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetAllIncidents.firstEvent.id
       type: String
       description: First related event ID.
     - contextPath: LumuSecops.GetAllIncidents.lastEvent.timestamp
       type: Date
-      description: Last related event timestamp.
+      description: The date the last related event occurred in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetAllIncidents.lastEvent.id
       type: String
       description: Last related event ID.
@@ -340,23 +340,23 @@ script:
       description: Number of incidents per page.
     - name: adversary_types
       isArray: true
-      description: Filter by adversary type values.
+      description: A comma-separated list of adversary type values.
     - name: labels
       isArray: true
-      description: Filter by label IDs.
+      description: A comma-separated list of label IDs.
     outputs:
     - contextPath: LumuSecops.GetOpenIncidents.id
       type: String
       description: Incident ID.
     - contextPath: LumuSecops.GetOpenIncidents.statusTimestamp
       type: Date
-      description: Incident status update timestamp.
+      description: The date the incident status was last updated in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetOpenIncidents.status
       type: String
       description: Incident status.
     - contextPath: LumuSecops.GetOpenIncidents.timestamp
       type: Date
-      description: Incident creation time.
+      description: The date the incident was created in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetOpenIncidents.detectorType
       type: String
       description: Detector type.
@@ -368,13 +368,13 @@ script:
       description: Total number of events.
     - contextPath: LumuSecops.GetOpenIncidents.firstEvent.timestamp
       type: Date
-      description: First related event timestamp.
+      description: The date the first related event occurred in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetOpenIncidents.firstEvent.id
       type: String
       description: First related event ID.
     - contextPath: LumuSecops.GetOpenIncidents.lastEvent.timestamp
       type: Date
-      description: Last related event timestamp.
+      description: The date the last related event occurred in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetOpenIncidents.lastEvent.id
       type: String
       description: Last related event ID.
@@ -474,23 +474,23 @@ script:
       description: Number of incidents per page.
     - name: adversary_types
       isArray: true
-      description: Filter by adversary type values.
+      description: A comma-separated list of adversary type values.
     - name: labels
       isArray: true
-      description: Filter by label IDs.
+      description: A comma-separated list of label IDs.
     outputs:
     - contextPath: LumuSecops.GetMutedIncidents.id
       type: String
       description: Incident ID.
     - contextPath: LumuSecops.GetMutedIncidents.statusTimestamp
       type: Date
-      description: Incident status update timestamp.
+      description: The date the incident status was last updated in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetMutedIncidents.status
       type: String
       description: Incident status.
     - contextPath: LumuSecops.GetMutedIncidents.timestamp
       type: Date
-      description: Incident creation time.
+      description: The date the incident was created in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetMutedIncidents.detectorType
       type: String
       description: Detector type.
@@ -502,13 +502,13 @@ script:
       description: Total number of events.
     - contextPath: LumuSecops.GetMutedIncidents.firstEvent.timestamp
       type: Date
-      description: First related event timestamp.
+      description: The date the first related event occurred in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetMutedIncidents.firstEvent.id
       type: String
       description: First related event ID.
     - contextPath: LumuSecops.GetMutedIncidents.lastEvent.timestamp
       type: Date
-      description: Last related event timestamp.
+      description: The date the last related event occurred in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetMutedIncidents.lastEvent.id
       type: String
       description: Last related event ID.
@@ -608,23 +608,23 @@ script:
       description: Number of incidents per page.
     - name: adversary_types
       isArray: true
-      description: Filter by adversary type values.
+      description: A comma-separated list of adversary type values.
     - name: labels
       isArray: true
-      description: Filter by label IDs.
+      description: A comma-separated list of label IDs.
     outputs:
     - contextPath: LumuSecops.GetClosedIncidents.id
       type: String
       description: Incident ID.
     - contextPath: LumuSecops.GetClosedIncidents.statusTimestamp
       type: Date
-      description: Incident status update timestamp.
+      description: The date the incident status was last updated in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetClosedIncidents.status
       type: String
       description: Incident status.
     - contextPath: LumuSecops.GetClosedIncidents.timestamp
       type: Date
-      description: Incident creation time.
+      description: The date the incident was created in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetClosedIncidents.detectorType
       type: String
       description: Detector type.
@@ -636,13 +636,13 @@ script:
       description: Total number of events.
     - contextPath: LumuSecops.GetClosedIncidents.firstEvent.timestamp
       type: Date
-      description: First related event timestamp.
+      description: The date the first related event occurred in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetClosedIncidents.firstEvent.id
       type: String
       description: First related event ID.
     - contextPath: LumuSecops.GetClosedIncidents.lastEvent.timestamp
       type: Date
-      description: Last related event timestamp.
+      description: The date the last related event occurred in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetClosedIncidents.lastEvent.id
       type: String
       description: Last related event ID.
@@ -748,7 +748,7 @@ script:
       description: Number of records per page.
     - name: status
       isArray: true
-      description: Filter by grouping status values.
+      description: A comma-separated list of grouping status values.
     outputs:
     - contextPath: LumuSecops.GetIncidentEventsGroupings.incidentId
       type: String
@@ -767,13 +767,13 @@ script:
       description: Total number of events in the grouping.
     - contextPath: LumuSecops.GetIncidentEventsGroupings.firstEvent.timestamp
       type: Date
-      description: First event timestamp.
+      description: The date the first event occurred in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetIncidentEventsGroupings.firstEvent.id
       type: String
       description: First event ID.
     - contextPath: LumuSecops.GetIncidentEventsGroupings.lastEvent.timestamp
       type: Date
-      description: Last event timestamp.
+      description: The date the last event occurred in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetIncidentEventsGroupings.lastEvent.id
       type: String
       description: Last event ID.
@@ -816,7 +816,7 @@ script:
       description: Incident ID.
     - contextPath: LumuSecops.GetIncidentDetails.timestamp
       type: Date
-      description: Incident creation time.
+      description: The date the incident was created in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetIncidentDetails.isUnread
       type: Boolean
       description: Whether the incident is unread.
@@ -828,7 +828,7 @@ script:
       description: Incident status.
     - contextPath: LumuSecops.GetIncidentDetails.statusTimestamp
       type: Date
-      description: Incident status update timestamp.
+      description: The date the incident status was last updated in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetIncidentDetails.description
       type: String
       description: Incident description.
@@ -891,7 +891,7 @@ script:
       description: Event count per environment.
     - contextPath: LumuSecops.GetIncidentDetails.actions.datetime
       type: Date
-      description: Action timestamp.
+      description: The date the action occurred in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetIncidentDetails.actions.userId
       type: Number
       description: Action user ID.
@@ -906,13 +906,13 @@ script:
       description: Incident actions.
     - contextPath: LumuSecops.GetIncidentDetails.firstEvent.timestamp
       type: Date
-      description: First event timestamp.
+      description: The date the first event occurred in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetIncidentDetails.firstEvent.id
       type: String
       description: First event ID.
     - contextPath: LumuSecops.GetIncidentDetails.lastEvent.timestamp
       type: Date
-      description: Last event timestamp.
+      description: The date the last event occurred in ISO 8601 format (e.g., 2026-01-15T12:34:56Z).
     - contextPath: LumuSecops.GetIncidentDetails.lastEvent.id
       type: String
       description: Last event ID.
@@ -1139,8 +1139,9 @@ script:
     - name: remote_incident_id
       description: Remote incident ID.
   - name: lumusecops-get-cache
+    hidden: true
     arguments: []
-    description: "Lumu get cache."
+    description: "Get Lumu Secops cache. For internal use."
     outputs:
     - contextPath: LumuSecops.GetCache.users
       type: string

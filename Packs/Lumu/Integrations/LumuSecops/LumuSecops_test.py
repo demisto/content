@@ -4,7 +4,6 @@ from unittest.mock import patch
 from LumuSecops import (
     COMMENT_MARK,
     Client,
-    add_prefix_to_comment,
     close_incident_command,
     comment_incident_command,
     consult_incidents_updates_command,
