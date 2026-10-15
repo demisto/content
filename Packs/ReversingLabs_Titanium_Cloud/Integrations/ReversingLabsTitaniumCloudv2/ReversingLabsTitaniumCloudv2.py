@@ -110,7 +110,7 @@ def test_module_command():
     return_results(result)
 
 
-def normalize_url(url: str):
+def normalize_url(url: str) -> str:
     url = url.replace(" ", "%20")
     return url
 
