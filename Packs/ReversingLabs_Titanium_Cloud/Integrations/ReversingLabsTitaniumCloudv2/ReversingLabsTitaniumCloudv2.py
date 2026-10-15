@@ -618,7 +618,7 @@ def advanced_search_output(result_list):
 
 
 def expression_search_command():
-    return_error(message="Command reversinglabs-titaniumcloud-expression-search is no longer available and can not be used.")
+    raise NotImplementedError("Command reversinglabs-titaniumcloud-expression-search is no longer available and can not be used.")
 
 
 def file_download_command():
