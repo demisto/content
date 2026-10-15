@@ -1,4 +1,8 @@
 Test pack for demisto-sdk CIAC-18570. Do not merge.
 
-- `TCTNoConnector`: no connector, sets `excludefromtightlycoupled: true` (CO192 should pass).
-- `TCTWithConnector`: referenced by the `tightly-coupled-test` connector and sets `excludefromtightlycoupled: true` (CO196 should fail).
+| Integration | Connector | `excludefromtightlycoupled` | Expected |
+|---|---|---|---|
+| `TCTNoConnector` | none | not set | CO192 fails |
+| `TCTExcludedNoConnector` | none | `true` | CO192 passes |
+| `TCTWithConnector` | `tightly-coupled-test` | `true` | CO196 fails |
+| `TCTCoveredNoFlag` | `tightly-coupled-test-pass` | not set | CO196 passes |

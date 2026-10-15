@@ -10,7 +10,6 @@ configuration:
 description: Test integration with no connector (CIAC-18570).
 display: TCT No Connector
 name: TCTNoConnector
-excludefromtightlycoupled: true
 script:
   commands:
   - name: tct-no-connector-ping
