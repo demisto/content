@@ -532,12 +532,12 @@ def user_dn(sam_account_name, search_base):
     return entry["dn"]
 
 
-def computer_dn(compuer_name, search_base):
+def computer_dn(computer_name, search_base):
     """Resolve a computer's DN by name. The input is escaped and treated as a literal value."""
-    search_filter = f"(&(objectClass=user)(objectCategory=computer)(name={escape_filter_chars(compuer_name)}))"
+    search_filter = f"(&(objectClass=user)(objectCategory=computer)(name={escape_filter_chars(computer_name)}))"
     entries = search(search_filter, search_base)
     if not entries:
-        raise Exception(f"Could not get full DN for computer with name '{compuer_name}'")
+        raise Exception(f"Could not get full DN for computer with name '{computer_name}'")
     entry = json.loads(entries[0].entry_to_json())
     return entry["dn"]
 

@@ -1263,7 +1263,7 @@ class FilterCapturingConnection:
         ("jdoe", "(&(objectClass=user)(sAMAccountName=jdoe))"),
     ],
 )
-def test_user_dn_escapes_filter_characters(sam_account_name, expected_filter):
+def test_user_dn_escapes_filter_characters(mocker, sam_account_name, expected_filter):
     """
     Given:
         A sAMAccountName containing LDAP filter special characters, a bare wildcard, a name with parentheses,
@@ -1274,17 +1274,17 @@ def test_user_dn_escapes_filter_characters(sam_account_name, expected_filter):
         The LDAP filter sent to the server treats the value as a literal (metacharacters escaped),
         and the domain prefix is still stripped before escaping.
     """
-    import Active_Directory_Query
+    from Active_Directory_Query import user_dn
 
     connection = FilterCapturingConnection(entries=[FilterCapturingEntry()])
-    Active_Directory_Query.connection = connection
+    mocker.patch("Active_Directory_Query.connection", connection)
 
-    Active_Directory_Query.user_dn(sam_account_name, "DC=corp,DC=local")
+    user_dn(sam_account_name, "DC=corp,DC=local")
 
     assert connection.filters == [expected_filter]
 
 
-def test_user_dn_special_chars_value_does_not_resolve():
+def test_user_dn_special_chars_value_does_not_resolve(mocker):
     """
     Given:
         A username containing LDAP filter special characters, and a directory with no user literally named that.
@@ -1293,12 +1293,12 @@ def test_user_dn_special_chars_value_does_not_resolve():
     Then:
         No DN is resolved and an exception is raised (instead of resolving a different object).
     """
-    import Active_Directory_Query
+    from Active_Directory_Query import user_dn
 
-    Active_Directory_Query.connection = FilterCapturingConnection(entries=[])
+    mocker.patch("Active_Directory_Query.connection", FilterCapturingConnection(entries=[]))
 
     with pytest.raises(Exception, match="Could not get full DN for user"):
-        Active_Directory_Query.user_dn(SPECIAL_CHARS_VALUE, "DC=corp,DC=local")
+        user_dn(SPECIAL_CHARS_VALUE, "DC=corp,DC=local")
 
 
 @pytest.mark.parametrize(
@@ -1308,7 +1308,7 @@ def test_user_dn_special_chars_value_does_not_resolve():
         ("WS-01", "(&(objectClass=user)(objectCategory=computer)(name=WS-01))"),
     ],
 )
-def test_computer_dn_escapes_filter_characters(computer_name, expected_filter):
+def test_computer_dn_escapes_filter_characters(mocker, computer_name, expected_filter):
     """
     Given:
         A computer name containing LDAP filter special characters, or a regular computer name.
@@ -1317,12 +1317,12 @@ def test_computer_dn_escapes_filter_characters(computer_name, expected_filter):
     Then:
         The LDAP filter treats the computer name as a literal value.
     """
-    import Active_Directory_Query
+    from Active_Directory_Query import computer_dn
 
     connection = FilterCapturingConnection(entries=[FilterCapturingEntry()])
-    Active_Directory_Query.connection = connection
+    mocker.patch("Active_Directory_Query.connection", connection)
 
-    Active_Directory_Query.computer_dn(computer_name, "DC=corp,DC=local")
+    computer_dn(computer_name, "DC=corp,DC=local")
 
     assert connection.filters == [expected_filter]
 
@@ -1336,14 +1336,14 @@ def test_disable_user_special_chars_value_modifies_nothing(mocker):
     Then:
         The lookup is escaped, nothing is resolved, an exception is raised and no object is modified.
     """
-    import Active_Directory_Query
+    from Active_Directory_Query import disable_user
 
     connection = FilterCapturingConnection(entries=[])
-    Active_Directory_Query.connection = connection
+    mocker.patch("Active_Directory_Query.connection", connection)
     mocker.patch.object(demisto, "args", return_value={"username": SPECIAL_CHARS_VALUE})
 
     with pytest.raises(Exception, match="Could not get full DN for user"):
-        Active_Directory_Query.disable_user("DC=corp,DC=local", 100)
+        disable_user("DC=corp,DC=local", 100)
 
     assert connection.modified_dns == []
     assert ESCAPED_SPECIAL_CHARS_VALUE in connection.filters[0]
@@ -1352,21 +1352,21 @@ def test_disable_user_special_chars_value_modifies_nothing(mocker):
 def test_set_password_not_expire_no_double_escape(mocker):
     """
     Given:
-        ad-set-password-never-expire called with a sAMAccountName that contains parentheses.
+        ad-modify-password-never-expire called with a sAMAccountName that contains parentheses.
     When:
         Running set_password_not_expire.
     Then:
         Every LDAP filter contains the name escaped exactly once (no '\\5c' from double escaping),
         and the resolved user is modified.
     """
-    import Active_Directory_Query
+    from Active_Directory_Query import set_password_not_expire
 
     connection = FilterCapturingConnection(entries=[FilterCapturingEntry()])
-    Active_Directory_Query.connection = connection
+    mocker.patch("Active_Directory_Query.connection", connection)
     mocker.patch.object(demisto, "args", return_value={"username": "jdoe(1)", "value": "true"})
     mocker.patch.object(demisto, "results")
 
-    Active_Directory_Query.set_password_not_expire("DC=corp,DC=local")
+    set_password_not_expire("DC=corp,DC=local")
 
     assert len(connection.filters) == 3
     for search_filter in connection.filters:
@@ -1375,7 +1375,7 @@ def test_set_password_not_expire_no_double_escape(mocker):
     assert connection.modified_dns == ["CN=jdoe,DC=corp,DC=local"]
 
 
-def test_lookup_helpers_escape_filter_characters():
+def test_lookup_helpers_escape_filter_characters(mocker):
     """
     Given:
         Values containing LDAP filter special characters passed to the internal lookup helpers used by the IAM commands.
@@ -1384,15 +1384,19 @@ def test_lookup_helpers_escape_filter_characters():
     Then:
         Each LDAP filter treats the value as a literal.
     """
-    import Active_Directory_Query
+    from Active_Directory_Query import (
+        check_if_user_exists_by_attribute,
+        get_user_activity_by_samaccountname,
+        get_user_dn_by_email,
+    )
 
     connection = FilterCapturingConnection(entries=[])
-    Active_Directory_Query.connection = connection
+    mocker.patch("Active_Directory_Query.connection", connection)
 
-    Active_Directory_Query.check_if_user_exists_by_attribute("DC=corp,DC=local", "sAMAccountName", SPECIAL_CHARS_VALUE)
-    Active_Directory_Query.get_user_activity_by_samaccountname("DC=corp,DC=local", SPECIAL_CHARS_VALUE)
+    check_if_user_exists_by_attribute("DC=corp,DC=local", "sAMAccountName", SPECIAL_CHARS_VALUE)
+    get_user_activity_by_samaccountname("DC=corp,DC=local", SPECIAL_CHARS_VALUE)
     # get_user_dn_by_email() uses the part before "@" (the whole value when there is no "@") as the sAMAccountName
-    Active_Directory_Query.get_user_dn_by_email("DC=corp,DC=local", "*)(cn=Administrator")
+    get_user_dn_by_email("DC=corp,DC=local", "*)(cn=Administrator")
 
     assert connection.filters == [
         f"(&(objectClass=User)(objectCategory=person)(sAMAccountName={ESCAPED_SPECIAL_CHARS_VALUE}))",
@@ -1424,14 +1428,14 @@ def test_search_computers_escapes_filter_characters(mocker, args, expected_filte
     Then:
         The LDAP filter treats each argument as a literal value.
     """
-    import Active_Directory_Query
+    from Active_Directory_Query import search_computers
 
     connection = FilterCapturingConnection(entries=[])
-    Active_Directory_Query.connection = connection
+    mocker.patch("Active_Directory_Query.connection", connection)
     mocker.patch.object(demisto, "args", return_value=args)
-    mocker.patch.object(Active_Directory_Query, "return_results")
+    mocker.patch("Active_Directory_Query.return_results")
 
-    Active_Directory_Query.search_computers("DC=corp,DC=local", 100)
+    search_computers("DC=corp,DC=local", 100)
 
     assert connection.filters == [expected_filter]
 
@@ -1453,10 +1457,10 @@ def test_search_group_members_escapes_filter_characters(mocker, account_name, ex
     Then:
         The '*' default still matches all members, while any other value is escaped and treated as a literal.
     """
-    import Active_Directory_Query
+    from Active_Directory_Query import search_group_members
 
     connection = FilterCapturingConnection(entries=[])
-    Active_Directory_Query.connection = connection
+    mocker.patch("Active_Directory_Query.connection", connection)
     mocker.patch.object(
         demisto,
         "args",
@@ -1469,7 +1473,7 @@ def test_search_group_members_escapes_filter_characters(mocker, account_name, ex
     )
     mocker.patch.object(demisto, "results")
 
-    Active_Directory_Query.search_group_members("DC=corp,DC=local", 100)
+    search_group_members("DC=corp,DC=local", 100)
 
     assert len(connection.filters) == 1
     assert connection.filters[0].endswith(f"{expected_account_filter})")
