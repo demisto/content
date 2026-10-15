@@ -1253,6 +1253,161 @@ script:
     execution: true
     name: azure-storage-container-delete
 
+  - name: azure-storage-containers-list
+    description: "Lists containers under the specified storage account. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/read."
+    arguments:
+    - name: account_name
+      description: The name of the storage account.
+      required: true
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: prefix
+      description: The prefix used to filter results to return only containers whose names begin with the specified value.
+    - name: limit
+      description: The maximum number of containers to retrieve. Accepted range is 1 to 5000.
+      defaultValue: '50'
+    - name: next_token
+      description: The continuation token returned by a previous call (Azure.Storage.ContainersNextToken), used to retrieve the next page of results.
+    outputs:
+    - contextPath: Azure.Storage.Container.name
+      description: The container name.
+      type: String
+    - contextPath: Azure.Storage.Container.Property.Last-Modified
+      description: The date and time the container was last modified, in RFC 1123 format (for example, Wed, 14 Aug 2024 10:00:00 GMT).
+      type: Date
+    - contextPath: Azure.Storage.Container.Property.Etag
+      description: The entity tag for the container.
+      type: String
+    - contextPath: Azure.Storage.Container.Property.LeaseStatus
+      description: The lease status of the container.
+      type: String
+    - contextPath: Azure.Storage.Container.Property.LeaseState
+      description: The lease state of the container.
+      type: String
+    - contextPath: Azure.Storage.ContainersNextToken
+      description: The continuation token to use when requesting the next set of containers.
+      type: String
+
+  - name: azure-storage-blobs-list
+    description: "Lists blobs under the specified container. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read."
+    arguments:
+    - name: container_name
+      description: The name of the container.
+      required: true
+    - name: account_name
+      description: The name of the storage account.
+      required: true
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: prefix
+      description: The prefix used to filter results to return only blobs whose names begin with the specified value.
+    - name: limit
+      description: The maximum number of blobs to retrieve. Accepted range is 1 to 5000.
+      defaultValue: '50'
+    - name: next_token
+      description: The continuation token returned by a previous call (Azure.Storage.BlobsNextToken), used to retrieve the next page of results.
+    outputs:
+    - contextPath: Azure.Storage.Blob.name
+      description: The name of the blob.
+      type: String
+    - contextPath: Azure.Storage.Blob.ContainerName
+      description: The name of the container that holds the blob.
+      type: String
+    - contextPath: Azure.Storage.Blob.Property
+      description: 'The blob system properties, including: Last-Modified, Etag, Content-Length, Content-Type, Content-Encoding, Content-Language, Content-MD5, Cache-Control, Content-Disposition, BlobType, LeaseStatus, LeaseState, and ServerEncrypted.'
+      type: Unknown
+    - contextPath: Azure.Storage.BlobsNextToken
+      description: The continuation token to use when requesting the next set of blobs.
+      type: String
+
+  - name: azure-storage-blob-update
+    description: "Updates the content of an existing blob. Fails if the blob does not exist. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read, Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
+    arguments:
+    - name: container_name
+      description: The name of the container.
+      required: true
+    - name: file_entry_id
+      description: The entry ID of the file to upload as the blob content. Available from the War Room when the context data contains file output.
+      required: true
+    - name: blob_name
+      description: The name of the blob to update.
+      required: true
+    - name: account_name
+      description: The name of the storage account.
+      required: true
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+
+  - name: azure-storage-blob-delete
+    description: "Marks a specific blob for deletion. The blob is deleted during garbage collection. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete."
+    execution: true
+    arguments:
+    - name: container_name
+      description: The name of the container.
+      required: true
+    - name: blob_name
+      description: The name of the blob to delete.
+      required: true
+    - name: account_name
+      description: The name of the storage account.
+      required: true
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+
+  - name: azure-storage-container-sas-create
+    description: "Creates a shared access signature (SAS) token for a container."
+    arguments:
+    - name: container_name
+      description: The name of the container.
+      required: true
+    - name: account_name
+      description: The name of the storage account.
+      required: true
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: expiry_time
+      description: The expiry time for the SAS token, in hours.
+      defaultValue: '1'
+      required: true
+    - name: signed_resources
+      description: The resources that are accessible via the shared access signature. Can be "c" (container), "b" (blob), "bv" (blob version), "bs" (blob snapshot), or "d" (directory).
+      auto: PREDEFINED
+      defaultValue: c
+      predefined:
+      - c
+      - b
+      - bv
+      - bs
+      - d
+      required: true
+    - name: signed_permissions
+      description: 'The permissions that are associated with the shared access signature. The user is restricted to operations that are allowed by the permissions. Possible permissions: r = Read, a = Add, c = Create, w = Write. The permissions must follow this order "racwdxltmeop". For example: r, c, a, w, rac, racw.'
+      defaultValue: r
+      required: true
+    - name: signed_ip
+      description: The public IP address or range of public IP addresses from which to accept requests.
+    - name: account_key
+      description: The access key of the storage account, used to sign the SAS token.
+      required: true
+      secret: true
+    outputs:
+    - contextPath: Azure.Storage.Container.SAS.name
+      description: The name of the container.
+      type: String
+    - contextPath: Azure.Storage.Container.SAS.SASURL
+      description: The generated SAS URL for the container.
+      type: String
+
   - arguments:
     - description: The name of the Blob Container.
       name: container_name
