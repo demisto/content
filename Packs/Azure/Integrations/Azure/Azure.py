@@ -668,7 +668,7 @@ STORAGE_BLOB_SPECIAL_COMMANDS = [
     "azure-storage-table-entity-replace",
     "azure-storage-table-entity-query",
     "azure-storage-table-entity-delete",
-    "azure-storage-blobs-list",
+        "azure-storage-blobs-list",
     "azure-storage-blob-update",
     "azure-storage-blob-delete",
 ]
@@ -9094,7 +9094,7 @@ def main():  # pragma: no cover
             "azure-storage-table-entity-replace": replace_entity_command,
             "azure-storage-table-entity-query": query_entity_command,
             "azure-storage-table-entity-delete": delete_entity_command,
-            "azure-storage-containers-list": storage_container_list_command,
+                        "azure-storage-containers-list": storage_container_list_command,
             "azure-storage-blobs-list": storage_container_blob_list_command,
             "azure-storage-blob-update": storage_container_blob_update_command,
             "azure-storage-blob-delete": storage_container_blob_delete_command,
