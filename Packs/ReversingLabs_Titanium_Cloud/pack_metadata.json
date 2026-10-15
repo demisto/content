@@ -19,7 +19,8 @@
     "keywords": [
         "Static Analysis",
         "Dynamic Analysis",
-        "File Analysis"
+        "File Analysis",
+        "ReversingLabs"
     ],
     "marketplaces": [
         "xsoar",
