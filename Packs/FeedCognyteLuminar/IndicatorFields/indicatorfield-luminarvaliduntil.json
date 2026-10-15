@@ -5,7 +5,7 @@
     "ownerOnly": false,
     "description": "The date until which the indicator is valid according to Luminar.",
     "cliName": "luminarvaliduntil",
-    "type": "shortText",
+    "type": "date",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -17,11 +17,25 @@
     "content": true,
     "group": 2,
     "hidden": false,
-    "associatedToAll": true,
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.9.0",
+    "associatedTypes": [
+        "IP",
+        "IPv6",
+        "CIDR",
+        "IPv6CIDR",
+        "URL",
+        "Domain",
+        "Email",
+        "File",
+        "Registry Key",
+        "MUTEX",
+        "AS",
+        "Host"
+    ]
 }

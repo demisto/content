@@ -31,6 +31,9 @@ REQUESTS_TIMEOUT_SEC = 86400
 DUMMY_INDICATOR_VALUE = "$$DummyIndicator$$"
 DATE_ADDED_LAST_HEADER = "X-TAXII-Date-Added-Last"
 LEAKED_CREDENTIAL = "LEAKED CREDENTIAL"
+# Written to the 'luminarleakedcredential' field unless the opt-in
+# 'Include Leaked Credentials' parameter is enabled.
+MASKED_CREDENTIAL = "********"
 # The Luminar TAXII collections that are always fetched.
 IOCS_COLLECTION = "IOCs"
 LEAKED_RECORDS_COLLECTION = "Leaked Records"
@@ -314,6 +317,7 @@ class Client(BaseClient):
         proxy: bool = False,
         tags: Optional[list] = None,
         tlp_color: Optional[str] = None,
+        include_leaked_credential: bool = False,
     ):
         super().__init__(base_url=base_url.rstrip("/"), verify=verify, proxy=proxy, timeout=REQUESTS_TIMEOUT_SEC)
         self.account_id = account_id
@@ -321,6 +325,7 @@ class Client(BaseClient):
         self.client_secret = client_secret
         self.feed_tags = tags or []
         self.tlp_color = tlp_color
+        self.include_leaked_credential = include_leaked_credential
         self._access_token: Optional[str] = None
         self._token_expiry: float = 0
         # Bounded LRU of cross-batch referenced objects (sliding-window fetch).
@@ -1129,8 +1134,13 @@ def build_account_indicator(
     incident: Optional[dict],
     feed_tags: list,
     tlp_color: Optional[str],
+    include_credential: bool = False,
 ) -> Optional[dict]:
-    """Create an Account indicator from a leaked-credential user-account object."""
+    """Create an Account indicator from a leaked-credential user-account object.
+
+    The plaintext credential is masked unless include_credential is enabled
+    (opt-in 'Include Leaked Credentials' parameter), so customer passwords are
+    not exposed in TIM by default."""
     ext = get_extension_fields(stix_object)
     value = stix_object.get("account_login") or stix_object.get("display_name")
     if not value:
@@ -1138,8 +1148,7 @@ def build_account_indicator(
         return None
 
     tags = [LEAKED_CREDENTIAL] + list(feed_tags)
-    if stix_object.get("credential"):
-        tags.append(f'Credentials:{stix_object["credential"]}')
+    credential = stix_object.get("credential")
     fields = build_common_fields(stix_object, feed_tags, tlp_color, ext)
     fields.update(
         {
@@ -1149,7 +1158,7 @@ def build_account_indicator(
             "username": stix_object.get("account_login"),
             "displayname": stix_object.get("display_name"),
             "emailaddress": stix_object.get("display_name"),
-            "luminarleakedcredential": stix_object.get("credential"),
+            "luminarleakedcredential": credential if include_credential else (MASKED_CREDENTIAL if credential else None),
             "luminarleaksource": ext.get("source"),
             "luminarleakurl": ext.get("url"),
             "luminarmonitoringplanterms": to_csv(ext.get("monitoring_plan_terms")),
@@ -1180,6 +1189,9 @@ def build_account_indicator(
 
     raw_json = dict(stix_object)
     raw_json["value"] = value
+    if credential and not include_credential:
+        # Keep the raw JSON faithful but do not store the plaintext password.
+        raw_json["credential"] = MASKED_CREDENTIAL
     indicator = {
         "value": value,
         "type": FeedIndicatorType.Account,
@@ -1329,6 +1341,7 @@ def stix_objects_to_indicators(
     incident_map: Optional[dict] = None,
     data_type: Optional[str] = None,
     raw_map: Optional[dict] = None,
+    include_credential: bool = False,
 ) -> tuple[list, list]:
     """
     Transform a page of STIX objects into XSOAR indicator dicts.
@@ -1338,7 +1351,8 @@ def stix_objects_to_indicators(
     (target + resolved context) is passed in. raw_map (id -> object) is used
     to resolve reference properties like malware sample_refs; when omitted
     it is built from the given objects. data_type is written to the
-    'luminardatatype' field of every created indicator.
+    'luminardatatype' field of every created indicator. include_credential
+    controls whether leaked plaintext credentials are stored or masked.
 
     Returns:
         (indicators, rel_records)
@@ -1356,7 +1370,7 @@ def stix_objects_to_indicators(
 
         if obj_type == "user-account":
             incident = find_related_incident(obj.get("id", ""), rel_records, incident_map)
-            indicator = build_account_indicator(obj, incident, feed_tags, tlp_color)
+            indicator = build_account_indicator(obj, incident, feed_tags, tlp_color, include_credential=include_credential)
         elif stix_is_sdo(obj_type):
             indicator = build_sdo_indicator(obj, feed_tags, tlp_color, raw_map=raw_map)
         else:
@@ -1502,6 +1516,7 @@ def fetch_indicators_command(client: Client, first_fetch: Optional[str]) -> None
                     incident_map=incident_map,
                     data_type=COLLECTION_TO_DATA_TYPE.get(title),
                     raw_map={o.get("id"): o for o in (target + context) if o.get("id")},
+                    include_credential=client.include_leaked_credential,
                 )
                 batch_created, batch_rels = create_batch(indicators, target_rels, light_map)
                 created += batch_created
@@ -1698,6 +1713,7 @@ def stream_persist_collect(
             incident_map=incident_map,
             data_type=COLLECTION_TO_DATA_TYPE.get(collection_title),
             raw_map=id_map,
+            include_credential=client.include_leaked_credential,
         )
         batch_created, _batch_rels = create_batch(indicators, target_rels, light_map)
         created += batch_created
@@ -1802,6 +1818,7 @@ def main() -> None:
         proxy=proxy,
         tags=tags,
         tlp_color=tlp_color,
+        include_leaked_credential=argToBoolean(params.get("include_leaked_credential", False)),
     )
 
     command = demisto.command()

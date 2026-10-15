@@ -17,11 +17,15 @@
     "content": true,
     "group": 2,
     "hidden": false,
-    "associatedToAll": true,
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.9.0",
+    "associatedTypes": [
+        "Account",
+        "Luminar Incident"
+    ]
 }

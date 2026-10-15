@@ -68,7 +68,7 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  additionalinfo: The reputation to apply to indicators fetched from this integration instance.
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
 - name: feedReliability
   display: Source Reliability
   defaultvalue: F - Reliability cannot be judged
@@ -82,7 +82,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  additionalinfo: The reliability of the source providing the intelligence data.
+  additionalinfo: Reliability of the source providing the intelligence data
 - name: feedExpirationPolicy
   display: ''
   type: 17
@@ -110,7 +110,7 @@ configuration:
   type: 0
   required: false
   section: Collect
-  additionalinfo: A comma-separated list of tags to apply to indicators fetched from the feed.
+  additionalinfo: Supports CSV values.
 - name: tlp_color
   display: Traffic Light Protocol Color
   type: 15
@@ -122,6 +122,13 @@ configuration:
   - GREEN
   - WHITE
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+- name: include_leaked_credential
+  display: Include Leaked Credentials
+  type: 8
+  required: false
+  section: Collect
+  advanced: true
+  additionalinfo: Whether to store the plaintext leaked credential in the Account indicator's Luminar Leaked Credential field. When not selected, a masked value is stored so customer passwords are not exposed in TIM.
 - name: feedBypassExclusionList
   display: Bypass exclusion list
   type: 8
@@ -245,4 +252,3 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 6.9.0
-supportlevelheader: xsoar

@@ -23,8 +23,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "shouldCommit": false,
-    "shouldCommitSys": false,
-    "inUse": true,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.9.0"
 }

@@ -20,13 +20,14 @@ This integration was integrated and tested with the Luminar external API (TAXII 
 | Trust any certificate (not secure) | Whether to trust any certificate \(not secure\). | False |
 | First Fetch Time | The first fetch time range or date for incremental fetching \(e.g. "7 days", "2026-01-01T00:00:00Z"\). On the first fetch, indicators added to the collections after this time are ingested. | False |
 | Fetch indicators |  | False |
-| Indicator Reputation | The reputation to apply to indicators fetched from this integration instance. | False |
-| Source Reliability | The reliability of the source providing the intelligence data. | True |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
 |  |  | False |
 |  |  | False |
 | Feed Fetch Interval | The interval \(in minutes\) at which the feed fetches indicators. | False |
-| Tags | A comma-separated list of tags to apply to indicators fetched from the feed. | False |
+| Tags | Supports CSV values. | False |
 | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
+| Include Leaked Credentials | Whether to store the plaintext leaked credential in the Account indicator's Luminar Leaked Credential field. When not selected, a masked value is stored so customer passwords are not exposed in TIM. | False |
 | Bypass exclusion list | Whether to bypass the exclusion list for indicators from this feed. When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
 
 ## Commands
@@ -207,3 +208,4 @@ There is no context output for this command.
 
 - The get-* commands fetch and persist the full collection (bounded only by the `from_date` argument) before rendering the table. The `limit` argument only limits the number of displayed rows; all fetched indicators are saved to TIM.
 - For large `from_date` ranges, run the commands with a higher execution timeout, e.g., `!luminar-v3-get-indicators from_date="30 days" execution-timeout=3600`. For scheduled fetches, increase the `feedIntegrationScript.timeout` server configuration.
+- Leaked credentials are masked (`********`) on Account indicators by default. Enable the **Include Leaked Credentials** parameter to store the plaintext value.

@@ -174,7 +174,10 @@ def test_stix_objects_to_indicators_leaked_records():
     account = accounts[0]
     assert account["fields"]["accounttype"] == "LEAKED CREDENTIAL"
     assert any(t.startswith("Incident: ") for t in account["fields"]["tags"])
-    assert account["fields"].get("luminarleakedcredential") is not None
+    # plaintext credential is masked by default and never added as a tag
+    assert account["fields"]["luminarleakedcredential"] == "********"
+    assert account["rawJSON"]["credential"] == "********"
+    assert not any(t.startswith("Credentials:") for t in account["fields"]["tags"])
     # related incident data is saved on the account's fields (old integration approach)
     assert account["fields"].get("luminarincidentname")
     assert account["fields"].get("luminarincidentdescription")
@@ -189,6 +192,23 @@ def test_stix_objects_to_indicators_leaked_records():
     malware = [i for i in indicators if i["type"] == "Malware"]
     assert malware
     assert malware[0]["fields"]["luminarsamples"] == "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe"
+
+
+def test_stix_objects_to_indicators_include_credential():
+    """
+    Given:
+        - A STIX bundle from the Leaked Records collection and the opt-in
+          'Include Leaked Credentials' setting enabled.
+    When:
+        - Converting it to XSOAR indicators with include_credential=True.
+    Then:
+        - The Account indicator stores the plaintext leaked credential.
+    """
+    indicators, _ = stix_objects_to_indicators(LEAKED_RESPONSE["objects"], [], None, include_credential=True)
+    accounts = [i for i in indicators if i["type"] == "Account"]
+    assert accounts
+    assert accounts[0]["fields"]["luminarleakedcredential"] == "P@ssw0rd!123"
+    assert accounts[0]["rawJSON"]["credential"] == "P@ssw0rd!123"
 
 
 def test_stix_objects_to_indicators_data_type():
