@@ -76,7 +76,11 @@ script:
       - "true"
       - "false"
       required: true
-    description: Gets BitSight findings events from the last 2 days (48 hours).
+    - description: 'Optional. Start of the window to retrieve findings from. Accepts free text (e.g. "2 days ago", "1 week ago") or a date (e.g. 2026-08-31). When provided, the command queries this explicit date range instead of the default 2-day lookback. Useful for retrieving historical findings.'
+      name: start_date
+    - description: 'Optional. End of the window to retrieve findings up to. Accepts free text (e.g. "now", "1 day ago") or a date (e.g. 2026-09-02). Defaults to now when omitted.'
+      name: end_date
+    description: Gets BitSight findings events from the last 2 days (48 hours) by default, or from an explicit start_date/end_date window when provided.
     name: bitsight-get-events
   runonce: false
   script: "-"
