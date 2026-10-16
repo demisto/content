@@ -1,0 +1,830 @@
+{
+    "name": "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a",
+    "canonicalName": "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a",
+    "parent": "organizations/1094826489209/sources/5629340921983475201",
+    "resourceName": "//compute.googleapis.com/projects/prod-webapp-284917/zones/us-central1-a/instances/web-server-01",
+    "state": "ACTIVE",
+    "category": "Malware: Cryptomining Bad IP",
+    "externalUri": "https://console.cloud.google.com/compute/instancesDetail/zones/us-central1-a/instances/web-server-01?project=prod-webapp-284917",
+    "sourceProperties": {
+        "dst_zipcode": "94043",
+        "browser": "Chrome",
+        "dst_region": "California",
+        "userkey": "jdoe@example.com",
+        "traffic_type": "CloudApp",
+        "count": "3",
+        "dst_longitude": -122.0841,
+        "src_region": "Maharashtra",
+        "app": "Google Cloud Platform",
+        "dst_latitude": 37.4220,
+        "object": "instances/web-server-01",
+        "src_latitude": 19.0760,
+        "sv": "malsite",
+        "os": "Linux",
+        "src_geoip_src": "MaxMind",
+        "dst_location": "Mountain View",
+        "device": "Server",
+        "srcip": "0.0.0.1"
+    },
+    "securityMarks": {
+        "name": "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a/securityMarks",
+        "marks": {
+            "priority": "P1",
+            "reviewed": "true"
+        },
+        "canonicalName": "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a/securityMarks"
+    },
+    "eventTime": "2020-02-18T07:26:42Z",
+    "createTime": "2020-02-19T13:37:43.858Z",
+    "severity": "CRITICAL",
+    "mute": "MUTED",
+    "muteInfo": {
+        "staticMute": {
+            "state": "MUTED",
+            "applyTime": "2020-02-18T07:26:42Z"
+        },
+        "dynamicMuteRecords": [
+            {
+                "muteConfig": "organizations/1094826489209/muteConfigs/known-cryptomining-testrange",
+                "matchTime": "2020-02-18T07:26:42Z"
+            }
+        ]
+    },
+    "findingClass": "THREAT",
+    "indicator": {
+        "ipAddresses": [
+            "0.0.0.1"
+        ],
+        "domains": [
+            "xmr-pool.badactor.example"
+        ],
+        "signatures": [
+            {
+                "signatureType": "SIGNATURE_TYPE_PROCESS",
+                "memoryHashSignature": {
+                    "binaryFamily": "XMRig",
+                    "detections": [
+                        {
+                            "binary": "xmrig",
+                            "percentPagesMatched": 0.87
+                        }
+                    ]
+                },
+                "yaraRuleSignature": {
+                    "yaraRule": "Cryptominer_XMRig_Generic"
+                }
+            }
+        ],
+        "uris": [
+            "http://xmr-pool.badactor.example:3333"
+        ]
+    },
+    "vulnerability": {
+        "cve": {
+            "id": "CVE-2021-44228",
+            "references": [
+                {
+                    "source": "NVD",
+                    "uri": "https://nvd.nist.gov/vuln/detail/CVE-2021-44228"
+                }
+            ],
+            "cvssv3": {
+                "baseScore": 10.0,
+                "attackVector": "ATTACK_VECTOR_NETWORK",
+                "attackComplexity": "ATTACK_COMPLEXITY_LOW",
+                "privilegesRequired": "PRIVILEGES_REQUIRED_NONE",
+                "userInteraction": "USER_INTERACTION_NONE",
+                "scope": "SCOPE_CHANGED",
+                "confidentialityImpact": "IMPACT_HIGH",
+                "integrityImpact": "IMPACT_HIGH",
+                "availabilityImpact": "IMPACT_HIGH"
+            },
+            "upstreamFixAvailable": true,
+            "impact": "LOW",
+            "exploitationActivity": "WIDE",
+            "observedInTheWild": true,
+            "zeroDay": false,
+            "exploitReleaseDate": "2021-12-10T00:00:00Z",
+            "firstExploitationDate": "2021-12-10T00:00:00Z"
+        },
+        "offendingPackage": {
+            "packageName": "log4j-core",
+            "cpeUri": "cpe:2.3:a:apache:log4j:2.14.1:*:*:*:*:*:*:*",
+            "packageType": "MAVEN",
+            "packageVersion": "2.14.1"
+        },
+        "fixedPackage": {
+            "packageName": "log4j-core",
+            "cpeUri": "cpe:2.3:a:apache:log4j:2.17.1:*:*:*:*:*:*:*",
+            "packageType": "MAVEN",
+            "packageVersion": "2.17.1"
+        },
+        "securityBulletin": {
+            "bulletinId": "GCP-2021-021",
+            "submissionTime": "2021-12-11T00:00:00Z",
+            "suggestedUpgradeVersion": "2.17.1"
+        },
+        "providerRiskScore": "95",
+        "reachable": true,
+        "cwes": [
+            {
+                "id": "CWE-502",
+                "references": [
+                    {
+                        "source": "MITRE",
+                        "uri": "https://dummyuser1@dummy.com/data/definitions/502.html"
+                    }
+                ]
+            }
+        ]
+    },
+    "muteUpdateTime": "2020-02-18T07:26:42Z",
+    "externalSystems": {
+        "jira": {
+            "name": "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a/externalSystems/jira",
+            "assignees": [
+                "secops@example.com"
+            ],
+            "externalUid": "SEC-4821",
+            "status": "In Progress",
+            "externalSystemUpdateTime": "2020-02-18T07:26:42Z",
+            "caseUri": "https://example.atlassian.net/browse/SEC-4821",
+            "casePriority": "High",
+            "caseSla": "2020-02-20T07:26:42Z",
+            "caseCreateTime": "2020-02-18T07:26:42Z",
+            "caseCloseTime": "2020-02-19T07:26:42Z",
+            "ticketInfo": {
+                "id": "SEC-4821",
+                "assignee": "secops@example.com",
+                "description": "Cryptomining activity detected on web-server-01",
+                "uri": "https://example.atlassian.net/browse/SEC-4821",
+                "status": "In Progress",
+                "updateTime": "2020-02-18T07:26:42Z"
+            }
+        }
+    },
+    "mitreAttack": {
+        "primaryTactic": "IMPACT",
+        "primaryTechniques": [
+            "RESOURCE_HIJACKING"
+        ],
+        "additionalTactics": [
+            "COMMAND_AND_CONTROL"
+        ],
+        "additionalTechniques": [
+            "INGRESS_TOOL_TRANSFER"
+        ],
+        "version": "12"
+    },
+    "access": {
+        "principalEmail": "jdoe@example.com",
+        "callerIp": "0.0.0.1",
+        "callerIpGeo": {
+            "regionCode": "IN"
+        },
+        "userAgentFamily": "curl",
+        "userAgent": "curl/7.68.0",
+        "serviceName": "compute.googleapis.com",
+        "methodName": "v1.compute.instances.get",
+        "principalSubject": "user:jdoe@example.com",
+        "serviceAccountKeyName": "//iam.googleapis.com/projects/prod-webapp-284917/serviceAccounts/compute@prod-webapp-284917.iam.gserviceaccount.com/keys/a1b2c3d4",
+        "serviceAccountDelegationInfo": [
+            {
+                "principalEmail": "compute@prod-webapp-284917.iam.gserviceaccount.com",
+                "principalSubject": "serviceAccount:compute@prod-webapp-284917.iam.gserviceaccount.com"
+            }
+        ],
+        "userName": "jdoe"
+    },
+    "connections": [
+        {
+            "destinationIp": "0.0.0.1",
+            "destinationPort": 3333,
+            "sourceIp": "10.128.0.12",
+            "sourcePort": 51244,
+            "protocol": "TCP"
+        }
+    ],
+    "muteInitiator": "secops@example.com",
+    "processes": [
+        {
+            "name": "xmrig",
+            "binary": {
+                "path": "/tmp/.cache/xmrig",
+                "size": "4194304",
+                "sha256": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+                "hashedSize": "4194304",
+                "partiallyHashed": false,
+                "contents": "ELF binary",
+                "diskPath": {
+                    "partitionUuid": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+                    "relativePath": "/tmp/.cache/xmrig"
+                },
+                "operations": [
+                    {
+                        "type": "EXECUTE"
+                    }
+                ],
+                "fileLoadState": "LOADED_BY_PROCESS"
+            },
+            "libraries": [
+                {
+                    "path": "/lib/x86_64-linux-gnu/libc.so.6",
+                    "size": "2029224",
+                    "sha256": "cafebabecafebabecafebabecafebabecafebabecafebabecafebabecafebabe",
+                    "hashedSize": "2029224",
+                    "partiallyHashed": false,
+                    "contents": "shared object",
+                    "diskPath": {
+                        "partitionUuid": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+                        "relativePath": "/lib/x86_64-linux-gnu/libc.so.6"
+                    },
+                    "operations": [
+                        {
+                            "type": "OPEN"
+                        }
+                    ],
+                    "fileLoadState": "LOADED_BY_PROCESS"
+                }
+            ],
+            "script": {
+                "path": "/tmp/.cache/install.sh",
+                "size": "2048",
+                "sha256": "feedfacefeedfacefeedfacefeedfacefeedfacefeedfacefeedfacefeedface",
+                "hashedSize": "2048",
+                "partiallyHashed": false,
+                "contents": "#!/bin/bash",
+                "diskPath": {
+                    "partitionUuid": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+                    "relativePath": "/tmp/.cache/install.sh"
+                },
+                "operations": [
+                    {
+                        "type": "EXECUTE"
+                    }
+                ],
+                "fileLoadState": "LOADED_BY_PROCESS"
+            },
+            "args": [
+                "./xmrig",
+                "-o",
+                "xmr-pool.badactor.example:3333"
+            ],
+            "argumentsTruncated": false,
+            "envVariables": [
+                {
+                    "name": "HOME",
+                    "val": "/root"
+                }
+            ],
+            "envVariablesTruncated": false,
+            "pid": "34521",
+            "parentPid": "1042",
+            "userId": "0"
+        }
+    ],
+    "contacts": {
+        "security": {
+            "contacts": [
+                {
+                    "email": "security-admin@example.com"
+                }
+            ]
+        }
+    },
+    "compliances": [
+        {
+            "standard": "cis",
+            "version": "1.2.0",
+            "ids": [
+                "4.1"
+            ]
+        }
+    ],
+    "parentDisplayName": "Event Threat Detection",
+    "description": "The VM web-server-01 connected to a known cryptomining command-and-control IP address.",
+    "exfiltration": {
+        "sources": [
+            {
+                "name": "//compute.googleapis.com/projects/prod-webapp-284917/zones/us-central1-a/instances/web-server-01",
+                "components": [
+                    "disk"
+                ]
+            }
+        ],
+        "targets": [
+            {
+                "name": "//storage.googleapis.com/exfil-bucket-badactor",
+                "components": [
+                    "bucket"
+                ]
+            }
+        ],
+        "totalExfiltratedBytes": "1048576"
+    },
+    "iamBindings": [
+        {
+            "action": "ADD",
+            "role": "roles/owner",
+            "member": "user:jdoe@example.com"
+        }
+    ],
+    "nextSteps": "Isolate the affected VM, terminate the xmrig process, and rotate the associated service account keys.",
+    "moduleName": "known_cryptomining_bad_ip",
+    "containers": [
+        {
+            "name": "web-app",
+            "uri": "gcr.io/prod-webapp-284917/web-app@sha256:baddecafbaddecafbaddecafbaddecafbaddecafbaddecafbaddecafbaddecaf",
+            "imageId": "sha256:baddecafbaddecafbaddecafbaddecafbaddecafbaddecafbaddecafbaddecaf",
+            "labels": [
+                {
+                    "name": "app",
+                    "value": "web"
+                }
+            ],
+            "createTime": "2020-02-18T07:26:42Z"
+        }
+    ],
+    "kubernetes": {
+        "pods": [
+            {
+                "ns": "default",
+                "name": "web-app-7d9f8c6b5-x2k4p",
+                "labels": [
+                    {
+                        "name": "app",
+                        "value": "web"
+                    }
+                ],
+                "containers": [
+                    {
+                        "name": "web-app",
+                        "uri": "gcr.io/prod-webapp-284917/web-app@sha256:baddecafbaddecafbaddecafbaddecafbaddecafbaddecafbaddecafbaddecaf",
+                        "imageId": "sha256:baddecafbaddecafbaddecafbaddecafbaddecafbaddecafbaddecafbaddecaf",
+                        "labels": [
+                            {
+                                "name": "app",
+                                "value": "web"
+                            }
+                        ],
+                        "createTime": "2020-02-18T07:26:42Z"
+                    }
+                ]
+            }
+        ],
+        "nodes": [
+            {
+                "name": "gke-prod-cluster-default-pool-a1b2c3d4-x9k2"
+            }
+        ],
+        "nodePools": [
+            {
+                "name": "default-pool",
+                "nodes": [
+                    {
+                        "name": "gke-prod-cluster-default-pool-a1b2c3d4-x9k2"
+                    }
+                ]
+            }
+        ],
+        "roles": [
+            {
+                "kind": "ROLE",
+                "ns": "default",
+                "name": "pod-reader"
+            }
+        ],
+        "bindings": [
+            {
+                "ns": "default",
+                "name": "read-pods",
+                "role": {
+                    "kind": "ROLE",
+                    "ns": "default",
+                    "name": "pod-reader"
+                },
+                "subjects": [
+                    {
+                        "kind": "USER",
+                        "ns": "default",
+                        "name": "jdoe@example.com"
+                    }
+                ]
+            }
+        ],
+        "accessReviews": [
+            {
+                "group": "apps",
+                "ns": "default",
+                "name": "deployments",
+                "resource": "deployments",
+                "subresource": "",
+                "verb": "create",
+                "version": "v1"
+            }
+        ],
+        "objects": [
+            {
+                "group": "apps",
+                "kind": "Deployment",
+                "ns": "default",
+                "name": "web-app",
+                "containers": [
+                    {
+                        "name": "web-app",
+                        "uri": "gcr.io/prod-webapp-284917/web-app@sha256:baddecafbaddecafbaddecafbaddecafbaddecafbaddecafbaddecafbaddecaf",
+                        "imageId": "sha256:baddecafbaddecafbaddecafbaddecafbaddecafbaddecafbaddecafbaddecaf",
+                        "labels": [
+                            {
+                                "name": "app",
+                                "value": "web"
+                            }
+                        ],
+                        "createTime": "2020-02-18T07:26:42Z"
+                    }
+                ]
+            }
+        ]
+    },
+    "database": {
+        "name": "//cloudsql.googleapis.com/projects/prod-webapp-284917/instances/main-db",
+        "displayName": "main-db",
+        "userName": "app_user",
+        "query": "SELECT * FROM users WHERE role = 'admin'",
+        "grantees": [
+            "app_user"
+        ],
+        "version": "POSTGRES_14"
+    },
+    "attackExposure": {
+        "score": 8.5,
+        "latestCalculationTime": "2020-02-18T07:26:42Z",
+        "attackExposureResult": "organizations/1094826489209/simulations/latest/attackExposureResults/6d7e8f9a",
+        "state": "CALCULATED",
+        "exposedHighValueResourcesCount": 3,
+        "exposedMediumValueResourcesCount": 5,
+        "exposedLowValueResourcesCount": 12
+    },
+    "files": [
+        {
+            "path": "/tmp/.cache/xmrig",
+            "size": "4194304",
+            "sha256": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+            "hashedSize": "4194304",
+            "partiallyHashed": false,
+            "contents": "ELF binary",
+            "diskPath": {
+                "partitionUuid": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+                "relativePath": "/tmp/.cache/xmrig"
+            },
+            "operations": [
+                {
+                    "type": "EXECUTE"
+                }
+            ],
+            "fileLoadState": "LOADED_BY_PROCESS"
+        }
+    ],
+    "cloudDlpInspection": {
+        "inspectJob": "projects/prod-webapp-284917/locations/global/dlpJobs/i-1234567890123456789",
+        "infoType": "CREDIT_CARD_NUMBER",
+        "infoTypeCount": "42",
+        "fullScan": true
+    },
+    "cloudDlpDataProfile": {
+        "dataProfile": "projects/prod-webapp-284917/locations/us/tableProfiles/9876543210",
+        "parentType": "ORGANIZATION",
+        "infoTypes": [
+            {
+                "name": "EMAIL_ADDRESS",
+                "version": "1",
+                "sensitivityScore": {
+                    "score": "SENSITIVITY_LOW"
+                }
+            }
+        ]
+    },
+    "kernelRootkit": {
+        "name": "Diamorphine",
+        "unexpectedCodeModification": true,
+        "unexpectedReadOnlyDataModification": false,
+        "unexpectedFtraceHandler": true,
+        "unexpectedKprobeHandler": false,
+        "unexpectedKernelCodePages": true,
+        "unexpectedSystemCallHandler": true,
+        "unexpectedInterruptHandler": false,
+        "unexpectedProcessesInRunqueue": false
+    },
+    "orgPolicies": [
+        {
+            "name": "organizations/1094826489209/policies/compute.requireShieldedVm"
+        }
+    ],
+    "job": {
+        "name": "projects/prod-webapp-284917/jobs/etl-nightly-run",
+        "state": "PENDING",
+        "errorCode": 0,
+        "location": "us-central1"
+    },
+    "application": {
+        "baseUri": "https://web-server-01.example.com",
+        "fullUri": "https://web-server-01.example.com/api/v1/login"
+    },
+    "ipRules": {
+        "direction": "INGRESS",
+        "sourceIpRanges": [
+            "0.0.0.0/0"
+        ],
+        "destinationIpRanges": [
+            "0.0.0.1/20"
+        ],
+        "exposedServices": [
+            "ssh"
+        ],
+        "allowed": {
+            "ipRules": [
+                {
+                    "protocol": "tcp",
+                    "portRanges": [
+                        {
+                            "min": "22",
+                            "max": "22"
+                        }
+                    ]
+                }
+            ]
+        },
+        "denied": {
+            "ipRules": [
+                {
+                    "protocol": "tcp",
+                    "portRanges": [
+                        {
+                            "min": "3333",
+                            "max": "3333"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "backupDisasterRecovery": {
+        "backupTemplate": "gold-daily",
+        "policies": [
+            "daily-30d-retention"
+        ],
+        "host": "web-server-01",
+        "applications": [
+            "web-app"
+        ],
+        "storagePool": "primary-pool",
+        "policyOptions": [
+            "compression"
+        ],
+        "profile": "production",
+        "appliance": "bdr-appliance-01",
+        "backupType": "Incremental",
+        "backupCreateTime": "2020-02-18T07:26:42Z"
+    },
+    "securityPosture": {
+        "name": "organizations/1094826489209/locations/global/postures/production-posture",
+        "revisionId": "a1b2c3d4",
+        "postureDeploymentResource": "organizations/1094826489209",
+        "postureDeployment": "organizations/1094826489209/locations/global/postureDeployments/prod-deployment",
+        "changedPolicy": "compute.requireShieldedVm",
+        "policySet": "cis-gcp-1.2",
+        "policy": "compute.requireShieldedVm",
+        "policyDriftDetails": [
+            {
+                "field": "enableSecureBoot",
+                "expectedValue": "true",
+                "detectedValue": "false"
+            }
+        ]
+    },
+    "logEntries": [
+        {
+            "cloudLoggingEntry": {
+                "insertId": "1a2b3c4d5e6f",
+                "logId": "cloudaudit.googleapis.com%2Fdata_access",
+                "resourceContainer": "projects/prod-webapp-284917",
+                "timestamp": "2020-02-18T07:26:42Z"
+            }
+        }
+    ],
+    "loadBalancers": [
+        {
+            "name": "web-lb-frontend"
+        }
+    ],
+    "cloudArmor": {
+        "securityPolicy": {
+            "name": "prod-waf-policy",
+            "type": "CLOUD_ARMOR",
+            "preview": false
+        },
+        "requests": {
+            "ratio": 0.35,
+            "shortTermAllowed": 1200,
+            "longTermAllowed": 45000,
+            "longTermDenied": 3200
+        },
+        "adaptiveProtection": {
+            "confidence": 0.92
+        },
+        "attack": {
+            "volumePpsLong": "150000",
+            "volumeBpsLong": "120000000",
+            "classification": "HTTP_FLOOD",
+            "volumePps": 180000,
+            "volumeBps": 145000000
+        },
+        "threatVector": "HTTP_FLOOD",
+        "duration": "300s"
+    },
+    "notebook": {
+        "name": "projects/prod-webapp-284917/locations/us-central1/instances/analysis-notebook",
+        "service": "Vertex AI Workbench",
+        "lastAuthor": "data-scientist@example.com",
+        "notebookUpdateTime": "2020-02-18T07:26:42Z"
+    },
+    "toxicCombination": {
+        "attackExposureScore": 9.1,
+        "relatedFindings": [
+            "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/aabbccddeeff00112233445566778899"
+        ]
+    },
+    "groupMemberships": [
+        {
+            "groupType": "GROUP_TYPE_TOXIC_COMBINATION",
+            "groupId": "toxic-combo-9a8b7c6d"
+        }
+    ],
+    "disk": {
+        "name": "//compute.googleapis.com/projects/prod-webapp-284917/zones/us-central1-a/disks/web-server-01"
+    },
+    "dataAccessEvents": [
+        {
+            "eventId": "evt-a1b2c3d4",
+            "principalEmail": "jdoe@example.com",
+            "operation": "READ",
+            "eventTime": "2020-02-18T07:26:42Z"
+        }
+    ],
+    "dataFlowEvents": [
+        {
+            "eventId": "evt-e5f6a7b8",
+            "principalEmail": "jdoe@example.com",
+            "operation": "READ",
+            "violatedLocation": "asia-south1",
+            "eventTime": "2020-02-18T07:26:42Z"
+        }
+    ],
+    "networks": [
+        {
+            "name": "//compute.googleapis.com/projects/prod-webapp-284917/global/networks/default"
+        }
+    ],
+    "dataRetentionDeletionEvents": [
+        {
+            "eventDetectionTime": "2020-02-18T07:26:42Z",
+            "dataObjectCount": "15000",
+            "maxRetentionAllowed": "7776000s",
+            "minRetentionAllowed": "2592000s",
+            "eventType": "EVENT_TYPE_MAX_TTL_EXCEEDED"
+        }
+    ],
+    "affectedResources": {
+        "count": "3"
+    },
+    "aiModel": {
+        "name": "projects/prod-webapp-284917/locations/us-central1/models/fraud-detector",
+        "domain": "Fraud Detection",
+        "library": "TensorFlow",
+        "location": "us-central1",
+        "publisher": "internal",
+        "deploymentPlatform": "VERTEX_AI",
+        "displayName": "Fraud Detector v3",
+        "usageCategory": "Production"
+    },
+    "chokepoint": {
+        "relatedFindings": [
+            "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/aabbccddeeff00112233445566778899"
+        ]
+    },
+    "complianceDetails": {
+        "frameworks": [
+            {
+                "name": "cis-gcp-foundation-1.2",
+                "displayName": "CIS Google Cloud Platform Foundation Benchmark v1.2.0",
+                "category": [
+                    "SECURITY_BENCHMARKS"
+                ],
+                "type": "FRAMEWORK_TYPE_BUILT_IN",
+                "controls": [
+                    {
+                        "controlName": "4.1",
+                        "displayName": "Ensure That Instances Are Not Configured To Use the Default Service Account"
+                    }
+                ]
+            }
+        ],
+        "cloudControl": {
+            "cloudControlName": "shielded-vm-enabled",
+            "type": "BUILT_IN",
+            "policyType": "ORG_POLICY",
+            "version": 1
+        },
+        "cloudControlDeploymentNames": [
+            "organizations/1094826489209/locations/global/cloudControlDeployments/shielded-vm-enabled"
+        ]
+    },
+    "vertexAi": {
+        "datasets": [
+            {
+                "name": "projects/prod-webapp-284917/locations/us-central1/datasets/transactions",
+                "displayName": "transactions",
+                "source": "bq://prod-webapp-284917.analytics.transactions"
+            }
+        ],
+        "pipelines": [
+            {
+                "name": "projects/prod-webapp-284917/locations/us-central1/pipelineJobs/training-run-2020",
+                "displayName": "training-run-2020"
+            }
+        ]
+    },
+    "cryptoKeyName": "projects/prod-webapp-284917/locations/us-central1/keyRings/prod-ring/cryptoKeys/data-key",
+    "artifactGuardPolicies": {
+        "resourceId": "gcr.io/prod-webapp-284917/web-app",
+        "failingPolicies": [
+            {
+                "type": "VULNERABILITY",
+                "policyId": "block-critical-cves",
+                "failureReason": "Image contains CVE-2021-44228 with CVSS score 10.0"
+            }
+        ]
+    },
+    "secret": {
+        "type": "GCP_SERVICE_ACCOUNT_KEY",
+        "status": {
+            "lastUpdatedTime": "2020-02-18T07:26:42Z",
+            "validity": "SECRET_VALIDITY_UNSUPPORTED"
+        },
+        "environmentVariable": {
+            "key": "GOOGLE_APPLICATION_CREDENTIALS"
+        },
+        "filePath": {
+            "path": "/etc/secrets/sa-key.json"
+        }
+    },
+    "externalExposure": {
+        "privateIpAddress": "10.128.0.12",
+        "privatePort": "8080",
+        "exposedService": "http",
+        "publicIpAddress": "0.0.0.1",
+        "publicPort": "80",
+        "exposedEndpoint": "0.0.0.1:80",
+        "loadBalancerFirewallPolicy": "prod-lb-fw-policy",
+        "serviceFirewallPolicy": "prod-svc-fw-policy",
+        "forwardingRule": "web-lb-forwarding-rule",
+        "backendService": "web-backend-service",
+        "instanceGroup": "web-server-ig",
+        "networkEndpointGroup": "web-neg",
+        "hostnameUri": "https://web-server-01.example.com",
+        "pscServiceAttachment": "projects/prod-webapp-284917/regions/us-central1/serviceAttachments/web-psc",
+        "pscNetworkAttachment": "projects/prod-webapp-284917/regions/us-central1/networkAttachments/web-na",
+        "internalBackendService": "internal-web-backend",
+        "backendBucket": "web-static-bucket",
+        "exposedApplication": "web-app",
+        "networkIngressFirewallPolicy": "prod-ingress-fw-policy",
+        "httpResponse": [
+            {
+                "statusCode": "200",
+                "path": "/api/v1/login"
+            }
+        ],
+        "networkPathInsightsGenerationTime": "2020-02-18T07:26:42Z"
+    },
+    "policyViolationSummary": {
+        "policyViolationsCount": "7",
+        "conformantResourcesCount": "42",
+        "evaluationErrorsCount": "1",
+        "outOfScopeResourcesCount": "3"
+    },
+    "agentDataAccessEvents": [
+        {
+            "eventId": "evt-c9d0e1f2",
+            "principalSubject": "serviceAccount:agent@prod-webapp-284917.iam.gserviceaccount.com",
+            "operation": "READ",
+            "eventTime": "2020-02-18T07:26:42Z"
+        }
+    ],
+    "discoveredWorkload": {
+        "workloadType": "MCP_SERVER",
+        "confidence": "CONFIDENCE_HIGH",
+        "detectedRelevantPackages": true,
+        "detectedRelevantKeywords": true,
+        "detectedRelevantHardware": false
+    }
+}
