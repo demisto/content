@@ -16,7 +16,6 @@ from ReversingLabsTitaniumCloudv2 import (
     domain_report_output,
     domain_to_ip_output,
     domain_urls_output,
-    expression_search_output,
     file_analysis_output,
     file_reputation_output,
     format_proxy,
@@ -45,6 +44,7 @@ from ReversingLabsTitaniumCloudv2 import (
     file_command,
     domain_command,
     url_command,
+    normalize_url,
 )
 from CommonServerPython import *
 from ReversingLabs.SDK.helper import WrongInputError
@@ -188,15 +188,6 @@ def test_advanced_search_output():
     test_context = load_json("test_data/advanced_search_context.json")
 
     result, _ = advanced_search_output(result_list=test_report)
-
-    assert result.to_context() == test_context
-
-
-def test_expression_search_output():
-    test_report = load_json("test_data/expression_search.json")
-    test_context = load_json("test_data/expression_search_context.json")
-
-    result, _ = expression_search_output(result_list=test_report)
 
     assert result.to_context() == test_context
 
@@ -467,3 +458,6 @@ def test_url_command():
 def test_file_command():
     with pytest.raises(WrongInputError):
         file_command()
+
+def test_normalize_url():
+    assert normalize_url("https://www.imdb.com/new page/listings") == "https://www.imdb.com/new%20page/listings"

@@ -1,3 +1,5 @@
+display: ReversingLabs TitaniumCloud v2
+name: ReversingLabs TitaniumCloud v2
 category: Data Enrichment & Threat Intelligence
 provider: ReversingLabs
 sectionorder:
@@ -66,8 +68,6 @@ configuration:
     section: Connect
     advanced: true
 description: ReversingLabs TitaniumCloud provides threat analysis data from various ReversingLabs cloud services.
-display: ReversingLabs TitaniumCloud v2
-name: ReversingLabs TitaniumCloud v2
 script:
   commands:
     - name: file
@@ -378,7 +378,8 @@ script:
           description: The advanced search.
           type: Unknown
     - name: reversinglabs-titaniumcloud-expression-search
-      description: Search provides samples first seen on a particular date, filtered by search criteria.
+      deprecated: true
+      description: This command is deprecated and it can no longer be used. There are no alternatives to this command.
       arguments:
         - name: query
           description: Query string.
