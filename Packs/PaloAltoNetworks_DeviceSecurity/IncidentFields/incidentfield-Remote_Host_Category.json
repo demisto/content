@@ -1,0 +1,30 @@
+{
+    "id": "incident_remotehostcategory",
+    "version": -1,
+    "name": "Remote Host Category",
+    "ownerOnly": false,
+    "description": "Remote Host Category from a Device Security alert.",
+    "cliName": "remotehostcategory",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Device Security Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
