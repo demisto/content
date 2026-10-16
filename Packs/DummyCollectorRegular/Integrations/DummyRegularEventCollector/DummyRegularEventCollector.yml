@@ -1,0 +1,70 @@
+category: Analytics & SIEM
+provider: Open Source
+sectionorder:
+- Collect
+commonfields:
+  id: DummyRegularEventCollector
+  version: -1
+configuration:
+- defaultvalue: '5'
+  section: Collect
+  display: Max number of events per fetch
+  name: max_events_per_fetch
+  required: false
+  type: 0
+  additionalinfo: The number of fake events to generate in each fetch.
+- defaultvalue: '1'
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  advanced: true
+  section: Collect
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
+- defaultvalue: 'false'
+  display: Fetch Events
+  name: isFetchEvents
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
+description: Dummy event collector (regular pack) that generates fake events for Cortex XSIAM. No external API is called.
+display: Dummy Regular Event Collector
+name: DummyRegularEventCollector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+    - defaultValue: '5'
+      description: Maximum number of events to generate.
+      name: limit
+      required: false
+    description: Generates dummy events. Used for development and debugging.
+    name: dummy-regular-get-events
+  dockerimage: demisto/python3:3.12.13.10116658
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+- platform
+fromversion: 8.4.0
+tests:
+- No tests (auto formatted)
+supportedModules:
+- xsiam
