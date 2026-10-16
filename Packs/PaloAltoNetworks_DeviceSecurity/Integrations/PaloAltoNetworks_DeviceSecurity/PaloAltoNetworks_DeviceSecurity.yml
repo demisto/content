@@ -27,6 +27,8 @@ configuration:
   name: client_secret
   type: 4
   required: true
+  displaypassword: Client Secret
+  hiddenusername: true
 - section: Connect
   advanced: true
   display: Trust any certificate (not secure)
@@ -80,6 +82,7 @@ configuration:
   defaultvalue: '1'
   type: 19
   required: false
+  additionalinfo: The interval between automatic incident fetches. Applies when Fetch incidents is enabled.
 - section: Connect
   advanced: true
   display: The timeout for querying APIs
@@ -100,7 +103,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: Retrieves the device UID (mac address).
+      description: The device UID (MAC address).
     outputs:
     - contextPath: PaloAltoNetworksDeviceSecurity.Device
       description: The device details.

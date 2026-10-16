@@ -26,7 +26,7 @@ Before configuring the integration, ensure that you have:
 | Fetch Device Security Alerts | When selected, the integration fetches Device Security alerts from the Device Security Portal. | False |
 | Fetch Device Security Vulnerabilities | When selected, the integration fetches Device Security vulnerabilities from the Device Security Portal. | False |
 | Fetch incidents |  | False |
-| Incidents Fetch Interval |  | False |
+| Incidents Fetch Interval | The interval between automatic incident fetches. The default is 1 minute. Applies when **Fetch incidents** is enabled. | False |
 | The timeout for querying APIs |  | False |
 | Incident type |  | False |
 
