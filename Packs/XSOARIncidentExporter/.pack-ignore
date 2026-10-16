@@ -1,0 +1,7 @@
+[file:XSIAMAlertPusher.yml]
+ignore=IN136
+
+[known_words]
+xsoar
+xsiam
+xporter

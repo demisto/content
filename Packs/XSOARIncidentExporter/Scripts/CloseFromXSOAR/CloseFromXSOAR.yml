@@ -1,0 +1,35 @@
+commonfields:
+  id: CloseFromXSOAR
+  version: -1
+name: CloseFromXSOAR
+comment: Extracts Close Reason and Close Notes from a pushed XSOAR incident alert and closes the XSIAM case if the XSOAR incident was closed.
+script: ''
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.14.100715
+runas: DBotWeakRole
+tags:
+- xsoar
+- xsiam
+- close
+enabled: true
+args: []
+outputs:
+- contextPath: XSOARClose.XSOARIncidentID
+  description: The XSOAR incident ID from the alert.
+  type: String
+- contextPath: XSOARClose.XSOARCloseReason
+  description: The close reason from XSOAR.
+  type: String
+- contextPath: XSOARClose.XSIAMCloseReason
+  description: The mapped XSIAM close reason.
+  type: String
+- contextPath: XSOARClose.CloseNotes
+  description: The close notes from XSOAR.
+  type: String
+- contextPath: XSOARClose.Action
+  description: Whether the case was closed or no action was taken.
+  type: String
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
