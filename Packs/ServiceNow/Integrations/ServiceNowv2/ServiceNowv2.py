@@ -632,6 +632,7 @@ class Client(BaseClient):
         use_display_value: bool = False,
         display_date_format: str = "",
         jwt_params: dict | None = None,
+        disable_duplicate_protection : bool = False,
     ):
         """
 
@@ -674,6 +675,7 @@ class Client(BaseClient):
         self.sys_param_offset = 0
         self.look_back = look_back
         self.use_display_value = use_display_value
+        self.disable_duplicate_protection = disable_duplicate_protection
         self.display_date_format = DATE_FORMAT_OPTIONS.get(display_date_format)
         if self.use_display_value:
             assert self.display_date_format, (
@@ -2675,10 +2677,11 @@ def fetch_incidents(client: Client) -> list:
     if client.use_display_value:
         tickets_response = format_incidents_response_with_display_values(incidents_res=tickets_response)
 
-    # remove duplicate incidents which were already fetched
-    tickets_response = filter_incidents_by_duplicates_and_limit(
-        incidents_res=tickets_response, last_run=last_run, fetch_limit=client.sys_param_limit, id_field="sys_id"
-    )
+    if not client.disable_duplicate_protection :
+        # remove duplicate incidents which were already fetched
+        tickets_response = filter_incidents_by_duplicates_and_limit(
+            incidents_res=tickets_response, last_run=last_run, fetch_limit=client.sys_param_limit, id_field="sys_id"
+        )
 
     for ticket in tickets_response:
         ticket.update(get_mirroring())
@@ -3885,6 +3888,7 @@ def main():
     look_back = arg_to_number(params.get("look_back")) or 0
     use_display_value = argToBoolean(params.get("use_display_value", False))
     display_date_format = params.get("display_date_format", "")
+    disable_duplicate_protection = params.get("disable_duplicate_protection", False)
     add_custom_fields(params)
 
     file_tag_from_service_now, file_tag_to_service_now = (params.get("file_tag_from_service_now"), params.get("file_tag"))
@@ -3933,6 +3937,7 @@ def main():
             use_display_value=use_display_value,
             display_date_format=display_date_format,
             jwt_params=jwt_params,
+            disable_duplicate_protection=disable_duplicate_protection,
         )
         commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any], bool]]] = {
             "test-module": test_module,
