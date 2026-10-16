@@ -1,0 +1,28 @@
+args:
+- auto: PREDEFINED
+  defaultValue: "False"
+  name: RunInPlaybook
+  predefined:
+  - "True"
+  - "False"
+  supportedModules: []
+commonfields:
+  id: 'HealthCheckOutdatedEngines'
+  version: -1
+dockerimage: demisto/python3:3.12.13.10404775
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: HealthCheckOutdatedEngines
+pswd: ""
+restrictioncenter: {}
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+signature: ""
+subtype: python3
+tags:
+- widget
+type: python
+fromversion: 8.0.0

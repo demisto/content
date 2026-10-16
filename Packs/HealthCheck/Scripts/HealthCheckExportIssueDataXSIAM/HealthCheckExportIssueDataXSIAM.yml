@@ -1,0 +1,20 @@
+comment: Export all Incident, Context and Widget data into Json format output.
+commonfields:
+  id: 'HealthCheckExportIssueDataXSIAM'
+  version: -1
+dockerimage: demisto/python3:3.12.12.5490952
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: HealthCheckExportIssueDataXSIAM
+pswd: ""
+restrictioncenter: {}
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+signature: ""
+subtype: python3
+tags:
+- AI Generated
+type: python

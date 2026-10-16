@@ -1,0 +1,17 @@
+comment: Creates a HealthCheck alert via the XSIAM local API (public_api/v1/alerts/create_alert)
+  and posts a hyperlink to the created alert in the War Room.
+commonfields:
+  id: HealthCheckStart
+  version: -1
+enabled: true
+name: HealthCheckStart
+script: "-"
+subtype: python3
+type: python
+dockerimage: demisto/python3:3.12.12.7090913
+runas: DBotWeakRole
+runonce: false
+tags: []
+fromversion: 8.3.0
+marketplaces:
+  - marketplacev2
