@@ -1,0 +1,8 @@
+fromversion: 8.0.0
+id: Sprinklr_ModelingRule
+name: Sprinklr Modeling Rule
+rules: ''
+schema: ''
+tags: []
+supportedModules:
+- xsiam

@@ -1,0 +1,868 @@
+commonfields:
+  id: Sprinklr Event Collector
+  version: -1
+name: Sprinklr Event Collector
+display: Sprinklr Event Collector
+category: Cloud Services
+provider: Sprinklr
+description: Cortex XSIAM event collection, investigation, and response integration for Sprinklr. Uses OAuth 2.0 Client Credentials,
+  collects Reporting API events, and provides guarded Governance/SCIM actions for response playbooks.
+sectionorder:
+- Connect
+- Collect
+configuration:
+- display: Sprinklr API root URL
+  name: server_url
+  defaultvalue: https://api3.sprinklr.com
+  type: 0
+  required: true
+  section: Connect
+- display: Sprinklr environment
+  name: environment
+  defaultvalue: prod3
+  type: 0
+  required: true
+  section: Connect
+- display: Client ID / API Key
+  name: client_id
+  type: 0
+  required: true
+  section: Connect
+- display: Client Secret / API Secret
+  name: client_secret
+  type: 4
+  required: true
+  section: Connect
+- display: Reporting API path
+  name: reporting_path
+  defaultvalue: /{env}/api/v2/reports/query
+  type: 0
+  required: true
+  section: Connect
+- display: Reporting API payload (JSON)
+  name: reporting_payload
+  defaultvalue: '{"reportingEngine":"OUTBOUND_MESSAGE","report":"OUTBOUND_MESSAGE","timeZone":"Etc/UTC","pageSize":"20","page":"0","groupBys":[{"heading":"POST_ID","dimensionName":"POST_ID","groupType":"FIELD","details":null}],"projections":[]}'
+  type: 0
+  required: true
+  section: Collect
+- display: Fetch events
+  name: isFetchEvents
+  defaultvalue: 'false'
+  type: 8
+  required: false
+  section: Collect
+- display: First fetch time interval
+  name: first_fetch
+  defaultvalue: 1 minute
+  type: 0
+  required: false
+  section: Collect
+- display: Maximum number of events per fetch
+  name: max_fetch
+  defaultvalue: '200'
+  type: 0
+  required: false
+  section: Collect
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  defaultvalue: '1'
+  type: 19
+  required: false
+  section: Collect
+  advanced: true
+- display: SCIM delete path template
+  name: scim_delete_path
+  defaultvalue: /{env}/api/v1/scim/v2/Users/{userId}
+  type: 0
+  required: true
+  section: Connect
+  advanced: true
+- display: HTTP timeout in seconds
+  name: timeout
+  defaultvalue: '60'
+  type: 0
+  required: false
+  section: Connect
+  advanced: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: 'false'
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: 'false'
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+script:
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.13.10116658
+  isfetchevents: true
+  commands:
+  - name: sprinklr-get-events
+    description: Fetches Sprinklr Reporting API records for a selected time range. Can optionally push the returned records
+      to XSIAM.
+    arguments:
+    - name: from_time
+      required: false
+      description: Start time. Accepts epoch milliseconds, epoch seconds, or a date/time string. Defaults to one minute ago.
+    - name: to_time
+      required: false
+      description: End time. Accepts epoch milliseconds, epoch seconds, or a date/time string. Defaults to now.
+    - name: limit
+      required: false
+      defaultValue: '20'
+      description: Maximum rows to request on the selected page. Sprinklr documents a maximum pageSize of 1000.
+    - name: page
+      required: false
+      defaultValue: '0'
+      description: Reporting API page number, starting at 0.
+    - name: payload
+      required: false
+      description: Optional complete Reporting API JSON payload. If omitted, the configured Reporting API payload is used.
+    - name: should_push_events
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+      description: If true, also sends the retrieved records to the Cortex XSIAM event dataset.
+    outputs:
+    - contextPath: Sprinklr.Events
+      description: Events returned from the Sprinklr Reporting API.
+      type: Unknown
+  - name: sprinklr-report-query
+    description: Executes a Sprinklr Reporting API query using the configured OAuth client credentials.
+    arguments:
+    - name: payload
+      required: false
+      description: Complete Reporting API JSON payload. If omitted, the configured Reporting API payload is used; a one-minute
+        time window is added when timestamps are absent.
+    outputs:
+    - contextPath: Sprinklr.Reporting
+      description: Raw Sprinklr Reporting API response.
+      type: Unknown
+  - name: sprinklr-search-events
+    description: Searches Sprinklr Reporting API activity for investigation using time and field filters. The filtering is
+      performed on records returned by the configured Reporting API and does not require a new Sprinklr endpoint.
+    arguments:
+    - name: from_time
+      required: false
+      description: Start time. Accepts relative values such as 24 hours ago, epoch milliseconds/seconds, or a date/time string.
+        Defaults to 24 hours ago.
+    - name: to_time
+      required: false
+      description: End time. Defaults to now.
+    - name: author_id
+      required: false
+      description: Filter by Sprinklr authorId.
+    - name: account_id
+      required: false
+      description: Filter by Sprinklr accountId.
+    - name: post_id
+      required: false
+      description: Filter by Sprinklr postId.
+    - name: message_id
+      required: false
+      description: Filter by Sprinklr messageId.
+    - name: channel
+      required: false
+      description: Filter by channelType, for example FACEBOOK, INSTAGRAM, TWITTER, LINKEDIN, or TIKTOK.
+    - name: status
+      required: false
+      description: Filter by exact Sprinklr status value.
+    - name: deleted
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Filter by deleted=true or deleted=false.
+    - name: limit
+      required: false
+      defaultValue: '200'
+      description: Maximum matching records to return.
+    - name: page_size
+      required: false
+      defaultValue: '200'
+      description: Rows requested from Sprinklr per page (maximum 1000).
+    - name: max_pages
+      required: false
+      defaultValue: '10'
+      description: Maximum Reporting API pages to inspect.
+    outputs:
+    - contextPath: Sprinklr.Search.Events
+      description: Matching Sprinklr events.
+      type: Unknown
+  - name: sprinklr-get-user-activity
+    description: Returns recent Sprinklr activity for a specific authorId to support user investigation.
+    arguments:
+    - name: author_id
+      required: true
+      description: Sprinklr authorId to investigate.
+    - name: from_time
+      required: false
+      description: Start time. Defaults to 24 hours ago.
+    - name: to_time
+      required: false
+      description: End time. Defaults to now.
+    - name: limit
+      required: false
+      defaultValue: '200'
+      description: Maximum matching events returned.
+    - name: max_pages
+      required: false
+      defaultValue: '10'
+      description: Maximum Reporting API pages to inspect.
+    outputs:
+    - contextPath: Sprinklr.Investigation.UserActivity
+      description: Activity for the requested authorId.
+      type: Unknown
+  - name: sprinklr-get-account-activity
+    description: Returns recent Sprinklr activity for a specific accountId to support account investigation.
+    arguments:
+    - name: account_id
+      required: true
+      description: Sprinklr accountId to investigate.
+    - name: from_time
+      required: false
+      description: Start time. Defaults to 24 hours ago.
+    - name: to_time
+      required: false
+      description: End time. Defaults to now.
+    - name: limit
+      required: false
+      defaultValue: '200'
+      description: Maximum matching events returned.
+    - name: max_pages
+      required: false
+      defaultValue: '10'
+      description: Maximum Reporting API pages to inspect.
+    outputs:
+    - contextPath: Sprinklr.Investigation.AccountActivity
+      description: Activity for the requested accountId.
+      type: Unknown
+  - name: sprinklr-get-post
+    description: Finds Sprinklr Reporting API activity for a specific postId.
+    arguments:
+    - name: post_id
+      required: true
+      description: Sprinklr postId to find.
+    - name: from_time
+      required: false
+      description: Start time. Defaults to 7 days ago.
+    - name: to_time
+      required: false
+      description: End time. Defaults to now.
+    - name: max_pages
+      required: false
+      defaultValue: '20'
+      description: Maximum Reporting API pages to inspect.
+    outputs:
+    - contextPath: Sprinklr.Investigation.Post
+      description: Records matching the requested postId.
+      type: Unknown
+  - name: sprinklr-get-deleted-events
+    description: Returns Sprinklr events marked deleted=true in the requested time range for investigation.
+    arguments:
+    - name: from_time
+      required: false
+      description: Start time. Defaults to 24 hours ago.
+    - name: to_time
+      required: false
+      description: End time. Defaults to now.
+    - name: limit
+      required: false
+      defaultValue: '200'
+      description: Maximum matching records returned.
+    - name: max_pages
+      required: false
+      defaultValue: '10'
+      description: Maximum Reporting API pages to inspect.
+    outputs:
+    - contextPath: Sprinklr.Investigation.DeletedEvents
+      description: Sprinklr records where deleted=true.
+      type: Unknown
+  - name: sprinklr-security-summary
+    description: Builds a read-only investigation summary of Sprinklr activity for a selected time range, including counts
+      by status, channel, author, account, and deleted state.
+    arguments:
+    - name: from_time
+      required: false
+      description: Start time. Defaults to 24 hours ago.
+    - name: to_time
+      required: false
+      description: End time. Defaults to now.
+    - name: page_size
+      required: false
+      defaultValue: '200'
+      description: Rows requested from Sprinklr per page (maximum 1000).
+    - name: max_pages
+      required: false
+      defaultValue: '10'
+      description: Maximum Reporting API pages to inspect.
+    outputs:
+    - contextPath: Sprinklr.SecuritySummary
+      description: Investigation summary of Sprinklr activity.
+      type: Unknown
+  - name: sprinklr-get-user
+    description: Gets a Sprinklr user by email using the official Governance User API. Useful before remediation to confirm
+      identity and team membership.
+    arguments:
+    - name: email
+      required: true
+      description: Sprinklr user email address.
+    outputs:
+    - contextPath: Sprinklr.Response.User
+      description: Sprinklr user details returned by the Governance API.
+      type: Unknown
+  - name: sprinklr-deactivate-user
+    description: Deactivates a Sprinklr user by setting SCIM active=false. Intended for containment actions in response playbooks.
+    execution: true
+    arguments:
+    - name: user_id
+      required: true
+      description: Sprinklr user ID.
+    - name: confirm
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'yes'
+      - 'no'
+      description: Must be exactly yes to execute the action.
+    outputs:
+    - contextPath: Sprinklr.Response.UserID
+      description: Sprinklr user ID.
+      type: String
+    - contextPath: Sprinklr.Response.Action
+      description: Action performed.
+      type: String
+    - contextPath: Sprinklr.Response.Active
+      description: Resulting active state.
+      type: Boolean
+    - contextPath: Sprinklr.Response.StatusCode
+      description: HTTP status returned by Sprinklr.
+      type: Number
+  - name: sprinklr-activate-user
+    description: Reactivates a Sprinklr user by setting SCIM active=true. Useful for recovery/rollback after containment.
+    execution: true
+    arguments:
+    - name: user_id
+      required: true
+      description: Sprinklr user ID.
+    - name: confirm
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'yes'
+      - 'no'
+      description: Must be exactly yes to execute the action.
+    outputs:
+    - contextPath: Sprinklr.Response.UserID
+      description: Sprinklr user ID.
+      type: String
+    - contextPath: Sprinklr.Response.Action
+      description: Action performed.
+      type: String
+    - contextPath: Sprinklr.Response.Active
+      description: Resulting active state.
+      type: Boolean
+    - contextPath: Sprinklr.Response.StatusCode
+      description: HTTP status returned by Sprinklr.
+      type: Number
+  - name: sprinklr-remove-user-from-team
+    description: Removes a Sprinklr user from a specified team using the Governance User API. Useful for reducing access during
+      containment.
+    execution: true
+    arguments:
+    - name: email
+      required: true
+      description: Sprinklr user email address.
+    - name: team_id
+      required: true
+      description: Sprinklr team ID to remove the user from.
+    - name: confirm
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'yes'
+      - 'no'
+      description: Must be exactly yes to execute the action.
+    outputs:
+    - contextPath: Sprinklr.Response.Email
+      description: Sprinklr user email address.
+      type: String
+    - contextPath: Sprinklr.Response.TeamID
+      description: Sprinklr team ID.
+      type: String
+    - contextPath: Sprinklr.Response.Action
+      description: Action performed.
+      type: String
+    - contextPath: Sprinklr.Response.StatusCode
+      description: HTTP status returned by Sprinklr.
+      type: Number
+  - name: sprinklr-delete-user-by-email
+    description: Deletes a Sprinklr user by email using the Governance User API. This is destructive and requires explicit
+      confirmation.
+    execution: true
+    arguments:
+    - name: email
+      required: true
+      description: Sprinklr user email address.
+    - name: confirm
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'yes'
+      - 'no'
+      description: Must be exactly yes to execute the destructive action.
+    outputs:
+    - contextPath: Sprinklr.Response.Email
+      description: Sprinklr user email address.
+      type: String
+    - contextPath: Sprinklr.Response.Action
+      description: Action performed.
+      type: String
+    - contextPath: Sprinklr.Response.StatusCode
+      description: HTTP status returned by Sprinklr.
+      type: Number
+  - name: sprinklr-deprovision-user
+    description: Deletes/deprovisions a Sprinklr user through the configured SCIM DELETE endpoint using automatic OAuth authentication.
+    execution: true
+    arguments:
+    - name: user_id
+      required: true
+      description: Unique Sprinklr user ID to deprovision.
+    - name: confirm
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'yes'
+      - 'no'
+      description: Must be exactly yes to execute the destructive action.
+    outputs:
+    - contextPath: Sprinklr.Response.UserID
+      description: Sprinklr user ID supplied to the command.
+      type: String
+    - contextPath: Sprinklr.Response.Action
+      description: Action performed.
+      type: String
+    - contextPath: Sprinklr.Response.StatusCode
+      description: HTTP status returned by Sprinklr.
+      type: Number
+  - name: sprinklr-get-social-logins
+    description: Gets social login profiles linked to a Sprinklr user email using the documented Governance Social Login API.
+    arguments:
+    - name: email
+      required: true
+      description: Sprinklr user email address.
+    outputs:
+    - contextPath: Sprinklr.Investigation.SocialLogins
+      description: Social login profiles linked to the requested user.
+      type: Unknown
+  - name: sprinklr-create-user
+    description: Creates a Sprinklr user using the documented Governance User API. Intended for controlled recovery or re-provisioning
+      workflows.
+    execution: true
+    arguments:
+    - name: email
+      required: true
+      description: Email address for the new Sprinklr user.
+    - name: name
+      required: true
+      description: Full name for the new Sprinklr user.
+    - name: profile_picture
+      required: false
+      description: Optional profile picture URL.
+    - name: teams
+      required: false
+      description: Optional JSON array of team objects. Each object can contain organizationId, teamId, and role as documented
+        by Sprinklr.
+    - name: confirm
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'yes'
+      - 'no'
+      description: Must be exactly yes to execute the action.
+    outputs:
+    - contextPath: Sprinklr.Response.Email
+      description: Created user email address.
+      type: String
+    - contextPath: Sprinklr.Response.Name
+      description: Created user name.
+      type: String
+    - contextPath: Sprinklr.Response.Action
+      description: Action performed.
+      type: String
+    - contextPath: Sprinklr.Response.StatusCode
+      description: HTTP status returned by Sprinklr.
+      type: Number
+  - name: sprinklr-attach-ad-account-to-team
+    description: Attaches a Sprinklr ad account to a team using the documented Governance Account Management API. Useful for
+      controlled containment and recovery.
+    execution: true
+    arguments:
+    - name: team_id
+      required: true
+      description: Sprinklr team ID.
+    - name: account_id
+      required: true
+      description: Sprinklr ad account ID.
+    - name: confirm
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'yes'
+      - 'no'
+      description: Must be exactly yes to execute the action.
+    outputs:
+    - contextPath: Sprinklr.Response.TeamID
+      description: Sprinklr team ID.
+      type: String
+    - contextPath: Sprinklr.Response.AccountID
+      description: Sprinklr account ID.
+      type: String
+    - contextPath: Sprinklr.Response.AccountKind
+      description: 'Account kind: ad or page.'
+      type: String
+    - contextPath: Sprinklr.Response.Action
+      description: Action performed.
+      type: String
+    - contextPath: Sprinklr.Response.StatusCode
+      description: HTTP status returned by Sprinklr.
+      type: Number
+    - contextPath: Sprinklr.Response.Result
+      description: Result returned by Sprinklr.
+      type: Unknown
+  - name: sprinklr-remove-ad-account-from-team
+    description: Removes a Sprinklr ad account from a team using the documented Governance Account Management API. Useful
+      for controlled containment and recovery.
+    execution: true
+    arguments:
+    - name: team_id
+      required: true
+      description: Sprinklr team ID.
+    - name: account_id
+      required: true
+      description: Sprinklr ad account ID.
+    - name: confirm
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'yes'
+      - 'no'
+      description: Must be exactly yes to execute the action.
+    outputs:
+    - contextPath: Sprinklr.Response.TeamID
+      description: Sprinklr team ID.
+      type: String
+    - contextPath: Sprinklr.Response.AccountID
+      description: Sprinklr account ID.
+      type: String
+    - contextPath: Sprinklr.Response.AccountKind
+      description: 'Account kind: ad or page.'
+      type: String
+    - contextPath: Sprinklr.Response.Action
+      description: Action performed.
+      type: String
+    - contextPath: Sprinklr.Response.StatusCode
+      description: HTTP status returned by Sprinklr.
+      type: Number
+    - contextPath: Sprinklr.Response.Result
+      description: Result returned by Sprinklr.
+      type: Unknown
+  - name: sprinklr-attach-page-account-to-team
+    description: Attaches a Sprinklr page account to a team using the documented Governance Account Management API. Useful
+      for controlled containment and recovery.
+    execution: true
+    arguments:
+    - name: team_id
+      required: true
+      description: Sprinklr team ID.
+    - name: account_id
+      required: true
+      description: Sprinklr page account ID.
+    - name: confirm
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'yes'
+      - 'no'
+      description: Must be exactly yes to execute the action.
+    outputs:
+    - contextPath: Sprinklr.Response.TeamID
+      description: Sprinklr team ID.
+      type: String
+    - contextPath: Sprinklr.Response.AccountID
+      description: Sprinklr account ID.
+      type: String
+    - contextPath: Sprinklr.Response.AccountKind
+      description: 'Account kind: ad or page.'
+      type: String
+    - contextPath: Sprinklr.Response.Action
+      description: Action performed.
+      type: String
+    - contextPath: Sprinklr.Response.StatusCode
+      description: HTTP status returned by Sprinklr.
+      type: Number
+    - contextPath: Sprinklr.Response.Result
+      description: Result returned by Sprinklr.
+      type: Unknown
+  - name: sprinklr-remove-page-account-from-team
+    description: Removes a Sprinklr page account from a team using the documented Governance Account Management API. Useful
+      for controlled containment and recovery.
+    execution: true
+    arguments:
+    - name: team_id
+      required: true
+      description: Sprinklr team ID.
+    - name: account_id
+      required: true
+      description: Sprinklr page account ID.
+    - name: confirm
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'yes'
+      - 'no'
+      description: Must be exactly yes to execute the action.
+    outputs:
+    - contextPath: Sprinklr.Response.TeamID
+      description: Sprinklr team ID.
+      type: String
+    - contextPath: Sprinklr.Response.AccountID
+      description: Sprinklr account ID.
+      type: String
+    - contextPath: Sprinklr.Response.AccountKind
+      description: 'Account kind: ad or page.'
+      type: String
+    - contextPath: Sprinklr.Response.Action
+      description: Action performed.
+      type: String
+    - contextPath: Sprinklr.Response.StatusCode
+      description: HTTP status returned by Sprinklr.
+      type: Number
+    - contextPath: Sprinklr.Response.Result
+      description: Result returned by Sprinklr.
+      type: Unknown
+  - name: sprinklr-get-account-details
+    description: Fetches full details for a Sprinklr social account by accountId using the documented GET /{env}/api/v2/account/{accountId} API. Read-only.
+    arguments:
+    - name: account_id
+      required: true
+      description: Unique Sprinklr account ID.
+    outputs:
+    - contextPath: Sprinklr.Investigation.AccountDetails
+      description: Full account response returned by Sprinklr.
+      type: Unknown
+  - name: sprinklr-get-message
+    description: Retrieves Reporting API activity for a specific messageId using the already configured Reporting API. Read-only.
+    arguments:
+    - name: message_id
+      required: true
+      description: Sprinklr messageId to investigate.
+    - name: from_time
+      required: false
+      description: Start time. Defaults to 7 days ago.
+    - name: to_time
+      required: false
+      description: End time. Defaults to now.
+    - name: limit
+      required: false
+      defaultValue: '100'
+      description: Maximum matching records returned.
+    - name: max_pages
+      required: false
+      defaultValue: '10'
+      description: Maximum Reporting API pages to inspect.
+    outputs:
+    - contextPath: Sprinklr.Investigation.Message
+      description: Reporting records matching the requested messageId.
+      type: Unknown
+  - name: sprinklr-get-channel-activity
+    description: Retrieves Reporting API activity for a specific channelType, such as FACEBOOK, INSTAGRAM, TWITTER, LINKEDIN, or TIKTOK. Read-only.
+    arguments:
+    - name: channel
+      required: true
+      description: Exact Sprinklr channelType value to match.
+    - name: from_time
+      required: false
+      description: Start time. Defaults to 24 hours ago.
+    - name: to_time
+      required: false
+      description: End time. Defaults to now.
+    - name: limit
+      required: false
+      defaultValue: '200'
+      description: Maximum matching records returned.
+    - name: max_pages
+      required: false
+      defaultValue: '10'
+      description: Maximum Reporting API pages to inspect.
+    outputs:
+    - contextPath: Sprinklr.Investigation.ChannelActivity
+      description: Reporting records matching the requested channelType.
+      type: Unknown
+  - name: sprinklr-get-status-events
+    description: Retrieves Reporting API activity for an exact Sprinklr status value. Read-only.
+    arguments:
+    - name: status
+      required: true
+      description: Exact Sprinklr status value to match.
+    - name: from_time
+      required: false
+      description: Start time. Defaults to 24 hours ago.
+    - name: to_time
+      required: false
+      description: End time. Defaults to now.
+    - name: limit
+      required: false
+      defaultValue: '200'
+      description: Maximum matching records returned.
+    - name: max_pages
+      required: false
+      defaultValue: '10'
+      description: Maximum Reporting API pages to inspect.
+    outputs:
+    - contextPath: Sprinklr.Investigation.StatusEvents
+      description: Reporting records matching the requested status.
+      type: Unknown
+  - name: sprinklr-get-failed-events
+    description: Retrieves Reporting API records whose status is exactly FAILED. Read-only investigation helper.
+    arguments:
+    - name: from_time
+      required: false
+      description: Start time. Defaults to 24 hours ago.
+    - name: to_time
+      required: false
+      description: End time. Defaults to now.
+    - name: limit
+      required: false
+      defaultValue: '200'
+      description: Maximum matching records returned.
+    - name: max_pages
+      required: false
+      defaultValue: '10'
+      description: Maximum Reporting API pages to inspect.
+    outputs:
+    - contextPath: Sprinklr.Investigation.FailedEvents
+      description: Reporting records with status FAILED.
+      type: Unknown
+  - name: sprinklr-get-sent-events
+    description: Retrieves Reporting API records whose status is exactly SENT. Read-only investigation helper.
+    arguments:
+    - name: from_time
+      required: false
+      description: Start time. Defaults to 24 hours ago.
+    - name: to_time
+      required: false
+      description: End time. Defaults to now.
+    - name: limit
+      required: false
+      defaultValue: '200'
+      description: Maximum matching records returned.
+    - name: max_pages
+      required: false
+      defaultValue: '10'
+      description: Maximum Reporting API pages to inspect.
+    outputs:
+    - contextPath: Sprinklr.Investigation.SentEvents
+      description: Reporting records with status SENT.
+      type: Unknown
+  - name: sprinklr-get-author-account-activity
+    description: Retrieves Reporting API activity matching both an authorId and accountId. Read-only correlation helper.
+    arguments:
+    - name: author_id
+      required: true
+      description: Sprinklr authorId.
+    - name: account_id
+      required: true
+      description: Sprinklr accountId.
+    - name: from_time
+      required: false
+      description: Start time. Defaults to 24 hours ago.
+    - name: to_time
+      required: false
+      description: End time. Defaults to now.
+    - name: limit
+      required: false
+      defaultValue: '200'
+      description: Maximum matching records returned.
+    - name: max_pages
+      required: false
+      defaultValue: '10'
+      description: Maximum Reporting API pages to inspect.
+    outputs:
+    - contextPath: Sprinklr.Investigation.AuthorAccountActivity
+      description: Reporting records matching both authorId and accountId.
+      type: Unknown
+  - name: sprinklr-get-account-channel-activity
+    description: Retrieves Reporting API activity matching both an accountId and channelType. Read-only correlation helper.
+    arguments:
+    - name: account_id
+      required: true
+      description: Sprinklr accountId.
+    - name: channel
+      required: true
+      description: Exact Sprinklr channelType value to match.
+    - name: from_time
+      required: false
+      description: Start time. Defaults to 24 hours ago.
+    - name: to_time
+      required: false
+      description: End time. Defaults to now.
+    - name: limit
+      required: false
+      defaultValue: '200'
+      description: Maximum matching records returned.
+    - name: max_pages
+      required: false
+      defaultValue: '10'
+      description: Maximum Reporting API pages to inspect.
+    outputs:
+    - contextPath: Sprinklr.Investigation.AccountChannelActivity
+      description: Reporting records matching both accountId and channelType.
+      type: Unknown
+  - name: sprinklr-get-author-channel-activity
+    description: Retrieves Reporting API activity matching both an authorId and channelType. Read-only correlation helper.
+    arguments:
+    - name: author_id
+      required: true
+      description: Sprinklr authorId.
+    - name: channel
+      required: true
+      description: Exact Sprinklr channelType value to match.
+    - name: from_time
+      required: false
+      description: Start time. Defaults to 24 hours ago.
+    - name: to_time
+      required: false
+      description: End time. Defaults to now.
+    - name: limit
+      required: false
+      defaultValue: '200'
+      description: Maximum matching records returned.
+    - name: max_pages
+      required: false
+      defaultValue: '10'
+      description: Maximum Reporting API pages to inspect.
+    outputs:
+    - contextPath: Sprinklr.Investigation.AuthorChannelActivity
+      description: Reporting records matching both authorId and channelType.
+      type: Unknown
+fromversion: 8.0.0
+marketplaces:
+- marketplacev2
+- platform
+supportedModules:
+- xsiam
+tests:
+- No tests
