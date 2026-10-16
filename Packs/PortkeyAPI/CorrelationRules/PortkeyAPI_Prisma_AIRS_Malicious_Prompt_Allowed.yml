@@ -1,0 +1,62 @@
+name: Portkey - Prisma AIRS Classified A Prompt Malicious And It Was Allowed - by GoCortexIO
+description: Reports prompts that Prisma AIRS classified as malicious while the applied security profile still permitted the request to reach the model. This is a policy posture finding rather than a detection failure - AIRS did its job and the profile chose to allow. It is the difference between a control that is watching and a control that is enforcing.
+severity: SEV_040_HIGH
+xql_query: |-
+  // PROVENANCE
+  //   Pattern:   a detection control running in monitor-only mode. The finding is not that
+  //              something was detected, it is that it was detected AND permitted.
+  //   Basis:     the vendor's own verdict. Prisma AIRS is authoritative here and versioned by
+  //              the vendor, which is why this rule reads the verdict rather than re-deriving
+  //              it from prompt text. The text-matching rules in this pack sit alongside it
+  //              and are deliberately separate: they catch what AIRS is not configured for.
+  //   ATT&CK:    T1585
+  //   Threshold: none. One malicious prompt permitted is the finding, so this is a boundary
+  //              rather than a tuned number. The aggregation exists to group repeats, not to
+  //              gate the alert.
+  //   Grouping:  per ACTOR per workspace per detection set. An operator working through the
+  //              same technique produces one alert rather than one per prompt, and a NEW
+  //              technique from the same actor is a new alert because the detection set is
+  //              part of the key.
+  //   Suppression: keyed on the actor and the detection set, which is what makes two findings
+  //              different here. Keying on the actor alone would mute a second, different
+  //              technique from that actor for the whole duration.
+  datamodel dataset = portkey_llm_requests_raw
+  | filter xdm.event.original_event_type = "llm_request_airs_malicious"
+        and xdm.observer.action ~= "airs_detected_"
+        and xdm.observer.action !~= "denied"
+  | alter airs_detections = arrayindex(regextract(to_string(xdm.event.outcome_reason), "airs_prompt:([a-z_|]+)"), 0)
+  | comp count() as permitted_requests,
+         count_distinct(xdm.event.id) as distinct_requests,
+         values(xdm.target.resource.name) as models,
+         min(_time) as first_seen,
+         max(_time) as last_seen
+      by xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.parent_id, xdm.event.type, airs_detections
+  | sort desc permitted_requests
+  | fields xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.parent_id, xdm.event.type, airs_detections, permitted_requests, distinct_requests, models, first_seen, last_seen
+alert_name: Portkey - Prisma AIRS flagged $airs_detections as malicious and it was allowed - $xdm.source.user.username
+alert_category: User Defined
+user_defined_category: xdm.event.type
+alert_description: Prisma AIRS classified $permitted_requests prompt(s) from $xdm.source.user.username in workspace $xdm.target.resource.parent_id as malicious, detecting $airs_detections, and the applied security profile permitted them to reach $models. Review whether the profile should block this class of prompt, and review what the model returned.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0001 - Initial Access:
+  - T1585 - Establish Accounts
+suppression_fields:
+- xdm.source.user.identifier
+- airs_detections
+global_rule_id: 9154644b-f899-497f-a968-684b6fd98b4c
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 2 hours
+timezone: Australia/Melbourne
+crontab: '*/10 * * * *'
+suppression_enabled: true
+suppression_duration: 1 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_llm_requests_raw | filter airs_category != "" and airs_evaluated = true
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0
