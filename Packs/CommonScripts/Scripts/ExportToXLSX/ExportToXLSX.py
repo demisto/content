@@ -27,7 +27,7 @@ def write_data(sheet: str, data_item: dict | list, data_headers: list | None, wo
                 item_value = item.get(header)
                 if item_value:
                     if isinstance(item_value, list):
-                        worksheet.write(row, col, ", ".join(item_value), border)
+                        worksheet.write(row, col, ", ".join(str(v) for v in item_value), border)
                     else:
                         worksheet.write(row, col, str(item_value), border)
                 col += 1
