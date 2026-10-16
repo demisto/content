@@ -1,0 +1,33 @@
+{
+    "id": "incident_ticketstate",
+    "version": -1,
+    "name": "Ticket State",
+    "ownerOnly": false,
+    "description": "Ticket State reported by Palo Alto Networks Device Security.",
+    "cliName": "ticketstate",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Device Security Alert",
+        "Device Security Vulnerability"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
