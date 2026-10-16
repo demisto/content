@@ -984,6 +984,7 @@ def parse_positive_int(value: Any, field_name: str) -> int:
     demisto.debug(f"[Configuration] {field_name}: validated value={parsed_value}.")
     return parsed_value
 
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
