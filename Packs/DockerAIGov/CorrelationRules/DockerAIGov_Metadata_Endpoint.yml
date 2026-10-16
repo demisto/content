@@ -1,0 +1,44 @@
+global_rule_id: DockerAIGov_Metadata_Endpoint
+name: Docker AI Gov - Agent Reached Cloud Metadata Endpoint
+alert_name: 'Docker AI Gov: agent connected to cloud instance metadata service'
+description: Detects a governed AI agent connecting to a cloud instance metadata service, a common first
+  step in cloud credential theft.
+alert_description: An AI agent reached the cloud metadata service. Under IMDSv1 this can return temporary
+  cloud credentials without authentication. Verify IMDSv2 is enforced.
+alert_category: CREDENTIAL_ACCESS
+alert_fields:
+  actor_effective_username: username
+  actor_process_image_name: agent
+  action_remote_ip: resource_id
+dataset: docker_ai_gov_raw
+drilldown_query_timeframe: ALERT
+execution_mode: SCHEDULED
+crontab: '*/10 * * * *'
+search_window: 15 MINUTES
+mitre_defs:
+  TA0006 - Credential Access:
+  - 'T1552.005 - Unsecured Credentials: Cloud Instance Metadata API'
+severity: SEV_040_HIGH
+suppression_enabled: true
+suppression_duration: 60 MINUTES
+suppression_fields: audit_session_id
+xql_query: 'dataset = docker_ai_gov_raw
+
+  | filter action_type = "network_egress"
+
+  | filter resource_id ~= "(169\.254\.169\.254|metadata\.google\.internal|metadata\.azure\.com|100\.100\.100\.200|192\.0\.0\.192|fd00:ec2::254)"
+
+  | fields _time, username, agent, hostname, resource_id, decision, policy_rule, audit_session_id, sandbox_id
+
+  | sort desc _time'
+mapping_strategy: CUSTOM
+fromversion: 8.4.0
+investigation_query_link: 'dataset = docker_ai_gov_raw
+
+  | filter action_type = "network_egress"
+
+  | filter resource_id ~= "(169\.254\.169\.254|metadata\.google\.internal|metadata\.azure\.com|100\.100\.100\.200|192\.0\.0\.192|fd00:ec2::254)"
+
+  | fields _time, username, agent, hostname, resource_id, decision, policy_rule, audit_session_id, sandbox_id
+
+  | sort desc _time'
