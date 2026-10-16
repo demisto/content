@@ -953,8 +953,9 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
                     "ContentsFormat": EntryFormat.JSON,
                 }
             )
+            wipe_cache(incident_id)
         demisto.info(f"Event: {event_type} - Incident: {incident_id} - keys: {details.keys()}")
-        wipe_cache(incident_id)
+        
         return GetRemoteDataResponse(details, parsed_entries)
     except Exception as e:
         demisto.debug(f"get_remote_data_command error {e}")
