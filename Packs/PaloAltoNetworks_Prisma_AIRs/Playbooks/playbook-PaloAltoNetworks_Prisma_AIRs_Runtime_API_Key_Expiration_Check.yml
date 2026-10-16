@@ -1,0 +1,1273 @@
+description: |-
+  Checks the expiration dates of the Prisma AIRS Runtime API keys for a single integration instance: lists the current (non-revoked) keys, buckets them into low/medium/high/critical risk by how many days remain until expiration, groups the keys by severity in context, reports each severity to the War Room as a table (most severe first), optionally emails when any key is more than medium risk, and closes the incident when there is nothing to remediate.
+
+  Flow - list the Runtime API keys and drop revoked keys. Each remaining key is placed in exactly one severity bucket by comparing its expires_at against the current time plus the tunable day thresholds - Critical (expires within CriticalWithinDays days, including already expired), High, Medium, and Low (everything further out). The thresholds are playbook inputs so the ranges can be tuned per use case. Each non-empty bucket is written to the War Room as a table, ordered most severe to least severe.
+
+  Email - an email is sent only when at least one key is more than medium risk (Critical or High) AND at least one recipient is configured. The email lists the offending keys grouped by severity, critical first.
+
+  Auto-close vs. manual close - when no key is Critical or High the incident closes automatically (closeReason "Resolved", closeNotes "Completed") so a recurring job leaves no open incidents. When at least one Critical or High key is found the playbook pauses on a manual "Validate remediation and approve to close" task so an analyst can rotate/renew the keys before the incident is closed.
+
+  Clone-per-tenant - every integration command is pinned to the instance named in the InstanceName input via the universal "using" argument, so this playbook can be duplicated and pointed at a different Prisma AIRS Runtime instance (tenant) without editing any task. Leave InstanceName empty to use the single enabled instance.
+id: PaloAltoNetworks_Prisma_AIRs_Runtime_API_Key_Expiration_Check
+inputs:
+- key: InstanceName
+  value: {}
+  required: false
+  description: The Prisma AIRS Runtime integration instance name to run every command against (universal "using" argument). Leave empty to use the single enabled instance. Set this (and clone the playbook) to check a different tenant.
+  playbookInputQuery:
+- key: MaxKeys
+  value:
+    simple: "1000"
+  required: false
+  description: The maximum number of Runtime API keys to inventory (passed to the list command's limit argument). Raise this if a tenant has more keys than the default.
+  playbookInputQuery:
+- key: CriticalWithinDays
+  value:
+    simple: "5"
+  required: false
+  description: A key is Critical risk when it expires in fewer than this many days (including already-expired keys). Default 5 means 0-4 days remaining, or expired, is Critical.
+  playbookInputQuery:
+- key: HighWithinDays
+  value:
+    simple: "10"
+  required: false
+  description: A key is High risk when it expires in fewer than this many days but is not already Critical. Default 10 (with CriticalWithinDays 5) means 5-9 days remaining is High.
+  playbookInputQuery:
+- key: MediumWithinDays
+  value:
+    simple: "31"
+  required: false
+  description: A key is Medium risk when it expires in fewer than this many days but is not already High or Critical. Default 31 (with HighWithinDays 10) means 10-30 days remaining is Medium; anything further out is Low.
+  playbookInputQuery:
+- key: NotificationRecipients
+  value: {}
+  required: false
+  description: Comma-separated email address(es) to notify when a key is more than medium risk. If left empty, no email is sent (offenders are still reported to the War Room). Requires a configured mail-sender integration on the tenant.
+  playbookInputQuery:
+- key: EmailSubjectPrefix
+  value:
+    simple: '[Prisma AIRS Runtime]'
+  required: false
+  description: Prefix added to notification email subjects. Useful for per-tenant mailbox filtering.
+  playbookInputQuery:
+name: PaloAltoNetworks_Prisma_AIRs_Runtime_API_Key_Expiration_Check
+outputs:
+- contextPath: PrismaAIRs.ApiKey
+  description: The inventory of Runtime API keys returned by the list step.
+  type: unknown
+- contextPath: PrismaAIRs.RuntimeApiKeyLive
+  description: The non-revoked Runtime API keys considered by the expiration check.
+  type: unknown
+- contextPath: PrismaAIRs.RuntimeApiKeyCritical
+  description: The keys in the Critical risk bucket (expiring within CriticalWithinDays days, or expired).
+  type: unknown
+- contextPath: PrismaAIRs.RuntimeApiKeyHigh
+  description: The keys in the High risk bucket.
+  type: unknown
+- contextPath: PrismaAIRs.RuntimeApiKeyMedium
+  description: The keys in the Medium risk bucket.
+  type: unknown
+- contextPath: PrismaAIRs.RuntimeApiKeyLow
+  description: The keys in the Low risk bucket.
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e3f4a5b6-0000-4c5d-8e9f-0a1b2c3d0000
+    type: start
+    task:
+      id: e3f4a5b6-0000-4c5d-8e9f-0a1b2c3d0000
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: e3f4a5b6-0002-4c5d-8e9f-0a1b2c3d0002
+    type: regular
+    task:
+      id: e3f4a5b6-0002-4c5d-8e9f-0a1b2c3d0002
+      version: -1
+      name: prisma-airs-runtime-api-keys-list
+      description: Lists the Runtime API keys configured in Prisma AIRS (name, expires_at, revoked).
+      script: '|||prisma-airs-runtime-api-keys-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit:
+        complex:
+          root: inputs.MaxKeys
+      using:
+        simple: ${inputs.InstanceName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e3f4a5b6-0003-4c5d-8e9f-0a1b2c3d0003
+    type: regular
+    task:
+      id: e3f4a5b6-0003-4c5d-8e9f-0a1b2c3d0003
+      version: -1
+      name: Keep non-revoked keys
+      description: Keep only the keys that have not been revoked under PrismaAIRs.RuntimeApiKeyLive. Revoked keys are already dead and are not evaluated for expiration.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.RuntimeApiKeyLive
+      value:
+        complex:
+          root: PrismaAIRs.ApiKey
+          filters:
+          - - operator: isFalse
+              left:
+                value:
+                  simple: PrismaAIRs.ApiKey.revoked
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: e3f4a5b6-0026-4c5d-8e9f-0a1b2c3d0026
+    type: regular
+    task:
+      id: e3f4a5b6-0026-4c5d-8e9f-0a1b2c3d0026
+      version: -1
+      name: Build critical relative-date threshold
+      description: Builds the "in N days" relative-date string for the Critical threshold from the CriticalWithinDays input, so the bucket filters can reference it (relative-date operators cannot template an input inline).
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.RuntimeRelCritical
+      value:
+        simple: in ${inputs.CriticalWithinDays} days
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: e3f4a5b6-0027-4c5d-8e9f-0a1b2c3d0027
+    type: regular
+    task:
+      id: e3f4a5b6-0027-4c5d-8e9f-0a1b2c3d0027
+      version: -1
+      name: Build high relative-date threshold
+      description: Builds the "in N days" relative-date string for the High threshold from the HighWithinDays input.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.RuntimeRelHigh
+      value:
+        simple: in ${inputs.HighWithinDays} days
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: e3f4a5b6-0028-4c5d-8e9f-0a1b2c3d0028
+    type: regular
+    task:
+      id: e3f4a5b6-0028-4c5d-8e9f-0a1b2c3d0028
+      version: -1
+      name: Build medium relative-date threshold
+      description: Builds the "in N days" relative-date string for the Medium threshold from the MediumWithinDays input.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.RuntimeRelMedium
+      value:
+        simple: in ${inputs.MediumWithinDays} days
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: e3f4a5b6-0004-4c5d-8e9f-0a1b2c3d0004
+    type: regular
+    task:
+      id: e3f4a5b6-0004-4c5d-8e9f-0a1b2c3d0004
+      version: -1
+      name: Bucket - Critical risk keys
+      description: Keep the live keys expiring within CriticalWithinDays days (including already-expired keys) under PrismaAIRs.RuntimeApiKeyCritical.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.RuntimeApiKeyCritical
+      value:
+        complex:
+          root: PrismaAIRs.RuntimeApiKeyLive
+          filters:
+          - - operator: BeforeRelativeDate
+              left:
+                value:
+                  simple: PrismaAIRs.RuntimeApiKeyLive.expires_at
+                iscontext: true
+              right:
+                value:
+                  simple: PrismaAIRs.RuntimeRelCritical
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e3f4a5b6-0005-4c5d-8e9f-0a1b2c3d0005
+    type: regular
+    task:
+      id: e3f4a5b6-0005-4c5d-8e9f-0a1b2c3d0005
+      version: -1
+      name: Bucket - High risk keys
+      description: Keep the live keys expiring within HighWithinDays days but not already Critical (still on/after CriticalWithinDays days) under PrismaAIRs.RuntimeApiKeyHigh.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.RuntimeApiKeyHigh
+      value:
+        complex:
+          root: PrismaAIRs.RuntimeApiKeyLive
+          filters:
+          - - operator: BeforeRelativeDate
+              left:
+                value:
+                  simple: PrismaAIRs.RuntimeApiKeyLive.expires_at
+                iscontext: true
+              right:
+                value:
+                  simple: PrismaAIRs.RuntimeRelHigh
+                iscontext: true
+          - - operator: AfterRelativeDate
+              left:
+                value:
+                  simple: PrismaAIRs.RuntimeApiKeyLive.expires_at
+                iscontext: true
+              right:
+                value:
+                  simple: PrismaAIRs.RuntimeRelCritical
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e3f4a5b6-0006-4c5d-8e9f-0a1b2c3d0006
+    type: regular
+    task:
+      id: e3f4a5b6-0006-4c5d-8e9f-0a1b2c3d0006
+      version: -1
+      name: Bucket - Medium risk keys
+      description: Keep the live keys expiring within MediumWithinDays days but not already High or Critical (still on/after HighWithinDays days) under PrismaAIRs.RuntimeApiKeyMedium.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.RuntimeApiKeyMedium
+      value:
+        complex:
+          root: PrismaAIRs.RuntimeApiKeyLive
+          filters:
+          - - operator: BeforeRelativeDate
+              left:
+                value:
+                  simple: PrismaAIRs.RuntimeApiKeyLive.expires_at
+                iscontext: true
+              right:
+                value:
+                  simple: PrismaAIRs.RuntimeRelMedium
+                iscontext: true
+          - - operator: AfterRelativeDate
+              left:
+                value:
+                  simple: PrismaAIRs.RuntimeApiKeyLive.expires_at
+                iscontext: true
+              right:
+                value:
+                  simple: PrismaAIRs.RuntimeRelHigh
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: e3f4a5b6-0007-4c5d-8e9f-0a1b2c3d0007
+    type: regular
+    task:
+      id: e3f4a5b6-0007-4c5d-8e9f-0a1b2c3d0007
+      version: -1
+      name: Bucket - Low risk keys
+      description: Keep the live keys expiring on/after MediumWithinDays days (more than the medium window out) under PrismaAIRs.RuntimeApiKeyLow.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.RuntimeApiKeyLow
+      value:
+        complex:
+          root: PrismaAIRs.RuntimeApiKeyLive
+          filters:
+          - - operator: AfterRelativeDate
+              left:
+                value:
+                  simple: PrismaAIRs.RuntimeApiKeyLive.expires_at
+                iscontext: true
+              right:
+                value:
+                  simple: PrismaAIRs.RuntimeRelMedium
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e3f4a5b6-0008-4c5d-8e9f-0a1b2c3d0008
+    type: condition
+    task:
+      id: e3f4a5b6-0008-4c5d-8e9f-0a1b2c3d0008
+      version: -1
+      name: Any critical keys?
+      description: Branch to the critical reporting path only when at least one key is in the Critical bucket.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: PrismaAIRs.RuntimeApiKeyCritical
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: e3f4a5b6-0009-4c5d-8e9f-0a1b2c3d0009
+    type: regular
+    task:
+      id: e3f4a5b6-0009-4c5d-8e9f-0a1b2c3d0009
+      version: -1
+      name: Report critical keys to War Room
+      description: Writes the Critical risk keys to the War Room as a human-readable table.
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      title:
+        simple: 'Critical risk - Runtime API keys expiring within ${inputs.CriticalWithinDays} days (or expired)'
+      columns:
+        simple: name,expires_at,last8,id
+      data:
+        complex:
+          root: PrismaAIRs.RuntimeApiKeyCritical
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: e3f4a5b6-0010-4c5d-8e9f-0a1b2c3d0010
+    type: regular
+    task:
+      id: e3f4a5b6-0010-4c5d-8e9f-0a1b2c3d0010
+      version: -1
+      name: Mark problem found (critical)
+      description: Records that at least one more-than-medium-risk key was found so the incident routes to the manual approve-to-close gate instead of auto-closing.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.RuntimeKeyProblem
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: e3f4a5b6-0011-4c5d-8e9f-0a1b2c3d0011
+    type: condition
+    task:
+      id: e3f4a5b6-0011-4c5d-8e9f-0a1b2c3d0011
+      version: -1
+      name: Any high keys?
+      description: Branch to the high reporting path only when at least one key is in the High bucket.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: PrismaAIRs.RuntimeApiKeyHigh
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: e3f4a5b6-0012-4c5d-8e9f-0a1b2c3d0012
+    type: regular
+    task:
+      id: e3f4a5b6-0012-4c5d-8e9f-0a1b2c3d0012
+      version: -1
+      name: Report high keys to War Room
+      description: Writes the High risk keys to the War Room as a human-readable table.
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      title:
+        simple: 'High risk - Runtime API keys expiring within ${inputs.HighWithinDays} days'
+      columns:
+        simple: name,expires_at,last8,id
+      data:
+        complex:
+          root: PrismaAIRs.RuntimeApiKeyHigh
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: e3f4a5b6-0013-4c5d-8e9f-0a1b2c3d0013
+    type: regular
+    task:
+      id: e3f4a5b6-0013-4c5d-8e9f-0a1b2c3d0013
+      version: -1
+      name: Mark problem found (high)
+      description: Records that at least one more-than-medium-risk key was found so the incident routes to the manual approve-to-close gate instead of auto-closing.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.RuntimeKeyProblem
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: e3f4a5b6-0014-4c5d-8e9f-0a1b2c3d0014
+    type: condition
+    task:
+      id: e3f4a5b6-0014-4c5d-8e9f-0a1b2c3d0014
+      version: -1
+      name: Any medium keys?
+      description: Branch to the medium reporting path only when at least one key is in the Medium bucket.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: PrismaAIRs.RuntimeApiKeyMedium
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: e3f4a5b6-0015-4c5d-8e9f-0a1b2c3d0015
+    type: regular
+    task:
+      id: e3f4a5b6-0015-4c5d-8e9f-0a1b2c3d0015
+      version: -1
+      name: Report medium keys to War Room
+      description: Writes the Medium risk keys to the War Room as a human-readable table.
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      title:
+        simple: 'Medium risk - Runtime API keys expiring within ${inputs.MediumWithinDays} days'
+      columns:
+        simple: name,expires_at,last8,id
+      data:
+        complex:
+          root: PrismaAIRs.RuntimeApiKeyMedium
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: e3f4a5b6-0016-4c5d-8e9f-0a1b2c3d0016
+    type: condition
+    task:
+      id: e3f4a5b6-0016-4c5d-8e9f-0a1b2c3d0016
+      version: -1
+      name: Any low keys?
+      description: Branch to the low reporting path only when at least one key is in the Low bucket.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: PrismaAIRs.RuntimeApiKeyLow
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: e3f4a5b6-0017-4c5d-8e9f-0a1b2c3d0017
+    type: regular
+    task:
+      id: e3f4a5b6-0017-4c5d-8e9f-0a1b2c3d0017
+      version: -1
+      name: Report low keys to War Room
+      description: Writes the Low risk keys to the War Room as a human-readable table.
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      title:
+        simple: 'Low risk - Runtime API keys expiring on/after ${inputs.MediumWithinDays} days'
+      columns:
+        simple: name,expires_at,last8,id
+      data:
+        complex:
+          root: PrismaAIRs.RuntimeApiKeyLow
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: e3f4a5b6-0018-4c5d-8e9f-0a1b2c3d0018
+    type: condition
+    task:
+      id: e3f4a5b6-0018-4c5d-8e9f-0a1b2c3d0018
+      version: -1
+      name: Email more-than-medium-risk keys?
+      description: Send an email only when at least one recipient is configured AND at least one key is more than medium risk (Critical or High). All severities have already been reported to the War Room.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.NotificationRecipients
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: PrismaAIRs.RuntimeApiKeyCritical
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              simple: PrismaAIRs.RuntimeApiKeyHigh
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: e3f4a5b6-0019-4c5d-8e9f-0a1b2c3d0019
+    type: regular
+    task:
+      id: e3f4a5b6-0019-4c5d-8e9f-0a1b2c3d0019
+      version: -1
+      name: Build critical email section
+      description: Renders the Critical risk keys into a human-readable text block (one key per block, critical-labeled) for the email body. Always sets the key (empty when there are no critical keys) so the email body resolves cleanly.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.RuntimeCriticalEmailText
+      value:
+        complex:
+          root: PrismaAIRs.RuntimeApiKeyCritical
+          transformers:
+          - operator: FormatTemplate
+            args:
+              template:
+                value:
+                  simple: |-
+                    [CRITICAL] ${.name}
+                      Expires at: ${.expires_at}
+                      Last 8: ${.last8}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: "\n\n"
+          - operator: SetIfEmpty
+            args:
+              defaultValue:
+                value:
+                  simple: None.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: e3f4a5b6-0020-4c5d-8e9f-0a1b2c3d0020
+    type: regular
+    task:
+      id: e3f4a5b6-0020-4c5d-8e9f-0a1b2c3d0020
+      version: -1
+      name: Build high email section
+      description: Renders the High risk keys into a human-readable text block (one key per block, high-labeled) for the email body. Always sets the key (empty when there are no high keys) so the email body resolves cleanly.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.RuntimeHighEmailText
+      value:
+        complex:
+          root: PrismaAIRs.RuntimeApiKeyHigh
+          transformers:
+          - operator: FormatTemplate
+            args:
+              template:
+                value:
+                  simple: |-
+                    [HIGH] ${.name}
+                      Expires at: ${.expires_at}
+                      Last 8: ${.last8}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: "\n\n"
+          - operator: SetIfEmpty
+            args:
+              defaultValue:
+                value:
+                  simple: None.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: e3f4a5b6-0021-4c5d-8e9f-0a1b2c3d0021
+    type: regular
+    task:
+      id: e3f4a5b6-0021-4c5d-8e9f-0a1b2c3d0021
+      version: -1
+      name: send-mail (expiring keys)
+      description: Emails the critical and high risk key summary (critical first) to the configured recipients via the tenant's mail-sender integration.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      to:
+        complex:
+          root: inputs.NotificationRecipients
+      subject:
+        simple: ${inputs.EmailSubjectPrefix} Runtime API keys nearing expiration (critical/high)
+      body:
+        simple: |-
+          One or more Prisma AIRS Runtime API keys are more than medium risk. Rotate or renew the keys below before they expire.
+
+          Critical risk keys:
+          ${PrismaAIRs.RuntimeCriticalEmailText}
+
+          High risk keys:
+          ${PrismaAIRs.RuntimeHighEmailText}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: e3f4a5b6-0022-4c5d-8e9f-0a1b2c3d0022
+    type: condition
+    task:
+      id: e3f4a5b6-0022-4c5d-8e9f-0a1b2c3d0022
+      version: -1
+      name: Any problem found?
+      description: If any Critical or High key was recorded, route to the manual approve-to-close gate. Otherwise nothing needs remediation and the incident closes automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: PrismaAIRs.RuntimeKeyProblem
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: e3f4a5b6-0023-4c5d-8e9f-0a1b2c3d0023
+    type: regular
+    task:
+      id: e3f4a5b6-0023-4c5d-8e9f-0a1b2c3d0023
+      version: -1
+      name: Validate remediation and approve to close
+      description: |-
+        Manual approval gate for the problem path. Investigate the keys reported in the War Room ("Critical risk" and/or "High risk" tables), rotate or renew them, then complete this task to approve closing the incident.
+
+        The incident will NOT close automatically while a Critical or High key was detected - it stays open for investigation until this step is completed.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: e3f4a5b6-0024-4c5d-8e9f-0a1b2c3d0024
+    type: regular
+    task:
+      id: e3f4a5b6-0024-4c5d-8e9f-0a1b2c3d0024
+      version: -1
+      name: Close incident
+      description: Closes the incident once the run has completed, so a recurring job does not leave open incidents behind.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeNotes:
+        simple: Completed
+      closeReason:
+        simple: Resolved
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: e3f4a5b6-0025-4c5d-8e9f-0a1b2c3d0025
+    type: title
+    task:
+      id: e3f4a5b6-0025-4c5d-8e9f-0a1b2c3d0025
+      version: -1
+      name: No critical or high keys - nothing to remediate
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4620,
+        "width": 820,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.10.0
+tests:
+- No tests
+version: -1

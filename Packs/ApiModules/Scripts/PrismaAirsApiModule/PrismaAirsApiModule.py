@@ -35,6 +35,14 @@ DEFAULT_DLP_BASE_URL = "https://api.dlp.paloaltonetworks.com"
 SCANNER_SYNC_SCAN_PATH = "/v1/scan/sync/request"
 DEFAULT_SCANNER_BASE_URL = "https://service.api.aisecurity.paloaltonetworks.com"
 
+# AI Gateway governance API - OAuth2 (SCM) auth like the other planes, but a separate host with two plane prefixes.
+DEFAULT_AIGW_BASE_URL = "https://api.apps.paloaltonetworks.com"
+AIGW_CONTROL_PLANE_PATH = "/ai_gw/v2"
+AIGW_ADMIN_PLANE_PATH = "/ai_gw/admin/v2"
+# SCM IAM scopes live on the same host but a third prefix (/iam/v1). Workspace-scoped AI Gateway
+# access is granted through these scopes; they share the OAuth token and x-tsg-id header.
+AIGW_IAM_PATH = "/iam/v1"
+
 # OAuth2 token endpoint (SCM).
 TOKEN_URL = "https://auth.apps.paloaltonetworks.com/oauth2/access_token"
 
@@ -126,6 +134,9 @@ class Client(BaseClient):
         use_redteam_data: bool = False,
         use_redteam_mgmt: bool = False,
         use_dlp_base: bool = False,
+        use_aigw_cp: bool = False,
+        use_aigw_admin: bool = False,
+        use_aigw_iam: bool = False,
         resp_type: str = "json",
         return_empty_response: bool = False,
         headers: dict[str, str] | None = None,
@@ -145,6 +156,9 @@ class Client(BaseClient):
             use_redteam_data: If True, use RED_TEAM_DATA_PATH prefix (e.g., /ai-red-teaming/data-plane/...).
             use_redteam_mgmt: If True, use RED_TEAM_MGMT_PATH prefix (e.g., /ai-red-teaming/mgmt-plane/...).
             use_dlp_base: If True, use DLP_BASE_URL (https://api.dlp.paloaltonetworks.com) + url_suffix directly.
+            use_aigw_cp: If True, use the AI Gateway control plane (AIGW_CONTROL_PLANE_PATH) on the AI Gateway host.
+            use_aigw_admin: If True, use the AI Gateway admin plane (AIGW_ADMIN_PLANE_PATH) on the AI Gateway host.
+            use_aigw_iam: If True, use the SCM IAM plane (AIGW_IAM_PATH) on the AI Gateway host (workspace scopes).
             resp_type: Response type - "json" (default), "text", "content", "xml", or "response".
             return_empty_response: If True, return empty response object for 204 No Content responses (DELETE operations).
 
@@ -155,6 +169,12 @@ class Client(BaseClient):
         # 'service-name: api' is required by some tenants' downstream services (notably the DLP API),
         # which otherwise return a generic HTTP 400. Sent on every management/DLP request to match the SDK.
         request_headers: dict[str, str] = {"Authorization": f"Bearer {token}", "service-name": "api"}
+        # Every AI Gateway endpoint requires the tenant header (x-tsg-id) on top of the bearer token;
+        # the SDK composes TsgHeaderAuth over OAuthAuth for exactly this. Scoped to the AI Gateway planes
+        # (and the SCM IAM plane, which shares the same host/token) only - the other planes neither send
+        # nor require it.
+        if use_aigw_cp or use_aigw_admin or use_aigw_iam:
+            request_headers["x-tsg-id"] = self.tsg_id or ""
         # For multipart file uploads, let the HTTP layer set the Content-Type (with boundary).
         if files is None:
             request_headers["Content-Type"] = "application/json"
@@ -163,8 +183,14 @@ class Client(BaseClient):
             request_headers.update(headers)
 
         # Determine which API path prefix to use
-        # CRITICAL: DLP v2 API uses a completely different base URL
-        if use_dlp_base:
+        # CRITICAL: DLP v2 API and AI Gateway use completely different base URLs / prefixes
+        if use_aigw_cp:
+            full_url = f"{self._base_url}{AIGW_CONTROL_PLANE_PATH}{url_suffix}"
+        elif use_aigw_admin:
+            full_url = f"{self._base_url}{AIGW_ADMIN_PLANE_PATH}{url_suffix}"
+        elif use_aigw_iam:
+            full_url = f"{self._base_url}{AIGW_IAM_PATH}{url_suffix}"
+        elif use_dlp_base:
             full_url = f"{self.dlp_base_url}{url_suffix}"
         elif use_model_sec_data:
             full_url = f"{self._base_url}{MODEL_SEC_DATA_PATH}{url_suffix}"

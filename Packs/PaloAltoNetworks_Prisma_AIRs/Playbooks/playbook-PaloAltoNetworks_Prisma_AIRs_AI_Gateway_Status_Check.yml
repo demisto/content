@@ -1,0 +1,577 @@
+description: |-
+  Checks the health of the configured Prisma AIRS AI Gateway deployments (gateways) for a single integration instance, reports any unhealthy gateways to the War Room as a human-readable table, optionally emails a notification, and closes the incident when the run completes without errors (so it can be driven by a recurring job).
+
+  Flow - list the deployments on the AI Gateway admin plane (filtered by status, default active). Each returned deployment carries a connection_status field, which is the health signal. Filter the inventory down to the gateways whose connection_status indicates a definite problem (present, and not "healthy" or "unknown"; unknown/unset are treated as informational). When at least one unhealthy gateway is found, write the offenders to the War Room as a table and - when email notifications are enabled and at least one recipient is configured - send an email summary.
+
+  Auto-close vs. manual close - the healthy paths (no deployments found, or all gateways healthy) close the incident automatically (closeReason "Resolved", closeNotes "Completed") so a recurring job leaves no open incidents. The unhealthy path never auto-closes: it pauses on a manual "Validate remediation and approve to close" task so an analyst can investigate and confirm the fix before the incident is closed.
+
+  Clone-per-tenant - every integration command is pinned to the instance named in the InstanceName input via the universal "using" argument, so this playbook can be duplicated and pointed at a different Prisma AIRS AI Gateway instance (tenant) without editing any task. Leave InstanceName empty to use the single enabled instance.
+id: PaloAltoNetworks_Prisma_AIRs_AI_Gateway_Status_Check
+inputs:
+- key: InstanceName
+  value: {}
+  required: false
+  description: The Prisma AIRS AI Gateway integration instance name to run every command against (universal "using" argument). Leave empty to use the single enabled instance. Set this (and clone the playbook) to check a different tenant.
+  playbookInputQuery:
+- key: StatusFilter
+  value:
+    simple: active
+  required: false
+  description: Which deployments to inventory and health-check. One of "active" or "archived". Defaults to active; archived gateways are intentionally disabled and are not treated as faults.
+  playbookInputQuery:
+- key: WorkspaceSlug
+  value: {}
+  required: false
+  description: Optional comma-separated list of workspace slugs to narrow the deployment inventory. Leave empty to check all workspaces.
+  playbookInputQuery:
+- key: SendEmail
+  value:
+    simple: "true"
+  required: false
+  description: Master on/off switch for email notifications. One of "true" or "false". Email is sent only when this is true AND NotificationRecipients is non-empty AND at least one unhealthy gateway is found.
+  playbookInputQuery:
+- key: NotificationRecipients
+  value: {}
+  required: false
+  description: Comma-separated email address(es) to notify. If left empty, no email is sent (the unhealthy gateways are still reported to the War Room). Requires a configured mail-sender integration on the tenant.
+  playbookInputQuery:
+- key: EmailSubjectPrefix
+  value:
+    simple: '[Prisma AIRS AI Gateway]'
+  required: false
+  description: Prefix added to the notification email subject. Useful for per-tenant mailbox filtering.
+  playbookInputQuery:
+name: PaloAltoNetworks_Prisma_AIRs_AI_Gateway_Status_Check
+outputs:
+- contextPath: PrismaAIRs.AIGatewayDeployment
+  description: The configured gateway deployments returned by the inventory step (each row includes connection_status).
+  type: unknown
+- contextPath: PrismaAIRs.AIGatewayUnhealthy
+  description: The subset of deployments whose connection_status indicates a definite problem (present, and not healthy or unknown).
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d1e2f3a4-0001-4e5f-9a0b-1c2d3e4f6001
+    type: start
+    task:
+      id: d1e2f3a4-0001-4e5f-9a0b-1c2d3e4f6001
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d1e2f3a4-0003-4e5f-9a0b-1c2d3e4f6003
+    type: regular
+    task:
+      id: d1e2f3a4-0003-4e5f-9a0b-1c2d3e4f6003
+      version: -1
+      name: prisma-airs-aigateway-deployments-list
+      description: Lists the configured gateway deployments on the AI Gateway admin plane, filtered by status (and optionally workspace).
+      script: '|||prisma-airs-aigateway-deployments-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      status:
+        complex:
+          root: inputs.StatusFilter
+      workspace_slug:
+        complex:
+          root: inputs.WorkspaceSlug
+      using:
+        simple: ${inputs.InstanceName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d1e2f3a4-0004-4e5f-9a0b-1c2d3e4f6004
+    type: condition
+    task:
+      id: d1e2f3a4-0004-4e5f-9a0b-1c2d3e4f6004
+      version: -1
+      name: Any gateways found?
+      description: Continue only if the inventory returned at least one deployment.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: PrismaAIRs.AIGatewayDeployment.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d1e2f3a4-0006-4e5f-9a0b-1c2d3e4f6006
+    type: regular
+    task:
+      id: d1e2f3a4-0006-4e5f-9a0b-1c2d3e4f6006
+      version: -1
+      name: Filter unhealthy gateways
+      description: Keep only the deployments whose connection_status is present and indicates a definite problem - that is, not "healthy" and not "unknown" (unknown/unset are treated as informational, not alerted) - under PrismaAIRs.AIGatewayUnhealthy.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: PrismaAIRs.AIGatewayUnhealthy
+      value:
+        complex:
+          root: PrismaAIRs.AIGatewayDeployment
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: PrismaAIRs.AIGatewayDeployment.connection_status
+                iscontext: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: PrismaAIRs.AIGatewayDeployment.connection_status
+                iscontext: true
+              right:
+                value:
+                  simple: healthy
+              ignorecase: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: PrismaAIRs.AIGatewayDeployment.connection_status
+                iscontext: true
+              right:
+                value:
+                  simple: unknown
+              ignorecase: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d1e2f3a4-0007-4e5f-9a0b-1c2d3e4f6007
+    type: condition
+    task:
+      id: d1e2f3a4-0007-4e5f-9a0b-1c2d3e4f6007
+      version: -1
+      name: Any unhealthy gateways found?
+      description: Branch to the reporting/notification path only when at least one gateway is unhealthy. Otherwise everything is healthy and the incident is closed.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: PrismaAIRs.AIGatewayUnhealthy
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d1e2f3a4-0008-4e5f-9a0b-1c2d3e4f6008
+    type: title
+    task:
+      id: d1e2f3a4-0008-4e5f-9a0b-1c2d3e4f6008
+      version: -1
+      name: No AI Gateway deployments found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: d1e2f3a4-0009-4e5f-9a0b-1c2d3e4f6009
+    type: title
+    task:
+      id: d1e2f3a4-0009-4e5f-9a0b-1c2d3e4f6009
+      version: -1
+      name: All gateways healthy
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: d1e2f3a4-0010-4e5f-9a0b-1c2d3e4f6010
+    type: regular
+    task:
+      id: d1e2f3a4-0010-4e5f-9a0b-1c2d3e4f6010
+      version: -1
+      name: send-mail
+      description: Emails the unhealthy-gateway summary to the configured recipients via the tenant's mail-sender integration.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      to:
+        complex:
+          root: inputs.NotificationRecipients
+      subject:
+        simple: ${inputs.EmailSubjectPrefix} Unhealthy AI Gateway deployment(s) detected
+      body:
+        complex:
+          root: PrismaAIRs.AIGatewayUnhealthy
+          transformers:
+          - operator: Stringify
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d1e2f3a4-0011-4e5f-9a0b-1c2d3e4f6011
+    type: regular
+    task:
+      id: d1e2f3a4-0011-4e5f-9a0b-1c2d3e4f6011
+      version: -1
+      name: Close incident
+      description: Closes the incident once the run has completed without errors, so a recurring job does not leave open incidents behind.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeNotes:
+        simple: Completed
+      closeReason:
+        simple: Resolved
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: d1e2f3a4-0012-4e5f-9a0b-1c2d3e4f6012
+    type: regular
+    task:
+      id: d1e2f3a4-0012-4e5f-9a0b-1c2d3e4f6012
+      version: -1
+      name: Report unhealthy gateways to War Room
+      description: Writes the unhealthy gateway deployments to the War Room as a human-readable table.
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      title:
+        simple: Unhealthy AI Gateway deployments
+      columns:
+        simple: name,slug,connection_status,type,status,id
+      data:
+        complex:
+          root: PrismaAIRs.AIGatewayUnhealthy
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: d1e2f3a4-0013-4e5f-9a0b-1c2d3e4f6013
+    type: condition
+    task:
+      id: d1e2f3a4-0013-4e5f-9a0b-1c2d3e4f6013
+      version: -1
+      name: Email recipients configured?
+      description: Send an email only when notifications are enabled (SendEmail is true) AND at least one recipient is configured. When no recipient is configured, the unhealthy gateways have already been reported to the War Room and no email is sent.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SendEmail
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.NotificationRecipients
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: d1e2f3a4-0014-4e5f-9a0b-1c2d3e4f6014
+    type: title
+    task:
+      id: d1e2f3a4-0014-4e5f-9a0b-1c2d3e4f6014
+      version: -1
+      name: Notification skipped - no recipients configured
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: d1e2f3a4-0015-4e5f-9a0b-1c2d3e4f6015
+    type: regular
+    task:
+      id: d1e2f3a4-0015-4e5f-9a0b-1c2d3e4f6015
+      version: -1
+      name: Validate remediation and approve to close
+      description: |-
+        Manual approval gate for the unhealthy-gateway path. Investigate the gateways reported in the "Unhealthy AI Gateway deployments" War Room table, remediate them, and confirm each is healthy again. Only then complete this task to approve closing the incident.
+
+        The incident will NOT close automatically while unhealthy gateways were detected - it stays open for investigation until this step is completed.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1800,
+        "width": 1220,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.10.0
+tests:
+- No tests
+version: -1
