@@ -19,6 +19,8 @@ from LumuSecops import (
     mute_incident_command,
     test_module,
     unmute_incident_command,
+    update_remote_system_command,
+    wipe_cache,
 )
 
 
@@ -198,10 +200,20 @@ def test_get_incident_security_events_details_command(mock_request: patch) -> No
     "LumuSecops.get_integration_context",
     return_value={"cache": [], "lumu_secops_incident_ids": [], "source_records": {}, "users": {}, "labels": {}},
 )
+@patch("LumuSecops.demisto.incidents")
+@patch("LumuSecops.demisto.setLastRun")
 @patch.object(Client, "consult_incidents_updates_request", return_value=UPDATES_RESPONSE)
-def test_fetch_incidents(mock_updates: patch, mock_context: patch, mock_set_context: patch) -> None:
-    next_run, incidents = fetch_incidents(get_client(), "0", {"last_fetch": "0"}, 1, 4)
-    assert next_run == {"last_fetch": "456"}
+def test_fetch_incidents(
+    mock_updates: patch,
+    mock_set_last_run: patch,
+    mock_incidents: patch,
+    mock_context: patch,
+    mock_set_context: patch,
+) -> None:
+    fetch_incidents(get_client(), "0", {"last_fetch": "0"}, 1, 4, "instance-1", "In", ["tag-a"])
+
+    mock_set_last_run.assert_called_once_with({"last_fetch": "456"})
+    incidents = mock_incidents.call_args.args[0]
     assert len(incidents) == 1
     assert incidents[0]["dbotMirrorId"] == "inc-1"
     raw_json = json.loads(incidents[0]["rawJSON"])
@@ -217,6 +229,14 @@ def test_fetch_incidents(mock_updates: patch, mock_context: patch, mock_set_cont
     assert raw_json["lumu_secops_adversary_types"] == ["Malware"]
     assert raw_json["lumu_secops_description"] == "Suspicious communication"
     assert raw_json["lumu_secops_incident_grouping_fields"] == '{"adversary": "wicar.org"}'
+    assert raw_json["mirror_instance"] == "instance-1"
+    assert raw_json["mirror_direction"] == "In"
+    assert raw_json["mirror_tags"] == ["tag-a"]
+
+    written_cache = mock_set_context.call_args.args[0]
+    assert written_cache["cache"] == [["inc-1"]]
+    assert "inc-1" in written_cache["lumu_secops_incident_ids"]
+    assert "inc-1" in written_cache["source_records"]
 
 
 @patch("LumuSecops.set_integration_context")
@@ -224,10 +244,20 @@ def test_fetch_incidents(mock_updates: patch, mock_context: patch, mock_set_cont
     "LumuSecops.get_integration_context",
     return_value={"cache": [], "lumu_secops_incident_ids": [], "source_records": {}, "users": {}, "labels": {}},
 )
+@patch("LumuSecops.demisto.incidents")
+@patch("LumuSecops.demisto.setLastRun")
 @patch.object(Client, "consult_incidents_updates_request", return_value=SPARSE_UPDATES_RESPONSE)
-def test_fetch_incidents_sparse_updates_fallbacks(mock_updates: patch, mock_context: patch, mock_set_context: patch) -> None:
-    next_run, incidents = fetch_incidents(get_client(), "0", {"last_fetch": "0"}, 1, 4)
-    assert next_run == {"last_fetch": "789"}
+def test_fetch_incidents_sparse_updates_fallbacks(
+    mock_updates: patch,
+    mock_set_last_run: patch,
+    mock_incidents: patch,
+    mock_context: patch,
+    mock_set_context: patch,
+) -> None:
+    fetch_incidents(get_client(), "0", {"last_fetch": "0"}, 1, 4, "instance-1", "In", [])
+    mock_set_last_run.assert_called_once_with({"last_fetch": "789"})
+
+    incidents = mock_incidents.call_args.args[0]
     assert len(incidents) == 1
     raw_json = json.loads(incidents[0]["rawJSON"])
     assert raw_json["lumu_secops_incident_type"] == "malicious-infrastructure"
@@ -295,3 +325,39 @@ def test_get_remote_data_command(
 )
 def test_test_module(mock_users: patch, mock_labels: patch, mock_context: patch, mock_set_context: patch) -> None:
     assert test_module(get_client(), {}) == "ok"
+
+
+@patch("LumuSecops.set_integration_context")
+@patch(
+    "LumuSecops.get_integration_context",
+    return_value={
+        "cache": [],
+        "lumu_secops_incident_ids": ["inc-1", "inc-2"],
+        "source_records": {"inc-1": {"event_type": "IncidentUpdated", "raw": {}}},
+        "users": {},
+        "labels": {},
+    },
+)
+def test_wipe_cache(mock_context: patch, mock_set_context: patch) -> None:
+    wipe_cache("inc-1")
+    cache = mock_set_context.call_args.args[0]
+    assert cache["lumu_secops_incident_ids"] == ["inc-2"]
+    assert "inc-1" not in cache["source_records"]
+
+
+@patch("LumuSecops.wipe_cache")
+@patch.object(Client, "close_incident_request", return_value="ok")
+@patch("LumuSecops.UpdateRemoteSystemArgs")
+def test_update_remote_system_close_wipes_cache(mock_update_args: patch, mock_close: patch, mock_wipe_cache: patch) -> None:
+    mock_update_args.return_value.remote_incident_id = "inc-1"
+    mock_update_args.return_value.entries = ["entry"]
+    mock_update_args.return_value.delta = {
+        "closeReason": "Resolved",
+        "closeNotes": "done",
+        "closingUserId": "42",
+    }
+
+    response = update_remote_system_command(get_client(), {})
+    assert response == "inc-1"
+    mock_close.assert_called_once_with("inc-1", f"{COMMENT_MARK} Close - Notes=done, Reason=Resolved, User=42")
+    mock_wipe_cache.assert_called_once_with("inc-1")

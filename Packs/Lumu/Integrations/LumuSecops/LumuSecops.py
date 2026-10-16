@@ -96,7 +96,7 @@ def format_comment(event_type: str, username: str, status_timestamp: str, commen
     )
 
 
-def format_updates_comment(client: 'Client', incident: dict, labels_cache: dict) -> str:
+def format_updates_comment(client: "Client", incident: dict, labels_cache: dict) -> str:
     total_events = html.escape(str(incident.get("totalEvents", 1)))
 
     affected_targets_users = {
@@ -111,20 +111,18 @@ def format_updates_comment(client: 'Client', incident: dict, labels_cache: dict)
         for target in incident.get("targetsSamples", [])
         if target.get("type", "") == "user"
     }
-    
+
     affected_environments_endpoints = set()
     for target in incident.get("targetsSamples", []):
         if target.get("type", "") != "user":
             label_id = str(target.get("label", "0"))
-                        
+
             if label_id not in labels_cache:
                 demisto.debug(f"Label ID {label_id} not found in cache. Retrieving from API.")
                 labels_cache[label_id] = client.retrieve_a_specific_label_request(label_id=label_id)
             label_name = labels_cache.get(label_id, {"name": "Unknown Label"})["name"]
-                
-            affected_environments_endpoints.add(
-                html.escape(label_name)
-            )
+
+            affected_environments_endpoints.add(html.escape(label_name))
 
     offenders: set[str] = {offender.get("value") or offender.get("name", "") for offender in incident.get("offendersSamples", [])}
     offenders = {html.escape(offender.replace(".", "[.]")) for offender in offenders}
@@ -159,6 +157,23 @@ def format_updates_comment(client: 'Client', incident: dict, labels_cache: dict)
 {offenders_block if offenders_block else ""}
 </div>
 """
+
+
+def wipe_cache(incident_id: str):
+    cache = get_integration_context() or {
+        "cache": [],
+        "lumu_secops_incident_ids": [],
+        "source_records": {},
+        "users": {},
+        "labels": {},
+    }
+    if incident_id in cache.get("lumu_secops_incident_ids", []):
+        cache["lumu_secops_incident_ids"].remove(incident_id)
+        demisto.debug(f"Removed incident ID {incident_id} from lumu_secops_incident_ids cache.")
+    if incident_id in cache.get("source_records", {}):
+        cache["source_records"].pop(incident_id, None)
+        demisto.debug(f"Removed incident ID {incident_id} from source_records cache.")
+    set_integration_context(cache)
 
 
 class Client(BaseClient):
@@ -494,7 +509,7 @@ def get_all_incidents_command(client: Client, args: dict[str, Any]) -> CommandRe
     items = arg_to_number(args.get("items"))
     status = argToList(args.get("status"))
     adversary_types = argToList(args.get("adversary_types"))
-    labels = [arg_to_number(label) for label in argToList(args.get("labels"))]
+    labels = [label_id for label_id in (arg_to_number(label) for label in argToList(args.get("labels"))) if label_id is not None]
     from_date = args.get("from_date")
     to_date = args.get("to_date")
     response = client.get_all_incidents_request(page, items, status, from_date, to_date, adversary_types, labels)
@@ -505,7 +520,7 @@ def get_open_incidents_command(client: Client, args: dict[str, Any]) -> CommandR
     page = arg_to_number(args.get("page"))
     items = arg_to_number(args.get("items"))
     adversary_types = argToList(args.get("adversary_types"))
-    labels = [arg_to_number(label) for label in argToList(args.get("labels"))]
+    labels = [label_id for label_id in (arg_to_number(label) for label in argToList(args.get("labels"))) if label_id is not None]
     response = client.get_open_incidents_request(page, items, adversary_types, labels)
     return build_command_results("Open Incidents", "LumuSecops.GetOpenIncidents", response, response.get("items", []))
 
@@ -514,7 +529,7 @@ def get_muted_incidents_command(client: Client, args: dict[str, Any]) -> Command
     page = arg_to_number(args.get("page"))
     items = arg_to_number(args.get("items"))
     adversary_types = argToList(args.get("adversary_types"))
-    labels = [arg_to_number(label) for label in argToList(args.get("labels"))]
+    labels = [label_id for label_id in (arg_to_number(label) for label in argToList(args.get("labels"))) if label_id is not None]
     response = client.get_muted_incidents_request(page, items, adversary_types, labels)
     return build_command_results("Muted Incidents", "LumuSecops.GetMutedIncidents", response, response.get("items", []))
 
@@ -523,7 +538,7 @@ def get_closed_incidents_command(client: Client, args: dict[str, Any]) -> Comman
     page = arg_to_number(args.get("page"))
     items = arg_to_number(args.get("items"))
     adversary_types = argToList(args.get("adversary_types"))
-    labels = [arg_to_number(label) for label in argToList(args.get("labels"))]
+    labels = [label_id for label_id in (arg_to_number(label) for label in argToList(args.get("labels"))) if label_id is not None]
     response = client.get_closed_incidents_request(page, items, adversary_types, labels)
     return build_command_results("Closed Incidents", "LumuSecops.GetClosedIncidents", response, response.get("items", []))
 
@@ -818,7 +833,6 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
             )
         }
 
-
     if not cache.get("labels") or len(cache["labels"]) == 1:
         demisto.info("Initializing labels cache with Unlabeled activity only")
         cache["labels"] = {
@@ -940,6 +954,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
                 }
             )
         demisto.info(f"Event: {event_type} - Incident: {incident_id} - keys: {details.keys()}")
+        wipe_cache(incident_id)
         return GetRemoteDataResponse(details, parsed_entries)
     except Exception as e:
         demisto.debug(f"get_remote_data_command error {e}")
@@ -998,6 +1013,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
             comment = f"{COMMENT_MARK} {close_comment}"
             response_text = client.close_incident_request(remote_incident_id, comment)
             demisto.debug(f"Closed incident {remote_incident_id} with Lumu Response: {response_text}")
+            wipe_cache(remote_incident_id)
             return remote_incident_id
 
         lumu_status = str(delta.get("Take Status Action") or delta.get("lumusecopstakestatusaction") or "").lower()
@@ -1080,11 +1096,11 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
 
-    mirror_direction = {
+    mirror_direction: str = {
         "Incoming": "In",
         "Outgoing": "Out",
         "Incoming And Outgoing": "Both",
-    }.get(params.get("mirror_direction"))
+    }.get(params.get("mirror_direction"), "")
     mirror_tags = params.get("mirror_tags") or []
     integration_instance = demisto.integrationInstance()
 
@@ -1094,7 +1110,8 @@ def main() -> None:
     api_key = params.get("api_key", {}).get("credentials", {}).get("password")
 
     offset_set_off = params.get("fetch_offset", "0")
-    items = arg_to_number(params.get("total_items_per_lumu_fetch", 30))
+    items = arg_to_number(params.get("total_items_per_lumu_fetch", 30)) or 30
+
     time_last = int(params.get("max_time_fetching_lumu_incident", 4))
 
     instance_name: str = get_integration_instance_name() or "default"
