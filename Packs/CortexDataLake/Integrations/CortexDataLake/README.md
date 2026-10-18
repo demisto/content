@@ -2,8 +2,8 @@
 
 ---
 
-Palo Alto Networks Strata Logging Service XSOAR Connector provides cloud-based, centralized log storage and aggregation for your on premise, virtual (private cloud and public cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex XDR.
-This integration was integrated and tested with version 2 of Strata Logging Service XSOAR Connector.
+Palo Alto Networks Strata Logging Service XSOAR Connector provides cloud-based, centralized log storage and aggregation for your on-premises, virtual (private cloud and public cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex XDR.
+This integration was tested with version 2 of Strata Logging Service XSOAR Connector.
 
 ---
 
@@ -11,48 +11,33 @@ This integration was integrated and tested with version 2 of Strata Logging Serv
 
 ---
 
-1. Go to the Palo Alto Networks [HUB](https://apps.paloaltonetworks.com/apps) and select and add the **Cortex XSOAR** app as described [here](https://docs.paloaltonetworks.com/hub/hub-getting-started/get-started/accessing-applications.html).
-The following screen will appear:
-
-   ![image](https://github.com/demisto/content-docs/blob/master/docs/doc_imgs/integrations/cdl-authorization.png?raw=true)
-
-2. In the Palo Alto Networks Cortex XSOAR Playground or War Room, run the ***!GetLicenseID*** command to get the License ID.
-The License ID will be used in Step 4.
-3. (Cortex XOAR 6.x) Go to **Settings** > **ABOUT** > **License** and get the value in the license field Customer name.
-
-   (Cortex xSOAR 8, Administrators only ) Go to **Profile** > **ABOUT** and get the value in the license field Customer name.
-
-   The Customer name will be used in Step 4.
-
-4. In the Palo Alto Networks HUB, enter the License ID and the Customer name in the screen obtained in Step 1. The License ID and Customer name were obtained in Steps 2 and 3. Click **Start Authorization Process** to get the Authentication Token, Registration ID, and Encryption Key - these three fields will be used in the Palo Alto Networks Cortex v2 integration instance in Step 7 below.
-5. In Palo Alto Networks Cortex XSOAR, navigate to **Settings** > **Integrations** > **Servers & Services**.
-6. Search for Strata Logging Service XSOAR Connector.
-7. Click **Add instance** to create and configure a new integration instance.
+1. Go to the [HUB](https://apps.paloaltonetworks.com/apps) and log in using your Palo Alto Networks credentials.
+2. Under the `Cortex XSOAR` app, select the relevant instance. If you don't have an active `Cortex XSOAR` app, check out the Hub [Docs site](https://docs.paloaltonetworks.com/hub/hub-getting-started/get-started) to learn about app activation.
+3. Once the page loads, if required, insert the `license ID` and the `Customer Name` in the required fields and complete the authentication process in order to get the **Registration ID**, **Encryption Key**, and either **Authentication Token** or **Client Secret**.
+    * To get the `license ID`, run the command `!GetLicenseID` in the War Room.
+    * To get the `Customer Name`, Go to **Settings** \> **ABOUT** \> **License**.
+4. Deppending on your tenant, navigate to either of the following:
+    * Cortex Agentix: **Settings** > **Data Collection** > **Data Sources & Integrations**.
+    * Cortex XSOAR: **Settings** > **Integrations** > **Instances**.
+5. Search for Strata Logging Service.
+6. Click **Add instance** to create and configure a new integration instance.
     * **Name**: A textual name for the integration instance.
-    * **Authentication Token**: Retrieved in the authentication process in Step 4.
-    * **Registration ID**: Retrieved in the authentication process in Step 4.
-      * The token retrieval URL is inferred based on the tenant's FedRAMP status unless explicitly specified in the **Registration ID** parameter in the format `REGISTRATION_ID@URL`.
-    * **Encryption Key**: Retrieved in the authentication process in Step 4.
-    * **Fetch incidents**: Whether to fetch incidents or not.
-    * **first_fetch_timestamp**: First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year).
-    * **Fetch Table**: Choose the table from which incidents will be fetched.
-    * **Severity of events to fetch (Firewall)**: Select from all, Critical, High, Medium,Low, Informational, Unused.
-    * **Subtype of events to fetch (Firewall)**: Select from all, attack, url, virus, spyware, vulnerability, file, scan, flood, packet, resource, data, url-content, wildfire, extpcap, wildfire-virus, http-hdr-insert, http-hdr, email-hdr, spyware-dns, spyware-wildfire-dns, spyware-wpc-dns, spyware-custom-dns, spyware-cloud-dns, spyware-raven, spyware-wildfire-raven, spyware-wpc-raven, wpc-virus,sctp
-    * **Fetch Fields**: Comma-separated fields that will be fetched with every incident, e.g., "pcap,session_id". Enter "*" for all possible fields.
-    * **Fetch Filter**: Specify the filter that should be used to fetch incidents. Can not be used in combination with the Subtype and Severity parameters.
-    * **Incidents fetched per query**: How many incidents will be fetched per query. Caution: high number could create overload. Default is 10.
+    * **Registration ID**: From the authentication process.
+        * The token retrieval URL is inferred based on the tenant's FedRAMP status unless explicitly specified in the **Registration ID** parameter in the format `REGISTRATION_ID@URL`.
+    * **Encryption Key**: From the authentication process.
+    * **Authentication Token** OR **Client Secret**: From the authentication process.
     * **proxy**: Use system proxy settings.
     * **insecure**: Trust any certificate (not secure).
-8. Click **Test** to validate the URLs, token, and connection.
+    * **Fetch incidents**: Whether to fetch incidents.
+    * **First fetch time**: First fetch time (\<number\> \<time unit\>, e.g., 12 hours, 7 days, 3 months, 1 year).
+    * **Severity of events to fetch (Firewall)**: Select from all, Critical, High, Medium, Low, Informational, or Unused.
+    * **Subtype of events to fetch (Firewall)**: Select from all, attack, url, virus, spyware, vulnerability, file, scan, flood, packet, resource, data, url-content, wildfire, extpcap, wildfire-virus, http-hdr-insert, http-hdr, email-hdr, spyware-dns, spyware-wildfire-dns, spyware-wpc-dns, spyware-custom-dns, spyware-cloud-dns, spyware-raven, spyware-wildfire-raven, spyware-wpc-raven, wpc-virus, or sctp.
+7. Click **Test** to validate the credentials and connection.
 
-In order for the integration to work, the following URLs need to be accessible:
+In order for the integration to work, the following domains need to be accessible:
 
-* For authentication:
-  * `oproxy.demisto.ninja`
-  * `api.paloaltonetworks.com`
-* For API requests, one of the following:
-  * US: `api.us.cdl.paloaltonetworks.com`
-  * EU: `api.nl.cdl.paloaltonetworks.com`
+* `*.paloaltonetworks.com`
+* `oproxy.demisto.ninja`
 
 ## Fetched Incidents Data
 
@@ -74,18 +59,18 @@ The integration can fetch incidents from the following tables:
 
 ## CDL Server - API Calls Caching Mechanism
 
-The integration implements a caching mechanism for repetitive error when requesting access token from CDL server.
+The integration implements a caching mechanism for repetitive errors when requesting an access token from the CDL server.
 When the integration reaches the limit of allowed calls, the following error will be shown:
 
-```We have found out that your recent attempts to authenticate against the CDL server have failed. Therefore we have limited the number of calls that the CDL integration performs.```
+```We have found out that your recent attempts to authenticate against the CDL server have failed. Therefore, we have limited the number of calls that the CDL integration performs.```
 
 The integration will re-attempt authentication if the command was called under the following cases:
 
 1. First hour - once every minute.
 2. First 48 hours - once in 10 minutes.
-3. After that every 60 minutes.
+3. After that, every 60 minutes.
 
-If you wish to try authenticating again, run the 'cdl-reset-authentication-timeout' command and retry.
+To try authenticating again, run the 'cdl-reset-authentication-timeout' command and retry.
 
 ---
 
