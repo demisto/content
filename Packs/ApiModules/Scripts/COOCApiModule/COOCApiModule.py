@@ -147,6 +147,10 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
         name = PROVIDER_ACCOUNT_NAMES.get(cloud_type, "account identifier")
         raise ValueError(f"Missing {name} for {cloud_type}")
 
+    if not isinstance(account_id, str):
+        demisto.debug(f"[COOC API] account_id is not a string (type: {type(account_id)}). Converting to string.")
+        account_id = str(account_id)
+
     cloud_info_context = demisto.callingContext.get("context", {}).get("CloudIntegrationInfo", {})
 
     request_data = {
