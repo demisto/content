@@ -679,7 +679,10 @@ COSMOS_DB_API_VERSION = "2024-11-15"
 PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
 NETWORK_INTERFACE_API_VERSION = "2026-01-01"
-NSG_API_VERSION = "2025-01-01"
+NSG_API_VERSION = "2026-01-01"
+PUBLIC_IP_API_VERSION = "2026-01-01"
+BLOB_SERVICE_API_VERSION = "2026-09-01"
+RESOURCE_GROUPS_API_VERSION = "2025-04-01"
 # Application Gateway and Front Door WAF policies are served by two separate resource providers,
 # each with its own independently released API version, so these two versions intentionally differ.
 WAF_POLICY_API_VERSION = "2025-09-01"
@@ -1086,8 +1089,9 @@ class AzureClient:
                 "PUT",
                 full_url=(
                     f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-                    f"/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}?"
+                    f"/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}"
                 ),
+                params={"api-version": NSG_API_VERSION},
                 json_data={"properties": properties},
             )
         except Exception as e:
@@ -1122,6 +1126,7 @@ class AzureClient:
             return self.http_request(
                 "GET",
                 full_url=f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}",
+                params={"api-version": NSG_API_VERSION},
             )
         except Exception as e:
             self.handle_azure_error(
@@ -1152,7 +1157,8 @@ class AzureClient:
             demisto.debug("Retrieving security rules list.")
             return self.http_request(
                 "GET",
-                full_url=f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups/{network_security_group_name}/securityRules?{NSG_API_VERSION}",
+                full_url=f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups/{network_security_group_name}/securityRules",
+                params={"api-version": NSG_API_VERSION},
             )
         except Exception as e:
             self.handle_azure_error(
@@ -1410,14 +1416,14 @@ class AzureClient:
         Returns:
             The json response from the API call.
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/storagerp/blob-services/get-service-properties?view=rest-storagerp-2024-01-01&utm_source=chatgpt.com&tabs=HTTP
+            https://learn.microsoft.com/en-us/rest/api/storagerp/blob-services/get-service-properties?view=rest-storagerp-2026-09-01&tabs=HTTP
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default"
         )
         try:
-            return self.http_request(method="GET", full_url=full_url)
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": BLOB_SERVICE_API_VERSION})
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -1474,6 +1480,7 @@ class AzureClient:
             return self.http_request(
                 method=method,
                 full_url=full_url,
+                params={"api-version": BLOB_SERVICE_API_VERSION},
                 json_data={"properties": properties},
             )
         except Exception as e:
@@ -3001,14 +3008,14 @@ class AzureClient:
             A dictionary containing the list of network security groups.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups/list?view=rest-virtualnetwork-2024-05-01
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups/list?view=rest-virtualnetwork-2026-01-01
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Network/networkSecurityGroups"
         )
         try:
-            return self.http_request(method="GET", full_url=full_url)
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": NSG_API_VERSION})
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -3033,7 +3040,7 @@ class AzureClient:
             The HTTP response object from the delete operation.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/security-rules/delete?view=rest-virtualnetwork-2024-05-01
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/security-rules/delete?view=rest-virtualnetwork-2026-01-01
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -3041,7 +3048,9 @@ class AzureClient:
             f"/securityRules/{security_rule_name}"
         )
         try:
-            response = self.http_request(method="DELETE", full_url=full_url, resp_type="response")
+            response = self.http_request(
+                method="DELETE", full_url=full_url, params={"api-version": NSG_API_VERSION}, resp_type="response"
+            )
             if response.status_code in (200, 202, 204):  # type: ignore[union-attr]
                 return response
             else:
@@ -3241,11 +3250,15 @@ class AzureClient:
             A dictionary containing the list of resource groups.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/list?view=rest-resources-2021-04-01
+            https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/list?view=rest-resources-2025-04-01
         """
         full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourcegroups"
         try:
-            return self.http_request(method="GET", full_url=full_url, params={"$filter": filter_by_tag, "$top": limit})
+            return self.http_request(
+                method="GET",
+                full_url=full_url,
+                params={"api-version": RESOURCE_GROUPS_API_VERSION, "$filter": filter_by_tag, "$top": limit},
+            )
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -3298,14 +3311,14 @@ class AzureClient:
             A dictionary containing the list of public IP addresses.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/list?view=rest-virtualnetwork-2024-05-01
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/list?view=rest-virtualnetwork-2026-01-01
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
             f"providers/Microsoft.Network/publicIPAddresses"
         )
         try:
-            return self.http_request(method="GET", full_url=full_url)
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": PUBLIC_IP_API_VERSION})
         except Exception as e:
             self.handle_azure_error(
                 e=e,
@@ -3841,11 +3854,11 @@ class AzureClient:
             List of PublicIPAddressListResult objects.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/list-all?tabs=HTTP
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/list-all?view=rest-virtualnetwork-2026-01-01
         """
         full_url = f"{PREFIX_URL_AZURE}{subscription_id}/providers/Microsoft.Network/publicIPAddresses"
         try:
-            return self.http_request(method="GET", full_url=full_url)
+            return self.http_request(method="GET", full_url=full_url, params={"api-version": PUBLIC_IP_API_VERSION})
         except Exception as e:
             self.handle_azure_error(
                 e=e,
