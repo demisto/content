@@ -43,18 +43,17 @@ configuration:
   type: 0
   section: Connect
   required: false
-  hidden: true
 - display: Token
   name: _tenant_id
   type: 0
   section: Connect
   required: false
   hidden: true
-- display: ID
-  displaypassword: Key
+- displaypassword: Key
   section: Connect
   name: credentials
   type: 9
+  hiddenusername: true
   required: false
 - display: Certificate Thumbprint
   name: creds_certificate
