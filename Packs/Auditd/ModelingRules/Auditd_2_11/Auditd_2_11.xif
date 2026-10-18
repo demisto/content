@@ -1,6 +1,6 @@
 [MODEL:dataset="unix_auditd_raw"]
 alter eventid = arrayindex(regextract(_raw_log, "audit\([^\:]+\:([^\)]+)"),0),
-hostname = arrayindex(regextract(_raw_log ,"\w+\s\d+\s\d+\:\d+\:\d+\s(\w+)\s"),0),
+hostname = arrayindex(regextract(_raw_log ,"\w+\s+\d+\s+\d+\:\d+\:\d+\s([\w-])\s"),0),
 type = arrayindex(regextract(_raw_log , "type\=([^\s]+)"),0),
 ses = arrayindex(regextract(_raw_log ,"\sses\=(\S+)\s"),0),
 res = arrayindex(regextract(_raw_log ,"\sres\=([a-zA-Z0-9\-\_]+)"),0),
