@@ -58,9 +58,8 @@ script:
   - description: 'Returns a list of events'
     name: cyberarkidentity-get-events
     arguments:
-    - description: The maximum number of events per fetch. Default is 1000.
-      defaultValue: 1000
-      isArray: true
+    - description: The maximum number of events to return. Default is 50.
+      defaultValue: 50
       name: limit
     - description: Set this argument to True to create events, otherwise events will only be displayed.
       auto: PREDEFINED

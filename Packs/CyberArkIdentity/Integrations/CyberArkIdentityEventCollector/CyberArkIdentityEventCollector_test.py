@@ -111,7 +111,7 @@ def _run(mocker, redrock, last_run: dict | None = None, command: str = "fetch-ev
 
         from CyberArkIdentityEventCollector import main
 
-        main(command, demisto_params | (args or {}))
+        main(command, demisto_params, args or {})
 
     events = sent.call_args[0][0] if sent.called else []
     new_last_run = mock_set_last_run.call_args[0][0] if mock_set_last_run.called else None
@@ -269,6 +269,25 @@ def test_fetch_events_millisecond_tie_across_limit_is_not_lost(mocker):
     second_events, _, _, _ = _run(mocker, redrock, last_run=first_last_run, limit=limit)
     all_ids = _ids(first_events + second_events)
     assert len(all_ids) == len(set(all_ids)) == len(rows)
+
+
+@pytest.mark.parametrize("args, expected_count", [({}, 50), ({"limit": "2"}, 2)])
+def test_get_events_command_limit_is_independent_of_instance_limit(mocker, args, expected_count):
+    """
+    Given
+        - An instance limit of 5000 and 3000 matching events.
+    When
+        - cyberarkidentity-get-events runs without a limit argument, or with limit=2.
+    Then
+        - The command uses its own default of 50, or its limit argument, never the instance limit.
+    """
+    redrock = FakeRedRock([_build_row(i, BASE_MS + i) for i in range(3000)])
+    _, _, contents, error = _run(
+        mocker, redrock, command="cyberarkidentity-get-events", args={"should_push_events": "false"} | args, limit=5000
+    )
+    assert error is None
+    assert len(contents["Contents"]) == expected_count
+    assert redrock.page_sizes == [expected_count]
 
 
 @pytest.mark.parametrize("limit", [0, -5])

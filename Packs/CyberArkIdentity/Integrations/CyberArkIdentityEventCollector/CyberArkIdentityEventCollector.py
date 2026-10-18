@@ -105,6 +105,7 @@ VENDOR = "cyberark"
 # Max events per RedRock page.
 PAGE_SIZE = 1000
 DEFAULT_LIMIT = 5000
+DEFAULT_COMMAND_LIMIT = 50
 # Epoch milliseconds in a WhenOccurred value, e.g. '/Date(1651483379362)/' or '/Date(1651483379362+0300)/'.
 WHEN_OCCURRED_PATTERN = re.compile(r"/Date\((-?\d+)")
 EPOCH = datetime(1970, 1, 1)
@@ -388,19 +389,33 @@ def get_request_params(from_time: str, url: str, insecure: Any = False, page_siz
     }
 
 
-def main(command: str, demisto_params: dict):
+def get_max_events(command: str, demisto_params: dict, demisto_args: dict) -> int:
+    """fetch-events uses the instance limit, the get-events command uses its own limit argument."""
+    if command == "test-module":
+        return 1
+    if command == "cyberarkidentity-get-events":
+        limit, default = demisto_args.get("limit"), DEFAULT_COMMAND_LIMIT
+    else:
+        limit, default = demisto_params.get("limit"), DEFAULT_LIMIT
+    max_events = arg_to_number(limit, arg_name="limit")
+    if max_events is None:
+        return default
+    if max_events < 1:
+        raise DemistoException(f"limit must be a positive number, got {max_events}.")
+    return max_events
+
+
+def main(command: str, demisto_params: dict, demisto_args: dict | None = None):
     demisto.debug(f"[main] Command '{command}' started.")
+    demisto_args = demisto_args or {}
 
     try:
         credentials = Credentials(**demisto_params.get("credentials", {}))
         # The limit is applied in _iter_events, so turn off the base class's own truncation.
         options = CyberArkIdentityEventsOptions(**(demisto_params | {"limit": None}))
-        limit = arg_to_number(demisto_params.get("limit"), arg_name="limit")
-        if limit is None:
-            limit = DEFAULT_LIMIT
-        if limit < 1:
-            raise DemistoException(f"limit must be a positive number, got {limit}.")
-        max_events = 1 if command == "test-module" else limit
+        max_events = get_max_events(command, demisto_params, demisto_args)
+        # The command's 'from' argument overrides the first fetch time.
+        demisto_params = demisto_params | {key: value for key, value in demisto_args.items() if key != "limit"}
         page_size = min(max_events, PAGE_SIZE)
         should_push = command == "fetch-events" or (
             command == "cyberarkidentity-get-events" and argToBoolean(demisto_params.get("should_push_events", False))
@@ -462,5 +477,4 @@ def main(command: str, demisto_params: dict):
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    # Command arguments override instance parameters. The last run is read in main().
-    main(demisto.command(), demisto.params() | demisto.args())
+    main(demisto.command(), demisto.params(), demisto.args())
