@@ -1,0 +1,21 @@
+!csc-fetchthephishkitdatawithticketid ticketId=123
+!csc-fetchthescreenshotdatawithticketid ticketId=123
+!csc-gethtmlsourcecodeforaticket ticketId=123
+!csc-listofworklogsforticketid ticketId=123
+!csc-listtakedowneventswithfilters fromDate="2026-01-01" toDate="2026-03-01"
+!csc-updatetheactionwithticketid action="OPEN" body={"ticketId"=123}
+!csc-listtakedownevents fromDate="2026-01-01" toDate="2026-03-01"
+
+!csc-getlistofbrands
+!csc-getlistoffraudtypes
+
+!csc-startorstopmonitoringforaspecificevent body={"eventId"=123} action="START"
+!csc-getfilteredlistofmonitoringresultsspecifiedtime startDate="2026-01-01" endDate="2026-03-01" brandId="BrandA" fraudType="FraudTypeA"
+!csc-getlistofmonitoringresultsspecifiedtime  startDate="2026-01-01" endDate="2026-03-01"
+
+!csc-retrievelistofdetectionswithinspecifiedtimeframe fromDate="2026-01-01" toDate="2026-03-01"
+!csc-retrieveeventscreenshotwitheventid   eventId=123
+!csc-controldetectionflowbyeventidandaction body={"eventId"=123} action="START"
+!csc-retrievephishkitwitheventid eventId=1234
+
+!csc-performanactiononasingletarget targetType="URL" action="MONITOR" fraudType="Not Confirmed" body={"brandId":4843,"target":"http://bingotest.com"}
