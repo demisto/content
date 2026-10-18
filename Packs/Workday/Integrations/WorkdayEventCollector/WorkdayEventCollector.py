@@ -11,11 +11,19 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
+# Query only up to (now - this lag) so we never read a minute Workday hasn't fully published yet.
+FETCH_TO_DATE_LAG_SECONDS = 60
+
 DEFAULT_MAX_FETCH = 3000
 MAX_PAGE_SIZE = 1000
 VENDOR = "Workday"
 PRODUCT = "Activity"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT_WITH_MS = "%Y-%m-%dT%H:%M:%S.%fZ"  # requestTime precision (Workday query params accept whole seconds only).
+# Fields that together uniquely identify an event, for order-independent deduplication.
+EVENT_IDENTITY_FIELDS = ("taskId", "requestTime", "sessionId", "systemAccount", "activityAction", "ipAddress")
+# Cap on identities persisted for the boundary second, so last_run can't bloat on a huge single-second burst.
+MAX_PREVIOUS_EVENT_IDS = 1000
 
 """ CLIENT CLASS """
 
@@ -150,45 +158,63 @@ def get_max_fetch_activity_logging(client: Client, logging_to_fetch: int, from_d
     return activity_loggings
 
 
-def remove_duplications(activity_loggings: list, last_run: dict):
+def get_event_identity(activity_logging: dict) -> str:
     """
-    Removes potential duplicated activity loggings.
+    Builds a stable, order-independent identity for a single activity logging event.
+
+    Args:
+        activity_logging: a single activity logging event returned by the Workday API.
+
+    Returns:
+        A string uniquely identifying the event.
+    """
+    return "|".join(str(activity_logging.get(field, "")) for field in EVENT_IDENTITY_FIELDS)
+
+
+def remove_duplications(activity_loggings: list, last_run: dict) -> list:
+    """
+    Removes activity loggings already ingested in the previous cycle.
+
+    The boundary second is re-requested every cycle (the checkpoint is truncated to whole seconds),
+    so we dedup by event identity: any event whose identity was seen last cycle is dropped, every
+    other event is kept regardless of API ordering.
 
     Args:
         activity_loggings: activity loggings fetched from Workday.
-        last_run: Last run object.
+        last_run: Last run object. May contain `previous_event_ids` (identities ingested last cycle).
+
+    Returns:
+        The activity loggings with previously-ingested events removed.
     """
-    demisto.debug("Started removing duplications")
-    last_log_stored = last_run.get("last_log")
-    log_found = False
-    final_count = 0
-    if last_log_stored:
-        for count, log in enumerate(activity_loggings):
-            if log == last_log_stored:
-                log_found = True
-                final_count = count
-                break
-        if log_found:
-            demisto.debug(f"Found duplicated with {last_log_stored}, returning from {final_count}")
-            return activity_loggings[final_count + 1 :]
-    demisto.debug("Didn't find duplications, returning everything")
-    return activity_loggings
+    demisto.debug("[remove_duplications] Started removing duplications (identity-based).")
+    previous_event_ids = set(last_run.get("previous_event_ids", []))
+    if not previous_event_ids:
+        demisto.debug("[remove_duplications] No previous_event_ids in last_run, returning everything.")
+        return activity_loggings
+
+    deduped = [logging for logging in activity_loggings if get_event_identity(logging) not in previous_event_ids]
+    removed = len(activity_loggings) - len(deduped)
+    demisto.debug(
+        f"[remove_duplications] Identity-based dedup: received {len(activity_loggings)} loggings, "
+        f"removed {removed} already-ingested duplicates, keeping {len(deduped)}."
+    )
+    return deduped
 
 
-def remove_milliseconds_from_time_of_logging(activity_logging: dict):
+def remove_milliseconds_from_time_of_logging(activity_logging: dict) -> str:
     """
-    Workday API receive from_date only without milliseconds, therefor need to be removed.
+    Converts a logging's requestTime to the whole-second format Workday's `from`/`to` params accept.
+
     Args:
         activity_logging: activity logging
 
     Returns:
-        The logging with the string in the correct format.
-
+        The requestTime string truncated to whole seconds (DATE_FORMAT).
     """
-    demisto.debug("Changing timestamp of loggings to match date format.")
-    date_format_with_milliseconds = "%Y-%m-%dT%H:%M:%S.%fZ"
-    request_time_date_obj = datetime.strptime(activity_logging.get("requestTime"), date_format_with_milliseconds)  # type: ignore
-    request_time_date_obj.replace(microsecond=0)
+    demisto.debug("Changing timestamp of loggings to match whole-second date format.")
+    request_time_date_obj = datetime.strptime(activity_logging.get("requestTime"), DATE_FORMAT_WITH_MS)  # type: ignore
+    # replace() returns a new datetime (datetimes are immutable), so reassign to actually drop the ms.
+    request_time_date_obj = request_time_date_obj.replace(microsecond=0)
     return datetime.strftime(request_time_date_obj, DATE_FORMAT)
 
 
@@ -222,6 +248,68 @@ def get_activity_logging_command(
     return activity_loggings, CommandResults(readable_output=readable_output)
 
 
+def build_next_last_run(activity_loggings: list, previous_last_run: dict) -> dict:
+    """
+    Builds the next last_run after deduplication.
+
+    `last_fetch_time` is the whole-second floor of the latest event's requestTime (Workday's `from`
+    accepts whole seconds only). `previous_event_ids` holds the identities of the ingested events in
+    that latest second, so the next cycle can dedup the re-requested boundary second by identity.
+
+    If the boundary second does not advance between cycles, the previously stored identities for that
+    same second are merged in, so events ingested in earlier cycles are not forgotten and re-ingested.
+
+    Args:
+        activity_loggings: the deduped events ingested this cycle.
+        previous_last_run: the last_run from the current cycle (used as a fallback when empty).
+
+    Returns:
+        The next last_run dict.
+    """
+    if not activity_loggings:
+        demisto.debug("[build_next_last_run] No new activity loggings this cycle, preserving previous last_run.")
+        return previous_last_run
+
+    # Determine the latest requestTime across the ingested events (do NOT assume API ordering).
+    latest_logging = max(activity_loggings, key=lambda logging: logging.get("requestTime", ""))
+    latest_request_time = latest_logging.get("requestTime", "")
+    # Whole-second checkpoint for the next request (Workday `from` accepts whole seconds only).
+    next_from_date = remove_milliseconds_from_time_of_logging(latest_logging)
+    # The whole-second prefix (e.g. "2026-08-18T07:29:33") that will be re-requested next cycle.
+    latest_second_prefix = latest_request_time[:19]
+
+    # Identities of events ingested this cycle in the boundary second (order-independent dedup).
+    current_second_ids = [
+        get_event_identity(logging)
+        for logging in activity_loggings
+        if str(logging.get("requestTime", ""))[:19] == latest_second_prefix
+    ]
+
+    # If the checkpoint second didn't advance, keep the ids already tracked for it so they aren't forgotten.
+    previous_last_fetch_time = previous_last_run.get("last_fetch_time", "")
+    previous_ids = (
+        previous_last_run.get("previous_event_ids", []) if previous_last_fetch_time[:19] == latest_second_prefix else []
+    )
+    merged_ids = list(dict.fromkeys(previous_ids + current_second_ids))  # dedup, preserving order
+    previous_event_ids = merged_ids[-MAX_PREVIOUS_EVENT_IDS:]  # cap the persisted state
+    if len(merged_ids) > MAX_PREVIOUS_EVENT_IDS:
+        # Abnormal: oldest ids for this second are dropped, so their duplicates could re-appear.
+        demisto.error(
+            f"[build_next_last_run] previous_event_ids cap ({MAX_PREVIOUS_EVENT_IDS}) reached for {latest_second_prefix}; "
+            f"dropped {len(merged_ids) - MAX_PREVIOUS_EVENT_IDS} oldest id(s)."
+        )
+
+    demisto.debug(
+        f"[build_next_last_run] Next checkpoint: last_fetch_time={next_from_date}, latest_request_time={latest_request_time}, "
+        f"tracking {len(previous_event_ids)} event id(s) in boundary second {latest_second_prefix} for dedup."
+    )
+    return {
+        "last_fetch_time": next_from_date,
+        "last_log": latest_logging,  # kept for observability / backward compatibility (not read by the code)
+        "previous_event_ids": previous_event_ids,
+    }
+
+
 def fetch_activity_logging(client: Client, max_fetch: int, first_fetch: datetime, last_run: dict):
     """
     Fetches activity loggings from Workday.
@@ -236,19 +324,30 @@ def fetch_activity_logging(client: Client, max_fetch: int, first_fetch: datetime
 
     """
     from_date = last_run.get("last_fetch_time", first_fetch.strftime(DATE_FORMAT))
-    to_date = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
-    demisto.debug(f"Getting activity loggings {from_date=}, {to_date=}.")
+    # Cap to_date at (now - lag) so we only request already-published minutes.
+    now = datetime.now(tz=timezone.utc)
+    safe_to_dt = now - timedelta(seconds=FETCH_TO_DATE_LAG_SECONDS)
+    from_dt = datetime.strptime(from_date, DATE_FORMAT).replace(tzinfo=timezone.utc)
+    # Clamp to from_date so the window is never inverted when from_date is very recent.
+    to_dt = safe_to_dt if safe_to_dt >= from_dt else from_dt
+    to_date = to_dt.strftime(DATE_FORMAT)
+    demisto.debug(
+        f"[fetch_activity_logging] Getting activity loggings {from_date=}, {to_date=} (to_date lagged by "
+        f"{FETCH_TO_DATE_LAG_SECONDS}s from now={now.strftime(DATE_FORMAT)}). "
+        f"Carrying {len(last_run.get('previous_event_ids', []))} previous event id(s) for dedup."
+    )
     activity_loggings = get_max_fetch_activity_logging(
         client=client, logging_to_fetch=max_fetch, from_date=from_date, to_date=to_date
     )
+    demisto.debug(f"[fetch_activity_logging] Fetched {len(activity_loggings)} activity loggings from Workday before dedup.")
 
     activity_loggings = remove_duplications(activity_loggings=activity_loggings, last_run=last_run)
-    if activity_loggings:
-        last_log = activity_loggings[-1]
-        last_log_time = remove_milliseconds_from_time_of_logging(last_log)
-        last_run = {"last_fetch_time": last_log_time, "last_log": last_log}
+    demisto.debug(
+        f"[fetch_activity_logging] {len(activity_loggings)} activity loggings remain after dedup and will be sent to XSIAM."
+    )
 
-    return activity_loggings, last_run
+    next_last_run = build_next_last_run(activity_loggings, last_run)
+    return activity_loggings, next_last_run
 
 
 def test_module(client: Client) -> str:  # pragma: no cover
@@ -331,6 +430,8 @@ def main() -> None:  # pragma: no cover
                 # saves next_run for the time fetch-events is invoked
                 demisto.info(f"Setting new last_run to {new_last_run}")
                 demisto.setLastRun(new_last_run)
+        else:
+            raise NotImplementedError(f"Command {command} is not implemented.")
 
     # Log exceptions and return errors
     except Exception as e:

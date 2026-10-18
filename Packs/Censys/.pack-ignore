@@ -4,6 +4,9 @@ ignore=IM111
 [file:Censys_image.png]
 ignore=IM111
 
+[file:playbook-Indicator_Enrichment_-_Censys.yml]
+ignore=GR107
+
 [known_words]
 CN
 GB
@@ -54,3 +57,8 @@ x
 P
 gx
 N
+TLP
+MCC
+MNC
+anonymization
+VPN
