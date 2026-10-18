@@ -370,6 +370,7 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-vn-firewall-policy-network-rule-create",
         "azure-vn-firewall-policy-network-rule-update",
         "azure-vn-firewall-policy-network-rule-delete",
+        "azure-vn-firewall-policy-rule-collection-groups-delete",
     ],
     "Microsoft.Network/firewallPolicies/ruleCollectionGroups/write": [
         "azure-vn-firewall-policy-rule-collection-groups-create",

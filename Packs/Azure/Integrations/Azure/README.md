@@ -3327,14 +3327,14 @@ Creates a rule collection group in a firewall policy. The group contains a netwo
 | policy_name | The name of the firewall policy in which to create the rule collection group. | Required |
 | collection_name | The name of the network rule collection to create. | Required |
 | collection_priority | The priority of the network rule collection. Must be between 100 and 65000. | Required |
-| action | The action type of the network rule collection. Possible values are Allow or Deny. Possible values are: Allow, Deny. | Required |
+| action | The action type of the network rule collection. Possible values are: Allow, Deny. | Required |
 | rule_name | The name of the network rule to create in the collection. | Required |
 | description | The description of the created network rule. | Optional |
-| protocols | A comma-separated list of protocols for the created network rule. Possible values are TCP, UDP, ICMP, or Any. Possible values are: TCP, UDP, ICMP, Any. | Required |
-| source_type | The source type of the created network rule. Possible values are ip_address or ip_group. Possible values are: ip_address, ip_group. | Required |
+| protocols | A comma-separated list of protocols for the created network rule. Possible values are: TCP, UDP, ICMP, Any. | Required |
+| source_type | The source type of the created network rule. Possible values are: ip_address, ip_group. | Required |
 | source_ips | A comma-separated list of source IP addresses for the created network rule. Required when source_type is ip_address. | Optional |
 | source_ip_group_ids | A comma-separated list of source IP group IDs for the created network rule. Required when source_type is ip_group. | Optional |
-| destination_type | The destination type of the created network rule. Possible values are ip_address, ip_group, service_tag, or fqdn. Possible values are: ip_address, ip_group, service_tag, fqdn. | Required |
+| destination_type | The destination type of the created network rule. Possible values are: ip_address, ip_group, service_tag, fqdn. | Required |
 | destinations | A comma-separated list of destinations for the created network rule. Must match the value of destination_type. Supports IP addresses, IP group IDs, service tag names, and FQDNs. | Required |
 | destination_ports | A comma-separated list of destination ports for the created network rule. | Required |
 | interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
@@ -3370,7 +3370,7 @@ Updates the priority or the action of a network rule collection in a firewall po
 | policy_name | The name of the firewall policy that contains the rule collection group. | Required |
 | collection_name | The name of the network rule collection to update. | Required |
 | priority | The new priority of the network rule collection. Must be between 100 and 65000. It is mandatory to provide priority, action, or both. | Optional |
-| action | The new action type of the network rule collection. Possible values are Allow or Deny. It is mandatory to provide priority, action, or both. Possible values are: Allow, Deny. | Optional |
+| action | The new action type of the network rule collection. It is mandatory to provide priority, action, or both. Possible values are: Allow, Deny. | Optional |
 | interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
 | polling_timeout | The time, in seconds, after which polling stops. Must be a positive number. Default is 600. | Optional |
 
@@ -3389,7 +3389,7 @@ Updates the priority or the action of a network rule collection in a firewall po
 ### azure-vn-firewall-policy-rule-collection-groups-delete
 
 ***
-Deletes a rule collection group from a firewall policy. Required permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete.
+Deletes a rule collection group from a firewall policy. Required permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete.
 
 #### Base Command
 
@@ -3429,11 +3429,11 @@ Creates a network rule in an existing network rule collection of an Azure Firewa
 | collection_name | The name of the network rule collection in which to create the network rule. | Required |
 | rule_name | The name of the network rule to create. | Required |
 | description | The description of the created network rule. | Optional |
-| protocols | A comma-separated list of protocols for the created network rule. Possible values are TCP, UDP, ICMP, or Any. Possible values are: TCP, UDP, ICMP, Any. | Required |
-| source_type | The source type of the created network rule. Possible values are ip_address or ip_group. Possible values are: ip_address, ip_group. | Required |
+| protocols | A comma-separated list of protocols for the created network rule. Possible values are: TCP, UDP, ICMP, Any. | Required |
+| source_type | The source type of the created network rule. Possible values are: ip_address, ip_group. | Required |
 | source_ips | A comma-separated list of source IP addresses for the created network rule. Required when source_type is ip_address. | Optional |
 | source_ip_group_ids | A comma-separated list of source IP group IDs for the created network rule. Required when source_type is ip_group. | Optional |
-| destination_type | The destination type of the created network rule. Possible values are ip_address, ip_group, service_tag, or fqdn. Possible values are: ip_address, ip_group, service_tag, fqdn. | Required |
+| destination_type | The destination type of the created network rule. Possible values are: ip_address, ip_group, service_tag, fqdn. | Required |
 | destinations | A comma-separated list of destinations for the created network rule. Must match the value of destination_type. Supports IP addresses, IP group IDs, service tag names, and FQDNs. | Required |
 | destination_ports | A comma-separated list of destination ports for the created network rule. | Required |
 | interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
@@ -3470,11 +3470,11 @@ Updates a network rule in a network rule collection of an Azure Firewall. Only t
 | collection_name | The name of the network rule collection that contains the network rule. | Required |
 | rule_name | The name of the network rule to update. | Required |
 | description | The new description of the network rule. | Optional |
-| protocols | A comma-separated list of protocols that replaces the protocols of the network rule. Possible values are TCP, UDP, ICMP, or Any. Possible values are: TCP, UDP, ICMP, Any. | Optional |
-| source_type | The new source type of the network rule. Possible values are ip_address or ip_group. If provided, you must also provide source_ips or source_ip_group_ids. Possible values are: ip_address, ip_group. | Optional |
+| protocols | A comma-separated list of protocols that replaces the protocols of the network rule. Possible values are: TCP, UDP, ICMP, Any. | Optional |
+| source_type | The new source type of the network rule. If provided, you must also provide source_ips or source_ip_group_ids. Possible values are: ip_address, ip_group. | Optional |
 | source_ips | A comma-separated list of source IP addresses that replaces the sources of the network rule. Required when source_type is ip_address. | Optional |
 | source_ip_group_ids | A comma-separated list of source IP group IDs that replaces the sources of the network rule. Required when source_type is ip_group. | Optional |
-| destination_type | The new destination type of the network rule. Possible values are ip_address, ip_group, service_tag, or fqdn. Required when destinations is provided. Possible values are: ip_address, ip_group, service_tag, fqdn. | Optional |
+| destination_type | The new destination type of the network rule. Required when destinations is provided. Possible values are: ip_address, ip_group, service_tag, fqdn. | Optional |
 | destinations | A comma-separated list of destinations that replaces the destinations of the network rule. Must match the value of destination_type. Supports IP addresses, IP group IDs, service tag names, and FQDNs. | Optional |
 | destination_ports | A comma-separated list of destination ports that replaces the destination ports of the network rule. | Optional |
 | interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
@@ -5134,14 +5134,14 @@ Creates a network rule collection that contains a single network rule in an Azur
 | firewall_name | The name of the Azure Firewall in which to create the network rule collection. | Required |
 | collection_name | The name of the network rule collection to create. | Required |
 | collection_priority | The priority of the network rule collection. Must be between 100 and 65000. | Required |
-| action | The action type of the network rule collection. Possible values are Allow or Deny. Possible values are: Allow, Deny. | Required |
+| action | The action type of the network rule collection. Possible values are: Allow, Deny. | Required |
 | rule_name | The name of the network rule to create in the collection. | Required |
 | description | The description of the created network rule. | Optional |
-| protocols | A comma-separated list of protocols for the created network rule. Possible values are TCP, UDP, ICMP, or Any. Possible values are: TCP, UDP, ICMP, Any. | Required |
-| source_type | The source type of the created network rule. Possible values are ip_address or ip_group. Possible values are: ip_address, ip_group. | Required |
+| protocols | A comma-separated list of protocols for the created network rule. Possible values are: TCP, UDP, ICMP, Any. | Required |
+| source_type | The source type of the created network rule. Possible values are: ip_address, ip_group. | Required |
 | source_ips | A comma-separated list of source IP addresses for the created network rule. Required when source_type is ip_address. | Optional |
 | source_ip_group_ids | A comma-separated list of source IP group IDs for the created network rule. Required when source_type is ip_group. | Optional |
-| destination_type | The destination type of the created network rule. Possible values are ip_address, ip_group, service_tag, or fqdn. Possible values are: ip_address, ip_group, service_tag, fqdn. | Required |
+| destination_type | The destination type of the created network rule. Possible values are: ip_address, ip_group, service_tag, fqdn. | Required |
 | destinations | A comma-separated list of destinations for the created network rule. Must match the value of destination_type. Supports IP addresses, IP group IDs, service tag names, and FQDNs. | Required |
 | destination_ports | A comma-separated list of destination ports for the created network rule. | Required |
 | interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
@@ -5177,7 +5177,7 @@ Updates the priority or the action of a network rule collection in an Azure Fire
 | firewall_name | The name of the Azure Firewall that contains the network rule collection. | Required |
 | collection_name | The name of the network rule collection to update. | Required |
 | priority | The new priority of the network rule collection. Must be between 100 and 65000. It is mandatory to provide priority, action, or both. | Optional |
-| action | The new action type of the network rule collection. Possible values are Allow or Deny. It is mandatory to provide priority, action, or both. Possible values are: Allow, Deny. | Optional |
+| action | The new action type of the network rule collection. It is mandatory to provide priority, action, or both. Possible values are: Allow, Deny. | Optional |
 | interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
 | polling_timeout | The time, in seconds, after which polling stops. Must be a positive number. Default is 600. | Optional |
 
@@ -5244,11 +5244,11 @@ Creates a network rule in an existing network rule collection of a firewall poli
 | collection_name | The name of the network rule collection in which to create the network rule. | Required |
 | rule_name | The name of the network rule to create. | Required |
 | description | The description of the created network rule. | Optional |
-| protocols | A comma-separated list of protocols for the created network rule. Possible values are TCP, UDP, ICMP, or Any. Possible values are: TCP, UDP, ICMP, Any. | Required |
-| source_type | The source type of the created network rule. Possible values are ip_address or ip_group. Possible values are: ip_address, ip_group. | Required |
+| protocols | A comma-separated list of protocols for the created network rule. Possible values are: TCP, UDP, ICMP, Any. | Required |
+| source_type | The source type of the created network rule. Possible values are: ip_address, ip_group. | Required |
 | source_ips | A comma-separated list of source IP addresses for the created network rule. Required when source_type is ip_address. | Optional |
 | source_ip_group_ids | A comma-separated list of source IP group IDs for the created network rule. Required when source_type is ip_group. | Optional |
-| destination_type | The destination type of the created network rule. Possible values are ip_address, ip_group, service_tag, or fqdn. Possible values are: ip_address, ip_group, service_tag, fqdn. | Required |
+| destination_type | The destination type of the created network rule. Possible values are: ip_address, ip_group, service_tag, fqdn. | Required |
 | destinations | A comma-separated list of destinations for the created network rule. Must match the value of destination_type. Supports IP addresses, IP group IDs, service tag names, and FQDNs. | Required |
 | destination_ports | A comma-separated list of destination ports for the created network rule. | Required |
 | interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
@@ -5285,11 +5285,11 @@ Updates a network rule in a network rule collection of a firewall policy rule co
 | collection_name | The name of the network rule collection that contains the network rule. | Required |
 | rule_name | The name of the network rule to update. | Required |
 | description | The new description of the network rule. | Optional |
-| protocols | A comma-separated list of protocols that replaces the protocols of the network rule. Possible values are TCP, UDP, ICMP, or Any. Possible values are: TCP, UDP, ICMP, Any. | Optional |
-| source_type | The new source type of the network rule. Possible values are ip_address or ip_group. If provided, you must also provide source_ips or source_ip_group_ids. Possible values are: ip_address, ip_group. | Optional |
+| protocols | A comma-separated list of protocols that replaces the protocols of the network rule. Possible values are: TCP, UDP, ICMP, Any. | Optional |
+| source_type | The new source type of the network rule. If provided, you must also provide source_ips or source_ip_group_ids. Possible values are: ip_address, ip_group. | Optional |
 | source_ips | A comma-separated list of source IP addresses that replaces the sources of the network rule. Required when source_type is ip_address. | Optional |
 | source_ip_group_ids | A comma-separated list of source IP group IDs that replaces the sources of the network rule. Required when source_type is ip_group. | Optional |
-| destination_type | The new destination type of the network rule. Possible values are ip_address, ip_group, service_tag, or fqdn. Required when destinations is provided. Possible values are: ip_address, ip_group, service_tag, fqdn. | Optional |
+| destination_type | The new destination type of the network rule. Required when destinations is provided. Possible values are: ip_address, ip_group, service_tag, fqdn. | Optional |
 | destinations | A comma-separated list of destinations that replaces the destinations of the network rule. Must match the value of destination_type. Supports IP addresses, IP group IDs, service tag names, and FQDNs. | Optional |
 | destination_ports | A comma-separated list of destination ports that replaces the destination ports of the network rule. | Optional |
 | interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |

@@ -12084,7 +12084,7 @@ script:
       type: Number
       required: true
     - name: action
-      description: The action type of the network rule collection. Possible values are Allow or Deny.
+      description: The action type of the network rule collection.
       auto: PREDEFINED
       predefined:
         - Allow
@@ -12099,7 +12099,7 @@ script:
       description: The description of the created network rule.
       type: String
     - name: protocols
-      description: A comma-separated list of protocols for the created network rule. Possible values are TCP, UDP, ICMP, or Any.
+      description: A comma-separated list of protocols for the created network rule.
       auto: PREDEFINED
       predefined:
         - TCP
@@ -12109,7 +12109,7 @@ script:
       isArray: true
       required: true
     - name: source_type
-      description: The source type of the created network rule. Possible values are ip_address or ip_group.
+      description: The source type of the created network rule.
       auto: PREDEFINED
       predefined:
         - ip_address
@@ -12123,7 +12123,7 @@ script:
       description: A comma-separated list of source IP group IDs for the created network rule. Required when source_type is ip_group.
       isArray: true
     - name: destination_type
-      description: The destination type of the created network rule. Possible values are ip_address, ip_group, service_tag, or fqdn.
+      description: The destination type of the created network rule.
       auto: PREDEFINED
       predefined:
         - ip_address
@@ -12203,7 +12203,7 @@ script:
       type: Number
       required: true
     - name: action
-      description: The action type of the network rule collection. Possible values are Allow or Deny.
+      description: The action type of the network rule collection.
       auto: PREDEFINED
       predefined:
         - Allow
@@ -12218,7 +12218,7 @@ script:
       description: The description of the created network rule.
       type: String
     - name: protocols
-      description: A comma-separated list of protocols for the created network rule. Possible values are TCP, UDP, ICMP, or Any.
+      description: A comma-separated list of protocols for the created network rule.
       auto: PREDEFINED
       predefined:
         - TCP
@@ -12228,7 +12228,7 @@ script:
       isArray: true
       required: true
     - name: source_type
-      description: The source type of the created network rule. Possible values are ip_address or ip_group.
+      description: The source type of the created network rule.
       auto: PREDEFINED
       predefined:
         - ip_address
@@ -12242,7 +12242,7 @@ script:
       description: A comma-separated list of source IP group IDs for the created network rule. Required when source_type is ip_group.
       isArray: true
     - name: destination_type
-      description: The destination type of the created network rule. Possible values are ip_address, ip_group, service_tag, or fqdn.
+      description: The destination type of the created network rule.
       auto: PREDEFINED
       predefined:
         - ip_address
@@ -12321,7 +12321,7 @@ script:
       description: The new priority of the network rule collection. Must be between 100 and 65000. It is mandatory to provide priority, action, or both.
       type: Number
     - name: action
-      description: The new action type of the network rule collection. Possible values are Allow or Deny. It is mandatory to provide priority, action, or both.
+      description: The new action type of the network rule collection. It is mandatory to provide priority, action, or both.
       auto: PREDEFINED
       predefined:
         - Allow
@@ -12389,7 +12389,7 @@ script:
       description: The new priority of the network rule collection. Must be between 100 and 65000. It is mandatory to provide priority, action, or both.
       type: Number
     - name: action
-      description: The new action type of the network rule collection. Possible values are Allow or Deny. It is mandatory to provide priority, action, or both.
+      description: The new action type of the network rule collection. It is mandatory to provide priority, action, or both.
       auto: PREDEFINED
       predefined:
         - Allow
@@ -12491,7 +12491,7 @@ script:
       description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
       type: Unknown
   - name: azure-vn-firewall-policy-rule-collection-groups-delete
-    description: "Deletes a rule collection group from a firewall policy. Required permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete."
+    description: "Deletes a rule collection group from a firewall policy. Required permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete."
     polling: true
     arguments:
     - name: subscription_id
@@ -12555,7 +12555,7 @@ script:
       description: The description of the created network rule.
       type: String
     - name: protocols
-      description: A comma-separated list of protocols for the created network rule. Possible values are TCP, UDP, ICMP, or Any.
+      description: A comma-separated list of protocols for the created network rule.
       auto: PREDEFINED
       predefined:
         - TCP
@@ -12565,7 +12565,7 @@ script:
       isArray: true
       required: true
     - name: source_type
-      description: The source type of the created network rule. Possible values are ip_address or ip_group.
+      description: The source type of the created network rule.
       auto: PREDEFINED
       predefined:
         - ip_address
@@ -12579,7 +12579,7 @@ script:
       description: A comma-separated list of source IP group IDs for the created network rule. Required when source_type is ip_group.
       isArray: true
     - name: destination_type
-      description: The destination type of the created network rule. Possible values are ip_address, ip_group, service_tag, or fqdn.
+      description: The destination type of the created network rule.
       auto: PREDEFINED
       predefined:
         - ip_address
@@ -12662,7 +12662,7 @@ script:
       description: The description of the created network rule.
       type: String
     - name: protocols
-      description: A comma-separated list of protocols for the created network rule. Possible values are TCP, UDP, ICMP, or Any.
+      description: A comma-separated list of protocols for the created network rule.
       auto: PREDEFINED
       predefined:
         - TCP
@@ -12672,7 +12672,7 @@ script:
       isArray: true
       required: true
     - name: source_type
-      description: The source type of the created network rule. Possible values are ip_address or ip_group.
+      description: The source type of the created network rule.
       auto: PREDEFINED
       predefined:
         - ip_address
@@ -12686,7 +12686,7 @@ script:
       description: A comma-separated list of source IP group IDs for the created network rule. Required when source_type is ip_group.
       isArray: true
     - name: destination_type
-      description: The destination type of the created network rule. Possible values are ip_address, ip_group, service_tag, or fqdn.
+      description: The destination type of the created network rule.
       auto: PREDEFINED
       predefined:
         - ip_address
@@ -12769,7 +12769,7 @@ script:
       description: The new description of the network rule.
       type: String
     - name: protocols
-      description: A comma-separated list of protocols that replaces the protocols of the network rule. Possible values are TCP, UDP, ICMP, or Any.
+      description: A comma-separated list of protocols that replaces the protocols of the network rule.
       auto: PREDEFINED
       predefined:
         - TCP
@@ -12778,7 +12778,7 @@ script:
         - Any
       isArray: true
     - name: source_type
-      description: The new source type of the network rule. Possible values are ip_address or ip_group. If provided, you must also provide source_ips or source_ip_group_ids.
+      description: The new source type of the network rule. If provided, you must also provide source_ips or source_ip_group_ids.
       auto: PREDEFINED
       predefined:
         - ip_address
@@ -12791,7 +12791,7 @@ script:
       description: A comma-separated list of source IP group IDs that replaces the sources of the network rule. Required when source_type is ip_group.
       isArray: true
     - name: destination_type
-      description: The new destination type of the network rule. Possible values are ip_address, ip_group, service_tag, or fqdn. Required when destinations is provided.
+      description: The new destination type of the network rule. Required when destinations is provided.
       auto: PREDEFINED
       predefined:
         - ip_address
@@ -12871,7 +12871,7 @@ script:
       description: The new description of the network rule.
       type: String
     - name: protocols
-      description: A comma-separated list of protocols that replaces the protocols of the network rule. Possible values are TCP, UDP, ICMP, or Any.
+      description: A comma-separated list of protocols that replaces the protocols of the network rule.
       auto: PREDEFINED
       predefined:
         - TCP
@@ -12880,7 +12880,7 @@ script:
         - Any
       isArray: true
     - name: source_type
-      description: The new source type of the network rule. Possible values are ip_address or ip_group. If provided, you must also provide source_ips or source_ip_group_ids.
+      description: The new source type of the network rule. If provided, you must also provide source_ips or source_ip_group_ids.
       auto: PREDEFINED
       predefined:
         - ip_address
@@ -12893,7 +12893,7 @@ script:
       description: A comma-separated list of source IP group IDs that replaces the sources of the network rule. Required when source_type is ip_group.
       isArray: true
     - name: destination_type
-      description: The new destination type of the network rule. Possible values are ip_address, ip_group, service_tag, or fqdn. Required when destinations is provided.
+      description: The new destination type of the network rule. Required when destinations is provided.
       auto: PREDEFINED
       predefined:
         - ip_address
