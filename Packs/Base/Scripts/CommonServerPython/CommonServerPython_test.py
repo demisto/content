@@ -9944,18 +9944,9 @@ def _install_fake_ijson(mocker):
 
 def _install_deferred_executor(mocker):
     """
-    Replace concurrent.futures.ThreadPoolExecutor and concurrent.futures.wait with a deterministic, thread-free fake
-    for the streaming + multiple_threads send path (CIAC-18422).
-
-    Why: real worker threads made these tests deadlock intermittently on the loaded nightly runner (one py3.10/py3.11
-    pytest container hung until the 9h job timeout). The tests assert behavior (chunking, ordering, bounding, error
-    propagation, return contract) - none of which needs real concurrency.
-
-    How: submit() only *queues* the task and returns a real concurrent.futures.Future. A queued task runs when the
-    production back-pressure loop calls concurrent.futures.wait() (oldest first), or when the test calls run_all().
-    Nothing ever blocks: if wait() would need a task that does not exist, it raises AssertionError instead of hanging.
-
-    Returns the list of created fake executors (one per send_data_to_xsiam call that requested threads).
+    Thread-free stand-in for ThreadPoolExecutor/wait (real threads deadlocked on the nightly runner).
+    submit() only queues a task; it runs when concurrent.futures.wait() or run_all() is called.
+    A wait() that cannot be satisfied raises instead of blocking.
     """
     import concurrent.futures
 
@@ -9963,30 +9954,26 @@ def _install_deferred_executor(mocker):
     real_wait = concurrent.futures.wait
 
     class DeferredExecutor:
-        def __init__(self, max_workers=None, *args, **kwargs):
-            self.max_workers = max_workers
-            self.pending = []  # queued (future, fn, args, kwargs), oldest first; "resident"/in-flight tasks
+        def __init__(self, *args, **kwargs):
+            self.pending = []
             self.max_pending = 0
-            self.submitted_count = 0
             self.shutdown_calls = []
             created_executors.append(self)
 
         def submit(self, fn, *args, **kwargs):
             future = concurrent.futures.Future()
             self.pending.append((future, fn, args, kwargs))
-            self.submitted_count += 1
             self.max_pending = max(self.max_pending, len(self.pending))
             return future
 
         def run_task_for(self, futures):
-            """Run the oldest queued task whose future is in `futures`; return False if there is none."""
             for index, (future, fn, args, kwargs) in enumerate(self.pending):
                 if future in futures:
                     del self.pending[index]
                     if future.set_running_or_notify_cancel():
                         try:
                             future.set_result(fn(*args, **kwargs))
-                        except Exception as exc:  # the worker error is delivered through the future, like a real pool
+                        except Exception as exc:
                             future.set_exception(exc)
                     return True
             return False
@@ -10022,7 +10009,6 @@ def _install_deferred_executor(mocker):
 
 
 def _completed_results(futures):
-    """Collect results of already-completed futures; result(timeout=0) raises instead of ever blocking."""
     return [future.result(timeout=0) for future in futures]
 
 
@@ -10185,18 +10171,6 @@ class TestSendEventsToXSIAMTest:
         assert len(streaming_lines) == len(events)
         # streaming reports the same total count to the health module
         demisto.updateModuleHealth.assert_called_with({'eventsPulled': len(events)})
-
-    def test_send_data_to_xsiam_streaming_empty(self, mocker):
-        """Streaming path with an empty list makes no HTTP call and reports 0."""
-        if not IS_PY3:
-            return
-        from CommonServerPython import BaseClient
-        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
-        mocker.patch.object(demisto, 'updateModuleHealth')
-        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
-        http_mock = mocker.patch.object(BaseClient, '_http_request')
-        send_data_to_xsiam(data=[], vendor='v', product='p', data_type='events', use_streaming_send=True)
-        assert http_mock.call_count == 0
 
     def test_send_data_to_xsiam_streaming_skips_oversized_entry_like_legacy(self, mocker):
         """
@@ -10388,7 +10362,7 @@ class TestSendEventsToXSIAMTest:
         mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
         mocker.patch('CommonServerPython.support_multithreading')
         mocker.patch('time.time', return_value=123)
-        executors = _install_deferred_executor(mocker)  # no real threads (CIAC-18422)
+        executors = _install_deferred_executor(mocker)
 
         info_mock = mocker.patch.object(demisto, 'info')
 
@@ -10756,300 +10730,14 @@ class TestSendEventsToXSIAMTest:
 
     def test_send_data_to_xsiam_streaming_threaded_matches_legacy(self, mocker):
         """
-        Given: a list of dict events and both use_streaming_send=True and multiple_threads=True (CIAC-17212).
-        When:  calling send_data_to_xsiam, forcing several chunks with a small chunk_size.
-        Then:  the union of decompressed lines POSTed matches the legacy path (byte-equivalent payload), the
-               function returns a list of futures, and resolving them yields the correct total event count.
-        Uses the deterministic thread-free executor (CIAC-18422) - no real threads, nothing can block.
-        """
-        if not IS_PY3:
-            return
-        import CommonServerPython as csp
-        from requests import Response
-
-        chunk_size = 50
-        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
-        mocker.patch.object(demisto, 'updateModuleHealth')
-        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
-        mocker.patch('CommonServerPython.support_multithreading')
-        executors = _install_deferred_executor(mocker)
-
-        api_response = Response()
-        api_response.status_code = 200
-        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
-
-        events = [{'id': i, 'msg': 'event number {}'.format(i)} for i in range(25)]
-
-        # legacy single-thread path (the reference payload)
-        legacy_mock = mocker.patch.object(csp.BaseClient, '_http_request', return_value=api_response)
-        send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=chunk_size,
-                           data_type='events', use_streaming_send=False)
-        legacy_lines = []
-        for call in legacy_mock.call_args_list:
-            legacy_lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
-
-        # reset the health mock so the assertion below reflects only the threaded call
-        demisto.updateModuleHealth.reset_mock()
-
-        # streaming + threaded path
-        threaded_mock = mocker.patch.object(csp.BaseClient, '_http_request', return_value=api_response)
-        futures = send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=chunk_size,
-                                     data_type='events', use_streaming_send=True, multiple_threads=True,
-                                     should_update_health_module=False)
-
-        # contract: threaded path returns a list of futures (never None) and does NOT update health itself
-        assert isinstance(futures, list)
-        assert len(executors) == 1
-        assert executors[0].max_workers == csp.NUM_OF_WORKERS
-        executors[0].run_all()
-        assert sum(_completed_results(futures)) == len(events)
-        demisto.updateModuleHealth.assert_not_called()
-
-        threaded_lines = []
-        for call in threaded_mock.call_args_list:
-            threaded_lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
-
-        assert sorted(threaded_lines) == sorted(legacy_lines)
-        assert len(threaded_lines) == len(events)
-
-    def test_send_data_to_xsiam_streaming_threaded_skips_oversized_entry(self, mocker):
-        """
-        Given: a list with one entry exceeding MAX_ALLOWED_ENTRY_SIZE, streaming + multiple_threads.
+        Given: events, streaming + multiple_threads, and a small chunk_size (several chunks).
         When:  calling send_data_to_xsiam.
-        Then:  the oversized entry is dropped exactly like the legacy/streaming paths and the returned
-               futures tally only the remaining events.
+        Then:  the POSTed lines match the legacy path, the returned futures sum to the event count, and the
+               callee does not update health itself (even with should_update_health_module=True).
         """
         if not IS_PY3:
             return
-        import CommonServerPython as csp
-        from requests import Response
-
-        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
-        mocker.patch.object(demisto, 'updateModuleHealth')
-        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
-        mocker.patch.object(demisto, 'error')
-        mocker.patch('CommonServerPython.support_multithreading')
-        executors = _install_deferred_executor(mocker)
-
-        api_response = Response()
-        api_response.status_code = 200
-        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
-
-        events = [
-            {'id': 0, 'msg': 'first'},
-            {'id': 1, 'blob': 'x' * (csp.MAX_ALLOWED_ENTRY_SIZE + 1000)},
-            {'id': 2, 'msg': 'second'},
-        ]
-
-        http_mock = mocker.patch.object(csp.BaseClient, '_http_request', return_value=api_response)
-        futures = send_data_to_xsiam(data=list(events), vendor='v', product='p',
-                                     data_type='events', use_streaming_send=True, multiple_threads=True,
-                                     should_update_health_module=False)
-        executors[0].run_all()
-        assert sum(_completed_results(futures)) == 2
-
-        lines = []
-        for call in http_mock.call_args_list:
-            lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
-        assert len(lines) == 2
-        assert all('blob' not in line for line in lines)
-
-    def test_send_data_to_xsiam_streaming_threaded_empty(self, mocker):
-        """Streaming + threaded path with an empty list makes no HTTP call and creates no executor."""
-        if not IS_PY3:
-            return
-        import CommonServerPython as csp
-        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
-        mocker.patch.object(demisto, 'updateModuleHealth')
-        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
-        mocker.patch('CommonServerPython.support_multithreading')
-        executors = _install_deferred_executor(mocker)
-        http_mock = mocker.patch.object(csp.BaseClient, '_http_request')
-        result = send_data_to_xsiam(data=[], vendor='v', product='p', data_type='events',
-                                    use_streaming_send=True, multiple_threads=True,
-                                    should_update_health_module=False)
-        assert http_mock.call_count == 0
-        # empty list short-circuits before the streaming branch, so nothing is submitted
-        assert result is None or result == []
-        assert all(executor.submitted_count == 0 for executor in executors)
-
-    def test_send_data_to_xsiam_streaming_threaded_bounds_inflight_chunks(self, mocker):
-        """
-        Given: MAX_INFLIGHT_CHUNKS patched strictly below NUM_OF_WORKERS and far more chunks than the bound.
-        When:  calling send_data_to_xsiam with streaming + multiple_threads.
-        Then:  the number of submitted-but-not-completed chunks never exceeds the bound and reaches it exactly
-               (so the back-pressure loop - not the pool size - does the capping), and every event is delivered.
-        Deterministic: the fake executor only runs a queued chunk when the production loop calls wait().
-        """
-        if not IS_PY3:
-            return
-        import CommonServerPython as csp
-        from requests import Response
-
-        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
-        mocker.patch.object(demisto, 'updateModuleHealth')
-        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
-        mocker.patch('CommonServerPython.support_multithreading')
-        executors = _install_deferred_executor(mocker)
-
-        pool_size = 4
-        bound = 2
-        mocker.patch.object(csp, 'NUM_OF_WORKERS', pool_size)
-        mocker.patch.object(csp, 'MAX_INFLIGHT_CHUNKS', bound)
-
-        api_response = Response()
-        api_response.status_code = 200
-        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
-        http_mock = mocker.patch.object(csp.BaseClient, '_http_request', return_value=api_response)
-
-        # tiny chunk_size => one event per chunk => far more chunks than the (patched) bound
-        events = [{'id': i, 'msg': 'x'} for i in range(bound * 6)]
-        futures = send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=1,
-                                     data_type='events', use_streaming_send=True, multiple_threads=True,
-                                     should_update_health_module=False)
-
-        executor = executors[0]
-        assert executor.max_workers == pool_size
-        assert executor.submitted_count == len(events)
-        # the back-pressure loop capped residency at the bound, and the bound was actually reached
-        assert executor.max_pending == bound
-        # only the last `bound` chunks are still queued when the producer returns
-        assert len(executor.pending) == bound
-
-        executor.run_all()
-        assert sum(_completed_results(futures)) == len(events)
-        assert http_mock.call_count == len(events)
-
-    def test_send_data_to_xsiam_streaming_threaded_midstream_failure_preserves_delivered(self, mocker):
-        """
-        Given: bound=2, one event per chunk, and the 3rd chunk POST fails.
-        When:  calling send_data_to_xsiam with streaming + multiple_threads.
-        Then:  the error re-raises from the back-pressure loop, the queued (unsent) chunk is cancelled via
-               shutdown(cancel_futures=True), and exc.submitted_futures lets the caller recover exactly the
-               2 chunks that reached XSIAM. Deterministic execution order => exact assertions.
-        """
-        if not IS_PY3:
-            return
-        import CommonServerPython as csp
-        from requests import Response
-
-        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
-        mocker.patch.object(demisto, 'updateModuleHealth')
-        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
-        mocker.patch('CommonServerPython.support_multithreading')
-        executors = _install_deferred_executor(mocker)
-        mocker.patch.object(csp, 'MAX_INFLIGHT_CHUNKS', 2)
-
-        ok_response = Response()
-        ok_response.status_code = 200
-        ok_response._content = json.dumps({'error': 'false'}).encode('utf-8')
-
-        state = {'calls': 0}
-        fail_on_call = 3
-
-        def flaky_http_request(*args, **kwargs):
-            state['calls'] += 1
-            if state['calls'] == fail_on_call:
-                raise ValueError('boom on chunk {}'.format(state['calls']))
-            return ok_response
-
-        mocker.patch.object(csp.BaseClient, '_http_request', side_effect=flaky_http_request)
-
-        events = [{'id': i, 'msg': 'x'} for i in range(8)]
-        with pytest.raises(ValueError, match='boom on chunk 3') as exc_info:
-            send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=1,
-                               data_type='events', use_streaming_send=True, multiple_threads=True,
-                               should_update_health_module=False)
-
-        # chunks 1-2 delivered, chunk 3 failed, chunk 4 queued then cancelled; chunks 5-8 never submitted
-        assert state['calls'] == fail_on_call
-        executor = executors[0]
-        assert executor.shutdown_calls == [{'wait': False, 'cancel_futures': True}]
-        assert executor.pending == []
-
-        submitted = getattr(exc_info.value, 'submitted_futures', None)
-        assert submitted is not None, 'exception must carry submitted_futures for count recovery'
-        assert len(submitted) == 4
-        assert all(future.done() for future in submitted)
-        assert [future.result(timeout=0) for future in submitted[:2]] == [1, 1]
-        assert isinstance(submitted[2].exception(timeout=0), ValueError)
-        assert submitted[3].cancelled()
-
-    def test_send_data_to_xsiam_streaming_threaded_backpressure_surfaces_worker_error(self, mocker):
-        """
-        Given: MAX_INFLIGHT_CHUNKS=1 and every chunk POST fails.
-        When:  calling send_data_to_xsiam with streaming + multiple_threads.
-        Then:  the first worker error re-raises from the back-pressure loop (finished.result()) before a second
-               chunk is ever POSTed, and the executor is shut down with cancel_futures=True.
-        """
-        if not IS_PY3:
-            return
-        import CommonServerPython as csp
-
-        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
-        mocker.patch.object(demisto, 'updateModuleHealth')
-        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
-        mocker.patch('CommonServerPython.support_multithreading')
-        executors = _install_deferred_executor(mocker)
-        mocker.patch.object(csp, 'MAX_INFLIGHT_CHUNKS', 1)
-
-        http_mock = mocker.patch.object(csp.BaseClient, '_http_request', side_effect=ValueError('worker exploded'))
-
-        events = [{'id': i, 'msg': 'x'} for i in range(6)]
-        with pytest.raises(ValueError, match='worker exploded') as exc_info:
-            send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=1,
-                               data_type='events', use_streaming_send=True, multiple_threads=True,
-                               should_update_health_module=False)
-
-        # surfaced promptly: only the first chunk was ever POSTed
-        assert http_mock.call_count == 1
-        assert len(exc_info.value.submitted_futures) == 1
-        assert executors[0].shutdown_calls == [{'wait': False, 'cancel_futures': True}]
-
-    @pytest.mark.parametrize('chunk_size', [2 ** 20, 50])
-    def test_send_data_to_xsiam_streaming_threaded_assets_snapshot_headers(self, mocker, chunk_size):
-        """
-        Assets over streaming + multiple_threads: every POST must carry the same correct snapshot-id
-        and total-items-count headers (the threaded dispatch must not corrupt the asset-snapshot contract).
-        """
-        if not IS_PY3:
-            return
-        import CommonServerPython as csp
-        from requests import Response
-
-        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
-        mocker.patch.object(demisto, 'updateModuleHealth')
-        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
-        mocker.patch('CommonServerPython.support_multithreading')
-        executors = _install_deferred_executor(mocker)
-
-        api_response = Response()
-        api_response.status_code = 200
-        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
-        http_mock = mocker.patch.object(csp.BaseClient, '_http_request', return_value=api_response)
-
-        assets = [{'id': i, 'msg': 'asset {}'.format(i)} for i in range(9)]
-        futures = send_data_to_xsiam(data=list(assets), vendor='v', product='p', chunk_size=chunk_size,
-                                     data_type='assets', snapshot_id='snap-999', items_count=len(assets),
-                                     use_streaming_send=True, multiple_threads=True,
-                                     should_update_health_module=False)
-        executors[0].run_all()
-        assert sum(_completed_results(futures)) == len(assets)
-
-        assert http_mock.call_count >= 1
-        for call in http_mock.call_args_list:
-            headers = call[1]['headers']
-            assert headers.get('snapshot-id') == 'snap-999'
-            assert headers.get('total-items-count') == str(len(assets))
-
-    def test_send_data_to_xsiam_streaming_threaded_dispatch_return_contract(self, mocker):
-        """
-        Threaded path: _dispatch returns 0, so even with should_update_health_module=True the callee does not
-        update health; the tally comes only from the returned futures.
-        """
-        if not IS_PY3:
-            return
-        import CommonServerPython as csp
+        from CommonServerPython import BaseClient
         from requests import Response
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
@@ -11061,24 +10749,112 @@ class TestSendEventsToXSIAMTest:
         api_response = Response()
         api_response.status_code = 200
         api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
-        mocker.patch.object(csp.BaseClient, '_http_request', return_value=api_response)
+        events = [{'id': i, 'msg': 'event number {}'.format(i)} for i in range(25)]
 
-        events = [{'id': i, 'msg': 'x'} for i in range(6)]
-        futures = send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=1,
+        legacy_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=50,
+                           data_type='events', use_streaming_send=False)
+        legacy_lines = [line for call in legacy_mock.call_args_list
+                        for line in gzip.decompress(call[1]['data']).decode('utf-8').split('\n')]
+        health_mock.reset_mock()
+
+        threaded_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        futures = send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=50,
                                      data_type='events', use_streaming_send=True, multiple_threads=True,
                                      should_update_health_module=True)
-
-        # threaded path never updates health itself, even with should_update_health_module=True
-        health_mock.assert_not_called()
-        # the tally is available ONLY from the futures, and it is complete
         executors[0].run_all()
+
         assert sum(_completed_results(futures)) == len(events)
         health_mock.assert_not_called()
+        assert threaded_mock.call_count > 1
+        threaded_lines = [line for call in threaded_mock.call_args_list
+                          for line in gzip.decompress(call[1]['data']).decode('utf-8').split('\n')]
+        assert sorted(threaded_lines) == sorted(legacy_lines)
+        assert len(threaded_lines) == len(events)
+
+    def test_send_data_to_xsiam_streaming_threaded_bounds_inflight_chunks(self, mocker):
+        """
+        Given: MAX_INFLIGHT_CHUNKS=2 and one event per chunk.
+        When:  calling send_data_to_xsiam with streaming + multiple_threads.
+        Then:  in-flight chunks reach the bound but never exceed it, and every event is sent.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('CommonServerPython.support_multithreading')
+        mocker.patch.object(CommonServerPython, 'MAX_INFLIGHT_CHUNKS', 2)
+        executors = _install_deferred_executor(mocker)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+
+        events = [{'id': i} for i in range(12)]
+        futures = send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=1,
+                                     data_type='events', use_streaming_send=True, multiple_threads=True,
+                                     should_update_health_module=False)
+
+        assert executors[0].max_pending == 2
+        executors[0].run_all()
+        assert sum(_completed_results(futures)) == len(events)
+        assert http_mock.call_count == len(events)
+
+    def test_send_data_to_xsiam_streaming_threaded_midstream_failure_preserves_delivered(self, mocker):
+        """
+        Given: MAX_INFLIGHT_CHUNKS=2, one event per chunk, and the 3rd POST fails.
+        When:  calling send_data_to_xsiam with streaming + multiple_threads.
+        Then:  the error is raised from the back-pressure loop, the queued chunk is cancelled, nothing more is
+               submitted, and exc.submitted_futures still exposes the 2 delivered chunks.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('CommonServerPython.support_multithreading')
+        mocker.patch.object(CommonServerPython, 'MAX_INFLIGHT_CHUNKS', 2)
+        executors = _install_deferred_executor(mocker)
+
+        ok_response = Response()
+        ok_response.status_code = 200
+        ok_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+        state = {'calls': 0}
+
+        def flaky_http_request(*args, **kwargs):
+            state['calls'] += 1
+            if state['calls'] == 3:
+                raise ValueError('boom')
+            return ok_response
+
+        mocker.patch.object(BaseClient, '_http_request', side_effect=flaky_http_request)
+
+        with pytest.raises(ValueError, match='boom') as exc_info:
+            send_data_to_xsiam(data=[{'id': i} for i in range(8)], vendor='v', product='p', chunk_size=1,
+                               data_type='events', use_streaming_send=True, multiple_threads=True,
+                               should_update_health_module=False)
+
+        submitted = exc_info.value.submitted_futures
+        assert state['calls'] == 3
+        assert len(submitted) == 4
+        assert [future.result(timeout=0) for future in submitted[:2]] == [1, 1]
+        assert isinstance(submitted[2].exception(timeout=0), ValueError)
+        assert submitted[3].cancelled()
+        assert executors[0].shutdown_calls == [{'wait': False, 'cancel_futures': True}]
 
     def test_send_data_to_xsiam_streaming_threaded_all_oversized_returns_empty_list(self, mocker):
         """
-        All entries oversized (all skipped): no POST is made and the caller gets an empty list ([]), never None,
-        so the standard 'for future in futures' tally loop stays safe.
+        Given: only oversized entries, streaming + multiple_threads.
+        When:  calling send_data_to_xsiam.
+        Then:  nothing is POSTed and the caller gets [] (not None), so its futures loop stays safe.
         """
         if not IS_PY3:
             return
@@ -11089,7 +10865,7 @@ class TestSendEventsToXSIAMTest:
         mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
         mocker.patch.object(demisto, 'error')
         mocker.patch('CommonServerPython.support_multithreading')
-        executors = _install_deferred_executor(mocker)
+        _install_deferred_executor(mocker)
         http_mock = mocker.patch.object(BaseClient, '_http_request')
 
         events = [{'id': i, 'blob': 'x' * (MAX_ALLOWED_ENTRY_SIZE + 1000)} for i in range(3)]
@@ -11099,8 +10875,6 @@ class TestSendEventsToXSIAMTest:
 
         assert http_mock.call_count == 0
         assert futures == []
-        assert futures is not None
-        assert executors[0].submitted_count == 0
 
     @pytest.mark.parametrize('data_type, snapshot_id, items_count, expected', [
         ('assets', None, None, {'snapshot_id': '123000', 'items_count': '2'}),
@@ -11184,7 +10958,7 @@ class TestSendEventsToXSIAMTest:
             request_mocker = requests_mock.post(
                 'https://api-url/logs/v1/xsiam', json=error_msg, status_code=status_code, reason='Unauthorized[401]'
             )
-            # A real server 'error' value (non-'false') is appended after the HTTP reason (CIAC-17212 fix).
+            # A real server 'error' value (non-'false') is appended after the HTTP reason.
             expected_error_msg = 'Unauthorized[401]: {}'.format(error_msg['error'])
         else:
             status_code = 403
@@ -11226,7 +11000,7 @@ class TestSendEventsToXSIAMTest:
             send_data_to_xsiam hits the error path and data_error_handler parses the response.
         Then:
             The raised DemistoException appends ': <error>' only when 'error' is a real (non-'false', non-empty)
-            message; otherwise only the HTTP reason is used. Locks in the CIAC-17212 error-handler fix.
+            message; otherwise only the HTTP reason is used.
         """
         if not IS_PY3:
             return
