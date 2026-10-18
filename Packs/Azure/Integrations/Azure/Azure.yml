@@ -1253,6 +1253,161 @@ script:
     execution: true
     name: azure-storage-container-delete
 
+  - name: azure-storage-containers-list
+    description: "Lists containers under the specified storage account. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/read."
+    arguments:
+    - name: account_name
+      description: The name of the storage account.
+      required: true
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: prefix
+      description: The prefix used to filter results to return only containers whose names begin with the specified value.
+    - name: limit
+      description: The maximum number of containers to retrieve. Accepted range is 1 to 5000.
+      defaultValue: '50'
+    - name: next_token
+      description: The continuation token returned by a previous call (Azure.Storage.ContainersNextToken), used to retrieve the next page of results.
+    outputs:
+    - contextPath: Azure.Storage.Container.name
+      description: The container name.
+      type: String
+    - contextPath: Azure.Storage.Container.Property.Last-Modified
+      description: The date and time the container was last modified, in RFC 1123 format (for example, Wed, 14 Aug 2024 10:00:00 GMT).
+      type: Date
+    - contextPath: Azure.Storage.Container.Property.Etag
+      description: The entity tag for the container.
+      type: String
+    - contextPath: Azure.Storage.Container.Property.LeaseStatus
+      description: The lease status of the container.
+      type: String
+    - contextPath: Azure.Storage.Container.Property.LeaseState
+      description: The lease state of the container.
+      type: String
+    - contextPath: Azure.Storage.ContainersNextToken
+      description: The continuation token to use when requesting the next set of containers.
+      type: String
+
+  - name: azure-storage-blobs-list
+    description: "Lists blobs under the specified container. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read."
+    arguments:
+    - name: container_name
+      description: The name of the container.
+      required: true
+    - name: account_name
+      description: The name of the storage account.
+      required: true
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: prefix
+      description: The prefix used to filter results to return only blobs whose names begin with the specified value.
+    - name: limit
+      description: The maximum number of blobs to retrieve. Accepted range is 1 to 5000.
+      defaultValue: '50'
+    - name: next_token
+      description: The continuation token returned by a previous call (Azure.Storage.BlobsNextToken), used to retrieve the next page of results.
+    outputs:
+    - contextPath: Azure.Storage.Blob.name
+      description: The name of the blob.
+      type: String
+    - contextPath: Azure.Storage.Blob.ContainerName
+      description: The name of the container that holds the blob.
+      type: String
+    - contextPath: Azure.Storage.Blob.Property
+      description: 'The blob system properties, including: Last-Modified, Etag, Content-Length, Content-Type, Content-Encoding, Content-Language, Content-MD5, Cache-Control, Content-Disposition, BlobType, LeaseStatus, LeaseState, and ServerEncrypted.'
+      type: Unknown
+    - contextPath: Azure.Storage.BlobsNextToken
+      description: The continuation token to use when requesting the next set of blobs.
+      type: String
+
+  - name: azure-storage-blob-update
+    description: "Updates the content of an existing blob. Fails if the blob does not exist. Required permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read, Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write."
+    arguments:
+    - name: container_name
+      description: The name of the container.
+      required: true
+    - name: file_entry_id
+      description: The entry ID of the file to upload as the blob content. Available from the War Room when the context data contains file output.
+      required: true
+    - name: blob_name
+      description: The name of the blob to update.
+      required: true
+    - name: account_name
+      description: The name of the storage account.
+      required: true
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+
+  - name: azure-storage-blob-delete
+    description: "Marks a specific blob for deletion. The blob is deleted during garbage collection. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/delete."
+    execution: true
+    arguments:
+    - name: container_name
+      description: The name of the container.
+      required: true
+    - name: blob_name
+      description: The name of the blob to delete.
+      required: true
+    - name: account_name
+      description: The name of the storage account.
+      required: true
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+
+  - name: azure-storage-container-sas-create
+    description: "Creates a shared access signature (SAS) token for a container."
+    arguments:
+    - name: container_name
+      description: The name of the container.
+      required: true
+    - name: account_name
+      description: The name of the storage account.
+      required: true
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: expiry_time
+      description: The expiry time for the SAS token, in hours.
+      defaultValue: '1'
+      required: true
+    - name: signed_resources
+      description: The resources that are accessible via the shared access signature. Can be "c" (container), "b" (blob), "bv" (blob version), "bs" (blob snapshot), or "d" (directory).
+      auto: PREDEFINED
+      defaultValue: c
+      predefined:
+      - c
+      - b
+      - bv
+      - bs
+      - d
+      required: true
+    - name: signed_permissions
+      description: 'The permissions that are associated with the shared access signature. The user is restricted to operations that are allowed by the permissions. Possible permissions: r = Read, a = Add, c = Create, w = Write. The permissions must follow this order "racwdxltmeop". For example: r, c, a, w, rac, racw.'
+      defaultValue: r
+      required: true
+    - name: signed_ip
+      description: The public IP address or range of public IP addresses from which to accept requests.
+    - name: account_key
+      description: The access key of the storage account, used to sign the SAS token.
+      required: true
+      secret: true
+    outputs:
+    - contextPath: Azure.Storage.Container.SAS.name
+      description: The name of the container.
+      type: String
+    - contextPath: Azure.Storage.Container.SAS.SASURL
+      description: The generated SAS URL for the container.
+      type: String
+
   - arguments:
     - description: The name of the Blob Container.
       name: container_name
@@ -5609,6 +5764,116 @@ script:
       type: Boolean
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.nicType
       description: The network interface card type (Standard/Basic).
+      type: String
+
+  - name: azure-vn-virtual-networks-list
+    description: "Gets virtual networks in a resource group. Required permissions: Microsoft.Network/virtualNetworks/read."
+    arguments:
+    - description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: resource_group_name
+      type: String
+      required: false
+      required:platform: true
+    - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: subscription_id
+      type: String
+      required: false
+      required:platform: true
+    - description: The URI to fetch the next page of results as returned in the Azure.VirtualNetworks.VirtualNetworksNextToken output of a previous run.
+      name: next_token
+      type: String
+      required: false
+    outputs:
+    - contextPath: Azure.VirtualNetworks.VirtualNetworksNextToken
+      description: The URI to fetch the next page of virtual networks. Run the same command with the next_token argument to get the next page.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.name
+      description: The virtual network's name.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.id
+      description: The virtual network's ID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.etag
+      description: The virtual network's ETag.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.location
+      description: The virtual network's location.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.tags
+      description: The tags associated with the virtual network.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.provisioningState
+      description: 'The provisioning state of the virtual network resource. Possible values are Succeeded, Updating, Deleting, or Failed.'
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.resourceGuid
+      description: The resource GUID property of the virtual network resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.addressSpace
+      description: The address space object of the virtual network. Contains the addressPrefixes field, which is a list of address blocks reserved for this virtual network in CIDR notation.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.subnets
+      description: The list of subnets in the virtual network. Each subnet contains the name, ID, and properties fields.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.virtualNetworkPeerings
+      description: The list of peerings in the virtual network.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.dhcpOptions
+      description: The dhcpOptions object of the virtual network. Contains the dnsServers field, which is a list of DNS servers IP addresses.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.enableDdosProtection
+      description: Whether DDoS protection is enabled for all the protected resources in the virtual network.
+      type: Boolean
+  - name: azure-rm-subscriptions-list
+    description: "Gets all subscriptions for a tenant. Required permissions: Microsoft.Resources/subscriptions/read."
+    arguments:
+    - description: The Azure subscription ID used to authenticate the request. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: subscription_id
+      type: String
+      required: false
+      required:platform: true
+    - description: The URI to fetch the next page of results as returned in the Azure.ResourceManagement.SubscriptionsNextToken output of a previous run.
+      name: next_token
+      type: String
+      required: false
+    outputs:
+    - contextPath: Azure.ResourceManagement.SubscriptionsNextToken
+      description: The URI to fetch the next page of subscriptions. Run the same command with the next_token argument to get the next page.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.id
+      description: The unique identifier of the subscription.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.subscriptionId
+      description: The ID of the subscription.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.tenantId
+      description: The ID of the tenant associated with the subscription.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.displayName
+      description: The display name of the subscription.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.state
+      description: 'The current state of the subscription. Possible values are Enabled, Warned, PastDue, Disabled, or Deleted.'
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.authorizationSource
+      description: 'The authorization source of the request. Possible values are Legacy, RoleBased, Bypassed, Direct, or Management.'
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.managedByTenants
+      description: The list of tenants that have access to manage the subscription.
+      type: Unknown
+    - contextPath: Azure.ResourceManagement.Subscriptions.tags
+      description: The tags associated with the subscription.
+      type: Unknown
+    - contextPath: Azure.ResourceManagement.Subscriptions.subscriptionPolicies.locationPlacementId
+      description: The ID of the location placement policy for the subscription.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.subscriptionPolicies.quotaId
+      description: The ID of the quota policy for the subscription.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.subscriptionPolicies.spendingLimit
+      description: The spending limit policy for the subscription.
       type: String
 
   - description: Gets public IP addresses in a resource group. The command is deprecated, please use azure-vn-public-ip-addresses-list.
@@ -13415,6 +13680,432 @@ script:
         type: Unknown
       - contextPath: Azure.VirtualNetworks.ServiceTagsInformationNextToken
         description: The URI used to fetch the next page of service tags. Run the same command with the next_token argument to get the next page of service tags.
+        type: String
+  - name: azure-compute-vm-create
+    description: "Creates a virtual machine instance with the specified OS image. Required permissions: Microsoft.Compute/virtualMachines/write."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group to which the new virtual machine will belong.
+      required: true
+    - name: virtual_machine_name
+      description: The name of the virtual machine to create.
+      required: true
+    - name: virtual_machine_location
+      description: The location in which to create the virtual machine.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - westus2
+      - westus
+      - westindia
+      - westeurope
+      - westcentralus
+      - uksouth
+      - ukwest
+      - southeastasia
+      - northcentralus
+      - northeurope
+      - southcentralus
+      - southindia
+      - francesouth
+      - francecentral
+      - japaneast
+      - japanwest
+      - koreacentral
+      - koreasouth
+      - brazilsouth
+      - canadacentral
+      - canadaeast
+      - centralindia
+      - eastus2
+      - eastasia
+      - centralus
+      - eastus
+      - australiacentral
+      - australiacentral2
+      - australiaeast
+      - australiasoutheast
+    - name: nic_name
+      description: The name of the Network Interface to link the virtual machine. Note that the virtual machine's location property must match that of the Network Interface to which it is linked.
+      required: true
+    - name: vm_size
+      description: The name of a VirtualMachineSize object, which determines the size of the deployed virtual machine.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Standard_D1_v2
+      - Standard_D2_v2
+      - Standard_D2s_v3
+      - Standard_B1ms
+      - Standard_B1s
+      - Standard_B2s
+      - Standard_B4ms
+      - Standard_D4s_v3
+      - Standard_DS1_v2
+      - Standard_DS2_v2
+      - Standard_DS3_v2
+      - Promo_DS2_v2
+      - Promo_DS3_v2
+    - name: os_image
+      description: The base operating system image of the virtual machine. It is mandatory to provide either this argument or the sku, publisher, version, and offer arguments.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Ubuntu Server 14.04 LTS
+      - Ubuntu Server 16.04 LTS
+      - Ubuntu Server 18.04 LTS
+      - Red Hat Enterprise Linux 7.6
+      - CentOS-based 7.5
+      - Windows Server 2012 R2 Datacenter
+      - Windows Server 2016 Datacenter
+      - Windows 10 Pro Version 1803
+      - Windows 10 Pro Version 1809
+    - name: sku
+      description: The SKU of the OS image to use.
+      required: false
+      defaultValue: 2016-Datacenter
+    - name: publisher
+      description: The name of the publisher of the OS image.
+      required: false
+      defaultValue: MicrosoftWindowsServer
+    - name: version
+      description: The version of the image to use. Supported formats are Major.Minor.Build or latest.
+      required: false
+      defaultValue: latest
+    - name: offer
+      description: The offer of the platform image or marketplace image used to create the virtual machine.
+      required: false
+      defaultValue: WindowsServer
+    - name: admin_username
+      description: The admin username to use when creating the virtual machine.
+      required: false
+    - name: admin_password
+      description: The admin password to use when creating the virtual machine.
+      required: false
+      secret: true
+    outputs:
+      - contextPath: Azure.Compute.VirtualMachines.id
+        description: The ID of the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.name
+        description: The name of the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.type
+        description: The type of the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.location
+        description: The location of the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.tags
+        description: The tags of the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.etag
+        description: The ETag of the virtual machine, used to prevent overwriting concurrent updates.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.extendedLocation
+        description: The extended location of the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.identity
+        description: The identity of the virtual machine, if configured.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.managedBy
+        description: The ARM resource ID of the Virtual Machine Scale Set (VMSS) that manages the virtual machine, if applicable.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.placement
+        description: The user-defined constraints for virtual machine hardware placement. This property cannot be changed once the virtual machine is provisioned.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.plan
+        description: The information about the marketplace image used to create the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.plan.name
+        description: The plan name.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.plan.publisher
+        description: The publisher of the plan.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.plan.product
+        description: The product of the plan.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.plan.promotionCode
+        description: The promotion code of the plan.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.systemData
+        description: The Azure Resource Manager metadata containing the createdBy and modifiedBy information.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.zones
+        description: The availability zones of the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.resources
+        description: The virtual machine child extension resources.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.vmId
+        description: The unique ID of the virtual machine.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.provisioningState
+        description: The provisioning state, which only appears in the response.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.timeCreated
+        description: The time when the virtual machine was created.
+        type: Date
+      - contextPath: Azure.Compute.VirtualMachines.properties.hardwareProfile
+        description: The hardware settings for the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.storageProfile
+        description: The storage settings for the virtual machine disks.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.osProfile
+        description: The operating system settings for the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.networkProfile
+        description: The network interfaces of the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.additionalCapabilities
+        description: The additional capabilities enabled or disabled on the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.securityProfile
+        description: The security settings for the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.diagnosticsProfile
+        description: The boot diagnostic settings state.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.availabilitySet
+        description: The availability set that the virtual machine is in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.virtualMachineScaleSet
+        description: The virtual machine scale set that the virtual machine is in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.proximityPlacementGroup
+        description: The proximity placement group that the virtual machine is in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.scheduledEventsPolicy
+        description: The Redeploy, Reboot, and ScheduledEventsAdditionalPublishingTargets Scheduled Event related configurations for the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.scheduledEventsProfile
+        description: The scheduled event related configurations.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.priority
+        description: The priority for the virtual machine. Possible values are Regular, Low, or Spot.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.evictionPolicy
+        description: The eviction policy for the Azure Spot virtual machine. Possible values are Deallocate or Delete.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.billingProfile
+        description: The billing related details of an Azure Spot virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.host
+        description: The dedicated host that the virtual machine resides in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.hostGroup
+        description: The dedicated host group that the virtual machine resides in.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.licenseType
+        description: The license type for the bring your own license scenario.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.extensionsTimeBudget
+        description: The time allotted for all extensions to start, in ISO 8601 format.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.platformFaultDomain
+        description: The scale set logical fault domain into which the virtual machine is created.
+        type: Number
+      - contextPath: Azure.Compute.VirtualMachines.properties.userData
+        description: The user data for the virtual machine, which must be base-64 encoded.
+        type: String
+      - contextPath: Azure.Compute.VirtualMachines.properties.capacityReservation
+        description: The capacity reservation related details of the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.applicationProfile
+        description: The gallery applications that should be made available to the virtual machine.
+        type: Unknown
+      - contextPath: Azure.Compute.VirtualMachines.properties.instanceView
+        description: The virtual machine instance view.
+        type: Unknown
+  - name: azure-compute-vm-delete
+    description: "Deallocates and deletes a specified virtual machine. Required permissions: Microsoft.Compute/virtualMachines/deallocate/action, Microsoft.Compute/virtualMachines/delete."
+    execution: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group to which the virtual machine belongs.
+      required: true
+    - name: virtual_machine_name
+      description: The name of the virtual machine to delete. To see all the virtual machines with their associated names for a specific resource group, run the azure-compute-vm-list command.
+      required: true
+    outputs: []
+  - name: azure-vn-network-interface-create
+    description: "Creates a virtual machine network interface. Required permissions: Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/networkSecurityGroups/join/action."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group to which the new network interface will belong.
+      required: true
+    - name: nic_name
+      description: The network interface name.
+      required: true
+    - name: nic_location
+      description: The location in which to create the network interface.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - westus2
+      - westus
+      - westindia
+      - westeurope
+      - westcentralus
+      - uksouth
+      - ukwest
+      - southeastasia
+      - northcentralus
+      - northeurope
+      - southcentralus
+      - southindia
+      - francesouth
+      - francecentral
+      - japaneast
+      - japanwest
+      - koreacentral
+      - koreasouth
+      - brazilsouth
+      - canadacentral
+      - canadaeast
+      - centralindia
+      - eastus2
+      - eastasia
+      - centralus
+      - eastus
+      - australiacentral
+      - australiacentral2
+      - australiaeast
+      - australiasoutheast
+    - name: vnet_name
+      description: The name of the virtual network of the network interface.
+      required: true
+    - name: subnet_name
+      description: The name of the subnet of the network interface.
+      required: true
+    - name: address_assignment_method
+      description: The address assignment method.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Static
+      - Dynamic
+      defaultValue: Dynamic
+    - name: private_ip_address
+      description: The private IP address of the network interface. Required if the address_assignment_method argument is set to Static.
+      required: false
+    - name: ip_config_name
+      description: The name of the IP address configuration.
+      required: true
+    - name: network_security_group
+      description: The network security group of the network interface.
+      required: false
+    outputs:
+      - contextPath: Azure.VirtualNetworks.NetworkInterfaces.id
+        description: The ID of the network interface.
+        type: String
+      - contextPath: Azure.VirtualNetworks.NetworkInterfaces.name
+        description: The name of the network interface.
+        type: String
+      - contextPath: Azure.VirtualNetworks.NetworkInterfaces.etag
+        description: The unique read-only string that changes whenever the network interface is updated.
+        type: String
+      - contextPath: Azure.VirtualNetworks.NetworkInterfaces.location
+        description: The location of the network interface.
+        type: String
+      - contextPath: Azure.VirtualNetworks.NetworkInterfaces.tags
+        description: The tags of the network interface.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.provisioningState
+        description: The provisioning state, which only appears in the response.
+        type: String
+      - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations
+        description: The IP configurations of the network interface, containing the name, id, and properties fields.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.networkSecurityGroup
+        description: The network security group attached to the network interface.
+        type: Unknown
+      - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.dnsSettings
+        description: The DNS settings of the network interface.
+        type: Unknown
+  - name: azure-rg-list-operations
+    description: "Gets all Azure Resource Graph operations permissions and descriptions. Required permission: Microsoft.ResourceGraph/operations/read."
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+    outputs:
+      - contextPath: Azure.ResourceGraph.Operations.Name
+        description: The name of the Azure Resource Graph operation.
+        type: String
+      - contextPath: Azure.ResourceGraph.Operations.Display
+        description: The display information of the Azure Resource Graph operation, including provider, resource, operation, and description.
+        type: Unknown
+  - name: azure-rg-query
+    description: 'Executes an Azure Resource Graph query based on Kusto Query Language (KQL). For example: query="Resources | project name, type | limit 5 | order by name asc". Required permission: Microsoft.ResourceGraph/resources/read.'
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: query
+        required: true
+        description: |-
+          The query for the Azure Resource Graph to execute.
+          For example: `resources | where (resourceGroup =~ ('demisto-sentinel2'))`.
+          The query is based on Kusto Query Language (KQL). Reference: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/.
+      - name: limit
+        description: 'The maximum number of resources to return. Accepted values are 1 to 1000. Note: Do not use with page and page_size.'
+        required: false
+        defaultValue: "50"
+        type: Number
+      - name: page_size
+        description: The maximum number of resources to return per page. Accepted values are 1 to 1000.
+        required: false
+        type: Number
+      - name: page
+        description: The page number to return.
+        required: false
+        type: Number
+      - name: management_groups
+        description: "A comma-separated list of Azure management groups against which to execute the query. For example: 'mg1, mg2'."
+        required: false
+        isArray: true
+      - name: subscriptions
+        description: "A comma-separated list of Azure subscriptions against which to execute the query. For example: 'sub1, sub2'."
+        required: false
+        isArray: true
+      - name: next_token
+        description: The token for the next set of results to return, used for pagination. Retrieved from the Azure.ResourceGraph.QueryNextToken output of a previous run.
+        required: false
+    outputs:
+      - contextPath: Azure.ResourceGraph.Query.id
+        description: The resource ID of the resource returned by the query.
+        type: String
+      - contextPath: Azure.ResourceGraph.Query.name
+        description: The name of the resource returned by the query.
+        type: String
+      - contextPath: Azure.ResourceGraph.Query.type
+        description: The type of the resource returned by the query.
+        type: String
+      - contextPath: Azure.ResourceGraph.Query.location
+        description: The location of the resource returned by the query.
+        type: String
+      - contextPath: Azure.ResourceGraph.Query.tags
+        description: The tags of the resource returned by the query.
+        type: Unknown
+      - contextPath: Azure.ResourceGraph.QueryNextToken
+        description: The token to pass as the next_token argument to retrieve the next set of query results.
         type: String
   isfetch: false
   runonce: false
