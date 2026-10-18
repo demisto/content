@@ -1,0 +1,9 @@
+[file:AcmeDemoAuditLogsEventCollector.yml]
+ignore=BA124
+
+[file:AcmeDemoParsingRules.yml]
+ignore=PR101
+
+[known_words]
+acmedemo
+auditlogs

@@ -1,0 +1,3 @@
+[INGEST:vendor="acmedemo", product="auditlogs", target_dataset="acmedemo_auditlogs_raw", no_hit=keep]
+filter to_string(created_time) ~= "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z"
+| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%SZ", to_string(created_time));

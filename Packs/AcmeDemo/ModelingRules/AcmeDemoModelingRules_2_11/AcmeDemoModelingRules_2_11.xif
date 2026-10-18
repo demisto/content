@@ -1,0 +1,28 @@
+[MODEL: dataset=acmedemo_auditlogs_raw]
+alter
+    user_id = json_extract_scalar(user, "$.id"),
+    user_name = json_extract_scalar(user, "$.name"),
+    user_email = json_extract_scalar(user, "$.email"),
+    target_type = json_extract_scalar(target, "$.type"),
+    target_name = json_extract_scalar(target, "$.name"),
+    source_ipv4 = if(source_ip ~= "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", source_ip, null),
+    source_ipv6 = if(source_ip ~= ":", source_ip, null)
+| alter
+    xdm.event.id = id,
+    xdm.event.type = event_type,
+    xdm.event.outcome = if(outcome = "success", XDM_CONST.OUTCOME_SUCCESS, outcome = "failure", XDM_CONST.OUTCOME_FAILED, null),
+    xdm.event.description = message,
+    xdm.alert.severity = severity,
+    xdm.source.ipv4 = source_ipv4,
+    xdm.source.ipv6 = source_ipv6,
+    xdm.source.user_agent = user_agent,
+    xdm.source.user.identifier = user_id,
+    xdm.source.user.username = user_name,
+    xdm.source.user.upn = user_email,
+    xdm.source.identity.identifier = user_id,
+    xdm.source.identity.username = user_name,
+    xdm.source.identity.upn = user_email,
+    xdm.target.resource.type = target_type,
+    xdm.target.resource.name = target_name,
+    xdm.observer.vendor = _vendor,
+    xdm.observer.product = _product;

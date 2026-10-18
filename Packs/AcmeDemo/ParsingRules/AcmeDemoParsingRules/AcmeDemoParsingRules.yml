@@ -1,0 +1,8 @@
+name: AcmeDemo Parsing Rule
+id: AcmeDemo_ParsingRule
+fromversion: 8.13.0
+tags: []
+rules: ''
+samples: ''
+supportedModules:
+- xsiam
