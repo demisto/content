@@ -46,6 +46,7 @@ configuration:
   - xpanse
   supportedModules:
   - xsiam
+  - exposure_management
 - display: Fetch events
   name: isFetchEvents
   type: 8
