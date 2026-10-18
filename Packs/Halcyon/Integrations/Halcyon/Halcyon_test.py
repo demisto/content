@@ -116,9 +116,7 @@ class TestClient:
             ]
         }
 
-        raw_response = mocker.Mock(status_code=200, headers={}, content=b"{}")
-        raw_response.json.return_value = mock_response
-        mocker.patch.object(mock_client, "_http_request", return_value=raw_response)
+        mocker.patch.object(mock_client, "_http_request", return_value=mock_response)
 
         result = mock_client.get_events(
             occurred_after="2024-01-01T00:00:00.000Z",
@@ -128,58 +126,6 @@ class TestClient:
 
         assert len(result["data"]) == 2
         assert result["data"][0]["eventId"] == "event-1"
-
-    def test_get_events_logs_header_names_only(self, mock_client, mocker):
-        """First page: every header name is logged, and no header value is."""
-        import demistomock as demisto
-
-        info = mocker.patch.object(demisto, "info")
-        headers = {
-            "X-RateLimit-Remaining": "42",
-            "Date": "Wed, 14 Oct 2026 09:00:00 GMT",
-            "Set-Cookie": "session=abc",
-            "Authorization": "Bearer secret",
-            "Server": "nginx",
-        }
-        raw_response = mocker.Mock(status_code=200, headers=headers, content=b"{}")
-        raw_response.json.return_value = {"data": []}
-        mocker.patch.object(mock_client, "_http_request", return_value=raw_response)
-
-        mock_client.get_events(page=1)
-
-        line = next(str(c.args[0]) for c in info.call_args_list if str(c.args[0]).startswith("HALCYON-EVENTS-HEADERS"))
-        assert "header_names=['Authorization', 'Date', 'Server', 'Set-Cookie', 'X-RateLimit-Remaining']" in line
-        for value in headers.values():
-            assert value not in line
-
-    def test_get_events_does_not_log_headers_after_first_page(self, mock_client, mocker):
-        import demistomock as demisto
-
-        info = mocker.patch.object(demisto, "info")
-        raw_response = mocker.Mock(status_code=200, headers={"Date": "x"}, content=b"{}")
-        raw_response.json.return_value = {"data": []}
-        mocker.patch.object(mock_client, "_http_request", return_value=raw_response)
-
-        mock_client.get_events(page=2)
-
-        assert not any(str(c.args[0]).startswith("HALCYON-EVENTS-HEADERS") for c in info.call_args_list)
-
-    def test_get_events_empty_body_returns_empty_dict(self, mock_client, mocker):
-        raw_response = mocker.Mock(status_code=200, headers={}, content=b"")
-        raw_response.json.side_effect = json.JSONDecodeError("empty", "", 0)
-        mocker.patch.object(mock_client, "_http_request", return_value=raw_response)
-
-        assert mock_client.get_events(page=1) == {}
-
-    def test_header_logging_failure_does_not_fail_fetch(self, mock_client, mocker):
-        import demistomock as demisto
-
-        mocker.patch.object(demisto, "info", side_effect=Exception("log failure"))
-        raw_response = mocker.Mock(status_code=200, headers={"Date": "x"}, content=b"{}")
-        raw_response.json.return_value = {"data": [{"eventId": "e"}]}
-        mocker.patch.object(mock_client, "_http_request", return_value=raw_response)
-
-        assert mock_client.get_events(page=1) == {"data": [{"eventId": "e"}]}
 
 
 class TestHelperFunctions:
@@ -878,14 +824,14 @@ class TestEventsLogging:
     def test_summary_reports_late_indexed_event(self, mock_client, mocker):
         import demistomock as demisto
 
-        info = mocker.patch.object(demisto, "info")
+        debug = mocker.patch.object(demisto, "debug")
         api = FakeHalcyonEventsApi()
         api.add("on-time", "2026-10-05T07:00:30Z")
         api.add("late", "2026-10-05T07:00:10Z", indexed_at="2026-10-05T07:01:30Z")
 
         run_cycles(mock_client, mocker, api, ["2026-10-05T07:01:00.000000Z", "2026-10-05T07:02:00.000000Z"])
 
-        logs = [str(call.args[0]) for call in info.call_args_list]
+        logs = [str(call.args[0]) for call in debug.call_args_list]
         assert any("HALCYON-EVENTS LATE-INDEXED" in line and "late@2026-10-05T07:00:10.000000Z" in line for line in logs)
         summaries = [line for line in logs if line.startswith("HALCYON-EVENTS SUMMARY")]
         assert len(summaries) == 2
@@ -896,20 +842,24 @@ class TestEventsLogging:
     def test_summary_reports_future_dated_event(self, mock_client, mocker):
         import demistomock as demisto
 
-        info = mocker.patch.object(demisto, "info")
+        debug = mocker.patch.object(demisto, "debug")
         api = FakeHalcyonEventsApi(ignore_occurred_before=True)
         api.add("future", "2026-10-05T07:03:00Z", indexed_at="2026-10-05T07:00:00Z")
 
         run_cycles(mock_client, mocker, api, ["2026-10-05T07:01:00.000000Z"])
 
-        logs = [str(call.args[0]) for call in info.call_args_list]
+        logs = [str(call.args[0]) for call in debug.call_args_list]
         assert any("HALCYON-EVENTS FUTURE-DATED" in line and "future@2026-10-05T07:03:00.000000Z(+120s)" in line for line in logs)
         assert any("future_held_back=1" in line for line in logs if line.startswith("HALCYON-EVENTS SUMMARY"))
 
     def test_logging_failure_does_not_fail_fetch(self, mock_client, mocker):
         import demistomock as demisto
 
-        mocker.patch.object(demisto, "info", side_effect=Exception("log failure"))
+        def fail_on_summary(message: str) -> None:
+            if "HALCYON-EVENTS SUMMARY" in message:
+                raise Exception("log failure")
+
+        debug = mocker.patch.object(demisto, "debug", side_effect=fail_on_summary)
         api = FakeHalcyonEventsApi()
         api.add("evt", "2026-10-05T07:00:30Z")
 
@@ -917,6 +867,8 @@ class TestEventsLogging:
 
         assert sent == {"evt": 1}
         assert last_run["last_fetch_events"] == "2026-10-05T07:01:00.000000Z"
+        failure_line = next(str(c.args[0]) for c in debug.call_args_list if "logging failed" in str(c.args[0]))
+        assert "Traceback" in failure_line
 
     def test_summarize_last_run_hides_dedup_cache(self):
         from Halcyon import summarize_last_run

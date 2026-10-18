@@ -1,4 +1,5 @@
 import time
+import traceback
 
 import urllib3
 from enum import Enum
@@ -44,13 +45,8 @@ EVENTS_LOG_MAX_SAMPLES = 20
 # Events last-run keys.
 EVENTS_WATERMARK_KEY = "last_fetch_events"  # Everything up to this time was processed. Same key as the legacy format.
 EVENTS_DEDUP_CACHE_KEY = "events_dedup_cache"  # {eventId: occurredAt} of events already sent.
-EVENTS_FLOOR_KEY = "events_fetch_floor"  # Set by the migration: never query before the legacy watermark.
+EVENTS_FLOOR_KEY = "events_fetch_floor"  # Never query before this time (first fetch start or legacy watermark).
 LEGACY_EVENTS_IDS_KEY = "previous_ids_events"  # Legacy dedup list, replaced by EVENTS_DEDUP_CACHE_KEY.
-
-# TEMPORARY DIAGNOSTICS - remove once answered. Logs the /v2/events response header NAMES (first page
-# of each cycle) to see whether the API exposes rate-limit, pagination or volume information there.
-# Header values are never logged.
-EVENTS_HEADERS_LOG_PREFIX = "HALCYON-EVENTS-HEADERS"
 
 """ LOG TYPE ENUM """
 
@@ -407,35 +403,10 @@ class Client(ContentClient):
             params["occurredBefore"] = occurred_before
 
         demisto.debug(f"Fetching events with params: {params}")
-        response = self._http_request(method="GET", url_suffix="/v2/events", params=params, resp_type="response")
-        if page == 1:
-            log_events_response_headers(response)
-        # Same as resp_type="json": an empty body is an empty result, anything else must be valid JSON.
-        try:
-            return response.json()
-        except json.JSONDecodeError:
-            if not response.content:
-                return {}
-            raise
+        return self._http_request(method="GET", url_suffix="/v2/events", params=params)
 
 
 """ HELPER FUNCTIONS """
-
-
-def log_events_response_headers(response: Any) -> None:
-    """TEMPORARY DIAGNOSTICS: log the header names of an events response. Never raises.
-
-    Only the names are logged, never the values, so no credential or token can reach the log.
-
-    Args:
-        response: The raw HTTP response of a /v2/events call.
-    """
-    try:
-        headers = getattr(response, "headers", None) or {}
-        header_names = sorted((str(name) for name in headers), key=str.lower)
-        log_events_info(f"{EVENTS_HEADERS_LOG_PREFIX} status={getattr(response, 'status_code', '?')} header_names={header_names}")
-    except Exception as e:
-        demisto.debug(f"{EVENTS_HEADERS_LOG_PREFIX} logging failed, the fetch continues: {e}")
 
 
 def get_log_types_from_titles(event_types_to_fetch: list[str]) -> list[LogType]:
@@ -763,8 +734,10 @@ def collect_new_events(
     new_events: list[dict] = []
     processed_through = query_start
     stats: dict[str, Any] = {"pages": 0, "rows": 0, "duplicates": 0, "no_id": 0, "future": [], "stop_reason": ""}
-    page = 1
-    while True:
+    page = 0
+    has_more_pages = True
+    while has_more_pages:
+        page += 1
         response = client.get_events(
             occurred_after=query_start, occurred_before=cycle_start, page=page, page_size=DEFAULT_PAGE_SIZE
         )
@@ -791,10 +764,10 @@ def collect_new_events(
                 stats["stop_reason"] = f"reached max_fetch={max_fetch} on page {page}"
                 return new_events, processed_through, stats
         demisto.debug(f"{EVENTS_LOG_PREFIX} page {page}: {len(rows)} rows, {len(new_events) - new_before_page} new")
-        if len(rows) < DEFAULT_PAGE_SIZE:
-            stats["stop_reason"] = f"page {page} was the last page ({len(rows)} rows): read everything up to the cycle start"
-            return new_events, cycle_start, stats
-        page += 1
+        has_more_pages = len(rows) >= DEFAULT_PAGE_SIZE  # A short page means everything up to cycle_start was read.
+
+    stats["stop_reason"] = f"page {page} was the last page ({len(rows)} rows): read everything up to the cycle start"
+    return new_events, cycle_start, stats
 
 
 def log_events_cycle(cycle_start: datetime, new_events: list[dict], stats: dict[str, Any], summary: dict[str, Any]) -> None:
@@ -818,25 +791,25 @@ def log_events_cycle(cycle_start: datetime, new_events: list[dict], stats: dict[
                 late.append((get_event_id(event, LogType.EVENTS) or "<no id>", event_time))
 
         if late:
-            demisto.info(
+            demisto.debug(
                 f"{EVENTS_LOG_PREFIX} LATE-INDEXED events caught by the lookback (occurred before the previous "
                 f"watermark {previous_watermark}): {len(late)}: {format_event_samples(late, cycle_start)}"
             )
             oldest_age = max(-seconds_from_cycle_start(event_time, cycle_start) for _, event_time in late)
             lookback_seconds = EVENTS_LOOKBACK.total_seconds()
             if oldest_age >= 0.8 * lookback_seconds:
-                demisto.info(
+                demisto.debug(
                     f"{EVENTS_LOG_PREFIX} WARNING the oldest late-indexed event occurred {oldest_age:.0f}s before the "
                     f"cycle start, close to the {lookback_seconds:.0f}s lookback. Events indexed later than the "
                     f"lookback are missed; consider a longer lookback."
                 )
         if stats["future"]:
-            demisto.info(
+            demisto.debug(
                 f"{EVENTS_LOG_PREFIX} FUTURE-DATED events held back for a later cycle: {len(stats['future'])}: "
                 f"{format_event_samples(stats['future'], cycle_start)}"
             )
 
-        demisto.info(
+        demisto.debug(
             f"{EVENTS_LOG_PREFIX} SUMMARY cycle_start={cycle_start.strftime(DATE_FORMAT)} | "
             f"query {summary['query_start']} -> {cycle_start.strftime(DATE_FORMAT)} [{summary['query_reason']}] | "
             f"pages={stats['pages']} rows={stats['rows']} new={len(new_events)} duplicates={stats['duplicates']} "
@@ -848,7 +821,7 @@ def log_events_cycle(cycle_start: datetime, new_events: list[dict], stats: dict[
             f"next fetch: {summary['next_fetch']} | took {summary['took_seconds']:.1f}s"
         )
     except Exception as e:
-        demisto.debug(f"{EVENTS_LOG_PREFIX} logging failed, the fetch continues: {e}")
+        demisto.debug(f"{EVENTS_LOG_PREFIX} logging failed, the fetch continues: {e}\n{traceback.format_exc()}")
 
 
 def fetch_events_with_lookback(client: Client, last_run: dict, max_fetch: int, cycle_start: datetime) -> tuple[list[dict], dict]:
@@ -872,7 +845,7 @@ def fetch_events_with_lookback(client: Client, last_run: dict, max_fetch: int, c
     cache_loaded = len(dedup_cache)
     query_start, floor = get_events_query_start(watermark_before, floor_before, cycle_start)
     query_reason = describe_query_start(query_start, watermark_before, floor_before, cycle_start)
-    log_events_info(
+    demisto.debug(
         f"{EVENTS_LOG_PREFIX} START query {query_start} -> {cycle_start_str} [{query_reason}] | "
         f"max_fetch={max_fetch} | watermark={watermark_before} | dedup cache {cache_loaded} keys"
     )
