@@ -691,7 +691,19 @@ def test_is_private_network_urls(mocker: MockerFixture):
     )
 
 
-def test_increase_counter_chrome_instances_file(mocker):
+@pytest.fixture
+def chrome_instances_tmp_path(mocker, tmp_path) -> str:
+    """
+    Redirect CHROME_INSTANCES_FILE_PATH to a writable temp dir.
+    write_chrome_instances_file() writes atomically via a NamedTemporaryFile in the target's directory,
+    and the default (/var) is not writable in the test container.
+    """
+    chrome_instances_path = str(tmp_path / "chrome_instances.json")
+    mocker.patch("rasterize.CHROME_INSTANCES_FILE_PATH", chrome_instances_path)
+    return chrome_instances_path
+
+
+def test_increase_counter_chrome_instances_file(mocker, chrome_instances_tmp_path):
     """
     Given:
         - A new Chrome instance content
@@ -718,7 +730,7 @@ def test_increase_counter_chrome_instances_file(mocker):
     assert expected_rasterization_count == mocker_json.call_args[0][0]["2222"][RASTERIZATION_COUNT]
 
 
-def test_add_new_chrome_instance(mocker):
+def test_add_new_chrome_instance(mocker, chrome_instances_tmp_path):
     """
     Given:
         - A new Chrome instance content
@@ -749,7 +761,7 @@ def test_add_new_chrome_instance(mocker):
     assert "9345" in mocker_json.call_args[0][0]
 
 
-def test_terminate_port_chrome_instances_file(mocker):
+def test_terminate_port_chrome_instances_file(mocker, chrome_instances_tmp_path):
     """
     Given:
         - A port to terminate.
@@ -772,7 +784,7 @@ def test_terminate_port_chrome_instances_file(mocker):
     assert "2222" not in mocker_json.call_args[0][0]
 
 
-def test_write_chrome_instances_empty(mocker):
+def test_write_chrome_instances_empty(mocker, chrome_instances_tmp_path):
     """
     Given:
         - A new Chrome instance content(first chrome instance).
@@ -791,6 +803,26 @@ def test_write_chrome_instances_empty(mocker):
     write_chrome_instances_file(new_chrome_content=mock_file_content)
 
     assert mocker_json.call_count == 1
+
+
+def test_write_chrome_instances_file_atomic_round_trip(chrome_instances_tmp_path):
+    """
+    Given:
+        - A writable chrome instances file location.
+    When:
+        - Executing write_chrome_instances_file and reading the file back.
+    Then:
+        - The content round-trips intact and no temporary files are left behind.
+    """
+    from rasterize import write_chrome_instances_file
+
+    content = util_load_json("test_data/chrome_instances.json")
+    write_chrome_instances_file(new_chrome_content=content)
+
+    with open(chrome_instances_tmp_path) as f:
+        assert json.load(f) == content
+    directory = os.path.dirname(chrome_instances_tmp_path)
+    assert os.listdir(directory) == ["chrome_instances.json"]
 
 
 def test_read_json_file(mocker):
