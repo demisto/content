@@ -814,7 +814,7 @@ class TestMain:
 
 class TestConfig:
     def test_values(self) -> None:
-        assert INTEGRATION_NAME == "SAP Enterprise Threat Detection"
+        assert INTEGRATION_NAME == "SAP Enterprise Threat Detection (On-Premise)"
         assert (Config.VENDOR, Config.PRODUCT) == ("SAP", "Threat Detection")
         assert Config.ALERTS_ENDPOINT == "/sap/secmon/services/Alerts.xsjs"
         assert Config.DEFAULT_MAX_FETCH == 10000

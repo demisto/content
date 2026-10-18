@@ -13,7 +13,7 @@ from ContentClientApiModule import *
 # Constants and helpers
 # =================================
 
-INTEGRATION_NAME = "SAP Enterprise Threat Detection"
+INTEGRATION_NAME = "SAP Enterprise Threat Detection (On-Premise)"
 
 
 class Config:

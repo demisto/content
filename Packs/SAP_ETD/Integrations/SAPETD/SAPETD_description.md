@@ -1,3 +1,5 @@
+This integration supports **SAP Enterprise Threat Detection on-premise only** (Alert API at `/sap/secmon/services/Alerts.xsjs` with Basic authentication). SAP Enterprise Threat Detection, Cloud Edition (SAP BTP) is not supported.
+
 ## Prerequisites
 
 1. Create a user in your SIEM solution with the following application privileges:

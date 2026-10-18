@@ -2,10 +2,10 @@ commonfields:
   id: SAPETD
   version: -1
 name: SAPETD
-display: SAP Enterprise Threat Detection
+display: SAP Enterprise Threat Detection (On-Premise)
 category: Analytics & SIEM
 provider: SAP
-description: Use the SAP Enterprise Threat Detection integration to fetch alerts from SAP ETD for ingestion into Cortex XSIAM.
+description: Use the SAP Enterprise Threat Detection (On-Premise) integration to fetch alerts from an on-premise SAP ETD server (Alerts.xsjs API) for ingestion into Cortex XSIAM. SAP Enterprise Threat Detection, Cloud Edition is not supported.
 sectionorder:
 - Connect
 - Collect
@@ -15,7 +15,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-  additionalinfo: The SAP ETD server URL (e.g., https://<Server_Host>:<Port>).
+  additionalinfo: The URL of the on-premise SAP ETD server (e.g., https://<Server_Host>:<Port>).
 - name: credentials
   display: Username
   required: true
