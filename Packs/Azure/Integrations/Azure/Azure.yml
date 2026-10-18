@@ -1878,8 +1878,8 @@ script:
       description: Source of the configuration.
     - name: value
       type: string
-      description: Value of the configuration.
-    name: azure-postgres-config-set
+      description: Value of the coazure-postgresnfiguration.
+    name: -config-set
     description: "Updates a server configuration. Deprecated due to the retirement of Azure PostgreSQL Single Server. Required permissions: Microsoft.DBforPostgreSQL/servers/configurations/read, Microsoft.DBforPostgreSQL/servers/configurations/write."
     outputs: [] # have no outputs for these command by response
     deprecated: true
@@ -2417,8 +2417,9 @@ script:
     arguments:
     - name: resource_group_name
       type: string
-      required: true
-      description: The resource group name.
+      description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
     - name: subscription_id
       type: string
       required: false

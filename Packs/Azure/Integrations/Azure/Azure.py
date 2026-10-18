@@ -1834,6 +1834,7 @@ class AzureClient:
         )
         params = {"api-version": POSTGRES_FLEXIBLE_API_VERSION}
         data = {"properties": {"source": source, "value": value}}
+        data = remove_empty_elements(data)
         demisto.debug(f'Updating configuration "{configuration_name}" of PostgreSQL Flexible Server "{server_name}".')
         try:
             return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
