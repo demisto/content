@@ -258,6 +258,59 @@ def handle_excluded_data_from_alerts_param(excluded_alert_fields: list = []) -> 
     return formatted_excluded_data, remove_nulls_from_alerts
 
 
+def normalize_url_host(url: str) -> str:
+    """
+    Normalizes a URL down to a comparable host, stripping the scheme, port, path,
+    and common API-host prefixes (e.g. 'api-' / 'api.') used to distinguish a tenant's
+    API endpoint from its UI endpoint.
+
+    Args:
+        url (str): The URL to normalize.
+
+    Returns:
+        str: The normalized hostname, or an empty string if the input is empty.
+    """
+    if not url:
+        return ""
+    host = url.lower().strip()
+    for prefix in ("https://", "http://"):
+        if host.startswith(prefix):
+            host = host[len(prefix) :]
+            break
+    # Keep the host component only - drop any path and port.
+    host = host.split("/")[0].split(":")[0]
+    for api_prefix in ("api-", "api."):
+        if host.startswith(api_prefix):
+            host = host[len(api_prefix) :]
+            break
+    return host
+
+
+def check_self_pointing_url(configured_url: str, local_server_url: str):
+    """
+    Verifies that the Cortex XDR server URL configured for this integration instance does not
+    point back to the local tenant it is running on. Pointing the integration at itself can
+    lead to recursive fetch/mirror loops and other undefined behavior.
+
+    Args:
+        configured_url (str): The 'url' parameter configured on the integration instance.
+        local_server_url (str): The local tenant's own server URL, as reported by the platform.
+
+    Raises:
+        DemistoException: If the configured URL and the local server URL resolve to the same host.
+    """
+    normalized_configured = normalize_url_host(configured_url)
+    normalized_local = normalize_url_host(local_server_url)
+    if not normalized_configured or not normalized_local:
+        return
+    if normalized_configured == normalized_local:
+        raise DemistoException(
+            "The configured Cortex XDR server URL points to the tenant this integration instance is running on. "
+            "Configure this integration with the URL of a different Cortex XDR/XSIAM tenant. "
+            "For same-tenant actions, use the built-in Cortex Platform commands instead."
+        )
+
+
 class Client(CoreClient):
     def __init__(self, base_url, proxy, verify, timeout, params=None):
         if not params:
@@ -273,6 +326,8 @@ class Client(CoreClient):
         """
         Performs basic get request to get item samples
         """
+        check_self_pointing_url(self._params.get("url") or "", demisto.demistoUrls().get("server") or "")
+
         last_one_day, _ = parse_date_range(first_fetch_time, TIME_FORMAT)
         try:
             self.get_incidents(lte_creation_time=last_one_day, limit=1)
