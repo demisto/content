@@ -3531,6 +3531,9 @@ def fetch_and_send_vulnerabilities_streamed(client: Client, last_run: dict[str, 
     send: every non-final batch carries ``items_count=1`` (unsealed) and only the final batch declares the
     cumulative total to seal the snapshot (one snapshot id per cycle, matching the previous single-send logic).
 
+    Errors are not caught here: the caller does not update the last run, so the next run retries the whole stage
+    with a new snapshot ID (see ``fetch_assets_and_vulnerabilities_by_date``).
+
     Args:
         client (Client): Qualys client.
         last_run (dict): The last run.
@@ -3905,7 +3908,32 @@ def qualys_command_flow_manager(
 
 def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str, Any]) -> None:
     """
-    Fetches host dectections (assets) by VM scan date and vulnerabilities by last modified date in two seperate fetch stages.
+    Fetches host detections (assets) by VM scan date and vulnerabilities by last modified date in two separate stages.
+
+    Each run handles one stage, saved in ``last_run["stage"]``. A full cycle is: all assets pages, then vulnerabilities,
+    then back to assets.
+
+    Assets stage (``fetch_and_send_assets_streamed``), one page of up to ``limit`` hosts per run:
+        - The page is streamed. Every ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` hosts, their rows are sent into the cycle's
+          assets snapshot (unsealed) and the last run is saved right away with ``next_page`` = last host ID + 1.
+          ``id_min`` is inclusive, so this cursor is the first unsent host. This relies on Qualys returning hosts in
+          ascending ID order, which matches observed behavior but is not stated in the Qualys API documentation.
+        - On any error mid-page (dropped connection, cut-off XML, failed send), the last commit is kept and the run ends
+          normally. The next run resumes from that cursor with the same ``snapshot_id``, so committed hosts are not
+          sent again. Hosts after the last commit are requested again; only a batch whose send failed partway can
+          reach XSIAM twice.
+        - If nothing was committed in a run (request timeout, concurrency limit, or an error before the first commit),
+          the next run's ``limit`` is halved and ``consecutive_failures`` is incremented. Any commit resets it. After
+          ``ASSETS_MAX_CONSECUTIVE_FAILURES`` runs in a row without a commit, the fetch raises so the failure is visible.
+        - On the last page, the final send seals the snapshot with the cumulative total and the stage moves to
+          "vulnerabilities".
+
+    Vulnerabilities stage (``fetch_and_send_vulnerabilities_streamed``), all vulnerabilities in one run:
+        - One request for everything modified since ``since_datetime``, sent in batches of
+          ``VULNERABILITIES_SEND_BATCH_SIZE`` into a new snapshot that is sealed on the last send.
+        - This stage is not incremental. On an error the exception propagates and the last run is not updated, so the
+          next run retries the whole stage with a new ``snapshot_id``. The partial snapshot is never sealed; this
+          assumes XSIAM does not expose a snapshot that was never sealed.
 
     Args:
         client (Client): Qualys client.
