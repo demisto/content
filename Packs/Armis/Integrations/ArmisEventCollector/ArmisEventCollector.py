@@ -738,11 +738,11 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
         # the following timestamp format from the response: "YYYY-MM-DDTHH:MM:SS.fffff+Z"
         demisto.debug("Dedup case 3 - Most recent event has later timestamp then other events in the response.")
 
-        latest_event_timestamp = events[-1].get(event_order_by, "")[:19]
+        latest_event_timestamp = (events[-1].get(event_order_by) or "")[:19]
         # itertools.takewhile is used to iterate over the list of events (from latest time to earliest)
         # and take only the events with identical latest time
         events_with_identical_latest_time = list(
-            itertools.takewhile(lambda x: x.get(event_order_by, "")[:19] == latest_event_timestamp, reversed(events))
+            itertools.takewhile(lambda x: (x.get(event_order_by) or "")[:19] == latest_event_timestamp, reversed(events))
         )
         new_ids = [event.get(unique_id_key, "") for event in events_with_identical_latest_time]
 
@@ -792,8 +792,8 @@ def compute_resume_state(
     if not response_events:
         return last_fetch_time, last_fetch_next
 
-    earliest_second = str(response_events[0].get(order_by, ""))[:19]
-    latest_second = str(response_events[-1].get(order_by, ""))[:19]
+    earliest_second = str(response_events[0].get(order_by) or "")[:19]
+    latest_second = str(response_events[-1].get(order_by) or "")[:19]
     return _next_fetch_window(earliest_second, latest_second, len(response_events), last_fetch_time, last_fetch_next)
 
 
@@ -866,10 +866,12 @@ def _stream_page_to_xsiam(event_type: EVENT_TYPE, running_state: dict) -> Callab
 
         # Track the earliest second and the total fetched (pre-dedup) across the whole
         # cycle so the caller can re-anchor the resume offset (see compute_resume_state).
-        if running_state.get("first_event_time") is None:
-            first_time = page[0].get(event_type.order_by)
-            if first_time:
-                running_state["first_event_time"] = first_time
+        # Like the non-streaming path, always take the first event of the cycle; a missing
+        # timestamp hits the "do not advance" guard in _next_fetch_window. Empty pages return
+        # above before total_fetched is incremented, so 0 means this is the first page with events.
+        is_first_non_empty_page = running_state["total_fetched"] == 0
+        if is_first_non_empty_page:
+            running_state["first_event_time"] = page[0].get(event_type.order_by)
         running_state["total_fetched"] += page_len
 
         dedup_start = time.monotonic()
@@ -881,15 +883,15 @@ def _stream_page_to_xsiam(event_type: EVENT_TYPE, running_state: dict) -> Callab
         running_state["last_fetch_ids"] = updated_ids
         deduped_count = page_len - len(new_events)
         # Always track the latest event timestamp from the raw page (even if everything
-        # deduped) so the watermark can still advance when a later second appears.
-        page_latest_time = page[-1].get(event_type.order_by)
-        if page_latest_time:
-            running_state["last_event_time"] = page_latest_time
+        # deduped) so the watermark can still advance when a later second appears. Record it
+        # unconditionally, like the non-streaming path: a missing timestamp hits the
+        # "do not advance" guard instead of leaving an older value that would cause re-reads.
+        running_state["last_event_time"] = page[-1].get(event_type.order_by)
         if not new_events:
             safe_debug(f"[{tname}] [stream:{dataset}] page #{page_idx} all {page_len} events deduped (no ship)")
             return
 
-        latest_time = page_latest_time
+        latest_time = running_state["last_event_time"]
 
         add_time_to_events(new_events, dataset)
         product = f"{PRODUCT}_{dataset}" if event_type.type != EVENT_TYPE_ALERTS else PRODUCT
@@ -1610,7 +1612,7 @@ def handle_fetched_events(events: dict[str, list[dict[str, Any]]], next_run: dic
     # Summarize next_run for logging: collapse list values (e.g. dedup id lists) to their
     # length so the long id lists do not spam the logs, while keeping scalar fields visible.
     next_run_summary = {key: (f"<{len(value)} ids>" if isinstance(value, list) else value) for key, value in next_run.items()}
-    demisto.debug(f"setting next_run={next_run_summary}")
+    demisto.debug(f"[handle_fetched_events] setting next_run={next_run_summary}")
     next_run["nextTrigger"] = "1"
     demisto.setLastRun(next_run)
 

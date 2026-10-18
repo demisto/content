@@ -333,6 +333,32 @@ class TestHelperFunction:
         assert after == "2026-10-06T08:33:16"
         assert offset == 12  # 10 + len(response)
 
+    @pytest.mark.parametrize(
+        "response",
+        [
+            pytest.param(
+                [{"id": "a", "time": None}, {"id": "b", "time": "2026-10-06T08:33:17.050000+00:00"}],
+                id="first_event_time_is_None",
+            ),
+            pytest.param(
+                [{"id": "a", "time": "2026-10-06T08:33:16.010000+00:00"}, {"id": "b", "time": None}],
+                id="last_event_time_is_None",
+            ),
+        ],
+    )
+    def test_resume_treats_explicit_none_timestamp_as_missing(self, response):
+        """
+        Given: a response where the boundary event has an explicit None order-by value.
+        When:  computing the next-cycle resume state.
+        Then:  None is treated as a missing timestamp (not the string "None"), so the
+               watermark is NOT advanced and the offset steps conservatively instead.
+        """
+        from ArmisEventCollector import compute_resume_state
+
+        after, offset = compute_resume_state(response, "2026-10-06T08:33:16", 10, "time")
+        assert after == "2026-10-06T08:33:16"
+        assert offset == 12  # 10 + len(response)
+
     def test_resume_keeps_state_unchanged_when_no_events(self):
         """
         Given: an empty response.
@@ -426,6 +452,23 @@ class TestHelperFunction:
         from ArmisEventCollector import dedup_events
 
         assert dedup_events(events, events_last_fetch_ids, unique_id_key, event_order_by) == expected_result
+
+    def test_dedup_events_handles_explicit_none_timestamp(self):
+        """
+        Given: events where the latest event has an explicit None order-by value.
+        When:  running the dedup mechanism.
+        Then:  no TypeError is raised (None is treated as an empty timestamp), new events
+               are returned, and only the trailing None-timestamp event's id is kept for dedup.
+        """
+        from ArmisEventCollector import dedup_events
+
+        events = [
+            {"unique_id": "1", "time": "2023-01-01T01:00:10.123456+00:00"},
+            {"unique_id": "2", "time": None},
+        ]
+        new_events, new_ids = dedup_events(events, [], "unique_id", "time")
+        assert new_events == events
+        assert new_ids == ["2"]
 
     @pytest.mark.parametrize(
         "next_pointer, expected_last_run",
@@ -1719,6 +1762,55 @@ class TestStreamPageToXsiam:
 
         mock_send.assert_not_called()
         assert state["total_shipped"] == 0
+        assert state["last_event_time"] is None
+
+    def test_first_event_time_recorded_from_first_page_even_when_missing(self, mocker):
+        """
+        Given: two pages where the first event of the first page has no timestamp.
+        When: the callback is invoked for both pages.
+        Then: first_event_time stays None (matching the non-streaming path, which uses
+              response[0]) and is not overwritten by a later timestamped event.
+        """
+        mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        state = self._running_state()
+        on_page = _stream_page_to_xsiam(EVENT_TYPES["Activities"], state)
+
+        on_page([{"activityUUID": "a"}, {"activityUUID": "b", "time": "2023-01-01T01:00:10.000000+00:00"}])
+        on_page([{"activityUUID": "c", "time": "2023-01-01T01:00:20.000000+00:00"}])
+
+        assert state["first_event_time"] is None
+        assert state["total_fetched"] == 3
+
+    def test_first_event_time_not_set_by_empty_page(self, mocker):
+        """
+        Given: an empty page followed by a non-empty page.
+        When: the callback is invoked for both pages.
+        Then: first_event_time comes from the first non-empty page.
+        """
+        mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        state = self._running_state()
+        on_page = _stream_page_to_xsiam(EVENT_TYPES["Activities"], state)
+
+        on_page([])
+        on_page([{"activityUUID": "a", "time": "2023-01-01T01:00:10.000000+00:00"}])
+
+        assert state["first_event_time"] == "2023-01-01T01:00:10.000000+00:00"
+
+    def test_last_event_time_recorded_even_when_missing(self, mocker):
+        """
+        Given: a timestamped page followed by a page whose last event has no timestamp.
+        When: the callback is invoked for both pages.
+        Then: last_event_time is overwritten with None rather than keeping the older value,
+              so the resume logic does not advance the watermark to a stale second.
+        """
+        mocker.patch("ArmisEventCollector.send_events_to_xsiam")
+        state = self._running_state()
+        on_page = _stream_page_to_xsiam(EVENT_TYPES["Activities"], state)
+
+        on_page([{"activityUUID": "a", "time": "2023-01-01T01:00:10.000000+00:00"}])
+        assert state["last_event_time"] == "2023-01-01T01:00:10.000000+00:00"
+
+        on_page([{"activityUUID": "b", "time": "2023-01-01T01:00:20.000000+00:00"}, {"activityUUID": "c"}])
         assert state["last_event_time"] is None
 
     def test_single_page_shipped(self, mocker):
