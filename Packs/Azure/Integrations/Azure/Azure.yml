@@ -11381,6 +11381,8 @@ script:
   - name: azure-log-analytics-table-run
     description: "Runs a search job to fetch records from large datasets into a new search results table in the workspace, and polls until the table is provisioned. Required permissions: Microsoft.OperationalInsights/workspaces/tables/read, Microsoft.OperationalInsights/workspaces/tables/write, Microsoft.OperationalInsights/workspaces/searchJobs/write."
     polling: true
+    hidden:
+      - platform
     arguments:
     - name: subscription_id
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
