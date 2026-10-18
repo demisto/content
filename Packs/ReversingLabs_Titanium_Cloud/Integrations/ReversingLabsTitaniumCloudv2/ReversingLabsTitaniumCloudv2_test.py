@@ -459,5 +459,6 @@ def test_file_command():
     with pytest.raises(WrongInputError):
         file_command()
 
+
 def test_normalize_url():
     assert normalize_url("https://www.imdb.com/new page/listings") == "https://www.imdb.com/new%20page/listings"
