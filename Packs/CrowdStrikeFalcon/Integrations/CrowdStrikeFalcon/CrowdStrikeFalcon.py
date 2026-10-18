@@ -1793,7 +1793,7 @@ def get_token(new_token=False):
     now = datetime.now()
     ctx = demisto.getIntegrationContext()
     if ctx and not new_token:
-        passed_mins = get_passed_mins(now, ctx.get("time", 0))
+        passed_mins = get_passed_mins(now, ctx.get("time"))
         demisto.debug(f"{passed_mins=}")
         if passed_mins >= TOKEN_LIFE_TIME:
             # token expired
