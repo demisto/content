@@ -3247,34 +3247,34 @@ script:
       required: false
     outputs:
     - contextPath: Azure.SQL.Servers
-      description: List of SQL servers.
+      description: The list of SQL servers.
       type: Unknown
     - contextPath: Azure.SQL.Servers.id
-      description: Server resource ID.
+      description: The server resource ID.
       type: String
     - contextPath: Azure.SQL.Servers.name
-      description: Server name.
+      description: The server name.
       type: String
     - contextPath: Azure.SQL.Servers.location
-      description: Server location.
+      description: The server location.
       type: String
     - contextPath: Azure.SQL.Servers.kind
-      description: Kind of server.
+      description: The kind of server.
       type: String
     - contextPath: Azure.SQL.Servers.type
-      description: Server resource type.
+      description: The server resource type.
       type: String
     - contextPath: Azure.SQL.Servers.administratorLogin
-      description: Username of the server administrator.
+      description: The username of the server administrator.
       type: String
     - contextPath: Azure.SQL.Servers.version
-      description: Server version.
+      description: The server version.
       type: String
     - contextPath: Azure.SQL.Servers.state
-      description: Server state.
+      description: The server state.
       type: String
     - contextPath: Azure.SQL.Servers.fullyQualifiedDomainName
-      description: Fully qualified domain name of the server.
+      description: The fully qualified domain name of the server.
       type: String
     - contextPath: Azure.SQL.Servers.publicNetworkAccess
       description: Whether public endpoint access is enabled.
@@ -3300,37 +3300,37 @@ script:
       required: false
     outputs:
     - contextPath: Azure.SQL.Databases
-      description: List of SQL databases.
+      description: The list of SQL databases.
       type: Unknown
     - contextPath: Azure.SQL.Databases.id
-      description: Database resource ID.
+      description: The database resource ID.
       type: String
     - contextPath: Azure.SQL.Databases.name
-      description: Database name.
+      description: The database name.
       type: String
     - contextPath: Azure.SQL.Databases.location
-      description: Database location.
+      description: The database location.
       type: String
     - contextPath: Azure.SQL.Databases.kind
-      description: Kind of database.
+      description: The kind of database.
       type: String
     - contextPath: Azure.SQL.Databases.type
-      description: Database resource type.
+      description: The database resource type.
       type: String
     - contextPath: Azure.SQL.Databases.status
-      description: Database status.
+      description: The database status.
       type: String
     - contextPath: Azure.SQL.Databases.managedBy
-      description: Resource that manages the database.
+      description: The resource that manages the database.
       type: String
     - contextPath: Azure.SQL.Databases.sku
-      description: Database SKU details.
+      description: The database SKU details.
       type: Unknown
     - contextPath: Azure.SQL.Databases.collation
-      description: Database collation.
+      description: The database collation.
       type: String
     - contextPath: Azure.SQL.Databases.maxSizeBytes
-      description: Maximum size of the database in bytes.
+      description: The maximum size of the database in bytes.
       type: Number
     - contextPath: Azure.SQL.Databases.zoneRedundant
       description: Whether the database is zone redundant.
@@ -3359,28 +3359,28 @@ script:
       required: false
     outputs:
     - contextPath: Azure.SQL.DBAuditPolicy
-      description: List of database audit policies.
+      description: The list of database audit policies.
       type: Unknown
     - contextPath: Azure.SQL.DBAuditPolicy.id
-      description: Audit policy resource ID.
+      description: The audit policy resource ID.
       type: String
     - contextPath: Azure.SQL.DBAuditPolicy.name
-      description: Audit policy name.
+      description: The audit policy name.
       type: String
     - contextPath: Azure.SQL.DBAuditPolicy.type
-      description: Resource type.
+      description: The resource type.
       type: String
     - contextPath: Azure.SQL.DBAuditPolicy.state
-      description: Policy state (Enabled/Disabled).
+      description: The policy state (Enabled/Disabled).
       type: String
     - contextPath: Azure.SQL.DBAuditPolicy.retentionDays
-      description: Number of days to keep audit logs.
+      description: The number of days to keep audit logs.
       type: Number
     - contextPath: Azure.SQL.DBAuditPolicy.isAzureMonitorTargetEnabled
       description: Whether audit events are sent to Azure Monitor.
       type: Boolean
     - contextPath: Azure.SQL.DBAuditPolicy.storageAccountSubscriptionId
-      description: Storage subscription ID.
+      description: The storage subscription ID.
       type: String
     - contextPath: Azure.SQL.DBAuditPolicy.serverName
       description: The name of the server the audit policy belongs to.
@@ -3411,7 +3411,7 @@ script:
       - Enabled
       - Disabled
     - name: audit_actions_groups
-      description: Comma-separated list of actions and groups to audit. See https://docs.microsoft.com/en-us/sql/relational-databases/security/auditing/sql-server-audit-action-groups-and-actions for possible values.
+      description: A comma-separated list of actions and groups to audit. See https://docs.microsoft.com/en-us/sql/relational-databases/security/auditing/sql-server-audit-action-groups-and-actions for possible values.
       required: false
       isArray: true
     - name: is_azure_monitor_target_enabled
@@ -3429,19 +3429,19 @@ script:
       - 'true'
       - 'false'
     - name: queue_delay_ms
-      description: Time in milliseconds that can elapse before audit actions are forced to be processed. The default minimum value is 1000 (1 second).
+      description: The time in milliseconds that can elapse before audit actions are forced to be processed. The default minimum value is 1000 (1 second).
       required: false
     - name: retention_days
-      description: Number of days to keep the policy in the audit logs.
+      description: The number of days to keep the policy in the audit logs.
       required: false
     - name: storage_account_access_key
-      description: Identifier key of the auditing storage account.
+      description: The identifier key of the auditing storage account.
       required: false
     - name: storage_account_subscription_id
-      description: Storage subscription ID.
+      description: The storage subscription ID.
       required: false
     - name: storage_endpoint
-      description: Storage endpoint. Required when state is Enabled and is_azure_monitor_target_enabled is not set.
+      description: The storage endpoint. Required when state is Enabled and is_azure_monitor_target_enabled is not set.
       required: false
     - name: is_managed_identity_in_use
       description: Whether managed identity is used to access blob storage.
@@ -3459,37 +3459,37 @@ script:
       required: true
     outputs:
     - contextPath: Azure.SQL.DBAuditPolicy.id
-      description: Audit policy resource ID.
+      description: The audit policy resource ID.
       type: String
     - contextPath: Azure.SQL.DBAuditPolicy.name
-      description: Audit policy name.
+      description: The audit policy name.
       type: String
     - contextPath: Azure.SQL.DBAuditPolicy.type
-      description: Resource type.
+      description: The resource type.
       type: String
     - contextPath: Azure.SQL.DBAuditPolicy.state
-      description: Policy state (Enabled/Disabled).
+      description: The policy state (Enabled/Disabled).
       type: String
     - contextPath: Azure.SQL.DBAuditPolicy.retentionDays
-      description: Number of days to keep audit logs.
+      description: The number of days to keep audit logs.
       type: Number
     - contextPath: Azure.SQL.DBAuditPolicy.isAzureMonitorTargetEnabled
       description: Whether audit events are sent to Azure Monitor.
       type: Boolean
     - contextPath: Azure.SQL.DBAuditPolicy.storageAccountSubscriptionId
-      description: Storage subscription ID.
+      description: The storage subscription ID.
       type: String
     - contextPath: Azure.SQL.DBAuditPolicy.auditActionsAndGroups
-      description: Audit actions and groups.
+      description: The audit actions and groups.
       type: Unknown
     - contextPath: Azure.SQL.DBAuditPolicy.isStorageSecondaryKeyInUse
       description: Whether the storage account access key is the secondary key.
       type: Boolean
     - contextPath: Azure.SQL.DBAuditPolicy.queueDelayMs
-      description: Time in milliseconds before audit actions are forced to be processed.
+      description: The time in milliseconds before audit actions are forced to be processed.
       type: String
     - contextPath: Azure.SQL.DBAuditPolicy.storageEndpoint
-      description: Storage endpoint.
+      description: The storage endpoint.
       type: String
     - contextPath: Azure.SQL.DBAuditPolicy.serverName
       description: The name of the server the audit policy belongs to.
@@ -3517,7 +3517,7 @@ script:
       - Enabled
       - Disabled
     - name: disabled_alerts
-      description: "Comma-separated list of disabled alerts. Possible values: None, Sql_Injection, Sql_Injection_Vulnerability, Access_Anomaly, Data_Exfiltration, Unsafe_Action."
+      description: "A comma-separated list of disabled alerts. Possible values: None, Sql_Injection, Sql_Injection_Vulnerability, Access_Anomaly, Data_Exfiltration, Unsafe_Action."
       required: false
       isArray: true
     - name: email_account_admins
@@ -3528,14 +3528,14 @@ script:
       - 'true'
       - 'false'
     - name: email_addresses
-      description: Comma-separated list of email addresses to which the alert is sent.
+      description: A comma-separated list of email addresses to which the alert is sent.
       required: false
       isArray: true
     - name: retention_days
-      description: Number of days to keep the policy in the audit logs.
+      description: The number of days to keep the policy in the audit logs.
       required: false
     - name: storage_account_access_key
-      description: Identifier key of the threat detection audit storage account.
+      description: The identifier key of the threat detection audit storage account.
       required: false
     - name: storage_endpoint
       description: The blob storage endpoint for Threat Detection audit logs.
@@ -3549,31 +3549,31 @@ script:
       required: true
     outputs:
     - contextPath: Azure.SQL.DBThreatPolicy.id
-      description: Threat policy resource ID.
+      description: The threat policy resource ID.
       type: String
     - contextPath: Azure.SQL.DBThreatPolicy.name
-      description: Threat policy name.
+      description: The threat policy name.
       type: String
     - contextPath: Azure.SQL.DBThreatPolicy.type
-      description: Resource type.
+      description: The resource type.
       type: String
     - contextPath: Azure.SQL.DBThreatPolicy.state
-      description: Threat policy state (Enabled/Disabled).
+      description: The threat policy state (Enabled/Disabled).
       type: String
     - contextPath: Azure.SQL.DBThreatPolicy.retentionDays
-      description: Number of days to keep Threat Detection audit logs.
+      description: The number of days to keep Threat Detection audit logs.
       type: Number
     - contextPath: Azure.SQL.DBThreatPolicy.storageEndpoint
-      description: Threat Detection audit storage account endpoint.
+      description: The Threat Detection audit storage account endpoint.
       type: String
     - contextPath: Azure.SQL.DBThreatPolicy.emailAccountAdmins
       description: Whether account administrators are emailed on alert.
       type: Boolean
     - contextPath: Azure.SQL.DBThreatPolicy.emailAddresses
-      description: List of email addresses to which the alert is sent.
+      description: The list of email addresses to which the alert is sent.
       type: String
     - contextPath: Azure.SQL.DBThreatPolicy.disabledAlerts
-      description: List of disabled alerts, or empty string if none are disabled.
+      description: The list of disabled alerts, or empty string if none are disabled.
       type: String
     - contextPath: Azure.SQL.DBThreatPolicy.serverName
       description: The name of the server the threat policy belongs to.
@@ -3602,16 +3602,16 @@ script:
       required: false
     outputs:
     - contextPath: Azure.SQL.FirewallRule
-      description: List of SQL server firewall rules.
+      description: The list of SQL server firewall rules.
       type: Unknown
     - contextPath: Azure.SQL.FirewallRule.id
-      description: Firewall rule resource ID.
+      description: The firewall rule resource ID.
       type: String
     - contextPath: Azure.SQL.FirewallRule.name
-      description: Firewall rule name.
+      description: The firewall rule name.
       type: String
     - contextPath: Azure.SQL.FirewallRule.type
-      description: Resource type.
+      description: The resource type.
       type: String
     - contextPath: Azure.SQL.FirewallRule.properties.startIpAddress
       description: The start IP address of the firewall rule.
@@ -3646,13 +3646,13 @@ script:
       required: true
     outputs:
     - contextPath: Azure.SQL.FirewallRule.id
-      description: Firewall rule resource ID.
+      description: The firewall rule resource ID.
       type: String
     - contextPath: Azure.SQL.FirewallRule.name
-      description: Firewall rule name.
+      description: The firewall rule name.
       type: String
     - contextPath: Azure.SQL.FirewallRule.type
-      description: Resource type.
+      description: The resource type.
       type: String
     - contextPath: Azure.SQL.FirewallRule.properties.startIpAddress
       description: The start IP address of the firewall rule.
@@ -3662,6 +3662,7 @@ script:
       type: String
   - name: azure-sql-firewall-rule-delete
     description: "Deletes a firewall rule from a SQL server. Required Permissions: Microsoft.Sql/servers/firewallRules/delete."
+    execution: true
     arguments:
     - name: server_name
       description: The name of the SQL server.
@@ -3678,6 +3679,7 @@ script:
       required: true
   - name: azure-sql-firewall-rule-replace
     description: "Replaces all firewall rules on a SQL server. Required Permissions: Microsoft.Sql/servers/firewallRules/write."
+    execution: true
     arguments:
     - name: server_name
       description: The name of the SQL server.
@@ -3703,13 +3705,13 @@ script:
       required: true
     outputs:
     - contextPath: Azure.SQL.FirewallRule.id
-      description: Firewall rule resource ID.
+      description: The firewall rule resource ID.
       type: String
     - contextPath: Azure.SQL.FirewallRule.name
-      description: Firewall rule name.
+      description: The firewall rule name.
       type: String
     - contextPath: Azure.SQL.FirewallRule.type
-      description: Resource type.
+      description: The resource type.
       type: String
     - contextPath: Azure.SQL.FirewallRule.properties.startIpAddress
       description: The start IP address of the firewall rule.

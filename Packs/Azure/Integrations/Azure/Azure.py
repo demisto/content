@@ -406,14 +406,6 @@ API_FUNCTION_TO_PERMISSIONS = {
     "sql_firewall_rule_delete": ["Microsoft.Sql/servers/firewallRules/delete"],
     "sql_firewall_rule_replace": ["Microsoft.Sql/servers/firewallRules/write"],
     "sql_db_threat_policy_update": [
-        "Microsoft.Sql/servers/read",
-        "Microsoft.Sql/servers/databases/read",
-        "Microsoft.Sql/servers/databases/auditingSettings/read",
-        "Microsoft.Sql/servers/databases/auditingSettings/write",
-        "Microsoft.Sql/servers/databases/securityAlertPolicies/write",
-        "Microsoft.Sql/servers/firewallRules/read",
-        "Microsoft.Sql/servers/firewallRules/write",
-        "Microsoft.Sql/servers/firewallRules/delete",
         "Microsoft.Sql/servers/databases/securityAlertPolicies/read",
         "Microsoft.Sql/servers/databases/securityAlertPolicies/write",
     ],
@@ -2192,14 +2184,14 @@ class AzureClient:
         resource_group_name: str,
         state: str,
         audit_actions_groups: list | None = None,
-        is_azure_monitor_target_enabled: str | None = None,
-        is_storage_secondary_key_in_use: str | None = None,
+        is_azure_monitor_target_enabled: bool | None = None,
+        is_storage_secondary_key_in_use: bool | None = None,
         queue_delay_ms: str | None = None,
-        retention_days: str | None = None,
+        retention_days: int | None = None,
         storage_account_access_key: str | None = None,
         storage_account_subscription_id: str | None = None,
         storage_endpoint: str | None = None,
-        is_managed_identity_in_use: str | None = None,
+        is_managed_identity_in_use: bool | None = None,
     ):
         """
         Creates or updates the auditing policy for a SQL database.
@@ -2211,10 +2203,10 @@ class AzureClient:
             resource_group_name (str): Name of the resource group.
             state (str): The state of the audit policy (Enabled/Disabled).
             audit_actions_groups (list | None): Actions and groups to audit.
-            is_azure_monitor_target_enabled (str | None): Whether to send events to Azure Monitor.
-            is_storage_secondary_key_in_use (str | None): Whether to use the secondary storage key.
+            is_azure_monitor_target_enabled (bool | None): Whether to send events to Azure Monitor.
+            is_storage_secondary_key_in_use (bool | None): Whether to use the secondary storage key.
             queue_delay_ms (str | None): Queue delay in milliseconds.
-            retention_days (str | None): Number of days to retain audit logs.
+            retention_days (int | None): Number of days to retain audit logs.
             storage_account_access_key (str | None): Storage account access key.
             storage_account_subscription_id (str | None): Storage account subscription ID.
             storage_endpoint (str | None): Storage endpoint URL.
@@ -2229,15 +2221,15 @@ class AzureClient:
         """
         properties = assign_params(
             state=state,
-            auditActionsAndGroups=audit_actions_groups or None,
-            isAzureMonitorTargetEnabled=is_azure_monitor_target_enabled or None,
-            isStorageSecondaryKeyInUse=is_storage_secondary_key_in_use or None,
-            queueDelayMs=queue_delay_ms or None,
-            retentionDays=retention_days or None,
-            storageAccountAccessKey=storage_account_access_key or None,
-            storageAccountSubscriptionId=storage_account_subscription_id or None,
-            storageEndpoint=storage_endpoint or None,
-            isManagedIdentityInUse=is_managed_identity_in_use or None,
+            auditActionsAndGroups=audit_actions_groups,
+            isAzureMonitorTargetEnabled=is_azure_monitor_target_enabled,
+            isStorageSecondaryKeyInUse=is_storage_secondary_key_in_use,
+            queueDelayMs=queue_delay_ms,
+            retentionDays=retention_days,
+            storageAccountAccessKey=storage_account_access_key,
+            storageAccountSubscriptionId=storage_account_subscription_id,
+            storageEndpoint=storage_endpoint,
+            isManagedIdentityInUse=is_managed_identity_in_use,
         )
         data = {"properties": properties} if properties else {}
         params = {"api-version": SQL_DB_API_VERSION}
@@ -2266,9 +2258,9 @@ class AzureClient:
         resource_group_name: str,
         state: str,
         disabled_alerts: list | None = None,
-        email_account_admins: str | None = None,
+        email_account_admins: bool | None = None,
         email_addresses: list | None = None,
-        retention_days: str | None = None,
+        retention_days: int | None = None,
         storage_account_access_key: str | None = None,
         storage_endpoint: str | None = None,
     ):
@@ -2282,9 +2274,9 @@ class AzureClient:
             resource_group_name (str): Name of the resource group.
             state (str): The state of the threat policy (Enabled/Disabled).
             disabled_alerts (list | None): List of disabled alert types.
-            email_account_admins (str | None): Whether to email account admins.
+            email_account_admins (bool | None): Whether to email account admins.
             email_addresses (list | None): List of email addresses for alerts.
-            retention_days (str | None): Number of days to retain audit logs.
+            retention_days (int | None): Number of days to retain audit logs.
             storage_account_access_key (str | None): Storage account access key.
             storage_endpoint (str | None): Storage endpoint URL.
 
@@ -2297,12 +2289,12 @@ class AzureClient:
         """
         properties = assign_params(
             state=state,
-            retentionDays=retention_days or None,
-            storageAccountAccessKey=storage_account_access_key or None,
-            storageEndpoint=storage_endpoint or None,
-            disabledAlerts=disabled_alerts or None,
-            emailAccountAdmins=email_account_admins or None,
-            emailAddresses=email_addresses or None,
+            retentionDays=retention_days,
+            storageAccountAccessKey=storage_account_access_key,
+            storageEndpoint=storage_endpoint,
+            disabledAlerts=disabled_alerts,
+            emailAccountAdmins=email_account_admins,
+            emailAddresses=email_addresses,
         )
         data = {"properties": properties} if properties else {}
         params = {"api-version": SQL_DB_API_VERSION}
@@ -4873,14 +4865,20 @@ def sql_db_audit_policy_create_update_command(client: AzureClient, params: dict,
         resource_group_name=resource_group_name,
         state=state,
         audit_actions_groups=argToList(args.get("audit_actions_groups")),
-        is_azure_monitor_target_enabled=args.get("is_azure_monitor_target_enabled"),
-        is_storage_secondary_key_in_use=args.get("is_storage_secondary_key_in_use"),
+        is_azure_monitor_target_enabled=argToBoolean(args["is_azure_monitor_target_enabled"])
+        if args.get("is_azure_monitor_target_enabled") is not None
+        else None,
+        is_storage_secondary_key_in_use=argToBoolean(args["is_storage_secondary_key_in_use"])
+        if args.get("is_storage_secondary_key_in_use") is not None
+        else None,
         queue_delay_ms=args.get("queue_delay_ms"),
-        retention_days=args.get("retention_days"),
+        retention_days=int(args["retention_days"]) if args.get("retention_days") is not None else None,
         storage_account_access_key=args.get("storage_account_access_key"),
         storage_account_subscription_id=args.get("storage_account_subscription_id"),
         storage_endpoint=args.get("storage_endpoint"),
-        is_managed_identity_in_use=args.get("is_managed_identity_in_use"),
+        is_managed_identity_in_use=argToBoolean(args["is_managed_identity_in_use"])
+        if args.get("is_managed_identity_in_use") is not None
+        else None,
     )
 
     fixed_response = copy.deepcopy(response)
@@ -4932,9 +4930,11 @@ def sql_db_threat_policy_create_update_command(client: AzureClient, params: dict
         resource_group_name=resource_group_name,
         state=state,
         disabled_alerts=disabled_alerts or None,
-        email_account_admins=args.get("email_account_admins"),
+        email_account_admins=argToBoolean(args["email_account_admins"])
+        if args.get("email_account_admins") is not None
+        else None,
         email_addresses=argToList(args.get("email_addresses")) or None,
-        retention_days=args.get("retention_days"),
+        retention_days=int(args["retention_days"]) if args.get("retention_days") is not None else None,
         storage_account_access_key=args.get("storage_account_access_key"),
         storage_endpoint=args.get("storage_endpoint"),
     )
@@ -5120,6 +5120,8 @@ def sql_firewall_rule_replace_command(client: AzureClient, params: dict, args: D
                 "'end_ip_address' arguments must not be set, as the request body is taken entirely from the file."
             )
         file_path = demisto.getFilePath(entry_id).get("path")
+        if not file_path:
+            raise DemistoException(f"Could not find a file for entry_id '{entry_id}'. Verify the entry ID is correct.")
         with open(file_path) as f:
             try:
                 request_body = json.loads(f.read())

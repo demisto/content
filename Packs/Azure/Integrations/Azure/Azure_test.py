@@ -1059,6 +1059,11 @@ def test_sql_db_audit_policy_create_update_command(mocker, client, mock_params):
     assert call_kwargs["state"] == "Enabled"
     assert call_kwargs["server_name"] == "integration"
     assert call_kwargs["db_name"] == "integration-db"
+    # Verify casted arguments: retention_days str→int, is_azure_monitor_target_enabled str→bool
+    assert call_kwargs["retention_days"] == 5
+    assert isinstance(call_kwargs["retention_days"], int)
+    assert call_kwargs["is_azure_monitor_target_enabled"] is True
+    assert isinstance(call_kwargs["is_azure_monitor_target_enabled"], bool)
 
 
 def test_sql_db_threat_policy_create_update_command(mocker, client, mock_params):
@@ -1081,6 +1086,7 @@ def test_sql_db_threat_policy_create_update_command(mocker, client, mock_params)
         "state": "Enabled",
         "retention_days": "5",
         "email_addresses": "test1@test.com",
+        "email_account_admins": "true",
     }
     result = sql_db_threat_policy_create_update_command(client=client, params=mock_params, args=args)
 
@@ -1090,6 +1096,11 @@ def test_sql_db_threat_policy_create_update_command(mocker, client, mock_params)
     call_kwargs = client.sql_db_threat_policy_create_update.call_args[1]
     assert call_kwargs["state"] == "Enabled"
     assert call_kwargs["email_addresses"] == ["test1@test.com"]
+    # Verify casted arguments: retention_days str→int, email_account_admins str→bool
+    assert call_kwargs["retention_days"] == 5
+    assert isinstance(call_kwargs["retention_days"], int)
+    assert call_kwargs["email_account_admins"] is True
+    assert isinstance(call_kwargs["email_account_admins"], bool)
 
 
 def test_sql_db_threat_policy_create_update_command_none_alerts(mocker, client, mock_params):
@@ -1328,6 +1339,20 @@ def test_sql_firewall_rule_replace_command_missing_required_args(mocker, client,
     with pytest.raises(DemistoException) as exc:
         sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
     assert "Either 'entry_id' must be provided" in str(exc.value)
+
+
+def test_sql_firewall_rule_replace_command_invalid_entry_id(mocker, client, mock_params):
+    """
+    Given: An entry_id that does not exist (getFilePath returns an empty dict).
+    When: sql_firewall_rule_replace_command is called with that entry_id.
+    Then: A DemistoException is raised with a clear message.
+    """
+    mocker.patch("Azure.demisto.getFilePath", return_value={})
+
+    args = {"server_name": "integration", "entry_id": "nonexistent@123"}
+    with pytest.raises(DemistoException) as exc:
+        sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
+    assert "Could not find a file for entry_id" in str(exc.value)
 
 
 def test_cosmosdb_update_command(mocker, client, mock_params):
