@@ -2453,6 +2453,7 @@ def test_fetch_and_send_assets_streamed_not_last_page_keeps_unsealed(mocker: Moc
     mocker.patch("Qualysv2.get_next_page_from_url", return_value="42")  # has next page
     mock_send = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
     mock_health = mocker.patch("Qualysv2.demisto.updateModuleHealth")
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 10)  # more than the 3 hosts, so no commit mid-page
 
     new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
 

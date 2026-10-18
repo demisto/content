@@ -1792,13 +1792,16 @@ class Client(BaseClient):
 
         response: Optional[requests.Response] = None
         try:
-            demisto.debug(f"Requesting host list detections (streamed). Used query params: {params}.")
+            demisto.debug(f"[HTTP Call] Requesting host list detections (streamed). Used query params: {params}.")
             url_suffix = urljoin(API_SUFFIX_DETECTION, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1")
             response = self._request_with_concurrency_retry("GET", url_suffix, params, timeout)
 
         # Handle response timeout (`ReadTimeout`) or response ending prematurely (`ChunkedEncodingError`)
         except (requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError) as e:
-            demisto.debug(f"An error occurred during the request: {str(e)}. Trying again in the next fetch with a reduced limit.")
+            demisto.debug(
+                f"[HTTP Error] An error occurred during the request: {str(e)}. "
+                f"Trying again in the next fetch with a reduced limit.\n{traceback.format_exc()}"
+            )
             set_new_limit = True
             response = None
 
@@ -1809,14 +1812,14 @@ class Client(BaseClient):
             if not self._is_concurrency_limit_error(getattr(e, "res", None)):
                 raise
             demisto.debug(
-                f"Qualys concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}) still active after retries. "
+                f"[HTTP Error] Qualys concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}) still active after retries. "
                 f"Trying again in the next fetch with a reduced limit. Error: {str(e)}\n{traceback.format_exc()}"
             )
             set_new_limit = True
             response = None
 
         if not set_new_limit:
-            demisto.debug(f"Got streamed host list detections response. Set new limit: {set_new_limit}.")
+            demisto.debug(f"[HTTP Call] Got streamed host list detections response. Set new limit: {set_new_limit}.")
         return response, set_new_limit
 
     def _request_with_concurrency_retry(
@@ -1859,7 +1862,7 @@ class Client(BaseClient):
                 if not self._is_concurrency_limit_error(getattr(e, "res", None)) or attempt == CONCURRENCY_LIMIT_MAX_RETRIES:
                     raise
                 demisto.debug(
-                    f"Hit Qualys concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}). "
+                    f"[HTTP Error] Hit Qualys concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}). "
                     f"Waiting {CONCURRENCY_LIMIT_WAIT_SEC}s before retry {attempt + 1}/{CONCURRENCY_LIMIT_MAX_RETRIES}. "
                     f"Error: {str(e)}\n{traceback.format_exc()}"
                 )
@@ -1918,11 +1921,14 @@ class Client(BaseClient):
         )
 
         try:
-            demisto.debug(f"Requesting vulnerabilities (streamed). Used query params: {params}.")
+            demisto.debug(f"[HTTP Call] Requesting vulnerabilities (streamed). Used query params: {params}.")
             url_suffix = urljoin(API_SUFFIX_KNOWLEDGEBASE, "knowledge_base/vuln/?action=list")
             response = self._request_with_concurrency_retry("POST", url_suffix, params, timeout)
         except (requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError) as e:
-            demisto.error(f"An error occurred during the vulnerabilities request: {str(e)}. Will retry in the next fetch cycle.")
+            demisto.error(
+                f"[HTTP Error] An error occurred during the vulnerabilities request: {str(e)}. "
+                f"Will retry in the next fetch cycle.\n{traceback.format_exc()}"
+            )
             raise
 
         return response
@@ -2972,13 +2978,13 @@ def handle_host_list_detection_result(raw_response: Optional[requests.Response])
     Returns:
         A tuple of (list of host dicts, next page URL string).
     """
-    demisto.debug("Going to stream-parse the host list detection response into the hosts list")
+    demisto.debug("[Parse] Going to stream-parse the host list detection response into the hosts list")
 
     stream_state: dict = {}
     hosts = list(iter_host_list_detections(raw_response, stream_state))
     response_next_url = stream_state.get("next_url", "")
 
-    demisto.debug(f"Extracted a list of {len(hosts)} hosts, and next URL - {response_next_url}")
+    demisto.debug(f"[Parse] Extracted a list of {len(hosts)} hosts, and next URL - {response_next_url}")
 
     return hosts, str(response_next_url)
 
@@ -3005,7 +3011,7 @@ def iter_host_list_detections(raw_response: Optional[requests.Response], stream_
     stream_state["next_url"] = ""
 
     if raw_response is None:
-        demisto.debug("Received an empty (None) host list detection response. Yielding no hosts.")
+        demisto.debug("[Parse] Received an empty (None) host list detection response. Yielding no hosts.")
         return
 
     simple_response: dict = {}
@@ -3048,11 +3054,11 @@ def handle_vulnerabilities_result(raw_response: Optional[requests.Response]) -> 
     Returns:
         List of vulnerability dicts.
     """
-    demisto.debug("Going to stream-parse the vulnerabilities response into the vulnerabilities list")
+    demisto.debug("[Parse] Going to stream-parse the vulnerabilities response into the vulnerabilities list")
 
     vulnerabilities = list(iter_vulnerabilities_result(raw_response))
 
-    demisto.debug(f"Extracted a list of {len(vulnerabilities)} vulnerabilities")
+    demisto.debug(f"[Parse] Extracted a list of {len(vulnerabilities)} vulnerabilities")
 
     return vulnerabilities
 
@@ -3087,7 +3093,7 @@ def iter_vulnerabilities_result(raw_response: Optional[requests.Response]) -> It
         One vulnerability dict per ``VULN`` element.
     """
     if raw_response is None:
-        demisto.debug("Received an empty (None) vulnerabilities response. Yielding no vulnerabilities.")
+        demisto.debug("[Parse] Received an empty (None) vulnerabilities response. Yielding no vulnerabilities.")
         return
 
     raw_response.raw.decode_content = True
@@ -3180,7 +3186,7 @@ def get_detections_from_hosts(hosts):
     """
     demisto.debug(f"Received {len(hosts)} hosts for extraction")
     fetched_assets = list(iter_detections_from_hosts(hosts))
-    demisto.debug(f"Extracted {len(fetched_assets)} assets from hosts")
+    demisto.debug(f"[Parse] Extracted {len(fetched_assets)} assets from hosts")
     return fetched_assets, False
 
 
@@ -3517,7 +3523,7 @@ def fetch_and_send_vulnerabilities_streamed(client: Client, last_run: dict[str, 
         last_run.get("since_datetime") or arg_to_datetime(ASSETS_FETCH_FROM, required=True).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
     )
     snapshot_id = str(round(time.time() * 1000))
-    demisto.debug(f"Getting vulnerabilities modified after {since_datetime} (streamed batches) {snapshot_id=}")
+    demisto.debug(f"[Vulnerabilities] Getting vulnerabilities modified after {since_datetime} (streamed batches) {snapshot_id=}")
 
     raw_response = client.get_vulnerabilities(since_datetime=since_datetime)
 
@@ -3549,7 +3555,7 @@ def fetch_and_send_vulnerabilities_streamed(client: Client, last_run: dict[str, 
     batch, seal_count = close_snapshot_if_empty(batch, total_sent, snapshot_id, "vulnerabilities")
     flush(batch, seal_count)
 
-    demisto.debug(f"Finished streaming vulnerabilities to XSIAM. Total sent: {total_sent}. {snapshot_id=}")
+    demisto.debug(f"[Vulnerabilities] Finished streaming vulnerabilities to XSIAM. Total sent: {total_sent}. {snapshot_id=}")
     return DEFAULT_LAST_ASSETS_RUN
 
 
@@ -3576,11 +3582,11 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
     snapshot_id = str(last_run.get("snapshot_id", str(round(time.time() * 1000))))
     limit = last_run.get("limit", HOST_LIMIT)
 
-    demisto.debug(f"Starting streamed assets fetch {snapshot_id=}, {since_datetime=}, {next_page=}")
+    demisto.debug(f"[Assets] Starting streamed assets fetch {snapshot_id=}, {since_datetime=}, {next_page=}")
 
     raw_response, set_new_limit = client.get_host_list_detection(since_datetime, next_page, limit)
     if set_new_limit:
-        demisto.debug("Host list detection request needs a reduced limit; deferring to next fetch without sending.")
+        demisto.debug("[Assets] Host list detection request needs a reduced limit; deferring to next fetch without sending.")
         # Only signal the reduction; the caller (fetch_assets_and_vulnerabilities_by_date) is the single place that
         # builds the reduced-limit last run, so it is not computed twice.
         return last_run, True
@@ -3592,6 +3598,7 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
     def flush(records: list, items_count: int) -> None:
         """Send one batch into the assets snapshot. ``items_count=1`` keeps the snapshot unsealed; the cumulative
         total seals it on the final send of the final page."""
+        demisto.debug(f"[HOST ORDER] Host IDs in batch: {list(dict.fromkeys(row.get('ID') for row in records))}")
         send_assets_and_vulnerabilities_to_xsiam(
             records,
             vendor=VENDOR,
@@ -3678,7 +3685,7 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
         demisto.updateModuleHealth({"assetsPulled": total_assets})
 
     demisto.debug(
-        f"Finished streamed assets page. Page sent: {page_assets_count}, cumulative: {total_assets}, "
+        f"[Assets] Finished streamed assets page. Page sent: {page_assets_count}, cumulative: {total_assets}, "
         f"last page: {is_last_page}."
     )
     return new_last_run, False
@@ -3905,13 +3912,13 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
         # No execution timeout here: batches are sent while the page streams, so interrupting the block mid-page would
         # re-send already-sent batches on the next run. The request itself is bounded by its connect/read timeouts.
         new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
-        demisto.debug("Finished streamed fetch for assets.")
+        demisto.debug("[Fetch Assets] Finished streamed fetch for assets.")
 
         # Nothing was committed in this run (request timeout, concurrency limit, or a failure before the first commit);
         # make the next API call smaller.
         if set_new_limit:
             demisto.debug(
-                f"Reducing limit for assets next run since nothing was committed in this run. "
+                f"[Fetch Assets] Reducing limit for assets next run since nothing was committed in this run. "
                 f"Elapsed time: {time.time() - EXECUTION_START_TIME}."
             )
             new_last_run = set_assets_last_run_with_new_limit(new_last_run, new_last_run.get("limit", HOST_LIMIT))
