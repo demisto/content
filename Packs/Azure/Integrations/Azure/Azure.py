@@ -41,6 +41,9 @@ API_VERSION = "2022-09-01"
 STORAGE_API_VERSION = "2023-11-03"
 NEW_API_VERSION_PARAMS = {"api-version": "2024-05-01"}
 BLOB_CONTAINERS_MAX_PAGE_SIZE = 5000
+RESOURCE_GRAPH_API_VERSION = "2024-04-01"
+RESOURCE_GRAPH_MAX_PAGE_SIZE = 1000
+
 GRANT_BY_CONNECTION = {
     "Device Code": DEVICE_CODE,
     "Authorization Code": AUTHORIZATION_CODE,
@@ -58,6 +61,8 @@ STORAGE_RESOURCE = "https://storage.azure.com/"
 DEFAULT_AZURE_AD_ENDPOINT = "https://login.microsoftonline.com"
 
 PERMISSIONS_TO_COMMANDS = {
+    "Microsoft.ResourceGraph/operations/read": ["azure-rg-list-operations"],
+    "Microsoft.ResourceGraph/resources/read": ["azure-rg-query"],
     "Microsoft.Network/networkSecurityGroups/read": ["azure-nsg-security-groups-list", "azure-vn-security-groups-list"],
     "Microsoft.Network/networkSecurityGroups/securityRules/read": [
         "azure-nsg-security-rule-update",
@@ -423,6 +428,8 @@ PERMISSIONS_TO_COMMANDS = {
     ],
     "Microsoft.Network/ipGroups/write": ["azure-vn-ip-group-create", "azure-vn-ip-group-update"],
     "Microsoft.Network/ipGroups/delete": ["azure-vn-ip-group-delete"],
+    "Microsoft.Network/virtualNetworks/read": ["azure-vn-virtual-networks-list"],
+    "Microsoft.Resources/subscriptions/read": ["azure-rm-subscriptions-list"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -560,6 +567,10 @@ API_FUNCTION_TO_PERMISSIONS = {
     "firewall_policy_rule_collection_list_request": ["Microsoft.Network/firewallPolicies/ruleCollectionGroups/read"],
     "firewall_policy_rule_collection_get_request": ["Microsoft.Network/firewallPolicies/ruleCollectionGroups/read"],
     "firewall_service_tag_list_request": ["Microsoft.Network/locations/serviceTagDetails/read"],
+    "resource_graph_list_operations": ["Microsoft.ResourceGraph/operations/read"],
+    "resource_graph_query_resources": ["Microsoft.ResourceGraph/resources/read"],
+    "list_virtual_networks_request": ["Microsoft.Network/virtualNetworks/read"],
+    "list_subscriptions_request": ["Microsoft.Resources/subscriptions/read"],
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
@@ -569,6 +580,7 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Network/networkSecurityGroups/securityRules/delete",
     "Microsoft.Network/networkInterfaces/read",
     "Microsoft.Network/publicIPAddresses/read",
+    "Microsoft.Network/virtualNetworks/read",
     "Microsoft.Storage/storageAccounts/read",
     "Microsoft.Storage/storageAccounts/write",
     "Microsoft.Storage/storageAccounts/blobServices/read",
@@ -647,6 +659,8 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Network/ipGroups/read",
     "Microsoft.Network/ipGroups/write",
     "Microsoft.Network/ipGroups/delete",
+    "Microsoft.ResourceGraph/operations/read",
+    "Microsoft.ResourceGraph/resources/read",
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -726,6 +740,8 @@ IMAGES = {
         "version": "latest",
     },
 }
+SUBSCRIPTIONS_API_VERSION = "2022-12-01"
+VIRTUAL_NETWORKS_API_VERSION = "2026-01-01"
 
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
 # get_command_and_token_scopes.
@@ -3300,6 +3316,80 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
+    def list_virtual_networks_request(self, subscription_id: str, resource_group_name: str, next_token: str = ""):
+        """
+        List all virtual networks in a specific resource group.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the virtual networks.
+            next_token: The URI to fetch the next page of results.
+
+        Return:
+            A dictionary containing the list of virtual networks.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/virtual-networks/list
+        """
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of virtual networks.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
+            parameters: dict[str, Any] = {}
+        else:
+            full_url = (
+                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
+                f"providers/Microsoft.Network/virtualNetworks"
+            )
+            parameters = {"api-version": VIRTUAL_NETWORKS_API_VERSION}
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=parameters)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_group_name,
+                resource_type="Virtual Network",
+                api_function_name="list_virtual_networks_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def list_subscriptions_request(self, next_token: str = ""):
+        """
+        List all subscriptions the authenticated identity has access to in the tenant.
+
+        Note:
+            This is a tenant-level call, therefore it cannot reuse PREFIX_URL_AZURE, which always
+            includes a subscription ID path segment. The base URL is derived from PREFIX_URL_AZURE so
+            the command keeps working after switch_to_gov_account() rebinds the global.
+
+        Args:
+            next_token: The URI to fetch the next page of results.
+
+        Return:
+            A dictionary containing the list of subscriptions.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/resources/subscriptions/list?view=rest-resources-2022-12-01
+        """
+        if next_token:
+            demisto.debug(f"[Azure] using {next_token=} for retrieving the next page of subscriptions.")
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
+            parameters: dict[str, Any] = {}
+        else:
+            full_url = f"{PREFIX_URL_AZURE.rstrip('/')}"
+            parameters = {"api-version": SUBSCRIPTIONS_API_VERSION}
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=parameters)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name="subscriptions",
+                resource_type="Subscription",
+                api_function_name="list_subscriptions_request",
+                subscription_id=None,
+                resource_group_name=None,
+            )
+
     def start_vm_request(self, subscription_id: str, resource_group_name: str, vm_name: str):
         """
         Starts the specified virtual machine in a given resource group.
@@ -4593,6 +4683,66 @@ class AzureClient:
                 resource_type="Service Tags",
                 api_function_name="firewall_service_tag_list_request",
                 subscription_id=subscription_id,
+            )
+
+    def resource_graph_list_operations(self):
+        """
+        Send the list Azure Resource Graph operations request to the API.
+
+        Returns:
+            dict: The JSON response from the API call, containing the available operations.
+
+        Raises:
+            DemistoException: If there are permission or other API errors.
+        """
+        management_host = urlparse(PREFIX_URL_AZURE).hostname
+        full_url = f"https://{management_host}/providers/Microsoft.ResourceGraph/operations"
+        params = {"api-version": RESOURCE_GRAPH_API_VERSION}
+        demisto.debug("Listing Azure Resource Graph operations.")
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name="operations",
+                resource_type="Resource Graph Operations",
+                api_function_name="resource_graph_list_operations",
+            )
+
+    def resource_graph_query_resources(
+        self, query: str, paging_options: dict[str, Any], subscriptions: list, management_groups: list
+    ):
+        """
+        Send the Azure Resource Graph query request to the API.
+
+        Args:
+            query (str): The KQL query to execute.
+            paging_options (dict): The paging options (e.g. $skip, $top, $skipToken) for the query.
+            subscriptions (list): The subscriptions against which to execute the query.
+            management_groups (list): The management groups against which to execute the query.
+
+        Returns:
+            dict: The JSON response from the API call, containing the query results.
+
+        Raises:
+            DemistoException: If there are permission or other API errors.
+        """
+        request_data = remove_empty_elements(
+            {"query": query, "options": paging_options, "subscriptions": subscriptions, "managementGroups": management_groups}
+        )
+
+        management_host = urlparse(PREFIX_URL_AZURE).hostname
+        full_url = f"https://{management_host}/providers/Microsoft.ResourceGraph/resources"
+        params = {"api-version": RESOURCE_GRAPH_API_VERSION}
+        demisto.debug(f"Executing Azure Resource Graph query with options: {paging_options}.")
+        try:
+            return self.http_request(method="POST", full_url=full_url, params=params, json_data=request_data)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name="resources",
+                resource_type="Resource Graph Query",
+                api_function_name="resource_graph_query_resources",
             )
 
 
@@ -7835,6 +7985,98 @@ def nsg_public_ip_addresses_list_command(client: AzureClient, params: dict[str, 
     )
 
 
+def virtual_networks_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    List all virtual networks in a resource group.
+    Args:
+        client (AzureClient): Azure Client.
+        args (Dict[str, Any]): command arguments.
+        params (Dict[str, Any]): configuration parameters.
+    Returns:
+        Command results with raw response, outputs and readable outputs.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    next_token = args.get("next_token", "")
+    demisto.debug(f"[Azure] Listing virtual networks with {bool(next_token)=}")
+
+    response = client.list_virtual_networks_request(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, next_token=next_token
+    )
+    data_from_response = response.get("value") or []
+    next_token = response.get("nextLink") or ""
+    demisto.debug(f"[Azure] Retrieved {len(data_from_response)} virtual networks, {bool(next_token)=}")
+
+    if not data_from_response:
+        return CommandResults(readable_output=f"No virtual networks were found in resource group '{resource_group_name}'.")
+
+    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
+    for data in data_from_response:
+        data["etag"] = data.get("etag", "")[3:-1]
+
+    # The token is always written, as null on the last page, so a stale token is cleared from the context.
+    outputs = {
+        "Azure.VirtualNetworks.VirtualNetworks(val.id && val.id == obj.id)": data_from_response,
+        "Azure.VirtualNetworks(true)": {"VirtualNetworksNextToken": next_token or None},
+    }
+
+    readable_output = tableToMarkdown(
+        name="Virtual Networks List",
+        t=data_from_response,
+        headers=["name", "id", "etag", "type", "location"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
+def subscriptions_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    List all subscriptions the authenticated identity has access to in the tenant.
+    Args:
+        client (AzureClient): Azure Client.
+        args (Dict[str, Any]): command arguments.
+        params (Dict[str, Any]): configuration parameters.
+    Returns:
+        Command results with raw response, outputs and readable outputs.
+    """
+    next_token = args.get("next_token", "")
+    demisto.debug(f"[Azure] Listing subscriptions with {bool(next_token)=}")
+
+    response = client.list_subscriptions_request(next_token=next_token)
+    data_from_response = response.get("value") or []
+    next_token = response.get("nextLink") or ""
+    demisto.debug(f"[Azure] Retrieved {len(data_from_response)} subscriptions, {bool(next_token)=}")
+
+    if not data_from_response:
+        return CommandResults(readable_output="No subscriptions were found.")
+
+    # The token is always written, as null on the last page, so a stale token is cleared from the context.
+    outputs = {
+        "Azure.ResourceManagement.Subscriptions(val.id && val.id == obj.id)": data_from_response,
+        "Azure.ResourceManagement(true)": {"SubscriptionsNextToken": next_token or None},
+    }
+
+    readable_output = tableToMarkdown(
+        name="Subscriptions List",
+        t=data_from_response,
+        headers=["subscriptionId", "tenantId", "displayName", "state"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
 def remove_member_from_role(client: AzureClient, args: dict) -> CommandResults:
     """Currently not supported in the integration
     Remove a member from a group by group id and user id.
@@ -9145,6 +9387,122 @@ def firewall_service_tag_list_command(client: AzureClient, params: dict[str, Any
     )
 
 
+def resource_graph_list_operations_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Lists all available Azure Resource Graph operations and their descriptions.
+
+    Args:
+        client (AzureClient): Azure client instance for API communication.
+        params (dict): Configuration parameters from integration settings.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: Contains the list of Azure Resource Graph operations.
+    """
+    response = client.resource_graph_list_operations()
+    operations = [{"Name": operation.get("name"), "Display": operation.get("display")} for operation in response.get("value", [])]
+
+    if not operations:
+        return CommandResults(readable_output="No Azure Resource Graph operations were found.", raw_response=response)
+
+    readable_output = tableToMarkdown(
+        "List of Azure Resource Graph Operations",
+        operations,
+        headers=["Name", "Display"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Azure.ResourceGraph.Operations",
+        outputs_key_field="Name",
+        outputs=operations,
+        raw_response=response,
+    )
+
+
+def resource_graph_query_resources_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Executes an Azure Resource Graph query (KQL) and returns the matching resources.
+
+    Args:
+        client (AzureClient): Azure client instance for API communication.
+        params (dict): Configuration parameters from integration settings.
+        args (dict): Command arguments including the required query and the optional limit,
+            page_size, page, management_groups, subscriptions, and next_token.
+
+    Returns:
+        CommandResults: Contains the resources returned by the query.
+    """
+    limit = arg_to_number(args.get("limit") or DEFAULT_LIMIT)
+    page_size = arg_to_number(args.get("page_size"))
+    page_number = arg_to_number(args.get("page"))
+    validate_limit(limit, max_limit=RESOURCE_GRAPH_MAX_PAGE_SIZE)
+    validate_limit(page_size, max_limit=RESOURCE_GRAPH_MAX_PAGE_SIZE)
+    management_groups = argToList(args.get("management_groups"))
+    subscriptions = argToList(args.get("subscriptions"))
+    next_token = args.get("next_token")
+    query = args.get("query", "")
+
+    if page_number is not None and page_number < 1:
+        raise DemistoException(f'The "page" argument must be a positive integer. Currently the value is {page_number}.')
+    if page_number and not page_size:
+        raise DemistoException('Please enter a value for "page_size" when using "page".')
+    if page_size and not page_number:
+        raise DemistoException('Please enter a value for "page" when using "page_size".')
+
+    if page_number and page_size:
+        paging_options: dict[str, Any] = {"$skip": (page_number - 1) * page_size, "$top": page_size}
+    else:
+        # The API supports $top, so the limit is sent to the API instead of being enforced client-side.
+        paging_options = remove_empty_elements({"$top": limit, "$skipToken": next_token})
+
+    response = client.resource_graph_query_resources(
+        query=query, paging_options=paging_options, management_groups=management_groups, subscriptions=subscriptions
+    )
+    list_of_query_results = response.get("data", [])
+    total_records = response.get("totalRecords", 0)
+    response_skip_token = response.get("$skipToken", "")
+
+    if not list_of_query_results:
+        readable_output = "No resources were found for the given query."
+        if response_skip_token:
+            readable_output += " More pages are available - re-run the command with the next_token argument to continue."
+        # The token is always written, as null when there are no more results, so a stale token is cleared from the context.
+        return CommandResults(
+            readable_output=readable_output,
+            outputs={"Azure.ResourceGraph(true)": {"QueryNextToken": response_skip_token or None}},
+            raw_response=response,
+        )
+
+    metadata = (
+        "Run the following command to retrieve the next batch of results:\n"
+        f'!azure-rg-query query="{query}" next_token={response_skip_token}'
+        if response_skip_token
+        else None
+    )
+    title = f"Results of query:\n```{query}```\n\n Total Number of Possible Records: {total_records} \n"
+    readable_output = tableToMarkdown(
+        title,
+        list_of_query_results,
+        headers=["id", "name", "type"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+        metadata=metadata,
+    )
+
+    outputs: dict[str, Any] = {
+        "Azure.ResourceGraph.Query(val.id && val.id == obj.id)": list_of_query_results,
+        "Azure.ResourceGraph(true)": {"QueryNextToken": response_skip_token or None},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
 def parse_forecast_table_to_dict(response: dict) -> list[dict]:
     """
     Parses a generic Azure table-like API response and organizes the data into a list of dictionaries.
@@ -10196,6 +10554,8 @@ def main():  # pragma: no cover
     handle_proxy()
     try:
         commands_with_params_and_args = {
+            "azure-rg-list-operations": resource_graph_list_operations_command,
+            "azure-rg-query": resource_graph_query_resources_command,
             "azure-nsg-security-rule-update": update_security_rule_command,
             "azure-vn-security-rule-update": update_security_rule_command,
             "azure-billing-usage-list": azure_billing_usage_list_command,
@@ -10289,6 +10649,8 @@ def main():  # pragma: no cover
             "azure-vn-network-interfaces-list": nsg_network_interfaces_list_command,
             "azure-nsg-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
             "azure-vn-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
+            "azure-vn-virtual-networks-list": virtual_networks_list_command,
+            "azure-rm-subscriptions-list": subscriptions_list_command,
             "azure-vm-instance-start": start_vm_command,
             "azure-compute-vm-start": start_vm_command,
             "azure-vm-instance-power-off": poweroff_vm_command,
