@@ -67,6 +67,19 @@ def test_recursive_replace_with_none():
     assert recursive_replace(None, []) is None
 
 
+def test_recursive_replace_omits_unresolved_placeholders():
+    """
+    Given: query params referencing @last_fetched_id while the last run has no stored ID yet.
+    When: recursive_replace substitutes only the placeholders that have values.
+    Then: the unresolved parameter is omitted instead of being sent literally (regression test, XSUP-78726).
+    """
+    query_params = {"limit": "@fetch_size_limit", "seqUpdate": "@last_fetched_id", "nested": {"cursor": "@last_fetched_id"}}
+
+    result = recursive_replace(query_params, [("@fetch_size_limit", "10")])
+
+    assert result == {"limit": "10", "nested": {}}
+
+
 def test_get_time_field_from_event_to_dt():
     event = {"timestamp": "2023-05-01T12:00:00Z"}
     config = TimestampFieldConfig(["timestamp"], "%Y-%m-%dT%H:%M:%SZ")

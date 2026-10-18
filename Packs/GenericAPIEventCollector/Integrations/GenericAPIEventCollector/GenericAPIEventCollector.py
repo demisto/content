@@ -150,7 +150,7 @@ def recursive_replace(org_dict: dict[Any, Any] | None, substitutions: list[tuple
     # Create a deep copy of the dictionary to avoid modifying the original
     copy_dict = copy.deepcopy(org_dict)
 
-    for key, value in copy_dict.items():
+    for key, value in list(copy_dict.items()):
         if isinstance(value, dict):
             # If value is a dictionary, recursively call this function
             copy_dict[key] = recursive_replace(value, substitutions)
@@ -158,6 +158,12 @@ def recursive_replace(org_dict: dict[Any, Any] | None, substitutions: list[tuple
             # If value is a string, perform substitutions
             for old, new in substitutions:
                 value = value.replace(old, new)
+            # A placeholder with no value yet (e.g. @last_fetched_id before the first stored ID) would be sent
+            # literally and rejected by the API, so the parameter is omitted instead.
+            if unresolved := [p.value for p in PlaceHolders if p.value in value]:
+                demisto.debug(f"Omitting parameter {key}: no value yet for {', '.join(unresolved)}")
+                del copy_dict[key]
+                continue
             copy_dict[key] = value
 
     return copy_dict
