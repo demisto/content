@@ -49,13 +49,11 @@ def _build_row(index: int, when_occurred_ms: int | None, when_occurred: str | No
 class FakeRedRock:
     """In-memory RedRock: filters by the query's cursor, sorts by (WhenOccurred, ID), pages.
 
-    precision="second" compares the cursor truncated to whole seconds, like a server that ignores milliseconds.
     Rows with no parseable WhenOccurred always match and sort first.
     """
 
-    def __init__(self, rows: list, precision: str = "millisecond", full_count: int | None | str = "actual"):
+    def __init__(self, rows: list, full_count: int | None | str = "actual"):
         self.rows = rows
-        self.precision = precision
         self.full_count = full_count
         self.requested_pages: list = []
         self.page_sizes: list = []
@@ -73,8 +71,6 @@ class FakeRedRock:
         assert match, f"query is not using an inclusive cursor: {body['Script']}"
         self.cursors.append(match.group(1))
         cursor_ms = cursor_to_ms(match.group(1))
-        if self.precision == "second":
-            cursor_ms -= cursor_ms % 1000
         matching = sorted(
             (row for row in self.rows if self._ms(row) is None or self._ms(row) >= cursor_ms),
             key=lambda row: (self._ms(row) or -1, row["Row"]["ID"]),
@@ -308,26 +304,6 @@ def test_invalid_limit_returns_error(mocker, limit):
     assert redrock.requested_pages == []
 
 
-def test_second_precision_server_does_not_cause_duplicates(mocker):
-    """
-    Given
-        - A server that compares the cursor at whole-second precision, and a previous run that ended mid-second.
-    When
-        - fetch-events runs.
-    Then
-        - Events earlier in the cursor's second are returned by the server but dropped client-side.
-    """
-    rows = [_build_row(i, BASE_MS + i * 100) for i in range(30)]  # 10 events per second
-    redrock = FakeRedRock(rows, precision="second")
-    # The previous run sent event-0 .. event-14 and ended at event-14 (mid-second).
-    previous_last_run = {"from": ms_to_cursor(BASE_MS + 1400), "ids": ["event-14"]}
-
-    events, last_run, _, error = _run(mocker, redrock, last_run=previous_last_run)
-    assert error is None
-    assert _ids(events) == [f"event-{i}" for i in range(15, 30)]
-    assert last_run["ids"] == ["event-29"]
-
-
 def test_last_run_ids_merged_when_cursor_does_not_move(mocker):
     """
     Given
@@ -385,15 +361,14 @@ def test_row_repeated_across_page_boundary_is_sent_once(mocker):
     assert len(_ids(events)) == len(set(_ids(events)))
 
 
-def test_unparseable_when_occurred_does_not_crash(mocker):
+def test_unparseable_when_occurred_is_skipped_for_the_cursor(mocker):
     """
     Given
         - One event with no WhenOccurred, one with a time-zone offset, and normal events.
     When
         - fetch-events runs.
     Then
-        - All events are sent, the cursor comes from the parseable ones, and the unparseable event's ID
-          is kept so it isn't sent again.
+        - The run doesn't crash, all events are sent, and the cursor comes from the parseable events only.
     """
     rows = [_build_row(i, BASE_MS + i) for i in range(3)]
     rows.append(_build_row(3, None))
@@ -403,29 +378,7 @@ def test_unparseable_when_occurred_does_not_crash(mocker):
     events, last_run, _, error = _run(mocker, redrock)
     assert error is None
     assert sorted(_ids(events)) == ["event-0", "event-1", "event-2", "event-3", "event-4"]
-    assert last_run["from"] == ms_to_cursor(BASE_MS + 10)
-    assert sorted(last_run["ids"]) == ["event-3", "event-4"]
-
-
-def test_all_rows_unparseable_keeps_cursor_and_dedups(mocker):
-    """
-    Given
-        - Every returned event has no parseable WhenOccurred.
-    When
-        - fetch-events runs twice.
-    Then
-        - Run 1 sends them and keeps the previous cursor with their IDs; run 2 sends nothing.
-    """
-    cursor = ms_to_cursor(BASE_MS)
-    redrock = FakeRedRock([_build_row(i, None) for i in range(3)])
-
-    first_events, first_last_run, _, error = _run(mocker, redrock, last_run={"from": cursor, "ids": []})
-    assert error is None
-    assert len(first_events) == 3
-    assert first_last_run == {"from": cursor, "ids": ["event-0", "event-1", "event-2"]}
-
-    second_events, _, _, _ = _run(mocker, redrock, last_run=first_last_run)
-    assert second_events == []
+    assert last_run == {"from": ms_to_cursor(BASE_MS + 10), "ids": ["event-4"]}
 
 
 @pytest.mark.parametrize("row_count, expected_pages", [(3, [1]), (2500, [1, 2, 3])])

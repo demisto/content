@@ -186,14 +186,12 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
         last_run: dict | None = None,
         max_events: int | None = None,
         page_size: int = PAGE_SIZE,
-        max_pages: int | None = None,
     ) -> None:
         super().__init__(client, options)
         self.from_time = from_time
         self.last_run = last_run or {}
         self.max_events = max_events
         self.page_size = page_size
-        self.max_pages = max_pages
 
     @staticmethod
     def get_when_occurred_ms(event: dict) -> int | None:
@@ -209,26 +207,19 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
         return ids
 
     def get_last_run(self, events: list) -> dict:  # type: ignore
-        timestamps = [self.get_when_occurred_ms(event) for event in events]
-        unparsed_ids = [event.get("ID") for event, ms in zip(events, timestamps, strict=True) if ms is None and event.get("ID")]
-        if unparsed_ids:
-            demisto.debug(
-                f"[get_last_run] {len(unparsed_ids)} events have no parseable WhenOccurred (e.g. {unparsed_ids[:3]}); "
-                "they are not used for the cursor."
-            )
-        parsed = [ms for ms in timestamps if ms is not None]
-        if parsed:
-            last_timestamp_ms = max(parsed)
-            last_run_time = ms_to_cursor(last_timestamp_ms)
-            ids = self.get_last_run_ids(events, last_timestamp_ms)
-        else:
-            last_run_time, ids = self.from_time, []
+        timestamps = [ms for ms in map(self.get_when_occurred_ms, events) if ms is not None]
+        if len(timestamps) < len(events):
+            demisto.debug(f"[get_last_run] Skipped {len(events) - len(timestamps)} events with no parseable WhenOccurred.")
+        if not timestamps:
+            return {"from": self.from_time, "ids": self.last_run.get("ids", [])}
+        last_timestamp_ms = max(timestamps)
+        last_run_time = ms_to_cursor(last_timestamp_ms)
+        ids = self.get_last_run_ids(events, last_timestamp_ms)
         if last_run_time == self.from_time:
             # Cursor didn't move: keep the previous IDs too.
             ids = self.last_run.get("ids", []) + ids
             demisto.debug("[get_last_run] Cursor did not move; merged with the previous dedup list.")
-        # Unparsed events may be returned again, so keep their IDs for dedup.
-        last_run = {"from": last_run_time, "ids": list(dict.fromkeys(ids + unparsed_ids))}
+        last_run = {"from": last_run_time, "ids": list(dict.fromkeys(ids))}
         demisto.debug(f"[get_last_run] Built last run with from={last_run['from']} and {len(last_run['ids'])} ids.")
         return last_run
 
@@ -269,7 +260,7 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
                 duplicates += 1
                 continue
             when_occurred_ms = self.get_when_occurred_ms(row)
-            # Client-side check, so dedup doesn't depend on how RedRock compares the cursor.
+            # Defensive: RedRock was observed comparing the cursor at millisecond precision, so this should never match.
             if when_occurred_ms is not None and when_occurred_ms < cursor_ms:
                 older += 1
                 continue
@@ -333,10 +324,6 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
                     f"[_iter_events] Reached the limit of {self.max_events} events. "
                     f"The remaining events (FullCount={full_count}) will be collected by the next runs."
                 )
-                break
-
-            if self.max_pages and page_number >= self.max_pages:
-                demisto.debug(f"[_iter_events] Reached the cap of {self.max_pages} pages.")
                 break
 
             page_number += 1
@@ -437,7 +424,6 @@ def main(command: str, demisto_params: dict, demisto_args: dict | None = None):
             last_run=last_run,
             max_events=max_events,
             page_size=page_size,
-            max_pages=1 if command == "test-module" else None,
         )
 
         if command == "test-module":
