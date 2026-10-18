@@ -1358,6 +1358,7 @@ def test_sql_firewall_rule_replace_command_invalid_entry_id(mocker, client, mock
         sql_firewall_rule_replace_command(client=client, params=mock_params, args=args)
     assert "Could not find a file for entry_id" in str(exc.value)
 
+
 def test_aks_clusters_list_command(mocker, client, mock_params):
     """
     Given: An Azure client whose aks_clusters_list returns a list of managed clusters with a nextLink.

@@ -11257,9 +11257,7 @@ def sql_db_threat_policy_create_update_command(client: AzureClient, params: dict
         resource_group_name=resource_group_name,
         state=state,
         disabled_alerts=disabled_alerts or None,
-        email_account_admins=argToBoolean(args["email_account_admins"])
-        if args.get("email_account_admins") is not None
-        else None,
+        email_account_admins=argToBoolean(args["email_account_admins"]) if args.get("email_account_admins") is not None else None,
         email_addresses=argToList(args.get("email_addresses")) or None,
         retention_days=int(args["retention_days"]) if args.get("retention_days") is not None else None,
         storage_account_access_key=args.get("storage_account_access_key"),
