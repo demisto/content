@@ -1,6 +1,6 @@
 import json
 import re
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, timezone
 
 import demistomock as demisto
 import pytest
@@ -71,8 +71,10 @@ class FakeRedRock:
         assert match, f"query is not using an inclusive cursor: {body['Script']}"
         self.cursors.append(match.group(1))
         cursor_ms = cursor_to_ms(match.group(1))
+        to_match = re.search(r"WhenOccurred < '([^']+)'", body["Script"])
+        to_ms = cursor_to_ms(to_match.group(1)) if to_match else float("inf")
         matching = sorted(
-            (row for row in self.rows if self._ms(row) is None or self._ms(row) >= cursor_ms),
+            (row for row in self.rows if self._ms(row) is None or cursor_ms <= self._ms(row) < to_ms),
             key=lambda row: (self._ms(row) or -1, row["Row"]["ID"]),
         )
         page_number, page_size = body["args"]["PageNumber"], body["args"]["PageSize"]
@@ -474,6 +476,62 @@ def test_get_events_without_push_does_not_save_last_run(mocker, should_push_even
     assert last_run is None
 
 
+def test_get_events_to_argument_limits_the_window(mocker):
+    """
+    Given
+        - 10 events, one per second, and cyberarkidentity-get-events with 'from' and 'to' arguments.
+    When
+        - The command runs.
+    Then
+        - The query has an exclusive upper bound and only events in [from, to) are returned.
+    """
+    redrock = FakeRedRock([_build_row(i, BASE_MS + i * 1000) for i in range(10)])
+    _, _, contents, error = _run(
+        mocker,
+        redrock,
+        command="cyberarkidentity-get-events",
+        args={"should_push_events": "false", "from": ms_to_cursor(BASE_MS + 2000), "to": ms_to_cursor(BASE_MS + 5000)},
+    )
+    assert error is None
+    assert _ids(contents["Contents"]) == ["event-2", "event-3", "event-4"]
+
+
+@pytest.mark.parametrize(
+    "to_value, expected_error",
+    [("not a date at all", "Invalid 'to' value"), ("2022-05-15T12:00:00", "must be later than 'from'")],
+)
+def test_get_events_invalid_to_argument(mocker, to_value, expected_error):
+    """
+    Given
+        - A 'to' argument that can't be parsed, or that is not later than 'from'.
+    When
+        - cyberarkidentity-get-events runs.
+    Then
+        - The command fails with a clear error and no query is made.
+    """
+    redrock = FakeRedRock([_build_row(0, BASE_MS)])
+    _, _, _, error = _run(
+        mocker, redrock, command="cyberarkidentity-get-events", args={"should_push_events": "false", "to": to_value}
+    )
+    assert expected_error in error
+    assert redrock.requested_pages == []
+
+
+def test_fetch_events_ignores_to_argument(mocker):
+    """
+    Given
+        - A stray 'to' value in the instance parameters.
+    When
+        - fetch-events runs.
+    Then
+        - The query has no upper bound.
+    """
+    redrock = FakeRedRock([_build_row(i, BASE_MS + i) for i in range(3)])
+    events, _, _, error = _run(mocker, redrock, to=ms_to_cursor(BASE_MS + 1))
+    assert error is None
+    assert len(events) == 3
+
+
 def test_get_events_without_push_uses_its_from_argument(mocker):
     """
     Given
@@ -649,7 +707,7 @@ def test_first_fetch_uses_relative_from(mocker):
 
     from_time = get_from_time({"from": "3 days"}, last_run={})
     parsed = datetime.strptime(from_time, DATETIME_FORMAT)
-    now = datetime.now(UTC).replace(tzinfo=None)
+    now = datetime.now(timezone.utc).replace(tzinfo=None)  # noqa: UP017
     assert timedelta(days=2, hours=23) < now - parsed < timedelta(days=3, hours=1)
 
 
