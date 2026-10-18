@@ -1351,7 +1351,7 @@ def _fetch_single_log_type(
             if raw_count < page_size:
                 break
             page += 1
-            if page > Config.MAX_PAGES_PER_FETCH:
+            if page - start_page >= Config.MAX_PAGES_PER_FETCH:
                 break
 
         result.new_event_count = total_new

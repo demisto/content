@@ -1223,6 +1223,40 @@ class TestOversizedTimestampBucket:
         # Still stuck on the same timestamp, so the resume page keeps advancing.
         assert mock_set_last_run.call_args[0][0]["page_audit"] == 4
 
+    def test_resumed_cycle_reads_full_page_budget(self, mock_client, mocker):
+        """A cycle resuming deep into a stuck timestamp must still read MAX_PAGES_PER_FETCH pages.
+
+        The page cap counts pages read in this cycle, not the absolute page number, so resuming
+        at page 11 reads pages 11-20 instead of stopping after page 11.
+        """
+        page_size = Config.MAX_PAGE_SIZE
+        start_page = Config.MAX_PAGES_PER_FETCH + 1
+        mock_get_page = mocker.patch.object(mock_client, "get_events_page", return_value=self._bucket(page_size))
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"max_fetch": str(page_size * Config.MAX_PAGES_PER_FETCH), "event_types_to_fetch": "Audit"},
+        )
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={
+                "last_fetch_audit": self.STUCK_TIME,
+                "previous_ids_audit": [f"audit-{i}" for i in range(page_size)],
+                "page_audit": start_page,
+                "page_size_audit": page_size,
+                "window_end_audit": "2026-10-11T12:00:00Z",
+            },
+        )
+        mocker.patch.object(mock_client, "send_events")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        requested_pages = [call.kwargs["page"] for call in mock_get_page.call_args_list]
+        assert requested_pages == list(range(start_page, start_page + Config.MAX_PAGES_PER_FETCH))
+        assert mock_set_last_run.call_args[0][0]["page_audit"] == start_page + Config.MAX_PAGES_PER_FETCH
+
     def test_resume_page_resets_once_cursor_advances(self, mock_client, mocker):
         """Leaving the oversized timestamp must reset the resume page and clear the window."""
         newer_page = [{"id": "audit-new", "created_at": "2026-10-11T10:47:09Z"}]
