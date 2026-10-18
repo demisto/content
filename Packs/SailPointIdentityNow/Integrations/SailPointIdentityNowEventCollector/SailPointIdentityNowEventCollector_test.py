@@ -299,6 +299,61 @@ def test_fetch_events_batch(mocker, api_responses, limit, expected_events_count,
         assert max(timestamps) == expected_most_recent_timestamp
 
 
+def test_fetch_events_batch__full_page_of_duplicates_advances_from_date(mocker):
+    """
+    Given:
+        - A dedup cache that contains all the events of the first full page returned by the API
+          (e.g. a lookback window that holds more cached events than a single API call can return)
+    When:
+        - Calling _fetch_events_batch
+    Then:
+        - Ensure the fetch does not stop on the full page of duplicates
+        - Ensure the next API call uses the creation date of the last event in the duplicates page
+        - Ensure the new events after the duplicates page are fetched
+    """
+    from SailPointIdentityNowEventCollector import _fetch_events_batch
+
+    mocker.patch("SailPointIdentityNowEventCollector.MAX_EVENTS_PER_API_CALL", 2)
+    mocker.patch.object(demisto, "debug")
+
+    client = mocker.Mock()
+    client.search_events.side_effect = [EVENTS_SEQUENTIAL[:2], EVENTS_SEQUENTIAL[1:3], []]
+    previous_id_timestamps = {event["id"]: event["created"] for event in EVENTS_SEQUENTIAL[:2]}
+
+    all_events, dedup_cache = _fetch_events_batch(client, 5, "2022-01-01T00:00:00Z", previous_id_timestamps)
+
+    assert all_events == [EVENTS_SEQUENTIAL[2]]
+    assert client.search_events.call_args_list[1].kwargs["from_date"] == EVENTS_SEQUENTIAL[1]["created"]
+    assert dedup_cache == {event["id"]: event["created"] for event in EVENTS_SEQUENTIAL[:3]}
+
+
+def test_fetch_events_batch__partial_page_of_duplicates_stops(mocker):
+    """
+    Given:
+        - A dedup cache that contains all the events returned by the API
+        - The API returns fewer events than requested (no new events available yet)
+    When:
+        - Calling _fetch_events_batch
+    Then:
+        - Ensure the fetch stops after a single API call and returns no events
+        - Ensure the dedup cache is unchanged
+    """
+    from SailPointIdentityNowEventCollector import _fetch_events_batch
+
+    mocker.patch("SailPointIdentityNowEventCollector.MAX_EVENTS_PER_API_CALL", 3)
+    mocker.patch.object(demisto, "debug")
+
+    client = mocker.Mock()
+    client.search_events.side_effect = [EVENTS_SEQUENTIAL[:2]]
+    previous_id_timestamps = {event["id"]: event["created"] for event in EVENTS_SEQUENTIAL[:2]}
+
+    all_events, dedup_cache = _fetch_events_batch(client, 5, "2022-01-01T00:00:00Z", previous_id_timestamps)
+
+    assert all_events == []
+    assert client.search_events.call_count == 1
+    assert dedup_cache == previous_id_timestamps
+
+
 @pytest.mark.parametrize(
     "all_events,dedup_cache,look_back,expected_prev_date,expected_cache_size",
     [

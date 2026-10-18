@@ -272,6 +272,7 @@ def _fetch_events_batch(
             should_break_after_processing = False
 
         events_before_dedup = len(events)
+        page_last_created = events[-1]["created"]
         events = dedup_events(events, list(dedup_cache.keys()), prev_date)
         demisto.debug(f"After dedup: {events_before_dedup} -> {len(events)} events.")
 
@@ -290,10 +291,17 @@ def _fetch_events_batch(
             # Only decrease remaining by NEW events after dedup
             remaining_events_to_fetch -= len(events)
             demisto.debug(f"Fetched {len(events)} new events, {remaining_events_to_fetch} remaining")
-        else:
-            # All events are duplicates - exit loop
-            demisto.debug(f"Loop {loop_count}: All {events_before_dedup} events were duplicates. " f"Exiting loop.")
+        elif should_break_after_processing:
+            # Partial page of duplicates - the API has no new events yet
+            demisto.debug(f"Loop {loop_count}: All {events_before_dedup} events were duplicates. No new events available.")
             break
+        else:
+            # Full page of duplicates - advance the from_date to the last event of the page and keep fetching
+            current_from_date = page_last_created
+            demisto.debug(
+                f"Loop {loop_count}: All {events_before_dedup} events were duplicates (full page). "
+                f"Updated from_date to: {current_from_date}"
+            )
 
         # Break if API returned fewer events than requested (no more events available)
         if should_break_after_processing:
