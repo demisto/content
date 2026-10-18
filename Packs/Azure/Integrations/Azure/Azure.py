@@ -3525,7 +3525,7 @@ class AzureClient:
             }
         else:
             demisto.debug(f"using {next_token=} for retrieving the next page of results.")
-            full_url = next_token
+            full_url = validate_next_link(next_token, urlparse(PREFIX_URL_AZURE).hostname or "")
             parameters = {}
         try:
             demisto.debug(f"[Azure] {parameters=}")
@@ -3891,6 +3891,8 @@ class AzureClient:
         }
         remove_nulls_from_dictionary(params_)
 
+        if next_page_token:
+            validate_next_link(next_page_token, urlparse(PREFIX_URL_AZURE).hostname or "")
         try:
             if next_page_token:
                 new_url = remove_query_param_from_url(next_page_token, "api-version")
