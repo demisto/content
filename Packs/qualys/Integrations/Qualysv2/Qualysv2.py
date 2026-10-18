@@ -3021,16 +3021,16 @@ def iter_host_list_detections(raw_response: Optional[requests.Response], stream_
     # because `stream_xml_elements` clears each element once the generator advances past it.
     for local_tag, element in stream_xml_elements(raw_response.raw, tags=["HOST", "WARNING", "SIMPLE_RETURN"]):
         if local_tag == "HOST":
-            # Convert this single HOST subtree to the same structure produced previously by `xml2json`.
-            host_dict = element_to_dict(element)
+            # Convert this HOST subtree to a dict.
+            host_dict = elem_to_internal(element)
             yield host_dict.get("HOST", host_dict)
         elif local_tag == "WARNING":
             # Pagination block (RESPONSE/WARNING/URL). Small subtree, parse fully and read the exact path.
-            warning_dict = element_to_dict(element).get("WARNING", {})
+            warning_dict = elem_to_internal(element).get("WARNING", {})
             stream_state["next_url"] = warning_dict.get("URL", "") or stream_state["next_url"]
         elif local_tag == "SIMPLE_RETURN":
             # Error envelope (SIMPLE_RETURN/RESPONSE/{CODE,TEXT}). Small subtree, parse fully.
-            simple_return = element_to_dict(element)
+            simple_return = elem_to_internal(element)
             simple_response = get_simple_response_from_raw(simple_return) or {}
 
     if simple_response and simple_response.get("CODE"):
@@ -3063,22 +3063,6 @@ def handle_vulnerabilities_result(raw_response: Optional[requests.Response]) -> 
     return vulnerabilities
 
 
-def element_to_dict(element: "ElementTree.Element") -> dict:
-    """
-    Converts a parsed XML element into a dict, reusing the shared ``elem_to_internal`` helper.
-
-    This yields the same structure as ``json.loads(xml2json(ElementTree.tostring(element)))`` but avoids the
-    serialize-then-reparse round-trip (element -> XML string -> re-parsed element -> JSON string -> dict),
-    which lowers transient allocations per record on the memory-heavy streaming paths.
-
-    Args:
-        element (ElementTree.Element): a single parsed XML element from the streamed body.
-    Returns:
-        The element converted to a dict (top-level key is the element's tag).
-    """
-    return elem_to_internal(element)
-
-
 def iter_vulnerabilities_result(raw_response: Optional[requests.Response]) -> Iterator[dict]:
     """
     Yields vulnerability dicts one at a time from the streamed response, without accumulating the full list.
@@ -3099,7 +3083,7 @@ def iter_vulnerabilities_result(raw_response: Optional[requests.Response]) -> It
     raw_response.raw.decode_content = True
 
     for _local_tag, element in stream_xml_elements(raw_response.raw, tags=["VULN"]):
-        vuln_dict = element_to_dict(element)
+        vuln_dict = elem_to_internal(element)
         yield vuln_dict.get("VULN", vuln_dict)
 
 
@@ -3195,8 +3179,9 @@ def iter_detections_from_hosts(hosts: Iterable[dict]) -> Iterator[dict]:
 
     Generator form of `get_detections_from_hosts` and the single source of truth for the host->detection fan-out:
     one row per detection, with a deep copy of the host-without-detections per row so each row is fully independent
-    (required because downstream `truncate_asset_size`/`add_fields_to_events` mutate rows in place), plus the same
-    per-row `truncate_asset_size`. Yielding lazily keeps peak memory proportional to the consumer's batch size.
+    (required because `truncate_asset_size`/`add_fields_to_events` mutate rows in place), plus the same per-row
+    `truncate_asset_size`. This is also the single place where `_time` and `event_type` are added to asset rows.
+    Yielding lazily keeps peak memory proportional to the consumer's batch size.
 
     Args:
         hosts (Iterable[dict]): an iterable (typically a generator) of host dicts.
@@ -3217,6 +3202,7 @@ def iter_detections_from_hosts(hosts: Iterable[dict]) -> Iterator[dict]:
             new_detection = copy.deepcopy(host_without_detections)
             new_detection["DETECTION"] = detection
             truncate_asset_size(new_detection)
+            add_fields_to_events([new_detection], ["DETECTION", "FIRST_FOUND_DATETIME"], "host_list_detection")
             yield new_detection
 
 
@@ -3380,8 +3366,6 @@ def get_host_list_detections_events(
         demisto.debug(f"Finished parsing asset detections from hosts, created {len(assets)} assets.")
 
         if not set_new_limit:
-            demisto.debug(f"Adding fields to {len(assets)} parsed asset detections.")
-            add_fields_to_events(assets, ["DETECTION", "FIRST_FOUND_DATETIME"], "host_list_detection")
             demisto.debug(f"Extracting next page from URL: {next_url}.")
             next_page = get_next_page_from_url(next_url, "id_min")
 
@@ -3504,6 +3488,40 @@ def fetch_vulnerabilities(client: Client, last_run: dict[str, Any], detection_qi
     return vulnerabilities, new_last_run
 
 
+def iter_batches(records: Iterable[dict], size: int) -> Iterator[list[dict]]:
+    """Groups an iterable into lists of at most ``size`` items. Only the last list can be shorter than ``size``."""
+    batch: list[dict] = []
+    for record in records:
+        batch.append(record)
+        if len(batch) >= size:
+            yield batch
+            batch = []
+    if batch:
+        yield batch
+
+
+def send_snapshot_batch(records: list[dict], product: str, snapshot_id: str, items_count: int) -> None:
+    """Sends one batch into an assets-type snapshot.
+
+    ``items_count=1`` keeps the snapshot unsealed; the cumulative total seals it on the final send.
+
+    Args:
+        records (list[dict]): The rows to send.
+        product (str): The dataset product ("assets" or "vulnerabilities").
+        snapshot_id (str): The snapshot ID.
+        items_count (int): The items count to report for the snapshot.
+    """
+    demisto.debug(f"[Snapshot] Sending {len(records)} {product} rows to {snapshot_id=} with {items_count=}.")
+    send_assets_and_vulnerabilities_to_xsiam(
+        records,
+        vendor=VENDOR,
+        product=product,
+        snapshot_id=snapshot_id,
+        items_count=str(items_count),
+        should_update_health_module=False,
+    )
+
+
 def fetch_and_send_vulnerabilities_streamed(client: Client, last_run: dict[str, Any]) -> dict[str, Any]:
     """Fetches vulnerabilities (by last modified date) and sends them to XSIAM in bounded batches.
 
@@ -3527,36 +3545,66 @@ def fetch_and_send_vulnerabilities_streamed(client: Client, last_run: dict[str, 
 
     raw_response = client.get_vulnerabilities(since_datetime=since_datetime)
 
-    batch: list = []
     total_sent = 0
+    remainder: list[dict] = []
 
-    def flush(records: list, items_count: int) -> None:
-        """Send one batch into the vulnerabilities snapshot. ``items_count=1`` keeps the snapshot unsealed; the
-        cumulative total seals it on the final send."""
-        send_assets_and_vulnerabilities_to_xsiam(
-            records,
-            vendor=VENDOR,
-            product="vulnerabilities",
-            snapshot_id=snapshot_id,
-            items_count=str(items_count),
-            should_update_health_module=False,
-        )
+    for batch in iter_batches(iter_vulnerabilities_result(raw_response), VULNERABILITIES_SEND_BATCH_SIZE):
+        if len(batch) < VULNERABILITIES_SEND_BATCH_SIZE:
+            remainder = batch  # only the last batch can be partial; it is sent below as the sealing send
+            break
+        send_snapshot_batch(batch, "vulnerabilities", snapshot_id, items_count=1)  # unsealed: more may follow
+        total_sent += len(batch)
 
-    for vuln in iter_vulnerabilities_result(raw_response):
-        batch.append(vuln)
-        if len(batch) >= VULNERABILITIES_SEND_BATCH_SIZE:
-            flush(batch, 1)  # unsealed: more vulnerabilities follow
-            total_sent += len(batch)
-            batch = []
-
-    # Final flush seals the snapshot with the cumulative total. If the last batch is empty (rows divided evenly),
+    # The final send seals the snapshot with the cumulative total. If the rows divided evenly (empty remainder),
     # close_snapshot_if_empty emits a closing signal so the snapshot still seals with the correct count.
-    total_sent += len(batch)
-    batch, seal_count = close_snapshot_if_empty(batch, total_sent, snapshot_id, "vulnerabilities")
-    flush(batch, seal_count)
+    total_sent += len(remainder)
+    remainder, seal_count = close_snapshot_if_empty(remainder, total_sent, snapshot_id, "vulnerabilities")
+    send_snapshot_batch(remainder, "vulnerabilities", snapshot_id, items_count=seal_count)
 
     demisto.debug(f"[Vulnerabilities] Finished streaming vulnerabilities to XSIAM. Total sent: {total_sent}. {snapshot_id=}")
     return DEFAULT_LAST_ASSETS_RUN
+
+
+def build_assets_last_run(
+    stage: str, next_page: Optional[str], total_assets: int, since_datetime: str, snapshot_id: str
+) -> dict[str, Any]:
+    """Builds the assets last run that triggers the next fetch iteration immediately."""
+    return {
+        "stage": stage,
+        "next_page": next_page,
+        "total_assets": total_assets,
+        "since_datetime": since_datetime,
+        "snapshot_id": snapshot_id,
+        "nextTrigger": "0",
+        "type": FETCH_COMMAND.get("assets"),
+    }
+
+
+def send_assets_batch(rows: list[dict], snapshot_id: str, items_count: int) -> None:
+    """Sends one batch of asset rows into the assets snapshot, logging its host IDs to verify their order."""
+    demisto.debug(f"[HOST ORDER] Host IDs in batch: {list(dict.fromkeys(row.get('ID') for row in rows))}")
+    send_snapshot_batch(rows, "assets", snapshot_id, items_count)
+
+
+def handle_assets_page_error(
+    error: Exception, last_run: dict[str, Any], committed_run: Optional[dict[str, Any]]
+) -> tuple[dict[str, Any], bool]:
+    """Ends the run after a mid-page failure, keeping the last commit.
+
+    Returns the last commit if one was made in this run. Otherwise counts the failure and returns the original last
+    run with ``set_new_limit=True``, raising once ``ASSETS_MAX_CONSECUTIVE_FAILURES`` runs in a row made no progress.
+    """
+    error_message = f"Assets fetch stopped mid-page; the next fetch resumes from the last committed host. Error: {error}"
+    demisto.error(f"[Assets] {error_message}\n{traceback.format_exc()}")
+    if committed_run is not None:
+        return committed_run, False
+
+    consecutive_failures = last_run.get("consecutive_failures", 0) + 1
+    if consecutive_failures >= ASSETS_MAX_CONSECUTIVE_FAILURES:
+        raise DemistoException(
+            f"Assets fetch failed {consecutive_failures} times in a row without progress. Last error: {error}"
+        ) from error
+    return {**last_run, "consecutive_failures": consecutive_failures}, True
 
 
 def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> tuple[dict[str, Any], bool]:
@@ -3594,45 +3642,25 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
     stream_state: dict = {}
     batch: list = []
     page_assets_count = 0
-
-    def flush(records: list, items_count: int) -> None:
-        """Send one batch into the assets snapshot. ``items_count=1`` keeps the snapshot unsealed; the cumulative
-        total seals it on the final send of the final page."""
-        demisto.debug(f"[HOST ORDER] Host IDs in batch: {list(dict.fromkeys(row.get('ID') for row in records))}")
-        send_assets_and_vulnerabilities_to_xsiam(
-            records,
-            vendor=VENDOR,
-            product="assets",
-            snapshot_id=snapshot_id,
-            items_count=str(items_count),
-            should_update_health_module=False,
-        )
-
-    hosts_in_batch = 0
     committed_run: Optional[dict[str, Any]] = None
     try:
-        for host in iter_host_list_detections(raw_response, stream_state):
-            batch.extend(iter_detections_from_hosts([host]))
-            hosts_in_batch += 1
-            host_id = arg_to_number(host.get("ID"))
-            if hosts_in_batch < ASSETS_COMMIT_HOSTS_BATCH_SIZE or host_id is None:
-                continue
+        hosts = iter_host_list_detections(raw_response, stream_state)
+        for host_batch in iter_batches(hosts, ASSETS_COMMIT_HOSTS_BATCH_SIZE):
+            batch = list(iter_detections_from_hosts(host_batch))
+            if len(host_batch) < ASSETS_COMMIT_HOSTS_BATCH_SIZE:
+                break  # only the last batch can be partial; it is sent below as the end-of-page remainder
 
-            add_fields_to_events(batch, ["DETECTION", "FIRST_FOUND_DATETIME"], "host_list_detection")
-            flush(batch, 1)
+            send_assets_batch(batch, snapshot_id, items_count=1)
             page_assets_count += len(batch)
-            batch, hosts_in_batch = [], 0
+            batch = []
 
             # Host IDs are ascending and `id_min` is inclusive, so the next run resumes right after this host.
+            host_id = int(host_batch[-1]["ID"])
             committed_run = {
-                "stage": "assets",
-                "next_page": str(host_id + 1),
-                "total_assets": total_assets + page_assets_count,
-                "since_datetime": since_datetime,
-                "snapshot_id": snapshot_id,
+                **build_assets_last_run(
+                    "assets", str(host_id + 1), total_assets + page_assets_count, since_datetime, snapshot_id
+                ),
                 "limit": limit,
-                "nextTrigger": "0",
-                "type": FETCH_COMMAND.get("assets"),
             }
             demisto.setAssetsLastRun(committed_run)
             demisto.debug(f"[Assets] Committed hosts up to ID {host_id}. Cumulative: {committed_run['total_assets']}.")
@@ -3646,40 +3674,20 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
         # On the last page this is the single sealing send (cumulative total); an empty remainder still sends a
         # closing signal. Otherwise the remainder stays unsealed (items_count=1).
         if is_last_page:
-            add_fields_to_events(batch, ["DETECTION", "FIRST_FOUND_DATETIME"], "host_list_detection")
             batch, seal_count = close_snapshot_if_empty(batch, total_assets, snapshot_id, "assets")
-            flush(batch, seal_count)
+            send_assets_batch(batch, snapshot_id, items_count=seal_count)
         elif batch:
-            add_fields_to_events(batch, ["DETECTION", "FIRST_FOUND_DATETIME"], "host_list_detection")
-            flush(batch, 1)
+            send_assets_batch(batch, snapshot_id, items_count=1)
     except Exception as e:
-        error_message = f"Assets fetch stopped mid-page; the next fetch resumes from the last committed host. Error: {e}"
-        demisto.error(f"[Assets] {error_message}\n{traceback.format_exc()}")
-        if committed_run is not None:
-            return committed_run, False
-
-        consecutive_failures = last_run.get("consecutive_failures", 0) + 1
-        if consecutive_failures >= ASSETS_MAX_CONSECUTIVE_FAILURES:
-            raise DemistoException(
-                f"Assets fetch failed {consecutive_failures} times in a row without progress. Last error: {e}"
-            ) from e
-        return {**last_run, "consecutive_failures": consecutive_failures}, True
+        return handle_assets_page_error(e, last_run, committed_run)
     finally:
         if raw_response is not None:
             raw_response.close()
 
-    # Mirror the non-streaming `fetch_assets` last run exactly: on the last page, move to the "vulnerabilities"
-    # stage while keeping `since_datetime`/`snapshot_id`; otherwise continue paging the "assets" stage.
+    # On the last page, move to the "vulnerabilities" stage while keeping `since_datetime`/`snapshot_id`;
+    # otherwise continue paging the "assets" stage.
     stage = "assets" if next_run_page else "vulnerabilities"
-    new_last_run = {
-        "stage": stage,
-        "next_page": next_run_page,
-        "total_assets": total_assets,
-        "since_datetime": since_datetime,
-        "snapshot_id": snapshot_id,
-        "nextTrigger": "0",
-        "type": FETCH_COMMAND.get("assets"),
-    }
+    new_last_run = build_assets_last_run(stage, next_run_page, total_assets, since_datetime, snapshot_id)
 
     if is_last_page:
         demisto.updateModuleHealth({"assetsPulled": total_assets})

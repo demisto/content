@@ -5,6 +5,7 @@ from xml.etree import ElementTree
 import Qualysv2
 import pytest
 import requests
+from urllib3.exceptions import ProtocolError, ReadTimeoutError
 from requests_mock import Mocker as RequestsMocker
 from pytest_mock import MockerFixture
 from freezegun import freeze_time
@@ -36,11 +37,11 @@ from Qualysv2 import (
     fetch_assets,
     get_detections_from_hosts,
     iter_detections_from_hosts,
+    iter_batches,
     iter_host_list_detections,
     fetch_and_send_assets_streamed,
     handle_host_list_detection_result,
     handle_vulnerabilities_result,
-    element_to_dict,
     fetch_vulnerabilities,
     fetch_assets_and_vulnerabilities_by_date,
     fetch_assets_and_vulnerabilities_by_qids,
@@ -486,19 +487,19 @@ def test_handle_vulnerabilities_result_streams_vulnerabilities():
         b"<WARNING><CODE>1980</CODE><URL>https://qualys.example/api?id_min=3</URL></WARNING>",
     ],
 )
-def test_element_to_dict_matches_xml2json_roundtrip(xml_bytes: bytes):
+def test_elem_to_internal_matches_xml2json_roundtrip(xml_bytes: bytes):
     """
     Given:
     - A parsed XML element (single VULN, a HOST with repeated DETECTION children, and a WARNING block).
     When:
-    - Converting it with element_to_dict.
+    - Converting it with elem_to_internal (used directly by the streaming parsers).
     Then:
     - The result is identical to the previous json.loads(xml2json(ElementTree.tostring(element))) round-trip,
       proving the optimization preserves the exact dict structure (including repeated-element lists).
     """
     element = ElementTree.fromstring(xml_bytes)
 
-    optimized = element_to_dict(element)
+    optimized = elem_to_internal(element)
     legacy = json.loads(xml2json(ElementTree.tostring(element)))
 
     assert optimized == legacy
@@ -1978,6 +1979,28 @@ def _make_host(host_id: str, num_detections: int) -> dict:
     return {"ID": host_id, "IP": "1.1.1.1", "DETECTION_LIST": {"DETECTION": detections if detections else {}}}
 
 
+@pytest.mark.parametrize(
+    "items, expected_batches",
+    [
+        pytest.param([1, 2, 3, 4, 5], [[1, 2], [3, 4], [5]], id="partial-last-batch"),
+        pytest.param([1, 2, 3, 4], [[1, 2], [3, 4]], id="exact-multiple-no-empty-batch"),
+        pytest.param([], [], id="empty-input"),
+    ],
+)
+def test_iter_batches(items: list, expected_batches: list):
+    """
+    Given:
+        - An iterable of items and a batch size of 2.
+
+    When:
+        - Grouping it with iter_batches.
+
+    Assert:
+        - Batches hold at most 2 items, only the last batch can be shorter, and no empty batch is yielded.
+    """
+    assert list(iter_batches(iter(items), 2)) == expected_batches
+
+
 def test_iter_detections_from_hosts_matches_get_detections_from_hosts():
     """
     Given:
@@ -2016,12 +2039,12 @@ def test_iter_host_list_detections_matches_handle_host_list_detection_result(moc
 
     mocker.patch("Qualysv2.stream_xml_elements", return_value=iter(stream_elements))
 
-    def fake_element_to_dict(element):
+    def fake_elem_to_internal(element):
         if element == "warn":
             return {"WARNING": {"URL": "https://qualys/next?id_min=42"}}
         return hosts[int(str(element).replace("elem", ""))]
 
-    mocker.patch("Qualysv2.element_to_dict", side_effect=fake_element_to_dict)
+    mocker.patch("Qualysv2.elem_to_internal", side_effect=fake_elem_to_internal)
 
     raw_response = Mock()
     stream_state: dict = {}
@@ -2119,10 +2142,23 @@ def test_fetch_and_send_assets_streamed_commits_last_run_after_each_hosts_batch(
 
 
 @freeze_time("2025-01-01 00:00:00 UTC")
-def test_fetch_and_send_assets_streamed_error_after_commit_resumes_from_last_commit(mocker: MockerFixture, client: Client):
+@pytest.mark.parametrize(
+    "stream_error",
+    [
+        pytest.param(requests.exceptions.ChunkedEncodingError("Connection broken"), id="ChunkedEncodingError"),
+        pytest.param(ProtocolError("Connection broken"), id="urllib3-ProtocolError"),
+        pytest.param(ReadTimeoutError(None, None, "Connection broken"), id="urllib3-ReadTimeoutError"),  # type: ignore[arg-type]
+        pytest.param(ElementTree.ParseError("Connection broken: no element found"), id="ParseError"),
+    ],
+)
+def test_fetch_and_send_assets_streamed_error_after_commit_resumes_from_last_commit(
+    mocker: MockerFixture, client: Client, stream_error: Exception
+):
     """
     Given:
-        - A page whose stream breaks (e.g. the socket is closed) after 3 hosts, committed every 2 hosts.
+        - A page whose stream breaks after 3 hosts, committed every 2 hosts. The error is one of those raised while
+          reading a streamed body: a requests error, a urllib3 error from a `raw` read, or a parse error from a
+          cut-off XML body.
 
     When:
         - Calling fetch_and_send_assets_streamed.
@@ -2137,7 +2173,7 @@ def test_fetch_and_send_assets_streamed_error_after_commit_resumes_from_last_com
 
     def broken_stream(*_args, **_kwargs):
         yield from hosts
-        raise requests.exceptions.ChunkedEncodingError("Connection broken")
+        raise stream_error
 
     raw_response = Mock()
     mocker.patch.object(client, "get_host_list_detection", return_value=(raw_response, False))
@@ -2379,37 +2415,6 @@ def test_fetch_assets_and_vulnerabilities_by_date_halves_limit_and_keeps_failure
     assert saved_last_run["consecutive_failures"] == 2
 
 
-@freeze_time("2025-01-01 00:00:00 UTC")
-def test_fetch_and_send_assets_streamed_host_without_id_does_not_commit(mocker: MockerFixture, client: Client):
-    """
-    Given:
-        - A page where the host completing a commit group has no ID, followed by a host with an ID.
-
-    When:
-        - Calling fetch_and_send_assets_streamed with commits every 2 hosts.
-
-    Assert:
-        - The commit is deferred to the next host with an ID, so the cursor is always a valid host ID + 1.
-    """
-    last_run = {"stage": "assets", "total_assets": 0, "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
-    host_without_id = _make_host("101", 1)
-    host_without_id.pop("ID")
-    hosts = [_make_host("100", 1), host_without_id, _make_host("102", 1)]
-
-    mocker.patch.object(client, "get_host_list_detection", return_value=(Mock(), False))
-    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter(hosts))
-    mocker.patch("Qualysv2.get_next_page_from_url", return_value="500")
-    mock_send = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
-    mock_set_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
-    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 2)
-
-    fetch_and_send_assets_streamed(client, last_run)
-
-    mock_set_last_run.assert_called_once()
-    assert mock_set_last_run.call_args.args[0]["next_page"] == "103"
-    assert len(mock_send.call_args_list[0].args[0]) == 3  # all 3 hosts sent in the deferred commit
-
-
 def test_fetch_assets_and_vulnerabilities_by_date_saves_last_commit_after_mid_page_error(mocker: MockerFixture, client: Client):
     """
     Given:
@@ -2495,6 +2500,42 @@ def test_fetch_and_send_assets_streamed_empty_last_page(mocker: MockerFixture, c
     assert mock_send.call_args.args[0] == [{}]  # empty list replaced to trigger snapshot close
     assert mock_send.call_args.kwargs["items_count"] == str(last_total + 1)  # +1 for the empty JSON row
     assert new_last_run["stage"] == "vulnerabilities"
+
+
+@freeze_time("2025-01-01 00:00:00 UTC")
+def test_fetch_and_send_assets_streamed_last_page_exact_multiple_sends_closing_signal(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A last page of 4 hosts with 1 detection each, committed every 2 hosts, so the remainder is empty.
+
+    When:
+        - Calling fetch_and_send_assets_streamed.
+
+    Assert:
+        - Both batches are committed unsealed (items_count=1), the cursor moves after the last host.
+        - The empty remainder still sends the closing signal ([{}] with the cumulative total + 1).
+        - The stage moves to "vulnerabilities".
+    """
+    last_total = 10
+    last_run = {"stage": "assets", "total_assets": last_total, "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
+    hosts = [_make_host(str(100 + i), 1) for i in range(4)]
+
+    mocker.patch.object(client, "get_host_list_detection", return_value=(Mock(), False))
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter(hosts))
+    mocker.patch("Qualysv2.get_next_page_from_url", return_value="")  # last page
+    mock_send = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+    mock_set_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 2)
+
+    new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+
+    assert set_new_limit is False
+    items_counts = [call.kwargs["items_count"] for call in mock_send.call_args_list]
+    assert items_counts == ["1", "1", str(last_total + 4 + 1)]  # 2 commits, then the closing signal
+    assert mock_send.call_args.args[0] == [{}]
+    assert mock_set_last_run.call_args.args[0]["next_page"] == "104"  # last commit: after host 103
+    assert new_last_run["stage"] == "vulnerabilities"
+    assert new_last_run["total_assets"] == last_total + 4
 
 
 def test_fetch_and_send_assets_streamed_set_new_limit(mocker: MockerFixture, client: Client):
@@ -2605,6 +2646,36 @@ def test_fetch_assets_and_vulnerabilities_by_date_vulnerabilities_stage(mocker: 
     assert items_counts == ["1", "1", str(len(expected_vulnerabilities))]
 
     assert next_run == DEFAULT_LAST_ASSETS_RUN  # pulling finished, next run stage should be assets
+
+
+def test_fetch_and_send_vulnerabilities_streamed_exact_multiple_sends_closing_signal(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - 4 vulnerabilities with a send batch size of 2, so the rows divide evenly and the remainder is empty.
+
+    When:
+        - Calling fetch_assets_and_vulnerabilities_by_date with the "vulnerabilities" stage.
+
+    Assert:
+        - Two unsealed sends (items_count=1) of 2 rows each, then a closing signal ([{}] with total + 1),
+          all under one snapshot id.
+    """
+    last_run = {"stage": "vulnerabilities", "snapshot_id": SNAPSHOT_ID}
+    vulnerabilities = [{"QID": str(i)} for i in range(4)]
+
+    mocker.patch.object(client, "get_vulnerabilities", return_value=Mock())
+    mocker.patch("Qualysv2.iter_vulnerabilities_result", return_value=iter(vulnerabilities))
+    mocker.patch("Qualysv2.VULNERABILITIES_SEND_BATCH_SIZE", 2)
+    mock_send = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+    mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+
+    fetch_assets_and_vulnerabilities_by_date(client, last_run)
+
+    sent_batches = [call.args[0] for call in mock_send.call_args_list]
+    items_counts = [call.kwargs["items_count"] for call in mock_send.call_args_list]
+    assert sent_batches == [vulnerabilities[:2], vulnerabilities[2:], [{}]]
+    assert items_counts == ["1", "1", str(len(vulnerabilities) + 1)]
+    assert len({call.kwargs["snapshot_id"] for call in mock_send.call_args_list}) == 1
 
 
 @freeze_time("2025-01-01 00:00:00 UTC")
