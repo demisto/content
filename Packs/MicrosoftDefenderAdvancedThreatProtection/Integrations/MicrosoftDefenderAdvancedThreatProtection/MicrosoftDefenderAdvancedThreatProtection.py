@@ -6341,7 +6341,7 @@ def main():  # pragma: no cover
     is_gcc = params.get("is_gcc", False)
     tenant_id = params.get("tenant_id") or params.get("_tenant_id") or params.get("_tenant_id_encrypted", {}).get("password")
     auth_id = (
-        (params.get("credentials") or {}).get("identifier")
+        (params.get("credentials", {})).get("identifier")
         or params.get("_auth_id")
         or params.get("auth_id")
         or params.get("_auth_id_encrypted", {}).get("password")
