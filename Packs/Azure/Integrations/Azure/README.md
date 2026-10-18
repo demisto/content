@@ -4830,3 +4830,72 @@ Executes an Azure Resource Graph query based on Kusto Query Language (KQL). For 
 | Azure.ResourceGraph.Query.location | String | The location of the resource returned by the query. |
 | Azure.ResourceGraph.Query.tags | Unknown | The tags of the resource returned by the query. |
 | Azure.ResourceGraph.QueryNextToken | String | The token to pass as the next_token argument to retrieve the next set of query results. |
+
+### azure-vn-virtual-networks-list
+
+***
+Gets virtual networks in a resource group. Required permissions: Microsoft.Network/virtualNetworks/read.
+
+#### Base Command
+
+`azure-vn-virtual-networks-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| next_token | The URI to fetch the next page of results as returned in the Azure.VirtualNetworks.VirtualNetworksNextToken output of a previous run. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.VirtualNetworksNextToken | String | The URI to fetch the next page of virtual networks. Run the same command with the next_token argument to get the next page. |
+| Azure.VirtualNetworks.VirtualNetworks.name | String | The virtual network's name. |
+| Azure.VirtualNetworks.VirtualNetworks.id | String | The virtual network's ID. |
+| Azure.VirtualNetworks.VirtualNetworks.etag | String | The virtual network's ETag. |
+| Azure.VirtualNetworks.VirtualNetworks.type | String | The resource type. |
+| Azure.VirtualNetworks.VirtualNetworks.location | String | The virtual network's location. |
+| Azure.VirtualNetworks.VirtualNetworks.tags | Unknown | The tags associated with the virtual network. |
+| Azure.VirtualNetworks.VirtualNetworks.properties.provisioningState | String | The provisioning state of the virtual network resource. Possible values are Succeeded, Updating, Deleting, or Failed. |
+| Azure.VirtualNetworks.VirtualNetworks.properties.resourceGuid | String | The resource GUID property of the virtual network resource. |
+| Azure.VirtualNetworks.VirtualNetworks.properties.addressSpace | Unknown | The address space object of the virtual network. Contains the addressPrefixes field, which is a list of address blocks reserved for this virtual network in CIDR notation. |
+| Azure.VirtualNetworks.VirtualNetworks.properties.subnets | Unknown | The list of subnets in the virtual network. Each subnet contains the name, ID, and properties fields. |
+| Azure.VirtualNetworks.VirtualNetworks.properties.virtualNetworkPeerings | Unknown | The list of peerings in the virtual network. |
+| Azure.VirtualNetworks.VirtualNetworks.properties.dhcpOptions | Unknown | The dhcpOptions object of the virtual network. Contains the dnsServers field, which is a list of DNS servers IP addresses. |
+| Azure.VirtualNetworks.VirtualNetworks.properties.enableDdosProtection | Boolean | Whether DDoS protection is enabled for all the protected resources in the virtual network. |
+
+### azure-rm-subscriptions-list
+
+***
+Gets all subscriptions for a tenant. Required permissions: Microsoft.Resources/subscriptions/read.
+
+#### Base Command
+
+`azure-rm-subscriptions-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID used to authenticate the request. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| next_token | The URI to fetch the next page of results as returned in the Azure.ResourceManagement.SubscriptionsNextToken output of a previous run. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ResourceManagement.SubscriptionsNextToken | String | The URI to fetch the next page of subscriptions. Run the same command with the next_token argument to get the next page. |
+| Azure.ResourceManagement.Subscriptions.id | String | The unique identifier of the subscription. |
+| Azure.ResourceManagement.Subscriptions.subscriptionId | String | The ID of the subscription. |
+| Azure.ResourceManagement.Subscriptions.tenantId | String | The ID of the tenant associated with the subscription. |
+| Azure.ResourceManagement.Subscriptions.displayName | String | The display name of the subscription. |
+| Azure.ResourceManagement.Subscriptions.state | String | The current state of the subscription. Possible values are Enabled, Warned, PastDue, Disabled, or Deleted. |
+| Azure.ResourceManagement.Subscriptions.authorizationSource | String | The authorization source of the request. Possible values are Legacy, RoleBased, Bypassed, Direct, or Management. |
+| Azure.ResourceManagement.Subscriptions.managedByTenants | Unknown | The list of tenants that have access to manage the subscription. |
+| Azure.ResourceManagement.Subscriptions.tags | Unknown | The tags associated with the subscription. |
+| Azure.ResourceManagement.Subscriptions.subscriptionPolicies.locationPlacementId | String | The ID of the location placement policy for the subscription. |
+| Azure.ResourceManagement.Subscriptions.subscriptionPolicies.quotaId | String | The ID of the quota policy for the subscription. |
+| Azure.ResourceManagement.Subscriptions.subscriptionPolicies.spendingLimit | String | The spending limit policy for the subscription. |
