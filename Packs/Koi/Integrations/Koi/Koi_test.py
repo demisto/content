@@ -179,7 +179,7 @@ class TestExtractTimeFromEvent:
         assert result == "2024-01-01T00:00:00Z"
 
     def test_alert_event_ignores_finding_group_created_time(self):
-        """The finding group created_time must NOT be used; only the per-event time is (XSUP-78592)."""
+        """The finding group created_time must NOT be used; only the per-event time is."""
         event = {"time": 1704067200000, "finding_info": {"created_time": 1500000000000}}
         result = extract_time_from_event(event, LogType.ALERTS)
         assert result == "2024-01-01T00:00:00Z"
@@ -273,7 +273,7 @@ class TestGetEventId:
         assert get_event_id(event) == expected_id
 
     def test_alert_notification_event_id_preferred(self):
-        """Alerts use metadata.notification_event_id as the unique dedup key (XSUP-78592)."""
+        """Alerts use metadata.notification_event_id as the unique dedup key."""
         event = {"metadata": {"notification_event_id": "a74afbae-0078-4060-8782-bb853fccc7de"}}
         assert get_event_id(event) == "a74afbae-0078-4060-8782-bb853fccc7de"
 
@@ -281,6 +281,17 @@ class TestGetEventId:
         """notification_event_id wins over top-level id when both are present."""
         event = {"id": "123", "metadata": {"notification_event_id": "notif-999"}}
         assert get_event_id(event) == "notif-999"
+
+    @pytest.mark.parametrize("empty_value", ["", None], ids=["empty_string", "none"])
+    def test_empty_notification_event_id_returns_none(self, empty_value):
+        """An alert whose notification_event_id is present but empty has no usable ID."""
+        event = {"metadata": {"notification_event_id": empty_value}}
+        assert get_event_id(event) is None
+
+    @pytest.mark.parametrize("metadata", ["notif-999", ["notif-999"], 123], ids=["string", "list", "int"])
+    def test_non_dict_metadata_returns_none(self, metadata):
+        """A metadata value that is not a dict is ignored instead of raising AttributeError."""
+        assert get_event_id({"metadata": metadata}) is None
 
     def test_no_id_field(self):
         """Test that missing ID field returns None."""
@@ -1239,20 +1250,20 @@ class TestOversizedTimestampBucket:
         # Cleared so the next cycle opens a fresh window up to the then-current time.
         assert not last_run_arg["window_end_audit"]
 
-    def test_partial_page_holds_resume_page(self, mock_client, mocker):
-        """A partial page means the window is drained, so the resume page must not skip ahead.
+    def test_partial_resumed_page_resets_to_page_one(self, mock_client, mocker):
+        """A partial resumed page means the stuck timestamp is fully read.
 
-        Events arriving later are appended into that same page, so advancing past it
-        would lose them.
+        Holding the page with a frozen window would request the same partial page forever,
+        so it resets to page 1 and clears the window while keeping the cursor.
         """
-        mocker.patch.object(mock_client, "get_events_page", return_value=self._bucket(50))
+        mocker.patch.object(mock_client, "get_events_page", return_value=self._bucket(50, prefix="tail"))
         mocker.patch.object(demisto, "params", return_value=self.AUDIT_PARAMS)
         mocker.patch.object(
             demisto,
             "getLastRun",
             return_value={
                 "last_fetch_audit": self.STUCK_TIME,
-                "previous_ids_audit": [f"audit-{i}" for i in range(50)],
+                "previous_ids_audit": [f"audit-{i}" for i in range(600)],
                 "page_audit": 4,
                 "page_size_audit": 200,
                 "window_end_audit": "2026-10-11T12:00:00Z",
@@ -1263,8 +1274,118 @@ class TestOversizedTimestampBucket:
 
         fetch_events_command(mock_client)
 
-        # Held at the same page rather than advanced to 5.
-        assert mock_set_last_run.call_args[0][0]["page_audit"] == 4
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        assert last_run_arg["last_fetch_audit"] == self.STUCK_TIME
+        assert last_run_arg["page_audit"] == Config.DEFAULT_PAGE
+        assert not last_run_arg["window_end_audit"]
+        # IDs from earlier pages are kept, so re-reading the timestamp resends nothing.
+        assert len(last_run_arg["previous_ids_audit"]) == 650
+
+    def test_trimmed_page_is_resumed_not_skipped(self, mock_client, mocker):
+        """A page trimmed to respect max_fetch must be read again next cycle, not skipped.
+
+        With max_fetch=700 the page size is 500. Page 1 is read in full; page 2 is trimmed to
+        200 events, so the resume page must be 2 (not 3) and nothing is skipped or resent.
+        """
+        window = self._bucket(1500)
+        page_size = 500
+        last_run: dict = {"last_fetch_audit": self.STUCK_TIME, "previous_ids_audit": []}
+        sent_ids: list[str] = []
+
+        def paged(**kwargs):
+            start = (kwargs["page"] - 1) * page_size
+            return window[start : start + page_size]
+
+        mocker.patch.object(mock_client, "get_events_page", side_effect=paged)
+        mocker.patch.object(demisto, "params", return_value={"max_fetch": "700", "event_types_to_fetch": "Audit"})
+        mocker.patch.object(demisto, "getLastRun", side_effect=lambda: last_run)
+        mocker.patch.object(demisto, "setLastRun", side_effect=lambda lr: last_run.update(lr))
+        mocker.patch.object(
+            mock_client, "send_events", side_effect=lambda events, **kwargs: sent_ids.extend(e["id"] for e in events)
+        )
+
+        fetch_events_command(mock_client)
+        # Only page 1 was read in full, so the next cycle resumes at the trimmed page 2.
+        assert last_run["page_audit"] == 2
+
+        fetch_events_command(mock_client)
+        # The rest of page 2 (events 700-999) is fetched, and nothing is sent twice.
+        assert len(sent_ids) == len(set(sent_ids))
+        assert {f"audit-{i}" for i in range(1000)} <= set(sent_ids)
+
+    def test_empty_resumed_page_resets_to_page_one(self, mock_client, mocker):
+        """An empty resumed page (timestamp held an exact multiple of the page size) must reset.
+
+        Without it, no state is written and the same empty page is requested forever.
+        """
+        mocker.patch.object(mock_client, "get_events_page", return_value=[])
+        mocker.patch.object(demisto, "params", return_value=self.AUDIT_PARAMS)
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={
+                "last_fetch_audit": self.STUCK_TIME,
+                "previous_ids_audit": [f"audit-{i}" for i in range(400)],
+                "page_audit": 3,
+                "page_size_audit": 200,
+                "window_end_audit": "2026-10-11T12:00:00Z",
+            },
+        )
+        mocker.patch.object(mock_client, "send_events")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        assert last_run_arg["page_audit"] == Config.DEFAULT_PAGE
+        assert not last_run_arg["window_end_audit"]
+        # The cursor and saved IDs are untouched, so nothing is lost or resent.
+        assert last_run_arg["last_fetch_audit"] == self.STUCK_TIME
+        assert len(last_run_arg["previous_ids_audit"]) == 400
+
+    def test_late_event_at_stuck_timestamp_is_fetched_after_reset(self, mock_client, mocker):
+        """An event arriving late at the stuck timestamp is sent once after a reset, with no resends.
+
+        The stuck timestamp holds 450 events; the first 400 were sent on pages 1-2. Page 3 is
+        partial, so the next cycle resets to page 1. A late event then appears at the same
+        timestamp and must be picked up while all earlier events are deduplicated.
+        """
+        window = self._bucket(450)
+        page_size = 200
+        last_run: dict = {
+            "last_fetch_audit": self.STUCK_TIME,
+            "previous_ids_audit": [f"audit-{i}" for i in range(400)],
+            "page_audit": 3,
+            "page_size_audit": 200,
+            "window_end_audit": "2026-10-11T12:00:00Z",
+        }
+        sent_ids: list[str] = []
+
+        mocker.patch.object(demisto, "params", return_value=self.AUDIT_PARAMS)
+        mocker.patch.object(demisto, "getLastRun", side_effect=lambda: last_run)
+        mocker.patch.object(demisto, "setLastRun", side_effect=lambda lr: last_run.update(lr))
+        mocker.patch.object(
+            mock_client, "send_events", side_effect=lambda events, **kwargs: sent_ids.extend(e["id"] for e in events)
+        )
+
+        def paged(**kwargs):
+            start = (kwargs["page"] - 1) * page_size
+            return window[start : start + page_size]
+
+        mocker.patch.object(mock_client, "get_events_page", side_effect=paged)
+
+        # Cycle 1: partial page 3 sends the remaining 50 and resets to page 1.
+        fetch_events_command(mock_client)
+        assert last_run["page_audit"] == Config.DEFAULT_PAGE
+
+        # A late event arrives at the stuck timestamp, then the timestamp is walked again.
+        window.append({"id": "audit-late", "created_at": self.STUCK_TIME})
+        for _ in range(5):
+            fetch_events_command(mock_client)
+
+        assert "audit-late" in sent_ids
+        assert len(sent_ids) == len(set(sent_ids))
+        assert set(sent_ids) == {f"audit-{i}" for i in range(400, 450)} | {"audit-late"}
 
     def test_escapes_bucket_larger_than_max_fetch_across_cycles(self, mock_client, mocker):
         """A bucket several times max_fetch must drain across cycles and then move on.

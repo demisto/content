@@ -271,7 +271,8 @@ def get_event_id(event: dict) -> str | None:
     Returns:
         The event ID string, or None if not found.
     """
-    notification_event_id = (event.get("metadata") or {}).get("notification_event_id")
+    metadata = event.get("metadata")
+    notification_event_id = metadata.get("notification_event_id") if isinstance(metadata, dict) else None
     if notification_event_id:
         return str(notification_event_id)
 
@@ -1280,8 +1281,8 @@ def _fetch_single_log_type(
         page = start_page
         fetched = 0
 
-        # A partial last page means the window is drained, so the resume point must hold
-        # (new events are appended into that same page) rather than skip past it.
+        # Only a full last page means the stuck timestamp may hold more events; a partial
+        # page means it is fully read, so resuming stops.
         last_page_was_full = False
         pages_read = 0
 
@@ -1304,11 +1305,13 @@ def _fetch_single_log_type(
 
             raw_count = len(page_events)
             last_page_was_full = raw_count >= page_size
-            pages_read += 1
             # Trim the final page so the total fetched never exceeds max_events.
             remaining = max_events - fetched
             if raw_count > remaining:
                 page_events = page_events[:remaining]
+            else:
+                # Count only fully read pages, so a trimmed page is resumed instead of skipped.
+                pages_read += 1
             fetched += len(page_events)
 
             # Parse each event's time ONCE here: stamp _time/source_log_type and update the
@@ -1362,12 +1365,13 @@ def _fetch_single_log_type(
                 ids_at_last_timestamp = set(last_fetched_ids) | hwm_ids
 
             # Advance the resume page only while the cursor is stuck and the page was full.
-            # `page` is not always incremented before the loop exits, so use pages_read.
+            # `page` is not always incremented before the loop exits, so use pages_read,
+            # which excludes a trimmed last page so its unread events are fetched next cycle.
+            # Otherwise go back to page 1 with a fresh window. The cursor stays on the stuck
+            # timestamp, so late events at it are still fetched; sent ones are deduplicated.
             if hwm_time == last_fetch_timestamp and last_page_was_full:
                 next_page = start_page + pages_read
                 demisto.debug(f"[Fetch] {log_type.type_string}: Cursor stuck at {hwm_time}. Resuming at page {next_page}.")
-            elif hwm_time == last_fetch_timestamp:
-                next_page = start_page
             else:
                 next_page = Config.DEFAULT_PAGE
 
@@ -1382,6 +1386,12 @@ def _fetch_single_log_type(
                 f"[Fetch] {log_type.type_string}: State updated. New HWM: {hwm_time}, "
                 f"next page: {next_page}, window end: {saved_window_end}"
             )
+        elif start_page > Config.DEFAULT_PAGE:
+            # An empty resumed page means the stuck timestamp is fully read. Reset to page 1
+            # and a fresh window; otherwise the same empty page would be requested forever.
+            result.last_run_updates[page_key] = Config.DEFAULT_PAGE
+            result.last_run_updates[window_end_key] = ""
+            demisto.debug(f"[Fetch] {log_type.type_string}: Page {start_page} was empty. Resetting to page 1.")
         else:
             demisto.debug(f"[Fetch] {log_type.type_string}: No events with a time field. State not updated.")
 
