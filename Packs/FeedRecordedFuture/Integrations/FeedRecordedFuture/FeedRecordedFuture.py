@@ -629,7 +629,7 @@ def main():  # pragma: no cover
     client = Client(
         RF_INDICATOR_TYPES[params.get("indicator_type")],
         api_token,
-        params.get("services"),
+        argToList(params.get("services")),
         params.get("risk_rule"),
         params.get("fusion_file_path"),
         params.get("insecure"),
