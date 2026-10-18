@@ -2142,21 +2142,41 @@ class TestRateLimitRetry:
         assert http_mock.call_count == 2
         sleep_mock.assert_called_once_with(42)  # 40 + RATE_LIMIT_WAIT_BUFFER_SEC
 
+    def test_multiple_retries_then_success(self, mocker: MockerFixture, client: Client):
+        """
+        Given: 409 rate-limit responses on every attempt except the last allowed retry.
+        When:  _http_request_with_rate_limit_retry is called.
+        Then:  it retries RATE_LIMIT_MAX_RETRIES times, waiting the requested time each time, and returns the result.
+        """
+        sleep_mock = mocker.patch.object(Qualysv2.time, "sleep")
+        rate_limit_errors = [_make_rate_limit_exception("58") for _ in range(Qualysv2.RATE_LIMIT_MAX_RETRIES)]
+        http_mock = mocker.patch.object(client, "_http_request", side_effect=[*rate_limit_errors, "ok"])
+
+        result = client._http_request_with_rate_limit_retry(method="GET", url_suffix="x")
+
+        assert result == "ok"
+        assert http_mock.call_count == Qualysv2.RATE_LIMIT_MAX_RETRIES + 1
+        assert sleep_mock.call_count == Qualysv2.RATE_LIMIT_MAX_RETRIES
+        sleep_mock.assert_called_with(60)  # 58 + RATE_LIMIT_WAIT_BUFFER_SEC, not capped
+
     def test_retry_exhausted_raises(self, mocker: MockerFixture, client: Client):
         """
-        Given: 409 rate-limit responses on both the initial call and the single retry.
+        Given: 409 rate-limit responses on the initial call and on all retries.
         When:  _http_request_with_rate_limit_retry is called.
-        Then:  the rate-limit DemistoException is raised after one retry.
+        Then:  the rate-limit DemistoException is raised after RATE_LIMIT_MAX_RETRIES retries.
         """
-        mocker.patch.object(Qualysv2.time, "sleep")
+        sleep_mock = mocker.patch.object(Qualysv2.time, "sleep")
         http_mock = mocker.patch.object(
-            client, "_http_request", side_effect=[_make_rate_limit_exception("10"), _make_rate_limit_exception("10")]
+            client,
+            "_http_request",
+            side_effect=[_make_rate_limit_exception("10") for _ in range(Qualysv2.RATE_LIMIT_MAX_RETRIES + 1)],
         )
 
         with pytest.raises(Qualysv2.DemistoException):
             client._http_request_with_rate_limit_retry(method="GET", url_suffix="x")
 
-        assert http_mock.call_count == 2
+        assert http_mock.call_count == Qualysv2.RATE_LIMIT_MAX_RETRIES + 1
+        assert sleep_mock.call_count == Qualysv2.RATE_LIMIT_MAX_RETRIES
 
     def test_non_rate_limit_error_raised_immediately(self, mocker: MockerFixture, client: Client):
         """
@@ -2181,7 +2201,7 @@ class TestRateLimitRetry:
         "raw_wait, expected",
         [
             ("40", 42),  # header value + buffer
-            ("100", Qualysv2.RATE_LIMIT_MAX_WAIT_SEC),  # capped
+            ("100", 102),  # not capped
             (
                 "not-a-number",
                 Qualysv2.RATE_LIMIT_DEFAULT_WAIT_SEC + Qualysv2.RATE_LIMIT_WAIT_BUFFER_SEC,
@@ -2190,7 +2210,7 @@ class TestRateLimitRetry:
         ],
     )
     def test_get_rate_limit_wait_seconds(self, raw_wait, expected):
-        """Validate parsing of X-RateLimit-ToWait-Sec into a bounded wait value."""
+        """Validate parsing of X-RateLimit-ToWait-Sec into a wait value."""
         response = Mock()
         response.headers = {Qualysv2.RATE_LIMIT_TO_WAIT_HEADER: raw_wait} if raw_wait is not None else {}
         assert Client._get_rate_limit_wait_seconds(response) == expected
