@@ -663,18 +663,20 @@ class ZendeskClient(BaseClient):
             command_results.append(error_entry("\n".join(error_msgs)))
         return command_results if command_results else "No outputs."
 
-    def __zendesk_ticket_send_attachements(
+    def __zendesk_ticket_upload_attachements(
         self,
         file_id: STR_OR_STR_LIST,
         filename: STR_OR_STR_LIST | None = None,
         is_mirror: bool = False,
         **kwargs,
-    ) -> (list, list):
+    ) -> tuple[list, list]:
         headers = {"Content-Type": "application/binary"}
         if is_mirror:
             headers["user-agent"] = MIRROR_USER_AGENT
         file_id = argToList(file_id)
         file_name_list = argToList(filename) if filename else [None] * len(file_id)
+        if filename:
+            assert file_id, "you can't use 'filename' without 'file_id'"
         file_tokens = []
         uploaded_files = []
         for single_file_id, single_file_name in zip(file_id, file_name_list):
@@ -705,8 +707,7 @@ class ZendeskClient(BaseClient):
             priority: str | None = None,
             followers: list[str] | str | None = None,
             status: str | None = None,
-            file_id: STR_OR_STR_LIST | None = None,
-            filename: STR_OR_STR_LIST | None = None,
+            uploads: list[str] | None = None,
             **kwargs,
         ):
             self._data: dict[str, Any] = {}
@@ -721,12 +722,12 @@ class ZendeskClient(BaseClient):
                 self._data["priority"] = priority
             if comment:
                 self._data["comment"] = {"body": comment}
-                if public:
-                    self._data["comment"]["public"] = argToBoolean(public)
             if html_comment:
                 self._data["comment"] = {"html_body": html_comment}
-                if public:
-                    self._data["comment"]["public"] = argToBoolean(public)
+            if public:
+                self._data["comment"]["public"] = argToBoolean(public)
+            if uploads:
+                self._data["comment"]["uploads"] = uploads
             if status:
                 Validators.validate_ticket_status(status)
                 self._data["status"] = status
@@ -736,13 +737,6 @@ class ZendeskClient(BaseClient):
                 self._data["followers"] = list(map(self.follower_and_email_cc_parse, argToList(followers)))
             if email_ccs:
                 self._data["email_ccs"] = list(map(self.follower_and_email_cc_parse, argToList(email_ccs)))
-            if filename:
-                assert not file_id, "you can't use 'filename' without 'file_id'"
-            if file_id:
-                _, file_tokens = ZendeskClient.__zendesk_ticket_send_attachements(
-                    self, file_id=file_id, filename=filename, **kwargs
-                )
-                self._data["comment"]["uploads"] = file_tokens
 
             self._data.update(
                 prepare_kwargs(
@@ -798,6 +792,11 @@ class ZendeskClient(BaseClient):
         for argument in ["subject", "type", "requester", "description"]:
             assert argument in kwargs, f"'{argument}' is a required argument."
         kwargs["comment"] = kwargs.pop("description")
+        file_id = kwargs.pop("file_id", None)
+        filename = kwargs.pop("filename", None)
+        kwargs["uploads"] = None
+        if file_id or filename:
+            _, kwargs["uploads"] = self.__zendesk_ticket_upload_attachements(file_id=file_id, filename=filename)
         return self.__command_results_zendesk_tickets(
             [self._http_request("POST", url_suffix="tickets", json_data={"ticket": dict(self.Ticket(**kwargs))})["ticket"]]
         )
@@ -810,6 +809,11 @@ class ZendeskClient(BaseClient):
         **kwargs,
     ):
         headers = {"user-agent": MIRROR_USER_AGENT} if is_mirror else {}
+        file_id = kwargs.pop("file_id", None)
+        filename = kwargs.pop("filename", None)
+        kwargs["uploads"] = None
+        if file_id or filename:
+            _, kwargs["uploads"] = self.__zendesk_ticket_upload_attachements(file_id=file_id, filename=filename)
         res = self._http_request(
             "PUT", url_suffix=f"tickets/{ticket_id}", json_data={"ticket": dict(self.Ticket(**kwargs))}, headers=headers
         )
@@ -869,11 +873,7 @@ class ZendeskClient(BaseClient):
         filename: STR_OR_STR_LIST | None = None,
         **kwargs,
     ):
-        uploaded_files, file_tokens = self.__zendesk_ticket_send_attachements(
-            file_id=file_id,
-            filename=filename,
-            **kwargs
-        )
+        uploaded_files, file_tokens = self.__zendesk_ticket_upload_attachements(file_id=file_id, filename=filename, **kwargs)
 
         self._http_request(
             "PUT", url_suffix=f"tickets/{ticket_id}", json_data={"ticket": {"comment": {"uploads": file_tokens, "body": comment}}}
