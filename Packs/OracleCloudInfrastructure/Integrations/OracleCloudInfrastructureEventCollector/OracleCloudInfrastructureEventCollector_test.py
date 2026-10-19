@@ -17,6 +17,7 @@ def dummy_client(mocker):
     mocker.patch.object(Client, "build_singer_object", return_value="dummy_singer_object")
     mocker.patch.object(Client, "build_audit_base_url", return_value="dummy_audit_base_url")
     mocker.patch.object(Client, "build_searchlog_url", return_value="dummy_searchlog_url")
+    mocker.patch.object(Client, "build_cloudguard_url", return_value="dummy_cloudguard_url")
     return Client(
         verify_certificate=False,
         proxy=False,
@@ -74,6 +75,7 @@ class TestClientRelatedFunctions:
         """
         mocker.patch.object(Client, "build_audit_base_url", return_value="dummy_audit_base_url")
         mocker.patch.object(Client, "build_searchlog_url", return_value="dummy_searchlog_url")
+        mocker.patch.object(Client, "build_cloudguard_url", return_value="dummy_cloudguard_url")
         mocker.patch("OracleCloudInfrastructureEventCollector.Signer", return_value="dummy_singer_object")
         mocker.patch.object(Client, "validate_private_key_syntax", return_value="dummy_validated_private_key")
         client = Client(
@@ -110,6 +112,7 @@ class TestClientRelatedFunctions:
         """
         mocker.patch.object(Client, "build_audit_base_url", return_value="dummy_audit_base_url")
         mocker.patch.object(Client, "build_searchlog_url", return_value="dummy_searchlog_url")
+        mocker.patch.object(Client, "build_cloudguard_url", return_value="dummy_cloudguard_url")
         mocker.patch("OracleCloudInfrastructureEventCollector.Signer", side_effect=Exception("dummy_exception"))
         mocker.patch.object(Client, "validate_private_key_syntax", return_value="dummy_validated_private_key")
 
@@ -231,6 +234,7 @@ class TestClientRelatedFunctions:
         mocker.patch.object(Client, "build_singer_object", return_value="dummy_singer_object")
         mocker.patch.object(Client, "build_audit_base_url", return_value="dummy_audit_base_url")
         mocker.patch.object(Client, "build_searchlog_url", return_value="dummy_searchlog_url")
+        mocker.patch.object(Client, "build_cloudguard_url", return_value="dummy_cloudguard_url")
         client = Client(
             verify_certificate=False,
             proxy=False,
@@ -440,6 +444,7 @@ class TestEventRelatedFunctions:
 
         mocker.patch.object(Client, "build_audit_base_url", return_value="dummy_audit_base_url")
         mocker.patch.object(Client, "build_searchlog_url", return_value="dummy_searchlog_url")
+        mocker.patch.object(Client, "build_cloudguard_url", return_value="dummy_cloudguard_url")
         mocker.patch("OracleCloudInfrastructureEventCollector.Signer", return_value="dummy_singer_object")
         mocker.patch.object(Client, "validate_private_key_syntax", return_value="dummy_validated_private_key")
         client = Client(
@@ -1628,3 +1633,523 @@ class TestTestModule:
         assert result == "ok"
         assert mocked_http_request.called
         assert mocked_searchlogs.called
+
+
+class MockCloudGuardResponse:
+    """Represents a ListProblems response from the OCI Cloud Guard API."""
+
+    def __init__(self, items: list, next_page: str | None = None):
+        self.content = json.dumps({"items": items})
+        self.headers = {"opc-next-page": next_page} if next_page else {}
+
+
+def build_problem(problem_id: str, first_detected: str, last_detected: str) -> dict:
+    return {"id": problem_id, "timeFirstDetected": first_detected, "timeLastDetected": last_detected, "riskLevel": "HIGH"}
+
+
+class TestBuildCloudGuardUrl:
+    """Tests for the build_cloudguard_url method."""
+
+    def test_build_cloudguard_url_success(self, mocker):
+        """
+        Given:
+            - A valid region parameter.
+        When:
+            - Building the CloudGuard URL during Client initialization.
+        Then:
+            - Make sure the CloudGuard URL is built with the region-based Cloud Guard host.
+        """
+        mocker.patch.object(Client, "build_singer_object", return_value="dummy_singer_object")
+        mocker.patch("OracleCloudInfrastructureEventCollector.is_region", return_value=True)
+        client = Client(
+            verify_certificate=False,
+            proxy=False,
+            region="us-ashburn-1",
+            tenancy_ocid="dummy_tenancy_ocid",
+            private_key="dummy_private_key",
+            user_ocid="dummy_use_ocid",
+            key_fingerprint="dummy_key_fingerprint",
+            compartment_id="",
+            private_key_type="PKCS#8",
+        )
+
+        assert client.cloudguard_url == "https://cloudguard-cp-api.us-ashburn-1.oci.oraclecloud.com/20200131/problems"
+
+    def test_build_cloudguard_url_fail(self, mocker):
+        """
+        Given:
+            - An invalid region parameter.
+        When:
+            - Building the CloudGuard URL.
+        Then:
+            - Make sure a DemistoException is raised with a relevant message.
+        """
+        mocker.patch.object(Client, "build_singer_object", return_value="dummy_singer_object")
+        mocker.patch.object(Client, "build_audit_base_url", return_value="dummy_audit_base_url")
+        mocker.patch.object(Client, "build_searchlog_url", return_value="dummy_searchlog_url")
+        mocker.patch("OracleCloudInfrastructureEventCollector.is_region", return_value=False)
+        with pytest.raises(DemistoException, match="Could not create a valid OCI configuration"):
+            Client(
+                verify_certificate=False,
+                proxy=False,
+                region="invalid_region",
+                tenancy_ocid="dummy_tenancy_ocid",
+                private_key="dummy_private_key",
+                user_ocid="dummy_use_ocid",
+                key_fingerprint="dummy_key_fingerprint",
+                compartment_id="",
+                private_key_type="PKCS#8",
+            )
+
+
+class TestParseCloudGuardQuery:
+    """Tests for the parse_cloudguard_query function."""
+
+    @pytest.mark.parametrize(
+        "query, expected",
+        [
+            (None, {}),
+            ("", {}),
+            ("riskLevel=CRITICAL", {"riskLevel": "CRITICAL"}),
+            (
+                " riskLevel = CRITICAL ; lifecycleState=ACTIVE; ",
+                {"riskLevel": "CRITICAL", "lifecycleState": "ACTIVE"},
+            ),
+            ("label=a=b", {"label": "a=b"}),
+        ],
+    )
+    def test_parse_cloudguard_query_valid(self, query, expected):
+        """
+        Given:
+            - An empty query, a single pair, multiple pairs with extra spaces / trailing ';', or a value containing '='.
+        When:
+            - Parsing the 'CloudGuard Problems query' parameter.
+        Then:
+            - Make sure the filters are parsed into a dict of ListProblems query parameters.
+        """
+        from OracleCloudInfrastructureEventCollector import parse_cloudguard_query
+
+        assert parse_cloudguard_query(query) == expected
+
+    @pytest.mark.parametrize(
+        "query, error_match",
+        [
+            ("unknownKey=1", "Unsupported key 'unknownKey'"),
+            ("compartmentId=ocid1", "Unsupported key 'compartmentId'"),
+            ("limit=5", "Unsupported key 'limit'"),
+            ("riskLevel", "Invalid 'CloudGuard Problems query' entry"),
+            ("riskLevel=", "Invalid 'CloudGuard Problems query' entry"),
+            ("=CRITICAL", "Invalid 'CloudGuard Problems query' entry"),
+        ],
+    )
+    def test_parse_cloudguard_query_invalid(self, query, error_match):
+        """
+        Given:
+            - A query with an unknown key, a collector-controlled key, or a malformed pair.
+        When:
+            - Parsing the 'CloudGuard Problems query' parameter.
+        Then:
+            - Make sure a readable DemistoException is raised.
+        """
+        from OracleCloudInfrastructureEventCollector import parse_cloudguard_query
+
+        with pytest.raises(DemistoException, match=error_match):
+            parse_cloudguard_query(query)
+
+
+class TestCloudGuardProblemsApiRequest:
+    """Tests for the cloudguard_problems_api_request function."""
+
+    def test_cloudguard_problems_api_request_params(self, mocker, dummy_client):
+        """
+        Given:
+            - A fetch window, user filters and a page token.
+        When:
+            - Making a ListProblems API request.
+        Then:
+            - Make sure the request is a GET to the CloudGuard URL with the fixed and user-supplied query parameters.
+        """
+        from OracleCloudInfrastructureEventCollector import cloudguard_problems_api_request
+
+        mocked_http_request = mocker.patch.object(dummy_client, "_http_request")
+        cloudguard_problems_api_request(
+            client=dummy_client,
+            time_start="2023-01-01T00:00:00.000000Z",
+            time_end="2023-01-02T00:00:00.000000Z",
+            filters={"riskLevel": "CRITICAL"},
+            next_page="page-2",
+        )
+
+        call_kwargs = mocked_http_request.call_args[1]
+        assert call_kwargs["method"] == "GET"
+        assert call_kwargs["full_url"] == "dummy_cloudguard_url"
+        assert call_kwargs["params"] == {
+            "riskLevel": "CRITICAL",
+            "compartmentId": "dummy_tenancy_ocid",
+            "compartmentIdInSubtree": "true",
+            "accessLevel": "ACCESSIBLE",
+            "timeLastDetectedGreaterThanOrEqualTo": "2023-01-01T00:00:00.000000Z",
+            "timeLastDetectedLessThanOrEqualTo": "2023-01-02T00:00:00.000000Z",
+            "sortBy": "timeLastDetected",
+            "sortOrder": "ASC",
+            "limit": 1000,
+            "page": "page-2",
+        }
+
+    def test_cloudguard_problems_api_request_error_includes_url(self, mocker, dummy_client):
+        """
+        Given:
+            - The underlying _http_request raises a DemistoException.
+        When:
+            - Making a ListProblems API request.
+        Then:
+            - Make sure the raised exception message includes the CloudGuard URL.
+        """
+        from OracleCloudInfrastructureEventCollector import cloudguard_problems_api_request
+
+        mocker.patch.object(dummy_client, "_http_request", side_effect=DemistoException("underlying failure"))
+        with pytest.raises(DemistoException, match="dummy_cloudguard_url"):
+            cloudguard_problems_api_request(dummy_client, "start", "end", {})
+
+
+class TestCloudGuardProblemHelpers:
+    """Tests for the CloudGuard Problem enrichment and last run helpers."""
+
+    @pytest.mark.parametrize(
+        "problem, expected_status",
+        [
+            (build_problem("p1", "2023-01-01T10:00:00.000Z", "2023-01-01T10:00:00.000Z"), "new"),
+            (build_problem("p1", "2023-01-01T10:00:00.000Z", "2023-01-02T10:00:00.000Z"), "updated"),
+        ],
+    )
+    def test_add_cloudguard_fields(self, problem, expected_status):
+        """
+        Given:
+            - case 1: A Problem whose timeLastDetected equals timeFirstDetected.
+            - case 2: A Problem whose timeLastDetected is later than timeFirstDetected.
+        When:
+            - Adding the XSIAM fields to the Problem.
+        Then:
+            - _time is mapped from timeLastDetected.
+            - _ENTRY_STATUS is 'new' for case 1 and 'updated' for case 2.
+        """
+        from OracleCloudInfrastructureEventCollector import add_cloudguard_fields
+
+        result = add_cloudguard_fields(problem)
+        assert result["_time"] == problem["timeLastDetected"]
+        assert result["_ENTRY_STATUS"] == expected_status
+
+    def test_add_cloudguard_fields_missing_time(self):
+        """
+        Given:
+            - A Problem without timeFirstDetected.
+        When:
+            - Adding the XSIAM fields to the Problem.
+        Then:
+            - _ENTRY_STATUS is not set.
+        """
+        from OracleCloudInfrastructureEventCollector import add_cloudguard_fields
+
+        result = add_cloudguard_fields({"id": "p1", "timeLastDetected": "2023-01-01T10:00:00.000Z"})
+        assert result["_time"] == "2023-01-01T10:00:00.000Z"
+        assert "_ENTRY_STATUS" not in result
+
+    def test_get_problem_dedup_key(self):
+        """
+        Given:
+            - A Problem.
+        When:
+            - Building its deduplication key.
+        Then:
+            - The key combines the id and timeLastDetected.
+        """
+        from OracleCloudInfrastructureEventCollector import get_problem_dedup_key
+
+        problem = build_problem("p1", "2023-01-01T10:00:00.000Z", "2023-01-02T10:00:00.000Z")
+        assert get_problem_dedup_key(problem) == "p1|2023-01-02T10:00:00.000Z"
+
+    def test_build_cloudguard_last_run_no_problems(self):
+        """
+        Given:
+            - No Problems were fetched.
+        When:
+            - Building the CloudGuard last run.
+        Then:
+            - The previous last run is kept.
+        """
+        from OracleCloudInfrastructureEventCollector import build_cloudguard_last_run
+
+        assert build_cloudguard_last_run([], "prev", ["k1"]) == {"lastRun": "prev", "LastFetchedIds": ["k1"]}
+
+    def test_build_cloudguard_last_run_cursor_moved(self):
+        """
+        Given:
+            - Problems with a newer timeLastDetected than the previous cursor, two sharing the last timestamp.
+        When:
+            - Building the CloudGuard last run.
+        Then:
+            - lastRun is the last timeLastDetected and only the keys at that timestamp are stored.
+        """
+        from OracleCloudInfrastructureEventCollector import build_cloudguard_last_run
+
+        problems = [
+            build_problem("p1", "2023-01-01T10:00:00.000Z", "2023-01-01T10:00:00.000Z"),
+            build_problem("p2", "2023-01-01T10:00:00.000Z", "2023-01-01T11:00:00.000Z"),
+            build_problem("p3", "2023-01-01T11:00:00.000Z", "2023-01-01T11:00:00.000Z"),
+        ]
+        assert build_cloudguard_last_run(problems, "2023-01-01T09:00:00.000Z", ["old"]) == {
+            "lastRun": "2023-01-01T11:00:00.000Z",
+            "LastFetchedIds": ["p2|2023-01-01T11:00:00.000Z", "p3|2023-01-01T11:00:00.000Z"],
+        }
+
+    def test_build_cloudguard_last_run_cursor_not_moved(self):
+        """
+        Given:
+            - Newly fetched Problems all share the previous cursor timestamp.
+        When:
+            - Building the CloudGuard last run.
+        Then:
+            - The previous keys are kept and the new keys are added.
+        """
+        from OracleCloudInfrastructureEventCollector import build_cloudguard_last_run
+
+        cursor = "2023-01-01T11:00:00.000Z"
+        problems = [build_problem("p4", cursor, cursor)]
+        assert build_cloudguard_last_run(problems, cursor, [f"p3|{cursor}"]) == {
+            "lastRun": cursor,
+            "LastFetchedIds": [f"p3|{cursor}", f"p4|{cursor}"],
+        }
+
+
+class TestGetCloudGuardProblems:
+    """Tests for the get_cloudguard_problems function."""
+
+    def test_get_cloudguard_problems_first_run(self, mocker, dummy_client):
+        """
+        Given:
+            - First run with no previous last run state.
+        When:
+            - Fetching CloudGuard Problems.
+        Then:
+            - Problems are returned with _time and _ENTRY_STATUS.
+            - The last run holds the last timeLastDetected and its dedup key.
+        """
+        from OracleCloudInfrastructureEventCollector import get_cloudguard_problems
+
+        items = [
+            build_problem("p1", "2023-01-01T09:00:00.000Z", "2023-01-01T09:00:00.000Z"),
+            build_problem("p2", "2023-01-01T08:00:00.000Z", "2023-01-01T09:30:00.000Z"),
+        ]
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.cloudguard_problems_api_request",
+            return_value=MockCloudGuardResponse(items),
+        )
+
+        problems, last_run = get_cloudguard_problems(dummy_client, {}, 10, [], "2023-01-01T00:00:00.000000Z")
+
+        assert [problem["_ENTRY_STATUS"] for problem in problems] == ["new", "updated"]
+        assert [problem["_time"] for problem in problems] == ["2023-01-01T09:00:00.000Z", "2023-01-01T09:30:00.000Z"]
+        assert last_run == {"lastRun": "2023-01-01T09:30:00.000Z", "LastFetchedIds": ["p2|2023-01-01T09:30:00.000Z"]}
+
+    def test_get_cloudguard_problems_dedup_keeps_updates(self, mocker, dummy_client):
+        """
+        Given:
+            - The previous fetch stored the key of Problem p1 at the cursor timestamp.
+            - The API returns p1 again with the same timeLastDetected, and p1 again with a newer timeLastDetected.
+        When:
+            - Fetching CloudGuard Problems.
+        Then:
+            - The duplicate occurrence is dropped and the updated occurrence is kept.
+        """
+        from OracleCloudInfrastructureEventCollector import get_cloudguard_problems
+
+        cursor = "2023-01-01T09:00:00.000Z"
+        items = [
+            build_problem("p1", cursor, cursor),
+            build_problem("p1", cursor, "2023-01-01T10:00:00.000Z"),
+        ]
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.cloudguard_problems_api_request",
+            return_value=MockCloudGuardResponse(items),
+        )
+
+        problems, last_run = get_cloudguard_problems(dummy_client, {}, 10, [f"p1|{cursor}"], cursor)
+
+        assert len(problems) == 1
+        assert problems[0]["timeLastDetected"] == "2023-01-01T10:00:00.000Z"
+        assert problems[0]["_ENTRY_STATUS"] == "updated"
+        assert last_run == {"lastRun": "2023-01-01T10:00:00.000Z", "LastFetchedIds": ["p1|2023-01-01T10:00:00.000Z"]}
+
+    def test_get_cloudguard_problems_pagination(self, mocker, dummy_client):
+        """
+        Given:
+            - The first response has an opc-next-page header and the second has none.
+        When:
+            - Fetching CloudGuard Problems.
+        Then:
+            - Two requests are made, the second with the page token, and Problems from both pages are returned.
+        """
+        from OracleCloudInfrastructureEventCollector import get_cloudguard_problems
+
+        page1 = MockCloudGuardResponse([build_problem("p1", "2023-01-01T09:00:00.000Z", "2023-01-01T09:00:00.000Z")], "token-2")
+        page2 = MockCloudGuardResponse([build_problem("p2", "2023-01-01T10:00:00.000Z", "2023-01-01T10:00:00.000Z")])
+        mocked_request = mocker.patch(
+            "OracleCloudInfrastructureEventCollector.cloudguard_problems_api_request", side_effect=[page1, page2]
+        )
+
+        problems, _ = get_cloudguard_problems(dummy_client, {}, 10, [], "2023-01-01T00:00:00.000000Z")
+
+        assert mocked_request.call_count == 2
+        assert mocked_request.call_args_list[0].kwargs["next_page"] is None
+        assert mocked_request.call_args_list[1].kwargs["next_page"] == "token-2"
+        assert [problem["id"] for problem in problems] == ["p1", "p2"]
+
+    def test_get_cloudguard_problems_respects_max_fetch(self, mocker, dummy_client):
+        """
+        Given:
+            - The first page holds more Problems than max_fetch and has an opc-next-page header.
+        When:
+            - Fetching CloudGuard Problems.
+        Then:
+            - Only max_fetch Problems are returned and no further page is requested.
+        """
+        from OracleCloudInfrastructureEventCollector import get_cloudguard_problems
+
+        items = [build_problem(f"p{i}", f"2023-01-01T09:0{i}:00.000Z", f"2023-01-01T09:0{i}:00.000Z") for i in range(5)]
+        mocked_request = mocker.patch(
+            "OracleCloudInfrastructureEventCollector.cloudguard_problems_api_request",
+            return_value=MockCloudGuardResponse(items, "token-2"),
+        )
+
+        problems, last_run = get_cloudguard_problems(dummy_client, {}, 2, [], "2023-01-01T00:00:00.000000Z")
+
+        assert mocked_request.call_count == 1
+        assert [problem["id"] for problem in problems] == ["p0", "p1"]
+        assert last_run["lastRun"] == "2023-01-01T09:01:00.000Z"
+
+    def test_get_cloudguard_problems_api_error(self, mocker, dummy_client):
+        """
+        Given:
+            - The API request raises an exception.
+        When:
+            - Fetching CloudGuard Problems.
+        Then:
+            - An empty list is returned and the previous last run is preserved.
+        """
+        from OracleCloudInfrastructureEventCollector import get_cloudguard_problems
+
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.cloudguard_problems_api_request", side_effect=Exception("API Error")
+        )
+        mocker.patch("OracleCloudInfrastructureEventCollector.demisto.error")
+
+        problems, last_run = get_cloudguard_problems(dummy_client, {}, 10, ["k1"], "prev")
+
+        assert problems == []
+        assert last_run == {"lastRun": "prev", "LastFetchedIds": ["k1"]}
+
+
+class TestCloudGuardFlows:
+    """Tests for the CloudGuard Problems flows in test-module and main."""
+
+    params = {
+        "tenancy_ocid": "dummy_tenancy_ocid",
+        "user_ocid": "dummy_user_ocid",
+        "region": "dummy_region",
+        "max_fetch": "5",
+        "first_fetch": "3 days",
+        "credentials": {"identifier": "dummy_key_fingerprint", "password": "dummy_private_key"},
+        "event_types_to_fetch": ["CloudGuard Problems"],
+        "cloudguard_query": "riskLevel=CRITICAL",
+    }
+
+    def test_test_module_cloudguard(self, mocker, dummy_client):
+        """
+        Given:
+            - event_types_to_fetch contains 'CloudGuard Problems'.
+        When:
+            - test_module is called.
+        Then:
+            - cloudguard_problems_api_request is called with the user filters and 'ok' is returned.
+        """
+        from OracleCloudInfrastructureEventCollector import test_module
+
+        mocked_request = mocker.patch("OracleCloudInfrastructureEventCollector.cloudguard_problems_api_request")
+        result = test_module(dummy_client, "", ["CloudGuard Problems"], {"riskLevel": "CRITICAL"})
+
+        assert result == "ok"
+        assert mocked_request.call_args.kwargs["filters"] == {"riskLevel": "CRITICAL"}
+
+    def test_test_module_cloudguard_failure(self, mocker, dummy_client):
+        """
+        Given:
+            - event_types_to_fetch contains 'CloudGuard Problems'.
+        When:
+            - test_module is called and the ListProblems API raises an error.
+        Then:
+            - test_module raises and the original error text is preserved.
+        """
+        from OracleCloudInfrastructureEventCollector import test_module
+
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.cloudguard_problems_api_request",
+            side_effect=DemistoException("NotAuthorizedOrNotFound"),
+        )
+        with pytest.raises(DemistoException, match="NotAuthorizedOrNotFound"):
+            test_module(dummy_client, "", ["CloudGuard Problems"], {})
+
+    def test_fetch_events_cloudguard(self, mocker, dummy_client):
+        """
+        Given:
+            - event_types_to_fetch is ['CloudGuard Problems'] and a previous CloudGuard last run exists.
+        When:
+            - Running fetch-events.
+        Then:
+            - get_cloudguard_problems is called with the parsed filters and the stored cursor and keys.
+            - Problems are sent to the existing oracle/cloud_infrastructure dataset.
+            - The CloudGuardProblems last run sub-key is updated.
+        """
+        from OracleCloudInfrastructureEventCollector import main
+
+        previous_last_run = {"CloudGuardProblems": {"lastRun": "2023-01-01T09:00:00.000Z", "LastFetchedIds": ["k1"]}}
+        mock_demisto(mocker, mock_params=self.params, mock_args={}, command="fetch-events", mock_last_run=previous_last_run)
+        problems = [{"id": "p1", "_time": "2023-01-01T10:00:00.000Z"}]
+        new_cloudguard_last_run = {"lastRun": "2023-01-01T10:00:00.000Z", "LastFetchedIds": ["p1|2023-01-01T10:00:00.000Z"]}
+        mocked_get_problems = mocker.patch(
+            "OracleCloudInfrastructureEventCollector.get_cloudguard_problems",
+            return_value=(problems, new_cloudguard_last_run),
+        )
+        mocked_send_events = mocker.patch("OracleCloudInfrastructureEventCollector.send_events_to_xsiam")
+        mocked_set_last_run = mocker.patch("OracleCloudInfrastructureEventCollector.demisto.setLastRun")
+
+        main()
+
+        assert mocked_get_problems.call_args.args[1:] == ({"riskLevel": "CRITICAL"}, 5, ["k1"], "2023-01-01T09:00:00.000Z")
+        mocked_send_events.assert_called_once_with(problems, vendor="oracle", product="cloud_infrastructure")
+        assert mocked_set_last_run.call_args.args[0]["CloudGuardProblems"] == new_cloudguard_last_run
+
+    def test_fetch_events_cloudguard_invalid_query(self, mocker, dummy_client):
+        """
+        Given:
+            - The 'CloudGuard Problems query' parameter contains an unsupported key.
+        When:
+            - Running fetch-events.
+        Then:
+            - return_error is called with a readable message and nothing is fetched.
+        """
+        from OracleCloudInfrastructureEventCollector import main
+
+        mock_demisto(
+            mocker,
+            mock_params={**self.params, "cloudguard_query": "badKey=1"},
+            mock_args={},
+            command="fetch-events",
+            mock_last_run={},
+        )
+        mocked_get_problems = mocker.patch("OracleCloudInfrastructureEventCollector.get_cloudguard_problems")
+        mocked_return_error = mocker.patch("OracleCloudInfrastructureEventCollector.return_error")
+
+        main()
+
+        assert not mocked_get_problems.called
+        assert "Unsupported key 'badKey'" in mocked_return_error.call_args.args[0]

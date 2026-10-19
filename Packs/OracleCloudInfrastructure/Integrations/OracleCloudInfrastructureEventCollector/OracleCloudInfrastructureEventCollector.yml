@@ -60,7 +60,7 @@ configuration:
   section: Collect
   defaultvalue: '1'
 - display: First fetch time
-  additionalinfo: This parameter is relevant for 'Audit' events only.
+  additionalinfo: This parameter is relevant for 'Audit' and 'CloudGuard Problems' events only.
   defaultvalue: 3 days
   name: first_fetch
   type: 0
@@ -79,6 +79,7 @@ configuration:
   options:
   - Audit
   - Search Logs
+  - CloudGuard Problems
   defaultvalue: Audit
   section: Collect
   required: true
@@ -87,6 +88,13 @@ configuration:
   name: search_log_query
   type: 0
   section: Collect
+  required: false
+- display: CloudGuard Problems query
+  additionalinfo: 'Filters for CloudGuard Problems as key=value pairs separated by ";" (for example: riskLevel=CRITICAL;lifecycleState=ACTIVE). Each pair is passed as a ListProblems query parameter. Leave empty to fetch all Problems. CloudGuard Problems are fetched from the configured Region, which must be the Cloud Guard reporting region.'
+  name: cloudguard_query
+  type: 0
+  section: Collect
+  advanced: true
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
