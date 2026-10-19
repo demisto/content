@@ -255,6 +255,16 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-appservice-webapp-update",
         "azure-appservice-webapp-update-quick-action",
     ],
+    "Microsoft.DBforPostgreSQL/flexibleServers/configurations/write": [
+        "azure-postgres-flexible-server-configuration-update",
+        "azure-postgres-flexible-server-set-disconnection-logging-quick-action",
+        "azure-postgres-flexible-server-set-checkpoint-logging-quick-action",
+        "azure-postgres-flexible-server-set-connection-throttling-quick-action",
+        "azure-postgres-flexible-server-set-session-connection-logging-quick-action",
+        "azure-postgres-flexible-server-set-log-retention-period-quick-action",
+        "azure-postgres-flexible-server-set-statement-logging-quick-action",
+        "azure-postgres-flexible-server-set-secure-transport-quick-action",
+    ],
     "Microsoft.DBforMySQL/flexibleServers/configurations/read": [
         "azure-mysql-flexible-server-param-set",
         "azure-mysql-set-secure-transport-quick-action",
@@ -459,6 +469,29 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/ipGroups/delete": ["azure-vn-ip-group-delete"],
     "Microsoft.Network/virtualNetworks/read": ["azure-vn-virtual-networks-list"],
     "Microsoft.Resources/subscriptions/read": ["azure-rm-subscriptions-list"],
+    "Microsoft.OperationalInsights/workspaces/savedSearches/read": [
+        "azure-log-analytics-saved-searches-list",
+        "azure-log-analytics-saved-search-get",
+    ],
+    "Microsoft.OperationalInsights/workspaces/savedSearches/write": [
+        "azure-log-analytics-saved-search-create-update",
+    ],
+    "Microsoft.OperationalInsights/workspaces/savedSearches/delete": [
+        "azure-log-analytics-saved-search-delete",
+    ],
+    "Microsoft.OperationalInsights/workspaces/read": [
+        "azure-log-analytics-workspaces-list",
+    ],
+    "Microsoft.OperationalInsights/workspaces/tables/read": [
+        "azure-log-analytics-table-get",
+    ],
+    "Microsoft.OperationalInsights/workspaces/tables/write": [
+        "azure-log-analytics-table-run",
+    ],
+    "Microsoft.OperationalInsights/workspaces/tables/delete": [
+        "azure-log-analytics-table-delete",
+    ],
+    "Microsoft.OperationalInsights/workspaces/searchJobs/write": ["azure-log-analytics-table-run"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -490,6 +523,7 @@ API_FUNCTION_TO_PERMISSIONS = {
         "Microsoft.DBforPostgreSQL/servers/configurations/write",
     ],
     "postgres_server_update": ["Microsoft.DBforPostgreSQL/servers/read", "Microsoft.DBforPostgreSQL/servers/write"],
+    "postgres_flexible_server_configuration_update": ["Microsoft.DBforPostgreSQL/flexibleServers/configurations/write"],
     "sql_db_threat_policy_update": [
         "Microsoft.Sql/servers/databases/securityAlertPolicies/read",
         "Microsoft.Sql/servers/databases/securityAlertPolicies/write",
@@ -606,6 +640,21 @@ API_FUNCTION_TO_PERMISSIONS = {
         "Microsoft.Network/firewallPolicies/ruleCollectionGroups/write",
     ],
     "firewall_policy_rule_collection_group_delete": ["Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete"],
+    "log_analytics_saved_searches_list": ["Microsoft.OperationalInsights/workspaces/savedSearches/read"],
+    "log_analytics_saved_search_get": ["Microsoft.OperationalInsights/workspaces/savedSearches/read"],
+    "log_analytics_saved_search_create_update": [
+        "Microsoft.OperationalInsights/workspaces/savedSearches/read",
+        "Microsoft.OperationalInsights/workspaces/savedSearches/write",
+    ],
+    "log_analytics_saved_search_delete": ["Microsoft.OperationalInsights/workspaces/savedSearches/delete"],
+    "log_analytics_workspaces_list": ["Microsoft.OperationalInsights/workspaces/read"],
+    "log_analytics_table_get": ["Microsoft.OperationalInsights/workspaces/tables/read"],
+    "log_analytics_table_run": [
+        "Microsoft.OperationalInsights/workspaces/tables/read",
+        "Microsoft.OperationalInsights/workspaces/tables/write",
+        "Microsoft.OperationalInsights/workspaces/searchJobs/write",
+    ],
+    "log_analytics_table_delete": ["Microsoft.OperationalInsights/workspaces/tables/delete"],
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
@@ -635,6 +684,7 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.DBforPostgreSQL/servers/write",
     "Microsoft.DBforPostgreSQL/servers/configurations/read",
     "Microsoft.DBforPostgreSQL/servers/configurations/write",
+    "Microsoft.DBforPostgreSQL/flexibleServers/configurations/write",
     "Microsoft.Web/sites/config/read",
     "Microsoft.Web/sites/config/write",
     "Microsoft.Web/sites/read",
@@ -699,6 +749,15 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Network/firewallPolicies/ruleCollectionGroups/read",
     "Microsoft.Network/firewallPolicies/ruleCollectionGroups/write",
     "Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete",
+    "Microsoft.OperationalInsights/workspaces/read",
+    "Microsoft.OperationalInsights/workspaces/query/read",
+    "Microsoft.OperationalInsights/workspaces/savedSearches/read",
+    "Microsoft.OperationalInsights/workspaces/savedSearches/write",
+    "Microsoft.OperationalInsights/workspaces/savedSearches/delete",
+    "Microsoft.OperationalInsights/workspaces/tables/read",
+    "Microsoft.OperationalInsights/workspaces/tables/write",
+    "Microsoft.OperationalInsights/workspaces/tables/delete",
+    "Microsoft.OperationalInsights/workspaces/searchJobs/write",
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -706,6 +765,7 @@ PREFIX_URL_AZURE = "https://management.azure.com/subscriptions/"
 PREFIX_URL_MS_GRAPH = "https://graph.microsoft.com/v1.0"
 POLICY_ASSIGNMENT_API_VERSION = "2024-05-01"
 POSTGRES_API_VERSION = "2017-12-01"
+POSTGRES_FLEXIBLE_API_VERSION = "2025-08-01"
 WEBAPP_API_VERSION = "2024-04-01"
 FLEXIBLE_API_VERSION = "2023-12-30"
 MONITOR_API_VERSION = "2016-03-01"
@@ -735,6 +795,15 @@ STORAGE_ACCOUNT_API_VERSION = "2026-06-01"
 AKS_API_VERSION = "2026-06-01"
 
 IP_GROUPS_API_VERSION = "2025-09-01"
+
+LOG_ANALYTICS_API_VERSION = "2026-03-01"
+LOG_ANALYTICS_TABLE_NAME_SUFFIX = "_SRCH"
+LOG_ANALYTICS_SAVED_SEARCH_HEADERS = [
+    "id",
+    "name",
+    "type",
+    "etag",
+]
 
 # Polling settings for the IP group and Azure Firewall polling commands.
 DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval between polling attempts of the polling commands.
@@ -810,6 +879,7 @@ POLLING_COMMANDS = {
     "azure-vn-firewall-policy-network-rule-create",
     "azure-vn-firewall-policy-network-rule-update",
     "azure-vn-firewall-policy-network-rule-delete",
+    "azure-log-analytics-table-run",
 }
 
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
@@ -2543,6 +2613,53 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
+    def postgres_flexible_server_configuration_update(
+        self,
+        server_name: str,
+        configuration_name: str,
+        subscription_id: str,
+        resource_group_name: str,
+        source: str,
+        value: str,
+    ):
+        """
+        Updates a configuration of a PostgreSQL Flexible Server.
+
+        Args:
+            server_name (str): Name of the PostgreSQL Flexible Server.
+            configuration_name (str): Name of the configuration parameter to update.
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Name of the resource group containing the server.
+            source (str): The source of the configuration value (e.g. "user-override").
+            value (str): The new value to set for the configuration parameter.
+
+        Returns:
+            dict: The response from the Azure REST API after applying the update.
+
+        Raises:
+            ValueError: If the PostgreSQL Flexible Server or configuration parameter is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.DBforPostgreSQL/flexibleServers/{server_name}/configurations/{configuration_name}"
+        )
+        params = {"api-version": POSTGRES_FLEXIBLE_API_VERSION}
+        data = {"properties": {"source": source, "value": value}}
+        data = remove_empty_elements(data)
+        demisto.debug(f'Updating configuration "{configuration_name}" of PostgreSQL Flexible Server "{server_name}".')
+        try:
+            return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{server_name}/{configuration_name}",
+                resource_type="PostgreSQL Flexible Server Configuration",
+                api_function_name="postgres_flexible_server_configuration_update",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
     def get_monitor_log_profile(self, subscription_id: str, log_profile_name: str):
         """
         Gets a monitor log profile.
@@ -4096,6 +4213,275 @@ class AzureClient:
                 subscription_id=subscription_id,
                 resource_group_name=None,
             )
+
+    def log_analytics_workspace_full_url(self, subscription_id: str, resource_group_name: str, workspace_name: str) -> str:
+        """Build the ARM base URL for a Log Analytics workspace."""
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.OperationalInsights/workspaces"
+        )
+        if workspace_name:
+            full_url += f"/{workspace_name}"
+        return full_url
+
+    def log_analytics_saved_searches_list(self, subscription_id: str, resource_group_name: str, workspace_name: str):
+        """
+        List all saved searches of a Log Analytics workspace.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Resource group name.
+            workspace_name (str): Log Analytics workspace name.
+
+        Returns:
+            dict: The API response containing the saved searches.
+
+        Raises:
+            ValueError: If the workspace is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        base_url = self.log_analytics_workspace_full_url(subscription_id, resource_group_name, workspace_name)
+        params = {"api-version": LOG_ANALYTICS_API_VERSION}
+        try:
+            return self.http_request("GET", full_url=f"{base_url}/savedSearches", params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=workspace_name,
+                resource_type="Log Analytics Saved Search",
+                api_function_name="log_analytics_saved_searches_list",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+            return {}
+
+    def log_analytics_saved_search_get(
+        self, subscription_id: str, resource_group_name: str, workspace_name: str, saved_search_id: str
+    ):
+        """
+        Get a specified saved search from a Log Analytics workspace.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Resource group name.
+            workspace_name (str): Log Analytics workspace name.
+            saved_search_id (str): The ID of the saved search.
+
+        Returns:
+            dict: The API response containing the saved search.
+
+        Raises:
+            ValueError: If the saved search is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        base_url = self.log_analytics_workspace_full_url(subscription_id, resource_group_name, workspace_name)
+        params = {"api-version": LOG_ANALYTICS_API_VERSION}
+        try:
+            return self.http_request("GET", full_url=f"{base_url}/savedSearches/{saved_search_id}", params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=saved_search_id,
+                resource_type="Log Analytics Saved Search",
+                api_function_name="log_analytics_saved_search_get",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+            return {}
+
+    def log_analytics_saved_search_create_update(
+        self, subscription_id: str, resource_group_name: str, workspace_name: str, saved_search_id: str, data: dict
+    ):
+        """
+        Create or update a saved search in a Log Analytics workspace.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Resource group name.
+            workspace_name (str): Log Analytics workspace name.
+            saved_search_id (str): The ID of the saved search.
+            data (dict): The saved search request body.
+
+        Returns:
+            dict: The API response containing the created/updated saved search.
+
+        Raises:
+            ValueError: If the workspace is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        base_url = self.log_analytics_workspace_full_url(subscription_id, resource_group_name, workspace_name)
+        params = {"api-version": LOG_ANALYTICS_API_VERSION}
+        try:
+            return self.http_request("PUT", full_url=f"{base_url}/savedSearches/{saved_search_id}", json_data=data, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=saved_search_id,
+                resource_type="Log Analytics Saved Search",
+                api_function_name="log_analytics_saved_search_create_update",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+            return {}
+
+    def log_analytics_saved_search_delete(
+        self, subscription_id: str, resource_group_name: str, workspace_name: str, saved_search_id: str
+    ) -> None:
+        """
+        Delete a specified saved search from a Log Analytics workspace.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Resource group name.
+            workspace_name (str): Log Analytics workspace name.
+            saved_search_id (str): The ID of the saved search.
+
+        Raises:
+            ValueError: If the saved search is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        base_url = self.log_analytics_workspace_full_url(subscription_id, resource_group_name, workspace_name)
+        params = {"api-version": LOG_ANALYTICS_API_VERSION}
+        try:
+            self.http_request(
+                "DELETE", full_url=f"{base_url}/savedSearches/{saved_search_id}", params=params, resp_type="response"
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=saved_search_id,
+                resource_type="Log Analytics Saved Search",
+                api_function_name="log_analytics_saved_search_delete",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def log_analytics_workspaces_list(self, subscription_id: str, resource_group_name: str):
+        """
+        List Log Analytics workspaces in a resource group.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Resource group name.
+
+        Returns:
+            dict: The API response containing the workspaces.
+
+        Raises:
+            ValueError: If the resource group is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        full_url = self.log_analytics_workspace_full_url(subscription_id, resource_group_name, "")
+        params = {"api-version": LOG_ANALYTICS_API_VERSION}
+        try:
+            return self.http_request("GET", full_url=full_url, params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_group_name,
+                resource_type="Log Analytics Workspace",
+                api_function_name="log_analytics_workspaces_list",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+            return {}
+
+    def log_analytics_table_get(self, subscription_id: str, resource_group_name: str, workspace_name: str, table_name: str):
+        """
+        Get a Log Analytics workspace table (search job).
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Resource group name.
+            workspace_name (str): Log Analytics workspace name.
+            table_name (str): The name of the table.
+
+        Returns:
+            dict: The API response containing the table.
+
+        Raises:
+            ValueError: If the table is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        base_url = self.log_analytics_workspace_full_url(subscription_id, resource_group_name, workspace_name)
+        params = {"api-version": LOG_ANALYTICS_API_VERSION}
+        try:
+            return self.http_request("GET", full_url=f"{base_url}/tables/{table_name}", params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=table_name,
+                resource_type="Log Analytics Search Job",
+                api_function_name="log_analytics_table_get",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+            return {}
+
+    def log_analytics_table_run(
+        self, subscription_id: str, resource_group_name: str, workspace_name: str, table_name: str, data: dict
+    ):
+        """
+        Create a Log Analytics search job table. The API returns only a 202 status code.
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Resource group name.
+            workspace_name (str): Log Analytics workspace name.
+            table_name (str): The name of the table to create (must end with the _SRCH suffix).
+            data (dict): The search job request body.
+
+        Raises:
+            ValueError: If the workspace is not found.
+            DemistoException: If the search job already exists or on permission/other API errors.
+        """
+        base_url = self.log_analytics_workspace_full_url(subscription_id, resource_group_name, workspace_name)
+        params = {"api-version": LOG_ANALYTICS_API_VERSION}
+        try:
+            return self.http_request(
+                "PUT", full_url=f"{base_url}/tables/{table_name}", json_data=data, params=params, resp_type="response"
+            )
+        except Exception as e:
+            if "properties.searchResult is immutable" in str(e):
+                raise DemistoException(f"Search job {table_name} already exists - please choose another name.") from e
+            self.handle_azure_error(
+                e=e,
+                resource_name=table_name,
+                resource_type="Log Analytics Search Job",
+                api_function_name="log_analytics_table_run",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+            return {}
+
+    def log_analytics_table_delete(self, subscription_id: str, resource_group_name: str, workspace_name: str, table_name: str):
+        """
+        Delete a Log Analytics workspace table (search job).
+
+        Args:
+            subscription_id (str): Azure subscription ID.
+            resource_group_name (str): Resource group name.
+            workspace_name (str): Log Analytics workspace name.
+            table_name (str): The name of the table to delete.
+
+        Raises:
+            ValueError: If the table is not found.
+            DemistoException: If there are permission or other API errors.
+        """
+        base_url = self.log_analytics_workspace_full_url(subscription_id, resource_group_name, workspace_name)
+        params = {"api-version": LOG_ANALYTICS_API_VERSION}
+        try:
+            return self.http_request("DELETE", full_url=f"{base_url}/tables/{table_name}", params=params, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=table_name,
+                resource_type="Log Analytics Search Job",
+                api_function_name="log_analytics_table_delete",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+            return {}
 
     def billing_usage_list(
         self,
@@ -5809,6 +6195,31 @@ def poll_firewall_policy_collection_provisioning(
     )
 
 
+def log_analytics_tags_arg_to_request_format(tags: str | None) -> list[dict[str, str]] | None:
+    """Convert a 'name=value;name=value' tags argument into the API request format.
+
+    Args:
+        tags (str | None): The tags argument as a string in the format 'name=value;name=value'.
+            Multiple tags are separated by semicolons, and each tag's name and value are separated
+            by an equals sign. Can be None or empty.
+
+    Returns:
+        list[dict[str, str]] | None: A list of dictionaries, each with 'name' and 'value' keys
+            representing a single tag, or None if the input is empty or None.
+
+    Raises:
+        DemistoException: If any tag is not in the expected 'name=value' format.
+    """
+    bad_arg_msg = "The `tags` argument is malformed. Value should be in the following format: `name=value;name=value`"
+    if not tags:
+        return None
+    parsed_tags = [tag.split("=") for tag in tags.split(";")]
+    for tag in parsed_tags:
+        if len(tag) != 2:
+            raise DemistoException(bad_arg_msg)
+    return [{"name": tag[0], "value": tag[1]} for tag in parsed_tags]
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -7380,6 +7791,32 @@ def mysql_flexible_server_param_set_command(client: AzureClient, params: dict, a
     value = args.get("value", "")
     client.flexible_server_param_set(server_name, configuration_name, subscription_id, resource_group_name, source, value)
     return CommandResults(readable_output=f"Updated the configuration {configuration_name} of the server {server_name}.")
+
+
+def postgres_flexible_server_configuration_update_command(client: AzureClient, params: dict, args: dict):
+    """
+    Updates a configuration of a PostgreSQL Flexible Server.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including server name, configuration name, source, and value.
+
+    Returns:
+        CommandResults: A success message confirming the configuration was updated.
+    """
+    server_name = args.get("server_name", "")
+    configuration_name = args.get("configuration_name", "")
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    source = args.get("source", "")
+    value = args.get("value", "")
+    client.postgres_flexible_server_configuration_update(
+        server_name, configuration_name, subscription_id, resource_group_name, source, value
+    )
+    return CommandResults(
+        readable_output=f"Updated the configuration {configuration_name} of the PostgreSQL Flexible Server {server_name}."
+    )
 
 
 def monitor_log_profile_update_command(client: AzureClient, params: dict, args: dict):
@@ -11782,6 +12219,367 @@ def firewall_policy_detach_command(client: AzureClient, params: dict[str, Any], 
     )
 
 
+def log_analytics_saved_searches_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    List the saved searches of a Log Analytics workspace.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: The list of saved searches.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    workspace_name = get_from_args_or_params(params=params, args=args, key="workspace_name")
+
+    response = client.log_analytics_saved_searches_list(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, workspace_name=workspace_name
+    )
+    output = response.get("value", [])
+
+    readable_output = tableToMarkdown(
+        "Saved Searches", output, headers=LOG_ANALYTICS_SAVED_SEARCH_HEADERS, headerTransform=pascalToSpace, removeNull=True
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Azure.LogAnalytics.SavedSearches",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
+def log_analytics_saved_search_get_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Get a specified saved search from a Log Analytics workspace.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including saved_search_id.
+
+    Returns:
+        CommandResults: The requested saved search.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    workspace_name = get_from_args_or_params(params=params, args=args, key="workspace_name")
+    saved_search_id = args.get("saved_search_id", "")
+
+    response = client.log_analytics_saved_search_get(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        workspace_name=workspace_name,
+        saved_search_id=saved_search_id,
+    )
+    readable_output = tableToMarkdown(
+        f"Saved search `{saved_search_id}` properties",
+        response,
+        headers=LOG_ANALYTICS_SAVED_SEARCH_HEADERS,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Azure.LogAnalytics.SavedSearches",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def log_analytics_saved_search_create_update_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Create or update a saved search in a Log Analytics workspace.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including saved_search_id, category, display_name, and query.
+
+    Returns:
+        CommandResults: The created or updated saved search.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    workspace_name = get_from_args_or_params(params=params, args=args, key="workspace_name")
+    saved_search_id = args.get("saved_search_id", "")
+    display_name = args.get("display_name", "")
+    category = args.get("category", "")
+    query = args.get("query", "")
+    etag = args.get("etag")
+
+    if not etag and not (category and query and display_name):
+        raise DemistoException("You must specify category, display_name and query arguments for creating a new saved search.")
+
+    data: dict = {
+        "properties": remove_empty_elements(
+            {
+                "category": category,
+                "displayName": display_name,
+                "functionAlias": args.get("function_alias"),
+                "functionParameters": args.get("function_parameters"),
+                "query": query,
+                "tags": log_analytics_tags_arg_to_request_format(args.get("tags")),
+            }
+        )
+    }
+    if etag:
+        data["etag"] = etag
+
+    response = client.log_analytics_saved_search_create_update(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        workspace_name=workspace_name,
+        saved_search_id=saved_search_id,
+        data=data,
+    )
+    readable_output = tableToMarkdown(
+        f"Saved search `{saved_search_id}` properties",
+        response,
+        headers=LOG_ANALYTICS_SAVED_SEARCH_HEADERS,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Azure.LogAnalytics.SavedSearches",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def log_analytics_saved_search_delete_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Delete a specified saved search from a Log Analytics workspace.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including saved_search_id.
+
+    Returns:
+        CommandResults: A success message.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    workspace_name = get_from_args_or_params(params=params, args=args, key="workspace_name")
+    saved_search_id = args.get("saved_search_id", "")
+
+    client.log_analytics_saved_search_delete(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        workspace_name=workspace_name,
+        saved_search_id=saved_search_id,
+    )
+    return CommandResults(readable_output=f"Successfully deleted the saved search {saved_search_id}.")
+
+
+def log_analytics_workspaces_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    List Log Analytics workspaces in a resource group.
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including optional subscription_id and resource_group_name.
+
+    Returns:
+        CommandResults: The list of workspaces.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    response = client.log_analytics_workspaces_list(subscription_id=subscription_id, resource_group_name=resource_group_name)
+    value = response.get("value", [])
+
+    workspaces = [
+        {
+            "Name": workspace.get("name"),
+            "Location": workspace.get("location"),
+            "Tags": workspace.get("tags"),
+            "ProvisioningState": workspace.get("properties", {}).get("provisioningState"),
+        }
+        for workspace in value
+    ]
+    readable_output = tableToMarkdown("Workspaces List", workspaces, removeNull=True, headerTransform=pascalToSpace)
+
+    return CommandResults(
+        outputs_prefix="Azure.LogAnalytics.Workspaces",
+        outputs_key_field="id",
+        outputs=value,
+        raw_response=value,
+        readable_output=readable_output,
+    )
+
+
+def log_analytics_table_get_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Get a Log Analytics workspace table (search job).
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including table_name.
+
+    Returns:
+        CommandResults: The search job table.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    workspace_name = get_from_args_or_params(params=params, args=args, key="workspace_name")
+    table_name = args.get("table_name", "")
+
+    response = client.log_analytics_table_get(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        workspace_name=workspace_name,
+        table_name=table_name,
+    )
+    properties: dict = response.get("properties", {})
+    schema: dict = properties.get("schema", {})
+    # The response sometimes returns searchResults in schema and sometimes in properties.
+    # https://github.com/MicrosoftDocs/azure-docs/issues/116671
+    search_results: dict = schema.get("searchResults", {}) or properties.get("searchResults", {})
+
+    readable = {
+        "Name": schema.get("name"),
+        "Create Date": properties.get("createDate"),
+        "Plan": properties.get("plan"),
+        "Query": search_results.get("query"),
+        "Description": search_results.get("description"),
+        "startSearchTime": search_results.get("startSearchTime"),
+        "endSearchTime": search_results.get("endSearchTime"),
+        "provisioningState": properties.get("provisioningState"),
+    }
+    return CommandResults(
+        readable_output=tableToMarkdown("Search Job", readable, removeNull=True, headerTransform=pascalToSpace),
+        outputs=response,
+        outputs_prefix="Azure.LogAnalytics.Tables",
+        outputs_key_field="id",
+    )
+
+
+@polling_function(
+    name="azure-log-analytics-table-run",
+    interval=arg_to_number(demisto.args().get("interval", 60)),
+    timeout=arg_to_number(demisto.args().get("timeout", 600)),
+    requires_polling_arg=False,  # always polls
+)
+def log_analytics_table_run_command(args: dict, client: AzureClient, params: dict = {}) -> PollResult:
+    """
+    Run a Log Analytics search job and poll until the resulting table is provisioned.
+
+    Args:
+        args (dict): Command arguments including table_name, query, and polling state (first_run).
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+
+    Returns:
+        PollResult: The polling result.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    workspace_name = get_from_args_or_params(params=params, args=args, key="workspace_name")
+    table_name = args.get("table_name", "")
+    if not table_name.endswith(LOG_ANALYTICS_TABLE_NAME_SUFFIX):
+        raise DemistoException(f"The table_name should end with '{LOG_ANALYTICS_TABLE_NAME_SUFFIX}' suffix.")
+
+    if argToBoolean(args.get("first_run", True)):
+        start_search_time = arg_to_datetime(args.get("start_search_time", "1 day ago"))
+        end_search_time = arg_to_datetime(args.get("end_search_time", "now"))
+        data = {
+            "properties": {
+                "searchResults": remove_empty_elements(
+                    {
+                        "query": args.get("query"),
+                        "limit": arg_to_number(args.get("limit")),
+                        "startSearchTime": start_search_time.isoformat() if start_search_time else None,
+                        "endSearchTime": end_search_time.isoformat() if end_search_time else None,
+                    }
+                )
+            }
+        }
+        demisto.debug(f"First execution {subscription_id} {resource_group_name} {workspace_name} {table_name} {data}")
+        res = client.log_analytics_table_run(
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            workspace_name=workspace_name,
+            table_name=table_name,
+            data=data,
+        )
+        demisto.debug(f"First execution {res=}")
+        args["first_run"] = False
+        return PollResult(
+            response=None,
+            args_for_next_run=args,
+            continue_to_poll=True,
+            partial_result=CommandResults(
+                readable_output=(
+                    "The command was sent successfully. "
+                    "You can check the status by running !azure-log-analytics-table-get or wait."
+                )
+            ),
+        )
+
+    demisto.debug(f"Second execution {subscription_id} {resource_group_name} {workspace_name} {table_name}")
+    response = client.log_analytics_table_get(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        workspace_name=workspace_name,
+        table_name=table_name,
+    )
+    demisto.debug(f"Second execution {response=}")
+    status = response.get("properties", {}).get("provisioningState")
+    if status != "Succeeded":
+        return PollResult(continue_to_poll=True, args_for_next_run=args, response=None)
+
+    return PollResult(
+        continue_to_poll=False,
+        response=CommandResults(
+            outputs_prefix="Azure.LogAnalytics.Tables",
+            outputs_key_field="TableName",
+            outputs={"TableName": table_name, "Query": args.get("query")},
+            readable_output=(
+                f"The {table_name} table created successfully. "
+                f"The table can be inspected by running the following command !azure-log-analytics-table-get"
+            ),
+        ),
+    )
+
+
+def log_analytics_table_delete_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
+    """
+    Delete a Log Analytics workspace table (search job).
+
+    Args:
+        client (AzureClient): The Azure client instance.
+        params (dict): Configuration parameters.
+        args (dict): Command arguments including table_name.
+
+    Returns:
+        CommandResults: A success message.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    workspace_name = get_from_args_or_params(params=params, args=args, key="workspace_name")
+    table_name = args.get("table_name", "")
+    if not table_name.endswith(LOG_ANALYTICS_TABLE_NAME_SUFFIX):
+        raise DemistoException(f"Deleting tables without '{LOG_ANALYTICS_TABLE_NAME_SUFFIX}' suffix is not allowed.")
+
+    client.log_analytics_table_delete(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        workspace_name=workspace_name,
+        table_name=table_name,
+    )
+    return CommandResults(readable_output=f"Search job {table_name} deleted successfully.")
+
+
 def test_module(client: AzureClient) -> str:
     """Tests API connectivity and authentication.
 
@@ -12151,6 +12949,14 @@ def main():  # pragma: no cover
             "azure-webapp-auth-update": update_webapp_auth_command,
             "azure-appservice-webapp-auth-settings-update": update_webapp_auth_command,
             "azure-mysql-flexible-server-param-set": mysql_flexible_server_param_set_command,
+            "azure-postgres-flexible-server-configuration-update": postgres_flexible_server_configuration_update_command,
+            "azure-postgres-flexible-server-set-disconnection-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-checkpoint-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-connection-throttling-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-session-connection-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-log-retention-period-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-statement-logging-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
+            "azure-postgres-flexible-server-set-secure-transport-quick-action": postgres_flexible_server_configuration_update_command,  # noqa: E501
             "azure-monitor-log-profile-update": monitor_log_profile_update_command,
             "azure-disk-update": disk_update_command,
             "azure-compute-disk-update": disk_update_command,
@@ -12286,6 +13092,14 @@ def main():  # pragma: no cover
             "azure-vn-firewall-policy-network-rule-create": firewall_policy_network_rule_create_command,
             "azure-vn-firewall-policy-network-rule-update": firewall_policy_network_rule_update_command,
             "azure-vn-firewall-policy-network-rule-delete": firewall_policy_network_rule_delete_command,
+            "azure-log-analytics-saved-searches-list": log_analytics_saved_searches_list_command,
+            "azure-log-analytics-saved-search-get": log_analytics_saved_search_get_command,
+            "azure-log-analytics-saved-search-create-update": log_analytics_saved_search_create_update_command,
+            "azure-log-analytics-saved-search-delete": log_analytics_saved_search_delete_command,
+            "azure-log-analytics-workspaces-list": log_analytics_workspaces_list_command,
+            "azure-log-analytics-table-get": log_analytics_table_get_command,
+            "azure-log-analytics-table-delete": log_analytics_table_delete_command,
+            "azure-log-analytics-table-run": log_analytics_table_run_command,
         }
 
         azure_ad_endpoint = params.get("azure_ad_endpoint") or DEFAULT_AZURE_AD_ENDPOINT
