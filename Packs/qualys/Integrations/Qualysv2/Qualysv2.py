@@ -3307,6 +3307,8 @@ def send_assets_and_vulnerabilities_to_xsiam_with_retry(data: list, **kwargs: An
 
         if attempt > 1:
             demisto.info(f"[XSIAM Send] {label} succeeded on attempt {attempt}/{max_attempts}.")
+        else:
+            demisto.debug(f"[XSIAM Send] {label} sent successfully on attempt 1/{max_attempts}.")
         return
 
 
