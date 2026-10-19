@@ -720,7 +720,7 @@ NETWORK_INTERFACE_API_VERSION = "2026-01-01"
 NSG_API_VERSION = "2026-01-01"
 PUBLIC_IP_API_VERSION = "2026-01-01"
 BLOB_SERVICE_API_VERSION = "2026-09-01"
-RESOURCE_GROUPS_API_VERSION = "2025-04-01"
+RESOURCE_GROUPS_API_VERSION = "2021-04-01"
 # Application Gateway and Front Door WAF policies are served by two separate resource providers,
 # each with its own independently released API version, so these two versions intentionally differ.
 WAF_POLICY_API_VERSION = "2025-09-01"
@@ -3491,7 +3491,7 @@ class AzureClient:
             A dictionary containing the list of resource groups.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/list?view=rest-resources-2025-04-01
+            https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/list?view=rest-resources-2022-09-01
         """
         full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourcegroups"
         try:

@@ -41,6 +41,9 @@ from Azure import (
     DemistoException,
     API_VERSION,
     NSG_API_VERSION,
+    PUBLIC_IP_API_VERSION,
+    BLOB_SERVICE_API_VERSION,
+    RESOURCE_GROUPS_API_VERSION,
     SCOPE_BY_CONNECTION,
     PREFIX_URL_AZURE,
     storage_container_property_get_command,
@@ -2092,12 +2095,12 @@ def test_azure_client_get_rule(mocker, client):
             {"security_group_name": "sg", "security_rule_name": "r", "subscription_id": "s", "resource_group_name": "rg"},
             NSG_API_VERSION,
         ),
-        ("list_public_ip_addresses_request", {"subscription_id": "s", "resource_group_name": "rg"}, "2026-01-01"),
-        ("get_all_public_ip_details_request", {"subscription_id": "s"}, "2026-01-01"),
+        ("list_public_ip_addresses_request", {"subscription_id": "s", "resource_group_name": "rg"}, PUBLIC_IP_API_VERSION),
+        ("get_all_public_ip_details_request", {"subscription_id": "s"}, PUBLIC_IP_API_VERSION),
         (
             "storage_blob_service_properties_get_request",
             {"account_name": "acc", "resource_group_name": "rg", "subscription_id": "s"},
-            "2026-09-01",
+            BLOB_SERVICE_API_VERSION,
         ),
         (
             "storage_blob_containers_create_update_request",
@@ -2107,9 +2110,13 @@ def test_azure_client_get_rule(mocker, client):
                 "args": {"account_name": "acc", "container_name": "c"},
                 "method": "PUT",
             },
-            "2026-09-01",
+            BLOB_SERVICE_API_VERSION,
         ),
-        ("list_resource_groups_request", {"subscription_id": "s", "filter_by_tag": "", "limit": "1"}, "2025-04-01"),
+        (
+            "list_resource_groups_request",
+            {"subscription_id": "s", "filter_by_tag": "", "limit": "1"},
+            RESOURCE_GROUPS_API_VERSION,
+        ),
     ],
 )
 def test_azure_client_requests_pin_explicit_api_version(mocker, client, method_name, kwargs, expected_api_version):
