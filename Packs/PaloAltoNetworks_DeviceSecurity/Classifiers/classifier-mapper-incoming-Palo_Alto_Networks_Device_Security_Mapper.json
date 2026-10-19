@@ -274,9 +274,6 @@
                 "Site Names": {
                     "simple": "siteName"
                 },
-                "Sources": {
-                    "simple": "source"
-                },
                 "Subnets": {
                     "simple": "subnets"
                 },

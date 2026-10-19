@@ -135,15 +135,6 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "sitename",
-                                "height": 22,
-                                "id": "a3d04df0-c300-11f1-8690-bd98af6fa476",
-                                "index": 10,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "profileconfidencelevel",
                                 "height": 22,
                                 "id": "a9d941c0-c300-11f1-8690-bd98af6fa476",
@@ -326,15 +317,6 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "incidenturl",
-                                "height": 22,
-                                "id": "7b5ca9d0-c301-11f1-8690-bd98af6fa476",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "devicesecurityincidenturl",
                                 "height": 22,
                                 "id": "7ecffea0-c301-11f1-8690-bd98af6fa476",
@@ -379,15 +361,6 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "networkdestinationport",
-                                "height": 22,
-                                "id": "9af2e7f0-c301-11f1-8690-bd98af6fa476",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "destinationport",
                                 "height": 22,
                                 "id": "0d6dca80-c338-11f1-8a4b-4f7f37005168",
@@ -401,15 +374,6 @@
                                 "height": 22,
                                 "id": "9d8615f0-c301-11f1-8690-bd98af6fa476",
                                 "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "networktrafficdirection",
-                                "height": 22,
-                                "id": "a213b460-c301-11f1-8690-bd98af6fa476",
-                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
