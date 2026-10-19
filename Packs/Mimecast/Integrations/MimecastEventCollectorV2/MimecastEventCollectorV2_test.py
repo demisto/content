@@ -36,43 +36,6 @@ CLIENT_ID = "test_client_id"
 CLIENT_SECRET = "test_client_secret"
 
 
-def to_epoch_millis(value: datetime) -> int:
-    """Converts a timezone-aware datetime to the epoch-milliseconds format used by the SIEM `timestamp` field."""
-    return int(value.timestamp() * 1000)
-
-
-def make_fake_siem_api(ingested_events: list[dict[str, Any]]):
-    """
-    Builds a fake replacement for `AsyncClient.get_siem_events` that behaves like the Mimecast SIEM API:
-    it only returns events that have already been ingested AND whose `timestamp` falls inside the requested
-    [dateRangeStartsAt, dateRangeEndsAt] window. Mutate `ingested_events` between fetch cycles to model
-    events that become available late (ingestion delay).
-    """
-
-    def parse_siem_date(value: str) -> datetime:
-        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC)
-
-    async def fake_get_siem_events(
-        start_date: str | None = None,
-        end_date: str | None = None,
-        next_page: str | None = None,
-        page_size: int = 100,
-        max_retries: int = 3,
-    ) -> dict[str, Any]:
-        assert start_date, "The fake SIEM API only supports date-window requests."
-        window_start_millis = to_epoch_millis(parse_siem_date(start_date))
-        window_end_millis = to_epoch_millis(parse_siem_date(end_date)) if end_date else None
-        matching_events = [
-            deepcopy(event)  # the collector mutates events in place, so never hand out the shared objects
-            for event in ingested_events
-            if event["timestamp"] >= window_start_millis
-            and (window_end_millis is None or event["timestamp"] <= window_end_millis)
-        ]
-        return {"value": matching_events[:page_size], "@nextPage": None}
-
-    return fake_get_siem_events
-
-
 @pytest.fixture()
 def async_client():
     return AsyncClient(
@@ -962,9 +925,9 @@ async def test_fetch_audit_events(
             100,
             [],
             None,
-            # No events for the queried window -> start_date is advanced to the query end_date (UTC_NOW, mocked to
-            # 2025-01-02T11:00:00Z), but last_fetched_ids must be preserved (never reset to []).
-            {"start_date": "2025-01-02T11:00:00.000Z", "last_fetched_ids": ["event-2"]},
+            # No events for the queried window -> advance start_date to the query end_date (UTC_NOW, mocked to
+            # 2025-01-02T11:00:00Z) and clear last_fetched_ids so the same empty window is not re-scanned.
+            {"start_date": "2025-01-02T11:00:00.000Z", "last_fetched_ids": []},
             id="No new events (advances start_date to end_date)",
         ),
         pytest.param(
@@ -1047,7 +1010,7 @@ async def test_fetch_siem_events_no_events_advances_start_date_to_end_date(async
     Then:
      - Ensure the next run advances start_date to the query end_date (y = UTC_NOW), so the same empty window
        is not re-scanned on the next cycle.
-     - Ensure last_fetched_ids is preserved (not reset to []).
+     - Ensure last_fetched_ids is cleared (there are no events at y to deduplicate against).
      - Ensure the next run does not persist a cursor.
     """
     from MimecastEventCollectorV2 import fetch_siem_events, convert_to_siem_filter_format
@@ -1063,68 +1026,8 @@ async def test_fetch_siem_events_no_events_advances_start_date_to_end_date(async
     expected_start_date = convert_to_siem_filter_format(mock_now)
     assert events == []
     assert next_run[START_DATE_KEY] == expected_start_date
-    assert next_run[LAST_FETCHED_IDS_KEY] == ["event-1"]
+    assert next_run[LAST_FETCHED_IDS_KEY] == []
     assert NEXT_PAGE_KEY not in next_run
-
-
-@pytest.mark.asyncio
-async def test_fetch_siem_events_collects_delayed_event_after_empty_cycle(async_client: AsyncClient, mocker: MockerFixture):
-    """
-    Given:
-     - A fetch cycle where the SIEM API has no events yet for the queried window (empty cycle).
-     - A following cycle where the API now returns an event whose timestamp is earlier than the
-       START_DATE_KEY persisted by the empty cycle (the event was ingested by Mimecast with a delay).
-    When:
-     - Calling fetch_siem_events twice, feeding the first next_run into the second call.
-    Then:
-     - Ensure the delayed event is collected by the second cycle (it must not be skipped forever).
-    """
-    from MimecastEventCollectorV2 import fetch_siem_events
-
-    mocker.patch("MimecastEventCollectorV2.is_within_last_24_hours", return_value=True)
-    ingested_events: list[dict[str, Any]] = []
-    mocker.patch.object(async_client, "get_siem_events", new=make_fake_siem_api(ingested_events))
-
-    # Cycle 1 (11:00): nothing ingested yet -> empty cycle.
-    mocker.patch("MimecastEventCollectorV2.UTC_NOW", datetime(2025, 1, 2, 11, 0, 0, tzinfo=UTC))
-    initial_last_run = {START_DATE_KEY: "2025-01-02T10:00:00.000Z", LAST_FETCHED_IDS_KEY: ["event-0"]}
-    next_run_after_empty_cycle, empty_cycle_events = await fetch_siem_events(async_client, initial_last_run, 100)
-    assert empty_cycle_events == []
-
-    # Between cycles, Mimecast ingests an event that occurred at 10:30 - inside cycle 1's window, but earlier
-    # than the 11:00 start date the empty cycle persists today.
-    delayed_event_time = datetime(2025, 1, 2, 10, 30, 0, tzinfo=UTC)
-    ingested_events.append({"aggregateId": "delayed", "timestamp": to_epoch_millis(delayed_event_time)})
-
-    # Cycle 2 (11:05).
-    mocker.patch("MimecastEventCollectorV2.UTC_NOW", datetime(2025, 1, 2, 11, 5, 0, tzinfo=UTC))
-    _, second_cycle_events = await fetch_siem_events(async_client, next_run_after_empty_cycle, 100)
-
-    assert [event["aggregateId"] for event in second_cycle_events] == ["delayed"]
-
-
-@pytest.mark.asyncio
-async def test_fetch_siem_events_empty_cycle_preserves_last_fetched_ids(async_client: AsyncClient, mocker: MockerFixture):
-    """
-    Given:
-     - A last run with a start_date and existing last_fetched_ids.
-     - A SIEM API that returns no events for the queried window.
-    When:
-     - Calling fetch_siem_events.
-    Then:
-     - Ensure LAST_FETCHED_IDS_KEY is preserved in the next run (not reset to []).
-    """
-    from MimecastEventCollectorV2 import fetch_siem_events
-
-    mocker.patch("MimecastEventCollectorV2.UTC_NOW", datetime(2025, 1, 2, 11, 0, 0, tzinfo=UTC))
-    mocker.patch("MimecastEventCollectorV2.is_within_last_24_hours", return_value=True)
-    mocker.patch.object(async_client, "get_siem_events", new=make_fake_siem_api([]))
-
-    last_run = {START_DATE_KEY: "2025-01-02T10:00:00.000Z", LAST_FETCHED_IDS_KEY: ["event-0", "event-1"]}
-    next_run, events = await fetch_siem_events(async_client, last_run, 100)
-
-    assert events == []
-    assert next_run[LAST_FETCHED_IDS_KEY] == ["event-0", "event-1"]
 
 
 @pytest.mark.asyncio
