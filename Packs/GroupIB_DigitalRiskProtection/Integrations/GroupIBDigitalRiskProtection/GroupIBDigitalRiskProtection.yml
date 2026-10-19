@@ -217,7 +217,7 @@ defaultclassifier: Group-IB Digital Risk Protection (classifier)
 defaultmapperin: Group-IB Digital Risk Protection (mapper)
 name: Group-IB Digital Risk Protection
 script:
-  dockerimage: demisto/vendors-sdk:1.0.0.11778894
+  dockerimage: demisto/vendors-sdk:1.0.0.13438517
   isfetch: true
   runonce: false
   script: ''
