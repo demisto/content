@@ -5623,12 +5623,12 @@ Updates the configuration of a PostgreSQL Flexible Server. Required permissions:
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The name of the resource group. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional | 
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional | 
-| server_name | The name of the PostgreSQL Flexible Server. | Required | 
-| configuration_name | The name of the server configuration parameter to update. | Required | 
-| source | The source of the configuration value (for example, user-override). | Optional | 
-| value | The new value of the configuration, which is also known as a server parameter. Required for updating the value assigned to a specific modifiable configuration. | Required | 
+| resource_group_name | The name of the resource group. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| server_name | The name of the PostgreSQL Flexible Server. | Required |
+| configuration_name | The name of the server configuration parameter to update. | Required |
+| source | The source of the configuration value (for example, user-override). | Optional |
+| value | The new value of the configuration, which is also known as a server parameter. Required for updating the value assigned to a specific modifiable configuration. | Required |
 
 #### Context Output
 
