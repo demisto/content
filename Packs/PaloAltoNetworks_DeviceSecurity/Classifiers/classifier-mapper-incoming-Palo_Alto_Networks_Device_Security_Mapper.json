@@ -138,7 +138,7 @@
                 "Site ID": {
                     "simple": "siteid"
                 },
-                "Site Names": {
+                "Device Security Site Names": {
                     "simple": "siteName"
                 },
                 "Source IP": {
@@ -271,7 +271,7 @@
                 "Site ID": {
                     "simple": "siteid"
                 },
-                "Site Names": {
+                "Device Security Site Names": {
                     "simple": "siteName"
                 },
                 "Subnets": {

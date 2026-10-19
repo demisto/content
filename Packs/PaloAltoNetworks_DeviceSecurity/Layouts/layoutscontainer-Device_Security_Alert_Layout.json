@@ -117,7 +117,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "sitenames",
+                                "fieldId": "devicesecuritysitenames",
                                 "height": 22,
                                 "id": "f851e410-c337-11f1-8a4b-4f7f37005168",
                                 "index": 8,
