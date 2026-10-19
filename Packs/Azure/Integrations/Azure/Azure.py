@@ -3891,10 +3891,9 @@ class AzureClient:
         }
         remove_nulls_from_dictionary(params_)
 
-        if next_page_token:
-            validate_next_link(next_page_token, urlparse(PREFIX_URL_AZURE).hostname or "")
         try:
             if next_page_token:
+                validate_next_link(next_page_token, urlparse(PREFIX_URL_AZURE).hostname or "")
                 new_url = remove_query_param_from_url(next_page_token, "api-version")
                 demisto.debug(f"Azure billing usage request (pagination): {new_url}")
                 return self.http_request("GET", full_url=new_url, params={"api-version": api_version})
