@@ -62,6 +62,9 @@ START_DATE_KEY = "start_date"
 LAST_FETCHED_IDS_KEY = "last_fetched_ids"
 NEXT_PAGE_KEY = "next_page"
 
+# SIEM cursor per-type offset entry, e.g. "av=5-100" -> captures "5-100"
+CURSOR_OFFSET_PATTERN = re.compile(r"=\s*(\d+-\d+)")
+
 
 class EventTypes(Enum):
     AUDIT = "audit"
@@ -455,20 +458,19 @@ def is_valid_cursor(cursor: str | None) -> bool:
         return False
 
     # Each entry looks like "type=<from>-<to>"; there is offset progress if any offset is not "0-0".
-    offset_values = re.findall(r"=\s*([\d]+-[\d]+)", offsets_block)
+    offset_values = CURSOR_OFFSET_PATTERN.findall(offsets_block)
     if not offset_values:
         demisto.debug(f"{EventTypes.SIEM.log_prefix} No parsable offsets in decoded cursor. Treating it as invalid.")
         return False
     has_offset_progress = any(offset != "0-0" for offset in offset_values)
 
-    # Suffix is ":<page>:<token>"; a fully degenerate cursor is page 0 with an empty/null token.
-    _, page, token = (suffix.split(":") + ["", ""])[:3]
+    # Suffix is ":<page>:<token>"; a fully degenerate cursor is page 0 with an empty/null token. The token is
+    # everything after the second ":" (it may itself contain ":"). Anything not starting with ":" is not a suffix.
+    page, _, token = suffix.removeprefix(":").partition(":") if suffix.startswith(":") else ("", "", "")
     has_suffix_progress = page.strip() not in {"", "0"} or token.strip().lower() not in {"", "null"}
 
     is_valid = has_offset_progress or has_suffix_progress
-    demisto.debug(
-        f"{EventTypes.SIEM.log_prefix} Evaluated cursor validity as {is_valid=} " f"(found {offset_values=}, {page=}, {token=})."
-    )
+    demisto.debug(f"{EventTypes.SIEM.log_prefix} Evaluated cursor validity as {is_valid=} ({offset_values=}, {page=}, {token=}).")
     return is_valid
 
 

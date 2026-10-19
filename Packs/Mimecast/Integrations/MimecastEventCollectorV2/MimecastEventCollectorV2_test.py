@@ -36,6 +36,43 @@ CLIENT_ID = "test_client_id"
 CLIENT_SECRET = "test_client_secret"
 
 
+def to_epoch_millis(value: datetime) -> int:
+    """Converts a timezone-aware datetime to the epoch-milliseconds format used by the SIEM `timestamp` field."""
+    return int(value.timestamp() * 1000)
+
+
+def make_fake_siem_api(ingested_events: list[dict[str, Any]]):
+    """
+    Builds a fake replacement for `AsyncClient.get_siem_events` that behaves like the Mimecast SIEM API:
+    it only returns events that have already been ingested AND whose `timestamp` falls inside the requested
+    [dateRangeStartsAt, dateRangeEndsAt] window. Mutate `ingested_events` between fetch cycles to model
+    events that become available late (ingestion delay).
+    """
+
+    def parse_siem_date(value: str) -> datetime:
+        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC)
+
+    async def fake_get_siem_events(
+        start_date: str | None = None,
+        end_date: str | None = None,
+        next_page: str | None = None,
+        page_size: int = 100,
+        max_retries: int = 3,
+    ) -> dict[str, Any]:
+        assert start_date, "The fake SIEM API only supports date-window requests."
+        window_start_millis = to_epoch_millis(parse_siem_date(start_date))
+        window_end_millis = to_epoch_millis(parse_siem_date(end_date)) if end_date else None
+        matching_events = [
+            deepcopy(event)  # the collector mutates events in place, so never hand out the shared objects
+            for event in ingested_events
+            if event["timestamp"] >= window_start_millis
+            and (window_end_millis is None or event["timestamp"] <= window_end_millis)
+        ]
+        return {"value": matching_events[:page_size], "@nextPage": None}
+
+    return fake_get_siem_events
+
+
 @pytest.fixture()
 def async_client():
     return AsyncClient(
@@ -557,6 +594,33 @@ async def test_get_siem_events_pagination(async_client: AsyncClient, mocker: Moc
             False,
             id="Malformed all 0-0 cursor missing the suffix segments does not crash and stays invalid",
         ),
+        pytest.param(
+            base64.b64encode(b"\xff\xfe[av=5-100]:1:token\x80").decode(),
+            False,
+            id="Valid base64 that decodes to non-UTF-8 bytes is invalid and does not raise",
+        ),
+        pytest.param(
+            base64.b64encode(b"[av=0-0, delivery=0-0]trailing-garbage").decode(),
+            False,
+            id="Decoded string with no :<page>:<token> suffix and all 0-0 offsets is invalid",
+        ),
+        pytest.param(
+            base64.b64encode(b"[av=5-100, delivery=0-0]trailing-garbage").decode(),
+            True,
+            id="Decoded string with no :<page>:<token> suffix is still valid when an offset carries progress",
+        ),
+        pytest.param(
+            base64.b64encode(b"[av=0-0, delivery=0-0]:0:abc:def").decode(),
+            True,
+            id="Token containing ':' is a non-null token and makes the cursor valid",
+        ),
+        # The token is everything after the second ':' - here "null:extra", which is NOT the null sentinel.
+        # Splitting on every ':' would truncate it to "null" and wrongly classify the cursor as degenerate.
+        pytest.param(
+            base64.b64encode(b"[av=0-0, delivery=0-0]:0:null:extra").decode(),
+            True,
+            id="Token containing ':' that starts with 'null' is not mistaken for the null sentinel",
+        ),
     ],
 )
 def test_is_valid_cursor(cursor, expected):
@@ -676,6 +740,44 @@ async def test_get_siem_events_ignores_invalid_incoming_cursor(async_client: Asy
     assert mock_get_siem_events.call_count == 1
     # The invalid cursor must not be forwarded to the API request
     assert mock_get_siem_events.call_args.kwargs.get("next_page") is None
+
+
+@pytest.mark.parametrize(
+    "invalid_next_page",
+    [
+        pytest.param(BAD_SIEM_CURSOR, id="Degenerate all 0-0 :0:null cursor"),
+        pytest.param("not-base64-!!!", id="Non-decodable cursor"),
+        pytest.param(base64.b64encode(b"\xff\xfe\x80").decode(), id="Base64 cursor decoding to non-UTF-8 bytes"),
+    ],
+)
+@pytest.mark.asyncio
+async def test_get_siem_events_partial_page_with_invalid_cursor(
+    async_client: AsyncClient, mocker: MockerFixture, invalid_next_page: str
+):
+    """
+    Given:
+     - A single page whose event count is below the requested page size AND whose @nextPage is invalid.
+    When:
+     - Calling get_siem_events.
+    Then:
+     - Ensure exactly one API call is made (no further pagination).
+     - Ensure no exception is raised and the page events are returned.
+    """
+    from MimecastEventCollectorV2 import get_siem_events
+
+    mock_response_jsons = [
+        {
+            "value": [{"id": f"event-{i}", "timestamp": 1704067200000} for i in range(10)],
+            "@nextPage": invalid_next_page,
+        },
+    ]
+
+    async with async_client as _client:
+        mock_get_siem_events = mocker.patch.object(_client, "get_siem_events", new=AsyncMock(side_effect=mock_response_jsons))
+        events, _ = await get_siem_events(client=_client, start_date="2025-01-01T00:00:00.000Z", limit=100)
+
+    assert mock_get_siem_events.call_count == 1
+    assert len(events) == 10
 
 
 @pytest.mark.asyncio
@@ -860,9 +962,9 @@ async def test_fetch_audit_events(
             100,
             [],
             None,
-            # No events for the queried window -> advance start_date to the query end_date (UTC_NOW, mocked to
-            # 2025-01-02T11:00:00Z) and clear last_fetched_ids so the same empty window is not re-scanned.
-            {"start_date": "2025-01-02T11:00:00.000Z", "last_fetched_ids": []},
+            # No events for the queried window -> start_date is advanced to the query end_date (UTC_NOW, mocked to
+            # 2025-01-02T11:00:00Z), but last_fetched_ids must be preserved (never reset to []).
+            {"start_date": "2025-01-02T11:00:00.000Z", "last_fetched_ids": ["event-2"]},
             id="No new events (advances start_date to end_date)",
         ),
         pytest.param(
@@ -945,7 +1047,7 @@ async def test_fetch_siem_events_no_events_advances_start_date_to_end_date(async
     Then:
      - Ensure the next run advances start_date to the query end_date (y = UTC_NOW), so the same empty window
        is not re-scanned on the next cycle.
-     - Ensure last_fetched_ids is cleared (there are no events at y to deduplicate against).
+     - Ensure last_fetched_ids is preserved (not reset to []).
      - Ensure the next run does not persist a cursor.
     """
     from MimecastEventCollectorV2 import fetch_siem_events, convert_to_siem_filter_format
@@ -961,8 +1063,68 @@ async def test_fetch_siem_events_no_events_advances_start_date_to_end_date(async
     expected_start_date = convert_to_siem_filter_format(mock_now)
     assert events == []
     assert next_run[START_DATE_KEY] == expected_start_date
-    assert next_run[LAST_FETCHED_IDS_KEY] == []
+    assert next_run[LAST_FETCHED_IDS_KEY] == ["event-1"]
     assert NEXT_PAGE_KEY not in next_run
+
+
+@pytest.mark.asyncio
+async def test_fetch_siem_events_collects_delayed_event_after_empty_cycle(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - A fetch cycle where the SIEM API has no events yet for the queried window (empty cycle).
+     - A following cycle where the API now returns an event whose timestamp is earlier than the
+       START_DATE_KEY persisted by the empty cycle (the event was ingested by Mimecast with a delay).
+    When:
+     - Calling fetch_siem_events twice, feeding the first next_run into the second call.
+    Then:
+     - Ensure the delayed event is collected by the second cycle (it must not be skipped forever).
+    """
+    from MimecastEventCollectorV2 import fetch_siem_events
+
+    mocker.patch("MimecastEventCollectorV2.is_within_last_24_hours", return_value=True)
+    ingested_events: list[dict[str, Any]] = []
+    mocker.patch.object(async_client, "get_siem_events", new=make_fake_siem_api(ingested_events))
+
+    # Cycle 1 (11:00): nothing ingested yet -> empty cycle.
+    mocker.patch("MimecastEventCollectorV2.UTC_NOW", datetime(2025, 1, 2, 11, 0, 0, tzinfo=UTC))
+    initial_last_run = {START_DATE_KEY: "2025-01-02T10:00:00.000Z", LAST_FETCHED_IDS_KEY: ["event-0"]}
+    next_run_after_empty_cycle, empty_cycle_events = await fetch_siem_events(async_client, initial_last_run, 100)
+    assert empty_cycle_events == []
+
+    # Between cycles, Mimecast ingests an event that occurred at 10:30 - inside cycle 1's window, but earlier
+    # than the 11:00 start date the empty cycle persists today.
+    delayed_event_time = datetime(2025, 1, 2, 10, 30, 0, tzinfo=UTC)
+    ingested_events.append({"aggregateId": "delayed", "timestamp": to_epoch_millis(delayed_event_time)})
+
+    # Cycle 2 (11:05).
+    mocker.patch("MimecastEventCollectorV2.UTC_NOW", datetime(2025, 1, 2, 11, 5, 0, tzinfo=UTC))
+    _, second_cycle_events = await fetch_siem_events(async_client, next_run_after_empty_cycle, 100)
+
+    assert [event["aggregateId"] for event in second_cycle_events] == ["delayed"]
+
+
+@pytest.mark.asyncio
+async def test_fetch_siem_events_empty_cycle_preserves_last_fetched_ids(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - A last run with a start_date and existing last_fetched_ids.
+     - A SIEM API that returns no events for the queried window.
+    When:
+     - Calling fetch_siem_events.
+    Then:
+     - Ensure LAST_FETCHED_IDS_KEY is preserved in the next run (not reset to []).
+    """
+    from MimecastEventCollectorV2 import fetch_siem_events
+
+    mocker.patch("MimecastEventCollectorV2.UTC_NOW", datetime(2025, 1, 2, 11, 0, 0, tzinfo=UTC))
+    mocker.patch("MimecastEventCollectorV2.is_within_last_24_hours", return_value=True)
+    mocker.patch.object(async_client, "get_siem_events", new=make_fake_siem_api([]))
+
+    last_run = {START_DATE_KEY: "2025-01-02T10:00:00.000Z", LAST_FETCHED_IDS_KEY: ["event-0", "event-1"]}
+    next_run, events = await fetch_siem_events(async_client, last_run, 100)
+
+    assert events == []
+    assert next_run[LAST_FETCHED_IDS_KEY] == ["event-0", "event-1"]
 
 
 @pytest.mark.asyncio
