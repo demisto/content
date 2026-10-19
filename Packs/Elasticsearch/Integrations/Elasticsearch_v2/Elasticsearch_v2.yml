@@ -108,6 +108,7 @@ configuration:
   additionalinfo: |-
     Raw Query allows raw DSL queries and will override the 'Query String' Lucene syntax string.
     Results will not be filtered or sorted. Use additional parameters in the raw query for these purposes.
+    When fetching Elasticsearch Security Alerts, the time range, sort, and maximum number of results are not applied to the raw query. Add a time range filter, a sort, and a size to the query, otherwise no new incidents are fetched after the first fetch cycle.
     For more information see the link in the help section.
 
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
