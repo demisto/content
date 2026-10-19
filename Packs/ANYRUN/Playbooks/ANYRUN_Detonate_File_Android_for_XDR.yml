@@ -2,9 +2,7 @@ id: ANYRUN Detonate File Android for XDR
 version: -1
 fromversion: 6.0.0
 name: ANYRUN Detonate File Android for XDR
-description: This playbook submits a file from a Cortex XDR issue to the ANY.RUN Cloud
-  Sandbox for dynamic analysis in an Android environment and automates malware
-  detonation and behavior observation on Android OS.
+description: Submits a file from a Cortex XDR issue to the ANY.RUN Cloud Sandbox for dynamic analysis in an Android environment and automates malware detonation and behavior observation on Android OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -45,8 +43,7 @@ tasks:
       id: 65da9c41-4517-43e7-bfdd-c9a6f5a98c1f
       version: -1
       name: Is a specific ANY.RUN instance provided?
-      description: Checks whether the "Using" playbook input was provided, to
-        determine which ANY.RUN Cloud Sandbox instance to run commands against.
+      description: Checks whether the Using playbook input was provided to determine which ANY.RUN Cloud Sandbox instance to run commands against.
       type: condition
       iscommand: false
       brand: ""
@@ -89,7 +86,7 @@ tasks:
       id: a236f1c0-e778-4264-9be0-a850b47c365a
       version: -1
       name: Set instance to use (from input)
-      description: Sets the selected ANY.RUN integration instance in playbook context.
+      description: Sets the selected ANY.RUN integration instance in the playbook context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -163,7 +160,7 @@ tasks:
       id: 11f737eb-4bf7-40bf-88a6-dc074886a093
       version: -1
       name: Set instance to use (first active instance)
-      description: Sets the first active ANY.RUN integration instance in playbook context.
+      description: Sets the first active ANY.RUN integration instance in the playbook context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -208,7 +205,7 @@ tasks:
       id: 6b554c8f-a691-4cb4-8192-9c298f0c1fc8
       version: -1
       name: '[ANY.RUN] Detonate File Android'
-      description: Performs file analysis using an Android VM in ANY.RUN Sandbox.
+      description: Performs file analysis using an Android VM in ANY.RUN Cloud Sandbox.
       script: '|||anyrun-detonate-file-android'
       type: regular
       iscommand: true
@@ -377,8 +374,7 @@ tasks:
       id: ec34746f-8722-40fe-878c-58c7ec28cd0a
       version: -1
       name: Is there an active ANY.RUN instance?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns yes if the integration brand is available. Otherwise, returns no.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -415,8 +411,7 @@ tasks:
       id: 96c2eacd-6290-4d96-8f21-97cbad7ac85b
       version: -1
       name: Was a malicious or suspicious verdict received?
-      description: Checks whether the argument values are equal. If either
-        of the arguments are missing values, no is returned.
+      description: Checks whether the argument values are equal. If either of the arguments is missing a value, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -460,8 +455,7 @@ tasks:
       id: 944ac489-9f60-4881-89ec-5da70f167ab1
       version: -1
       name: '[ANY.RUN] Get analysis verdict'
-      description: 'Returns a threat level text. Possible values: No threats detected,
-        Suspicious activity, Malicious activity'
+      description: 'Returns a threat level text. Possible values are No threats detected, Suspicious activity, or Malicious activity.'
       script: '|||anyrun-get-analysis-verdict'
       type: regular
       iscommand: true
@@ -634,8 +628,7 @@ tasks:
       id: 041bcbfa-99e9-4be4-8cc3-e7c4bfa88b58
       version: -1
       name: Is Cortex Core - IR available?
-      description: Returns 'yes' if Cortex Core - IR is available. Otherwise returns
-        'no'.
+      description: Returns yes if Cortex Core - IR is available. Otherwise, returns no.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -684,7 +677,7 @@ inputs:
   required: false
   description: |-
     The name of the ANY.RUN Cloud Sandbox integration instance to use for running commands in this playbook.
-    If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
+    If left empty and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
   playbookInputQuery: null
 - key: file_entry_id
   value: {}
@@ -695,8 +688,7 @@ inputs:
   value:
     simple: en-US
   required: false
-  description: 'The operating system language. Use locale identifier or country name (for example,
-    "en-US" or "Brazil"). Case insensitive.'
+  description: 'The operating system language. Use a locale identifier or a country name, for example, en-US or Brazil. Case insensitive.'
   playbookInputQuery: null
 - key: opt_network_connect
   value:
@@ -720,7 +712,7 @@ inputs:
   value:
     simple: fastest
   required: false
-  description: 'The TOR geo location option, for example US, AU.'
+  description: 'The TOR geolocation option, for example, US or AU.'
   playbookInputQuery: null
 - key: opt_network_mitm
   value:
@@ -738,13 +730,13 @@ inputs:
   value:
     simple: fastest
   required: false
-  description: 'The residential proxy geo location option, for example US, AU.'
+  description: 'The residential proxy geolocation option, for example, US or AU.'
   playbookInputQuery: null
 - key: opt_privacy_type
   value:
     simple: bylink
   required: false
-  description: 'The privacy settings. Supports: public, bylink, owner, byteam.'
+  description: 'The privacy settings. Possible values are public, bylink, owner, or byteam.'
   playbookInputQuery: null
 - key: opt_timeout
   value:
@@ -761,7 +753,7 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: 'Whether to automatically add malicious and suspicious ANY.RUN IOCs (Unknown reputation IOCs are always excluded) to Cortex XDR IOC rules. Set to "false" to disable.'
+  description: 'Whether to automatically add malicious and suspicious ANY.RUN IOCs to Cortex XDR IOC rules. IOCs with an Unknown reputation are always excluded. Set to false to disable.'
   playbookInputQuery: null
 inputSections:
 - inputs:
@@ -769,8 +761,7 @@ inputSections:
   - Using
   - file_entry_id
   name: Sample and Instance Selection
-  description: Optionally select the ANY.RUN instance with the "Using" input and provide an existing
-    War Room file EntryID. Cortex endpoint file retrieval is not used for Android analysis.
+  description: Optionally select the ANY.RUN instance with the Using input and provide an existing War Room file EntryID. Cortex endpoint file retrieval is not used for Android analysis.
 - inputs:
   - env_locale
   name: ANY.RUN Environment

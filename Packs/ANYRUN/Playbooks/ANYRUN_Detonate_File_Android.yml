@@ -45,9 +45,7 @@ tasks:
       id: bcb7ce0f-60a4-4797-b492-2d83595993d1
       version: -1
       name: Is a specific ANY.RUN instance provided?
-      description: Checks whether the "Using" playbook input was provided, to
-        determine which ANY.RUN Cloud Sandbox instance to run commands
-        against.
+      description: Checks whether the Using playbook input was provided to determine which ANY.RUN Cloud Sandbox instance to run commands against.
       type: condition
       iscommand: false
       brand: ""
@@ -90,7 +88,7 @@ tasks:
       id: a15b376c-8a9c-4ef3-9809-816ed237f8e2
       version: -1
       name: Set instance to use (from input)
-      description: Sets the selected ANY.RUN integration instance in playbook context.
+      description: Sets the selected ANY.RUN integration instance in the playbook context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -164,7 +162,7 @@ tasks:
       id: 38f45aa6-533f-4810-81b3-fb595877813f
       version: -1
       name: Set instance to use (first active instance)
-      description: Sets the first active ANY.RUN integration instance in playbook context.
+      description: Sets the first active ANY.RUN integration instance in the playbook context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -640,7 +638,7 @@ inputs:
   required: false
   description: |-
     The name of the ANY.RUN Cloud Sandbox integration instance to use for running commands in this playbook.
-    If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
+    If left empty and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
   playbookInputQuery:
 - key: file
   value:
@@ -652,7 +650,7 @@ inputs:
   value:
     simple: en-US
   required: false
-  description: 'The operating system language. Use locale identifier or country name (for example, "en-US" or "Brazil"). Case insensitive.'
+  description: 'The operating system language. Use a locale identifier or a country name, for example, en-US or Brazil. Case insensitive.'
   playbookInputQuery:
 - key: opt_network_connect
   value:
@@ -676,7 +674,7 @@ inputs:
   value:
     simple: fastest
   required: false
-  description: 'The TOR geo location option, for example US, AU.'
+  description: 'The TOR geolocation option, for example, US or AU.'
   playbookInputQuery:
 - key: opt_network_mitm
   value:
@@ -694,13 +692,13 @@ inputs:
   value:
     simple: fastest
   required: false
-  description: 'The residential proxy geo location option, for example US, AU.'
+  description: 'The residential proxy geolocation option, for example, US or AU.'
   playbookInputQuery:
 - key: opt_privacy_type
   value:
     simple: bylink
   required: false
-  description: 'The privacy settings. Supports: public, bylink, owner, byteam.'
+  description: 'The privacy settings. Possible values are public, bylink, owner, or byteam.'
   playbookInputQuery:
 - key: opt_timeout
   value:

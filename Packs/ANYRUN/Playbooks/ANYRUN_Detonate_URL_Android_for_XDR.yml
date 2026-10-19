@@ -2,9 +2,7 @@ id: ANYRUN Detonate URL Android for XDR
 version: -1
 fromversion: 6.0.0
 name: ANYRUN Detonate URL Android for XDR
-description: This playbook submits a URL from a Cortex XDR issue to the ANY.RUN Cloud
-  Sandbox for dynamic analysis in an Android environment and automates malware
-  detonation and behavior observation on an Android Environment.
+description: Submits a URL from a Cortex XDR issue to the ANY.RUN Cloud Sandbox for dynamic analysis in an Android environment and automates malware detonation and behavior observation on Android OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -45,8 +43,7 @@ tasks:
       id: 26d1554f-95f7-495c-8b4d-c638171f0c8e
       version: -1
       name: Is a specific ANY.RUN instance provided?
-      description: Checks whether the "Using" playbook input was provided, to
-        determine which ANY.RUN Cloud Sandbox instance to run commands against.
+      description: Checks whether the Using playbook input was provided to determine which ANY.RUN Cloud Sandbox instance to run commands against.
       type: condition
       iscommand: false
       brand: ""
@@ -89,7 +86,7 @@ tasks:
       id: 398f7e62-4d39-4e32-9f30-98eb1c78cd7d
       version: -1
       name: Set instance to use (from input)
-      description: Sets the selected ANY.RUN integration instance in playbook context.
+      description: Sets the selected ANY.RUN integration instance in the playbook context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -163,7 +160,7 @@ tasks:
       id: 4213190a-0370-4b83-a351-f16fe1bbf6f5
       version: -1
       name: Set instance to use (first active instance)
-      description: Sets the first active ANY.RUN integration instance in playbook context.
+      description: Sets the first active ANY.RUN integration instance in the playbook context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -334,8 +331,7 @@ tasks:
       id: b6091c12-e8a5-4434-8ad5-b279ce140850
       version: -1
       name: Is there any URL to detonate?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns yes if the integration brand is available. Otherwise, returns no.
       type: condition
       iscommand: false
       brand: ""
@@ -378,8 +374,7 @@ tasks:
       id: 29e232fc-0e51-42a3-8324-bc332829a6f5
       version: -1
       name: Is there an active ANY.RUN instance?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns yes if the integration brand is available. Otherwise, returns no.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -416,8 +411,7 @@ tasks:
       id: c8ea8096-a8b3-4a3a-8eb7-c7c319795668
       version: -1
       name: Was a malicious or suspicious verdict received?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Checks whether the values provided in the arguments are equal. If either of the arguments is missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -461,8 +455,7 @@ tasks:
       id: e8e10878-3ee5-442a-8ebe-c9643741c9f5
       version: -1
       name: '[ANY.RUN] Get analysis verdict'
-      description: 'Returns a threat level text. Possible values: No threats detected,
-        Suspicious activity, Malicious activity'
+      description: 'Returns a threat level text. Possible values are No threats detected, Suspicious activity, or Malicious activity.'
       script: '|||anyrun-get-analysis-verdict'
       type: regular
       iscommand: true
@@ -540,13 +533,7 @@ tasks:
       id: ccd41bfc-68a1-40b2-8976-aa21568488a2
       version: -1
       name: '[XDR] Add ANY.RUN IOCs to XDR IOC rules'
-      description: Upload the IOC rules to Cortex XDR. When the ioc_object is defined,
-        disregard any other provided arguments, as the ioc_object takes precedence.
-        Validates the indicator parameters when ioc_object is used. If `vendor_name`,
-        `vendor_reputation`, and `vendor_reliability` are used, only a single vendor
-        is supported. For multiple vendors, utilize an `ioc_object` in JSON format.
-        Adding a rule with the same indicator, but with different parameters, will
-        update the existing rule.
+      description: Uploads the IOC rules to Cortex XDR. When the ioc_object is defined, disregard any other provided arguments, as the ioc_object takes precedence. Validates the indicator parameters when ioc_object is used. If `vendor_name`, `vendor_reputation`, and `vendor_reliability` are used, only a single vendor is supported. For multiple vendors, utilize an `ioc_object` in JSON format. Adding a rule with the same indicator, but with different parameters, will update the existing rule.
       script: Cortex Core - IR|||core-add-indicator-rule
       type: regular
       iscommand: true
@@ -635,8 +622,7 @@ tasks:
       id: 8f3159e5-cea0-42f4-871c-9fadfd1f6a7f
       version: -1
       name: Is Cortex Core - IR available?
-      description: Returns 'yes' if Cortex Core - IR is available. Otherwise returns
-        'no'.
+      description: Returns yes if Cortex Core - IR is available. Otherwise, returns no.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -685,19 +671,19 @@ inputs:
   required: false
   description: |-
     The name of the ANY.RUN Cloud Sandbox integration instance to use for running commands in this playbook.
-    If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
+    If left empty and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
   playbookInputQuery: null
 - key: obj_url
   value:
     simple: ${issue.xdmtargeturl}
   required: false
-  description: 'The target URL to submit to ANY.RUN. By default, this playbook uses the Cortex XDR normalized target URL field xdm.target.url (${issue.xdmtargeturl}). If your issue uses another URL field, such as xdm.network.http.url, override this input accordingly. Size range 5-512. Example: (http/https)://(your-link).'
+  description: 'The target URL to submit to ANY.RUN. By default, this playbook uses the Cortex XDR normalized target URL field xdm.target.url (${issue.xdmtargeturl}). If your issue uses another URL field, such as xdm.network.http.url, override this input accordingly. Size range: 5-512. For example, (http/https)://(your-link).'
   playbookInputQuery: null
 - key: env_locale
   value:
     simple: en-US
   required: false
-  description: 'The operating system language. Use locale identifier or country name (for example, "en-US" or "Brazil"). Case insensitive.'
+  description: 'The operating system language. Use a locale identifier or a country name, for example, en-US or Brazil. Case insensitive.'
   playbookInputQuery: null
 - key: opt_network_connect
   value:
@@ -721,7 +707,7 @@ inputs:
   value:
     simple: fastest
   required: false
-  description: 'The TOR geo location option, for example US, AU.'
+  description: 'The TOR geolocation option, for example, US or AU.'
   playbookInputQuery: null
 - key: opt_network_mitm
   value:
@@ -739,13 +725,13 @@ inputs:
   value:
     simple: fastest
   required: false
-  description: 'The residential proxy geo location option, for example US, AU.'
+  description: 'The residential proxy geolocation option, for example, US or AU.'
   playbookInputQuery: null
 - key: opt_privacy_type
   value:
     simple: bylink
   required: false
-  description: 'The privacy settings. Supports: public, bylink, owner, byteam.'
+  description: 'The privacy settings. Possible values are public, bylink, owner, or byteam.'
   playbookInputQuery: null
 - key: opt_timeout
   value:
@@ -763,7 +749,7 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: 'Whether to automatically add malicious and suspicious ANY.RUN IOCs (Unknown reputation IOCs are always excluded) to Cortex XDR IOC rules. Set to "false" to disable.'
+  description: 'Whether to automatically add malicious and suspicious ANY.RUN IOCs to Cortex XDR IOC rules. IOCs with an Unknown reputation are always excluded. Set to false to disable.'
   playbookInputQuery: null
 inputSections:
 - inputs:
@@ -771,8 +757,7 @@ inputSections:
   - Using
   - obj_url
   name: URL and Instance Selection
-  description: Provide the target URL and optionally select the ANY.RUN instance with
-    Using.
+  description: Provide the target URL and optionally select the ANY.RUN instance with the Using input.
 - inputs:
   - env_locale
   name: Environment
@@ -796,7 +781,7 @@ inputSections:
 outputSections:
 - outputs: []
   name: General (Outputs group)
-  description: Generic group for outputs
+  description: The generic group for outputs.
 outputs:
 - contextPath: ANYRUN_DetonateUrlAndroid.TaskID
   description: The ANY.RUN task UUID.

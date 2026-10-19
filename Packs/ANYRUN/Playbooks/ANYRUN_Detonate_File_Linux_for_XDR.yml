@@ -2,9 +2,7 @@ id: ANYRUN Detonate File Linux for XDR
 version: -1
 fromversion: 6.0.0
 name: ANYRUN Detonate File Linux for XDR
-description: This playbook submits a file retrieved from a Cortex XDR endpoint to
-  the ANY.RUN Cloud Sandbox for dynamic analysis in a Linux environment and
-  automates malware detonation and behavior observation on Linux OS.
+description: Submits a file retrieved from a Cortex XDR endpoint to the ANY.RUN Cloud Sandbox for dynamic analysis in a Linux environment and automates malware detonation and behavior observation on Linux OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -45,8 +43,7 @@ tasks:
       id: 73c38156-9191-4ecd-9273-bf9f12651c90
       version: -1
       name: Is a specific ANY.RUN instance provided?
-      description: Checks whether the "Using" playbook input was provided, to
-        determine which ANY.RUN Cloud Sandbox instance to run commands against.
+      description: Checks whether the Using playbook input was provided to determine which ANY.RUN Cloud Sandbox instance to run commands against.
       type: condition
       iscommand: false
       brand: ""
@@ -89,7 +86,7 @@ tasks:
       id: c0c8106b-3844-4b52-b6fb-507550dbffc9
       version: -1
       name: Set instance to use (from input)
-      description: Sets the selected ANY.RUN integration instance in playbook context.
+      description: Sets the selected ANY.RUN integration instance in the playbook context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -163,7 +160,7 @@ tasks:
       id: 6c83b3a1-73ec-4ff2-b9c5-ac99462680b1
       version: -1
       name: Set instance to use (first active instance)
-      description: Sets the first active ANY.RUN integration instance in playbook context.
+      description: Sets the first active ANY.RUN integration instance in the playbook context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -342,7 +339,7 @@ tasks:
       id: 2725d55e-a7cf-4dda-8dac-386d8956cde1
       version: -1
       name: Is there an active ANY.RUN instance?
-      description: Returns yes if ANY.RUN Cloud Sandbox integration is available.
+      description: Returns yes if the ANY.RUN Cloud Sandbox integration is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -379,7 +376,7 @@ tasks:
       id: b920a4c2-a219-4641-89aa-2a188f870831
       version: -1
       name: Was a malicious or suspicious verdict received?
-      description: Checks whether ANY.RUN verdict is not equal to No threats detected.
+      description: Checks whether the ANY.RUN verdict is not equal to No threats detected.
       type: condition
       iscommand: false
       brand: ""
@@ -423,8 +420,7 @@ tasks:
       id: e36d01ac-20cd-439b-84a3-1ec9650384f9
       version: -1
       name: '[ANY.RUN] Get analysis verdict'
-      description: 'Returns a threat level text. Possible values: No threats detected,
-        Suspicious activity, Malicious activity.'
+      description: 'Returns a threat level text. Possible values are No threats detected, Suspicious activity, or Malicious activity.'
       script: '|||anyrun-get-analysis-verdict'
       type: regular
       iscommand: true
@@ -461,8 +457,7 @@ tasks:
       id: 1950e00e-5296-46ec-8ce3-1f6327458982
       version: -1
       name: '[ANY.RUN] Load IOCs to Threat Intel'
-      description: Returns the ANY.RUN analysis report in IOC format and loads IOCs
-        to context.
+      description: Returns the ANY.RUN analysis report in IOC format and loads the IOCs into the context.
       script: '|||anyrun-get-analysis-report'
       type: regular
       iscommand: true
@@ -597,8 +592,7 @@ tasks:
       id: 34529cc7-27a4-48be-89a4-ab07a8568ccd
       version: -1
       name: '[XDR] Get retrieved file details'
-      description: Creates a War Room File entry for the Cortex XDR retrieved archive
-        using the action ID returned by core-retrieve-files.
+      description: Creates a War Room file entry for the archive retrieved from Cortex XDR, using the action ID returned by core-retrieve-files.
       script: '|||core-retrieve-file-details'
       type: regular
       iscommand: true
@@ -633,8 +627,7 @@ tasks:
       id: b55fd135-5e05-44df-85e3-415eb914d202
       version: -1
       name: '[XDR] Unzip retrieved archive'
-      description: Unzips the retrieved archive and uploads extracted files to the
-        War Room as File entries.
+      description: Unzips the retrieved archive and uploads extracted files to the War Room as file entries.
       scriptName: UnzipFile
       type: regular
       iscommand: false
@@ -825,8 +818,7 @@ tasks:
       id: 546a99ae-d374-4765-870a-4ccc71256f83
       version: -1
       name: Was the original file selected?
-      description: Checks whether SelectedOriginalFile.EntryID exists before submitting
-        to ANY.RUN.
+      description: Checks whether SelectedOriginalFile.EntryID exists before submitting the file to ANY.RUN.
       type: condition
       iscommand: false
       brand: ""
@@ -869,13 +861,7 @@ tasks:
       id: 40a5759c-e6af-43d1-8474-bd1bb3680796
       version: -1
       name: '[XDR] Add ANY.RUN IOCs to XDR IOC rules'
-      description: Upload the IOC rules to Cortex XDR. When the ioc_object is defined,
-        disregard any other provided arguments, as the ioc_object takes precedence.
-        Validates the indicator parameters when ioc_object is used. If `vendor_name`,
-        `vendor_reputation`, and `vendor_reliability` are used, only a single vendor
-        is supported. For multiple vendors, utilize an `ioc_object` in JSON format.
-        Adding a rule with the same indicator, but with different parameters, will
-        update the existing rule.
+      description: Uploads the IOC rules to Cortex XDR. When the ioc_object is defined, disregard any other provided arguments, as the ioc_object takes precedence. Validates the indicator parameters when ioc_object is used. If `vendor_name`, `vendor_reputation`, and `vendor_reliability` are used, only a single vendor is supported. For multiple vendors, utilize an `ioc_object` in JSON format. Adding a rule with the same indicator, but with different parameters, will update the existing rule.
       script: Cortex Core - IR|||core-add-indicator-rule
       type: regular
       iscommand: true
@@ -964,9 +950,7 @@ tasks:
       id: 567802c5-ccee-471e-8059-08de2fa57f19
       version: -1
       name: '[XDR] Store retrieved archive EntryID'
-      description: Stores only the newly created retrieved archive EntryID. This prevents
-        UnzipFile from iterating over every File.EntryID already present in the incident
-        context.
+      description: Stores only the EntryID of the newly retrieved archive. This prevents UnzipFile from iterating over every File.EntryID already present in the incident context.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1009,9 +993,7 @@ tasks:
       id: effa26e4-7a94-4876-8505-89fcdc49001f
       version: -1
       name: Was an existing file EntryID provided?
-      description: Checks whether an explicit War Room file EntryID was provided.
-        If yes, endpoint retrieval is skipped. If not, the playbook attempts Cortex
-        XDR endpoint retrieval using endpoint_id and file_path inputs.
+      description: Checks whether an explicit War Room file EntryID was provided. If yes, endpoint retrieval is skipped. If not, the playbook attempts Cortex XDR endpoint retrieval using the endpoint_id and file_path inputs.
       type: condition
       iscommand: false
       brand: ""
@@ -1093,8 +1075,7 @@ tasks:
       id: 289ed81a-2210-425e-8d6f-1158ffab281c
       version: -1
       name: Is Cortex Core - IR available?
-      description: Returns 'yes' if Cortex Core - IR is available. Otherwise returns
-        'no'.
+      description: Returns yes if Cortex Core - IR is available. Otherwise, returns no.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1131,8 +1112,7 @@ tasks:
       id: d2097d35-ff7c-403b-8875-f073c8829a34
       version: -1
       name: Is Cortex Core - IR available?
-      description: Returns 'yes' if Cortex Core - IR is available. Otherwise returns
-        'no'.
+      description: Returns yes if Cortex Core - IR is available. Otherwise, returns no.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1179,7 +1159,7 @@ inputs:
   required: false
   description: |-
     The name of the ANY.RUN Cloud Sandbox integration instance to use for running commands in this playbook.
-    If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
+    If left empty and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
   playbookInputQuery: null
 - key: file_entry_id
   value: {}
@@ -1190,7 +1170,7 @@ inputs:
   value:
     simple: ${issue.xdmsourceagentidentifier}
   required: false
-  description: The Cortex XDR endpoint/agent ID. Used only when file_entry_id is not provided.
+  description: The ID of the Cortex XDR endpoint or agent. Used only when file_entry_id is not provided.
   playbookInputQuery: null
 - key: file_path
   value:
@@ -1202,25 +1182,25 @@ inputs:
   value:
     simple: "240"
   required: false
-  description: The timeout for Cortex XDR file retrieve polling.
+  description: The time, in seconds, after which polling for the Cortex XDR file retrieval stops.
   playbookInputQuery: null
 - key: retrieve_poll_interval_seconds
   value:
     simple: "30"
   required: false
-  description: The polling interval for Cortex XDR file retrieve action status checks.
+  description: The interval, in seconds, between status checks of the Cortex XDR file retrieval action.
   playbookInputQuery: null
 - key: env_locale
   value:
     simple: en-US
   required: false
-  description: 'The operating system language. Use locale identifier or country name (for example, "en-US" or "Brazil"). Case insensitive.'
+  description: 'The operating system language. Use a locale identifier or a country name, for example, en-US or Brazil. Case insensitive.'
   playbookInputQuery: null
 - key: env_os
   value:
     simple: ubuntu
   required: false
-  description: 'The operating system. Possible values: ubuntu, debian.'
+  description: 'The operating system. Possible values are ubuntu or debian.'
   playbookInputQuery: null
 - key: run_as_root
   value:
@@ -1250,7 +1230,7 @@ inputs:
   value:
     simple: fastest
   required: false
-  description: 'The TOR geo location option, for example US, AU.'
+  description: 'The TOR geolocation option, for example, US or AU.'
   playbookInputQuery: null
 - key: opt_network_mitm
   value:
@@ -1268,13 +1248,13 @@ inputs:
   value:
     simple: fastest
   required: false
-  description: 'The residential proxy geo location option, for example US, AU.'
+  description: 'The residential proxy geolocation option, for example, US or AU.'
   playbookInputQuery: null
 - key: opt_privacy_type
   value:
     simple: bylink
   required: false
-  description: 'The privacy settings. Supports: public, bylink, owner, byteam.'
+  description: 'The privacy settings. Possible values are public, bylink, owner, or byteam.'
   playbookInputQuery: null
 - key: opt_timeout
   value:
@@ -1291,7 +1271,7 @@ inputs:
   value:
     simple: temp
   required: false
-  description: 'The directory from which to start the file analysis. Supports: desktop, home, downloads, appdata, temp, windows, root.'
+  description: 'The directory from which to start the file analysis. Possible values are desktop, home, downloads, appdata, temp, windows, or root.'
   playbookInputQuery: null
 - key: obj_ext_extension
   value:
@@ -1303,7 +1283,7 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: 'Whether to automatically add malicious and suspicious ANY.RUN IOCs (Unknown reputation IOCs are always excluded) to Cortex XDR IOC rules. Set to "false" to disable.'
+  description: 'Whether to automatically add malicious and suspicious ANY.RUN IOCs to Cortex XDR IOC rules. IOCs with an Unknown reputation are always excluded. Set to false to disable.'
   playbookInputQuery: null
 inputSections:
 - inputs:
@@ -1315,10 +1295,7 @@ inputSections:
   - retrieve_timeout_seconds
   - retrieve_poll_interval_seconds
   name: Sample and Instance Selection
-  description: Optionally select the ANY.RUN instance with the "Using" input. If file_entry_id is
-    provided, the playbook uses it directly. Otherwise it retrieves the file from the
-    Cortex XDR endpoint using endpoint_id and file_path, then selects the extracted file
-    by filename.
+  description: Optionally select the ANY.RUN instance with the Using input. If file_entry_id is provided, the playbook uses it directly. Otherwise, it retrieves the file from the Cortex XDR endpoint using endpoint_id and file_path, then selects the extracted file by filename.
 - inputs:
   - env_locale
   - env_os

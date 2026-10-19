@@ -45,9 +45,7 @@ tasks:
       id: fe196060-84e5-406c-bccf-1b25d6000758
       version: -1
       name: Is a specific ANY.RUN instance provided?
-      description: Checks whether the "Using" playbook input was provided, to
-        determine which ANY.RUN Cloud Sandbox instance to run commands
-        against.
+      description: Checks whether the Using playbook input was provided to determine which ANY.RUN Cloud Sandbox instance to run commands against.
       type: condition
       iscommand: false
       brand: ""
@@ -90,7 +88,7 @@ tasks:
       id: 472f8493-b890-4bb6-8cce-71b9d705cc14
       version: -1
       name: Set instance to use (from input)
-      description: Sets the selected ANY.RUN integration instance in playbook context.
+      description: Sets the selected ANY.RUN integration instance in the playbook context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -164,7 +162,7 @@ tasks:
       id: b09072ea-858a-4cc4-9dae-674b062ce603
       version: -1
       name: Set instance to use (first active instance)
-      description: Sets the first active ANY.RUN integration instance in playbook context.
+      description: Sets the first active ANY.RUN integration instance in the playbook context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -654,7 +652,7 @@ inputs:
   required: false
   description: |-
     The name of the ANY.RUN Cloud Sandbox integration instance to use for running commands in this playbook.
-    If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
+    If left empty and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
   playbookInputQuery:
 - key: file
   value:
@@ -666,25 +664,25 @@ inputs:
   value:
     simple: en-US
   required: false
-  description: 'The operating system language. Use locale identifier or country name (for example, "en-US" or "Brazil"). Case insensitive.'
+  description: 'The operating system language. Use a locale identifier or a country name, for example, en-US or Brazil. Case insensitive.'
   playbookInputQuery:
 - key: env_bitness
   value:
     simple: "64"
   required: false
-  description: 'The bitness of the operating system. Supports: 32, 64.'
+  description: 'The bitness of the operating system. Possible values are 32 or 64.'
   playbookInputQuery:
 - key: env_version
   value:
     simple: "10"
   required: false
-  description: 'The version of the OS. Supports: 7, 10, 11.'
+  description: 'The version of the operating system. Possible values are 7, 10, or 11.'
   playbookInputQuery:
 - key: env_type
   value:
     simple: complete
   required: false
-  description: The environment preset type. You can select **development** env for OS Windows 10 x64. For all other cases, **complete** env is required.
+  description: The environment preset type. You can select the **development** environment for Windows 10 x64. For all other cases, the **complete** environment is required.
   playbookInputQuery:
 - key: opt_network_connect
   value:
@@ -708,7 +706,7 @@ inputs:
   value:
     simple: fastest
   required: false
-  description: 'The TOR geo location option, for example US, AU.'
+  description: 'The TOR geolocation option, for example, US or AU.'
   playbookInputQuery:
 - key: opt_network_mitm
   value:
@@ -726,13 +724,13 @@ inputs:
   value:
     simple: fastest
   required: false
-  description: 'The residential proxy geo location option, for example US, AU.'
+  description: 'The residential proxy geolocation option, for example, US or AU.'
   playbookInputQuery:
 - key: opt_privacy_type
   value:
     simple: bylink
   required: false
-  description: 'The privacy settings. Supports: public, bylink, owner, byteam.'
+  description: 'The privacy settings. Possible values are public, bylink, owner, or byteam.'
   playbookInputQuery:
 - key: opt_timeout
   value:
@@ -755,15 +753,14 @@ inputs:
   value:
     simple: temp
   required: false
-  description: 'The directory from which to start the file analysis. Supports: desktop, home, downloads, appdata, temp, windows, root.'
+  description: 'The directory from which to start the file analysis. Possible values are desktop, home, downloads, appdata, temp, windows, or root.'
   playbookInputQuery:
 - key: obj_force_elevation
   value:
     simple: "false"
   required: false
   description: |-
-    Whether to force the file to execute with elevated privileges and an elevated
-                token (for PE32, PE32+, PE64 files only).
+    Whether to force the file to execute with elevated privileges and an elevated token (for PE32, PE32+, PE64 files only).
   playbookInputQuery:
 - key: obj_ext_extension
   value:

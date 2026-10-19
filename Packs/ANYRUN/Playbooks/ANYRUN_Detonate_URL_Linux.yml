@@ -45,9 +45,7 @@ tasks:
       id: 30b73618-1aba-4b28-8604-bc96dff76de0
       version: -1
       name: Is a specific ANY.RUN instance provided?
-      description: Checks whether the "Using" playbook input was provided, to
-        determine which ANY.RUN Cloud Sandbox instance to run commands
-        against.
+      description: Checks whether the Using playbook input was provided to determine which ANY.RUN Cloud Sandbox instance to run commands against.
       type: condition
       iscommand: false
       brand: ""
@@ -90,7 +88,7 @@ tasks:
       id: d9668c10-48d8-4d6d-bd43-e3864747b492
       version: -1
       name: Set instance to use (from input)
-      description: Sets the selected ANY.RUN integration instance in playbook context.
+      description: Sets the selected ANY.RUN integration instance in the playbook context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -164,7 +162,7 @@ tasks:
       id: 5548601f-4ef6-40f4-944f-3c0ce1f9611f
       version: -1
       name: Set instance to use (first active instance)
-      description: Sets the first active ANY.RUN integration instance in playbook context.
+      description: Sets the first active ANY.RUN integration instance in the playbook context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -645,25 +643,25 @@ inputs:
   required: false
   description: |-
     The name of the ANY.RUN Cloud Sandbox integration instance to use for running commands in this playbook.
-    If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
+    If left empty and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
   playbookInputQuery:
 - key: obj_url
   value:
     simple: ${URL.Data}
   required: false
-  description: 'The target URL. Size range 5-512. Example: (http/https)://(your-link).'
+  description: 'The target URL. Size range: 5-512. For example, (http/https)://(your-link).'
   playbookInputQuery: null
 - key: env_locale
   value:
     simple: en-US
   required: false
-  description: 'The operating system language. Use locale identifier or country name (for example, "en-US" or "Brazil"). Case insensitive.'
+  description: 'The operating system language. Use a locale identifier or a country name, for example, en-US or Brazil. Case insensitive.'
   playbookInputQuery: null
 - key: env_os
   value:
     simple: ubuntu
   required: false
-  description: 'The operating system. Possible values: ubuntu, debian.'
+  description: 'The operating system. Possible values are ubuntu or debian.'
   playbookInputQuery: null
 - key: opt_network_connect
   value:
@@ -687,7 +685,7 @@ inputs:
   value:
     simple: fastest
   required: false
-  description: 'The TOR geo location option, for example US, AU.'
+  description: 'The TOR geolocation option, for example, US or AU.'
   playbookInputQuery: null
 - key: opt_network_mitm
   value:
@@ -705,13 +703,13 @@ inputs:
   value:
     simple: fastest
   required: false
-  description: 'The residential proxy geo location option, for example US, AU.'
+  description: 'The residential proxy geolocation option, for example, US or AU.'
   playbookInputQuery: null
 - key: opt_privacy_type
   value:
     simple: bylink
   required: false
-  description: 'The privacy settings. Supports: public, bylink, owner, byteam.'
+  description: 'The privacy settings. Possible values are public, bylink, owner, or byteam.'
   playbookInputQuery: null
 - key: opt_timeout
   value:
@@ -723,7 +721,7 @@ inputs:
   value:
     simple: Google Chrome
   required: false
-  description: 'The browser name. Supports: Google Chrome, Mozilla Firefox.'
+  description: 'The browser name. Possible values are Google Chrome or Mozilla Firefox.'
   playbookInputQuery: null
 - key: obj_ext_extension
   value:

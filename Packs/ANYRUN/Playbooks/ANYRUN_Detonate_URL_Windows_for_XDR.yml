@@ -2,9 +2,7 @@ id: ANYRUN Detonate URL Windows for XDR
 version: -1
 fromversion: 6.0.0
 name: ANYRUN Detonate URL Windows for XDR
-description: This playbook submits a URL from a Cortex XDR issue to the ANY.RUN Cloud
-  Sandbox for dynamic analysis in a Windows environment and automates malware
-  detonation and behavior observation on Windows OS.
+description: Submits a URL from a Cortex XDR issue to the ANY.RUN Cloud Sandbox for dynamic analysis in a Windows environment and automates malware detonation and behavior observation on Windows OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -45,8 +43,7 @@ tasks:
       id: cfc5da1c-1fdf-4951-a66f-4a85d958841f
       version: -1
       name: Is a specific ANY.RUN instance provided?
-      description: Checks whether the "Using" playbook input was provided, to
-        determine which ANY.RUN Cloud Sandbox instance to run commands against.
+      description: Checks whether the Using playbook input was provided to determine which ANY.RUN Cloud Sandbox instance to run commands against.
       type: condition
       iscommand: false
       brand: ""
@@ -89,7 +86,7 @@ tasks:
       id: 025eb243-6077-4dcd-9c4d-b5ad9fabe735
       version: -1
       name: Set instance to use (from input)
-      description: Sets the selected ANY.RUN integration instance in playbook context.
+      description: Sets the selected ANY.RUN integration instance in the playbook context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -163,7 +160,7 @@ tasks:
       id: 4593ef8f-65dc-453e-935e-ec32233af197
       version: -1
       name: Set instance to use (first active instance)
-      description: Sets the first active ANY.RUN integration instance in playbook context.
+      description: Sets the first active ANY.RUN integration instance in the playbook context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -344,8 +341,7 @@ tasks:
       id: 65536f05-f21b-40e5-800d-c8975c09e610
       version: -1
       name: Is there any URL to detonate?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns yes if the integration brand is available. Otherwise, returns no.
       type: condition
       iscommand: false
       brand: ""
@@ -388,8 +384,7 @@ tasks:
       id: ad23a924-ee29-488b-825a-e499616b83d4
       version: -1
       name: Is there an active ANY.RUN instance?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns yes if the integration brand is available. Otherwise, returns no.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -426,8 +421,7 @@ tasks:
       id: 0ab6b87b-c02e-408a-8715-54ffee5af727
       version: -1
       name: Was a malicious or suspicious verdict received?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Checks whether the values provided in the arguments are equal. If either of the arguments is missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -471,8 +465,7 @@ tasks:
       id: 912fa76a-940d-416b-8bbe-efef545cc163
       version: -1
       name: '[ANY.RUN] Get analysis verdict'
-      description: 'Returns a threat level text. Possible values: No threats detected,
-        Suspicious activity, Malicious activity'
+      description: 'Returns a threat level text. Possible values are No threats detected, Suspicious activity, or Malicious activity.'
       script: '|||anyrun-get-analysis-verdict'
       type: regular
       iscommand: true
@@ -550,13 +543,7 @@ tasks:
       id: 7efe4856-610c-4f1b-8585-aeb3fe3c1d2a
       version: -1
       name: '[XDR] Add ANY.RUN IOCs to XDR IOC rules'
-      description: Upload the IOC rules to Cortex XDR. When the ioc_object is defined,
-        disregard any other provided arguments, as the ioc_object takes precedence.
-        Validates the indicator parameters when ioc_object is used. If `vendor_name`,
-        `vendor_reputation`, and `vendor_reliability` are used, only a single vendor
-        is supported. For multiple vendors, utilize an `ioc_object` in JSON format.
-        Adding a rule with the same indicator, but with different parameters, will
-        update the existing rule.
+      description: Uploads the IOC rules to Cortex XDR. When the ioc_object is defined, disregard any other provided arguments, as the ioc_object takes precedence. Validates the indicator parameters when ioc_object is used. If `vendor_name`, `vendor_reputation`, and `vendor_reliability` are used, only a single vendor is supported. For multiple vendors, utilize an `ioc_object` in JSON format. Adding a rule with the same indicator, but with different parameters, will update the existing rule.
       script: Cortex Core - IR|||core-add-indicator-rule
       type: regular
       iscommand: true
@@ -645,8 +632,7 @@ tasks:
       id: 9da2dd71-d5d3-4a7d-8628-a194cae06c48
       version: -1
       name: Is Cortex Core - IR available?
-      description: Returns 'yes' if Cortex Core - IR is available. Otherwise returns
-        'no'.
+      description: Returns yes if Cortex Core - IR is available. Otherwise, returns no.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -695,37 +681,37 @@ inputs:
   required: false
   description: |-
     The name of the ANY.RUN Cloud Sandbox integration instance to use for running commands in this playbook.
-    If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
+    If left empty and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
   playbookInputQuery: null
 - key: obj_url
   value:
     simple: ${issue.xdmtargeturl}
   required: false
-  description: 'The target URL to submit to ANY.RUN. By default, this playbook uses the Cortex XDR normalized target URL field xdm.target.url (${issue.xdmtargeturl}). If your issue uses another URL field, such as xdm.network.http.url, override this input accordingly. Size range 5-512. Example: (http/https)://(your-link).'
+  description: 'The target URL to submit to ANY.RUN. By default, this playbook uses the Cortex XDR normalized target URL field xdm.target.url (${issue.xdmtargeturl}). If your issue uses another URL field, such as xdm.network.http.url, override this input accordingly. Size range: 5-512. For example, (http/https)://(your-link).'
   playbookInputQuery: null
 - key: env_locale
   value:
     simple: en-US
   required: false
-  description: 'The operating system language. Use locale identifier or country name (for example, "en-US" or "Brazil"). Case insensitive.'
+  description: 'The operating system language. Use a locale identifier or a country name, for example, en-US or Brazil. Case insensitive.'
   playbookInputQuery: null
 - key: env_bitness
   value:
     simple: "64"
   required: false
-  description: 'The bitness of the operating system. Supports 32 or 64.'
+  description: 'The bitness of the operating system. Possible values are 32 or 64.'
   playbookInputQuery: null
 - key: env_version
   value:
     simple: "10"
   required: false
-  description: 'The version of the OS. Supports: 7, 10, 11.'
+  description: 'The version of the operating system. Possible values are 7, 10, or 11.'
   playbookInputQuery: null
 - key: env_type
   value:
     simple: complete
   required: false
-  description: The environment preset type. You can select **development** env for OS Windows 10 x64. For all other cases, **complete** env is required.
+  description: The environment preset type. You can select the **development** environment for Windows 10 x64. For all other cases, the **complete** environment is required.
   playbookInputQuery: null
 - key: opt_network_connect
   value:
@@ -749,7 +735,7 @@ inputs:
   value:
     simple: fastest
   required: false
-  description: 'The TOR geo location option, for example US, AU.'
+  description: 'The TOR geolocation option, for example, US or AU.'
   playbookInputQuery: null
 - key: opt_network_mitm
   value:
@@ -767,13 +753,13 @@ inputs:
   value:
     simple: fastest
   required: false
-  description: 'The residential proxy geo location option, for example US, AU.'
+  description: 'The residential proxy geolocation option, for example, US or AU.'
   playbookInputQuery: null
 - key: opt_privacy_type
   value:
     simple: bylink
   required: false
-  description: 'The privacy settings. Supports: public, bylink, owner, byteam.'
+  description: 'The privacy settings. Possible values are public, bylink, owner, or byteam.'
   playbookInputQuery: null
 - key: opt_timeout
   value:
@@ -791,7 +777,7 @@ inputs:
   value:
     simple: Google Chrome
   required: false
-  description: 'The browser name. Supports: Google Chrome, Mozilla Firefox, Internet Explorer, Microsoft Edge.'
+  description: 'The browser name. Possible values are Google Chrome, Mozilla Firefox, Internet Explorer, or Microsoft Edge.'
   playbookInputQuery: null
 - key: obj_ext_extension
   value:
@@ -803,7 +789,7 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: 'Whether to automatically add malicious and suspicious ANY.RUN IOCs (Unknown reputation IOCs are always excluded) to Cortex XDR IOC rules. Set to "false" to disable.'
+  description: 'Whether to automatically add malicious and suspicious ANY.RUN IOCs to Cortex XDR IOC rules. IOCs with an Unknown reputation are always excluded. Set to false to disable.'
   playbookInputQuery: null
 inputSections:
 - inputs:
@@ -811,8 +797,7 @@ inputSections:
   - Using
   - obj_url
   name: URL and Instance Selection
-  description: Provide the target URL and optionally select the ANY.RUN instance with
-    Using.
+  description: Provide the target URL and optionally select the ANY.RUN instance with the Using input.
 - inputs:
   - env_locale
   - env_bitness
@@ -841,7 +826,7 @@ inputSections:
 outputSections:
 - outputs: []
   name: General (Outputs group)
-  description: Generic group for outputs
+  description: The generic group for outputs.
 outputs:
 - contextPath: ANYRUN_DetonateUrlWindows.TaskID
   description: The ANY.RUN task UUID.

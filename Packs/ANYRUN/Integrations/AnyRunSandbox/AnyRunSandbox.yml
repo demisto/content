@@ -98,7 +98,7 @@ script:
       predefined:
       - true
       - false
-    - description: 'The TOR geo location option, for example US, AU.'
+    - description: 'The TOR geolocation option, for example, US or AU.'
       name: opt_network_geo
       defaultValue: 'fastest'
       required: false
@@ -121,7 +121,7 @@ script:
       predefined:
       - true
       - false
-    - description: 'The residential proxy geo location option, for example US, AU.'
+    - description: 'The residential proxy geolocation option, for example, US or AU.'
       name: opt_network_residential_proxy_geo
       defaultValue: 'fastest'
       required: false
@@ -188,7 +188,7 @@ script:
       - true
       - false
     name: anyrun-detonate-file-windows
-    description: 'Perform file analysis using Windows VM.'
+    description: 'Performs file analysis using a Windows VM.'
     outputs:
     - contextPath: ANYRUN_DetonateFileWindows.TaskID
       description: 'Task UUID.'
@@ -258,7 +258,7 @@ script:
       predefined:
       - true
       - false
-    - description: 'The TOR geo location option, for example US, AU.'
+    - description: 'The TOR geolocation option, for example, US or AU.'
       name: opt_network_geo
       defaultValue: 'fastest'
       required: false
@@ -281,7 +281,7 @@ script:
       predefined:
       - true
       - false
-    - description: 'The residential proxy geo location option, for example US, AU.'
+    - description: 'The residential proxy geolocation option, for example, US or AU.'
       name: opt_network_residential_proxy_geo
       defaultValue: 'fastest'
       required: false
@@ -332,7 +332,7 @@ script:
       - true
       - false
     name: anyrun-detonate-url-windows
-    description: 'Performs URL analysis using Windows VM.'
+    description: 'Performs URL analysis using a Windows VM.'
     outputs:
     - contextPath: ANYRUN_DetonateUrlWindows.TaskID
       description: 'Task UUID.'
@@ -383,7 +383,7 @@ script:
       predefined:
       - true
       - false
-    - description: 'The TOR geo location option, for example US, AU.'
+    - description: 'The TOR geolocation option, for example, US or AU.'
       name: opt_network_geo
       defaultValue: 'fastest'
       required: false
@@ -406,7 +406,7 @@ script:
       predefined:
       - true
       - false
-    - description: 'The residential proxy geo location option, for example US, AU.'
+    - description: 'The residential proxy geolocation option, for example, US or AU.'
       name: opt_network_residential_proxy_geo
       defaultValue: 'fastest'
       required: false
@@ -456,7 +456,7 @@ script:
       required: false
       type: String
     - auto: PREDEFINED
-      description: 'Run file with superuser privileges.'
+      description: 'Whether to run the file with superuser privileges.'
       name: run_as_root
       defaultValue: true
       required: false
@@ -474,7 +474,7 @@ script:
       - true
       - false
     name: anyrun-detonate-file-linux
-    description: 'Perform file analysis using Linux VM.'
+    description: 'Performs file analysis using a Linux VM.'
     outputs:
     - contextPath: ANYRUN_DetonateFileLinux.TaskID
       description: 'Task UUID.'
@@ -525,7 +525,7 @@ script:
       predefined:
       - true
       - false
-    - description: 'The TOR geo location option, for example US, AU.'
+    - description: 'The TOR geolocation option, for example, US or AU.'
       name: opt_network_geo
       defaultValue: 'fastest'
       required: false
@@ -548,7 +548,7 @@ script:
       predefined:
       - true
       - false
-    - description: 'The residential proxy geo location option, for example US, AU.'
+    - description: 'The residential proxy geolocation option, for example, US or AU.'
       name: opt_network_residential_proxy_geo
       defaultValue: 'fastest'
       required: false
@@ -598,7 +598,7 @@ script:
       - true
       - false
     name: anyrun-detonate-url-linux
-    description: 'Performs URL analysis using Linux VM.'
+    description: 'Performs URL analysis using a Linux VM.'
     outputs:
     - contextPath: ANYRUN_DetonateUrlLinux.TaskID
       description: 'Task UUID.'
@@ -640,7 +640,7 @@ script:
       predefined:
       - true
       - false
-    - description: 'The TOR geo location option, for example US, AU.'
+    - description: 'The TOR geolocation option, for example, US or AU.'
       name: opt_network_geo
       defaultValue: 'fastest'
       required: false
@@ -663,7 +663,7 @@ script:
       predefined:
       - true
       - false
-    - description: 'The residential proxy geo location option, for example US, AU.'
+    - description: 'The residential proxy geolocation option, for example, US or AU.'
       name: opt_network_residential_proxy_geo
       defaultValue: 'fastest'
       required: false
@@ -699,7 +699,7 @@ script:
       required: false
       type: String
     name: anyrun-detonate-file-android
-    description: 'Perform file analysis using Android VM.'
+    description: 'Performs file analysis using an Android VM.'
     outputs:
     - contextPath: ANYRUN_DetonateFileAndroid.TaskID
       description: 'Task UUID.'
@@ -741,7 +741,7 @@ script:
       predefined:
       - true
       - false
-    - description: 'The TOR geo location option, for example US, AU.'
+    - description: 'The TOR geolocation option, for example, US or AU.'
       name: opt_network_geo
       defaultValue: 'fastest'
       required: false
@@ -764,7 +764,7 @@ script:
       predefined:
       - true
       - false
-    - description: 'The residential proxy geo location option, for example US, AU.'
+    - description: 'The residential proxy geolocation option, for example, US or AU.'
       name: opt_network_residential_proxy_geo
       defaultValue: 'fastest'
       required: false
@@ -806,7 +806,7 @@ script:
       - 'Google Chrome'
       - 'Mozilla Firefox'
     name: anyrun-detonate-url-android
-    description: 'Performs URL analysis using Android VM.'
+    description: 'Performs a URL analysis using an Android VM.'
     outputs:
     - contextPath: ANYRUN_DetonateUrlAndroid.TaskID
       description: 'Task UUID.'
@@ -854,7 +854,7 @@ script:
       predefined:
       - true
       - false
-    - description: 'Whether to skip the specified number of tasks.'
+    - description: 'The number of tasks to skip.'
       name: skip
       defaultValue: '0'
       required: false
@@ -932,7 +932,7 @@ script:
       - 'html'
       - 'ioc'
     - auto: PREDEFINED
-      description: 'Whether to also build Cortex XDR IOC objects when report_format is "ioc".'
+      description: 'Whether to also build Cortex XDR IOC objects when report_format is ioc.'
       name: create_xdr_iocs
       defaultValue: false
       required: false
