@@ -18,7 +18,6 @@ This integration provides access to Google Gemini's large language models for AI
 
 ### Instance Configuration Parameters
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Authentication Type | Choose whether to authenticate with a Google AI Studio API Key or a Google Cloud Vertex AI Service Account. | True |
@@ -34,7 +33,6 @@ This integration provides access to Google Gemini's large language models for AI
 | Top K | Consider only the top K most probable tokens when generating text. Affects the diversity of the generated content. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 ### Supported Models
 
@@ -71,30 +69,30 @@ Send a chat message to the Gemini AI model.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| prompt | The prompt or question to send to the AI model. | Required | 
-| model | The Gemini model to use for this request. If not specified, uses the default model from configuration. | Optional | 
-| history | Optional conversation history in JSON format. Array of message objects with 'role' (user/model) and 'parts' containing text.<br/>Example: [{"role": "user", "parts": [{"text": "Hello"}]}, {"role": "model", "parts": [{"text": "Hi there!"}]}]. | Optional | 
-| save_conversation | If true, saves the complete conversation (including the current exchange) to context under GoogleGemini.Chat.History for reuse in subsequent calls. Possible values are: true, false. | Optional | 
-| temperature | The degree of randomness in token selection for this call. Overrides the instance-level Temperature parameter. Lower values (closer to 0) produce more deterministic outputs, while higher values (up to 2.0) increase randomness and creativity. | Optional | 
-| max_tokens | The maximum number of tokens that can be generated for this response (1-10000). Overrides the instance-level Max tokens parameter for this call. If not specified, the instance-level value is used. | Optional | 
-| max_input_tokens | The maximum number of input tokens (prompt + history combined) allowed for this request. If exceeded and truncate=false, the command returns an error reporting the actual vs. allowed token count. | Optional | 
-| truncate | Whether to automatically truncate the oldest history entries first, then the prompt itself, to fit within the budget if max_input_tokens is exceeded. If false (default), an error is returned instead. Possible values are: true, false. | Optional | 
+| prompt | The prompt or question to send to the AI model. | Required |
+| model | The Gemini model to use for this request. If not specified, uses the default model from configuration. | Optional |
+| history | Optional conversation history in JSON format. Array of message objects with 'role' (user/model) and 'parts' containing text.<br/>Example: [{"role": "user", "parts": [{"text": "Hello"}]}, {"role": "model", "parts": [{"text": "Hi there!"}]}]. | Optional |
+| save_conversation | If true, saves the complete conversation (including the current exchange) to context under GoogleGemini.Chat.History for reuse in subsequent calls. Possible values are: true, false. | Optional |
+| temperature | The degree of randomness in token selection for this call. Overrides the instance-level Temperature parameter. Lower values (closer to 0) produce more deterministic outputs, while higher values (up to 2.0) increase randomness and creativity. | Optional |
+| max_tokens | The maximum number of tokens that can be generated for this response (1-10000). Overrides the instance-level Max tokens parameter for this call. If not specified, the instance-level value is used. | Optional |
+| max_input_tokens | The maximum number of input tokens (prompt + history combined) allowed for this request. If exceeded and truncate=false, the command returns an error reporting the actual vs. allowed token count. | Optional |
+| truncate | Whether to automatically truncate the oldest history entries first, then the prompt itself, to fit within the budget if max_input_tokens is exceeded. If false (default), an error is returned instead. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleGemini.Chat.Prompt | String | The original prompt sent to the model. | 
-| GoogleGemini.Chat.Response | String | The AI model's response. | 
-| GoogleGemini.Chat.Model | String | The model used for generation. | 
-| GoogleGemini.Chat.Temperature | Number | The temperature setting used. | 
-| GoogleGemini.Chat.MaxTokens | Number | The maximum number of output tokens configured for the request. | 
-| GoogleGemini.Chat.History | Unknown | Complete conversation history in Gemini format, updated when save_conversation=true. Can be used as input for the history argument in subsequent calls. | 
-| GoogleGemini.Chat.ConversationId | String | A unique identifier, used to identify the chat session. | 
-| GoogleGemini.Chat.InputTokenCount | Number | The number of input \(prompt\) tokens consumed by the request, as reported by the model. | 
-| GoogleGemini.Chat.OutputTokenCount | Number | The number of output \(response\) tokens generated by the model. | 
-| GoogleGemini.Chat.TotalTokenCount | Number | The total number of tokens \(input \+ output\) consumed by the request. | 
-| GoogleGemini.Chat.Truncated | Boolean | Whether the history and/or prompt were automatically truncated to fit within max_input_tokens. | 
+| GoogleGemini.Chat.Prompt | String | The original prompt sent to the model. |
+| GoogleGemini.Chat.Response | String | The AI model's response. |
+| GoogleGemini.Chat.Model | String | The model used for generation. |
+| GoogleGemini.Chat.Temperature | Number | The temperature setting used. |
+| GoogleGemini.Chat.MaxTokens | Number | The maximum number of output tokens configured for the request. |
+| GoogleGemini.Chat.History | Unknown | Complete conversation history in Gemini format, updated when save_conversation=true. Can be used as input for the history argument in subsequent calls. |
+| GoogleGemini.Chat.ConversationId | String | A unique identifier, used to identify the chat session. |
+| GoogleGemini.Chat.InputTokenCount | Number | The number of input \(prompt\) tokens consumed by the request, as reported by the model. |
+| GoogleGemini.Chat.OutputTokenCount | Number | The number of output \(response\) tokens generated by the model. |
+| GoogleGemini.Chat.TotalTokenCount | Number | The total number of tokens \(input \+ output\) consumed by the request. |
+| GoogleGemini.Chat.Truncated | Boolean | Whether the history and/or prompt were automatically truncated to fit within max_input_tokens. |
 
 #### Command Examples
 
