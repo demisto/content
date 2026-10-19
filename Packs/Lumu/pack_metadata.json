@@ -7,6 +7,7 @@
     "created": "2026-10-01T00:00:00Z",
     "url": "https://lumu.io",
     "email": "support@lumu.io",
+    "defaultDataSource": "LumuSecops",
     "categories": [
         "Case Management"
     ],
