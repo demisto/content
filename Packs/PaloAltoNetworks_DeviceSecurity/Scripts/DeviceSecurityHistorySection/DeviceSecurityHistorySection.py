@@ -27,13 +27,15 @@ def format_cell(value: Any) -> str:
 
 
 def render_history(history: Any) -> str:
-    """Render the JSON history field as a dynamic section table."""
+    """Render history stored as objects or JSON-encoded list entries."""
     if isinstance(history, str):
         history = json.loads(history) if history.strip() else []
     if history is None or history == []:
         return "No detection or resolution history available."
     if isinstance(history, dict):
         history = [history]
+    if isinstance(history, list):
+        history = [json.loads(event) if isinstance(event, str) else event for event in history]
     if not isinstance(history, list) or any(not isinstance(event, dict) for event in history):
         raise ValueError("Reason history must be a JSON object or a list of objects.")
     lines = [
