@@ -844,7 +844,8 @@ class PychromeEventHandler:
                 except Exception as e:
                     demisto.debug(
                         f"Error during navigation to {self.tab.id=}, {self.path=} "
-                        f"attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {e}"
+                        f"attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {e}\n"
+                        f"Trace:{traceback.format_exc()}"
                     )
 
                 # Never sleep past the overall deadline.
@@ -857,7 +858,8 @@ class PychromeEventHandler:
                 except Exception as e:
                     demisto.debug(
                         f"Error getting frame URL in retry_loading for {self.tab.id=}, {self.path=} "
-                        f"attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {str(e)}"
+                        f"attempt {retry_count}/{DEFAULT_RETRIES_COUNT}: {str(e)}\n"
+                        f"Trace:{traceback.format_exc()}"
                     )
                     frame_url = ""
 
@@ -1270,7 +1272,7 @@ def close_orphaned_tabs(browser: pychrome.Browser, max_allowed_tabs: int = MAX_C
     try:
         tabs = browser.list_tab()
     except Exception as ex:
-        demisto.debug(f"close_orphaned_tabs: could not list tabs: {ex}")
+        demisto.debug(f"close_orphaned_tabs: could not list tabs: {ex}\nTrace:{traceback.format_exc()}")
         return 0
 
     if len(tabs) <= max_allowed_tabs:
@@ -1287,7 +1289,9 @@ def close_orphaned_tabs(browser: pychrome.Browser, max_allowed_tabs: int = MAX_C
             browser.close_tab(tab)
             closed += 1
         except Exception as ex:
-            demisto.debug(f"close_orphaned_tabs: failed to close tab {getattr(tab, 'id', tab)}: {ex}")
+            demisto.debug(
+                f"close_orphaned_tabs: failed to close tab {getattr(tab, 'id', tab)}: {ex}\nTrace:{traceback.format_exc()}"
+            )
 
     demisto.info(f"close_orphaned_tabs: closed {closed}/{len(orphaned)} orphaned tabs.")
     return closed
@@ -1371,6 +1375,7 @@ def write_chrome_instances_file(new_chrome_content: Optional[Dict] = {}):
     :param new_chrome_content: Data to write to the file. If None, an empty file is created.
 
     """
+    tmp_path: str | None = None
     try:
         directory = os.path.dirname(CHROME_INSTANCES_FILE_PATH) or "."
         with tempfile.NamedTemporaryFile("w", dir=directory, prefix=".chrome_instances_", suffix=".tmp", delete=False) as tmp:
@@ -1380,12 +1385,12 @@ def write_chrome_instances_file(new_chrome_content: Optional[Dict] = {}):
             os.fsync(tmp.fileno())
         Path(tmp_path).replace(CHROME_INSTANCES_FILE_PATH)
     except Exception as e:
-        demisto.debug(f"An error occurred while writing to the file: {e}")
+        demisto.debug(f"An error occurred while writing to the file: {e}\nTrace:{traceback.format_exc()}")
         try:
-            if "tmp_path" in locals() and os.path.exists(tmp_path):
+            if tmp_path and os.path.exists(tmp_path):
                 os.remove(tmp_path)
         except OSError as cleanup_ex:
-            demisto.debug(f"Failed to clean up temporary chrome instances file: {cleanup_ex}")
+            demisto.debug(f"Failed to clean up temporary chrome instances file: {cleanup_ex}\nTrace:{traceback.format_exc()}")
 
 
 def opt_name(opt: str) -> str:
