@@ -1,7 +1,9 @@
+import gzip
 import io
 import re
 from unittest.mock import Mock, PropertyMock
 from xml.etree import ElementTree
+import demistomock as demisto
 import Qualysv2
 import pytest
 import requests
@@ -3096,3 +3098,317 @@ class TestConcurrencyLimitRetry:
         resp_no_text.status_code = Qualysv2.RATE_LIMIT_STATUS_CODE
         type(resp_no_text).text = PropertyMock(side_effect=AttributeError("no text attribute"))
         assert Client._is_concurrency_limit_error(resp_no_text) is False
+
+
+""" XSIAM SEND RETRY TESTS """
+
+XSIAM_INGEST_URL = "https://api-bjs.xdr.us.paloaltonetworks.com/logs/v1/xsiam"
+XSIAM_OK_RESPONSE = {"status_code": 200, "json": {"error": "false"}}
+NGINX_502_BODY = "<html><head><title>502 Bad Gateway</title></head><body><center>nginx</center></body></html>"
+
+
+def mock_xsiam_ingestion(mocker: MockerFixture) -> None:
+    """Mock the integration params, the license fields used by send_data_to_xsiam, and the demisto logs."""
+    license_fields = {"Http_Connector.token": "token", "Http_Connector.url": "bjs.xdr.us.paloaltonetworks.com"}
+    mocker.patch.object(demisto, "params", return_value={"url": BASE_URL})
+    mocker.patch.object(demisto, "getLicenseCustomField", side_effect=lambda field: license_fields[field])
+    mocker.patch.object(demisto, "error")
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "updateModuleHealth")
+
+
+@pytest.mark.parametrize(
+    "transient_response",
+    [
+        {"status_code": 502, "text": NGINX_502_BODY},
+        {"status_code": 500, "text": "Internal Server Error"},
+        {"status_code": 503, "text": "upstream connect error or disconnect/reset before headers"},
+        {"status_code": 504, "text": "Gateway Timeout"},
+        {"status_code": 408, "text": "Request Timeout"},
+        {"exc": requests.exceptions.ReadTimeout},
+        {"exc": requests.exceptions.ConnectionError},
+    ],
+    ids=["502_nginx", "500", "503_envoy_reset", "504", "408", "read_timeout", "connection_reset"],
+)
+def test_send_assets_with_retry_recovers_from_transient_error(
+    mocker: MockerFixture, requests_mock: RequestsMocker, transient_response: dict
+):
+    """
+    Given:
+        - The XSIAM ingestion endpoint fails once with a transient error, then succeeds.
+    When:
+        - Sending vulnerabilities with send_assets_and_vulnerabilities_to_xsiam_with_retry.
+    Then:
+        - The batch is retried after a backoff and the send succeeds.
+    """
+    mock_xsiam_ingestion(mocker)
+    sleep_mock = mocker.patch("Qualysv2.time.sleep")
+    requests_mock.post(XSIAM_INGEST_URL, [transient_response, XSIAM_OK_RESPONSE])
+
+    Qualysv2.send_assets_and_vulnerabilities_to_xsiam_with_retry(
+        [{"QID": "1"}], vendor=VENDOR, product="vulnerabilities", snapshot_id="123", items_count="1"
+    )
+
+    assert requests_mock.call_count == 2
+    sleep_mock.assert_called_once_with(Qualysv2.XSIAM_SEND_BACKOFF_SECONDS)
+
+
+def test_send_assets_with_retry_raises_after_max_attempts(mocker: MockerFixture, requests_mock: RequestsMocker):
+    """
+    Given:
+        - The XSIAM ingestion endpoint keeps answering 502.
+    When:
+        - Sending assets with send_assets_and_vulnerabilities_to_xsiam_with_retry.
+    Then:
+        - The send is attempted MAX_ATTEMPTS times with exponential backoff, then the error is raised.
+    """
+    mock_xsiam_ingestion(mocker)
+    sleep_mock = mocker.patch("Qualysv2.time.sleep")
+    requests_mock.post(XSIAM_INGEST_URL, status_code=502, text=NGINX_502_BODY)
+
+    with pytest.raises(Qualysv2.XSIAMSendError) as error:
+        Qualysv2.send_assets_and_vulnerabilities_to_xsiam_with_retry([{"ID": "1"}], vendor=VENDOR, product="assets")
+
+    assert error.value.status_code == 502
+    assert requests_mock.call_count == Qualysv2.XSIAM_SEND_MAX_ATTEMPTS
+    assert [call.args[0] for call in sleep_mock.call_args_list] == [
+        Qualysv2.XSIAM_SEND_BACKOFF_SECONDS * 2**attempt for attempt in range(Qualysv2.XSIAM_SEND_MAX_ATTEMPTS - 1)
+    ]
+
+
+@pytest.mark.parametrize("status_code", [400, 401, 403, 404, 413], ids=["400", "401", "403", "404", "413"])
+def test_send_assets_with_retry_does_not_retry_permanent_errors(
+    mocker: MockerFixture, requests_mock: RequestsMocker, status_code: int
+):
+    """
+    Given:
+        - The XSIAM ingestion endpoint answers with a permanent (non-transient) error.
+    When:
+        - Sending assets with send_assets_and_vulnerabilities_to_xsiam_with_retry.
+    Then:
+        - The error is raised immediately, without retrying or sleeping.
+    """
+    mock_xsiam_ingestion(mocker)
+    sleep_mock = mocker.patch("Qualysv2.time.sleep")
+    requests_mock.post(XSIAM_INGEST_URL, status_code=status_code, text="error")
+
+    with pytest.raises(Qualysv2.XSIAMSendError):
+        Qualysv2.send_assets_and_vulnerabilities_to_xsiam_with_retry([{"ID": "1"}], vendor=VENDOR, product="assets")
+
+    assert requests_mock.call_count == 1
+    sleep_mock.assert_not_called()
+
+
+def test_send_assets_with_retry_forwards_arguments_unchanged(mocker: MockerFixture):
+    """
+    Given:
+        - The argument shape used by the integration's snapshot sends.
+    When:
+        - Calling send_assets_and_vulnerabilities_to_xsiam_with_retry and the send succeeds on the first attempt.
+    Then:
+        - send_assets_and_vulnerabilities_to_xsiam is called exactly once with the same data and arguments plus
+          only the client_class, so the original flow (payload, snapshot headers, module health) is unchanged.
+    """
+    mock_xsiam_ingestion(mocker)
+    sleep_mock = mocker.patch("Qualysv2.time.sleep")
+    send_mock = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+    kwargs = {
+        "vendor": VENDOR,
+        "product": "assets",
+        "snapshot_id": "123",
+        "items_count": "2",
+        "should_update_health_module": False,
+    }
+
+    Qualysv2.send_assets_and_vulnerabilities_to_xsiam_with_retry([{"ID": "1"}, {"ID": "2"}], **kwargs)
+
+    send_mock.assert_called_once_with([{"ID": "1"}, {"ID": "2"}], client_class=Qualysv2.XSIAMIngestionClient, **kwargs)
+    sleep_mock.assert_not_called()
+
+
+def test_send_assets_with_retry_resends_the_identical_request(mocker: MockerFixture, requests_mock: RequestsMocker):
+    """
+    Given:
+        - An assets snapshot batch that fails once with a 502, sent through the streaming send path, which
+          clears the items of the list it receives while serializing them.
+    When:
+        - Sending it with send_assets_and_vulnerabilities_to_xsiam_with_retry.
+    Then:
+        - The retry sends the exact same request body and headers (same snapshot-id and total-items-count),
+          so XSIAM receives one consistent snapshot and the retried payload is not empty.
+    """
+    mock_xsiam_ingestion(mocker)
+    mocker.patch("Qualysv2.time.sleep")
+    requests_mock.post(XSIAM_INGEST_URL, [{"status_code": 502, "text": NGINX_502_BODY}, XSIAM_OK_RESPONSE])
+
+    Qualysv2.send_assets_and_vulnerabilities_to_xsiam_with_retry(
+        [{"ID": "asset-1"}, {"ID": "asset-2"}],
+        vendor=VENDOR,
+        product="assets",
+        snapshot_id="123",
+        items_count="1",
+        should_update_health_module=False,
+    )
+
+    first_request, retried_request = requests_mock.request_history
+    assert retried_request.body == first_request.body
+    assert b"asset-2" in gzip.decompress(retried_request.body)
+    assert retried_request.headers["snapshot-id"] == first_request.headers["snapshot-id"]
+    assert retried_request.headers["total-items-count"] == first_request.headers["total-items-count"] == "1"
+
+
+def test_send_assets_with_retry_keeps_the_original_error_message(mocker: MockerFixture, requests_mock: RequestsMocker):
+    """
+    Given:
+        - The XSIAM ingestion endpoint keeps answering 502.
+    When:
+        - All attempts of send_assets_and_vulnerabilities_to_xsiam_with_retry are exhausted.
+    Then:
+        - The raised error carries the same message send_data_to_xsiam produced before the change.
+    """
+    mock_xsiam_ingestion(mocker)
+    mocker.patch("Qualysv2.time.sleep")
+    requests_mock.post(XSIAM_INGEST_URL, status_code=502, text=NGINX_502_BODY)
+
+    with pytest.raises(DemistoException) as error:
+        Qualysv2.send_assets_and_vulnerabilities_to_xsiam_with_retry([{"ID": "1"}], vendor=VENDOR, product="assets")
+
+    assert str(error.value).startswith("Error sending new assets into XSIAM.")
+    assert "502 Bad Gateway" in str(error.value)
+
+
+def test_send_assets_with_retry_logs_no_payload_or_secrets(mocker: MockerFixture, requests_mock: RequestsMocker):
+    """
+    Given:
+        - An asset payload with customer data, sent while XSIAM fails with 502 on every attempt.
+    When:
+        - send_assets_and_vulnerabilities_to_xsiam_with_retry logs its retry attempts and the final failure.
+    Then:
+        - The retry logs contain the product and status code, but never the payload, token or response body.
+    """
+    mock_xsiam_ingestion(mocker)
+    mocker.patch("Qualysv2.time.sleep")
+    requests_mock.post(XSIAM_INGEST_URL, status_code=502, text=NGINX_502_BODY)
+
+    with pytest.raises(DemistoException):
+        Qualysv2.send_assets_and_vulnerabilities_to_xsiam_with_retry(
+            [{"DNS": "customer-host.corp.local", "NETBIOS": "SN-CUSTOMER-0001"}], vendor=VENDOR, product="assets"
+        )
+
+    retry_logs = [
+        str(call.args[0])
+        for log_mock in (demisto.debug, demisto.info, demisto.error)
+        for call in log_mock.call_args_list  # type: ignore[attr-defined]
+        if "[XSIAM Send]" in str(call.args[0])
+    ]
+    assert retry_logs, "expected [XSIAM Send] retry logs"
+    assert any("status_code=502" in log for log in retry_logs)
+    for log in retry_logs:
+        assert "customer-host.corp.local" not in log
+        assert "SN-CUSTOMER-0001" not in log
+        assert "token" not in log
+        assert "Bad Gateway" not in log
+
+
+@pytest.mark.parametrize(
+    "status_code, expected",
+    [(408, True), (500, True), (502, True), (503, True), (504, True), (429, False), (400, False), (401, False), (403, False)],
+    ids=["408", "500", "502", "503", "504", "429", "400", "401", "403"],
+)
+def test_is_retryable_xsiam_error_by_status_code(status_code: int, expected: bool):
+    """
+    Given:
+        - An XSIAMSendError carrying an HTTP status code.
+    When:
+        - Classifying it with is_retryable_xsiam_error.
+    Then:
+        - Only the transient status codes are retryable. 429 is not, because send_data_to_xsiam already
+          retries it internally.
+    """
+    assert Qualysv2.is_retryable_xsiam_error(Qualysv2.XSIAMSendError("error", status_code=status_code)) is expected
+
+
+@pytest.mark.parametrize(
+    "error, expected",
+    [
+        (requests.exceptions.ReadTimeout(), True),
+        (requests.exceptions.ConnectTimeout(), True),
+        (requests.exceptions.ConnectionError(), True),
+        (requests.exceptions.ChunkedEncodingError(), True),
+        (requests.exceptions.SSLError(), False),
+        (requests.exceptions.ProxyError(), False),
+        (DemistoException("wrapped", requests.exceptions.ConnectionError()), True),
+        (DemistoException("wrapped", requests.exceptions.SSLError()), False),
+        (DemistoException("no status code"), False),
+        (ValueError("unexpected"), False),
+    ],
+    ids=[
+        "read_timeout",
+        "connect_timeout",
+        "connection_error",
+        "chunked_encoding",
+        "ssl",
+        "proxy",
+        "wrapped_connection_error",
+        "wrapped_ssl",
+        "plain_demisto_exception",
+        "value_error",
+    ],
+)
+def test_is_retryable_xsiam_error(error: BaseException, expected: bool):
+    """
+    Given:
+        - An exception raised while sending data to XSIAM.
+    When:
+        - Classifying it with is_retryable_xsiam_error.
+    Then:
+        - Transient network errors are retryable; configuration and unknown errors are not.
+    """
+    assert Qualysv2.is_retryable_xsiam_error(error) is expected
+
+
+def test_send_snapshot_batch_uses_retry_wrapper(mocker: MockerFixture):
+    """
+    Given:
+        - A batch of vulnerabilities to send into a snapshot.
+    When:
+        - Calling send_snapshot_batch.
+    Then:
+        - The batch is sent through send_assets_and_vulnerabilities_to_xsiam_with_retry.
+    """
+    retry_send_mock = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam_with_retry")
+
+    Qualysv2.send_snapshot_batch([{"QID": "1"}], product="vulnerabilities", snapshot_id="123", items_count=1)
+
+    retry_send_mock.assert_called_once_with(
+        [{"QID": "1"}],
+        vendor=VENDOR,
+        product="vulnerabilities",
+        snapshot_id="123",
+        items_count="1",
+        should_update_health_module=False,
+    )
+
+
+def test_publish_assets_and_vulnerabilities_uses_retry_wrapper(mocker: MockerFixture):
+    """
+    Given:
+        - Assets and vulnerabilities to publish on the last page.
+    When:
+        - Calling publish_assets_and_vulnerabilities.
+    Then:
+        - Both sends go through send_assets_and_vulnerabilities_to_xsiam_with_retry.
+    """
+    retry_send_mock = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam_with_retry")
+
+    publish_assets_and_vulnerabilities(
+        assets=[{"ID": "1"}],
+        vulnerabilities=[{"QID": "1"}],
+        cumulative_assets_count=1,
+        cumulative_vulns_count=1,
+        has_next_page=False,
+        snapshot_id="123",
+    )
+
+    assert [call.kwargs["product"] for call in retry_send_mock.call_args_list] == ["assets", "vulnerabilities"]

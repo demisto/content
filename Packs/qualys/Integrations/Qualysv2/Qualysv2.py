@@ -56,6 +56,13 @@ CONCURRENCY_LIMIT_ERROR_CODE = "1960"
 CONCURRENCY_LIMIT_WAIT_SEC = 60
 CONCURRENCY_LIMIT_MAX_RETRIES = 2
 
+# Retry configuration for sending assets and vulnerabilities into XSIAM.
+# The XSIAM ingestion gateway intermittently answers with transient errors (502 from nginx, connection resets,
+# read timeouts). Without a retry a single transient error fails the whole fetch-assets cycle.
+XSIAM_SEND_MAX_ATTEMPTS = 3
+XSIAM_SEND_BACKOFF_SECONDS = 5
+XSIAM_SEND_RETRYABLE_STATUS_CODES = frozenset({408, 500, 502, 503, 504})
+
 ASSETS_DATE_FORMAT = "%Y-%m-%d"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 EXECUTION_START_TIME = time.time()
@@ -76,7 +83,6 @@ DEFAULT_LAST_ASSETS_RUN = {
     "nextTrigger": None,
     "type": FETCH_COMMAND.get("assets"),
 }
-
 
 # Arguments that need to be parsed as dates
 DATE_ARGUMENTS = {
@@ -1633,6 +1639,28 @@ inner_args_values: dict[str, Any] = {}
 
 
 """ CLIENT CLASS """
+
+
+class XSIAMSendError(DemistoException):
+    """A failed XSIAM ingestion request that carries the HTTP status code of the response."""
+
+    def __init__(self, message: str, status_code: int | None = None, exception: Exception | None = None):
+        super().__init__(message, exception)
+        self.status_code = status_code
+
+
+class XSIAMIngestionClient(BaseClient):
+    """Client passed to ``send_assets_and_vulnerabilities_to_xsiam`` so a failed response keeps its HTTP status code.
+
+    ``send_data_to_xsiam`` raises a plain ``DemistoException`` whose message does not include the
+    status code, which makes transient errors indistinguishable from permanent ones.
+    """
+
+    def _handle_error(self, error_handler: Any, res: requests.Response, should_update_metrics: bool) -> None:
+        try:
+            super()._handle_error(error_handler, res, should_update_metrics)
+        except DemistoException as exc:
+            raise XSIAMSendError(str(exc.message), status_code=res.status_code, exception=exc) from exc
 
 
 class Client(BaseClient):
@@ -3206,6 +3234,82 @@ def iter_detections_from_hosts(hosts: Iterable[dict]) -> Iterator[dict]:
             yield new_detection
 
 
+def is_retryable_xsiam_error(error: BaseException) -> bool:
+    """Decide whether a failure while sending data into XSIAM is transient and worth retrying.
+
+    Args:
+        error (BaseException): The exception raised by ``send_assets_and_vulnerabilities_to_xsiam``.
+
+    Returns:
+        bool: True for retryable HTTP status codes, timeouts and dropped connections.
+    """
+    if isinstance(error, XSIAMSendError) and error.status_code is not None:
+        return error.status_code in XSIAM_SEND_RETRYABLE_STATUS_CODES
+    # SSL and proxy errors are configuration problems; retrying them only delays the failure.
+    if isinstance(error, requests.exceptions.SSLError | requests.exceptions.ProxyError):
+        return False
+    if isinstance(
+        error,
+        requests.exceptions.Timeout | requests.exceptions.ConnectionError | requests.exceptions.ChunkedEncodingError,
+    ):
+        return True
+    # BaseClient wraps network errors in a DemistoException and keeps the original as `.exception`.
+    if isinstance(error, DemistoException) and isinstance(error.exception, BaseException):
+        return is_retryable_xsiam_error(error.exception)
+    return False
+
+
+def send_assets_and_vulnerabilities_to_xsiam_with_retry(data: list, **kwargs: Any) -> None:
+    """Call ``send_assets_and_vulnerabilities_to_xsiam`` with the same arguments, retrying transient ingestion errors.
+
+    The only differences from a direct ``send_assets_and_vulnerabilities_to_xsiam`` call are:
+        - ``client_class=XSIAMIngestionClient``, so a failed response keeps its HTTP status code.
+        - Each attempt receives a shallow copy of ``data``. The streaming send path clears the items of the
+          list it is given while serializing them, so the copy keeps the original rows intact for a retry.
+        - On a retryable error (see ``XSIAM_SEND_RETRYABLE_STATUS_CODES``, timeouts and dropped
+          connections) the same call is repeated, up to ``XSIAM_SEND_MAX_ATTEMPTS`` times, with
+          exponential backoff. Any other error is raised immediately, exactly as before.
+
+    Only the product, the attempt number, the error class and the HTTP status code are logged here -
+    never the payload, the headers or the response body.
+
+    Args:
+        data (list): The assets or vulnerabilities rows to send.
+        **kwargs: Keyword arguments forwarded to ``send_assets_and_vulnerabilities_to_xsiam``.
+
+    Raises:
+        Exception: The last error, when it is not retryable or all attempts are exhausted.
+    """
+    label = f"product={kwargs.get('product')}"
+    send_kwargs: dict[str, Any] = {**kwargs, "client_class": XSIAMIngestionClient}
+    max_attempts = XSIAM_SEND_MAX_ATTEMPTS
+    for attempt in range(1, max_attempts + 1):
+        try:
+            send_assets_and_vulnerabilities_to_xsiam(list(data), **send_kwargs)
+        except Exception as exc:
+            status_code = getattr(exc, "status_code", None)
+            error_name = type(exc).__name__
+            if not is_retryable_xsiam_error(exc):
+                demisto.debug(f"[XSIAM Send] {label} failed with a non-retryable error ({error_name}, {status_code=}).")
+                raise
+            if attempt == max_attempts:
+                demisto.error(
+                    f"[XSIAM Send] {label} failed after {max_attempts} attempts. Last error: {error_name}, {status_code=}."
+                )
+                raise
+            delay = XSIAM_SEND_BACKOFF_SECONDS * 2 ** (attempt - 1)
+            demisto.debug(
+                f"[XSIAM Send] {label} attempt {attempt}/{max_attempts} failed with a retryable error "
+                f"({error_name}, {status_code=}). Retrying in {delay}s."
+            )
+            time.sleep(delay)  # pylint: disable=E9003  # intentional backoff before retrying a transient XSIAM error
+            continue
+
+        if attempt > 1:
+            demisto.info(f"[XSIAM Send] {label} succeeded on attempt {attempt}/{max_attempts}.")
+        return
+
+
 def close_snapshot_if_empty(
     data: list,
     items_count: int,
@@ -3270,7 +3374,7 @@ def publish_assets_and_vulnerabilities(
     if is_closing_snapshot:
         assets, total_assets_to_report = close_snapshot_if_empty(assets, total_assets_to_report, snapshot_id, "assets")
 
-    send_assets_and_vulnerabilities_to_xsiam(
+    send_assets_and_vulnerabilities_to_xsiam_with_retry(
         assets,
         vendor=VENDOR,
         product="assets",
@@ -3290,7 +3394,7 @@ def publish_assets_and_vulnerabilities(
             vulnerabilities, total_vulns_to_report, snapshot_id, "vulnerabilities"
         )
 
-    send_assets_and_vulnerabilities_to_xsiam(
+    send_assets_and_vulnerabilities_to_xsiam_with_retry(
         vulnerabilities,
         vendor=VENDOR,
         product="vulnerabilities",
@@ -3512,7 +3616,7 @@ def send_snapshot_batch(records: list[dict], product: str, snapshot_id: str, ite
         items_count (int): The items count to report for the snapshot.
     """
     demisto.debug(f"[Snapshot] Sending {len(records)} {product} rows to {snapshot_id=} with {items_count=}.")
-    send_assets_and_vulnerabilities_to_xsiam(
+    send_assets_and_vulnerabilities_to_xsiam_with_retry(
         records,
         vendor=VENDOR,
         product=product,
