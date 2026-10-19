@@ -1,5 +1,6 @@
 import json
 import pytest
+import XSIAMAlertPusher
 from XSIAMAlertPusher import (
     map_severity,
     parse_date_to_epoch_ms,
@@ -10,7 +11,10 @@ from XSIAMAlertPusher import (
     push_single_incident_command,
     sync_new_incidents_command,
     reset_sync_command,
-    test_module,
+    extract_alert_field,
+    map_xsiam_resolution,
+    sync_close_status_command,
+    XSIAMClient,
 )
 
 
@@ -189,4 +193,145 @@ class TestTestModule:
     def test_ok(self, mocker):
         mock_xsoar = mocker.MagicMock()
         mock_xsiam = mocker.MagicMock()
-        assert test_module(mock_xsiam, mock_xsoar) == 'ok'
+        assert XSIAMAlertPusher.test_module(mock_xsiam, mock_xsoar) == 'ok'
+
+
+class TestExtractAlertField:
+    def test_extracts_simple_field(self):
+        desc = 'XSOAR Incident ID: 123\nName: Test'
+        assert extract_alert_field(desc, 'XSOAR Incident ID') == '123'
+
+    def test_returns_empty_when_missing(self):
+        assert extract_alert_field('Name: Test', 'Status') == ''
+
+    def test_extracts_field_at_end(self):
+        assert extract_alert_field('Status: Done', 'Status') == 'Done'
+
+    def test_extracts_multiword_value(self):
+        desc = 'Close Reason: False Positive\nNext: field'
+        assert extract_alert_field(desc, 'Close Reason') == 'False Positive'
+
+
+class TestMapXsiamResolution:
+    def test_resolved(self):
+        assert map_xsiam_resolution('Resolved') == 'STATUS_030_RESOLVED_THREAT_HANDLED'
+
+    def test_false_positive(self):
+        assert map_xsiam_resolution('False Positive') == 'STATUS_060_RESOLVED_FALSE_POSITIVE'
+
+    def test_duplicate(self):
+        assert map_xsiam_resolution('Duplicate') == 'STATUS_050_RESOLVED_DUPLICATE'
+
+    def test_other(self):
+        assert map_xsiam_resolution('Other') == 'STATUS_080_RESOLVED_OTHER'
+
+    def test_case_insensitive(self):
+        assert map_xsiam_resolution('RESOLVED') == 'STATUS_030_RESOLVED_THREAT_HANDLED'
+
+    def test_empty_maps_to_other(self):
+        assert map_xsiam_resolution('') == 'STATUS_080_RESOLVED_OTHER'
+
+    def test_unknown_maps_to_other(self):
+        assert map_xsiam_resolution('Custom') == 'STATUS_080_RESOLVED_OTHER'
+
+
+CLOSED_ALERT_DESC = (
+    'XSOAR Incident ID: 42\n'
+    'Status: Done\n'
+    'Close Reason: Resolved\n'
+    'Close Notes: Fixed the issue'
+)
+
+OPEN_ALERT_DESC = (
+    'XSOAR Incident ID: 43\n'
+    'Status: Active\n'
+    'Close Reason: \n'
+    'Close Notes: '
+)
+
+
+def _make_alert(alert_id, description, name='Test Alert'):
+    return {
+        'alert_id': alert_id,
+        'name': name,
+        'description': description,
+        'events': [],
+    }
+
+
+class TestSyncCloseStatusCommand:
+    def test_no_alerts_found(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.get_alerts.return_value = {'reply': {'alerts': [], 'total_count': 0}}
+
+        result = sync_close_status_command(mock_xsiam, {})
+        assert 'No open' in result.readable_output
+
+    def test_closes_resolved_alerts(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.get_alerts.return_value = {
+            'reply': {'alerts': [_make_alert(1001, CLOSED_ALERT_DESC)], 'total_count': 1},
+        }
+        mock_xsiam.update_alerts.return_value = {'reply': True}
+
+        result = sync_close_status_command(mock_xsiam, {})
+        mock_xsiam.update_alerts.assert_called_once()
+        call_args = mock_xsiam.update_alerts.call_args
+        assert call_args[0][0] == [1001]
+        assert call_args[0][1] == 'STATUS_030_RESOLVED_THREAT_HANDLED'
+        assert result.outputs['ClosedCount'] == 1
+
+    def test_skips_open_alerts(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.get_alerts.return_value = {
+            'reply': {'alerts': [_make_alert(1002, OPEN_ALERT_DESC)], 'total_count': 1},
+        }
+
+        result = sync_close_status_command(mock_xsiam, {})
+        mock_xsiam.update_alerts.assert_not_called()
+        assert result.outputs['ClosedCount'] == 0
+        assert result.outputs['SkippedCount'] == 1
+
+    def test_mixed_alerts(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.get_alerts.return_value = {
+            'reply': {
+                'alerts': [
+                    _make_alert(1001, CLOSED_ALERT_DESC),
+                    _make_alert(1002, OPEN_ALERT_DESC),
+                ],
+                'total_count': 2,
+            },
+        }
+        mock_xsiam.update_alerts.return_value = {'reply': True}
+
+        result = sync_close_status_command(mock_xsiam, {})
+        assert result.outputs['ClosedCount'] == 1
+        assert result.outputs['SkippedCount'] == 1
+
+    def test_description_from_events_fallback(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        alert = {
+            'alert_id': 2001,
+            'name': 'Event Alert',
+            'description': '',
+            'events': [{'alert_description': CLOSED_ALERT_DESC}],
+        }
+        mock_xsiam.get_alerts.return_value = {
+            'reply': {'alerts': [alert], 'total_count': 1},
+        }
+        mock_xsiam.update_alerts.return_value = {'reply': True}
+
+        result = sync_close_status_command(mock_xsiam, {})
+        assert result.outputs['ClosedCount'] == 1
+
+    def test_update_failure_recorded(self, mocker):
+        mock_xsiam = mocker.MagicMock()
+        mock_xsiam.get_alerts.return_value = {
+            'reply': {'alerts': [_make_alert(1001, CLOSED_ALERT_DESC)], 'total_count': 1},
+        }
+        mock_xsiam.update_alerts.side_effect = Exception('API error')
+
+        result = sync_close_status_command(mock_xsiam, {})
+        assert result.outputs['ClosedCount'] == 1
+        assert 'Failed' in result.outputs['ClosedAlerts'][0]['result']

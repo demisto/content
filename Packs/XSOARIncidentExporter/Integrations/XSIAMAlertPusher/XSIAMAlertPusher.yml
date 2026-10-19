@@ -4,50 +4,50 @@ commonfields:
 name: Xporter
 display: Xporter
 category: Utilities
-provider: Jon Huebner
-description: Pushes XSOAR 6 or XSOAR 8 incidents to Cortex XSIAM as parsed alerts using the Insert Parsed Alerts API.
+provider: Open Source
+description: Pushes Cortex XSOAR 6 or Cortex XSOAR 8 incidents to Cortex XSIAM as parsed alerts using the Insert Parsed Alerts API.
 sectionorder:
   - Connect
   - Collect
 configuration:
-  - display: XSOAR Server URL
+  - display: Cortex XSOAR Server URL
     name: xsoar_url
     type: 0
     required: true
     section: Connect
-    additionalinfo: The URL of the XSOAR server. For XSOAR 6 use the server IP/hostname (e.g., https://192.168.1.215). For XSOAR 8 use the API URL (e.g., https://api-{tenant}.xdr.us.paloaltonetworks.com).
+    additionalinfo: The URL of the Cortex XSOAR server. For XSOAR 6 use the server IP/hostname (e.g., https://192.168.1.215). For XSOAR 8 use the API URL (e.g., https://api-{tenant}.xdr.us.paloaltonetworks.com).
   - display: ""
-    displaypassword: XSOAR API Key
+    displaypassword: Cortex XSOAR API Key
     name: xsoar_api_key
     type: 9
     required: true
     hiddenusername: true
     section: Connect
-  - display: XSOAR API Key ID (XSOAR 8 only)
+  - display: Cortex XSOAR API Key ID (XSOAR 8 only)
     name: xsoar_api_key_id
     type: 0
     required: false
     section: Connect
-    additionalinfo: Required for XSOAR 8. Leave blank for XSOAR 6. The numeric API Key ID from XSOAR 8 Settings > API Keys.
-  - display: XSIAM API URL
+    additionalinfo: Required for Cortex XSOAR 8. Leave blank for XSOAR 6. The numeric API Key ID from XSOAR 8 Settings > API Keys.
+  - display: Cortex XSIAM API URL
     name: xsiam_url
     type: 0
     required: true
     section: Connect
-    additionalinfo: The XSIAM API URL (e.g., https://api-{tenant}.xdr.us.paloaltonetworks.com).
+    additionalinfo: The Cortex XSIAM API URL (e.g., https://api-{tenant}.xdr.us.paloaltonetworks.com).
   - display: ""
-    displaypassword: XSIAM API Key
+    displaypassword: Cortex XSIAM API Key
     name: xsiam_api_key
     type: 9
     required: true
     hiddenusername: true
     section: Connect
-  - display: XSIAM API Key ID
+  - display: Cortex XSIAM API Key ID
     name: xsiam_api_key_id
     type: 0
     required: true
     section: Connect
-    additionalinfo: The numeric API Key ID from XSIAM Settings > API Keys.
+    additionalinfo: The numeric API Key ID from Cortex XSIAM Settings > API Keys.
   - display: Trust any certificate (not secure)
     name: insecure
     type: 8
@@ -73,77 +73,77 @@ configuration:
     type: 0
     required: false
     section: Collect
-    additionalinfo: An XSOAR incident query to filter which incidents to push (e.g., type:Phishing).
+    additionalinfo: A Cortex XSOAR incident query to filter which incidents to push (e.g., type:Phishing).
   - display: Elevate Low severity to Medium
     name: elevate_low
     type: 8
     required: false
     section: Collect
-    additionalinfo: Maps Low severity incidents to Medium so they create cases in XSIAM instead of issues. Only Medium or higher severity alerts automatically trigger playbooks.
+    additionalinfo: Whether to map Low severity incidents to Medium so they create cases in Cortex XSIAM instead of issues. Only Medium or higher severity alerts automatically trigger playbooks.
   - display: Timestamp offset (minutes)
     name: timestamp_offset
     type: 0
     required: false
     defaultvalue: "0"
     section: Collect
-    additionalinfo: Minutes to add to the original XSOAR incident timestamp. The event timestamp defaults to the XSOAR occurred/created time. Use a positive offset to shift forward. XSIAM drops alerts with timestamps too far in the past.
+    additionalinfo: Minutes to add to the original Cortex XSOAR incident timestamp. The event timestamp defaults to the Cortex XSOAR occurred/created time. Use a positive offset to shift forward. Cortex XSIAM drops alerts with timestamps too far in the past.
 script:
   type: python
   subtype: python3
   script: ''
   commands:
     - name: xsiam-push-incidents
-      description: Pushes XSOAR incidents matching a query to XSIAM as parsed alerts.
+      description: Pushes Cortex XSOAR incidents matching a query to Cortex XSIAM as parsed alerts.
       arguments:
         - name: query
-          description: Overrides the configured incident query filter.
+          description: The incident query filter to override the configured one.
           required: false
         - name: max_incidents
-          description: Maximum number of incidents to push.
+          description: The maximum number of incidents to push.
           required: false
-          defaultValue: "100"
+          defaultvalue: "100"
         - name: from_date
-          description: "Start date for incident search (ISO format, e.g., 2024-01-01T00:00:00Z)."
+          description: "The start date for incident search in ISO 8601 format (e.g., 2024-01-01T00:00:00Z)."
           required: false
         - name: to_date
-          description: End date for incident search (ISO format).
+          description: "The end date for incident search in ISO 8601 format (e.g., 2024-01-01T00:00:00Z)."
           required: false
       outputs:
         - contextPath: XSIAMPush.PushedCount
-          description: Number of incidents pushed.
+          description: The number of incidents pushed.
           type: Number
         - contextPath: XSIAMPush.Incidents
-          description: List of pushed incident IDs and names.
+          description: The list of pushed incident IDs and names.
           type: Unknown
     - name: xsiam-push-incident
-      description: Pushes a single XSOAR incident to XSIAM as a parsed alert.
+      description: Pushes a single Cortex XSOAR incident to Cortex XSIAM as a parsed alert.
       arguments:
         - name: incident_id
-          description: The XSOAR incident ID to push.
+          description: The Cortex XSOAR incident ID to push.
           required: true
       outputs:
         - contextPath: XSIAMPush.PushedIncident
-          description: Details of the pushed incident.
+          description: The details of the pushed incident.
           type: Unknown
     - name: xsiam-sync-new-incidents
-      description: Finds and pushes only new XSOAR incidents that have not been synced yet.
+      description: Finds and pushes only new Cortex XSOAR incidents that have not been synced yet.
       arguments:
         - name: query
-          description: Overrides the configured incident query filter.
+          description: The incident query filter to override the configured one.
           required: false
         - name: max_incidents
-          description: Maximum number of incidents to sync.
+          description: The maximum number of incidents to sync.
           required: false
-          defaultValue: "100"
+          defaultvalue: "100"
         - name: from_date
-          description: "Overrides the stored sync timestamp (ISO format, e.g., 2024-01-01T00:00:00Z)."
+          description: "The sync timestamp override in ISO 8601 format (e.g., 2024-01-01T00:00:00Z)."
           required: false
       outputs:
         - contextPath: XSIAMSync.SyncedCount
-          description: Number of new incidents synced.
+          description: The number of new incidents synced.
           type: Number
         - contextPath: XSIAMSync.Incidents
-          description: List of synced incident IDs and names.
+          description: The list of synced incident IDs and names.
           type: Unknown
         - contextPath: XSIAMSync.LastSyncedID
           description: The highest incident ID that has been synced.
@@ -152,6 +152,23 @@ script:
       description: Resets the sync state so the next sync will send all incidents.
       arguments: []
       outputs: []
+    - name: xsiam-sync-close-status
+      description: Queries Cortex XSIAM for open XSOAR-sourced alerts and resolves those whose XSOAR incidents are closed.
+      arguments:
+        - name: max_alerts
+          description: The maximum number of alerts to process per run.
+          required: false
+          defaultvalue: "100"
+      outputs:
+        - contextPath: XSOARCloseSync.ClosedCount
+          description: The number of alerts closed.
+          type: Number
+        - contextPath: XSOARCloseSync.SkippedCount
+          description: The number of open alerts skipped.
+          type: Number
+        - contextPath: XSOARCloseSync.ClosedAlerts
+          description: The details of closed alerts.
+          type: Unknown
   dockerimage: demisto/python3:3.10.14.100715
 fromversion: 6.10.0
 tests:

@@ -23,66 +23,69 @@ def map_close_reason(xsoar_reason: str) -> str:
     return CLOSE_REASON_MAP.get(xsoar_reason.lower(), 'Other')
 
 
-def main():
-    incident = demisto.incident()
-    custom_fields = incident.get('CustomFields', {}) or {}
+def main() -> None:
+    try:
+        incident = demisto.incident()
+        custom_fields = incident.get('CustomFields', {}) or {}
 
-    description = custom_fields.get('alertdescription', '') or custom_fields.get('alert_description', '')
-    if not description:
-        labels = incident.get('labels', [])
-        for label in labels:
-            if label.get('type') in ('alert_description', 'alertdescription'):
-                description = label.get('value', '')
-                break
-    if not description:
-        description = incident.get('details', '') or ''
+        description = custom_fields.get('alertdescription', '') or custom_fields.get('alert_description', '')
+        if not description:
+            labels = incident.get('labels', [])
+            for label in labels:
+                if label.get('type') in ('alert_description', 'alertdescription'):
+                    description = label.get('value', '')
+                    break
+        if not description:
+            description = incident.get('details', '') or ''
 
-    status = extract_field(description, 'Status')
-    close_reason = extract_field(description, 'Close Reason')
-    close_notes = extract_field(description, 'Close Notes')
-    xsoar_id = extract_field(description, 'XSOAR Incident ID')
+        status = extract_field(description, 'Status')
+        close_reason = extract_field(description, 'Close Reason')
+        close_notes = extract_field(description, 'Close Notes')
+        xsoar_id = extract_field(description, 'XSOAR Incident ID')
 
-    if status not in ('Done', 'Archive'):
+        if status not in ('Done', 'Archive'):
+            return_results(CommandResults(
+                readable_output=f'XSOAR incident {xsoar_id} is not closed (Status: {status}). No action taken.',
+                outputs_prefix='XSOARClose',
+                outputs={
+                    'XSOARIncidentID': xsoar_id,
+                    'Status': status,
+                    'Action': 'none',
+                },
+            ))
+            return
+
+        xsiam_reason = map_close_reason(close_reason)
+        notes = f'Closed in XSOAR as: {close_reason}'
+        if close_notes:
+            notes += f'\nXSOAR Close Notes: {close_notes}'
+
+        res = demisto.executeCommand('closeInvestigation', {
+            'closeReason': xsiam_reason,
+            'closeNotes': notes,
+        })
+        if is_error(res):
+            return_error(f'Failed to close case: {get_error(res)}')
+
         return_results(CommandResults(
-            readable_output=f'XSOAR incident {xsoar_id} is not closed (Status: {status}). No action taken.',
+            readable_output=(
+                f'### Closed XSIAM Case\n'
+                f'- **XSOAR Incident ID:** {xsoar_id}\n'
+                f'- **XSOAR Close Reason:** {close_reason}\n'
+                f'- **XSIAM Close Reason:** {xsiam_reason}\n'
+                f'- **Close Notes:** {close_notes or "(none)"}\n'
+            ),
             outputs_prefix='XSOARClose',
             outputs={
                 'XSOARIncidentID': xsoar_id,
-                'Status': status,
-                'Action': 'none',
+                'XSOARCloseReason': close_reason,
+                'XSIAMCloseReason': xsiam_reason,
+                'CloseNotes': close_notes,
+                'Action': 'closed',
             },
         ))
-        return
-
-    xsiam_reason = map_close_reason(close_reason)
-    notes = f'Closed in XSOAR as: {close_reason}'
-    if close_notes:
-        notes += f'\nXSOAR Close Notes: {close_notes}'
-
-    res = demisto.executeCommand('closeInvestigation', {
-        'closeReason': xsiam_reason,
-        'closeNotes': notes,
-    })
-    if is_error(res):
-        return_error(f'Failed to close case: {get_error(res)}')
-
-    return_results(CommandResults(
-        readable_output=(
-            f'### Closed XSIAM Case\n'
-            f'- **XSOAR Incident ID:** {xsoar_id}\n'
-            f'- **XSOAR Close Reason:** {close_reason}\n'
-            f'- **XSIAM Close Reason:** {xsiam_reason}\n'
-            f'- **Close Notes:** {close_notes or "(none)"}\n'
-        ),
-        outputs_prefix='XSOARClose',
-        outputs={
-            'XSOARIncidentID': xsoar_id,
-            'XSOARCloseReason': close_reason,
-            'XSIAMCloseReason': xsiam_reason,
-            'CloseNotes': close_notes,
-            'Action': 'closed',
-        },
-    ))
+    except Exception as e:
+        return_error(f'Failed to execute CloseFromXSOAR.\nError:\n{str(e)}', e)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

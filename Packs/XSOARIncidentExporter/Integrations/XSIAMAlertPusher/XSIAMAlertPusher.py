@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa: F401
 
 import json
-import traceback
+import re
 import urllib3
 from datetime import datetime, timezone
 from typing import Any
@@ -16,6 +16,13 @@ SEVERITY_MAP = {
     2: 'Medium',
     3: 'High',
     4: 'Critical',
+}
+
+XSIAM_RESOLUTION_MAP = {
+    'resolved': 'STATUS_030_RESOLVED_THREAT_HANDLED',
+    'false positive': 'STATUS_060_RESOLVED_FALSE_POSITIVE',
+    'duplicate': 'STATUS_050_RESOLVED_DUPLICATE',
+    'other': 'STATUS_080_RESOLVED_OTHER',
 }
 
 
@@ -35,6 +42,49 @@ class XSIAMClient(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix='/public_api/v1/alerts/insert_parsed_alerts',
+            json_data=body,
+        )
+
+    def get_alerts(self, search_from: int = 0, search_to: int = 100) -> dict:
+        body = {
+            'request_data': {
+                'filters': [
+                    {
+                        'field': 'alert_source',
+                        'operator': 'in',
+                        'value': ['Palo Alto Networks - XSOAR'],
+                    },
+                    {
+                        'field': 'resolution_status',
+                        'operator': 'in',
+                        'value': ['STATUS_010_NEW', 'STATUS_020_UNDER_INVESTIGATION'],
+                    },
+                ],
+                'search_from': search_from,
+                'search_to': search_to,
+                'sort': {
+                    'field': 'creation_time',
+                    'keyword': 'asc',
+                },
+            }
+        }
+        return self._http_request(
+            method='POST',
+            url_suffix='/public_api/v1/alerts/get_alerts_multi_events',
+            json_data=body,
+        )
+
+    def update_alerts(self, alert_ids: list, resolution_status: str, comment: str) -> dict:
+        body = {
+            'request_data': {
+                'alert_id_list': alert_ids,
+                'resolution_status': resolution_status,
+                'resolution_comment': comment,
+            }
+        }
+        return self._http_request(
+            method='POST',
+            url_suffix='/public_api/v1/alerts/update_alerts',
             json_data=body,
         )
 
@@ -338,6 +388,117 @@ def reset_sync_command() -> CommandResults:
     return CommandResults(readable_output='Sync state has been reset. Next sync will send all incidents.')
 
 
+def extract_alert_field(description: str, field_name: str) -> str:
+    pattern = rf'{re.escape(field_name)}:\s*(.+?)(?:\n|$)'
+    match = re.search(pattern, description)
+    return match.group(1).strip() if match else ''
+
+
+def map_xsiam_resolution(xsoar_reason: str) -> str:
+    if not xsoar_reason:
+        return 'STATUS_080_RESOLVED_OTHER'
+    return XSIAM_RESOLUTION_MAP.get(xsoar_reason.lower(), 'STATUS_080_RESOLVED_OTHER')
+
+
+def sync_close_status_command(xsiam_client: XSIAMClient, args: dict) -> CommandResults:
+    max_alerts = arg_to_number(args.get('max_alerts')) or 100
+
+    response = xsiam_client.get_alerts(search_from=0, search_to=max_alerts)
+    alerts = response.get('reply', {}).get('alerts', [])
+    total = response.get('reply', {}).get('total_count', 0)
+
+    if not alerts:
+        return CommandResults(
+            readable_output=f'No open Cortex XSOAR-sourced alerts found ({total} total).',
+        )
+
+    to_close: dict[str, list] = {}
+    skipped: list[dict] = []
+
+    for alert in alerts:
+        alert_id = alert.get('alert_id', '')
+        alert_name = alert.get('name', '')
+        description = alert.get('description', '')
+
+        if not description:
+            events = alert.get('events', [])
+            if events:
+                description = events[0].get('alert_description', '')
+
+        status = extract_alert_field(description, 'Status')
+        close_reason = extract_alert_field(description, 'Close Reason')
+        close_notes = extract_alert_field(description, 'Close Notes')
+        xsoar_id = extract_alert_field(description, 'XSOAR Incident ID')
+
+        if status in ('Done', 'Archive'):
+            resolution = map_xsiam_resolution(close_reason)
+            comment = f'Closed in XSOAR as: {close_reason}'
+            if close_notes:
+                comment += f' | Notes: {close_notes}'
+
+            key = f'{resolution}||{comment}'
+            if key not in to_close:
+                to_close[key] = []
+            to_close[key].append({
+                'alert_id': alert_id,
+                'alert_name': alert_name,
+                'xsoar_id': xsoar_id,
+                'close_reason': close_reason,
+                'close_notes': close_notes,
+            })
+        else:
+            skipped.append({
+                'alert_id': alert_id,
+                'alert_name': alert_name,
+                'xsoar_id': xsoar_id,
+                'status': status,
+            })
+
+    closed_summary: list[dict] = []
+    for key, alert_group in to_close.items():
+        resolution, comment = key.split('||', 1)
+        alert_ids = [int(a['alert_id']) for a in alert_group]
+        try:
+            xsiam_client.update_alerts(alert_ids, resolution, comment)
+            for a in alert_group:
+                a['result'] = 'Closed'
+                closed_summary.append(a)
+        except Exception as e:
+            for a in alert_group:
+                a['result'] = f'Failed: {str(e)}'
+                closed_summary.append(a)
+
+    output_parts: list[str] = []
+    if closed_summary:
+        table = tableToMarkdown(
+            f'Closed {len(closed_summary)} Cortex XSIAM Alert(s)',
+            closed_summary,
+            headers=['alert_id', 'alert_name', 'xsoar_id', 'close_reason', 'close_notes', 'result'],
+        )
+        output_parts.append(table)
+
+    if skipped:
+        table = tableToMarkdown(
+            f'Skipped {len(skipped)} Open Alert(s)',
+            skipped,
+            headers=['alert_id', 'alert_name', 'xsoar_id', 'status'],
+        )
+        output_parts.append(table)
+
+    if not closed_summary and not skipped:
+        output_parts.append('No alerts processed.')
+
+    return CommandResults(
+        readable_output='\n'.join(output_parts),
+        outputs_prefix='XSOARCloseSync',
+        outputs={
+            'ClosedCount': len(closed_summary),
+            'SkippedCount': len(skipped),
+            'ClosedAlerts': closed_summary,
+        },
+    )
+
+
 def test_module(xsiam_client: XSIAMClient, xsoar_client: XSOARClient) -> str:
     xsoar_client.search_incidents(size=1)
     xsiam_client.insert_parsed_alerts([])
@@ -389,12 +550,14 @@ def main() -> None:  # pragma: no cover
         elif command == 'xsiam-reset-sync':
             result = reset_sync_command()
             return_results(result)
+        elif command == 'xsiam-sync-close-status':
+            result = sync_close_status_command(xsiam_client, args)
+            return_results(result)
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
 
     except Exception as e:
-        demisto.error(traceback.format_exc())
-        return_error(f'Failed to execute {command} command.\nError:\n{traceback.format_exc()}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}', e)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
