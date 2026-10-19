@@ -2606,6 +2606,7 @@ async def test_check_status_of_report_failed(mocker):
 
     # Mock generate_report to return a new instance_id
     mock_generate_report = mocker.patch("Rapid7_Nexpose.generate_report", return_value="new-instance-id")
+    mock_update_context = mocker.patch("Rapid7_Nexpose.update_integration_context_by_event_type")
 
     # Call the function under test
     result = await check_status_of_report(mock_client, "test-report-id", "test-instance-id", "assets")
@@ -2618,6 +2619,72 @@ async def test_check_status_of_report_failed(mocker):
 
     # Verify generate_report was called with the correct parameters
     mock_generate_report.assert_called_once_with(mock_client, "test-report-id", "assets")
+
+    # The regenerated instance must be persisted immediately, not only after the report completes
+    mock_update_context.assert_called_once_with("assets", {"instance_id": "new-instance-id"})
+
+
+def _status_response(mocker, status: str):
+    response = mocker.AsyncMock()
+    response.json = mocker.AsyncMock(return_value={"status": status})
+    return response
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("terminal_status", ["failed", "aborted"])
+async def test_check_status_of_report_stops_after_max_regenerations(mocker, terminal_status: str):
+    """
+    Given:
+      - A report that ends 'failed' or 'aborted' on every attempt (XSUP-77463)
+
+    When:
+      - Calling check_status_of_report
+
+    Then:
+      - Regenerate exactly MAX_REPORT_REGENERATIONS times, then raise instead of looping forever
+      - Apply the configured backoff before each regeneration
+    """
+    mock_client = mocker.AsyncMock()
+    mock_client.http_request = mocker.AsyncMock(side_effect=lambda *_: _status_response(mocker, terminal_status))
+    mock_sleep = mocker.patch("Rapid7_Nexpose.asyncio.sleep")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+    mocker.patch("Rapid7_Nexpose.update_integration_context_by_event_type")
+    mock_generate_report = mocker.patch("Rapid7_Nexpose.generate_report", side_effect=["instance-2", "instance-3", "instance-4"])
+
+    with pytest.raises(DemistoException, match=f"ended with status '{terminal_status}' after {MAX_REPORT_REGENERATIONS + 1}"):
+        await check_status_of_report(mock_client, "report-id", "instance-1", "vulnerability")
+
+    assert mock_generate_report.call_count == MAX_REPORT_REGENERATIONS
+    sleeps = [c.args[0] for c in mock_sleep.call_args_list]
+    for backoff in REPORT_REGENERATION_BACKOFF_SECONDS[:MAX_REPORT_REGENERATIONS]:
+        assert backoff in sleeps
+
+
+@pytest.mark.asyncio
+async def test_check_status_of_report_times_out_without_regenerating(mocker):
+    """
+    Given:
+      - A report that stays 'running' past REPORT_STATUS_TIMEOUT_SECONDS
+
+    When:
+      - Calling check_status_of_report
+
+    Then:
+      - Raise a timeout error instead of polling forever
+      - Do not regenerate (the next run resumes polling the same instance)
+    """
+    mock_client = mocker.AsyncMock()
+    mock_client.http_request = mocker.AsyncMock(side_effect=lambda *_: _status_response(mocker, "running"))
+    mocker.patch("Rapid7_Nexpose.asyncio.sleep")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+    # First call sets the deadline; the next is already past it.
+    mocker.patch("Rapid7_Nexpose._monotonic", side_effect=[0, REPORT_STATUS_TIMEOUT_SECONDS + 1])
+    mock_generate_report = mocker.patch("Rapid7_Nexpose.generate_report")
+
+    with pytest.raises(DemistoException, match="did not complete within"):
+        await check_status_of_report(mock_client, "report-id", "instance-1", "asset")
+
+    mock_generate_report.assert_not_called()
 
 
 @pytest.mark.asyncio

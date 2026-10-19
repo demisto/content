@@ -20,6 +20,12 @@ DEFAULT_PAGE_SIZE = 50  # Default page size to use
 MATCH_DEFAULT_VALUE = "any"  # Default "match" value to use when using search filters. Can be either "all" or "any".
 REMOVE_RESPONSE_LINKS = True  # Whether to remove `links` keys from responses.
 REPORT_DOWNLOAD_WAIT_TIME = 60  # Time in seconds to wait before downloading a report after starting its generation
+# Bounds on the fetch-assets report status loop (XSUP-77463). Previously a failed/aborted report was regenerated
+# every 60s with no limit, so a report the Rapid7 console could not complete (or that an admin aborted) was
+# resubmitted indefinitely within a single fetch invocation.
+MAX_REPORT_REGENERATIONS = 2  # Regenerations allowed after the first attempt fails, per fetch invocation.
+REPORT_REGENERATION_BACKOFF_SECONDS = [180, 600]  # Extra wait before each regeneration, on top of the poll interval.
+REPORT_STATUS_TIMEOUT_SECONDS = 12 * 60 * 60  # Max time to wait for a report to complete in one fetch invocation.
 CONNECTION_ERRORS_RETRIES = 5  # num of times to retry in case of connection-errors
 CONNECTION_ERRORS_INTERVAL = 1  # num of seconds between each time to send an http-request in case of a connection error.
 VALID_TAG_TYPES = ["custom", "location", "owner"]
@@ -6992,14 +6998,28 @@ async def generate_report(client: InsightVMClient, report_id: str, event_type: s
     return instance_id
 
 
+def _monotonic() -> float:
+    """Wraps time.monotonic so tests can control the report-status clock without patching the asyncio loop's clock."""
+    return time.monotonic()
+
+
 async def check_status_of_report(client: InsightVMClient, report_id: str, instance_id: str, event_type: str) -> str:
-    """Checks the status of a report instance with non-blocking waits."""
+    """
+    Polls a report instance until it completes, with bounded regeneration and an overall timeout.
+
+    A failed/aborted instance is regenerated at most MAX_REPORT_REGENERATIONS times per invocation, with backoff,
+    and the new instance ID is persisted immediately so a killed run resumes it instead of regenerating again.
+
+    Raises:
+        DemistoException: If the report keeps failing after the allowed regenerations, or does not complete
+            within REPORT_STATUS_TIMEOUT_SECONDS.
+    """
+    regenerations = 0
+    deadline = _monotonic() + REPORT_STATUS_TIMEOUT_SECONDS
+
     while True:
         endpoint = f"/api/3/reports/{report_id}/history/{instance_id}"
-
-        # Use the client's http_request method for GET
         response = await client.http_request("GET", endpoint)
-
         status_data = await response.json()
         await response.release()
         status = status_data.get("status", "unknown").lower()
@@ -7010,11 +7030,33 @@ async def check_status_of_report(client: InsightVMClient, report_id: str, instan
             return instance_id
 
         if status in ["failed", "aborted"]:
-            log(event_type, f"Report {instance_id} status is '{status}'. Re-triggering report generation")
+            if regenerations >= MAX_REPORT_REGENERATIONS:
+                raise DemistoException(
+                    f"Rapid7 report {report_id} (instance {instance_id}) ended with status '{status}' after "
+                    f"{regenerations + 1} attempt(s). Not regenerating again in this run to avoid adding load to the "
+                    "Rapid7 console. The next scheduled fetch will retry."
+                )
+            backoff = REPORT_REGENERATION_BACKOFF_SECONDS[min(regenerations, len(REPORT_REGENERATION_BACKOFF_SECONDS) - 1)]
+            regenerations += 1
+            log(
+                event_type,
+                f"Report {instance_id} status is '{status}'. Regenerating in {backoff}s "
+                f"(attempt {regenerations + 1} of {MAX_REPORT_REGENERATIONS + 1}).",
+            )
+            await asyncio.sleep(backoff)
             instance_id = await generate_report(client, report_id, event_type)
+            # Persist now: if this run is killed before the report completes, the next run must poll this
+            # instance rather than the failed one (which would trigger yet another regeneration).
+            update_integration_context_by_event_type(event_type, {"instance_id": instance_id})
+        else:
+            log(event_type, f"Report {instance_id} still processing. Waiting {REPORT_DOWNLOAD_WAIT_TIME} seconds")
 
-        if status in ["generated", "running", "unknown"]:
-            log(event_type, f"Report {instance_id} still processing. Waiting 60 seconds")
+        if _monotonic() >= deadline:
+            raise DemistoException(
+                f"Rapid7 report {report_id} (instance {instance_id}) did not complete within "
+                f"{REPORT_STATUS_TIMEOUT_SECONDS // 3600} hours (last status: '{status}'). The next scheduled fetch "
+                "will resume polling this instance."
+            )
 
         await asyncio.sleep(REPORT_DOWNLOAD_WAIT_TIME)
 
