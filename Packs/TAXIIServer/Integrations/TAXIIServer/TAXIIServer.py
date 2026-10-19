@@ -1,4 +1,5 @@
 import functools
+import re
 import uuid
 from base64 import b64decode
 from collections.abc import Callable, Generator
@@ -58,6 +59,17 @@ PAGE_SIZE = 1000
 APP: Flask = Flask("demisto-taxii")
 NAMESPACE_URI = "https://www.paloaltonetworks.com/cortex"
 NAMESPACE = "cortex"
+
+# Characters in the range \x00-\x1F (excluding tab/newline/carriage-return) and \x7F
+# are not valid XML 1.0 characters and will break lxml/CybOX serialization if left in place.
+INVALID_XML_CHARS_REGEX = re.compile("[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
+
+# Standard cryptographic hash lengths/charset supported by the CybOX File Object Hash field.
+# Values that don't match any of these (e.g. file paths, file names, or fuzzy hashes such as
+# SSDEEP) must not be sent to cybox.objects.file_object.File.add_hash, since that call accepts
+# any string and will silently classify it as hash type "Other", producing invalid STIX/CybOX
+# output that fails downstream schema validation and crashes the TAXII 1 poll response.
+VALID_HASH_REGEX = re.compile(r"^[0-9a-fA-F]{32}$|^[0-9a-fA-F]{40}$|^[0-9a-fA-F]{64}$|^[0-9a-fA-F]{128}$")
 
 
 """ Log Handler """
@@ -319,6 +331,23 @@ DEMISTO_LOGGER: Handler = Handler()
 """ STIX MAPPING """
 
 
+def sanitize_for_xml(value: str) -> str:
+    """
+    Strip characters that are not valid in XML 1.0 content (e.g. NULL bytes and other
+    control characters) so that CybOX/STIX serialization and downstream XML parsing
+    (lxml) never fail on indicator data pulled from threat intelligence feeds.
+    Args:
+        value: The raw indicator string.
+
+    Returns:
+        The value with invalid XML characters removed.
+    """
+    if not value:
+        return value
+
+    return INVALID_XML_CHARS_REGEX.sub("", value)
+
+
 def create_stix_ip_observable(namespace: str, indicator: dict) -> list[Observable]:
     """
     Create STIX IP observable.
@@ -331,7 +360,7 @@ def create_stix_ip_observable(namespace: str, indicator: dict) -> list[Observabl
     """
     category = cybox.objects.address_object.Address.CAT_IPV4
     type_ = indicator.get("indicator_type", "")
-    value = indicator.get("value", "")
+    value = sanitize_for_xml(indicator.get("value", ""))
 
     if type_ in [FeedIndicatorType.IPv6, FeedIndicatorType.IPv6CIDR]:
         category = cybox.objects.address_object.Address.CAT_IPV6
@@ -373,10 +402,10 @@ def create_stix_email_observable(namespace: str, indicator: dict) -> list[Observ
     """
     category = cybox.objects.address_object.Address.CAT_EMAIL
     type_ = indicator.get("indicator_type", "")
-    value = indicator.get("value", "")
+    value = sanitize_for_xml(indicator.get("value", ""))
     id_ = f"{namespace}:observable-{uuid.uuid4()}"
 
-    email_object = cybox.objects.address_object.Address(address_value=indicator.get("value", ""), category=category)
+    email_object = cybox.objects.address_object.Address(address_value=value, category=category)
 
     observable = Observable(title=f"{type_}: {value}", id_=id_, item=email_object)
 
@@ -394,7 +423,7 @@ def create_stix_domain_observable(namespace, indicator):
         STIX Domain observable.
     """
     id_ = f"{namespace}:observable-{uuid.uuid4()}"
-    value = indicator.get("value", "")
+    value = sanitize_for_xml(indicator.get("value", ""))
 
     domain_object = cybox.objects.domain_name_object.DomainName()
     domain_object.value = value
@@ -416,7 +445,7 @@ def create_stix_url_observable(namespace, indicator):
         STIX URL observable.
     """
     id_ = f"{namespace}:observable-{uuid.uuid4()}"
-    value = indicator.get("value", "")
+    value = sanitize_for_xml(indicator.get("value", ""))
 
     uri_object = cybox.objects.uri_object.URI(value=value, type_=cybox.objects.uri_object.URI.TYPE_URL)
 
@@ -434,11 +463,25 @@ def create_stix_hash_observable(namespace, indicator):
 
     Returns:
         STIX File observable.
+
+    Raises:
+        ValueError: If the indicator value is not a valid MD5/SHA1/SHA256/SHA512 hash.
+            File paths, file names, and fuzzy hashes (e.g. SSDEEP) are not valid CybOX
+            Hash values and must never be serialized into the Hash field - doing so
+            produces STIX/CybOX output that fails schema validation and crashes the
+            outbound TAXII 1 poll response.
     """
 
     id_ = f"{namespace}:observable-{uuid.uuid4()}"
-    value = indicator.get("value", "")
+    value = sanitize_for_xml(indicator.get("value", ""))
     type_ = indicator.get("indicator_type", "")
+
+    if not VALID_HASH_REGEX.match(value):
+        raise ValueError(
+            f"Indicator value '{value}' is not a valid MD5/SHA1/SHA256/SHA512 hash "
+            "and cannot be serialized as a CybOX File Hash (file paths, file names, "
+            "and fuzzy hashes such as SSDEEP are not supported)."
+        )
 
     file_object = cybox.objects.file_object.File()
     file_object.add_hash(value)
@@ -828,7 +871,14 @@ def taxii_poll_service() -> Response:
         handle_long_running_error(error)
         return make_response(error, 400)
 
-    return SERVER.get_poll_response(taxii_message)
+    try:
+        return SERVER.get_poll_response(taxii_message)
+    except Exception as e:
+        # Guard against any synchronous failure (e.g. unknown collection, bad STIX/CybOX serialization)
+        # so a single malformed request never surfaces as an unhandled HTTP 500.
+        error = f"Could not perform the polling request: {e!s}"
+        handle_long_running_error(error)
+        return make_response(error, 400)
 
 
 """ COMMAND FUNCTIONS """
