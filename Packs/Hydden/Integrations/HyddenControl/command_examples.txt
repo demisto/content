@@ -1,2 +1,0 @@
-!hydden-blast-radius account_id="jdoe@example.com" type="account"
-!hydden-deprovision-account account_id="jdoe@example.com"
