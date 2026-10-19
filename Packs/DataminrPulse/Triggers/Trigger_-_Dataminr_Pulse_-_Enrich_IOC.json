@@ -1,5 +1,5 @@
 {
-    "trigger_id": "Dataminr Pulse - Enrich IOC",
+    "trigger_id": "6c6737f69fcf48ff8d08527cc8f501da",
     "playbook_id": "Enrich Custom IOCs - Dataminr Pulse",
     "suggestion_reason": "Recommended for IOC Enrichment with Dataminr Pulse.",
     "description": "This trigger is responsible for running the Enrich Custom IOCs - Dataminr Pulse playbook on Dataminr Pulse ReGenAI alerts.",
