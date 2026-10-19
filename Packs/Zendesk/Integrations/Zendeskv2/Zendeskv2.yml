@@ -28,9 +28,6 @@ configuration:
   type: 8
   section: Connect
   required: false
-  supportedModules:
-  - agentix
-  - xsiam
 - additionalinfo: 'Selects which direction you want the incidents mirrored. You can mirror **Incoming** only (from Zendesk to Cortex XSOAR), **Outgoing** only (from Cortex XSOAR to Zendesk), or both **Incoming And Outgoing**.'
   defaultvalue: None
   display: Incident Mirroring Direction
@@ -137,9 +134,6 @@ configuration:
   section: Collect
   defaultvalue: '50'
   required: false
-  supportedModules:
-  - agentix
-  - xsiam
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -152,18 +146,12 @@ configuration:
   type: 19
   section: Collect
   required: false
-  supportedModules:
-  - agentix
-  - xsiam
 - display: Incident type
   name: incidentType
   defaultvalue: Zendesk Ticket
   type: 13
   section: Collect
   required: false
-  supportedModules:
-  - agentix
-  - xsiam
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -1093,15 +1081,22 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - name: collaborators
+    - name: file_id
       isArray: true
+      description: The optional entry ID's of attachments.
+    - name: filename
+      description: The filename to upload if file_id is set. Default is the original filename.
+      isArray: true
+    - name: collaborators
       description: Users to add as CC's when creating a ticket.
+      isArray: true
     - name: description
-      required: true
       description: The ticket description.
+      required: true
     - name: recipient
       description: The original recipient email address of the ticket.
     - name: status
+      description: The state of the ticket.
       auto: PREDEFINED
       predefined:
       - new
@@ -1110,8 +1105,8 @@ script:
       - hold
       - solved
       - closed
-      description: The state of the ticket.
     - name: priority
+      description: The urgency with which the ticket should be addressed.
       auto: PREDEFINED
       predefined:
       - urgent
@@ -1119,19 +1114,18 @@ script:
       - normal
       - low
       defaultValue: normal
-      description: The urgency with which the ticket should be addressed.
     - name: due_at
       description: If this is a ticket of type "task" it has a due date. Due date format uses ISO 8601 format.
     - name: email_ccs
-      isArray: true
       description: An array of agents or end users email CCs to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'.
+      isArray: true
     - name: external_id
       description: An ID you can use to link Zendesk Support tickets to local records.
     - name: forum_topic_id
       description: The topic in the Zendesk Web portal this ticket originated from, if any.
     - name: followers
-      isArray: true
       description: An array of agent followers to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'.
+      isArray: true
     - name: group_id
       description: The group this ticket is assigned to.
     - name: organization_id
@@ -1139,8 +1133,8 @@ script:
     - name: problem_id
       description: For tickets of type "incident", the ID of the problem the incident is linked to.
     - name: tags
+      description: 'The tags applied to this ticket.'
       isArray: true
-      description: The tags applied to this ticket.
     - name: via_followup_source_id
       description: The ID of a closed ticket when creating a follow-up ticket.
     - name: custom_fields
@@ -1297,9 +1291,16 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: file_id
+      description: The optional entry ID's of attachments.
+      isArray: true
+    - name: filename
+      description: The filename to upload. Default is the original filename.
+      isArray: true
     - name: recipient
       description: The original recipient email address of the ticket.
     - name: status
+      description: The state of the ticket.
       auto: PREDEFINED
       predefined:
       - open
@@ -1307,15 +1308,14 @@ script:
       - hold
       - solved
       - closed
-      description: The state of the ticket.
     - name: priority
+      description: The urgency with which the ticket should be addressed.
       auto: PREDEFINED
       predefined:
       - urgent
       - high
       - normal
       - low
-      description: The urgency with which the ticket should be addressed.
     - name: due_at
       description: If this is a ticket of type "task" it has a due date. Due date format uses ISO 8601 format.
     - name: email_ccs
@@ -1324,17 +1324,17 @@ script:
     - name: external_id
       description: An ID you can use to link Zendesk Support tickets to local records.
     - name: followers
-      isArray: true
       description: An array of agent followers to add or delete from the ticket. Default is add.\nThe format is '562624,562625:put,example@example.com:delete'.
+      isArray: true
     - name: group_id
       description: The ID of the group this ticket is assigned to.
     - name: organization
       description: The ID of the organization of the requester.
     - name: problem_id
-      description: For tickets of type "incident", the ID of the problem the incident is linked to.
+      description: 'For tickets of type "incident", the ID of the problem the incident is linked to.'
     - name: tags
-      isArray: true
       description: The tags applied to this ticket.
+      isArray: true
     - name: custom_fields
       description: 'Custom fields for the ticket (this is a JSON-formatted argument see: https://developer.zendesk.com/documentation/ticketing/managing-tickets/creating-and-updating-tickets#setting-custom-field-values).'
     - name: brand_id

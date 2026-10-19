@@ -663,6 +663,36 @@ class ZendeskClient(BaseClient):
             command_results.append(error_entry("\n".join(error_msgs)))
         return command_results if command_results else "No outputs."
 
+    def __zendesk_ticket_send_attachements(
+        self,
+        file_id: STR_OR_STR_LIST,
+        filename: STR_OR_STR_LIST | None = None,
+        is_mirror: bool = False,
+        **kwargs,
+    ) -> (list, list):
+        headers = {"Content-Type": "application/binary"}
+        if is_mirror:
+            headers["user-agent"] = MIRROR_USER_AGENT
+        file_id = argToList(file_id)
+        file_name_list = argToList(filename) if filename else [None] * len(file_id)
+        file_tokens = []
+        uploaded_files = []
+        for single_file_id, single_file_name in zip(file_id, file_name_list):
+            single_file = demisto.getFilePath(single_file_id)
+            display_name = single_file_name or single_file["name"]
+            with open(single_file["path"], "rb") as file_to_upload:
+                file_tokens.append(
+                    self._http_request(
+                        "POST",
+                        url_suffix="uploads",
+                        params={"filename": display_name},
+                        headers=headers,
+                        content=file_to_upload.read(),
+                    )["upload"]["token"]
+                )
+            uploaded_files.append(display_name)
+        return (uploaded_files, file_tokens)
+
     class Ticket:
         def __init__(
             self,
@@ -675,6 +705,8 @@ class ZendeskClient(BaseClient):
             priority: str | None = None,
             followers: list[str] | str | None = None,
             status: str | None = None,
+            file_id: STR_OR_STR_LIST | None = None,
+            filename: STR_OR_STR_LIST | None = None,
             **kwargs,
         ):
             self._data: dict[str, Any] = {}
@@ -704,6 +736,13 @@ class ZendeskClient(BaseClient):
                 self._data["followers"] = list(map(self.follower_and_email_cc_parse, argToList(followers)))
             if email_ccs:
                 self._data["email_ccs"] = list(map(self.follower_and_email_cc_parse, argToList(email_ccs)))
+            if filename:
+                assert not file_id, "you can't use 'filename' without 'file_id'"
+            if file_id:
+                _, file_tokens = ZendeskClient.__zendesk_ticket_send_attachements(
+                    self, file_id=file_id, filename=filename, **kwargs
+                )
+                self._data["comment"]["uploads"] = file_tokens
 
             self._data.update(
                 prepare_kwargs(
@@ -828,30 +867,13 @@ class ZendeskClient(BaseClient):
         ticket_id: int,
         comment: str,
         filename: STR_OR_STR_LIST | None = None,
-        is_mirror: bool = False,
         **kwargs,
     ):
-        headers = {"Content-Type": "application/binary"}
-        if is_mirror:
-            headers["user-agent"] = MIRROR_USER_AGENT
-        file_id = argToList(file_id)
-        file_name_list = argToList(filename) if filename else [None] * len(file_id)
-        file_tokens = []
-        uploaded_files = []
-        for single_file_id, single_file_name in zip(file_id, file_name_list):
-            single_file = demisto.getFilePath(single_file_id)
-            display_name = single_file_name or single_file["name"]
-            with open(single_file["path"], "rb") as file_to_upload:
-                file_tokens.append(
-                    self._http_request(
-                        "POST",
-                        url_suffix="uploads",
-                        params={"filename": display_name},
-                        headers=headers,
-                        content=file_to_upload.read(),
-                    )["upload"]["token"]
-                )
-            uploaded_files.append(display_name)
+        uploaded_files, file_tokens = self.__zendesk_ticket_send_attachements(
+            file_id=file_id,
+            filename=filename,
+            **kwargs
+        )
 
         self._http_request(
             "PUT", url_suffix=f"tickets/{ticket_id}", json_data={"ticket": {"comment": {"uploads": file_tokens, "body": comment}}}

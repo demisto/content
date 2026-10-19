@@ -5,7 +5,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., https://demisto.zendesk.com) |  | True |
+| Server URL (e.g., <https://demisto.zendesk.com>) |  | True |
 | Username (or '&lt;username&gt;/token' when using API key). | example 'admin@org.com' when using the password, or 'admin@org.com/token' when using an API key. | True |
 | Password/API key |  | True |
 | Fetch incidents |  | False |
@@ -325,7 +325,7 @@ Required permissions: Agents.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Query to search for tickets. For more information about the search syntax, see https://developer.zendesk.com/rest_api/docs/core/search. . | Optional |
+| query | Query to search for tickets. For more information about the search syntax, see <https://developer.zendesk.com/rest_api/docs/core/search>. . | Optional |
 | ticket_id | The ID of a specific ticket. | Optional |
 | filter | Filter tickets for which the specified user is relevant. Possible values are: assigned, requested, ccd, followed, recent. | Optional |
 | user_id | The agent ID associated with tickets filtered. | Optional |
@@ -410,10 +410,12 @@ Required permissions: Agents.
 | problem_id             | For tickets of type "incident", the ID of the problem the incident is linked to. | Optional |
 | tags                   | The tags applied to this ticket. | Optional |
 | via_followup_source_id | The ID of a closed ticket when creating a follow-up ticket. | Optional |
-| custom_fields          | Custom fields for the ticket (this is a JSON-formatted argument, see: https://developer.zendesk.com/documentation/ticketing/managing-tickets/creating-and-updating-tickets#setting-custom-field-values). | Optional |
+| custom_fields          | Custom fields for the ticket (this is a JSON-formatted argument, see: <https://developer.zendesk.com/documentation/ticketing/managing-tickets/creating-and-updating-tickets#setting-custom-field-values>). | Optional |
 | brand_id               | Enterprise only. The ID of the brand this ticket is associated with. | Optional |
 | comment                | A comment to add to the ticket. | Optional |
 | html_comment           | An HTML comment to add to the ticket. | Optional |
+| file_id                | The optional entry ID's of attachments. | Optional |
+| filename               | The filename to upload if file_id is set. Default is the original filename. | Optional |
 | public | true if a public comment; false if an internal note. The initial value set on ticket creation persists for any additional comment unless you change it. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
@@ -482,6 +484,8 @@ Required permissions: Agents.
 | comment | A comment to add to the ticket. | Optional |
 | html_comment | An HTML comment to add to the ticket. | Optional |
 | public | true if a public comment; false if an internal note. The initial value set on ticket creation persists for any additional comment unless you change it. Possible values are: true, false. Default is true. | Optional |
+| file_id | The optional entry ID's of attachments. | Optional |
+| filename | The filename to upload. Default is the original filename. | Optional |
 | recipient | The original recipient email address of the ticket. | Optional |
 | status | The state of the ticket. Possible values are: open, pending, hold, solved, closed. | Optional |
 | priority | The urgency with which the ticket should be addressed. Possible values are: urgent, high, normal, low. | Optional |
@@ -493,7 +497,7 @@ Required permissions: Agents.
 | organization | The ID of the organization of the requester. | Optional |
 | problem_id | For tickets of type "incident", the ID of the problem the incident is linked to. | Optional |
 | tags | The tags applied to this ticket. | Optional |
-| custom_fields | Custom fields for the ticket (this is a JSON-formatted argument see: https://developer.zendesk.com/documentation/ticketing/managing-tickets/creating-and-updating-tickets#setting-custom-field-values). | Optional |
+| custom_fields | Custom fields for the ticket (this is a JSON-formatted argument see: <https://developer.zendesk.com/documentation/ticketing/managing-tickets/creating-and-updating-tickets#setting-custom-field-values>). | Optional |
 | brand_id | Enterprise only. The ID of the brand this ticket is associated with. | Optional |
 
 #### Context Output
