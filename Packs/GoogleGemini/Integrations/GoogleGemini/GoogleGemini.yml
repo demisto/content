@@ -8,7 +8,7 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: Choose whether to authenticate with a Google AI Studio API Key or a Google Cloud Vertex AI Service Account.
-  defaultvalue: AI Studio API Key
+  defaultValue: AI Studio API Key
   display: Authentication Type
   name: auth_type
   options:
@@ -17,7 +17,7 @@ configuration:
   required: true
   section: Connect
   type: 15
-- defaultvalue: https://generativelanguage.googleapis.com
+- defaultValue: https://generativelanguage.googleapis.com
   additionalinfo: "For AI Studio: https://generativelanguage.googleapis.com. For Vertex AI: https://aiplatform.googleapis.com (auto-detected if unchanged)."
   display: Server URL
   name: url
@@ -45,13 +45,13 @@ configuration:
   section: Connect
   type: 0
 - additionalinfo: "Google Cloud location for Vertex AI (e.g., 'global', 'us-central1'). Defaults to 'global'."
-  defaultvalue: global
+  defaultValue: global
   display: Location
   name: location
   required: false
   section: Connect
   type: 0
-- defaultvalue: gemini-2.5-flash
+- defaultValue: gemini-2.5-flash
   additionalinfo: Please choose only one model.
   display: Default Model
   name: model
@@ -67,7 +67,7 @@ configuration:
   section: Collect
   type: 16
 - additionalinfo: The maximum number of tokens that can be generated for the response (1-10000). Defaults to 1024.
-  defaultvalue: '1024'
+  defaultValue: '1024'
   display: Max tokens
   name: max_tokens
   required: true
@@ -138,7 +138,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - defaultvalue: '0.5'
+    - defaultValue: '0.5'
       description: The degree of randomness in token selection for this call. Overrides the instance-level Temperature parameter. Lower values (closer to 0) produce more deterministic outputs, while higher values (up to 2.0) increase randomness and creativity.
       name: temperature
       required: false
@@ -148,7 +148,7 @@ script:
     - description: The maximum number of input tokens (prompt + history combined) allowed for this request. If exceeded and truncate=false, the command returns an error reporting the actual vs. allowed token count.
       name: max_input_tokens
       required: false
-    - defaultvalue: 'false'
+    - defaultValue: 'false'
       description: Whether to automatically truncate the oldest history entries first, then the prompt itself, to fit within the budget if max_input_tokens is exceeded. If false (default), an error is returned instead.
       name: truncate
       required: false
