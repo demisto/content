@@ -3,6 +3,7 @@ import os
 from unittest.mock import Mock, patch
 
 import pytest
+import GoogleCloudSCC
 from GoogleCloudSCC import (
     ERROR_MESSAGES,
     BaseGoogleClient,
@@ -2140,8 +2141,6 @@ def test_main_initializes_v2_client_with_regional_endpoint(mocker, args, expecte
     - Ensure no api_endpoint is set for "global", so that the default global endpoint is used.
     - Ensure the integration params are forwarded to the client alongside the api_endpoint.
     """
-    import GoogleCloudSCC
-
     params = {"service_account_json": TEST_JSON, "organization_id": "organization_id"}
     mocker.patch.object(GoogleCloudSCC.demisto, "params", return_value=params)
     mocker.patch.object(GoogleCloudSCC.demisto, "command", return_value="google-cloud-scc-v2-finding-list")
