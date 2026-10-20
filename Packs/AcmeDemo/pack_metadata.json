@@ -12,6 +12,8 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
+    "managed": true,
+    "source": "connectus",
     "marketplaces": [
         "marketplacev2",
         "platform"
