@@ -334,7 +334,7 @@ def test_incident_list_command_payload_mapping():
     assert result.outputs_prefix == "KELA.BrandControl.Incident"
     assert result.outputs_key_field == "incidentId"
     assert result.outputs[0]["incidentId"] == "i1"
-    assert "kela.com" in result.readable_output
+    assert "kela.com" in result.readable_output  # lgtm[py/incomplete-url-substring-sanitization] - test assertion on markdown table text, not a URL trust check
     assert result.raw_response["filteredCount"] == 1
 
 

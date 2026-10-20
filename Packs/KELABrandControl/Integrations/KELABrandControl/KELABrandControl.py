@@ -1,6 +1,6 @@
 import json
 import traceback
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 from urllib.parse import quote, quote_plus
 
@@ -116,7 +116,7 @@ def to_epoch_ms(value: Any, arg_name: str) -> int | None:
 
 def ms_to_iso(ms: int) -> str:
     """Epoch milliseconds -> ISO 8601 UTC string (millisecond precision)."""
-    return datetime.fromtimestamp(ms / 1000, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+    return datetime.fromtimestamp(ms / 1000, tz=UTC).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
 
 
 def validate_choices(values: list[str], allowed: list[str], arg_name: str) -> list[str]:
