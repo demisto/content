@@ -47,7 +47,8 @@ MIRROR_TIMEOUT = 60
 GRAPH_RESOLVED_STATUS = "resolved"
 # Set by Microsoft when an incident is merged into another one (redirectIncidentId = the target). Incidents only.
 GRAPH_REDIRECTED_STATUS = "redirected"
-REDIRECTED_CLOSE_REASON = "Duplicate"
+# XSOAR close reason for a redirected incident (the target incident is named in the close notes).
+REDIRECTED_CLOSE_REASON = "Resolved"
 # demisto.investigation() status of a closed XSOAR investigation (0 = open, 1 = closed), as used by SekoiaXDR.
 XSOAR_INVESTIGATION_STATUS_CLOSED = 1
 GRAPH_REOPEN_STATUS = {MIRROR_TYPE_INCIDENT: "active", MIRROR_TYPE_ALERT: "new"}
@@ -60,19 +61,19 @@ CLOSE_COMMENT_NOTES_PREFIX = "Comment: "
 UNKNOWN_FUTURE_VALUE = "unknownFutureValue"
 UNKNOWN_FUTURE_VALUE_KEYS = {"status", "classification", "determination"}
 
-# XSOAR severity -> Graph severity (incidents only, alerts cannot PATCH severity). Graph has no "critical".
+# XSOAR severity -> Graph severity (outgoing incidents only: Graph alerts_v2 rejects a severity update, so the alert
+# severity is mirrored in only). An XSOAR severity with no Graph value (Critical) is not sent.
 XSOAR_TO_GRAPH_SEVERITY = {
     IncidentSeverity.UNKNOWN: "unknown",
     IncidentSeverity.INFO: "informational",
     IncidentSeverity.LOW: "low",
     IncidentSeverity.MEDIUM: "medium",
     IncidentSeverity.HIGH: "high",
-    IncidentSeverity.CRITICAL: "high",
 }
 GRAPH_SEVERITY_VALUES = set(XSOAR_TO_GRAPH_SEVERITY.values())
 
-# Combined "classification - determination" label (as shown in the Defender UI) -> Graph (classification, determination).
-# The determinations use the incident enum names; alerts are translated with ALERT_DETERMINATION_OVERRIDES.
+# Combined "classification - determination" label (as shown in the Defender UI) -> Graph incident (classification,
+# determination). Used for outgoing alerts and incidents: alerts rename 4 determinations (ALERT_DETERMINATION_OVERRIDES).
 CLASSIFICATION_LABEL_TO_GRAPH = {
     "Unclassified": ("unknown", "unknown"),
     "True positive - Multi staged attack": ("truePositive", "multiStagedAttack"),
@@ -90,9 +91,9 @@ CLASSIFICATION_LABEL_TO_GRAPH = {
     "False positive - Not enough data to validate": ("falsePositive", "notEnoughDataToValidate"),
     "False positive - Other": ("falsePositive", "other"),
 }
-# Incident determination name -> alert determination name, for the values where the Graph `alertDetermination` enum
-# (security/alerts_v2) differs from the incident `determination` enum (security/incidents).
-ALERT_DETERMINATION_OVERRIDES: dict[str, str] = {
+# Incident determination -> alert determination, for the 4 values whose Graph enum name differs on alerts_v2
+# (alertDetermination). Must match the Alert section of the incoming mapper.
+ALERT_DETERMINATION_OVERRIDES = {
     "compromisedAccount": "compromisedUser",
     "confirmedActivity": "confirmedUserActivity",
     "notMalicious": "clean",
@@ -107,19 +108,22 @@ MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON = {
 }
 
 # `determination` is intentionally not offered as an outgoing field: the combined Classification label is split into the
-# Graph `classification` + `determination` by apply_classification_label (so `determination` stays in the PATCH keys).
+# Graph `classification` + `determination` by apply_classification_label (so `determination` stays in the alert and
+# incident PATCH keys). The alert severity is mirrored in only, so it isn't offered for alerts
+# (Graph alerts_v2 rejects a severity update, verified on the tenant).
 # `closeReason` is not a Graph key and is never PATCHed (as in Cortex XDR): the outgoing mapper must map it, otherwise the
 # server drops it from the delta. Close-out only writes it in the close comment (it never sets the classification).
 OUTGOING_ALERT_FIELDS = {
     "closeReason": "The close reason of the Cortex XSOAR incident. Used only for the close comment, not sent as a field.",
+    "closeNotes": "The close notes of the Cortex XSOAR incident. Used only for the close comment, not sent as a field.",
     "status": "The status of the alert. Possible values are: new, inProgress, resolved.",
-    "classification": "Specifies the classification of the alert (combined classification and determination label).",
+    "classification": "The specification for the alert (combined classification and determination label).",
     "customDetails": "User defined custom fields with string values.",
 }
 OUTGOING_INCIDENT_FIELDS = {
     "closeReason": "The close reason of the Cortex XSOAR incident. Used only for the close comment, not sent as a field.",
-    "status": "The status of the incident. Possible values are: active, inProgress, awaitingAction, resolved, redirected. "
-    "The status is mirrored both ways. unknownFutureValue is never sent.",
+    "status": "The status of the incident. Possible values are: active, inProgress, resolved. "
+    "The status is mirrored both ways. redirected is set only by Microsoft. unknownFutureValue is never sent.",
     "classification": "The specification for the incident (combined classification and determination label).",
     "severity": "Indicates the possible impact on assets. Possible values are: unknown, informational, low, medium, high.",
     "displayName": "The incident name.",
@@ -138,12 +142,12 @@ INCIDENT_PATCH_KEYS = {
     "description",
     "customTags",
     "resolvingComment",
-    "summary",
 }
+# The alert severity is mirrored in only, so it is never sent (Graph alerts_v2 rejects a severity update).
 ALERT_PATCH_KEYS = {"status", "classification", "determination", "customDetails"}
 # XSOAR field (cliName) -> Graph key, per the outgoing mapper (classifier-mapper-outgoing-Graph_Security.json, keep in sync).
 # The update-remote-system delta can hold the raw field name instead of the mapped key (seen for a cleared tags field).
-# Fields with the same name on both sides (severity, description) need no rename. `closeNotes` is not renamed: the
+# Fields with the same name on both sides (incident severity, description) need no rename. `closeNotes` is not renamed: the
 # close-out logic reads it and sends it as resolvingComment (incidents) or as a comment (alerts).
 XSOAR_FIELD_TO_GRAPH_KEY: dict[str, dict[str, str]] = {
     MIRROR_TYPE_INCIDENT: {
@@ -3143,7 +3147,7 @@ def get_close_entry(mirrored_object: dict) -> dict:
 def get_redirected_close_entry(mirrored_object: dict) -> dict:
     """
     Builds the XSOAR close entry for a redirected Graph incident (merged into another incident in Microsoft).
-    Closed as Duplicate (Microsoft 365 Defender also closes on Redirected), with the target incident in the close notes.
+    Closed as Resolved (Microsoft 365 Defender also closes on Redirected), with the target incident in the close notes.
     """
     target_id = mirrored_object.get("redirectIncidentId")
     close_notes = f"Redirected in Microsoft Defender to incident {target_id}." if target_id else "Redirected in Microsoft Defender."
@@ -3185,7 +3189,7 @@ def is_xsoar_investigation_closed() -> bool | None:
 def get_close_or_reopen_entries(mirrored_object: dict, close_incident: bool) -> list[dict]:
     """
     Builds the close/reopen entry for a mirrored-in alert/incident (only when close_incident is enabled).
-    `resolved` closes the XSOAR incident, and so does an incident `redirected` (as Duplicate, like Microsoft 365
+    `resolved` closes the XSOAR incident, and so does an incident `redirected` (as Resolved, like Microsoft 365
     Defender closes on Redirected). Any other status reopens it.
     Like SekoiaXDR, no entry is added when the XSOAR investigation is already in the matching state
     (e.g. a comment on an active object must not add a reopen entry to an open XSOAR incident).
@@ -3208,7 +3212,7 @@ def get_close_or_reopen_entries(mirrored_object: dict, close_incident: bool) -> 
         if status == GRAPH_REDIRECTED_STATUS:
             return [get_redirected_close_entry(mirrored_object)]
         return [get_close_entry(mirrored_object)]
-    # Incident `inProgress`/`awaitingAction` (valid Graph v1.0 incidentStatus values) are open statuses, so they reopen.
+    # Any other status (e.g. incident `active`/`inProgress`) is an open status, so it reopens.
     demisto.debug(f"[Mirroring] {remote_id} status is {status} (not closed, XSOAR: {xsoar_state}), adding a reopen entry.")
     return [{"Type": EntryType.NOTE, "Contents": {"dbotIncidentReopen": True}, "ContentsFormat": EntryFormat.JSON}]
 
@@ -3312,7 +3316,7 @@ def resolve_update_mirror_type(data: dict | None, remote_id: str) -> str:
 
 
 def to_graph_determination(determination: str, mirror_type: str) -> str:
-    """Converts an incident determination name to the Graph determination name of `mirror_type` (alerts differ for 4 values)."""
+    """Returns the Graph determination name of the object type: alerts rename the 4 values that differ on alerts_v2."""
     if mirror_type == MIRROR_TYPE_ALERT:
         return ALERT_DETERMINATION_OVERRIDES.get(determination, determination)
     return determination
@@ -3320,13 +3324,14 @@ def to_graph_determination(determination: str, mirror_type: str) -> str:
 
 def apply_classification_label(delta: dict, mirror_type: str) -> None:
     """
-    Translates a combined classification label (e.g. 'True positive - Malware') into Graph classification/determination,
-    using the determination names of `mirror_type`.
+    Translates a combined classification label (e.g. 'True positive - Malware') into the Graph classification and the
+    determination name of the object type (alert or incident). A value that isn't a label is left unchanged.
     """
     label = delta.get("classification")
     if label in CLASSIFICATION_LABEL_TO_GRAPH:
         classification, determination = CLASSIFICATION_LABEL_TO_GRAPH[label]
-        delta["classification"], delta["determination"] = classification, to_graph_determination(determination, mirror_type)
+        delta["classification"] = classification
+        delta["determination"] = to_graph_determination(determination, mirror_type)
 
 
 def format_close_comment(close_reason: str | None, close_notes: str | None) -> str | None:
@@ -3430,7 +3435,12 @@ def build_patch_body(delta: dict, mirror_type: str) -> dict:
         and not (key in UNKNOWN_FUTURE_VALUE_KEYS and value == UNKNOWN_FUTURE_VALUE)
     }
     if "severity" in body:
-        body["severity"] = to_graph_severity(body["severity"])
+        graph_severity = to_graph_severity(body["severity"])
+        if graph_severity is None:
+            demisto.debug(f"[Mirroring] Severity {body['severity']!r} has no Graph value, it is not sent.")
+            body.pop("severity")
+        else:
+            body["severity"] = graph_severity
     if "customTags" in body:
         body["customTags"] = [tag for tag in argToList(body["customTags"]) if tag]
     if "customDetails" in body:
@@ -3494,6 +3504,17 @@ def post_alert_close_notes(client: MsGraphClient, remote_id: str, mirror_type: s
         demisto.error(f"[Mirroring] Failed to post the close notes comment to {mirror_type} {remote_id}: {e!s}")
 
 
+def strip_remote_id_suffix(name: str, remote_id: str) -> str:
+    """
+    Removes one trailing " - <remote_id>" from an incident name.
+    The XSOAR name is "<displayName> - <id>" (fetch and incoming mapper), so the suffix must not be sent to Microsoft.
+    """
+    suffix = f" - {remote_id}"
+    if name and remote_id and name.endswith(suffix):
+        return name[: -len(suffix)]
+    return name
+
+
 def update_remote_fields(
     client: MsGraphClient, remote_id: str, mirror_type: str, remote_args: UpdateRemoteSystemArgs, params: dict
 ) -> None:
@@ -3502,6 +3523,8 @@ def update_remote_fields(
     The alert close notes are posted even if the PATCH fails; the PATCH error is then raised to the caller.
     """
     delta = to_graph_delta_keys(remote_args.delta or {}, mirror_type)
+    if mirror_type == MIRROR_TYPE_INCIDENT and isinstance(delta.get("displayName"), str):
+        delta["displayName"] = strip_remote_id_suffix(delta["displayName"], remote_id)
     alert_close_notes = None
     # TODO(CIAC-17706): verify on the tenant what Graph does when a redirected incident is resolved/reopened via PATCH
     # (accepted, rejected, or un-merged). No redirected guard for now, so close-out/reopen are sent as for any incident.
@@ -3554,7 +3577,7 @@ def update_remote_system_command(client: MsGraphClient, args: dict, params: dict
 
 """ TEMPORARY MIRRORING PROBE COMMANDS (CIAC-17706) """
 # TODO(CIAC-17706): TEMP - remove these probe commands (and their YML entries/tests) before the release.
-# They send a raw value to a Graph incident to check manually how Graph handles it (open issues #7 and #11).
+# They send a raw value to a Graph incident to check manually how Graph handles it (open issue #11).
 
 
 def probe_incident_patch(client: MsGraphClient, incident_id: str, body: dict) -> dict:
@@ -3589,19 +3612,6 @@ def probe_result_to_command_results(result: dict, keys: list[str], extra: dict |
         readable_output=readable,
         raw_response=result,
     )
-
-
-def probe_incident_severity_command(client: MsGraphClient, args: dict) -> CommandResults:
-    """
-    TEMP (open issue #7): sends a raw severity (e.g. "critical") to a Graph incident and shows what Graph stores.
-    If an XSOAR severity number (0-4) is given, it is sent mapped like mirroring out does (4/Critical -> "high").
-    """
-    incident_id, severity = args["incident_id"], str(args["severity"]).strip()
-    sent_severity = to_graph_severity(severity) if severity.replace(".", "", 1).isdigit() else severity
-    result = probe_incident_patch(client, incident_id, {"severity": sent_severity})
-    after_severity = result["After"].get("severity")
-    extra = {"RequestedSeverity": severity, "AfterXsoarSeverity": SEVERITY_MAP.get(after_severity)}
-    return probe_result_to_command_results(result, ["severity", "lastUpdateDateTime"], extra)
 
 
 def probe_incident_status_command(client: MsGraphClient, args: dict) -> CommandResults:
@@ -3682,7 +3692,6 @@ def main():
         "msg-list-case-operation": list_case_operation_command,
         "msg-export-result-ediscovery-data": export_result_ediscovery_data_command,
         # TODO(CIAC-17706): TEMP probe commands, remove before the release.
-        "msg-mirroring-probe-incident-severity": probe_incident_severity_command,
         "msg-mirroring-probe-incident-status": probe_incident_status_command,
     }
     command = demisto.command()

@@ -119,6 +119,9 @@
                 "Assigned User": {
                     "simple": "assignedTo"
                 },
+                "Classification": {
+                    "simple": "classification"
+                },
                 "Description": {
                     "simple": "description"
                 },
@@ -127,9 +130,6 @@
                 },
                 "Source Create time": {
                     "simple": "createdDateTime"
-                },
-                "Source Status": {
-                    "simple": "status"
                 },
                 "Tenant Name": {
                     "simple": "tenantId"
@@ -260,6 +260,42 @@
                 "Description": {
                     "simple": "description"
                 },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "displayName",
+                        "transformers": [
+                            {
+                                "operator": "concat",
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": " - "
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "operator": "concat",
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false
+                                    },
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "id"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
                 "Microsoft Graph Security Incident Tags": {
                     "simple": "customTags"
                 },
@@ -285,9 +321,6 @@
                 },
                 "Source Create time": {
                     "simple": "createdDateTime"
-                },
-                "Source Status": {
-                    "simple": "status"
                 },
                 "Tenant Name": {
                     "simple": "tenantId"

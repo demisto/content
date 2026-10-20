@@ -15,6 +15,13 @@
                         "transformers": []
                     }
                 },
+                "closeNotes": {
+                    "complex": {
+                        "filters": [],
+                        "root": "closeNotes",
+                        "transformers": []
+                    }
+                },
                 "status": {
                     "complex": {
                         "filters": [],
@@ -30,11 +37,8 @@
                     }
                 },
                 "customDetails": {
-                    "complex": {
-                        "filters": [],
-                        "root": "additionaldata",
-                        "transformers": []
-                    }
+                    "complex": null,
+                    "simple": "additionaldata"
                 }
             }
         },
@@ -84,11 +88,8 @@
                     }
                 },
                 "customTags": {
-                    "complex": {
-                        "filters": [],
-                        "root": "microsoftgraphsecurityincidenttags",
-                        "transformers": []
-                    }
+                    "complex": null,
+                    "simple": "microsoftgraphsecurityincidenttags"
                 },
                 "resolvingComment": {
                     "complex": {

@@ -3257,32 +3257,6 @@ script:
     - description: The Microsoft Graph incident ID.
       name: incident_id
       required: true
-    - description: The severity to send. A Graph value (for example critical, high) is sent as-is. An XSOAR severity number (0-4) is mapped like outgoing mirroring does (4 is sent as high).
-      name: severity
-      required: true
-    description: 'TEMPORARY, for testing only: sends the given severity to a Microsoft Graph incident without validation, and shows the incident severity before and after.'
-    hidden: true
-    name: msg-mirroring-probe-incident-severity
-    outputs:
-    - contextPath: MsGraph.MirroringProbe.IncidentId
-      description: The incident ID.
-      type: String
-    - contextPath: MsGraph.MirroringProbe.PatchError
-      description: The PATCH error, if the request failed.
-      type: String
-    - contextPath: MsGraph.MirroringProbe.BeforeSeverity
-      description: The incident severity before the PATCH.
-      type: String
-    - contextPath: MsGraph.MirroringProbe.AfterSeverity
-      description: The incident severity after the PATCH.
-      type: String
-    - contextPath: MsGraph.MirroringProbe.AfterXsoarSeverity
-      description: The XSOAR severity that the severity after the PATCH maps to on incoming mirroring.
-      type: Number
-  - arguments:
-    - description: The Microsoft Graph incident ID.
-      name: incident_id
-      required: true
     - description: The status to send, as-is. Default is redirected.
       name: status
       defaultValue: redirected

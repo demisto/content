@@ -76,14 +76,15 @@ from MicrosoftGraphSecurity import (
     MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR,
     ALERT_PATCH_KEYS,
     INCIDENT_PATCH_KEYS,
+    OUTGOING_ALERT_FIELDS,
     SEVERITY_MAP,
     additional_data_to_custom_details,
     apply_classification_label,
-    build_patch_body,
     to_graph_determination,
+    build_patch_body,
     custom_details_to_list,
-    probe_incident_severity_command,
     probe_incident_status_command,
+    strip_remote_id_suffix,
     test_function as msg_test_function,  # aliased so pytest does not collect it as a test
     validate_mirroring_comment_tags,
 )
@@ -2592,11 +2593,14 @@ def test_get_mapping_fields_command():
     Given: nothing.
     When: running get-mapping-fields.
     Then: two schemes are returned, with the Graph Security Alert/Incident type names, and `determination` is not offered
-          (it is derived from the combined Classification label). closeReason is offered (read by close-out, as in Cortex XDR).
+          (it is derived from the combined Classification label). closeReason is offered (read by close-out, as in Cortex XDR),
+          and the alert scheme offers closeNotes (read by close-out for the alert close comment). Both schemes offer
+          classification. The alert scheme doesn't offer severity (mirrored in only: Graph rejects an alert severity PATCH).
+          Only the incident scheme offers severity.
     """
     schemes = get_mapping_fields_command().extract_mapping()
     assert set(schemes.keys()) == {"Graph Security Alert", "Graph Security Incident"}
-    assert set(schemes["Graph Security Alert"]) == {"closeReason", "status", "classification", "customDetails"}
+    assert set(schemes["Graph Security Alert"]) == {"closeReason", "closeNotes", "status", "classification", "customDetails"}
     assert set(schemes["Graph Security Incident"]) == {
         "closeReason",
         "status",
@@ -2908,11 +2912,11 @@ def test_get_remote_data_no_reopen_entry_when_xsoar_already_open(mocker, status)
     ids=["with-target", "no-target", "with-resolving-comment"],
 )
 @pytest.mark.parametrize("investigation", [{"id": "1", "status": 0}, {"id": "1"}], ids=["xsoar-open", "xsoar-unknown"])
-def test_get_remote_data_redirected_incident_closes_as_duplicate(mocker, overrides, expected_notes, investigation):
+def test_get_remote_data_redirected_incident_closes_as_resolved(mocker, overrides, expected_notes, investigation):
     """
     Given: an incident redirected in Microsoft (merged into another incident), and an open or unknown XSOAR state.
     When: running get-remote-data with close_incident on.
-    Then: a close entry is added (like Microsoft 365 Defender), with close reason Duplicate and the redirect note.
+    Then: a close entry is added (like Microsoft 365 Defender), with close reason Resolved and the redirect note.
     """
     mocker.patch.object(demisto, "investigation", return_value=investigation)
     remote = _remote_object("incident", status="redirected", comments=[], classification="truePositive", **overrides)
@@ -2921,7 +2925,7 @@ def test_get_remote_data_redirected_incident_closes_as_duplicate(mocker, overrid
     assert res.entries == [
         {
             "Type": EntryType.NOTE,
-            "Contents": {"dbotIncidentClose": True, "closeReason": "Duplicate", "closeNotes": expected_notes},
+            "Contents": {"dbotIncidentClose": True, "closeReason": "Resolved", "closeNotes": expected_notes},
             "ContentsFormat": EntryFormat.JSON,
         }
     ]
@@ -3134,6 +3138,8 @@ def test_update_remote_system_missing_remote_id(mocker):
     "mirror_type, remote_id, delta, expected_body",
     [
         ("incident", INCIDENT_ID, {"status": "unknownFutureValue", "displayName": "x"}, {"displayName": "x"}),
+        ("incident", INCIDENT_ID, {"classification": "unknownFutureValue", "displayName": "x"}, {"displayName": "x"}),
+        ("alert", ALERT_ID, {"status": "unknownFutureValue", "customDetails": ["k: v"]}, {"customDetails": {"k": "v"}}),
         ("alert", ALERT_ID, {"status": "inProgress", "classification": "unknownFutureValue"}, {"status": "inProgress"}),
         ("alert", ALERT_ID, {"status": "new", "determination": "unknownFutureValue"}, {"status": "new"}),
     ],
@@ -3142,7 +3148,7 @@ def test_update_remote_system_drops_unknown_future_value(mocker, mirror_type, re
     """
     Given: a delta with unknownFutureValue in status, classification or determination.
     When: running update-remote-system.
-    Then: unknownFutureValue is never sent in the PATCH body.
+    Then: unknownFutureValue is never sent in the PATCH body (for alerts and incidents).
     """
     http_mock = _patch_http(mocker)
     update_remote_system_command(client_mocker, _update_args(remote_id, delta, mirror_type), MIRROR_PARAMS)
@@ -3168,12 +3174,12 @@ def test_update_remote_system_incident_patch(mocker):
     """
     Given: an incident delta with allowed, disallowed and cleared keys, and an XSOAR severity.
     When: running update-remote-system.
-    Then: the PATCH body is filtered, severity is mapped (critical -> high), the label is translated, and the cleared
+    Then: the PATCH body is filtered, severity is mapped (3 -> high), the label is translated, and the cleared
         description is sent as "".
     """
     http_mock = _patch_http(mocker)
     delta = {
-        "severity": 4,
+        "severity": 3,
         "displayName": "New name",
         "description": "",
         "customTags": "t1,t2",
@@ -3194,11 +3200,32 @@ def test_update_remote_system_incident_patch(mocker):
     }
 
 
-def test_update_remote_system_alert_patch_drops_severity(mocker):
+def test_alert_patch_keys_exclude_severity():
     """
-    Given: an alert delta with severity and status.
+    Given: the alert PATCH keys and the outgoing alert fields.
+    When: checking for severity.
+    Then: severity is in neither (Graph alerts_v2 rejects a severity update, so the alert severity is mirrored in only).
+    """
+    assert "severity" not in ALERT_PATCH_KEYS
+    assert "severity" not in OUTGOING_ALERT_FIELDS
+
+
+def test_update_remote_system_alert_severity_only_sends_no_patch(mocker):
+    """
+    Given: an alert delta that holds only an XSOAR severity (3).
     When: running update-remote-system.
-    Then: severity is dropped from the PATCH body.
+    Then: no PATCH is sent (the alert severity is mirrored in only).
+    """
+    http_mock = _patch_http(mocker)
+    update_remote_system_command(client_mocker, _update_args(ALERT_ID, {"severity": 3}, "alert"), MIRROR_PARAMS)
+    assert _http_calls(http_mock, "PATCH") == []
+
+
+def test_update_remote_system_alert_severity_with_status_sends_status_only(mocker):
+    """
+    Given: an alert delta with an XSOAR severity (3) and a status.
+    When: running update-remote-system.
+    Then: the alert PATCH sends only the status, the severity is dropped.
     """
     http_mock = _patch_http(mocker)
     delta = {"severity": 3, "status": "inProgress"}
@@ -3206,6 +3233,28 @@ def test_update_remote_system_alert_patch_drops_severity(mocker):
     patch_call = _http_calls(http_mock, "PATCH")[0]
     assert patch_call.kwargs["url_suffix"] == f"security/alerts_v2/{ALERT_ID}"
     assert patch_call.kwargs["json_data"] == {"status": "inProgress"}
+
+
+@pytest.mark.parametrize("severity", [0, 0.5, 1, 2, 3, "medium", 4])
+def test_build_patch_body_alert_severity_not_sent(severity):
+    """
+    Given: an alert delta with an XSOAR severity (or a Graph severity string).
+    When: building the alert PATCH body.
+    Then: the severity is never sent for alerts.
+    """
+    assert build_patch_body({"severity": severity}, "alert") == {}
+
+
+def test_outgoing_mapper_alert_has_no_severity():
+    """
+    Given: the outgoing mapper.
+    When: reading the alert and incident sections.
+    Then: the alert section has no severity entry, and the incident section still maps severity.
+    """
+    with open("../../Classifiers/classifier-mapper-outgoing-Graph_Security.json") as mapper_file:
+        mapping = json.load(mapper_file)["mapping"]
+    assert "severity" not in mapping["Graph Security Alert"]["internalMapping"]
+    assert "severity" in mapping["Graph Security Incident"]["internalMapping"]
 
 
 @pytest.mark.parametrize(
@@ -3228,6 +3277,65 @@ def test_update_remote_system_never_sends_assigned_to(mocker, mirror_type, remot
     assert body == expected_body
 
 
+def test_alert_patch_keys_include_classification():
+    """
+    Given: the allowed alert PATCH keys.
+    When: checking them.
+    Then: classification and determination are allowed (the combined label is split and mirrored out, as for incidents).
+    """
+    assert "classification" in ALERT_PATCH_KEYS
+    assert "determination" in ALERT_PATCH_KEYS
+
+
+@pytest.mark.parametrize(
+    "delta",
+    [
+        {"classification": "True positive - Malware", "status": "inProgress"},
+        {"microsoftgraphsecurityclassification": "True positive - Malware", "status": "inProgress"},
+        {"classification": "truePositive", "determination": "malware", "status": "inProgress"},
+    ],
+    ids=["label", "raw-field-name", "graph-values"],
+)
+def test_update_remote_system_alert_sends_classification(mocker, delta):
+    """
+    Given: an alert delta with a classification (label, raw field name or Graph values) and a status change.
+    When: running update-remote-system.
+    Then: the status and the alert classification/determination are PATCHed.
+    """
+    http_mock = _patch_http(mocker)
+    update_remote_system_command(client_mocker, _update_args(ALERT_ID, delta, "alert"), MIRROR_PARAMS)
+    patch_call = _http_calls(http_mock, "PATCH")[0]
+    assert patch_call.kwargs["url_suffix"] == f"security/alerts_v2/{ALERT_ID}"
+    assert patch_call.kwargs["json_data"] == {"status": "inProgress", "classification": "truePositive", "determination": "malware"}
+
+
+def test_update_remote_system_alert_classification_only_sends_patch(mocker):
+    """
+    Given: an open alert whose delta only changes the Microsoft Graph Security Classification field.
+    When: running update-remote-system.
+    Then: the alert PATCH holds the classification and the alert determination name (`clean`).
+    """
+    http_mock = _patch_http(mocker)
+    delta = {"classification": "False positive - Not malicious"}
+    update_remote_system_command(client_mocker, _update_args(ALERT_ID, delta, "alert"), MIRROR_PARAMS)
+    patch_call = _http_calls(http_mock, "PATCH")[0]
+    assert patch_call.kwargs["url_suffix"] == f"security/alerts_v2/{ALERT_ID}"
+    assert patch_call.kwargs["json_data"] == {"classification": "falsePositive", "determination": "clean"}
+
+
+def test_outgoing_mapper_classification_both_types():
+    """
+    Given: the outgoing mapper.
+    When: reading the alert and incident sections.
+    Then: both map classification out from the Microsoft Graph Security Classification field.
+    """
+    with open("../../Classifiers/classifier-mapper-outgoing-Graph_Security.json") as mapper_file:
+        mapping = json.load(mapper_file)["mapping"]
+    for section in ("Graph Security Alert", "Graph Security Incident"):
+        rule = mapping[section]["internalMapping"]["classification"]
+        assert rule == {"complex": {"filters": [], "root": "microsoftgraphsecurityclassification", "transformers": []}}
+
+
 def test_patch_keys_exclude_assigned_to():
     """
     Given: the allowed PATCH key sets.
@@ -3236,6 +3344,16 @@ def test_patch_keys_exclude_assigned_to():
     """
     assert "assignedTo" not in INCIDENT_PATCH_KEYS
     assert "assignedTo" not in ALERT_PATCH_KEYS
+
+
+def test_build_patch_body_incident_drops_summary():
+    """
+    Given: an incident delta that holds summary and status.
+    When: building the PATCH body.
+    Then: summary is dropped (it is not an allowed incident PATCH key) and status is kept.
+    """
+    assert "summary" not in INCIDENT_PATCH_KEYS
+    assert build_patch_body({"summary": "x", "status": "active"}, "incident") == {"status": "active"}
 
 
 @pytest.mark.parametrize(
@@ -3353,6 +3471,31 @@ def test_outgoing_mapper_maps_close_reason():
         assert mapping[section]["internalMapping"]["closeReason"]["complex"]["root"] == "closeReason"
 
 
+def test_outgoing_mapper_maps_alert_close_notes():
+    """
+    Given: the outgoing mapper.
+    When: reading the alert section.
+    Then: closeNotes is mapped from the XSOAR closeNotes field, so the server includes it in the delta and the alert
+        close comment holds the close notes (alerts have no resolvingComment).
+    """
+    with open("../../Classifiers/classifier-mapper-outgoing-Graph_Security.json") as mapper_file:
+        mapping = json.load(mapper_file)["mapping"]
+    assert mapping["Graph Security Alert"]["internalMapping"]["closeNotes"]["complex"]["root"] == "closeNotes"
+
+
+def test_update_remote_system_alert_close_notes_never_patched(mocker):
+    """
+    Given: an alert close with closeNotes in the delta (mapped out only so the server includes it).
+    When: running update-remote-system with close_out on.
+    Then: closeNotes is not a key of the alert PATCH body; it is only sent in the close comment.
+    """
+    http_mock = mocker.patch.object(client_mocker.ms_client, "http_request", return_value={})
+    delta = {"closeReason": "Resolved", "closeNotes": "handled"}
+    update_remote_system_command(client_mocker, _update_args(ALERT_ID, delta, "alert", status=2), MIRROR_PARAMS)
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": "resolved"}
+    assert "Comment: handled" in _http_calls(http_mock, "POST")[0].kwargs["json_data"]["comment"]
+
+
 def test_update_remote_system_incident_close_out_only_resolving_comment(mocker):
     """
     Given: a closed XSOAR incident whose delta holds only resolvingComment (the mapped closeNotes), as seen on the tenant.
@@ -3440,7 +3583,8 @@ def test_update_remote_system_alert_close_out(mocker):
     assert MIRRORED_OUT_XSOAR_ENTRY_TO_MICROSOFT_COMMENT_INDICATOR in post_call.kwargs["json_data"]["comment"]
 
 
-# Labels whose Graph determination name differs between alerts (alertDetermination) and incidents.
+# Labels whose Graph determination name differs between alerts (alertDetermination) and incidents (plus Malware, shared).
+# Used to check the outgoing label split and the incoming mapper alignment, per type.
 TYPE_SPECIFIC_LABELS = [
     ("True positive - Compromised account", "truePositive", "compromisedUser", "compromisedAccount"),
     ("Informational - Confirmed activity", "informationalExpectedActivity", "confirmedUserActivity", "confirmedActivity"),
@@ -3448,45 +3592,80 @@ TYPE_SPECIFIC_LABELS = [
     ("False positive - Not enough data to validate", "falsePositive", "insufficientData", "notEnoughDataToValidate"),
     ("True positive - Malware", "truePositive", "malware", "malware"),
 ]
+# The other labels: the same Graph determination name for alerts and incidents. With TYPE_SPECIFIC_LABELS, all 15 labels.
+SHARED_DETERMINATION_LABELS = [
+    ("Unclassified", "unknown", "unknown", "unknown"),
+    ("True positive - Multi staged attack", "truePositive", "multiStagedAttack", "multiStagedAttack"),
+    ("True positive - Malicious user activity", "truePositive", "maliciousUserActivity", "maliciousUserActivity"),
+    ("True positive - Unwanted software", "truePositive", "unwantedSoftware", "unwantedSoftware"),
+    ("True positive - Phishing", "truePositive", "phishing", "phishing"),
+    ("True positive - Other", "truePositive", "other", "other"),
+    ("Informational - Security testing", "informationalExpectedActivity", "securityTesting", "securityTesting"),
+    (
+        "Informational - Line of business application",
+        "informationalExpectedActivity",
+        "lineOfBusinessApplication",
+        "lineOfBusinessApplication",
+    ),
+    ("Informational - Other", "informationalExpectedActivity", "other", "other"),
+    ("False positive - Other", "falsePositive", "other", "other"),
+]
+ALL_CLASSIFICATION_LABELS = TYPE_SPECIFIC_LABELS + SHARED_DETERMINATION_LABELS
 
 
 @pytest.mark.parametrize("label, classification, alert_determination, incident_determination", TYPE_SPECIFIC_LABELS)
-@pytest.mark.parametrize("mirror_type", ["alert", "incident"])
-def test_apply_classification_label_per_type(mirror_type, label, classification, alert_determination, incident_determination):
+def test_apply_classification_label_incident(label, classification, alert_determination, incident_determination):
     """
-    Given: a combined Classification label in the delta.
-    When: splitting it for an alert or an incident.
-    Then: the determination uses the Graph enum name of that type (alerts and incidents differ for 4 labels).
+    Given: a combined Classification label in an incident delta.
+    When: splitting it.
+    Then: it becomes the Graph classification and the incident determination name.
     """
     delta = {"classification": label}
-    apply_classification_label(delta, mirror_type)
-    expected_determination = alert_determination if mirror_type == "alert" else incident_determination
-    assert delta == {"classification": classification, "determination": expected_determination}
+    apply_classification_label(delta, "incident")
+    assert delta == {"classification": classification, "determination": incident_determination}
+
+
+@pytest.mark.parametrize("label, classification, alert_determination, incident_determination", ALL_CLASSIFICATION_LABELS)
+def test_apply_classification_label_alert(label, classification, alert_determination, incident_determination):
+    """
+    Given: a combined Classification label in an alert delta (all 15 labels).
+    When: splitting it.
+    Then: it becomes the Graph classification and the alert determination name (alertDetermination enum), other keys stay.
+    """
+    delta = {"classification": label, "status": "new"}
+    apply_classification_label(delta, "alert")
+    assert delta == {"classification": classification, "determination": alert_determination, "status": "new"}
 
 
 @pytest.mark.parametrize(
     "determination, mirror_type, expected",
     [
+        ("compromisedAccount", "alert", "compromisedUser"),
+        ("confirmedActivity", "alert", "confirmedUserActivity"),
         ("notMalicious", "alert", "clean"),
+        ("notEnoughDataToValidate", "alert", "insufficientData"),
+        ("malware", "alert", "malware"),
+        ("compromisedAccount", "incident", "compromisedAccount"),
+        ("confirmedActivity", "incident", "confirmedActivity"),
         ("notMalicious", "incident", "notMalicious"),
-        ("other", "alert", "other"),
-        ("unknown", "incident", "unknown"),
+        ("notEnoughDataToValidate", "incident", "notEnoughDataToValidate"),
+        ("malware", "incident", "malware"),
     ],
 )
 def test_to_graph_determination(determination, mirror_type, expected):
     """
-    Given: an incident-name determination.
-    When: converting it for a mirror type.
-    Then: alerts get the alert enum name, incidents and unaffected values are unchanged.
+    Given: an incident-style Graph determination name and the mirror type.
+    When: converting it to the Graph determination of the object type.
+    Then: alerts use the alertDetermination names for the 4 values that differ; incidents and other values are unchanged.
     """
     assert to_graph_determination(determination, mirror_type) == expected
 
 
-def test_update_remote_system_alert_close_out_with_label_change_uses_alert_determination(mocker):
+def test_update_remote_system_alert_close_out_with_label_change_sends_classification(mocker):
     """
     Given: an alert close where the classification field also changed to "False positive - Not malicious".
     When: running update-remote-system with close_out on.
-    Then: the alert PATCH sends the alert determination name `clean`.
+    Then: the alert PATCH sends status=resolved and the split label (alert determination `clean`).
     """
     http_mock = _patch_http(mocker)
     delta = {"closeReason": "Resolved", "classification": "False positive - Not malicious"}
@@ -3495,22 +3674,18 @@ def test_update_remote_system_alert_close_out_with_label_change_uses_alert_deter
     assert body == {"status": "resolved", "classification": "falsePositive", "determination": "clean"}
 
 
-@pytest.mark.parametrize(
-    "mirror_type, remote_id, expected_url, expected_determination",
-    [("alert", ALERT_ID, "security/alerts_v2", "clean"), ("incident", INCIDENT_ID, "security/incidents", "notMalicious")],
-)
-def test_update_remote_system_classification_label_per_type(mocker, mirror_type, remote_id, expected_url, expected_determination):
+def test_update_remote_system_incident_classification_label(mocker):
     """
-    Given: an open alert/incident whose delta sets the label "False positive - Not malicious".
+    Given: an open incident whose delta sets the label "False positive - Not malicious".
     When: running update-remote-system.
-    Then: the PATCH body uses the determination name of the object type (alert `clean`, incident `notMalicious`).
+    Then: the PATCH body holds the incident classification and determination (`notMalicious`).
     """
     http_mock = _patch_http(mocker)
     delta = {"classification": "False positive - Not malicious"}
-    update_remote_system_command(client_mocker, _update_args(remote_id, delta, mirror_type), MIRROR_PARAMS)
+    update_remote_system_command(client_mocker, _update_args(INCIDENT_ID, delta, "incident"), MIRROR_PARAMS)
     patch_call = _http_calls(http_mock, "PATCH")[0]
-    assert patch_call.kwargs["url_suffix"] == f"{expected_url}/{remote_id}"
-    assert patch_call.kwargs["json_data"] == {"classification": "falsePositive", "determination": expected_determination}
+    assert patch_call.kwargs["url_suffix"] == f"security/incidents/{INCIDENT_ID}"
+    assert patch_call.kwargs["json_data"] == {"classification": "falsePositive", "determination": "notMalicious"}
 
 
 NEW_INCOMING_MAPPER_PATH = "../../Classifiers/classifier-mapper-incoming-Graph_Security.json"
@@ -3567,18 +3742,98 @@ def test_new_incoming_mapper_description_only(section):
     assert "details" not in rules
 
 
-@pytest.mark.parametrize("section", MAPPER_TYPE_SECTIONS)
-def test_new_incoming_mapper_no_common_classification_or_name(section):
+@pytest.mark.parametrize(
+    "section, expected_rule",
+    [("Graph Security Alert", {"simple": "classification"}), ("Graph Security Incident", None)],
+)
+def test_new_incoming_mapper_common_classification_alert_only(section, expected_rule):
     """
     Given: a section of the new incoming mapper.
     When: reading its rules.
-    Then: the CommonTypes Classification field isn't mapped (only the combined label is),
-        and name isn't mapped, so the fetch name "displayName - id" is kept.
+    Then: the system Classification field is mapped from the Graph classification for alerts only (as in the original
+        alert mapper), not for incidents. Both map the combined label to Microsoft Graph Security Classification.
     """
     rules = load_json(NEW_INCOMING_MAPPER_PATH)["mapping"][section]["internalMapping"]
-    assert "Classification" not in rules
-    assert "name" not in rules
+    assert rules.get("Classification") == expected_rule
     assert "Microsoft Graph Security Classification" in rules
+
+
+@pytest.mark.parametrize("section", MAPPER_TYPE_SECTIONS)
+def test_new_incoming_mapper_no_source_status(section):
+    """
+    Given: a section of the new incoming mapper.
+    When: reading its rules.
+    Then: the generic Source Status field isn't mapped (status goes to the dedicated status field only).
+    """
+    rules = load_json(NEW_INCOMING_MAPPER_PATH)["mapping"][section]["internalMapping"]
+    assert "Source Status" not in rules
+
+
+def test_new_incoming_mapper_alert_has_no_name_rule():
+    """
+    Given: the Alert section of the new incoming mapper.
+    When: reading its rules.
+    Then: name isn't mapped, so the fetch name "title - id" is kept (the alert title can't be edited in Microsoft).
+    """
+    rules = load_json(NEW_INCOMING_MAPPER_PATH)["mapping"]["Graph Security Alert"]["internalMapping"]
+    assert "name" not in rules
+
+
+def test_new_incoming_mapper_incident_name_rule():
+    """
+    Given: the Incident section of the new incoming mapper.
+    When: reading the name rule.
+    Then: name is built as "<displayName> - <id>" (the same format as the fetch name), so a rename in Microsoft is
+        mirrored in without changing the name format.
+    """
+    rule = load_json(NEW_INCOMING_MAPPER_PATH)["mapping"]["Graph Security Incident"]["internalMapping"]["name"]["complex"]
+    assert rule["root"] == "displayName"
+    first, second = rule["transformers"]
+    assert first["operator"] == second["operator"] == "concat"
+    assert first["args"]["suffix"] == {"isContext": False, "value": {"simple": " - "}}
+    assert second["args"]["suffix"] == {"isContext": True, "value": {"simple": "id"}}
+
+
+@pytest.mark.parametrize(
+    "name, expected",
+    [
+        ("Multi-stage incident - 2972395", "Multi-stage incident"),
+        ("Renamed in XSOAR", "Renamed in XSOAR"),
+        ("Name - 111", "Name - 111"),
+        ("Name - 2972395 extra", "Name - 2972395 extra"),
+        ("A - 2972395 - 2972395", "A - 2972395"),
+        ("", ""),
+    ],
+    ids=["suffix", "no-suffix", "other-id", "suffix-not-at-end", "suffix-twice", "empty"],
+)
+def test_strip_remote_id_suffix(name, expected):
+    """
+    Given: an XSOAR incident name and the remote incident ID.
+    When: stripping the " - <id>" suffix.
+    Then: only a trailing " - <remote id>" is removed (once); any other name is returned unchanged.
+    """
+    assert strip_remote_id_suffix(name, INCIDENT_ID) == expected
+
+
+@pytest.mark.parametrize(
+    "delta, expected_body",
+    [
+        ({"displayName": f"Multi-stage incident - {INCIDENT_ID}"}, {"displayName": "Multi-stage incident"}),
+        ({"name": f"Renamed - {INCIDENT_ID}"}, {"displayName": "Renamed"}),
+        ({"displayName": "Renamed without id"}, {"displayName": "Renamed without id"}),
+        ({"displayName": f" - {INCIDENT_ID}", "status": "active"}, {"status": "active"}),
+    ],
+    ids=["mapped-key", "raw-name-field", "no-suffix", "only-suffix-dropped"],
+)
+def test_update_remote_system_strips_id_suffix_from_display_name(mocker, delta, expected_body):
+    """
+    Given: an incident name in the delta that ends with " - <remote id>" (the fetch / incoming name format).
+    When: running update-remote-system.
+    Then: displayName is sent without the suffix; a name that is only the suffix isn't sent (displayName is never empty).
+    """
+    http_mock = _patch_http(mocker)
+    update_remote_system_command(client_mocker, _update_args(INCIDENT_ID, delta, "incident"), MIRROR_PARAMS)
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == expected_body
 
 
 def test_old_incoming_mapper_unchanged():
@@ -3609,14 +3864,14 @@ def test_update_remote_system_redirected_incident_close_out_sent(mocker):
     Then: the close-out is sent like for any incident (no redirected guard, pending tenant verification).
     """
     http_mock = _patch_http(mocker)
-    delta = {"closeReason": "Duplicate", "closeNotes": "Redirected in Microsoft Defender to incident 999."}
+    delta = {"closeReason": "Resolved", "closeNotes": "Redirected in Microsoft Defender to incident 999."}
     args = _update_args(INCIDENT_ID, delta, "incident", status=2)
     args["data"]["status"] = "redirected"
     update_remote_system_command(client_mocker, args, MIRROR_PARAMS)
     body = _http_calls(http_mock, "PATCH")[0].kwargs["json_data"]
     assert body["status"] == "resolved"
     assert body["resolvingComment"] == (
-        "Closed in Cortex XSOAR as: Duplicate\nComment: Redirected in Microsoft Defender to incident 999."
+        "Closed in Cortex XSOAR as: Resolved\nComment: Redirected in Microsoft Defender to incident 999."
     )
 
 
@@ -3987,6 +4242,7 @@ def test_build_patch_body_cleared_fields_sent(delta, mirror_type, expected):
         ({"displayName": ""}, "incident", {}),
         ({"status": ""}, "alert", {}),
         ({"classification": None}, "alert", {}),
+        ({"classification": "", "determination": ""}, "alert", {}),
         ({"description": ""}, "alert", {}),
         ({"customTags": []}, "alert", {}),
         ({"customDetails": []}, "incident", {}),
@@ -4053,8 +4309,22 @@ def test_build_patch_body_incident_sends_all_statuses(status):
         ),
         ("alert", ALERT_ID, {"microsoftgraphsecurityalertstatus": "inProgress"}, {"status": "inProgress"}),
         ("alert", ALERT_ID, {"additionaldata": ["k: v"]}, {"customDetails": {"k": "v"}}),
+        (
+            "alert",
+            ALERT_ID,
+            {"microsoftgraphsecurityclassification": "False positive - Not malicious"},
+            {"classification": "falsePositive", "determination": "clean"},
+        ),
     ],
-    ids=["incident-tags", "incident-status", "incident-name", "incident-classification", "alert-status", "alert-additional-data"],
+    ids=[
+        "incident-tags",
+        "incident-status",
+        "incident-name",
+        "incident-classification",
+        "alert-status",
+        "alert-additional-data",
+        "alert-classification",
+    ],
 )
 def test_update_remote_system_raw_field_names_renamed(mocker, mirror_type, remote_id, delta, expected_body):
     """
@@ -4090,6 +4360,69 @@ def test_to_graph_delta_keys_mapped_key_wins():
     assert "microsoftgraphsecurityincidenttags" in delta
 
 
+def _outgoing_mapper_source(rule: dict) -> str:
+    """Returns the XSOAR source field of an outgoing mapper rule, for both simple and complex mappings."""
+    return rule.get("simple") or rule["complex"]["root"]
+
+
+def test_outgoing_mapper_custom_tags_is_simple_mapping():
+    """
+    Given: the outgoing mapper's Incident customTags entry.
+    When: a user clears all tags in XSOAR, so the field value becomes [].
+    Then: the entry is a simple (direct) mapping of microsoftgraphsecurityincidenttags.
+          With a complex mapping, the server's applyFilters turns [] into nil and drops the key from the delta,
+          so the cleared tags would never reach update-remote-system or be mirrored to Graph customTags.
+    """
+    with open("../../Classifiers/classifier-mapper-outgoing-Graph_Security.json") as mapper_file:
+        mapping = json.load(mapper_file)["mapping"]
+    assert mapping["Graph Security Incident"]["internalMapping"]["customTags"] == {
+        "complex": None,
+        "simple": "microsoftgraphsecurityincidenttags",
+    }
+
+
+def test_outgoing_mapper_custom_details_is_simple_mapping():
+    """
+    Given: the outgoing mapper's Alert customDetails entry.
+    When: a user clears the Additional Data field in XSOAR, so the field value becomes [].
+    Then: the entry is a simple (direct) mapping of additionaldata.
+          With a complex mapping, the server's applyFilters turns [] into nil and drops the key from the mapped delta.
+          A clear on its own was only mirrored through the server's raw-delta fallback (mapped result empty), and a
+          clear saved together with another mapped change (e.g. a status change) never reached Graph customDetails.
+    """
+    with open("../../Classifiers/classifier-mapper-outgoing-Graph_Security.json") as mapper_file:
+        mapping = json.load(mapper_file)["mapping"]
+    assert mapping["Graph Security Alert"]["internalMapping"]["customDetails"] == {
+        "complex": None,
+        "simple": "additionaldata",
+    }
+
+
+def test_update_remote_system_alert_clears_custom_details_with_status_change(mocker):
+    """
+    Given: an alert delta (simple-mapped) that clears customDetails and changes the status in the same save.
+    When: running update-remote-system.
+    Then: the PATCH sends the new status and an empty customDetails dict, so Microsoft's customDetails are cleared.
+    """
+    http_mock = _patch_http(mocker)
+    delta = {"customDetails": [], "status": "inProgress"}
+    update_remote_system_command(client_mocker, _update_args(ALERT_ID, delta, "alert"), MIRROR_PARAMS)
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": "inProgress", "customDetails": {}}
+
+
+def test_update_remote_system_alert_close_out_clears_custom_details(mocker):
+    """
+    Given: an alert close (close_out on) whose delta also clears customDetails.
+    When: running update-remote-system.
+    Then: the PATCH sends the resolved status and an empty customDetails dict, and the close comment is posted.
+    """
+    http_mock = _patch_http(mocker)
+    delta = {"closeReason": "Resolved", "closeNotes": "handled", "customDetails": []}
+    update_remote_system_command(client_mocker, _update_args(ALERT_ID, delta, "alert", status=2), MIRROR_PARAMS)
+    assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"status": "resolved", "customDetails": {}}
+    assert "Comment: handled" in _http_calls(http_mock, "POST")[0].kwargs["json_data"]["comment"]
+
+
 def test_xsoar_field_to_graph_key_matches_outgoing_mapper():
     """
     Given: the outgoing mapper.
@@ -4100,9 +4433,9 @@ def test_xsoar_field_to_graph_key_matches_outgoing_mapper():
         mapping = json.load(mapper_file)["mapping"]
     for section, mirror_type in (("Graph Security Incident", "incident"), ("Graph Security Alert", "alert")):
         expected = {
-            rule["complex"]["root"]: graph_key
+            _outgoing_mapper_source(rule): graph_key
             for graph_key, rule in mapping[section]["internalMapping"].items()
-            if rule["complex"]["root"] not in (graph_key, "closeNotes")
+            if _outgoing_mapper_source(rule) not in (graph_key, "closeNotes")
         }
         assert expected == XSOAR_FIELD_TO_GRAPH_KEY[mirror_type]
 
@@ -4117,6 +4450,18 @@ def test_update_remote_system_incident_never_sends_custom_details(mocker):
     delta = {"customDetails": ["owner: SOC"], "displayName": "x"}
     update_remote_system_command(client_mocker, _update_args(INCIDENT_ID, delta, "incident"), MIRROR_PARAMS)
     assert _http_calls(http_mock, "PATCH")[0].kwargs["json_data"] == {"displayName": "x"}
+
+
+@pytest.mark.parametrize("mirror_type", ["incident", "alert"])
+@pytest.mark.parametrize("xsoar_severity", [4, "4", 4.0])
+def test_build_patch_body_drops_unsupported_xsoar_severity(xsoar_severity, mirror_type):
+    """
+    Given: an XSOAR severity with no Graph equivalent (4, Critical: Graph alerts and incidents have no such severity and
+        it is never mirrored in).
+    When: building the alert/incident PATCH body.
+    Then: severity isn't sent.
+    """
+    assert build_patch_body({"severity": xsoar_severity}, mirror_type) == {}
 
 
 """ TEMP MIRRORING PROBE COMMAND TESTS (CIAC-17706) """
@@ -4134,40 +4479,6 @@ def _probe_http(mocker, before: dict, after: dict, patch_error: Exception | None
         return next(gets)
 
     return mocker.patch.object(client_mocker.ms_client, "http_request", side_effect=side_effect)
-
-
-@pytest.mark.parametrize(
-    "severity, expected_sent",
-    [("critical", "critical"), ("high", "high"), ("4", "high"), ("2", "medium")],
-)
-def test_probe_incident_severity_command_sends_value(mocker, severity, expected_sent):
-    """
-    Given: a severity argument (a raw Graph value or an XSOAR number).
-    When: running msg-mirroring-probe-incident-severity.
-    Then: a raw value is sent as-is, and an XSOAR number is mapped like outgoing mirroring (4 -> high).
-    """
-    http_mock = _probe_http(mocker, {"severity": "medium"}, {"severity": "high"})
-    result = probe_incident_severity_command(client_mocker, {"incident_id": INCIDENT_ID, "severity": severity})
-    patch = _http_calls(http_mock, "PATCH")[0].kwargs
-    assert patch["url_suffix"] == f"security/incidents/{INCIDENT_ID}"
-    assert patch["json_data"] == {"severity": expected_sent}
-    assert result.outputs["BeforeSeverity"] == "medium"
-    assert result.outputs["AfterSeverity"] == "high"
-    assert result.outputs["AfterXsoarSeverity"] == SEVERITY_MAP["high"]
-    assert result.outputs["PatchError"] is None
-
-
-def test_probe_incident_severity_command_patch_error_reported(mocker):
-    """
-    Given: Graph rejects the PATCH.
-    When: running msg-mirroring-probe-incident-severity with "critical".
-    Then: the error is returned in the result instead of raised, and the before/after state is still shown.
-    """
-    _probe_http(mocker, {"severity": "low"}, {"severity": "low"}, DemistoException("400 invalid enum value"))
-    result = probe_incident_severity_command(client_mocker, {"incident_id": INCIDENT_ID, "severity": "critical"})
-    assert "invalid enum value" in result.outputs["PatchError"]
-    assert result.outputs["AfterSeverity"] == "low"
-    assert "invalid enum value" in result.readable_output
 
 
 @pytest.mark.parametrize("args, expected_status", [({}, "redirected"), ({"status": "active"}, "active")])
