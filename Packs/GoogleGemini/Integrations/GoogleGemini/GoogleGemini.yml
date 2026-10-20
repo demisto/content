@@ -8,7 +8,7 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: Choose whether to authenticate with a Google AI Studio API Key or a Google Cloud Vertex AI Service Account.
-  defaultValue: AI Studio API Key
+  defaultvalue: AI Studio API Key
   display: Authentication Type
   name: auth_type
   options:
@@ -17,7 +17,7 @@ configuration:
   required: true
   section: Connect
   type: 15
-- defaultValue: https://generativelanguage.googleapis.com
+- defaultvalue: https://generativelanguage.googleapis.com
   additionalinfo: "For AI Studio: https://generativelanguage.googleapis.com. For Vertex AI: https://aiplatform.googleapis.com (auto-detected if unchanged)."
   display: Server URL
   name: url
@@ -45,13 +45,13 @@ configuration:
   section: Connect
   type: 0
 - additionalinfo: "Google Cloud location for Vertex AI (e.g., 'global', 'us-central1'). Defaults to 'global'."
-  defaultValue: global
+  defaultvalue: global
   display: Location
   name: location
   required: false
   section: Connect
   type: 0
-- defaultValue: gemini-2.5-flash
+- defaultvalue: gemini-2.5-flash
   additionalinfo: Please choose only one model.
   display: Default Model
   name: model
@@ -67,7 +67,7 @@ configuration:
   section: Collect
   type: 16
 - additionalinfo: The maximum number of tokens that can be generated for the response (1-10000). Defaults to 1024.
-  defaultValue: '1024'
+  defaultvalue: '1024'
   display: Max tokens
   name: max_tokens
   required: true
