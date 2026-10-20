@@ -174,7 +174,7 @@ class Client(BaseClient):
         # (and the SCM IAM plane, which shares the same host/token) only - the other planes neither send
         # nor require it.
         if use_aigw_cp or use_aigw_admin or use_aigw_iam:
-            request_headers["x-tsg-id"] = self.tsg_id or ""
+            request_headers["x-tsg-id"] = tsg_id or self.tsg_id or ""
         # For multipart file uploads, let the HTTP layer set the Content-Type (with boundary).
         if files is None:
             request_headers["Content-Type"] = "application/json"
