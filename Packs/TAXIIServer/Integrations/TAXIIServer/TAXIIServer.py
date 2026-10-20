@@ -1,6 +1,7 @@
 import functools
 import re
 import uuid
+import traceback
 from base64 import b64decode
 from collections.abc import Callable, Generator
 from multiprocessing import Process
