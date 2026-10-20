@@ -553,12 +553,12 @@ def test_sanitize_for_xml_removes_control_characters():
     Then:
         - All invalid XML control characters are removed while valid characters are preserved.
     """
-    import TAXIIServer
+    from TAXIIServer import sanitize_for_xml
 
-    assert TAXIIServer.sanitize_for_xml("abc\x00def") == "abcdef"
-    assert TAXIIServer.sanitize_for_xml("abc\x01\x1fdef") == "abcdef"
-    assert TAXIIServer.sanitize_for_xml("normal-value.com") == "normal-value.com"
-    assert TAXIIServer.sanitize_for_xml("") == ""
+    assert sanitize_for_xml("abc\x00def") == "abcdef"
+    assert sanitize_for_xml("abc\x01\x1fdef") == "abcdef"
+    assert sanitize_for_xml("normal-value.com") == "normal-value.com"
+    assert sanitize_for_xml("") == ""
 
 
 def test_taxii_poll_service_does_not_return_500_on_internal_error(mocker):

@@ -867,6 +867,7 @@ def taxii_poll_service() -> Response:
         else:
             raise ValueError("Invalid message")
     except Exception as e:
+        demisto.debug(traceback.format_exc())
         internal_error = f"Could not perform the polling request: {e!s}"
         handle_long_running_error(internal_error)
         return make_response("Could not perform the polling request.", 400)
