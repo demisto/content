@@ -892,16 +892,21 @@ class TestNormalizeToolSchemas:
         [
             ({"type": ["string", "null"]}, {"type": "string"}),
             ({"type": ["null", "integer"]}, {"type": "integer"}),
+            ({"type": ["string", "string", "null"]}, {"type": "string"}),
             ({"type": ["string", "null"], "description": "Kept."}, {"type": "string", "description": "Kept."}),
             ({"type": ["null"]}, {}),
             ({"type": []}, {}),
+            ({"type": ["string", "number"]}, {}),
+            ({"type": ["number", "string", "null"]}, {}),
+            ({"type": ["string", "number"], "description": "Kept."}, {"description": "Kept."}),
         ],
     )
-    def test_nullable_type_list_is_flattened(self, prop: dict, expected: dict):
+    def test_type_list_is_reduced_to_a_single_type_or_removed(self, prop: dict, expected: dict):
         """
         Given: An input property whose type is a list, as JSON Schema allows.
         When: normalize_tool_schemas runs.
-        Then: The type becomes the first non-null entry, or is removed when there is none, and other keys are kept.
+        Then: A list that names one real type (null aside) becomes that type, and a list that names none or several
+              loses its type instead of guessing one. Other keys are kept.
         """
         tool = self._tool({"field": prop})
 
@@ -944,6 +949,19 @@ class TestNormalizeToolSchemas:
 
         assert tool["inputSchema"]["type"] == "object"
         assert tool["outputSchema"]["type"] == "object"
+
+    def test_top_level_schema_type_list_with_several_real_types_loses_its_type(self):
+        """
+        Given: A tool whose whole outputSchema names several real types.
+        When: normalize_tool_schemas runs.
+        Then: The top-level type is removed instead of guessing one, and the properties are still normalized.
+        """
+        tool = {"name": "t", "outputSchema": {"type": ["object", "array"], "properties": {"a": {"type": ["string", "null"]}}}}
+
+        normalize_tool_schemas([tool])
+
+        assert "type" not in tool["outputSchema"]
+        assert tool["outputSchema"]["properties"]["a"]["type"] == "string"
 
     def test_output_property_without_description_gets_a_default(self):
         """

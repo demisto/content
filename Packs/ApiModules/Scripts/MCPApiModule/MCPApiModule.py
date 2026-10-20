@@ -429,16 +429,18 @@ class OAuthHandler:
 
 
 def _flatten_nullable_type(schema: dict[str, Any]) -> None:
-    """Replace a list-valued JSON Schema "type" such as ["string", "null"] with its first non-null entry.
+    """Replace a list-valued JSON Schema "type" with the single real type it names, or remove it.
 
-    A type list that holds only "null" is removed. Any other form (a plain string, anyOf, oneOf) is left alone.
+    ["string", "null"] becomes "string", because "null" only marks the value as optional. A list that names no real
+    type (["null"]) or several (["string", "number"]) loses its "type", since picking one would be a guess. The
+    platform reads a missing type as unknown. Any other form (a plain string, anyOf, oneOf) is left alone.
     """
     declared = schema.get("type")
     if not isinstance(declared, list):
         return
-    concrete = next((entry for entry in declared if isinstance(entry, str) and entry != "null"), None)
-    if concrete:
-        schema["type"] = concrete
+    real_types = {entry for entry in declared if isinstance(entry, str) and entry != "null"}
+    if len(real_types) == 1:
+        schema["type"] = next(iter(real_types))
     else:
         schema.pop("type", None)
 
