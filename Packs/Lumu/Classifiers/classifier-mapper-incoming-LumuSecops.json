@@ -83,7 +83,7 @@
 				"lumu_status": {
 					"complex": {
 						"filters": [],
-						"root": "status",
+						"root": "lumu_secops_status",
 						"transformers": []
 					}
 				},
@@ -91,13 +91,6 @@
 					"complex": {
 						"filters": [],
 						"root": "timestamp",
-						"transformers": []
-					}
-				},
-                "statusTimestamp": {
-					"complex": {
-						"filters": [],
-						"root": "statusTimestamp",
 						"transformers": []
 					}
 				}
@@ -119,14 +112,14 @@
                 "Source Status": {
 					"complex": {
 						"filters": [],
-						"root": "status",
+						"root": "lumu_secops_status",
 						"transformers": []
 					}
 				},
                 "State": {
 					"complex": {
 						"filters": [],
-						"root": "status",
+						"root": "lumu_secops_status",
 						"transformers": []
 					}
 				},

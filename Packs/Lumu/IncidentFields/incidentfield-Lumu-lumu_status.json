@@ -5,8 +5,9 @@
     "cliName": "lumustatus",
     "type": "singleSelect",
     "selectValues": [
-        "mute",
-        "unmute"
+        "open",
+        "closed",
+        "muted"
     ],
     "closeForm": true,
     "editForm": true,

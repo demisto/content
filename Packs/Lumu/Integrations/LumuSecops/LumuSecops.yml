@@ -32,6 +32,7 @@ configuration:
 - display: API Key
   name: api_key
   required: true
+  displaypassword: API Key
   hiddenusername: true
   additionalinfo: "The API key used to authenticate with the Lumu Defender API."
   type: 9
