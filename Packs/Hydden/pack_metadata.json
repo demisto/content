@@ -35,5 +35,9 @@
         "marketplacev2",
         "platform"
     ],
-    "created": "2026-08-16T00:00:00Z"
+    "created": "2026-08-16T00:00:00Z",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

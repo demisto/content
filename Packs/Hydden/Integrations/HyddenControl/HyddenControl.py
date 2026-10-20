@@ -28,9 +28,7 @@ TOKEN_REFRESH_MARGIN_SECONDS = 60
 # sub-second. BaseClient defaults to 60s, which turns that first call into a
 # read timeout, so default well above it and let the instance override.
 DEFAULT_TIMEOUT_SECONDS = 300
-_UUID_RE = re.compile(
-    r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-)
+_UUID_RE = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
 
 def _as_blast_radius_string(response: Any) -> str:
@@ -45,7 +43,7 @@ def _as_blast_radius_string(response: Any) -> str:
         if value is None:
             # Name what did come back, so a contract change diagnoses itself.
             returned = ", ".join(sorted(response)) if response else "(empty response)"
-            raise DemistoException("Hydden response did not include a blast radius score. " f"Fields returned: {returned}")
+            raise DemistoException(f"Hydden response did not include a blast radius score. Fields returned: {returned}")
     else:
         value = response
     if value is None or (isinstance(value, str) and value.strip() == ""):
@@ -159,9 +157,8 @@ def _uuids_from_item(item: Any) -> list[str]:
     """Hydden UUID from one lookup row: a UUID string, or an object with uuid."""
     if uuid := _uuid_from_value(item):
         return [uuid]
-    if isinstance(item, dict):
-        if uuid := _uuid_from_value(item.get("uuid")):
-            return [uuid]
+    if isinstance(item, dict) and (uuid := _uuid_from_value(item.get("uuid"))):
+        return [uuid]
     return []
 
 
@@ -232,8 +229,7 @@ def hydden_deprovision_account_command(client: Client, args: dict[str, Any]) -> 
 
     return CommandResults(
         readable_output=(
-            f"Deprovision of account {identifier} ({account_id}) was accepted "
-            f"as batch {batch_id} (status: {status})."
+            f"Deprovision of account {identifier} ({account_id}) was accepted as batch {batch_id} (status: {status})."
         ),
         outputs_prefix="Hydden.Identity",
         outputs={"deprovisioned": True, "deprovision_batch_id": batch_id, "deprovision_status": status},

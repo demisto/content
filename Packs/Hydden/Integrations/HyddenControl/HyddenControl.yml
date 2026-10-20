@@ -53,7 +53,7 @@ script:
     - name: type
       required: false
       description: The subject the ref names. Sent to Hydden as the type query parameter.
-      defaultvalue: account
+      defaultValue: account
       predefined:
       - account
       - group
@@ -103,6 +103,8 @@ script:
     - contextPath: Hydden.Identity.deprovision_status
       description: The batch status when the request was accepted.
       type: String
+    compliantpolicies:
+    - User Soft Remediation
   dockerimage: demisto/fastapi:0.125.0.11206988
   runonce: false
   script: '-'
