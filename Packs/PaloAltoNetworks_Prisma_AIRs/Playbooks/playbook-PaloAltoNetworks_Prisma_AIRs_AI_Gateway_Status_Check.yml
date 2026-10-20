@@ -112,7 +112,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 195
+          "y": 370
         }
       }
     note: false
@@ -153,7 +153,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -215,7 +215,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -256,7 +256,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -287,7 +287,7 @@ tasks:
       {
         "position": {
           "x": 830,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -318,7 +318,7 @@ tasks:
       {
         "position": {
           "x": 830,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -361,7 +361,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -395,7 +395,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -435,7 +435,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -485,7 +485,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -516,7 +516,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -550,7 +550,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -587,7 +587,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 120
+          "y": 195
         }
       }
     note: false
@@ -618,8 +618,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 195
+          "x": 870,
+          "y": 370
         }
       }
     note: false
@@ -634,7 +634,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1800,
+        "height": 1975,
         "width": 1220,
         "x": 50,
         "y": 50
