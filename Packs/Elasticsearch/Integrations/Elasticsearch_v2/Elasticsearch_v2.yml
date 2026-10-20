@@ -587,6 +587,87 @@ script:
       description: The result of the index operation.
       type: string
     description: Indexes a document into an Elasticsearch index.
+  - name: es-delete
+    arguments:
+    - name: index_name
+      required: true
+      description: The name of the index from which to delete.
+    - name: id
+      required: true
+      description: The ID of the document to be deleted.
+    outputs:
+    - contextPath: Elasticsearch.DeletedDocument.id
+      description: The ID of the deleted document.
+      type: string
+    - contextPath: Elasticsearch.DeletedDocument.index
+      description: The name of the index from which the document was deleted.
+      type: string
+    - contextPath: Elasticsearch.DeletedDocument.version
+      description: The version number of the deleted document.
+      type: number
+    - contextPath: Elasticsearch.DeletedDocument.result
+      description: The result of the delete operation.
+      type: string
+    description: Deletes a document from an Elasticsearch index.
+  - name: es-get
+    arguments:
+    - name: index_name
+      required: true
+      description: The name of the index from which to retrieve the document.
+    - name: id
+      required: true
+      description: The ID of the document to be retrieved.
+    outputs:
+    - contextPath: Elasticsearch.Document.id
+      description: The ID of the retrieved document.
+      type: string
+    - contextPath: Elasticsearch.Document.index
+      description: The name of the index from which the document was retrieved.
+      type: string
+    - contextPath: Elasticsearch.Document.version
+      description: The version number of the retrieved document.
+      type: number
+    - contextPath: Elasticsearch.Document.found
+      description: Whether the requested document has been found.
+      type: string
+    description: Retrieves a document from an Elasticsearch index.
+  - name: es-get-multiple
+    arguments:
+    - name: index_name
+      description: The name of the index from which to retrieve the documents.
+    - name: body
+      required: true
+      description: The message body acting as a selector for the documents.
+    outputs:
+    - contextPath: Elasticsearch.Documents
+      description: The retrieved documents.
+      type: unknown
+    description: Retrieves multiple documents from Elasticsearch.
+  - name: es-update
+    arguments:
+    - name: index_name
+      required: true
+      description: The name of the index from which to delete.
+    - name: id
+      required: true
+      description: The ID of the document to be updated.
+    - name: body
+      required: true
+      description: The message body acting as the definition for the requested changes.
+    outputs:
+    - contextPath: Elasticsearch.UpdatedDocument.id
+      description: The ID of the updated document.
+      type: string
+    - contextPath: Elasticsearch.UpdatedDocument.index
+      description: The name of the index from which the document was updated.
+      type: string
+    - contextPath: Elasticsearch.UpdatedDocument.version
+      description: The version number of the updated document.
+      type: number
+    - contextPath: Elasticsearch.UpdatedDocument.result
+      description: The result of the update operation.
+      type: string
+    description: Updates a document in an Elasticsearch index.
   - name: es-esql-search
     arguments:
     - description: The ES|QL query string to execute using piped syntax (for example, FROM index | WHERE field == "value").
@@ -1146,13 +1227,15 @@ script:
       description: The date the comment was updated.
       type: Date
   - name: es-kibana-case-comment-delete
-    description: Deletes all comments and alerts from a case.
+    description: Deletes all comments and alerts from a case, or a single comment or alert when comment_id is provided.
     arguments:
     - name: space_id
       description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
     - name: case_id
       required: true
       description: The identifier for the case. To retrieve case IDs, use es-kibana-case-list.
+    - name: comment_id
+      description: The identifier of the comment or alert to delete. When not provided, all comments and alerts for the case are deleted.
   - name: es-kibana-case-file-attach
     description: Attach a file to a case.
     arguments:
@@ -1173,6 +1256,270 @@ script:
     - contextPath: Elasticsearch.Kibana.Case.comments.updated_by.username
       description: The user who attached the file.
       type: String
+  - name: es-kibana-case-settings-create
+    description: Adds (sets) the case settings in Kibana.
+    arguments:
+    - name: space_id
+      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+    - name: body
+      description: The full case settings object as a JSON object. If provided, the other arguments won't be considered.
+    - name: closure_type
+      auto: PREDEFINED
+      predefined:
+      - close-by-pushing
+      - close-by-user
+      description: Whether a case is automatically closed when it is pushed to external systems (close-by-pushing) or not (close-by-user).
+    - name: connector_id
+      description: The identifier of the default connector. Use none if you do not want a default connector. To retrieve connector IDs, use es-kibana-case-connectors-find.
+    - name: connector_name
+      description: The name of the default connector. Use none if you do not want a default connector.
+    - name: connector_type
+      auto: PREDEFINED
+      predefined:
+      - .cases-webhook
+      - .jira
+      - .none
+      - .resilient
+      - .servicenow
+      - .servicenow-sir
+      - .swimlane
+      description: The type of the default connector.
+    - name: connector_fields
+      description: The connector fields as a JSON object. The fields are not propagated to individual cases, so it is recommended to leave it unset (defaults to null).
+    - name: custom_fields
+      description: The custom fields case configuration as a JSON array of objects with the key, label, type (text or toggle) and an optional defaultValue property.
+    - name: extract_observables
+      description: Indicates whether observables (for example, IPs, hashes, and URLs) are automatically extracted from case comments and events.
+    - name: owner
+      auto: PREDEFINED
+      predefined:
+      - cases
+      - observability
+      - securitySolution
+      description: The application that owns the cases: Stack Management, Observability, or Elastic Security..
+    outputs:
+    - contextPath: Elasticsearch.Kibana.CaseSettings.id
+      description: The identifier of the case configuration.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseSettings.closure_type
+      description: Whether a case is automatically closed when it is pushed to external systems.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseSettings.connector.id
+      description: The identifier of the default connector.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseSettings.connector.name
+      description: The name of the default connector.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseSettings.connector.type
+      description: The type of the default connector.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseSettings.created_at
+      description: The creation date of the case settings.
+      type: Date
+    - contextPath: Elasticsearch.Kibana.CaseSettings.created_by.username
+      description: The user who created the case settings.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseSettings.customFields
+      description: The custom fields case configuration.
+      type: Unknown
+  - name: es-kibana-case-activity-find
+    description: Find the activity (user actions) for a case.
+    arguments:
+    - name: space_id
+      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+    - name: case_id
+      required: true
+      description: The identifier for the case. To retrieve case IDs, use es-kibana-case-list.
+    - name: page
+      description: The page from which to start. ES default is 1.
+    - name: sort_order
+      description: The sort order for the result. ES default is desc.
+    - name: types
+      description: The types of user actions to return.
+    - name: size
+      description: Number of results to return per page. ES default is 20, maximum is 100.
+    outputs:
+    - contextPath: Elasticsearch.Kibana.CaseActivity.id
+      description: The action ID.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseActivity.type
+      description: The action type.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseActivity.user
+      description: The username of the user who performed the action.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseActivity.action
+      description: A description of the action that was performed.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseActivity.created_at
+      description: The time the action was performed.
+      type: Date
+  - name: es-kibana-case-comment-find
+    description: Find the comments and alerts for a case.
+    arguments:
+    - name: space_id
+      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+    - name: case_id
+      required: true
+      description: The identifier for the case. To retrieve case IDs, use es-kibana-case-list.
+    - name: sort_order
+      description: The sort order for the result. ES default is desc.
+    - name: page
+      description: Page number to retrieve. ES default is 1.
+    - name: size
+      description: Number of results to return per page. ES default is 20, maximum is 100.
+    outputs:
+    - contextPath: Elasticsearch.Kibana.CaseComment.id
+      description: The comment or alert ID.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseComment.type
+      description: The comment or alert type.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseComment.comment
+      description: The comment text.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseComment.created_by.username
+      description: The username of the user who created the comment.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseComment.created_at
+      description: The time the comment was created.
+      type: Date
+    - contextPath: Elasticsearch.Kibana.CaseComment.updated_at
+      description: The time the comment was last updated.
+      type: Date
+  - name: es-kibana-case-comment-get
+    description: Get a single comment or alert for a case.
+    arguments:
+    - name: space_id
+      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+    - name: case_id
+      required: true
+      description: The identifier for the case. To retrieve case IDs, use es-kibana-case-list.
+    - name: comment_id
+      required: true
+      description: The identifier of the comment or alert. To retrieve comment IDs, use es-kibana-case-comment-find.
+    outputs:
+    - contextPath: Elasticsearch.Kibana.CaseComment.id
+      description: The comment or alert ID.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseComment.type
+      description: The comment or alert type.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseComment.comment
+      description: The comment text.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseComment.created_by.username
+      description: The username of the user who created the comment.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseComment.created_at
+      description: The time the comment was created.
+      type: Date
+    - contextPath: Elasticsearch.Kibana.CaseComment.updated_at
+      description: The time the comment was last updated.
+      type: Date
+  - name: es-kibana-case-connectors-find
+    description: Find the connectors configured for cases.
+    arguments:
+    - name: space_id
+      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+    outputs:
+    - contextPath: Elasticsearch.Kibana.CaseConnector.id
+      description: The connector ID.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseConnector.name
+      description: The connector name.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseConnector.actionTypeId
+      description: The connector action type.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseConnector.referencedByCount
+      description: The amount of references.
+      type: Date
+  - name: es-kibana-case-creators-get
+    description: Retrieves the case creators and the number of cases each creator has.
+    arguments:
+    - name: owner
+      description: A filter to limit the response to a specific set of applications. Values are cases, observability, or securitySolution.
+    outputs:
+    - contextPath: Elasticsearch.Kibana.CaseCreators
+      description: A map of case creators.
+      type: Unknown
+  - name: es-kibana-case-by-alert-get
+    description: Retrieves the cases linked to an alert.
+    arguments:
+    - name: space_id
+      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+    - name: alert_id
+      required: true
+      description: The identifier of the alert. To retrieve alert IDs, use es-kibana-detection-alert-search.
+    - name: owner
+      description: A filter to limit the response to a specific set of applications. Values are cases, observability, or securitySolution.
+    outputs:
+    - contextPath: Elasticsearch.Kibana.Cases.title
+      description: The cases retrieved for the given alert.
+      type: Unknown
+  - name: es-kibana-case-settings-update
+    description: Updates the case settings in Kibana.
+    arguments:
+    - name: space_id
+      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+    - name: configuration_id
+      required: true
+      description: The identifier of the case configuration to update. To retrieve it, use the id field of the case configuration returned by the case settings APIs (for example, es-kibana-case-settings-create).
+    - name: body
+      description: The case settings object as a JSON object. If provided, the other arguments won't be considered. Only the provided fields are updated.
+    - name: version
+      description: The version of the connector. To retrieve the version value, use the get configuration API.
+    - name: closure_type
+      auto: PREDEFINED
+      predefined:
+      - close-by-pushing
+      - close-by-user
+      description: Whether a case is automatically closed when it is pushed to external systems (close-by-pushing) or not (close-by-user).
+    - name: connector_id
+      description: The identifier of the default connector. Use none if you do not want a default connector. To retrieve connector IDs, use es-kibana-case-connectors-find.
+    - name: connector_name
+      description: The name of the default connector. Use none if you do not want a default connector.
+    - name: connector_type
+      auto: PREDEFINED
+      predefined:
+      - .cases-webhook
+      - .jira
+      - .none
+      - .resilient
+      - .servicenow
+      - .servicenow-sir
+      - .swimlane
+      description: The type of the default connector.
+    - name: connector_fields
+      description: The connector fields as a JSON object. The fields are not propagated to individual cases, so it is recommended to leave it unset (defaults to null).
+    - name: custom_fields
+      description: The custom fields case configuration as a JSON array of objects with the key, label, type (text or toggle) and an optional defaultValue property.
+    outputs:
+    - contextPath: Elasticsearch.Kibana.CaseSettings.id
+      description: The identifier of the case configuration.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseSettings.closure_type
+      description: Whether a case is automatically closed when it is pushed to external systems.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseSettings.connector.id
+      description: The identifier of the default connector.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseSettings.connector.name
+      description: The name of the default connector.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseSettings.connector.type
+      description: The type of the default connector.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseSettings.created_at
+      description: The creation date of the case settings.
+      type: Date
+    - contextPath: Elasticsearch.Kibana.CaseSettings.created_by.username
+      description: The user who created the case settings.
+      type: String
+    - contextPath: Elasticsearch.Kibana.CaseSettings.customFields
+      description: The custom fields case configuration.
+      type: Unknown
   - name: es-kibana-alerting-health-get
     description: Retrieves the health of the Kibana alerting framework.
     arguments:
@@ -1436,6 +1783,16 @@ script:
     - contextPath: Elasticsearch.Kibana.SecurityAlertSetStatus.updated
       description: The number of alerts that were updated.
       type: Number
+  - name: es-kibana-alerts-index-create
+    description: Creates a Kibana alerts index.
+    arguments:
+    - name: space_id
+      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+  - name: es-kibana-alerts-index-delete
+    description: Deletes a Kibana alerts index.
+    arguments:
+    - name: space_id
+      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
   - name: es-kibana-endpoint-execute-command
     description: Run a shell command on an endpoint.
     execution: true
@@ -2474,6 +2831,21 @@ script:
     - contextPath: Elasticsearch.Kibana.ValueList.created_at
       description: The creation date of the value list.
       type: Date
+  - name: es-kibana-delete-value-list
+    description: Delete a value list using the list ID.
+    arguments:
+    - name: space_id
+      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+    - name: value_list_id
+      description: Value list identifier to delete, including all of its list items.
+    - name: delete_references
+      description: Determines whether exception items referencing this value list should be deleted.
+    - name: ignore_references
+      description: Determines whether to delete value list without performing any additional checks of where this list may be utilized.
+    outputs:
+    - contextPath: Elasticsearch.Kibana.ValueList
+      description: The deleted value list metadata.
+      type: Unknown
   - name: es-kibana-value-list-item-get
     description: Retrieves value list items.
     arguments:
