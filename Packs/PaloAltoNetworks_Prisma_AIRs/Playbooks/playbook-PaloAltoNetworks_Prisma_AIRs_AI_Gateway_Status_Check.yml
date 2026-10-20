@@ -64,7 +64,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "15"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -474,6 +474,7 @@ tasks:
           right:
             value:
               simple: "true"
+          ignorecase: true
       - - operator: isNotEmpty
           left:
             value:
@@ -550,6 +551,75 @@ tasks:
         "position": {
           "x": 230,
           "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: d1e2f3a4-0016-4e5f-9a0b-1c2d3e4f6016
+    type: condition
+    task:
+      id: d1e2f3a4-0016-4e5f-9a0b-1c2d3e4f6016
+      version: -1
+      name: Is the Prisma AIRS AI Gateway integration enabled?
+      description: Returns 'yes' if the Prisma AIRS - AI Gateway integration brand has an enabled instance; otherwise 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: Palo Alto Networks Prisma AIRS - AI Gateway
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: d1e2f3a4-0017-4e5f-9a0b-1c2d3e4f6017
+    type: regular
+    task:
+      id: d1e2f3a4-0017-4e5f-9a0b-1c2d3e4f6017
+      version: -1
+      name: Integration not enabled - exit
+      description: Prints a clear message and exits because the Prisma AIRS - AI Gateway integration has no enabled instance.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: The Prisma AIRS - AI Gateway integration is not enabled. Enable an instance of the integration and re-run this playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 195
         }
       }
     note: false

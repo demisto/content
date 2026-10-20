@@ -85,7 +85,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "29"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -566,7 +566,7 @@ tasks:
       title:
         simple: 'Critical risk - Runtime API keys expiring within ${inputs.CriticalWithinDays} days (or expired)'
       columns:
-        simple: name,expires_at,last8,id
+        simple: name,expires_at,id
       data:
         complex:
           root: PrismaAIRs.RuntimeApiKeyCritical
@@ -684,7 +684,7 @@ tasks:
       title:
         simple: 'High risk - Runtime API keys expiring within ${inputs.HighWithinDays} days'
       columns:
-        simple: name,expires_at,last8,id
+        simple: name,expires_at,id
       data:
         complex:
           root: PrismaAIRs.RuntimeApiKeyHigh
@@ -802,7 +802,7 @@ tasks:
       title:
         simple: 'Medium risk - Runtime API keys expiring within ${inputs.MediumWithinDays} days'
       columns:
-        simple: name,expires_at,last8,id
+        simple: name,expires_at,id
       data:
         complex:
           root: PrismaAIRs.RuntimeApiKeyMedium
@@ -883,7 +883,7 @@ tasks:
       title:
         simple: 'Low risk - Runtime API keys expiring on/after ${inputs.MediumWithinDays} days'
       columns:
-        simple: name,expires_at,last8,id
+        simple: name,expires_at,id
       data:
         complex:
           root: PrismaAIRs.RuntimeApiKeyLow
@@ -984,7 +984,6 @@ tasks:
                   simple: |-
                     [CRITICAL] ${.name}
                       Expires at: ${.expires_at}
-                      Last 8: ${.last8}
           - operator: join
             args:
               separator:
@@ -1041,7 +1040,6 @@ tasks:
                   simple: |-
                     [HIGH] ${.name}
                       Expires at: ${.expires_at}
-                      Last 8: ${.last8}
           - operator: join
             args:
               separator:
@@ -1246,6 +1244,75 @@ tasks:
         "position": {
           "x": 480,
           "y": 4410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: c3d4e5f6-0029-4e5f-9a0b-1c2d3e4f8029
+    type: condition
+    task:
+      id: c3d4e5f6-0029-4e5f-9a0b-1c2d3e4f8029
+      version: -1
+      name: Is the Prisma AIRS AI Runtime Security integration enabled?
+      description: Returns 'yes' if the Prisma AIRS - AI Runtime Security integration brand has an enabled instance; otherwise 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: Palo Alto Networks Prisma AIRS - AI Runtime Security
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: c3d4e5f6-0030-4e5f-9a0b-1c2d3e4f8030
+    type: regular
+    task:
+      id: c3d4e5f6-0030-4e5f-9a0b-1c2d3e4f8030
+      version: -1
+      name: Integration not enabled - exit
+      description: Prints a clear message and exits because the Prisma AIRS - AI Runtime Security integration has no enabled instance.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: The Prisma AIRS - AI Runtime Security integration is not enabled. Enable an instance of the integration and re-run this playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 195
         }
       }
     note: false

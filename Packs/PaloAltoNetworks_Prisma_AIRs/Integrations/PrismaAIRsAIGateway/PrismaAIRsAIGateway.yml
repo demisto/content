@@ -2,7 +2,6 @@ category: Cloud Security
 provider: Palo Alto Networks
 sectionorder:
 - Connect
-- Collect
 commonfields:
   id: Palo Alto Networks Prisma AIRS - AI Gateway
   version: -1
@@ -125,7 +124,7 @@ script:
       description: The workspace ID.
       type: String
     - contextPath: PrismaAIRs.AIGatewayGuardrail.created_at
-      description: The creation timestamp.
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-aigateway-guardrails-update
     description: Updates a guardrail on the AI Gateway control plane.
@@ -942,6 +941,7 @@ script:
       - hashicorp_vault
     - name: auth_config
       required: true
+      secret: true
       description: A JSON object describing the secret manager auth configuration.
     - name: secret_path
       required: true
@@ -1290,6 +1290,7 @@ script:
     - name: configurations
       description: A JSON object describing the MCP integration configurations.
     - name: secret_mappings
+      secret: true
       description: A JSON array of secret mappings.
     outputs:
     - contextPath: PrismaAIRs.AIGatewayMcpIntegration.id
@@ -1348,6 +1349,7 @@ script:
     - name: configurations
       description: A JSON object describing the MCP integration configurations.
     - name: secret_mappings
+      secret: true
       description: A JSON array of secret mappings.
   - name: prisma-airs-aigateway-mcp-integrations-delete
     execution: true
@@ -1781,8 +1783,10 @@ script:
     - name: configurations
       description: Provider-specific configuration object (JSON).
     - name: key
+      secret: true
       description: The upstream API key / credential (secret).
     - name: secret_mappings
+      secret: true
       description: Secret mapping entries (JSON array).
     - name: create_default_provider
       description: Whether to create a default provider binding for this integration.
@@ -1814,8 +1818,10 @@ script:
     - name: configurations
       description: Provider-specific configuration object (JSON).
     - name: key
+      secret: true
       description: The upstream API key / credential (secret).
     - name: secret_mappings
+      secret: true
       description: Secret mapping entries (JSON array).
     - name: pricing_adjustments
       description: Pricing adjustment settings (JSON).
@@ -1957,7 +1963,7 @@ script:
     - name: rate_limits
       description: Rate limit settings (JSON).
     - name: expires_at
-      description: Expiry timestamp (ISO 8601).
+      description: Expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
     outputs:
     - contextPath: PrismaAIRs.AIGatewayProvider.id
       description: The created provider ID.
@@ -1980,7 +1986,7 @@ script:
     - name: rate_limits
       description: Rate limit settings (JSON).
     - name: expires_at
-      description: Expiry timestamp (ISO 8601).
+      description: Expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
     - name: reset_usage
       description: Whether to reset the accumulated usage counters.
       auto: PREDEFINED
@@ -2023,6 +2029,7 @@ script:
       description: The credential integration UUID to bind the plugin to.
     - name: credentials
       required: true
+      secret: true
       description: 'A JSON object of provider-specific credential name/value pairs. Example: {"AIRS_API_KEY": "<secret>"}.'
     - name: organisation_id
       description: The numeric organisation ID. Defaults to the configured tenant TSG ID.
@@ -2155,7 +2162,7 @@ script:
       description: A comma-separated list of alert notification email addresses.
       isArray: true
     - name: expires_at
-      description: Expiry timestamp (ISO 8601).
+      description: Expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
     - name: rate_limits
       description: Rate limit settings (JSON array).
     - name: usage_limits
@@ -2201,7 +2208,7 @@ script:
       description: A comma-separated list of alert notification email addresses.
       isArray: true
     - name: expires_at
-      description: Expiry timestamp (ISO 8601).
+      description: Expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
     - name: rate_limits
       description: Rate limit settings (JSON array).
     - name: usage_limits
@@ -2237,7 +2244,7 @@ script:
       description: A comma-separated list of alert notification email addresses.
       isArray: true
     - name: expires_at
-      description: Expiry timestamp (ISO 8601).
+      description: Expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
     - name: rate_limits
       description: Rate limit settings (JSON array).
     - name: usage_limits
@@ -2270,7 +2277,7 @@ script:
       description: A comma-separated list of alert notification email addresses.
       isArray: true
     - name: expires_at
-      description: Expiry timestamp (ISO 8601).
+      description: Expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
     - name: rate_limits
       description: Rate limit settings (JSON array).
     - name: usage_limits
@@ -2318,8 +2325,8 @@ script:
       description: The new one-time secret key value. Shown only once - capture it immediately.
       type: String
     - contextPath: PrismaAIRs.AIGatewayApiKeyRotation.key_transition_expires_at
-      description: When the previous key stops being accepted.
-      type: String
+      description: When the previous key stops being accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
   - name: prisma-airs-aigateway-api-keys-user-rotate
     description: Rotates a user API key on the AI Gateway data plane. The new one-time secret key is returned ONLY in this response - capture it immediately.
     arguments:
@@ -2336,8 +2343,8 @@ script:
       description: The new one-time secret key value. Shown only once - capture it immediately.
       type: String
     - contextPath: PrismaAIRs.AIGatewayApiKeyRotation.key_transition_expires_at
-      description: When the previous key stops being accepted.
-      type: String
+      description: When the previous key stops being accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
   - name: prisma-airs-aigateway-organisations-info-get
     description: Gets one organisation's capabilities and settings on the AI Gateway admin plane.
     arguments:
@@ -2400,6 +2407,7 @@ script:
       description: A comma-separated list of SSO/SCIM domains.
       isArray: true
     - name: scim_token
+      secret: true
       description: The SCIM token (secret). Never echoed back in the output.
     outputs: []
   - name: prisma-airs-aigateway-model-pricing-get

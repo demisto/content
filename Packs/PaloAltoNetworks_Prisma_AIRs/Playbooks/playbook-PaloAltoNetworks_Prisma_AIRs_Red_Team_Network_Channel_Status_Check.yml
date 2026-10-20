@@ -71,7 +71,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "20"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -286,13 +286,6 @@ tasks:
             value:
               simple: "true"
           ignorecase: true
-          left:
-            value:
-              simple: inputs.NotifyOffline
-            iscontext: true
-          right:
-            value:
-              simple: "true"
       - - operator: isExists
           left:
             value:
@@ -523,13 +516,6 @@ tasks:
             value:
               simple: "true"
           ignorecase: true
-          left:
-            value:
-              simple: inputs.NotifyOutdated
-            iscontext: true
-          right:
-            value:
-              simple: "true"
       - - operator: isExists
           left:
             value:
@@ -870,6 +856,75 @@ tasks:
         "position": {
           "x": 480,
           "y": 2835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: e5f6a7b8-0020-4e5f-9a0b-1c2d3e4f9020
+    type: condition
+    task:
+      id: e5f6a7b8-0020-4e5f-9a0b-1c2d3e4f9020
+      version: -1
+      name: Is the Prisma AIRS AI Red Teaming integration enabled?
+      description: Returns 'yes' if the Prisma AIRS - AI Red Teaming integration brand has an enabled instance; otherwise 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: Palo Alto Networks Prisma AIRS - AI Red Teaming
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: e5f6a7b8-0021-4e5f-9a0b-1c2d3e4f9021
+    type: regular
+    task:
+      id: e5f6a7b8-0021-4e5f-9a0b-1c2d3e4f9021
+      version: -1
+      name: Integration not enabled - exit
+      description: Prints a clear message and exits because the Prisma AIRS - AI Red Teaming integration has no enabled instance.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: The Prisma AIRS - AI Red Teaming integration is not enabled. Enable an instance of the integration and re-run this playbook.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 195
         }
       }
     note: false
