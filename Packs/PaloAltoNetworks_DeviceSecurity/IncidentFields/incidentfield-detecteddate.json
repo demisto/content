@@ -1,0 +1,32 @@
+{
+    "id": "incident_detecteddate",
+    "version": -1,
+    "name": "Detected Date",
+    "ownerOnly": false,
+    "description": "Detected Date reported by Palo Alto Networks Device Security.",
+    "cliName": "detecteddate",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Device Security Alert",
+        "Device Security Vulnerability"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
