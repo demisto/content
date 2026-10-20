@@ -1,8 +1,14 @@
+import json
+import traceback
+from datetime import datetime, timezone
+from typing import Any
+from urllib.parse import quote, quote_plus
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from datetime import datetime, timezone
-from urllib.parse import quote, quote_plus
+from ContentClientApiModule import *  # noqa: F401
+from BaseContentApiModule import *  # noqa: F401
 
 """ KELA Brand Control integration for Cortex XSOAR.
 
@@ -14,8 +20,6 @@ Evidence legend used in comments:
 """
 
 # region Constants
-VENDOR = "KELA"
-PRODUCT = "BrandControl"
 CONTEXT_PREFIX = "KELA.BrandControl"
 DEFAULT_BASE_URL = "https://api.ke-la.com/brand-control/v1"
 
@@ -27,8 +31,9 @@ MAX_FETCH_LIMIT = 200
 # Cap for the stored list of IDs that share the watermark timestamp.
 # MAX_FETCH_LIMIT + SEEN_IDS_CAP must stay <= API_MAX_LIMIT so the page size can always be honored.
 SEEN_IDS_CAP = 500
-# [SPEC] rate limit: 1 request per second. 429 is retried by BaseClient and requests are spaced out.
-RATE_LIMIT_SECONDS = 1.0
+# [SPEC] rate limit: 1 request per second, enforced by ContentClient's built-in rate limiter.
+# 429 responses are retried by ContentClient's _http_request.
+RATE_LIMIT_PER_SECOND = 1.0
 RETRIES_ON_429 = 3
 
 # [SPEC] enums, lowercase with underscores. [OWNER] confirmed lowercase.
@@ -56,7 +61,12 @@ SORT_FIELDS = ["incidentDate", "severity", "status", "lastUpdated"]
 SORT_ORDERS = ["asc", "desc"]
 
 # [OWNER] severity is always returned as one of the four strings.
-SEVERITY_TO_XSOAR = {"low": 1, "medium": 2, "high": 3, "critical": 4}
+SEVERITY_TO_XSOAR = {
+    "low": IncidentSeverity.LOW,
+    "medium": IncidentSeverity.MEDIUM,
+    "high": IncidentSeverity.HIGH,
+    "critical": IncidentSeverity.CRITICAL,
+}
 # endregion
 
 
@@ -167,8 +177,8 @@ def get_pagination(args: dict[str, Any]) -> tuple[int, int]:
         limit, offset = page_size, (page - 1) * page_size
     else:
         limit, offset = (limit if limit is not None else DEFAULT_LIMIT), 0
-    if limit < 1 or limit > API_MAX_LIMIT:
-        raise DemistoException(f"The number of results per request must be between 1 and {API_MAX_LIMIT}.")
+    if limit < 1:
+        raise DemistoException("The number of results per request must be a positive integer.")
     return limit, offset
 
 
@@ -176,21 +186,23 @@ def get_pagination(args: dict[str, Any]) -> tuple[int, int]:
 
 
 # region Client
-class Client(BaseClient):
-    """All HTTP traffic goes through BaseClient._http_request."""
+class Client(ContentClient):
+    """All HTTP traffic goes through ContentClient._http_request (BaseClient-compatible).
+
+    The apiToken is injected into every request's query string by APIKeyAuthHandler, and the
+    1 request/second rate limit [SPEC] is enforced by ContentClient's built-in rate limiter.
+    """
 
     def __init__(self, base_url: str, api_token: str, verify: bool, proxy: bool):
-        super().__init__(base_url=base_url.rstrip("/"), verify=verify, proxy=proxy)
-        self._api_token = api_token
-        self._last_request_ts = 0.0
+        super().__init__(
+            base_url=base_url.rstrip("/"),
+            verify=verify,
+            proxy=proxy,
+            auth_handler=APIKeyAuthHandler(key=api_token, query_param="apiToken"),
+            rate_limiter=RateLimitPolicy(rate_per_second=RATE_LIMIT_PER_SECOND, burst=1),
+            client_name="KELABrandControlClient",
+        )
         add_sensitive_log_strs(api_token)
-
-    def _throttle(self) -> None:
-        """[SPEC] 1 request / second: never fire two requests closer than RATE_LIMIT_SECONDS."""
-        elapsed = time.monotonic() - self._last_request_ts
-        if elapsed < RATE_LIMIT_SECONDS:
-            time.sleep(RATE_LIMIT_SECONDS - elapsed)
-        self._last_request_ts = time.monotonic()
 
     @staticmethod
     def _error_handler(res) -> None:
@@ -214,18 +226,17 @@ class Client(BaseClient):
         limit: int = DEFAULT_LIMIT,
         offset: int = 0,
     ) -> dict[str, Any]:
-        """POST /incidents (operationId getincidents). apiToken and workspaceId go in the query string [SPEC]."""
+        """POST /incidents (operationId getincidents). workspaceId goes in the query string [SPEC]."""
         body: dict[str, Any] = {
             "filters": filters or {},
             "pagination": {"limit": limit, "offset": offset},
         }
         if sort:
             body["sort"] = sort
-        self._throttle()
         return self._http_request(
             method="POST",
             url_suffix="/incidents",
-            params={"apiToken": self._api_token, "workspaceId": workspace_id},
+            params={"workspaceId": workspace_id},
             json_data=body,
             retries=RETRIES_ON_429,
             status_list_to_retry=[429],
@@ -240,7 +251,7 @@ class Client(BaseClient):
 # region Commands
 def test_module(client: Client, workspace_ids: list[str], params: dict[str, Any]) -> str:
     """Validate credentials + every configured workspace, and the fetch settings when fetch is enabled."""
-    if params.get("isFetch"):
+    if argToBoolean(params.get("isFetch", False)):
         to_epoch_ms(params.get("first_fetch") or DEFAULT_FIRST_FETCH, "first_fetch")
         parse_max_fetch(params.get("max_fetch"))
         validate_choices(argToList(params.get("fetch_severities")), SEVERITIES, "fetch_severities")
@@ -443,6 +454,7 @@ def fetch_incidents(
     If any workspace fails the whole cycle raises: nothing is created and the last run is not saved, so the
     next cycle retries cleanly with no duplicates.
     """
+    demisto.debug(f"KELA BrandControl: fetch started for workspaces {workspace_ids}.")
     previous = last_run.get("workspaces") or {}
     next_workspaces: dict[str, Any] = {ws: st for ws, st in previous.items() if ws not in workspace_ids}
     all_incidents: list[dict[str, Any]] = []
@@ -451,6 +463,7 @@ def fetch_incidents(
         next_state, incidents = fetch_workspace(client, workspace_id, state, max_fetch, severities)
         next_workspaces[workspace_id] = next_state
         all_incidents.extend(incidents)
+    demisto.info(f"KELA BrandControl: fetch completed, {len(all_incidents)} incident(s) created.")
     return {"workspaces": next_workspaces}, all_incidents
 
 
@@ -471,8 +484,8 @@ def main() -> None:  # pragma: no cover
         client = Client(
             base_url=params.get("url") or DEFAULT_BASE_URL,
             api_token=api_token,
-            verify=not params.get("insecure", False),
-            proxy=params.get("proxy", False),
+            verify=not argToBoolean(params.get("insecure", False)),
+            proxy=argToBoolean(params.get("proxy", False)),
         )
         if command == "test-module":
             return_results(test_module(client, workspace_ids, params))

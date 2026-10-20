@@ -4,7 +4,7 @@ KELA Brand Control protects your brand across the open web, social media and app
 
 ## What does this pack do?
 
-- Fetches Brand Control incidents of one or more workspaces into Cortex XSOAR, without duplicates.
+- Fetches Brand Control incidents of one or more workspaces into Cortex, without duplicates.
 - Lists incidents on demand with filters, sorting and pagination (`kela-brandcontrol-incident-list`).
 
 See the integration README for configuration and command details.

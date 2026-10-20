@@ -2,10 +2,10 @@ import json
 from collections import Counter
 from typing import Any
 from unittest.mock import MagicMock
-from urllib.parse import parse_qs, urlparse
 
 import pytest
 from CommonServerPython import DemistoException
+from pytest_mock import MockerFixture
 
 import KELABrandControl
 from KELABrandControl import (
@@ -32,8 +32,18 @@ WS2 = "ws_two"
 
 @pytest.fixture(autouse=True)
 def no_rate_limit_sleep(monkeypatch):
-    """The 1 req/s throttle is irrelevant for unit tests."""
-    monkeypatch.setattr(KELABrandControl, "RATE_LIMIT_SECONDS", 0)
+    """The 1 req/s rate limiter is irrelevant for unit tests."""
+    monkeypatch.setattr(KELABrandControl, "RATE_LIMIT_PER_SECOND", 0)
+
+
+@pytest.fixture(autouse=True)
+def mock_support_multithreading(mocker: MockerFixture) -> None:
+    """Mock support_multithreading to prevent demistomock attribute errors.
+
+    Called during ContentClient initialization; without this mock, tests fail with:
+    AttributeError: module 'demistomock' has no attribute '_Demisto__do'
+    """
+    mocker.patch("ContentClientApiModule.support_multithreading")
 
 
 # region Fakes ---------------------------------------------------------------------------------------------------
@@ -110,28 +120,49 @@ def make_client() -> Client:
     return Client(BASE_URL, TOKEN, verify=True, proxy=False)
 
 
-def test_client_incidents_list_maps_payload(requests_mock):
+def test_client_wires_the_api_token_through_a_query_param_auth_handler():
     """
-    Given: a client and a mocked POST /incidents.
+    Given: a client constructed with an API token.
+    When: it is built.
+    Then: the token is wired through an APIKeyAuthHandler that injects it as the 'apiToken' query
+          parameter on every request (rather than being passed manually with each call).
+    """
+    client = make_client()
+    assert isinstance(client._auth_handler, KELABrandControl.APIKeyAuthHandler)
+    assert client._auth_handler.key == TOKEN
+    assert client._auth_handler.query_param == "apiToken"
+
+
+def test_client_incidents_list_maps_payload(mocker: MockerFixture):
+    """
+    Given: a client with a mocked _http_request.
     When: incidents_list is called with filters, sort and pagination.
-    Then: apiToken and workspaceId travel in the query string and filters/sort/pagination in the JSON body.
+    Then: workspaceId travels in the query params and filters/sort/pagination in the JSON body
+          (apiToken is injected separately by the auth handler, not passed here).
     """
-    requests_mock.post(f"{BASE_URL}/incidents", json={"incidents": [], "count": 0})
-    make_client().incidents_list(
+    client = make_client()
+    http_request = mocker.patch.object(client, "_http_request", return_value={"incidents": [], "count": 0})
+    client.incidents_list(
         WS1,
         filters={"isDeleted": False},
         sort={"sortBy": "incidentDate", "order": "asc"},
         limit=10,
         offset=20,
     )
-    query = parse_qs(urlparse(requests_mock.last_request.url).query)
-    assert query["apiToken"] == [TOKEN]
-    assert query["workspaceId"] == [WS1]
-    assert requests_mock.last_request.json() == {
-        "filters": {"isDeleted": False},
-        "pagination": {"limit": 10, "offset": 20},
-        "sort": {"sortBy": "incidentDate", "order": "asc"},
-    }
+    http_request.assert_called_once_with(
+        method="POST",
+        url_suffix="/incidents",
+        params={"workspaceId": WS1},
+        json_data={
+            "filters": {"isDeleted": False},
+            "pagination": {"limit": 10, "offset": 20},
+            "sort": {"sortBy": "incidentDate", "order": "asc"},
+        },
+        retries=KELABrandControl.RETRIES_ON_429,
+        status_list_to_retry=[429],
+        backoff_factor=1,
+        error_handler=client._error_handler,
+    )
 
 
 @pytest.mark.parametrize(
@@ -143,15 +174,17 @@ def test_client_incidents_list_maps_payload(requests_mock):
         (500, {"message": "Internal Server Error"}, "[500] - Internal Server Error"),
     ],
 )
-def test_client_error_handling_never_leaks_token(requests_mock, status, body, expected):
+def test_client_error_handling_never_leaks_token(status, body, expected):
     """
     Given: the API answers with an error status.
-    When: the client call fails.
-    Then: a readable DemistoException is raised and it does not contain the API token.
+    When: Client._error_handler processes the response.
+    Then: a readable DemistoException is raised and it never contains the API token (the handler only
+          ever sees the response body/status, never the client's token).
     """
-    requests_mock.post(f"{BASE_URL}/incidents", status_code=status, json=body)
+    response = MagicMock(status_code=status, text=json.dumps(body))
+    response.json.return_value = body
     with pytest.raises(DemistoException) as exc:
-        make_client().incidents_list(WS1)
+        Client._error_handler(response)
     assert expected in str(exc.value)
     assert TOKEN not in str(exc.value)
 
@@ -216,15 +249,25 @@ def test_get_pagination(args, expected):
     assert get_pagination(args) == expected
 
 
-@pytest.mark.parametrize("args", [{"limit": "0"}, {"limit": "1001"}, {"page": "0"}, {"page_size": "-1"}])
+@pytest.mark.parametrize("args", [{"limit": "0"}, {"page": "0"}, {"page_size": "-1"}])
 def test_get_pagination_invalid(args):
     """
-    Given: out of range pagination arguments.
+    Given: non-positive pagination arguments.
     When: get_pagination runs.
-    Then: a DemistoException is raised (API disregards limits above 1000).
+    Then: a DemistoException is raised.
     """
     with pytest.raises(DemistoException):
         get_pagination(args)
+
+
+def test_get_pagination_does_not_cap_a_large_limit():
+    """
+    Given: a limit above the API's documented maximum (1000).
+    When: get_pagination runs.
+    Then: no local error is raised; the API itself disregards values above 1000 [SPEC], so enforcing a
+          client-side cap here would be artificial.
+    """
+    assert get_pagination({"limit": "1001"}) == (1001, 0)
 
 
 # endregion

@@ -1,7 +1,11 @@
-Detects brand impersonation (phishing websites, look-alike domains, fake social media profiles and more) with KELA Brand Control and fetches the incidents into Cortex XSOAR.
+## KELA Brand Control
+
+Brand Control detects brand impersonation across the open web, social media and app ecosystems: phishing websites, look-alike domains, fake social media profiles, fake shops and more.
+
+Detects brand impersonation (phishing websites, look-alike domains, fake social media profiles and more) with KELA Brand Control and fetches the incidents into Cortex.
 This integration was integrated and tested with version 1.0 of the KELA Brand Control API.
 
-## Configure KELA BrandControl in Cortex XSOAR
+## Configure KELA BrandControl in Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for KELA BrandControl.
@@ -11,15 +15,15 @@ This integration was integrated and tested with version 1.0 of the KELA Brand Co
 | --- | --- | --- |
 | Server URL | Base URL of the KELA Brand Control API. | True |
 | API Token | API token generated in the KELA platform (system menu). It is sent as the apiToken query parameter and is never logged. | True |
+| Use system proxy settings | Route requests to the KELA Brand Control API through the system proxy configured on the Cortex server or engine. | False |
+| Trust any certificate (not secure) | Skip TLS certificate validation when connecting to the KELA Brand Control API. | False |
 | Workspace ID(s) | Workspace ID to connect to. Several workspaces can be given separated by commas; each one is fetched with its own state. Only workspaces owned by, or shared with, your group are accessible. | True |
 | Fetch incidents |  | False |
-| Incident type |  | False |
-| Incidents Fetch Interval |  | False |
+| Incident type | The Cortex incident type to assign to incidents created by this integration. | False |
+| Incidents Fetch Interval | How often, in minutes, Cortex runs a fetch cycle for this instance. | False |
 | First fetch time | How far back to fetch the first time (e.g. "3 days", "12 hours", "2026-10-01T00:00:00Z"). Applied to the incident date. | False |
 | Maximum number of incidents per fetch (per workspace) | Between 1 and 200. | False |
 | Fetch only these severities | Optional. Leave empty to fetch every severity. Filtered-out incidents are skipped but the fetch position still advances past them. | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URL, token and workspace access.
 
@@ -53,9 +57,9 @@ Retrieves the Brand Control incidents of a workspace, with filtering, sorting an
 | --- | --- | --- |
 | workspace_id | Workspace ID to query. Optional when exactly one workspace is configured on the instance. | Optional |
 | search_term | Free text search term. | Optional |
-| types | Incident types to return. Comma separated. Possible values are: phishing_website, look_alike_domain, phishing_email, fake_social_media_profile, fake_shop, malicious_application, brand_infringement. | Optional |
-| statuses | Incident statuses to return. Comma separated. Possible values are: new, in_review, resolved, requested_takedown, false_positive, irrelevant, whitelisted. | Optional |
-| severities | Severities to return. Comma separated. Possible values are: low, medium, high, critical. | Optional |
+| types | A comma-separated list of incident types to return. Possible values are: phishing_website, look_alike_domain, phishing_email, fake_social_media_profile, fake_shop, malicious_application, brand_infringement. | Optional |
+| statuses | A comma-separated list of incident statuses to return. Possible values are: new, in_review, resolved, requested_takedown, false_positive, irrelevant, whitelisted. | Optional |
+| severities | A comma-separated list of severities to return. Possible values are: low, medium, high, critical. | Optional |
 | is_deleted | When true, returns only deleted incidents. When false, returns only incidents that are not deleted. Possible values are: true, false. Default is false. | Optional |
 | is_archived | When true, returns only archived incidents. When false, returns only incidents that are not archived. Possible values are: true, false. Default is false. | Optional |
 | new_updates_only | When true, returns only incidents with updates available since they were last visited in the UI. Possible values are: true, false. Default is false. | Optional |
@@ -73,8 +77,8 @@ Retrieves the Brand Control incidents of a workspace, with filtering, sorting an
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | KELA.BrandControl.Incident.incidentId | String | Unique identifier of the incident. |
-| KELA.BrandControl.Incident.incidentDate | Number | Unix timestamp (milliseconds) when the incident was first detected. |
-| KELA.BrandControl.Incident.incidentUpdateDate | Number | Unix timestamp (milliseconds) of the last update to the incident. |
+| KELA.BrandControl.Incident.incidentDate | Number | The timestamp in Unix milliseconds when the incident was first detected (e.g., 1700000000000). |
+| KELA.BrandControl.Incident.incidentUpdateDate | Number | The timestamp in Unix milliseconds of the last update to the incident (e.g., 1700000000000). |
 | KELA.BrandControl.Incident.type | String | Type of detection, as classified by KELA. |
 | KELA.BrandControl.Incident.severity | String | Aggregated priority for treatment (low, medium, high, critical). |
 | KELA.BrandControl.Incident.status | String | Current status of the incident. |
@@ -82,20 +86,20 @@ Retrieves the Brand Control incidents of a workspace, with filtering, sorting an
 | KELA.BrandControl.Incident.description | String | Detailed explanation of the incident. |
 | KELA.BrandControl.Incident.isTakedownRequested | Boolean | Whether a takedown has been requested for the incident. |
 | KELA.BrandControl.Incident.takedowns.takedownId | String | Takedown request ID. |
-| KELA.BrandControl.Incident.takedowns.takedownRequestDate | Number | Unix timestamp (milliseconds) of the takedown request. |
+| KELA.BrandControl.Incident.takedowns.takedownRequestDate | Number | The timestamp in Unix milliseconds of the takedown request (e.g., 1700000000000). |
 | KELA.BrandControl.Incident.takedowns.requestedBy | String | KELA username that submitted the takedown request. |
 | KELA.BrandControl.Incident.takedowns.status | String | Current status of the takedown request. |
-| KELA.BrandControl.Incident.takedowns.statusUpdateDate | Number | Unix timestamp (milliseconds) of the last takedown status update. |
+| KELA.BrandControl.Incident.takedowns.statusUpdateDate | Number | The timestamp in Unix milliseconds of the last takedown status update (e.g., 1700000000000). |
 | KELA.BrandControl.Incident.detectedEntity | Unknown | Entity at the core of the incident. The shape varies by incident type. |
 | KELA.BrandControl.Incident.detectedEntity.urls | Unknown | URLs linked to the detected entity. |
 | KELA.BrandControl.Incident.analysis | Unknown | Assessment of the detected entity. The shape varies by incident type. |
 | KELA.BrandControl.Incident.analysis.impersonatedAsset | String | The legitimate asset being impersonated. |
 | KELA.BrandControl.Incident.analysis.similarityScore | Number | Similarity score between the detected entity and the impersonated asset (0-1). |
 | KELA.BrandControl.Incident.analysis.domainStatus | String | Status of the domain (e.g. active, inactive). |
-| KELA.BrandControl.Incident.analysis.firstSeen | Number | Unix timestamp (milliseconds) when the entity was first detected. |
-| KELA.BrandControl.Incident.analysis.lastSeen | Number | Unix timestamp (milliseconds) when the entity was last detected. |
+| KELA.BrandControl.Incident.analysis.firstSeen | Number | The timestamp in Unix milliseconds when the entity was first detected (e.g., 1700000000000). |
+| KELA.BrandControl.Incident.analysis.lastSeen | Number | The timestamp in Unix milliseconds when the entity was last detected (e.g., 1700000000000). |
 | KELA.BrandControl.Incident.screenshots.url | String | Temporary signed download link of the screenshot. |
-| KELA.BrandControl.Incident.screenshots.screenshotDate | Number | Unix timestamp (milliseconds) of the screenshot. |
+| KELA.BrandControl.Incident.screenshots.screenshotDate | Number | The timestamp in Unix milliseconds of the screenshot (e.g., 1700000000000). |
 | KELA.BrandControl.Incident.screenshots.fileName | String | Screenshot file name. |
 | KELA.BrandControl.Incident.reasons | Unknown | Assets that triggered the detection. |
 | KELA.BrandControl.Incident.indicators.hasScreenshots | Boolean | Whether the incident has screenshots. |
@@ -104,11 +108,45 @@ Retrieves the Brand Control incidents of a workspace, with filtering, sorting an
 | KELA.BrandControl.Incident.indicators.hasRelatedEntities | Boolean | Whether the incident has related entities. |
 | KELA.BrandControl.Incident.isDeleted | Boolean | Whether the incident is deleted. |
 | KELA.BrandControl.Incident.isArchived | Boolean | Whether the incident is archived. |
-| KELA.BrandControl.Incident.lastVisited | Number | Unix timestamp (milliseconds) of the last time the incident was visited in the UI. |
+| KELA.BrandControl.Incident.lastVisited | Number | The timestamp in Unix milliseconds of the last time the incident was visited in the UI (e.g., 1700000000000). |
 
 #### Command example
 
 ```!kela-brandcontrol-incident-list workspace_id=<WORKSPACE_ID> types=look_alike_domain,phishing_website severities=high,critical start_date="7 days" sort_by=incidentDate sort_order=desc limit=10```
+
+#### Context Example
+
+```json
+{
+    "KELA": {
+        "BrandControl": {
+            "Incident": {
+                "incidentId": "<incident-id>",
+                "incidentDate": 1759500067000,
+                "incidentUpdateDate": 1759500067000,
+                "type": "look_alike_domain",
+                "severity": "high",
+                "status": "new",
+                "title": "<title>",
+                "description": "<description>",
+                "isTakedownRequested": false,
+                "detectedEntity": {
+                    "urls": [
+                        "http://examp1e.com"
+                    ]
+                },
+                "analysis": {
+                    "impersonatedAsset": "example.com",
+                    "similarityScore": 0.92,
+                    "domainStatus": "active"
+                },
+                "isDeleted": false,
+                "isArchived": false
+            }
+        }
+    }
+}
+```
 
 #### Human Readable Output
 

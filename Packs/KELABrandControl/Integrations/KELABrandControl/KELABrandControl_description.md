@@ -1,7 +1,3 @@
-## KELA Brand Control
-
-Brand Control detects brand impersonation across the open web, social media and app ecosystems: phishing websites, look-alike domains, fake social media profiles, fake shops and more.
-
 ### How to get your API token
 
 1. Log in to the KELA platform.
