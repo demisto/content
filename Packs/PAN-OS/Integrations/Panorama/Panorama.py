@@ -10,6 +10,7 @@ import enum
 import html
 
 import panos.errors
+import pan.xapi
 
 from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath  # type: ignore
 from panos.panorama import Panorama, DeviceGroup, Template, TemplateStack, PanoramaCommitAll
@@ -9910,6 +9911,28 @@ class Topology:
 
         return return_containers
 
+    def get_hygiene_object_containers(
+        self, device_filter_string: Optional[str] = None
+    ) -> List[Tuple[PanDevice, Union[Panorama, Firewall, DeviceGroup, Template, TemplateStack, Vsys]]]:
+        """
+        Type-aware variant of `get_all_object_containers`, used by the hygiene checks.
+        Only queries the container types that can exist on each device type, saving 4 API calls per device:
+        Panorama holds device-groups, templates and template-stacks; a Firewall holds virtual systems.
+        :param device_filter_string: The filter string to filter the devices on
+        """
+        containers: List[Tuple[PanDevice, Union[Panorama, Firewall, DeviceGroup, Template, TemplateStack, Vsys]]] = []
+        for device in self.active_devices(device_filter_string):
+            if isinstance(device, Panorama):
+                containers.extend((device, device_group) for device_group in DeviceGroup.refreshall(device))
+                containers.extend((device, template) for template in Template.refreshall(device))
+                containers.extend((device, template_stack) for template_stack in TemplateStack.refreshall(device))
+                # The "shared" location on Panorama.
+                containers.append((device, device))
+            else:
+                containers.extend((device, virtual_system) for virtual_system in Vsys.refreshall(device))
+
+        return containers
+
 
 """
 --- Dataclass Definitions Start Below ---
@@ -10930,6 +10953,92 @@ def panorama_disable_or_delete_rule_command(
     return_results(result)
 
 
+HYGIENE_READ_MODE_PER_OBJECT = "per-object"
+HYGIENE_READ_MODE_PER_CONTAINER = "per-container"
+HYGIENE_READ_MODES = (HYGIENE_READ_MODE_PER_OBJECT, HYGIENE_READ_MODE_PER_CONTAINER)
+
+
+class ContainerConfigCache:
+    """
+    Reads the configuration of each hygiene container (device group, template, template stack, vsys, Panorama shared) with a
+    single API call, and builds pan-os-python objects from that XML instead of calling `<Class>.refreshall(container)` once per
+    object type. Used by `pan-os-hygiene-check-all` when `read_mode=per-container`.
+
+    Where each object lives inside the container is taken from the object's own `xpath_nosuffix()`, so template and template
+    stack paths (which nest a full firewall config) are resolved by pan-os-python, not hardcoded here.
+    """
+
+    def __init__(self) -> None:
+        # Keyed by the container object id, since pan-os-python objects are not hashable by value.
+        self._configs: Dict[int, Tuple[str, Optional[Any]]] = {}
+        self.api_calls = 0
+
+    @staticmethod
+    def _container_xpath(container: Union[Panorama, Firewall, DeviceGroup, Template, TemplateStack, Vsys]) -> str:
+        if isinstance(container, Panorama):
+            return container.xpath_vsys()  # "/config/shared"
+        return container.xpath()
+
+    def _get_container_xml(self, container) -> Tuple[str, Optional[Any]]:
+        """Return (container xpath, container XML element), fetching it once."""
+        key = id(container)
+        if key not in self._configs:
+            container_xpath = self._container_xpath(container)
+            self.api_calls += 1
+            container_xml = None
+            try:
+                response = container.nearest_pandevice().xapi.get(container_xpath)
+                result = response.find("result")
+                if result is not None and len(result):
+                    container_xml = result[0]
+            except (panos.errors.PanNoSuchNode, pan.xapi.PanXapiError) as e:
+                if not str(e).startswith("No such node"):
+                    raise
+            self._configs[key] = (container_xpath, container_xml)
+        return self._configs[key]
+
+    def get_objects(self, object_class: type, parent) -> list:
+        """
+        Build the objects of `object_class` that are configured under `parent` from the cached container XML.
+        Equivalent to `object_class.refreshall(parent)` without the API call.
+
+        :param object_class: pan-os-python class to build, e.g. `Zone` or `SecurityRule`.
+        :param parent: The container, or an object inside it (e.g. a rulebase attached to the container).
+        """
+        container = parent
+        while not isinstance(container, (Panorama, Firewall, DeviceGroup, Template, TemplateStack, Vsys)):
+            container = container.parent
+        container_xpath, container_xml = self._get_container_xml(container)
+        if container_xml is None:
+            return []
+
+        class_instance = object_class()
+        class_instance.parent = parent
+        object_xpath = class_instance.xpath_nosuffix()
+        if not object_xpath.startswith(container_xpath):
+            demisto.debug(f"[hygiene-check-all] {object_class.__name__} path {object_xpath} is outside {container_xpath}")
+            return []
+        relative_path = object_xpath[len(container_xpath) :].strip("/")
+        object_root = container_xml.find(relative_path) if relative_path else container_xml
+        if object_root is None:
+            return []
+
+        instances = class_instance.refreshall_from_xml(object_root)
+        parent.removeall(cls=object_class)
+        parent.extend(instances)
+        return instances
+
+
+def refresh_objects(object_class: type, parent, config_cache: Optional[ContainerConfigCache] = None) -> list:
+    """
+    Return the `object_class` objects under `parent`, from the per-container cache when given, otherwise with
+    `object_class.refreshall(parent)` (one API call, the existing behavior).
+    """
+    if config_cache is None:
+        return object_class.refreshall(parent)
+    return config_cache.get_objects(object_class, parent)
+
+
 class HygieneRemediation:
     """Functions that remediate problems generated by HygieneLookups"""
 
@@ -11029,6 +11138,35 @@ class HygieneRemediation:
         :param container: The object to search for the rules in, as passed to pan-os-python
         """
         return HygieneRemediation.get_all_rules_in_container(container, SecurityRule)
+
+    @staticmethod
+    def get_security_rules_in_valid_rulebases(
+        container: Union[Panorama, Firewall, DeviceGroup, Template, TemplateStack, Vsys],
+        config_cache: Optional[ContainerConfigCache] = None,
+    ) -> List[SecurityRule]:
+        """
+        Rulebase-aware variant of `get_all_security_rules_in_container`, used by `pan-os-hygiene-check-all`.
+        Only reads the rulebases that can exist in the given container type, per the PAN-OS schema:
+            - Device group / Panorama shared: pre-rulebase and post-rulebase.
+            - Firewall vsys / Firewall: rulebase.
+            - Template / template-stack: none (templates hold network and device settings, not policy).
+        :param container: The object to search for the rules in, as passed to pan-os-python
+        :param config_cache: If given, rules are built from the cached container config instead of one API call per rulebase.
+        """
+        rulebases: List[Union[Rulebase, PreRulebase, PostRulebase]]
+        if isinstance(container, (Template, TemplateStack)):
+            return []
+        if isinstance(container, (DeviceGroup, Panorama)):
+            rulebases = [PreRulebase(), PostRulebase()]
+        else:
+            rulebases = [Rulebase()]
+
+        security_rules: List[SecurityRule] = []
+        for rulebase in rulebases:
+            container.add(rulebase)
+            security_rules += refresh_objects(SecurityRule, rulebase, config_cache)
+
+        return security_rules
 
     @staticmethod
     def fix_secuity_rule_log_settings(
@@ -11262,18 +11400,24 @@ class HygieneLookups:
     def check_log_forwarding_profiles(
         topology: Topology,
         device_filter_str: Optional[str] = None,
+        containers: Optional[list] = None,
+        config_cache: Optional[ContainerConfigCache] = None,
     ):
         """
         Evaluates the log forwarding profiles configured througout the environment to validate at least one is present with the
         correct settings required for log visibility.
         :param topology: `Topology` instance
         :param device_filter_str: Filter checks to a specific device or devices
+        :param containers: Pre-fetched (device, container) list. If not given, containers are fetched from the topology.
+        :param config_cache: If given, objects are built from the cached container config instead of per-object API calls.
         """
         issues = []
         lf_profile_list: List[LogForwardingProfile] = []
         check_register = HygieneCheckRegister.get_hygiene_check_register(["BP-V-1", "BP-V-2", "BP-V-3"])
-        for device, container in topology.get_all_object_containers(device_filter_str):
-            log_forwarding_profiles: List[LogForwardingProfile] = LogForwardingProfile.refreshall(container)
+        if containers is None:
+            containers = topology.get_all_object_containers(device_filter_str)
+        for device, container in containers:
+            log_forwarding_profiles: List[LogForwardingProfile] = refresh_objects(LogForwardingProfile, container, config_cache)
             lf_profile_list = lf_profile_list + log_forwarding_profiles
             for log_forwarding_profile in log_forwarding_profiles:
                 # Enhanced app logging - BP-V-2
@@ -11291,7 +11435,11 @@ class HygieneLookups:
                     check.result = UNICODE_FAIL
                     check.issue_count += 1
 
-                match_list_list = LogForwardingProfileMatchList.refreshall(log_forwarding_profile)
+                if config_cache is None:
+                    match_list_list = LogForwardingProfileMatchList.refreshall(log_forwarding_profile)
+                else:
+                    # Match lists are child objects, already parsed from the cached container XML.
+                    match_list_list = log_forwarding_profile.findall(LogForwardingProfileMatchList)
                 if len(match_list_list) == 0:
                     issues.append(
                         ConfigurationHygieneIssue(
@@ -11497,17 +11645,26 @@ class HygieneLookups:
         return result
 
     @staticmethod
-    def check_security_zones(topology: Topology, device_filter_str: Optional[str] = None) -> ConfigurationHygieneCheckResult:
+    def check_security_zones(
+        topology: Topology,
+        device_filter_str: Optional[str] = None,
+        containers: Optional[list] = None,
+        config_cache: Optional[ContainerConfigCache] = None,
+    ) -> ConfigurationHygieneCheckResult:
         """
         Check all security zones are configured with Log Forwarding profiles.
         :param device_filter_str: Filter checks to a specific device or devices
+        :param containers: Pre-fetched (device, container) list. If not given, containers are fetched from the topology.
+        :param config_cache: If given, zones are built from the cached container config instead of one API call per container.
         """
         issues = []
         check_register = HygieneCheckRegister.get_hygiene_check_register(["BP-V-7"])
+        if containers is None:
+            containers = topology.get_all_object_containers(device_filter_str)
         # pan-os-python will include Panorama template-pushed zones when checking a Firewall device without indication
         # where they are actually configured, so we have to check after.
-        for device, container in topology.get_all_object_containers(device_filter_str):
-            security_zones: List[Zone] = Zone.refreshall(container)
+        for device, container in containers:
+            security_zones: List[Zone] = refresh_objects(Zone, container, config_cache)
 
             if isinstance(device, Firewall):
                 # If this is a Firewall device, get a list of all Template-pushed Zones (if any).
@@ -11541,10 +11698,19 @@ class HygieneLookups:
         return ConfigurationHygieneCheckResult(summary_data=[item for item in check_register.values()], result_data=issues)
 
     @staticmethod
-    def check_security_rules(topology: Topology, device_filter_str: Optional[str] = None) -> ConfigurationHygieneCheckResult:
+    def check_security_rules(
+        topology: Topology,
+        device_filter_str: Optional[str] = None,
+        containers: Optional[list] = None,
+        rulebase_aware: bool = False,
+        config_cache: Optional[ContainerConfigCache] = None,
+    ) -> ConfigurationHygieneCheckResult:
         """
         Check all security rules, in all rulebases, are configured with Log Forwarding and threat profiles.
         :param device_filter_str: Filter checks to a specific device or devices
+        :param containers: Pre-fetched (device, container) list. If not given, containers are fetched from the topology.
+        :param rulebase_aware: If True, only read the rulebases that can exist in each container type.
+        :param config_cache: If given (requires rulebase_aware), rules are built from the cached container config.
         """
         issues = []
 
@@ -11555,9 +11721,14 @@ class HygieneLookups:
                 "BP-V-10",
             ]
         )
-        for device, container in topology.get_all_object_containers(device_filter_str):
+        if containers is None:
+            containers = topology.get_all_object_containers(device_filter_str)
+        for device, container in containers:
             # Because we check all the rulebases, we need to refresh the rules from all rulebases.
-            security_rules = HygieneRemediation.get_all_security_rules_in_container(container)
+            if rulebase_aware:
+                security_rules = HygieneRemediation.get_security_rules_in_valid_rulebases(container, config_cache)
+            else:
+                security_rules = HygieneRemediation.get_all_security_rules_in_container(container)
             for security_rule in security_rules:
                 # Check for "log at session end" enabled
                 if not security_rule.log_end:
@@ -11625,6 +11796,8 @@ class HygieneLookups:
         minimum_block_severities: Optional[List[str]] = None,
         minimum_alert_severities: Optional[List[str]] = None,
         return_nonconforming_profiles: Optional[bool] = False,
+        containers: Optional[list] = None,
+        config_cache: Optional[ContainerConfigCache] = None,
     ) -> ConfigurationHygieneCheckResult:
         """
         Checks the environment to ensure at least one security profile is configured according to visibility best practices.
@@ -11635,6 +11808,8 @@ class HygieneLookups:
         :param minimum_alert_severities: A string list of severities that MUST be in alert mode
         :param minimum_block_severities: A string list of severities that MUST be in block mode
         :param return_nonconforming_profiles: Whether to return details of non-conforming profiles
+        :param containers: Pre-fetched (device, container) list. If not given, containers are fetched from the topology.
+        :param config_cache: If given, profiles are built from the cached container config instead of per-container API calls.
         """
         # Configure profile-specific settings
         if profile_type == "vulnerability":
@@ -11666,9 +11841,11 @@ class HygieneLookups:
         issues = []
         check_register = HygieneCheckRegister.get_hygiene_check_register([issue_code])
 
+        if containers is None:
+            containers = topology.get_all_object_containers(device_filter_str)
         # Check all profiles in the topology
-        for device, container in topology.get_all_object_containers(device_filter_str):
-            profiles = profile_class.refreshall(container)
+        for device, container in containers:
+            profiles = refresh_objects(profile_class, container, config_cache)
 
             # Get conforming profiles based on profile type
             if profile_type == "url":
@@ -12935,6 +13112,129 @@ def check_security_rules(topology: Topology, device_filter_string: Optional[str]
     :param device_filter_string: String to filter to only check given device
     """
     return HygieneLookups.check_security_rules(topology, device_filter_str=device_filter_string)
+
+
+HYGIENE_CHECK_ERROR_ISSUE_CODE = "CHECK-ERROR"
+
+
+def _run_single_hygiene_check(
+    check_name: str, check_func: Callable[[], ConfigurationHygieneCheckResult]
+) -> Tuple[Optional[ConfigurationHygieneCheckResult], Optional[ConfigurationHygieneIssue]]:
+    """
+    Runs one hygiene check, timing it and isolating failures so one failing check doesn't drop the results of the others.
+    :param check_name: Human readable name of the check, used in logs and in the error issue.
+    :param check_func: Zero-argument callable that runs the check.
+    :return: (result, None) on success, (None, error issue) on failure.
+    """
+    start_time = time.monotonic()
+    try:
+        result = check_func()
+    except Exception as e:  # noqa: BLE001  # isolate per-check failures, the error is reported in the results
+        demisto.error(f"[hygiene-check-all] check '{check_name}' failed after {time.monotonic() - start_time:.1f}s: {e}")
+        return None, ConfigurationHygieneIssue(
+            hostid="PLATFORM",
+            container_name="",
+            description=f"The '{check_name}' check failed to run: {e}",
+            name=check_name,
+            issue_code=HYGIENE_CHECK_ERROR_ISSUE_CODE,
+        )
+    demisto.debug(f"[hygiene-check-all] check '{check_name}' took {time.monotonic() - start_time:.1f}s")
+    return result, None
+
+
+def check_all_hygiene(
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+    minimum_block_severities: str = "critical,high",
+    minimum_alert_severities: str = "medium,low",
+    return_nonconforming_profiles: str = "yes",
+    read_mode: str = HYGIENE_READ_MODE_PER_OBJECT,
+) -> ConfigurationHygieneCheckResult:
+    """
+    Runs all the configuration hygiene checks (log forwarding, security zones, spyware, URL filtering, vulnerability profiles
+    and security rules) in a single execution. The topology and the list of configuration containers are built once and
+    shared by all the checks, and only the container types and rulebases that can exist on each device are queried.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only check given device
+    :param minimum_block_severities: csv list of severities that must be in drop/reset/block-ip mode.
+    :param minimum_alert_severities: csv list of severities that must be in alert/default or higher mode.
+    :param return_nonconforming_profiles: Whether to return details of non-conforming profiles
+    :param read_mode: "per-object" reads each object type from each container separately. "per-container" reads each
+        container's configuration once and builds all the objects from it.
+    """
+    if read_mode not in HYGIENE_READ_MODES:
+        raise ValueError(f"Invalid read_mode '{read_mode}'. Use one of: {', '.join(HYGIENE_READ_MODES)}.")
+    config_cache = ContainerConfigCache() if read_mode == HYGIENE_READ_MODE_PER_CONTAINER else None
+
+    start_time = time.monotonic()
+    containers = topology.get_hygiene_object_containers(device_filter_string)
+    demisto.debug(
+        f"[hygiene-check-all] read_mode={read_mode}, fetched {len(containers)} containers in "
+        f"{time.monotonic() - start_time:.1f}s: {[resolve_container_name(container) for _, container in containers]}"
+    )
+
+    block_severities = argToList(minimum_block_severities)
+    alert_severities = argToList(minimum_alert_severities)
+    return_nonconforming = argToBoolean(return_nonconforming_profiles)
+
+    def run_profile_check(profile_type: str) -> ConfigurationHygieneCheckResult:
+        severity_args: Dict[str, List[str]] = {}
+        if profile_type != "url":
+            severity_args = {"minimum_block_severities": block_severities, "minimum_alert_severities": alert_severities}
+        return HygieneLookups.check_security_profiles(
+            topology=topology,
+            profile_type=profile_type,
+            return_nonconforming_profiles=return_nonconforming,
+            containers=containers,
+            config_cache=config_cache,
+            **severity_args,
+        )
+
+    checks: List[Tuple[str, Callable[[], ConfigurationHygieneCheckResult]]] = [
+        (
+            "log-forwarding",
+            lambda: HygieneLookups.check_log_forwarding_profiles(topology, containers=containers, config_cache=config_cache),
+        ),
+        (
+            "security-zones",
+            lambda: HygieneLookups.check_security_zones(topology, containers=containers, config_cache=config_cache),
+        ),
+        ("spyware-profiles", lambda: run_profile_check("spyware")),
+        ("url-filtering-profiles", lambda: run_profile_check("url")),
+        ("vulnerability-profiles", lambda: run_profile_check("vulnerability")),
+        (
+            "security-rules",
+            lambda: HygieneLookups.check_security_rules(
+                topology, containers=containers, rulebase_aware=True, config_cache=config_cache
+            ),
+        ),
+    ]
+
+    summary_data: List[ConfigurationHygieneCheck] = []
+    result_data: List[ConfigurationHygieneIssue] = []
+    for check_name, check_func in checks:
+        result, error_issue = _run_single_hygiene_check(check_name, check_func)
+        if error_issue:
+            result_data.append(error_issue)
+            summary_data.append(
+                ConfigurationHygieneCheck(
+                    description=f"The '{check_name}' check failed to run.",
+                    issue_code=HYGIENE_CHECK_ERROR_ISSUE_CODE,
+                    result=UNICODE_FAIL,
+                    issue_count=1,
+                )
+            )
+            continue
+        if result:
+            summary_data.extend(result.summary_data)
+            result_data.extend(result.result_data)
+
+    cache_calls = f", container config reads={config_cache.api_calls}" if config_cache else ""
+    demisto.debug(
+        f"[hygiene-check-all] all checks took {time.monotonic() - start_time:.1f}s (read_mode={read_mode}{cache_calls})"
+    )
+    return ConfigurationHygieneCheckResult(summary_data=summary_data, result_data=result_data)
 
 
 def hygiene_issue_dict_to_object(issue_dicts: Union[List[dict], dict]) -> List[ConfigurationHygieneIssue]:
@@ -17119,6 +17419,14 @@ def main():  # pragma: no cover
                 dataclasses_to_command_results(
                     check_security_rules(topology, **demisto.args()),
                     empty_result_message="All security rules are configured correctly.",
+                )
+            )
+        elif command == "pan-os-hygiene-check-all":
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    check_all_hygiene(topology, **demisto.args()),
+                    empty_result_message="All configuration hygiene checks passed.",
                 )
             )
         elif command == "pan-os-hygiene-fix-log-forwarding":

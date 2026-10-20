@@ -4478,6 +4478,396 @@ class TestHygieneFunctions:
             assert value
 
 
+class TestHygieneCheckAll:
+    """Tests for pan-os-hygiene-check-all and its type-aware / rulebase-aware helpers."""
+
+    def test_get_hygiene_object_containers_panorama_skips_vsys_lookup(self, mocker, mock_single_device_topology):
+        # given
+        device_groups = mocker.patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+        templates = mocker.patch("Panorama.Template.refreshall", return_value=mock_templates())
+        template_stacks = mocker.patch("Panorama.TemplateStack.refreshall", return_value=mock_template_stack())
+        vsys = mocker.patch("Panorama.Vsys.refreshall", return_value=mock_vsys())
+
+        # when
+        result = mock_single_device_topology.get_hygiene_object_containers()
+
+        # then
+        assert [container.name for _, container in result[:3]] == ["test-dg", "test-template", "test-template-stack"]
+        assert result[3][1] is result[3][0]  # Panorama shared
+        assert device_groups.call_count == templates.call_count == template_stacks.call_count == 1
+        vsys.assert_not_called()
+
+    def test_get_hygiene_object_containers_firewall_only_looks_up_vsys(self, mocker, mock_firewall_topology):
+        # given
+        mocker.patch.object(mock_firewall_topology, "active_devices", return_value=list(mock_firewall_topology.all()))
+        device_groups = mocker.patch("Panorama.DeviceGroup.refreshall")
+        templates = mocker.patch("Panorama.Template.refreshall")
+        template_stacks = mocker.patch("Panorama.TemplateStack.refreshall")
+        mocker.patch("Panorama.Vsys.refreshall", return_value=mock_vsys())
+
+        # when
+        result = mock_firewall_topology.get_hygiene_object_containers()
+
+        # then
+        assert [container.name for _, container in result] == ["vsys1"]
+        device_groups.assert_not_called()
+        templates.assert_not_called()
+        template_stacks.assert_not_called()
+
+    def test_get_security_rules_in_valid_rulebases_skips_templates(self, mocker):
+        # given
+        from Panorama import HygieneRemediation
+
+        refreshall = mocker.patch("Panorama.SecurityRule.refreshall", return_value=mock_good_security_rules())
+
+        # when
+        result = HygieneRemediation.get_security_rules_in_valid_rulebases(mock_templates()[0])
+
+        # then
+        assert result == []
+        refreshall.assert_not_called()
+
+    def test_get_security_rules_in_valid_rulebases_device_group_reads_pre_and_post(self, mocker):
+        # given
+        from Panorama import HygieneRemediation, PostRulebase, PreRulebase
+
+        refreshall = mocker.patch("Panorama.SecurityRule.refreshall", return_value=mock_good_security_rules())
+
+        # when
+        HygieneRemediation.get_security_rules_in_valid_rulebases(mock_device_groups()[0])
+
+        # then
+        read_rulebase_types = [type(call.args[0]) for call in refreshall.call_args_list]
+        assert read_rulebase_types == [PreRulebase, PostRulebase]
+
+    def test_get_security_rules_in_valid_rulebases_vsys_reads_rulebase_only(self, mocker):
+        # given
+        from Panorama import HygieneRemediation, Rulebase
+
+        refreshall = mocker.patch("Panorama.SecurityRule.refreshall", return_value=mock_good_security_rules())
+
+        # when
+        HygieneRemediation.get_security_rules_in_valid_rulebases(mock_vsys()[0])
+
+        # then
+        read_rulebase_types = [type(call.args[0]) for call in refreshall.call_args_list]
+        assert read_rulebase_types == [Rulebase]
+
+    def test_check_all_hygiene_fetches_containers_once(self, mocker, mock_topology):
+        # given
+        from Panorama import check_all_hygiene
+
+        containers = [(mock_topology.panorama_objects, mock_device_groups()[0])]
+        get_containers = mocker.patch.object(mock_topology, "get_hygiene_object_containers", return_value=containers)
+        legacy_get_containers = mocker.patch.object(mock_topology, "get_all_object_containers")
+        mocker.patch("Panorama.HygieneLookups.check_log_forwarding_profiles", return_value=self._result("BP-V-1"))
+        mocker.patch("Panorama.HygieneLookups.check_security_zones", return_value=self._result("BP-V-7"))
+        mocker.patch("Panorama.HygieneLookups.check_security_profiles", return_value=self._result("BP-V-4"))
+        mocker.patch("Panorama.HygieneLookups.check_security_rules", return_value=self._result("BP-V-8"))
+
+        # when
+        check_all_hygiene(mock_topology)
+
+        # then
+        get_containers.assert_called_once()
+        legacy_get_containers.assert_not_called()
+
+    def test_check_all_hygiene_merges_all_check_results(self, mocker, mock_topology):
+        # given
+        from Panorama import check_all_hygiene
+
+        mocker.patch.object(mock_topology, "get_hygiene_object_containers", return_value=[])
+        mocker.patch("Panorama.HygieneLookups.check_log_forwarding_profiles", return_value=self._result("BP-V-1"))
+        mocker.patch("Panorama.HygieneLookups.check_security_zones", return_value=self._result("BP-V-7"))
+        mocker.patch(
+            "Panorama.HygieneLookups.check_security_profiles",
+            side_effect=[self._result("BP-V-5"), self._result("BP-V-6"), self._result("BP-V-4")],
+        )
+        mocker.patch("Panorama.HygieneLookups.check_security_rules", return_value=self._result("BP-V-8"))
+
+        # when
+        result = check_all_hygiene(mock_topology)
+
+        # then
+        assert [check.issue_code for check in result.summary_data] == ["BP-V-1", "BP-V-7", "BP-V-5", "BP-V-6", "BP-V-4", "BP-V-8"]
+        assert len(result.result_data) == 6
+
+    def test_check_all_hygiene_isolates_a_failing_check(self, mocker, mock_topology):
+        # given
+        from Panorama import HYGIENE_CHECK_ERROR_ISSUE_CODE, check_all_hygiene
+
+        mocker.patch.object(mock_topology, "get_hygiene_object_containers", return_value=[])
+        mocker.patch("Panorama.HygieneLookups.check_log_forwarding_profiles", side_effect=Exception("device timeout"))
+        mocker.patch("Panorama.HygieneLookups.check_security_zones", return_value=self._result("BP-V-7"))
+        mocker.patch("Panorama.HygieneLookups.check_security_profiles", return_value=self._result("BP-V-4"))
+        mocker.patch("Panorama.HygieneLookups.check_security_rules", return_value=self._result("BP-V-8"))
+
+        # when
+        result = check_all_hygiene(mock_topology)
+
+        # then
+        error_issues = [issue for issue in result.result_data if issue.issue_code == HYGIENE_CHECK_ERROR_ISSUE_CODE]
+        assert len(error_issues) == 1
+        assert "log-forwarding" in error_issues[0].description
+        assert "device timeout" in error_issues[0].description
+        assert "BP-V-8" in [check.issue_code for check in result.summary_data]
+
+    def test_check_all_hygiene_uses_rulebase_aware_security_rules(self, mocker, mock_topology):
+        # given
+        from Panorama import check_all_hygiene
+
+        mocker.patch.object(mock_topology, "get_hygiene_object_containers", return_value=[])
+        mocker.patch("Panorama.HygieneLookups.check_log_forwarding_profiles", return_value=self._result("BP-V-1"))
+        mocker.patch("Panorama.HygieneLookups.check_security_zones", return_value=self._result("BP-V-7"))
+        mocker.patch("Panorama.HygieneLookups.check_security_profiles", return_value=self._result("BP-V-4"))
+        security_rules = mocker.patch("Panorama.HygieneLookups.check_security_rules", return_value=self._result("BP-V-8"))
+
+        # when
+        check_all_hygiene(mock_topology)
+
+        # then
+        assert security_rules.call_args.kwargs["rulebase_aware"] is True
+
+    @staticmethod
+    def _result(issue_code: str):
+        from Panorama import ConfigurationHygieneCheck, ConfigurationHygieneCheckResult, ConfigurationHygieneIssue
+
+        return ConfigurationHygieneCheckResult(
+            summary_data=[ConfigurationHygieneCheck(description="d", issue_code=issue_code, result="r")],
+            result_data=[
+                ConfigurationHygieneIssue(hostid="h", container_name="c", issue_code=issue_code, description="d", name="n")
+            ],
+        )
+
+    def test_check_all_hygiene_rejects_unknown_read_mode(self, mock_topology):
+        # given
+        from Panorama import check_all_hygiene
+
+        # when / then
+        with pytest.raises(ValueError, match="Invalid read_mode"):
+            check_all_hygiene(mock_topology, read_mode="bogus")
+
+    def test_check_all_hygiene_per_object_mode_passes_no_cache(self, mocker, mock_topology):
+        # given
+        from Panorama import check_all_hygiene
+
+        mocker.patch.object(mock_topology, "get_hygiene_object_containers", return_value=[])
+        mocker.patch("Panorama.HygieneLookups.check_log_forwarding_profiles", return_value=self._result("BP-V-1"))
+        mocker.patch("Panorama.HygieneLookups.check_security_zones", return_value=self._result("BP-V-7"))
+        mocker.patch("Panorama.HygieneLookups.check_security_profiles", return_value=self._result("BP-V-4"))
+        security_rules = mocker.patch("Panorama.HygieneLookups.check_security_rules", return_value=self._result("BP-V-8"))
+
+        # when
+        check_all_hygiene(mock_topology)
+
+        # then
+        assert security_rules.call_args.kwargs["config_cache"] is None
+
+    def test_check_all_hygiene_per_container_mode_shares_one_cache(self, mocker, mock_topology):
+        # given
+        from Panorama import ContainerConfigCache, check_all_hygiene
+
+        mocker.patch.object(mock_topology, "get_hygiene_object_containers", return_value=[])
+        log_forwarding = mocker.patch(
+            "Panorama.HygieneLookups.check_log_forwarding_profiles", return_value=self._result("BP-V-1")
+        )
+        zones = mocker.patch("Panorama.HygieneLookups.check_security_zones", return_value=self._result("BP-V-7"))
+        profiles = mocker.patch("Panorama.HygieneLookups.check_security_profiles", return_value=self._result("BP-V-4"))
+        rules = mocker.patch("Panorama.HygieneLookups.check_security_rules", return_value=self._result("BP-V-8"))
+
+        # when
+        check_all_hygiene(mock_topology, read_mode="per-container")
+
+        # then
+        caches = {id(mock.call_args.kwargs["config_cache"]) for mock in (log_forwarding, zones, profiles, rules)}
+        assert len(caches) == 1
+        assert isinstance(rules.call_args.kwargs["config_cache"], ContainerConfigCache)
+
+
+DEVICE_GROUP_CONFIG_XML = """
+<response status="success"><result total-count="1" count="1">
+  <entry name="Lab-Devices">
+    <zone>
+      <entry name="trust"><network><log-setting>default</log-setting></network></entry>
+    </zone>
+    <log-settings><profiles>
+      <entry name="lf-1">
+        <enhanced-application-logging>yes</enhanced-application-logging>
+        <match-list><entry name="traffic"><log-type>traffic</log-type></entry></match-list>
+      </entry>
+    </profiles></log-settings>
+    <pre-rulebase><security><rules>
+      <entry name="pre-rule-1"><action>allow</action></entry>
+    </rules></security></pre-rulebase>
+    <post-rulebase><security><rules>
+      <entry name="post-rule-1"><action>deny</action></entry>
+      <entry name="post-rule-2"><action>allow</action></entry>
+    </rules></security></post-rulebase>
+  </entry>
+</result></response>
+"""
+
+TEMPLATE_CONFIG_XML = """
+<response status="success"><result total-count="1" count="1">
+  <entry name="LogForwarding">
+    <config><devices><entry name="localhost.localdomain"><vsys><entry name="vsys1">
+      <zone><entry name="template-zone"><network><layer3/></network></entry></zone>
+    </entry></vsys></entry></devices></config>
+  </entry>
+</result></response>
+"""
+
+
+class TestContainerConfigCache:
+    """Tests for read_mode=per-container: one config read per container, objects built locally from the XML."""
+
+    @staticmethod
+    def _panorama(response_xml: str):
+        """A real pan-os-python Panorama whose XML API returns the given response."""
+        panorama = Panorama("panorama.example", api_key="test")
+        panorama._version_info = (10, 2, 0)
+        xapi = MagicMock()
+        xapi.get.return_value = ElementTree.fromstring(response_xml)
+        panorama._xapi_private = xapi
+        return panorama, xapi
+
+    def test_get_objects_builds_zones_from_container_xml(self):
+        # given
+        from Panorama import ContainerConfigCache, Zone
+
+        panorama, xapi = self._panorama(DEVICE_GROUP_CONFIG_XML)
+        device_group = DeviceGroup("Lab-Devices")
+        panorama.add(device_group)
+
+        # when
+        zones = ContainerConfigCache().get_objects(Zone, device_group)
+
+        # then
+        assert [zone.name for zone in zones] == ["trust"]
+        assert xapi.get.call_args.args[0] == device_group.xpath()
+
+    def test_get_objects_reads_each_container_only_once(self):
+        # given
+        from Panorama import ContainerConfigCache, Zone
+
+        panorama, xapi = self._panorama(DEVICE_GROUP_CONFIG_XML)
+        device_group = DeviceGroup("Lab-Devices")
+        panorama.add(device_group)
+        cache = ContainerConfigCache()
+
+        # when
+        cache.get_objects(Zone, device_group)
+        cache.get_objects(LogForwardingProfile, device_group)
+
+        # then
+        assert xapi.get.call_count == 1
+        assert cache.api_calls == 1
+
+    def test_get_objects_parses_log_forwarding_match_lists_as_children(self):
+        # given
+        from Panorama import ContainerConfigCache
+
+        panorama, _ = self._panorama(DEVICE_GROUP_CONFIG_XML)
+        device_group = DeviceGroup("Lab-Devices")
+        panorama.add(device_group)
+
+        # when
+        profiles = ContainerConfigCache().get_objects(LogForwardingProfile, device_group)
+
+        # then
+        assert [profile.name for profile in profiles] == ["lf-1"]
+        assert profiles[0].enhanced_logging is True
+        assert [match.name for match in profiles[0].findall(LogForwardingProfileMatchList)] == ["traffic"]
+
+    def test_get_security_rules_in_valid_rulebases_uses_cache_for_device_group(self):
+        # given
+        from Panorama import ContainerConfigCache, HygieneRemediation
+
+        panorama, xapi = self._panorama(DEVICE_GROUP_CONFIG_XML)
+        device_group = DeviceGroup("Lab-Devices")
+        panorama.add(device_group)
+
+        # when
+        rules = HygieneRemediation.get_security_rules_in_valid_rulebases(device_group, ContainerConfigCache())
+
+        # then
+        assert [rule.name for rule in rules] == ["pre-rule-1", "post-rule-1", "post-rule-2"]
+        assert xapi.get.call_count == 1
+
+    def test_get_objects_resolves_nested_template_path(self):
+        # given
+        from Panorama import ContainerConfigCache, Zone
+
+        panorama, _ = self._panorama(TEMPLATE_CONFIG_XML)
+        template = Template("LogForwarding")
+        panorama.add(template)
+
+        # when
+        zones = ContainerConfigCache().get_objects(Zone, template)
+
+        # then
+        assert [zone.name for zone in zones] == ["template-zone"]
+
+    def test_get_objects_returns_empty_when_container_has_no_such_object(self):
+        # given
+        from Panorama import AntiSpywareProfile, ContainerConfigCache
+
+        panorama, _ = self._panorama(DEVICE_GROUP_CONFIG_XML)
+        device_group = DeviceGroup("Lab-Devices")
+        panorama.add(device_group)
+
+        # when
+        profiles = ContainerConfigCache().get_objects(AntiSpywareProfile, device_group)
+
+        # then
+        assert profiles == []
+
+    def test_get_objects_returns_empty_on_no_such_node(self):
+        # given
+        from Panorama import ContainerConfigCache, Zone
+
+        panorama, xapi = self._panorama(DEVICE_GROUP_CONFIG_XML)
+        xapi.get.side_effect = panos.errors.PanNoSuchNode("No such node")
+        device_group = DeviceGroup("Lab-Devices")
+        panorama.add(device_group)
+
+        # when
+        zones = ContainerConfigCache().get_objects(Zone, device_group)
+
+        # then
+        assert zones == []
+
+    def test_get_objects_reads_panorama_shared_location(self):
+        # given
+        from Panorama import ContainerConfigCache, Zone
+
+        panorama, xapi = self._panorama(
+            DEVICE_GROUP_CONFIG_XML.replace('<entry name="Lab-Devices">', "<shared>").replace(
+                "</entry>\n</result>", "</shared>\n</result>"
+            )
+        )
+
+        # when
+        ContainerConfigCache().get_objects(Zone, panorama)
+
+        # then
+        assert xapi.get.call_args.args[0] == "/config/shared"
+
+    def test_refresh_objects_without_cache_calls_refreshall(self, mocker):
+        # given
+        from Panorama import Zone, refresh_objects
+
+        refreshall = mocker.patch("Panorama.Zone.refreshall", return_value=["zone"])
+        container = MagicMock()
+
+        # when
+        result = refresh_objects(Zone, container)
+
+        # then
+        assert result == ["zone"]
+        refreshall.assert_called_once_with(container)
+
+
 class TestObjectFunctions:
     @patch("Panorama.Template.refreshall", return_value=[])
     @patch("Panorama.TemplateStack.refreshall", return_value=[])

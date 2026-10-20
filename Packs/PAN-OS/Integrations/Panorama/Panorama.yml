@@ -9240,6 +9240,61 @@ script:
       description: The affected object name.
       type: String
   - arguments:
+    - description: The string by which to filter so that only the given device is checked.
+      name: device_filter_string
+    - description: A comma-separated list of severities that must be in drop/reset/block-ip mode. Used by the spyware and vulnerability profile checks.
+      name: minimum_block_severities
+      defaultValue: critical,high
+      isArray: true
+    - description: A comma-separated list of severities that must be in alert/default or higher mode. Used by the spyware and vulnerability profile checks.
+      name: minimum_alert_severities
+      defaultValue: medium,low
+      isArray: true
+    - auto: PREDEFINED
+      defaultValue: 'yes'
+      description: Whether or not to return details about security profiles that do not conform to best practices.
+      name: return_nonconforming_profiles
+      predefined:
+      - 'yes'
+      - 'no'
+    - auto: PREDEFINED
+      defaultValue: per-object
+      description: How the configuration is read. "per-object" reads each object type (profiles, zones, rules) from each container with a separate API call. "per-container" reads each container's configuration with a single API call and builds all the objects from it, which makes fewer, larger requests.
+      name: read_mode
+      predefined:
+      - per-object
+      - per-container
+    description: Runs all the configuration hygiene checks (log forwarding, security zones, spyware, URL filtering and vulnerability profiles, and security rules) in a single execution. The topology and configuration containers are retrieved once and shared by all the checks, which is significantly faster than running each hygiene check command separately.
+    name: pan-os-hygiene-check-all
+    outputs:
+    - contextPath: PANOS.ConfigurationHygiene.Summary.description
+      description: The description of the check.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
+      description: The shorthand code for this hygiene check.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.result
+      description: Whether the check passed or failed.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_count
+      description: The total number of matching issues.
+      type: Number
+    - contextPath: PANOS.ConfigurationHygiene.Result.hostid
+      description: The host ID.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.container_name
+      description: The parent container (DG, Template, VSYS) this object belongs to.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.issue_code
+      description: The shorthand code for the issue. CHECK-ERROR indicates that a check failed to run.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.description
+      description: The human readable description of the issue.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.name
+      description: The affected object name.
+      type: String
+  - arguments:
     - description: The Dictionary of Hygiene issue, from a hygiene check command. Can be a list.
       name: issue
       isArray: true
