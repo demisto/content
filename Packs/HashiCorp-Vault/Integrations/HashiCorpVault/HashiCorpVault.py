@@ -747,6 +747,23 @@ def configure_engine(
 
 
 def fetch_credentials():  # pragma: no cover
+    # XSUP-79239 LEAK REPRO - DO NOT MERGE: return fake credentials without contacting Vault.
+    leak_marker = "XSUP79239LEAKTEST"
+    dummy_credentials = [
+        {
+            "user": f"{leak_marker}_user{i}@example.invalid",
+            "password": f"{leak_marker}_FAKEPASS_{i}",
+            "name": f"{leak_marker}_cred{i}",
+        }
+        for i in range(1, 4)
+    ]
+    dummy_identifier = demisto.args().get("identifier")
+    if dummy_identifier:
+        dummy_credentials = [c for c in dummy_credentials if c["name"] == dummy_identifier]
+    demisto.debug(f"{leak_marker}: returning {len(dummy_credentials)} dummy credentials (no secrets in this line)")
+    demisto.credentials(dummy_credentials)
+    return
+
     credentials = []
     engines_to_fetch_from = []
     engines = argToList(demisto.params().get("engines", []))
