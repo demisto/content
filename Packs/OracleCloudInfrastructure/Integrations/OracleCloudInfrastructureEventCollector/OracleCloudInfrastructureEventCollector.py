@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from datetime import timezone
 from typing import Any
 
 import demistomock as demisto
@@ -20,9 +21,21 @@ CLOUDGUARD_EVENT_TYPE = "CloudGuard Problems"
 CLOUDGUARD_LAST_RUN_KEY = "CloudGuardProblems"
 CLOUDGUARD_API_VERSION = "20200131"
 CLOUDGUARD_PAGE_SIZE = 1000
+# Single timestamp format used for every CloudGuard fetch-window value (request params and stored cursor).
+CLOUDGUARD_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+# ListProblems query parameters that are set by the collector and therefore can not be overridden by the user.
+CLOUDGUARD_COLLECTOR_CONTROLLED_KEYS = {
+    "compartmentId",
+    "compartmentIdInSubtree",
+    "accessLevel",
+    "timeLastDetectedGreaterThanOrEqualTo",
+    "timeLastDetectedLessThanOrEqualTo",
+    "sortBy",
+    "sortOrder",
+    "limit",
+    "page",
+}
 # ListProblems filter query parameters that may be passed through the 'CloudGuard Problems query' parameter.
-# Parameters controlled by the collector (compartmentId, compartmentIdInSubtree, accessLevel, timeLastDetected*,
-# sortBy, sortOrder, limit, page) are intentionally excluded.
 CLOUDGUARD_ALLOWED_QUERY_KEYS = {
     "lifecycleDetail",
     "lifecycleState",
@@ -516,6 +529,12 @@ def parse_cloudguard_query(cloudguard_query: str | None) -> dict[str, str]:
                 f"Invalid 'CloudGuard Problems query' entry: '{pair}'. Expected key=value pairs separated by ';' "
                 "(for example: riskLevel=CRITICAL;lifecycleState=ACTIVE)."
             )
+        if key in CLOUDGUARD_COLLECTOR_CONTROLLED_KEYS:
+            raise DemistoException(
+                f"The key '{key}' in 'CloudGuard Problems query' can not be set manually, it is managed by the collector "
+                "to control the fetch window, sorting and pagination. Remove it from the query. "
+                f"Supported keys are: {', '.join(sorted(CLOUDGUARD_ALLOWED_QUERY_KEYS))}."
+            )
         if key not in CLOUDGUARD_ALLOWED_QUERY_KEYS:
             raise DemistoException(
                 f"Unsupported key '{key}' in 'CloudGuard Problems query'. "
@@ -526,6 +545,29 @@ def parse_cloudguard_query(cloudguard_query: str | None) -> dict[str, str]:
     return filters
 
 
+def format_cloudguard_time(value: datetime | str | None) -> str:
+    """Normalize a timestamp to the single CloudGuard timestamp format (UTC, CLOUDGUARD_DATE_FORMAT).
+
+    Args:
+        value (datetime | str | None): A datetime object or a timestamp string (RFC3339 or relative, e.g. '3 days').
+
+    Raises:
+        DemistoException: If the value can not be parsed as a timestamp.
+
+    Returns:
+        str: The timestamp formatted with CLOUDGUARD_DATE_FORMAT in UTC.
+    """
+    try:
+        parsed = value if isinstance(value, datetime) else arg_to_datetime(value)
+    except ValueError:
+        parsed = None
+    if not isinstance(parsed, datetime):
+        raise DemistoException(f"Could not parse CloudGuard timestamp: {value}")
+    if parsed.tzinfo:
+        parsed = parsed.astimezone(timezone.utc)  # noqa: UP017
+    return parsed.strftime(CLOUDGUARD_DATE_FORMAT)
+
+
 def get_cloudguard_first_fetch_time(first_fetch_param: str) -> str:
     """Get the start of the first CloudGuard fetch window from the 'First fetch time' parameter.
 
@@ -533,10 +575,9 @@ def get_cloudguard_first_fetch_time(first_fetch_param: str) -> str:
         first_fetch_param (str): First fetch time parameter.
 
     Returns:
-        str: The first fetch time formatted with DATE_FORMAT.
+        str: The first fetch time formatted with CLOUDGUARD_DATE_FORMAT.
     """
-    first_fetch_datetime = arg_to_datetime(first_fetch_param) or arg_to_datetime(FETCH_DEFAULT_TIME)
-    return first_fetch_datetime.strftime(DATE_FORMAT)  # type: ignore[union-attr]
+    return format_cloudguard_time(arg_to_datetime(first_fetch_param) or arg_to_datetime(FETCH_DEFAULT_TIME))
 
 
 def cloudguard_problems_api_request(
@@ -598,9 +639,10 @@ def get_problem_dedup_key(problem: dict[str, Any]) -> str:
 
 
 def add_cloudguard_fields(problem: dict[str, Any]) -> dict[str, Any]:
-    """Set the _time and _ENTRY_STATUS fields of a CloudGuard Problem.
+    """Set the _time, _source_log_type and _ENTRY_STATUS fields of a CloudGuard Problem.
 
     - _time is mapped from timeLastDetected.
+    - _source_log_type is 'CloudGuard Problems'.
     - _ENTRY_STATUS is 'new' when timeLastDetected == timeFirstDetected and 'updated' when timeLastDetected is later.
 
     Args:
@@ -611,6 +653,7 @@ def add_cloudguard_fields(problem: dict[str, Any]) -> dict[str, Any]:
     """
     time_last_detected = problem.get("timeLastDetected")
     problem["_time"] = time_last_detected
+    problem["_source_log_type"] = CLOUDGUARD_EVENT_TYPE
 
     first_detected = arg_to_datetime(problem.get("timeFirstDetected"))
     last_detected = arg_to_datetime(time_last_detected)
@@ -629,17 +672,21 @@ def build_cloudguard_last_run(
 
     Args:
         problems (list[dict[str, Any]]): The Problems fetched in this cycle (sorted by timeLastDetected ascending).
-        previous_last_run (str): The previous cursor.
+        previous_last_run (str): The previous cursor (formatted with CLOUDGUARD_DATE_FORMAT).
         previous_fetched_keys (list[str]): The deduplication keys stored in the previous cycle.
 
     Returns:
-        dict[str, Any]: last run dict with keys 'lastRun' (str) and 'LastFetchedIds' (list[str]).
+        dict[str, Any]: last run dict with keys 'lastRun' (str, CLOUDGUARD_DATE_FORMAT) and 'LastFetchedIds' (list[str]).
     """
-    if not problems:
+    if not problems or not problems[-1].get("timeLastDetected"):
         return {"lastRun": previous_last_run, "LastFetchedIds": previous_fetched_keys}
 
-    last_run = problems[-1].get("timeLastDetected") or previous_last_run
-    keys = [get_problem_dedup_key(problem) for problem in problems if problem.get("timeLastDetected") == last_run]
+    last_run = format_cloudguard_time(problems[-1]["timeLastDetected"])
+    keys = [
+        get_problem_dedup_key(problem)
+        for problem in problems
+        if problem.get("timeLastDetected") and format_cloudguard_time(problem["timeLastDetected"]) == last_run
+    ]
     if last_run == previous_last_run:
         # The cursor did not move, keep the previous keys so those Problems are not fetched again.
         keys = list(dict.fromkeys(previous_fetched_keys + keys))
@@ -662,34 +709,57 @@ def get_cloudguard_problems(
         last_fetched_keys (list[str]): The deduplication keys stored in the previous cycle.
         first_fetch_time (str): The start of the fetch window.
 
+    Raises:
+        DemistoException: If a ListProblems request fails. No Problems are returned in that case,
+            so the last run is not advanced and the window is fetched again in the next cycle.
+
     Returns:
         tuple[list[dict[str, Any]], dict]: A tuple containing:
             - list of CloudGuard Problems.
             - last run dict with keys 'lastRun' (str) and 'LastFetchedIds' (list[str]).
     """
     problems: list[dict[str, Any]] = []
-    time_end = datetime.utcnow().strftime(DATE_FORMAT)
+    time_end = format_cloudguard_time(datetime.now(timezone.utc))  # noqa: UP017
     next_page: str | None = None
 
-    try:
-        while len(problems) < max_fetch:
-            response = cloudguard_problems_api_request(
-                client=client, time_start=first_fetch_time, time_end=time_end, filters=filters, next_page=next_page
-            )
-            items = json.loads(response.content).get("items", [])
-            problems.extend(deduplicate_events(items, last_fetched_keys, key_func=get_problem_dedup_key))
+    while len(problems) < max_fetch:
+        response = cloudguard_problems_api_request(
+            client=client, time_start=first_fetch_time, time_end=time_end, filters=filters, next_page=next_page
+        )
+        items = json.loads(response.content).get("items", [])
+        problems.extend(deduplicate_events(items, last_fetched_keys, key_func=get_problem_dedup_key))
 
-            next_page = response.headers.get("opc-next-page")
-            if not items or not next_page:
-                break
-
-    except Exception as e:
-        demisto.error(f"Error while fetching CloudGuard problems: {e}")
-        return [], {"lastRun": first_fetch_time, "LastFetchedIds": last_fetched_keys}
+        next_page = response.headers.get("opc-next-page")
+        if not items or not next_page:
+            break
 
     problems = [add_cloudguard_fields(problem) for problem in problems[:max_fetch]]
     demisto.info(f"OCI: {len(problems)} CloudGuard problems fetched from start time: {first_fetch_time}.")
     return problems, build_cloudguard_last_run(problems, first_fetch_time, last_fetched_keys)
+
+
+def fetch_cloudguard_problems(
+    client: Client, cloudguard_query: str | None, max_fetch: int, cloudguard_last_run: dict[str, Any], first_fetch: str
+) -> tuple[list[dict[str, Any]], dict]:
+    """Run the CloudGuard Problems fetch flow: parse the user query, resolve the fetch window start and fetch.
+
+    Args:
+        client (Client): Client object for API requests.
+        cloudguard_query (str | None): The raw 'CloudGuard Problems query' parameter.
+        max_fetch (int): The maximum number of Problems to fetch.
+        cloudguard_last_run (dict[str, Any]): The CloudGuard last run sub-key from the previous cycle.
+        first_fetch (str): The 'First fetch time' parameter.
+
+    Raises:
+        DemistoException: If the query is invalid or a ListProblems request fails.
+
+    Returns:
+        tuple[list[dict[str, Any]], dict]: The fetched Problems and the CloudGuard last run for the next cycle.
+    """
+    filters = parse_cloudguard_query(cloudguard_query)
+    stored_cursor = cloudguard_last_run.get("lastRun")
+    start_time = format_cloudguard_time(stored_cursor) if stored_cursor else get_cloudguard_first_fetch_time(first_fetch)
+    return get_cloudguard_problems(client, filters, max_fetch, cloudguard_last_run.get("LastFetchedIds", []), start_time)
 
 
 def get_events(
@@ -772,16 +842,14 @@ def handle_fetched_events(events: list[dict[str, Any]], last_event_time: str):
 """ Test module """
 
 
-def test_module(
-    client: Client, search_log_query: str, event_types_to_fetch: list, cloudguard_filters: dict[str, str] | None = None
-) -> str:
+def test_module(client: Client, search_log_query: str, event_types_to_fetch: list, cloudguard_query: str | None = None) -> str:
     """Tests API connectivity and authentication.
 
     Args:
         client (Client): Client for SDK interaction and api requests.
         search_log_query (str): The search log query string from the instance configuration.
         event_types_to_fetch (list): The event types selected in the instance configuration.
-        cloudguard_filters (dict[str, str] | None): The parsed 'CloudGuard Problems query' filters.
+        cloudguard_query (str | None): The raw 'CloudGuard Problems query' parameter.
 
     Raises:
         DemistoException: If an error occurred while testing.
@@ -814,9 +882,10 @@ def test_module(
 
     if CLOUDGUARD_EVENT_TYPE in event_types_to_fetch:
         try:
-            datetime_now = datetime.utcnow().strftime(DATE_FORMAT)
+            cloudguard_filters = parse_cloudguard_query(cloudguard_query)
+            datetime_now = format_cloudguard_time(datetime.now(timezone.utc))  # noqa: UP017
             cloudguard_problems_api_request(
-                client=client, time_start=datetime_now, time_end=datetime_now, filters=cloudguard_filters or {}, limit=1
+                client=client, time_start=datetime_now, time_end=datetime_now, filters=cloudguard_filters, limit=1
             )
 
         except Exception as e:
@@ -854,8 +923,6 @@ def main():
         if not isinstance(first_fetch_time, datetime):
             raise DemistoException("Could not resolve First fetch time parameter.")
 
-        cloudguard_filters = parse_cloudguard_query(params.get("cloudguard_query"))
-
         client = Client(
             verify_certificate=not params.get("insecure", False),
             proxy=params.get("proxy", False),
@@ -870,7 +937,7 @@ def main():
         demisto.info("OCI: Client created successfully.")
 
         if command == "test-module":
-            return_results(test_module(client, searchlogs_query, event_types_to_fetch, cloudguard_filters))
+            return_results(test_module(client, searchlogs_query, event_types_to_fetch, params.get("cloudguard_query")))
 
         elif command in ("oracle-cloud-infrastructure-get-events", "fetch-events"):
             push_events = command == "fetch-events" or should_push_events
@@ -878,6 +945,7 @@ def main():
             searchlog_events: list[dict] = []
             audit_events: list[dict] = []
             cloudguard_problems: list[dict] = []
+            cloudguard_error: Exception | None = None
             last_audit_event_time = ""
 
             if "Search Logs" in event_types_to_fetch:
@@ -897,15 +965,15 @@ def main():
                 )
 
             if CLOUDGUARD_EVENT_TYPE in event_types_to_fetch:
-                first_fetch_time_cloudguard = cloudguard_last_run.get("lastRun") or get_cloudguard_first_fetch_time(first_fetch)
-
-                cloudguard_problems, cloudguard_last_run = get_cloudguard_problems(
-                    client,
-                    cloudguard_filters,
-                    max_fetch,
-                    cloudguard_last_run.get("LastFetchedIds", []),
-                    first_fetch_time_cloudguard,
-                )
+                # A CloudGuard failure (invalid query / API error) must not block the other event types,
+                # so it is raised only after they were fetched, sent and the last run was saved.
+                try:
+                    cloudguard_problems, cloudguard_last_run = fetch_cloudguard_problems(
+                        client, params.get("cloudguard_query"), max_fetch, cloudguard_last_run, first_fetch
+                    )
+                except Exception as e:
+                    demisto.error(f"OCI: Error while fetching CloudGuard problems: {e}")
+                    cloudguard_error = e
 
             if "Audit" in event_types_to_fetch:
                 audit_events, last_audit_event_time = get_events(
@@ -942,10 +1010,13 @@ def main():
                     return_results(events_to_command_results(audit_events, "Oracle Cloud Infrastructure Audit Events"))
                 if "Search Logs" in event_types_to_fetch:
                     return_results(events_to_command_results(searchlog_events, "Oracle Cloud Infrastructure Search Logs Events"))
-                if CLOUDGUARD_EVENT_TYPE in event_types_to_fetch:
+                if CLOUDGUARD_EVENT_TYPE in event_types_to_fetch and not cloudguard_error:
                     return_results(
                         events_to_command_results(cloudguard_problems, "Oracle Cloud Infrastructure CloudGuard Problems")
                     )
+
+            if cloudguard_error:
+                raise DemistoException(f"Error while fetching CloudGuard problems: {cloudguard_error}") from cloudguard_error
         else:
             return_error(f"Command {command} does not exist for this integration.")
     except Exception as e:

@@ -1735,8 +1735,9 @@ class TestParseCloudGuardQuery:
         "query, error_match",
         [
             ("unknownKey=1", "Unsupported key 'unknownKey'"),
-            ("compartmentId=ocid1", "Unsupported key 'compartmentId'"),
-            ("limit=5", "Unsupported key 'limit'"),
+            ("compartmentId=ocid1", "The key 'compartmentId' in 'CloudGuard Problems query' can not be set manually"),
+            ("limit=5", "The key 'limit' in 'CloudGuard Problems query' can not be set manually"),
+            ("sortBy=timeCreated", "managed by the collector"),
             ("riskLevel", "Invalid 'CloudGuard Problems query' entry"),
             ("riskLevel=", "Invalid 'CloudGuard Problems query' entry"),
             ("=CRITICAL", "Invalid 'CloudGuard Problems query' entry"),
@@ -1812,6 +1813,51 @@ class TestCloudGuardProblemsApiRequest:
             cloudguard_problems_api_request(dummy_client, "start", "end", {})
 
 
+class TestFormatCloudGuardTime:
+    """Tests for the format_cloudguard_time function."""
+
+    @pytest.mark.parametrize(
+        "value, expected",
+        [
+            ("2023-01-01T10:00:00.123Z", "2023-01-01T10:00:00.123000Z"),
+            ("2023-01-01T10:00:00Z", "2023-01-01T10:00:00.000000Z"),
+            ("2023-01-01T12:00:00.000+02:00", "2023-01-01T10:00:00.000000Z"),
+            ("2023-01-01T10:00:00.000000Z", "2023-01-01T10:00:00.000000Z"),
+            (
+                datetime.datetime(2023, 1, 1, 10, 0, 0, tzinfo=datetime.timezone.utc),  # noqa: UP017
+                "2023-01-01T10:00:00.000000Z",
+            ),
+        ],
+    )
+    def test_format_cloudguard_time(self, value, expected):
+        """
+        Given:
+            - API timestamps with milliseconds / without fraction / with an offset, an already normalized value
+              and a timezone-aware datetime.
+        When:
+            - Normalizing to the single CloudGuard timestamp format.
+        Then:
+            - All values are returned in UTC with the same '%Y-%m-%dT%H:%M:%S.%fZ' format.
+        """
+        from OracleCloudInfrastructureEventCollector import format_cloudguard_time
+
+        assert format_cloudguard_time(value) == expected
+
+    def test_format_cloudguard_time_invalid(self):
+        """
+        Given:
+            - A value that is not a timestamp.
+        When:
+            - Normalizing it.
+        Then:
+            - A DemistoException is raised.
+        """
+        from OracleCloudInfrastructureEventCollector import format_cloudguard_time
+
+        with pytest.raises(DemistoException, match="Could not parse CloudGuard timestamp"):
+            format_cloudguard_time("not a date")
+
+
 class TestCloudGuardProblemHelpers:
     """Tests for the CloudGuard Problem enrichment and last run helpers."""
 
@@ -1831,12 +1877,14 @@ class TestCloudGuardProblemHelpers:
             - Adding the XSIAM fields to the Problem.
         Then:
             - _time is mapped from timeLastDetected.
+            - _source_log_type is 'CloudGuard Problems'.
             - _ENTRY_STATUS is 'new' for case 1 and 'updated' for case 2.
         """
         from OracleCloudInfrastructureEventCollector import add_cloudguard_fields
 
         result = add_cloudguard_fields(problem)
         assert result["_time"] == problem["timeLastDetected"]
+        assert result["_source_log_type"] == "CloudGuard Problems"
         assert result["_ENTRY_STATUS"] == expected_status
 
     def test_add_cloudguard_fields_missing_time(self):
@@ -1852,6 +1900,7 @@ class TestCloudGuardProblemHelpers:
 
         result = add_cloudguard_fields({"id": "p1", "timeLastDetected": "2023-01-01T10:00:00.000Z"})
         assert result["_time"] == "2023-01-01T10:00:00.000Z"
+        assert result["_source_log_type"] == "CloudGuard Problems"
         assert "_ENTRY_STATUS" not in result
 
     def test_get_problem_dedup_key(self):
@@ -1888,7 +1937,7 @@ class TestCloudGuardProblemHelpers:
         When:
             - Building the CloudGuard last run.
         Then:
-            - lastRun is the last timeLastDetected and only the keys at that timestamp are stored.
+            - lastRun is the last timeLastDetected (normalized) and only the keys at that timestamp are stored.
         """
         from OracleCloudInfrastructureEventCollector import build_cloudguard_last_run
 
@@ -1897,8 +1946,8 @@ class TestCloudGuardProblemHelpers:
             build_problem("p2", "2023-01-01T10:00:00.000Z", "2023-01-01T11:00:00.000Z"),
             build_problem("p3", "2023-01-01T11:00:00.000Z", "2023-01-01T11:00:00.000Z"),
         ]
-        assert build_cloudguard_last_run(problems, "2023-01-01T09:00:00.000Z", ["old"]) == {
-            "lastRun": "2023-01-01T11:00:00.000Z",
+        assert build_cloudguard_last_run(problems, "2023-01-01T09:00:00.000000Z", ["old"]) == {
+            "lastRun": "2023-01-01T11:00:00.000000Z",
             "LastFetchedIds": ["p2|2023-01-01T11:00:00.000Z", "p3|2023-01-01T11:00:00.000Z"],
         }
 
@@ -1913,11 +1962,12 @@ class TestCloudGuardProblemHelpers:
         """
         from OracleCloudInfrastructureEventCollector import build_cloudguard_last_run
 
-        cursor = "2023-01-01T11:00:00.000Z"
-        problems = [build_problem("p4", cursor, cursor)]
-        assert build_cloudguard_last_run(problems, cursor, [f"p3|{cursor}"]) == {
+        api_time = "2023-01-01T11:00:00.000Z"
+        cursor = "2023-01-01T11:00:00.000000Z"
+        problems = [build_problem("p4", api_time, api_time)]
+        assert build_cloudguard_last_run(problems, cursor, [f"p3|{api_time}"]) == {
             "lastRun": cursor,
-            "LastFetchedIds": [f"p3|{cursor}", f"p4|{cursor}"],
+            "LastFetchedIds": [f"p3|{api_time}", f"p4|{api_time}"],
         }
 
 
@@ -1949,7 +1999,8 @@ class TestGetCloudGuardProblems:
 
         assert [problem["_ENTRY_STATUS"] for problem in problems] == ["new", "updated"]
         assert [problem["_time"] for problem in problems] == ["2023-01-01T09:00:00.000Z", "2023-01-01T09:30:00.000Z"]
-        assert last_run == {"lastRun": "2023-01-01T09:30:00.000Z", "LastFetchedIds": ["p2|2023-01-01T09:30:00.000Z"]}
+        assert all(problem["_source_log_type"] == "CloudGuard Problems" for problem in problems)
+        assert last_run == {"lastRun": "2023-01-01T09:30:00.000000Z", "LastFetchedIds": ["p2|2023-01-01T09:30:00.000Z"]}
 
     def test_get_cloudguard_problems_dedup_keeps_updates(self, mocker, dummy_client):
         """
@@ -1978,7 +2029,7 @@ class TestGetCloudGuardProblems:
         assert len(problems) == 1
         assert problems[0]["timeLastDetected"] == "2023-01-01T10:00:00.000Z"
         assert problems[0]["_ENTRY_STATUS"] == "updated"
-        assert last_run == {"lastRun": "2023-01-01T10:00:00.000Z", "LastFetchedIds": ["p1|2023-01-01T10:00:00.000Z"]}
+        assert last_run == {"lastRun": "2023-01-01T10:00:00.000000Z", "LastFetchedIds": ["p1|2023-01-01T10:00:00.000Z"]}
 
     def test_get_cloudguard_problems_pagination(self, mocker, dummy_client):
         """
@@ -2025,7 +2076,7 @@ class TestGetCloudGuardProblems:
 
         assert mocked_request.call_count == 1
         assert [problem["id"] for problem in problems] == ["p0", "p1"]
-        assert last_run["lastRun"] == "2023-01-01T09:01:00.000Z"
+        assert last_run["lastRun"] == "2023-01-01T09:01:00.000000Z"
 
     def test_get_cloudguard_problems_api_error(self, mocker, dummy_client):
         """
@@ -2034,19 +2085,51 @@ class TestGetCloudGuardProblems:
         When:
             - Fetching CloudGuard Problems.
         Then:
-            - An empty list is returned and the previous last run is preserved.
+            - The error is propagated (not swallowed) so the caller can surface it.
         """
         from OracleCloudInfrastructureEventCollector import get_cloudguard_problems
 
         mocker.patch(
-            "OracleCloudInfrastructureEventCollector.cloudguard_problems_api_request", side_effect=Exception("API Error")
+            "OracleCloudInfrastructureEventCollector.cloudguard_problems_api_request", side_effect=DemistoException("API Error")
         )
-        mocker.patch("OracleCloudInfrastructureEventCollector.demisto.error")
 
-        problems, last_run = get_cloudguard_problems(dummy_client, {}, 10, ["k1"], "prev")
+        with pytest.raises(DemistoException, match="API Error"):
+            get_cloudguard_problems(dummy_client, {}, 10, ["k1"], "2023-01-01T00:00:00.000000Z")
 
-        assert problems == []
-        assert last_run == {"lastRun": "prev", "LastFetchedIds": ["k1"]}
+    def test_fetch_cloudguard_problems_uses_stored_cursor(self, mocker, dummy_client):
+        """
+        Given:
+            - A stored CloudGuard last run whose cursor is in the API (millisecond) format.
+        When:
+            - Running the CloudGuard fetch flow.
+        Then:
+            - The query is parsed and the cursor is normalized to the single CloudGuard timestamp format.
+        """
+        from OracleCloudInfrastructureEventCollector import fetch_cloudguard_problems
+
+        mocked_get = mocker.patch("OracleCloudInfrastructureEventCollector.get_cloudguard_problems", return_value=([], {}))
+        fetch_cloudguard_problems(
+            dummy_client, "riskLevel=HIGH", 7, {"lastRun": "2023-01-01T09:00:00.000Z", "LastFetchedIds": ["k1"]}, "3 days"
+        )
+
+        assert mocked_get.call_args.args[1:] == ({"riskLevel": "HIGH"}, 7, ["k1"], "2023-01-01T09:00:00.000000Z")
+
+    @freeze_time("2023-01-10T00:00:00Z")
+    def test_fetch_cloudguard_problems_first_fetch(self, mocker, dummy_client):
+        """
+        Given:
+            - No stored CloudGuard last run.
+        When:
+            - Running the CloudGuard fetch flow.
+        Then:
+            - The fetch window starts at the 'First fetch time' parameter, in the single CloudGuard timestamp format.
+        """
+        from OracleCloudInfrastructureEventCollector import fetch_cloudguard_problems
+
+        mocked_get = mocker.patch("OracleCloudInfrastructureEventCollector.get_cloudguard_problems", return_value=([], {}))
+        fetch_cloudguard_problems(dummy_client, None, 7, {}, "3 days")
+
+        assert mocked_get.call_args.args[1:] == ({}, 7, [], "2023-01-07T00:00:00.000000Z")
 
 
 class TestCloudGuardFlows:
@@ -2070,15 +2153,29 @@ class TestCloudGuardFlows:
         When:
             - test_module is called.
         Then:
-            - cloudguard_problems_api_request is called with the user filters and 'ok' is returned.
+            - cloudguard_problems_api_request is called with the parsed user filters and 'ok' is returned.
         """
         from OracleCloudInfrastructureEventCollector import test_module
 
         mocked_request = mocker.patch("OracleCloudInfrastructureEventCollector.cloudguard_problems_api_request")
-        result = test_module(dummy_client, "", ["CloudGuard Problems"], {"riskLevel": "CRITICAL"})
+        result = test_module(dummy_client, "", ["CloudGuard Problems"], "riskLevel=CRITICAL")
 
         assert result == "ok"
         assert mocked_request.call_args.kwargs["filters"] == {"riskLevel": "CRITICAL"}
+
+    def test_test_module_invalid_query_ignored_when_not_selected(self, mocker, dummy_client):
+        """
+        Given:
+            - An invalid 'CloudGuard Problems query' but 'CloudGuard Problems' is not selected.
+        When:
+            - test_module is called.
+        Then:
+            - The query is not validated and 'ok' is returned.
+        """
+        from OracleCloudInfrastructureEventCollector import test_module
+
+        mocker.patch.object(dummy_client, "_http_request")
+        assert test_module(dummy_client, "", ["Audit"], "badKey=1") == "ok"
 
     def test_test_module_cloudguard_failure(self, mocker, dummy_client):
         """
@@ -2096,7 +2193,7 @@ class TestCloudGuardFlows:
             side_effect=DemistoException("NotAuthorizedOrNotFound"),
         )
         with pytest.raises(DemistoException, match="NotAuthorizedOrNotFound"):
-            test_module(dummy_client, "", ["CloudGuard Problems"], {})
+            test_module(dummy_client, "", ["CloudGuard Problems"], "")
 
     def test_fetch_events_cloudguard(self, mocker, dummy_client):
         """
@@ -2124,7 +2221,7 @@ class TestCloudGuardFlows:
 
         main()
 
-        assert mocked_get_problems.call_args.args[1:] == ({"riskLevel": "CRITICAL"}, 5, ["k1"], "2023-01-01T09:00:00.000Z")
+        assert mocked_get_problems.call_args.args[1:] == ({"riskLevel": "CRITICAL"}, 5, ["k1"], "2023-01-01T09:00:00.000000Z")
         mocked_send_events.assert_called_once_with(problems, vendor="oracle", product="cloud_infrastructure")
         assert mocked_set_last_run.call_args.args[0]["CloudGuardProblems"] == new_cloudguard_last_run
 
@@ -2135,7 +2232,7 @@ class TestCloudGuardFlows:
         When:
             - Running fetch-events.
         Then:
-            - return_error is called with a readable message and nothing is fetched.
+            - return_error is called with a readable message and no Problems are fetched.
         """
         from OracleCloudInfrastructureEventCollector import main
 
@@ -2148,8 +2245,67 @@ class TestCloudGuardFlows:
         )
         mocked_get_problems = mocker.patch("OracleCloudInfrastructureEventCollector.get_cloudguard_problems")
         mocked_return_error = mocker.patch("OracleCloudInfrastructureEventCollector.return_error")
+        mocker.patch("OracleCloudInfrastructureEventCollector.demisto.error")
 
         main()
 
         assert not mocked_get_problems.called
         assert "Unsupported key 'badKey'" in mocked_return_error.call_args.args[0]
+
+    @pytest.mark.parametrize(
+        "cloudguard_side_effect, error_text",
+        [
+            ({"cloudguard_query": "badKey=1"}, "Unsupported key 'badKey'"),
+            ({"api_error": DemistoException("NotAuthorizedOrNotFound")}, "NotAuthorizedOrNotFound"),
+        ],
+    )
+    def test_fetch_events_cloudguard_error_does_not_block_other_types(
+        self, mocker, dummy_client, cloudguard_side_effect, error_text
+    ):
+        """
+        Given:
+            - event_types_to_fetch is ['Audit', 'CloudGuard Problems'].
+            - case 1: the 'CloudGuard Problems query' is invalid.
+            - case 2: the ListProblems API fails.
+        When:
+            - Running fetch-events.
+        Then:
+            - Audit events are still sent and the Audit last run is saved.
+            - The CloudGuard last run is not changed.
+            - The CloudGuard error is raised (via return_error) after the other event types were handled.
+        """
+        from OracleCloudInfrastructureEventCollector import main
+
+        previous_cloudguard_last_run = {"lastRun": "2023-01-01T09:00:00.000000Z", "LastFetchedIds": ["k1"]}
+        params = {
+            **self.params,
+            "event_types_to_fetch": ["Audit", "CloudGuard Problems"],
+            "cloudguard_query": cloudguard_side_effect.get("cloudguard_query", ""),
+        }
+        mock_demisto(
+            mocker,
+            mock_params=params,
+            mock_args={},
+            command="fetch-events",
+            mock_last_run={"CloudGuardProblems": previous_cloudguard_last_run},
+        )
+        mocker.patch("OracleCloudInfrastructureEventCollector.Client", return_value=dummy_client)
+        if api_error := cloudguard_side_effect.get("api_error"):
+            mocker.patch("OracleCloudInfrastructureEventCollector.cloudguard_problems_api_request", side_effect=api_error)
+        audit_events = [{"eventId": "a1", "eventTime": "2023-01-01T10:00:00.000Z"}]
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.get_events", return_value=(audit_events, "2023-01-01T10:00:00.001000Z")
+        )
+        mocked_send_events = mocker.patch("OracleCloudInfrastructureEventCollector.send_events_to_xsiam")
+        mocked_set_last_run = mocker.patch("OracleCloudInfrastructureEventCollector.demisto.setLastRun")
+        mocked_return_error = mocker.patch("OracleCloudInfrastructureEventCollector.return_error")
+        mocker.patch("OracleCloudInfrastructureEventCollector.demisto.error")
+
+        main()
+
+        mocked_send_events.assert_called_once_with(audit_events, vendor="oracle", product="cloud_infrastructure")
+        saved_last_run = mocked_set_last_run.call_args.args[0]
+        assert saved_last_run["lastRun"] == "2023-01-01T10:00:00.001000Z"
+        assert saved_last_run["CloudGuardProblems"] == previous_cloudguard_last_run
+        assert mocked_return_error.call_count == 1
+        assert error_text in mocked_return_error.call_args.args[0]
