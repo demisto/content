@@ -5,6 +5,7 @@ This integration uses ZIdentity OAuth 2.0 client credentials to authenticate wit
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The Server URL assigned to your organization. For example, www.acme.zslogin.net. | True |
+| Base URL | The base URL of the ZIA API. Default: https://api.zsapi.net/zia/api/v1. | False |
 | Client ID | The OAuth 2.0 client ID from ZIdentity. | True |
 | Client Secret | The OAuth 2.0 client secret from ZIdentity. | True |
 | Auto Activate Changes | If enabled, the integration will activate the command changes after each execution. If disabled, use the 'zia-activate-changes' command to activate Zscaler command changes. | False |
