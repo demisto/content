@@ -1,6 +1,6 @@
 {
     "id": "incident_lumusecopsoffenderscount",
-    "name": "lumu_secops_offenders_count",
+    "name": "Lumu SecOps Offenders Count",
     "ownerOnly": false,
     "cliName": "lumusecopsoffenderscount",
     "type": "number",

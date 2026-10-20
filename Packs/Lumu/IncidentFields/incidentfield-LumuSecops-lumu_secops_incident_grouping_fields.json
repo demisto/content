@@ -1,6 +1,6 @@
 {
     "id": "incident_lumusecopsincidentgroupingfields",
-    "name": "lumu_secops_incident_grouping_fields",
+    "name": "Lumu SecOps Incident Grouping Fields",
     "ownerOnly": false,
     "cliName": "lumusecopsincidentgroupingfields",
     "type": "longText",

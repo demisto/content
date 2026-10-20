@@ -13,67 +13,67 @@
 					"simple": "companyId"
 				},
                 "details": {
-                    "simple": "lumu_secops_description"
+                    "simple": "lumu_description"
                 },
 				"lumu_description": {
-					"simple": "lumu_secops_description"
+					"simple": "lumu_description"
 				},
 				"lumu_incidentId": {
-					"simple": "lumu_secops_incident_id"
+					"simple": "lumu_incidentId"
 				},
-                "lumu_secops_adversary_types": {
+                "Lumu SecOps Adversary Types": {
                     "simple": "lumu_secops_adversary_types"
                 },
-                "lumu_secops_endpoint_targets_count": {
+                "Lumu SecOps Endpoint Targets Count": {
                     "simple": "lumu_secops_endpoint_targets_count"
                 },
-                "lumu_secops_user_targets_count": {
+                "Lumu SecOps User Targets Count": {
                     "simple": "lumu_secops_user_targets_count"
                 },
-                "lumu_secops_other_targets_count": {
+                "Lumu SecOps Other Targets Count": {
                     "simple": "lumu_secops_other_targets_count"
                 },
-                "lumu_secops_total_targets_count": {
+                "Lumu SecOps Total Targets Count": {
                     "simple": "lumu_secops_total_targets_count"
                 },
-                "lumu_secops_offenders_count": {
+                "Lumu SecOps Offenders Count": {
                     "simple": "lumu_secops_offenders_count"
                 },
-                "lumu_secops_actions_count": {
+                "Lumu SecOps Actions Count": {
                     "simple": "lumu_secops_actions_count"
                 },
-                "lumu_secops_last_action": {
+                "Lumu SecOps Last Action": {
                     "simple": "lumu_secops_last_action"
                 },
-                "lumu_secops_last_action_time": {
+                "Lumu SecOps Last Action Time": {
                     "simple": "lumu_secops_last_action_time"
                 },
-                "lumu_secops_last_action_user_id": {
+                "Lumu SecOps Last Action User ID": {
                     "simple": "lumu_secops_last_action_user_id"
                 },
-                "lumu_secops_last_comment": {
+                "Lumu SecOps Last Comment": {
                     "simple": "lumu_secops_last_comment"
                 },
-                "lumu_secops_detector_type": {
+                "Lumu SecOps Detector Type": {
                     "simple": "lumu_secops_detector_type"
                 },
-                "lumu_secops_event_type": {
+                "Lumu SecOps Event Type": {
                     "simple": "lumu_secops_event_type"
                 },
-                "lumu_secops_incident_grouping_fields": {
+                "Lumu SecOps Incident Grouping Fields": {
                     "simple": "lumu_secops_incident_grouping_fields"
                 },
-                "lumu_secops_incident_type": {
+                "Lumu SecOps Incident Type": {
                     "simple": "lumu_secops_incident_type"
                 },
-                "lumu_secops_source_name": {
+                "Lumu SecOps Source Name": {
 					"complex": {
 						"filters": [],
 						"root": "lumu_secops_source_name",
 						"transformers": []
 					}
 				},
-                "lumu_secops_total_events": {
+                "Lumu SecOps Total Events": {
 					"complex": {
 						"filters": [],
 						"root": "totalEvents",

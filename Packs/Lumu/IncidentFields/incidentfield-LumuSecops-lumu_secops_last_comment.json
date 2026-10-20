@@ -1,6 +1,6 @@
 {
     "id": "incident_lumusecopslastcomment",
-    "name": "lumu_secops_last_comment",
+    "name": "Lumu SecOps Last Comment",
     "ownerOnly": false,
     "cliName": "lumusecopslastcomment",
     "type": "longText",

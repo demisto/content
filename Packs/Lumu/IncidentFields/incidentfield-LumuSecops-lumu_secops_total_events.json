@@ -1,6 +1,6 @@
 {
     "id": "incident_lumusecopstotalevents",
-    "name": "lumu_secops_total_events",
+    "name": "Lumu SecOps Total Events",
     "ownerOnly": false,
     "cliName": "lumusecopstotalevents",
     "type": "number",

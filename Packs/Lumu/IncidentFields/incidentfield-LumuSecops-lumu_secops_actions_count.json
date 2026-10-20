@@ -1,6 +1,6 @@
 {
     "id": "incident_lumusecopsactionscount",
-    "name": "lumu_secops_actions_count",
+    "name": "Lumu SecOps Actions Count",
     "ownerOnly": false,
     "cliName": "lumusecopsactionscount",
     "type": "number",

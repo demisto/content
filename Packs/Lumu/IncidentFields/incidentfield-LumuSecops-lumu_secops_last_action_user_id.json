@@ -1,6 +1,6 @@
 {
     "id": "incident_lumusecopslastactionuserid",
-    "name": "lumu_secops_last_action_user_id",
+    "name": "Lumu SecOps Last Action User ID",
     "ownerOnly": false,
     "cliName": "lumusecopslastactionuserid",
     "type": "shortText",

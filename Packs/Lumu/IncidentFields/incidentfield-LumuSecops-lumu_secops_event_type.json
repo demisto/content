@@ -1,6 +1,6 @@
 {
     "id": "incident_lumusecopseventtype",
-    "name": "lumu_secops_event_type",
+    "name": "Lumu SecOps Event Type",
     "ownerOnly": false,
     "cliName": "lumusecopseventtype",
     "type": "shortText",

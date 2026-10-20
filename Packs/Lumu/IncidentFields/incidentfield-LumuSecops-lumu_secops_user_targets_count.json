@@ -1,6 +1,6 @@
 {
     "id": "incident_lumusecopsusertargetscount",
-    "name": "lumu_secops_user_targets_count",
+    "name": "Lumu SecOps User Targets Count",
     "ownerOnly": false,
     "cliName": "lumusecopsusertargetscount",
     "type": "number",

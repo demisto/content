@@ -1,6 +1,6 @@
 {
     "id": "incident_lumusecopstakestatusaction",
-    "name": "Take Status Action",
+    "name": "Lumu SecOps Take Status Action",
     "ownerOnly": false,
     "cliName": "lumusecopstakestatusaction",
     "type": "singleSelect",

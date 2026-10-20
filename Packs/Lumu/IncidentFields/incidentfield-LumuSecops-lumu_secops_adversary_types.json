@@ -1,6 +1,6 @@
 {
     "id": "incident_lumusecopsadversarytypes",
-    "name": "lumu_secops_adversary_types",
+    "name": "Lumu SecOps Adversary Types",
     "ownerOnly": false,
     "cliName": "lumusecopsadversarytypes",
     "type": "multiSelect",

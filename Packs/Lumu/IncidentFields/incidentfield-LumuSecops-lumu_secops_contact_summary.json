@@ -1,6 +1,6 @@
 {
     "id": "incident_lumusecopscontactsummary",
-    "name": "lumu_secops_contact_summary",
+    "name": "Lumu SecOps Contact Summary",
     "ownerOnly": false,
     "cliName": "lumusecopscontactsummary",
     "type": "longText",

@@ -650,7 +650,7 @@ def normalize_incident_record(
     normalized = record.copy()
     normalized["lumu_secops_source_name"] = "lumusecops"
     normalized["lumu_secops_event_type"] = event_type
-    normalized["lumu_secops_incident_id"] = incident_id
+    normalized["lumu_incidentId"] = incident_id
     normalized["lumu_secops_status"] = normalized.get("status", "")
     normalized["lumu_secops_total_events"] = normalized.get("totalEvents", 0)
     counts = normalized.get("counts", {}) if isinstance(normalized.get("counts"), dict) else {}
@@ -666,7 +666,7 @@ def normalize_incident_record(
         normalized.get("incidentGroupingFields")
     )
     normalized["lumu_secops_adversary_types"] = normalize_adversary_types(normalized.get("adversaryTypes"))
-    normalized["lumu_secops_description"] = str(normalized.get("description") or "")
+    normalized["lumu_description"] = str(normalized.get("description") or "")
     normalized.update(extract_latest_action(normalized.get("actions")))
     normalized["mirror_instance"] = integration_instance
     normalized["mirror_id"] = incident_id
@@ -869,7 +869,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
     try:
         status = details.get("status", "open")
         incident_id = details.get("id", parsed_args.remote_incident_id)
-        details["lumu_secops_incident_id"] = incident_id
+        details["lumu_incidentId"] = incident_id
         details["lumu_secops_status"] = status
         details["lumu_secops_event_type"] = event_type
         details["lumu_secops_source_name"] = "lumusecops"
@@ -896,7 +896,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
         first_event_timestamp = details.get("firstEvent", {}).get("timestamp", datetime.now(UTC).isoformat())
         source_description = str(details.get("description") or "")
 
-        details["lumu_secops_description"] = format_description_plain_text(
+        details["lumu_description"] = format_description_plain_text(
             incident_id, first_event_timestamp, source_description, adversary_types
         )
 
@@ -976,7 +976,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
         "lumu_secops_incident_type",
         "lumu_secops_incident_grouping_fields",
         "lumu_secops_adversary_types",
-        "lumu_secops_description",
+        "lumu_description",
         "lumu_secops_endpoint_targets_count",
         "lumu_secops_user_targets_count",
         "lumu_secops_other_targets_count",
@@ -1017,7 +1017,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
             wipe_cache(remote_incident_id)
             return remote_incident_id
 
-        lumu_status = str(delta.get("Take Status Action") or delta.get("lumusecopstakestatusaction") or "").lower()
+        lumu_status = str(delta.get("Lumu SecOps Take Status Action") or delta.get("lumusecopstakestatusaction") or "").lower()
         if lumu_status in {"mute", "muted"}:
             comment = f"{comment} Mute"
             response_text = client.mute_incident_request(remote_incident_id, comment)

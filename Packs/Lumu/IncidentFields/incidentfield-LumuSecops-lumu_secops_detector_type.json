@@ -1,6 +1,6 @@
 {
     "id": "incident_lumusecopsdetectortype",
-    "name": "lumu_secops_detector_type",
+    "name": "Lumu SecOps Detector Type",
     "ownerOnly": false,
     "cliName": "lumusecopsdetectortype",
     "type": "shortText",
