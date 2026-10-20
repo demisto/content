@@ -1,0 +1,2 @@
+!kela-monitor-incident-list incident_type=leaked_credentials severities=high,critical from_date="7 days" limit=20
+!kela-monitor-incident-scroll scroll_id=<SCROLL_ID>
