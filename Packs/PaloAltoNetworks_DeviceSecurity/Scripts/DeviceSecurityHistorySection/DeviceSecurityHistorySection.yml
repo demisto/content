@@ -2,7 +2,7 @@ commonfields:
   id: DeviceSecurityHistorySection
   version: -1
 name: DeviceSecurityHistorySection
-comment: Displays detection and resolution history for the current Device Security vulnerability incident.
+comment: Displays the detection and resolution history for the current Device Security vulnerability incident.
 script: '-'
 type: python
 subtype: python3

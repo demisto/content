@@ -82,7 +82,7 @@ configuration:
   defaultvalue: '1'
   type: 19
   required: false
-  additionalinfo: The interval between automatic incident fetches. Applies when Fetch incidents is enabled.
+  additionalinfo: The interval between automatic incident fetches. This setting applies when you enable Fetch incidents.
 - section: Connect
   advanced: true
   display: The timeout for querying APIs
@@ -103,7 +103,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: The device UID (MAC address).
+      description: The UID (MAC address) of the device.
     outputs:
     - contextPath: PaloAltoNetworksDeviceSecurity.Device
       description: The device details.
