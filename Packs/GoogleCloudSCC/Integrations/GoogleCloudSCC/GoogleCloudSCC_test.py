@@ -298,19 +298,18 @@ def test_main(mocker, client):
     Scenario : Parse and validate integration params and commands.
     """
     import GoogleCloudSCC
-    from GoogleCloudSCC import demisto
 
     params = {"service_account_json": TEST_JSON, "organization_id": "organization_id"}
-    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(GoogleCloudSCC.demisto, "params", return_value=params)
 
-    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(GoogleCloudSCC.demisto, "command", return_value="test-module")
     mocker.patch.object(GoogleCloudSCC, "init_google_scc_client")
     mocker.patch.object(GoogleCloudSCC, "init_google_pubsub_client")
     mocker.patch.object(GoogleCloudSCC, "test_module", return_value="ok")
     GoogleCloudSCC.main()
     assert GoogleCloudSCC.test_module.called
 
-    mocker.patch.object(demisto, "command", return_value="fetch-incidents")
+    mocker.patch.object(GoogleCloudSCC.demisto, "command", return_value="fetch-incidents")
     mocker.patch.object(GoogleCloudSCC, "fetch_incidents", return_value=([], []))
     GoogleCloudSCC.main()
     assert GoogleCloudSCC.fetch_incidents.called
@@ -2142,12 +2141,11 @@ def test_main_initializes_v2_client_with_regional_endpoint(mocker, args, expecte
     - Ensure the integration params are forwarded to the client alongside the api_endpoint.
     """
     import GoogleCloudSCC
-    from GoogleCloudSCC import demisto
 
     params = {"service_account_json": TEST_JSON, "organization_id": "organization_id"}
-    mocker.patch.object(demisto, "params", return_value=params)
-    mocker.patch.object(demisto, "command", return_value="google-cloud-scc-v2-finding-list")
-    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch.object(GoogleCloudSCC.demisto, "params", return_value=params)
+    mocker.patch.object(GoogleCloudSCC.demisto, "command", return_value="google-cloud-scc-v2-finding-list")
+    mocker.patch.object(GoogleCloudSCC.demisto, "args", return_value=args)
     init_client = mocker.patch.object(GoogleCloudSCC, "init_google_scc_v2_client")
     command_func = mocker.patch.object(GoogleCloudSCC, "finding_list_v2_command")
     mocker.patch.object(GoogleCloudSCC, "return_results")
