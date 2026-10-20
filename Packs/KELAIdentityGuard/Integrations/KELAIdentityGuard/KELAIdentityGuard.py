@@ -2,6 +2,9 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa: F401
 
+from ContentClientApiModule import *  # noqa: F401
+from BaseContentApiModule import *  # noqa: F401
+
 from typing import Any
 
 # ############################################################################
@@ -53,23 +56,25 @@ def cookie_severity_to_xsoar(value: Any) -> int:
     return 2  # Medium
 
 
-class Client(BaseClient):
-    """REST client for the KELA Identity Guard API (bots-client-api v1).
-    Authentication is a query-string parameter (`apiToken`), not a header.
+class Client(ContentClient):
+    """REST client for the KELA Identity Guard API (bots-client-api v1), BaseClient-compatible.
+    Authentication is a query-string parameter (`apiToken`), injected by APIKeyAuthHandler.
     """
 
     def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        self._api_key = api_key
-
-    def _auth_params(self) -> dict[str, Any]:
-        return {"apiToken": self._api_key}
+        super().__init__(
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            auth_handler=APIKeyAuthHandler(key=api_key, query_param="apiToken"),
+            client_name="KELAIdentityGuardClient",
+        )
+        add_sensitive_log_strs(api_key)
 
     def search_incidents(self, workspace_id: str, payload: dict[str, Any]) -> dict[str, Any]:
         return self._http_request(
             method="POST",
             url_suffix="/search-incidents",
-            params=self._auth_params(),
             json_data={"workspaceId": workspace_id, "payload": payload},
         )
 
@@ -77,7 +82,6 @@ class Client(BaseClient):
         return self._http_request(
             method="POST",
             url_suffix="/search-bot-markets",
-            params=self._auth_params(),
             json_data={"workspaceId": workspace_id, "payload": payload},
         )
 
@@ -85,7 +89,6 @@ class Client(BaseClient):
         return self._http_request(
             method="POST",
             url_suffix="/search-cookie-incidents",
-            params=self._auth_params(),
             json_data={"workspaceId": workspace_id, "payload": payload},
         )
 
@@ -117,17 +120,23 @@ def date_range_filter(args: dict[str, Any], prefix: str) -> dict[str, str] | Non
         return None
     date_filter: dict[str, str] = {}
     if start:
-        date_filter["startDate"] = dateparser.parse(start).strftime(DATE_FORMAT)  # type: ignore[union-attr]
+        parsed_start = dateparser.parse(start)
+        if not parsed_start:
+            raise ValueError(f"Invalid date format for '{prefix}_start': {start}")
+        date_filter["startDate"] = parsed_start.strftime(DATE_FORMAT)
     if end:
-        date_filter["endDate"] = dateparser.parse(end).strftime(DATE_FORMAT)  # type: ignore[union-attr]
+        parsed_end = dateparser.parse(end)
+        if not parsed_end:
+            raise ValueError(f"Invalid date format for '{prefix}_end': {end}")
+        date_filter["endDate"] = parsed_end.strftime(DATE_FORMAT)
     return date_filter
 
 
 def pagination_and_sort(args: dict[str, Any], sort_fields: list[str], default_sort: str = "updatedDate") -> dict[str, Any]:
     payload: dict[str, Any] = {
         "pagination": {
-            "offset": int(args.get("offset") or 0),
-            "size": int(args.get("limit") or 50),
+            "offset": arg_to_number(args.get("offset")) or 0,
+            "size": arg_to_number(args.get("limit")) or 50,
         }
     }
     if sort_fields:
@@ -403,9 +412,14 @@ def fetch_incidents(client: Client, params: dict[str, Any]) -> None:
     if not workspace_id:
         raise ValueError("Fetch incidents requires a Default Workspace ID to be configured on the instance.")
 
-    max_fetch = int(params.get("max_fetch") or 50)
+    demisto.debug("[Fetch] Starting fetch...")
+    max_fetch = min(arg_to_number(params.get("max_fetch")) or 50, 200)
     min_severity_label = (params.get("min_severity") or "0 - low").split(" - ")[-1]
-    min_severity = SEVERITY_LABEL_TO_INT.get(min_severity_label, 0)
+    min_severity_kela = SEVERITY_LABEL_TO_INT.get(min_severity_label, 0)
+    # min_severity is compared against each source's get_severity() return value below, which is
+    # always in XSOAR's 1-4 scale (not KELA's own 0-3 scale) - translate it here so the comparison
+    # and the incident's stored severity are always on the same scale.
+    min_severity = XSOAR_SEVERITY_BY_KELA_SEVERITY.get(min_severity_kela, 1)
     fetch_bot_markets = params.get("fetch_bot_markets", True)
     fetch_cookie_incidents = params.get("fetch_cookie_incidents", True)
 
@@ -428,7 +442,9 @@ def fetch_incidents(client: Client, params: dict[str, Any]) -> None:
         max_fetch,
         "KELA Identity Guard incident",
         "incidentId",
-        lambda raw: normalize_severity(raw.get("severity")),
+        # Translate KELA's own 0-3 severity scale to XSOAR's 1-4 scale, so the incident is created
+        # with the correct XSOAR severity (previously stored the raw 0-3 value directly).
+        lambda raw: XSOAR_SEVERITY_BY_KELA_SEVERITY.get(normalize_severity(raw.get("severity")), 1),
         min_severity,
     )
     all_incidents.extend(incidents)
@@ -477,6 +493,7 @@ def fetch_incidents(client: Client, params: dict[str, Any]) -> None:
 
     demisto.incidents(all_incidents)
     demisto.setLastRun(new_last_run)
+    demisto.info(f"[Fetch] Completed fetch, created {len(all_incidents)} incident(s).")
 
 
 # ############################################################################
@@ -513,7 +530,8 @@ def main() -> None:
             raise NotImplementedError(f"Command '{command}' is not implemented.")
 
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        demisto.debug(traceback.format_exc())
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}", error=e)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

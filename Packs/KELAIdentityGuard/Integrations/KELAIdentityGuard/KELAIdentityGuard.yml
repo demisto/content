@@ -1,4 +1,7 @@
+display: KELA Identity Guard
+name: KELAIdentityGuard
 category: Data Enrichment & Threat Intelligence
+supportlevelheader: partner
 provider: KELA
 sectionorder:
 - Connect
@@ -20,6 +23,18 @@ configuration:
   hiddenusername: true
   section: Connect
   additionalinfo: The KELA Identity Guard API token, generated through the platform. Sent as the "apiToken" query parameter on every request (not an auth header).
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
 - display: Default Workspace ID
   name: workspace_id
   type: 0
@@ -31,11 +46,6 @@ configuration:
   type: 8
   section: Collect
   required: false
-- display: Incident type
-  name: incidentType
-  type: 13
-  section: Connect
-  required: false
 - defaultvalue: '50'
   display: Maximum number of incidents per fetch (per source)
   name: max_fetch
@@ -43,7 +53,7 @@ configuration:
   section: Collect
   required: false
   additionalinfo: Applied separately to each enabled source (general incidents, bot-market alerts, cookie incidents), so up to 3x this number of incidents can be created per fetch cycle.
-- defaultvalue: 3 days
+- defaultvalue: '3 days'
   display: First fetch time
   name: first_fetch
   additionalinfo: 'How far back to look for incidents on the very first fetch (applies to all enabled sources). Accepts a relative time, e.g. "3 days", "1 month", or an exact date.'
@@ -74,21 +84,15 @@ configuration:
   type: 8
   section: Collect
   required: false
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Connect
+  required: false
   section: Connect
   advanced: true
   required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  section: Connect
-  advanced: true
-  required: false
-description: Search KELA Identity Guard incidents - compromised credentials detected on infostealer-infected machines, leaked credential lists, data breaches and cybercrime chatter; bot-market alerts; and compromised session-cookie incidents. Automatically fetches all three (each independently toggleable) into Cortex XSOAR.
-display: KELA Identity Guard
-name: KELAIdentityGuard
+description: Search KELA Identity Guard incidents - compromised credentials detected on infostealer-infected machines, leaked credential lists, data breaches and cybercrime chatter; bot-market alerts; and compromised session-cookie incidents. Automatically fetches all three (each independently toggleable) into Cortex.
 script:
   commands:
   - name: kela-identityguard-search-incidents
@@ -135,7 +139,7 @@ script:
       - archived
       - unarchived
     - name: deleted
-      description: Only return deleted/non-deleted incidents.
+      description: Whether to return only deleted incidents.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -186,13 +190,13 @@ script:
       description: The source category the incident was detected from.
       type: String
     - contextPath: KELA.IdentityGuard.Incident.createdDate
-      description: When the incident was created in KELA.
+      description: 'The date and time the incident was created in KELA, in ISO 8601 format (e.g., 2024-01-15T12:34:56.000Z).'
       type: Date
     - contextPath: KELA.IdentityGuard.Incident.updatedDate
-      description: When the incident was last updated.
+      description: 'The date and time the incident was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56.000Z).'
       type: Date
     - contextPath: KELA.IdentityGuard.Incident.sourceDate
-      description: When the underlying leak/detection occurred.
+      description: 'The date and time the underlying leak/detection occurred, in ISO 8601 format (e.g., 2024-01-15T12:34:56.000Z).'
       type: Date
     - contextPath: KELA.IdentityGuard.Incident.accountUserName
       description: The compromised username, if any.
@@ -251,13 +255,13 @@ script:
       description: Comma-separated list of marketplace names to filter by (e.g. RussianMarket).
       isArray: true
     - name: is_archived
-      description: Filter by archived state.
+      description: Whether to return only archived alerts.
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: is_deleted
-      description: Filter by deleted state.
+      description: Whether to return only deleted alerts.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -306,7 +310,7 @@ script:
       description: The listed price.
       type: String
     - contextPath: KELA.IdentityGuard.BotMarket.postedDate
-      description: When the item was posted for sale.
+      description: 'The date and time the item was posted for sale, in ISO 8601 format (e.g., 2024-01-15T12:34:56.000Z).'
       type: Date
     - contextPath: KELA.IdentityGuard.BotMarket.linkAlert
       description: A link to the alert in the KELA platform.
@@ -352,13 +356,13 @@ script:
     - name: session_hash
       description: Filter by a specific session hash.
     - name: linked_usernames
-      description: Only return incidents linked to usernames.
+      description: Whether to return only incidents linked to usernames.
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: archived
-      description: Filter by archived state.
+      description: Whether to return only archived incidents.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -404,7 +408,7 @@ script:
       description: The cookie name.
       type: String
     - contextPath: KELA.IdentityGuard.CookieIncident.expirationDate
-      description: The cookie's expiration date.
+      description: 'The cookie''s expiration date, in ISO 8601 format (e.g., 2024-01-15T12:34:56.000Z).'
       type: Date
     - contextPath: KELA.IdentityGuard.CookieIncident.hasLinkedUsernames
       description: Whether the incident has linked usernames.

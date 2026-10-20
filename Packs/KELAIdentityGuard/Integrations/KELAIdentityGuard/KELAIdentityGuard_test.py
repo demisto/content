@@ -1,5 +1,8 @@
 from unittest.mock import MagicMock, patch
 
+import pytest
+from pytest_mock import MockerFixture
+
 from KELAIdentityGuard import (
     search_incidents_command,
     search_bot_markets_command,
@@ -9,7 +12,18 @@ from KELAIdentityGuard import (
     normalize_severity,
     cookie_severity_to_xsoar,
     fetch_incidents,
+    test_module as run_test_module,
 )
+
+
+@pytest.fixture(autouse=True)
+def mock_support_multithreading(mocker: MockerFixture) -> None:
+    """Mock support_multithreading to prevent demistomock attribute errors.
+
+    Called during ContentClient initialization; without this mock, tests fail with:
+    AttributeError: module 'demistomock' has no attribute '_Demisto__do'
+    """
+    mocker.patch("ContentClientApiModule.support_multithreading")
 
 
 def test_search_incidents_command():
@@ -117,6 +131,17 @@ def test_date_range_filter_returns_none_when_empty():
     assert date_range_filter({}, "created_date") is None
 
 
+def test_date_range_filter_rejects_unparseable_dates():
+    """
+    Given: a start/end date argument dateparser cannot understand.
+    When: date_range_filter runs.
+    Then: a clear ValueError is raised, instead of an AttributeError from calling
+          .strftime() on dateparser's None result.
+    """
+    with pytest.raises(ValueError, match="created_date_start"):
+        date_range_filter({"created_date_start": "not a date"}, "created_date")
+
+
 def test_normalize_severity_handles_label_and_int():
     assert normalize_severity("critical") == 3
     assert normalize_severity(2) == 2
@@ -127,6 +152,60 @@ def test_normalize_severity_handles_label_and_int():
 def test_cookie_severity_to_xsoar():
     assert cookie_severity_to_xsoar("critical") == 4
     assert cookie_severity_to_xsoar("non-critical") == 2
+
+
+def test_module_success():
+    """
+    Given: a client that answers correctly for the configured workspace.
+    When: test-module runs.
+    Then: it returns 'ok'.
+    """
+    client = MagicMock()
+    client.search_incidents.return_value = {"results": []}
+    assert run_test_module(client, {"workspace_id": "ws-1"}) == "ok"
+    client.search_incidents.assert_called_once_with("ws-1", {"pagination": {"offset": 0, "size": 1}})
+
+
+def test_module_requires_workspace_id():
+    """
+    Given: no Default Workspace ID configured on the instance.
+    When: test-module runs.
+    Then: it fails locally with a clear message, before any request is made.
+    """
+    client = MagicMock()
+    with pytest.raises(ValueError, match="Default Workspace ID"):
+        run_test_module(client, {})
+    client.search_incidents.assert_not_called()
+
+
+@patch("KELAIdentityGuard.demisto")
+def test_fetch_incidents_translates_kela_severity_to_xsoar_scale(mock_demisto):
+    """
+    Given:
+        - A general-incidents record with KELA severity "high" (KELA scale: 2).
+    When:
+        - fetch_incidents runs.
+    Then:
+        - The created XSOAR incident's severity is 3 (XSOAR's High), not the raw KELA
+          value 2 (XSOAR's Medium) - regression test for XSOAR_SEVERITY_BY_KELA_SEVERITY
+          previously being defined but never applied.
+    """
+    mock_demisto.getLastRun.return_value = {}
+
+    client = MagicMock()
+    client.search_incidents.return_value = {
+        "results": [{"incidentId": "i-1", "severity": "high", "createdDate": "2026-01-01T00:00:00.000Z"}]
+    }
+    client.search_bot_markets.return_value = {"results": []}
+    client.search_cookie_incidents.return_value = {"results": []}
+
+    fetch_incidents(
+        client,
+        {"workspace_id": "ws-1", "max_fetch": "50", "first_fetch": "3 days", "fetch_bot_markets": False, "fetch_cookie_incidents": False},
+    )
+
+    incidents_arg = mock_demisto.incidents.call_args[0][0]
+    assert incidents_arg[0]["severity"] == 3
 
 
 @patch("KELAIdentityGuard.demisto")

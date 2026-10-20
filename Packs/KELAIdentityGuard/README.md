@@ -1,6 +1,6 @@
 # KELA Identity Guard
 
-This pack integrates [KELA Identity Guard](https://www.kelacyber.com/platform/identity-guard/) with Cortex XSOAR.
+This pack integrates [KELA Identity Guard](https://www.kelacyber.com/platform/identity-guard/) with Cortex.
 
 Identity Guard monitors for compromised credentials and identities belonging to your organization,
 detected across infostealer-infected machines ("bots"), leaked credential lists, data breaches,
@@ -13,14 +13,14 @@ This pack covers the three Identity Guard "search" endpoints that return inciden
 - **Bot-market alerts** (`search-bot-markets`) - bots/webmails offered for sale on marketplaces.
 - **Cookie incidents** (`search-cookie-incidents`) - compromised session cookies.
 
-## What you can do with this pack
+## What does this pack do?
 
-- Automatically fetch new/unresolved incidents from all three sources into Cortex XSOAR
+- Automatically fetch new/unresolved incidents from all three sources into Cortex
   (fetch-incidents), each independently toggleable in the instance configuration.
 - Set how far back the very first fetch looks (the "First fetch time" instance parameter).
 - Search and filter each of the three sources on demand with dedicated commands.
 
-## Configure KELA Identity Guard in Cortex XSOAR
+## Configure KELA Identity Guard in Cortex
 
 1. Navigate to **Settings > Integrations > Servers & Services**.
 2. Search for **KELA Identity Guard**.
