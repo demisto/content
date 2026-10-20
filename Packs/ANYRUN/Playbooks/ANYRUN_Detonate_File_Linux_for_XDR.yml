@@ -662,7 +662,7 @@ tasks:
       id: b8a32590-4653-410d-8419-cf1545e173df
       version: -1
       name: '[XDR] Extract requested file name from path'
-      description: Extracts the basename from inputs.file_path and stores it in ANYRUN.Input.FileName.
+      description: Extracts the basename from the file_path playbook input and saves it to the ANYRUN.Input.FileName context key.
         The playbook uses the filename to select the extracted original sample.
       scriptName: SetAndHandleEmpty
       type: regular
@@ -712,7 +712,7 @@ tasks:
       version: -1
       name: '[XDR] Select original file EntryID by file name'
       description: Selects the extracted original sample by matching File.Name to
-        the basename extracted from inputs.file_path, then stores its EntryID in SelectedOriginalFile.EntryID.
+        the basename extracted from the file_path playbook input, then stores its EntryID in SelectedOriginalFile.EntryID.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1356,3 +1356,4 @@ marketplaces:
 - marketplacev2
 supportedModules:
 - edr
+- xsiam
