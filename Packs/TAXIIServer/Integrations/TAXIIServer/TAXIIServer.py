@@ -867,18 +867,19 @@ def taxii_poll_service() -> Response:
         else:
             raise ValueError("Invalid message")
     except Exception as e:
-        error = f"Could not perform the polling request: {e!s}"
-        handle_long_running_error(error)
-        return make_response(error, 400)
+        internal_error = f"Could not perform the polling request: {e!s}"
+        handle_long_running_error(internal_error)
+        return make_response("Could not perform the polling request.", 400)
 
     try:
         return SERVER.get_poll_response(taxii_message)
     except Exception as e:
+        demisto.debug(traceback.format_exc())
         # Guard against any synchronous failure (e.g. unknown collection, bad STIX/CybOX serialization)
         # so a single malformed request never surfaces as an unhandled HTTP 500.
-        error = f"Could not perform the polling request: {e!s}"
-        handle_long_running_error(error)
-        return make_response(error, 400)
+        internal_error = f"Could not perform the polling request: {e!s}"
+        handle_long_running_error(internal_error)
+        return make_response("Could not perform the polling request.", 400)
 
 
 """ COMMAND FUNCTIONS """

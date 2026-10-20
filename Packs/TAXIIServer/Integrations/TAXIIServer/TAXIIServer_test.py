@@ -578,7 +578,6 @@ def test_taxii_poll_service_does_not_return_500_on_internal_error(mocker):
           and the error is reported via handle_long_running_error.
     """
     import TAXIIServer
-    from TAXIIServer import APP
 
     taxii_server = TAXIIServer.TAXIIServer(
         url_scheme="http",
@@ -611,6 +610,6 @@ def test_taxii_poll_service_does_not_return_500_on_internal_error(mocker):
         "X-TAXII-Services": "urn:taxii.mitre.org:services:1.1",
     }
 
-    with APP.test_client() as test_client:
+    with TAXIIServer.APP.test_client() as test_client:
         response = test_client.post("/taxii-poll-service", data=b"<fake/>", headers=headers)
         assert response.status_code == 400
