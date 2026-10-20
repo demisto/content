@@ -522,6 +522,14 @@ tasks:
           right:
             value:
               simple: "true"
+          ignorecase: true
+          left:
+            value:
+              simple: inputs.NotifyOutdated
+            iscontext: true
+          right:
+            value:
+              simple: "true"
       - - operator: isExists
           left:
             value:
