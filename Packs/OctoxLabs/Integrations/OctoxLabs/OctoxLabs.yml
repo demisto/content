@@ -814,7 +814,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/octoxlabs:1.0.0.12833174
+  dockerimage: demisto/octoxlabs:1.0.0.13531018
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

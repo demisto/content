@@ -995,7 +995,7 @@ script:
   subtype: python3
   isfetchevents: true
   isfetchevents:xsoar: false
-  dockerimage: demisto/fastapi:0.125.0.12689358
+  dockerimage: demisto/fastapi:0.142.2.13587997
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
