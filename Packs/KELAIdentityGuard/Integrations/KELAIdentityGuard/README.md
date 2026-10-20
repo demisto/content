@@ -83,7 +83,7 @@ Search Identity Guard incidents for a workspace, with rich filtering, sorting an
 | KELA.IdentityGuard.Incident.botIp | String | The IP address of the infected machine, if any. |
 | KELA.IdentityGuard.Incident.link | String | A link to the incident in the KELA platform. |
 
-#### Command Example
+#### Command example
 
 ```
 !kela-identityguard-search-incidents workspace_id=1234 severity=critical status=UNRESOLVED limit=20
@@ -112,6 +112,15 @@ Search Identity Guard incidents for a workspace, with rich filtering, sorting an
     }
 }
 ```
+
+*(Illustrative output: values are placeholders, not real data. It has not been run against the live API yet.)*
+
+#### Human Readable Output
+
+>### KELA Identity Guard incidents (workspace 1234) - 1 total
+>|incidentId|severity|status|sourceType|accountUserName|accountServiceHostname|createdDate|
+>|---|---|---|---|---|---|---|
+>| <incident-id> | critical | UNRESOLVED | infectedBots | jdoe | example.com | 2024-01-15T12:34:56.000Z |
 
 *(Illustrative output: values are placeholders, not real data. It has not been run against the live API yet.)*
 
@@ -155,7 +164,7 @@ Search Identity Guard bot-market alerts (bots/webmails offered for sale) for a w
 | KELA.IdentityGuard.BotMarket.postedDate | Date | The date and time the item was posted for sale, in ISO 8601 format (e.g., 2024-01-15T12:34:56.000Z). |
 | KELA.IdentityGuard.BotMarket.linkAlert | String | A link to the alert in the KELA platform. |
 
-#### Command Example
+#### Command example
 
 ```
 !kela-identityguard-search-bot-markets workspace_id=1234 statuses=pending
@@ -182,6 +191,15 @@ Search Identity Guard bot-market alerts (bots/webmails offered for sale) for a w
     }
 }
 ```
+
+*(Illustrative output: values are placeholders, not real data. It has not been run against the live API yet.)*
+
+#### Human Readable Output
+
+>### KELA Identity Guard bot-market alerts (workspace 1234)
+>|alertId|marketName|requestStatus|availabilityStatus|price|postedDate|
+>|---|---|---|---|---|---|
+>| <alert-id> | RussianMarket | pending | available | $10 | 2024-01-15T12:34:56.000Z |
 
 *(Illustrative output: values are placeholders, not real data. It has not been run against the live API yet.)*
 
@@ -230,7 +248,7 @@ permission on Identity Guard.
 | KELA.IdentityGuard.CookieIncident.botCountry | String | The country of the infected machine. |
 | KELA.IdentityGuard.CookieIncident.botOS | String | The OS of the infected machine. |
 
-#### Command Example
+#### Command example
 
 ```
 !kela-identityguard-search-cookie-incidents workspace_id=1234 severity=CRITICAL status=UNRESOLVED
@@ -258,5 +276,14 @@ permission on Identity Guard.
     }
 }
 ```
+
+*(Illustrative output: values are placeholders, not real data. It has not been run against the live API yet.)*
+
+#### Human Readable Output
+
+>### KELA Identity Guard cookie incidents (workspace 1234)
+>|incidentId|severity|status|cookieCategory|cookieName|botCountry|
+>|---|---|---|---|---|---|
+>| <incident-id> | critical | UNRESOLVED | sso | <cookie-name> | US |
 
 *(Illustrative output: values are placeholders, not real data. It has not been run against the live API yet.)*
