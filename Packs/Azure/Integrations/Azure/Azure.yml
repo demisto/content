@@ -2767,6 +2767,351 @@ script:
     name: azure-mysql-flexible-server-param-set
     description: "Updates a server configuration. Required permissions: Microsoft.DBforMySQL/flexibleServers/configurations/read, Microsoft.DBforMySQL/flexibleServers/configurations/write."
     outputs: [] # No outputs are returned in response
+  - name: azure-postgres-flexible-server-configuration-update
+    description: "Updates the configuration of a PostgreSQL Flexible Server. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write."
+    arguments:
+    - name: resource_group_name
+      type: string
+      description: The name of the resource group. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: subscription_id
+      type: string
+      required: false
+      required:platform: true
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: server_name
+      type: string
+      required: true
+      description: The name of the PostgreSQL Flexible Server.
+    - name: configuration_name
+      type: string
+      required: true
+      description: The name of the server configuration parameter to update.
+    - name: source
+      type: string
+      required: false
+      description: The source of the configuration value (for example, user-override).
+    - name: value
+      type: string
+      required: true
+      description: The new value of the configuration, which is also known as a server parameter. Required for updating the value assigned to a specific modifiable configuration.
+    outputs: [] # No outputs are returned in response
+  - name: azure-postgres-flexible-server-set-disconnection-logging-quick-action
+    prettyname: Set Disconnection Logging on PostgreSQL Flexible Server
+    hidden: true
+    quickaction: true
+    description: "Enables the logging of client disconnections on the PostgreSQL Flexible Server. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write."
+    arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The name of the resource group.
+      required: true
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - name: server_name
+      type: string
+      required: true
+      description: The name of the PostgreSQL Flexible Server.
+      prettyname: Postgres Flexible Server Name
+      defaultValue: Postgres Flexible Server Name
+      prettypredefined:
+        Postgres Flexible Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The name of the configuration setting.
+      hidden: true
+      defaultValue: log_disconnections
+    - name: value
+      type: string
+      description: The value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: The source of the configuration.
+      hidden: true
+    outputs: [] # No outputs are returned in response
+  - name: azure-postgres-flexible-server-set-checkpoint-logging-quick-action
+    prettyname: Set PostgreSQL Flexible Server Checkpoint Logging
+    hidden: true
+    quickaction: true
+    description: "Enables checkpoint logging on the PostgreSQL Flexible Server. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write."
+    arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The name of the resource group.
+      required: true
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - name: server_name
+      type: string
+      required: true
+      description: The name of the PostgreSQL Flexible Server.
+      prettyname: Postgres Flexible Server Name
+      defaultValue: Postgres Flexible Server Name
+      prettypredefined:
+        Postgres Flexible Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The name of the configuration setting.
+      hidden: true
+      defaultValue: 'log_checkpoints'
+    - name: value
+      type: string
+      description: The value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: The source of the configuration.
+      hidden: true
+    outputs: [] # No outputs are returned in response
+  - name: azure-postgres-flexible-server-set-connection-throttling-quick-action
+    prettyname: Set Connection Throttling on PostgreSQL Flexible Server
+    hidden: true
+    quickaction: true
+    description: "Enables connection throttling on the PostgreSQL Flexible Server to manage log verbosity for concurrent connection queries and errors. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write."
+    arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The name of the resource group.
+      required: true
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - name: server_name
+      type: string
+      required: true
+      description: The name of the PostgreSQL Flexible Server.
+      prettyname: Postgres Flexible Server Name
+      defaultValue: Postgres Flexible Server Name
+      prettypredefined:
+        Postgres Flexible Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The name of the configuration setting.
+      hidden: true
+      defaultValue: 'connection_throttling'
+    - name: value
+      type: string
+      description: The value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: The source of the configuration.
+      hidden: true
+    outputs: [] # No outputs are returned in response
+  - name: azure-postgres-flexible-server-set-session-connection-logging-quick-action
+    prettyname: Set Session Connection Logging on PostgreSQL Flexible Server
+    hidden: true
+    quickaction: true
+    description: "Enables the logging of client connections on the PostgreSQL Flexible Server. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write."
+    arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The name of the resource group.
+      required: true
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - name: server_name
+      type: string
+      required: true
+      description: The name of the PostgreSQL Flexible Server.
+      prettyname: Postgres Flexible Server Name
+      defaultValue: Postgres Flexible Server Name
+      prettypredefined:
+        Postgres Flexible Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The name of the configuration setting.
+      hidden: true
+      defaultValue: 'log_connections'
+    - name: value
+      type: string
+      description: The value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: The source of the configuration.
+      hidden: true
+    outputs: [] # No outputs are returned in response
+  - name: azure-postgres-flexible-server-set-log-retention-period-quick-action
+    prettyname: Set PostgreSQL Flexible Server Log Retention
+    hidden: true
+    quickaction: true
+    description: 'Sets the log retention period for the PostgreSQL Flexible Server to 4 days. The recommended log retention period is 4 to 7 days. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write.'
+    arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The name of the resource group.
+      required: true
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - name: server_name
+      type: string
+      required: true
+      description: The name of the PostgreSQL Flexible Server.
+      prettyname: Postgres Flexible Server Name
+      defaultValue: Postgres Flexible Server Name
+      prettypredefined:
+        Postgres Flexible Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The name of the configuration setting.
+      hidden: true
+      defaultValue: 'log_retention_days'
+    - name: value
+      type: string
+      description: The value of the configuration.
+      hidden: true
+      defaultValue: '4'
+    - name: source
+      defaultValue: user-override
+      description: The source of the configuration.
+      hidden: true
+    outputs: [] # No outputs are returned in response
+  - name: azure-postgres-flexible-server-set-statement-logging-quick-action
+    prettyname: Set PostgreSQL Flexible Server Statement Logging
+    hidden: true
+    quickaction: true
+    description: "Enables the logging of statement execution duration on the PostgreSQL Flexible Server to help with performance analysis. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write."
+    arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The name of the resource group.
+      required: true
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - name: server_name
+      type: string
+      required: true
+      description: The name of the PostgreSQL Flexible Server.
+      prettyname: Postgres Flexible Server Name
+      defaultValue: Postgres Flexible Server Name
+      prettypredefined:
+        Postgres Flexible Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The name of the configuration setting.
+      hidden: true
+      defaultValue: 'log_duration'
+    - name: value
+      type: string
+      description: The value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: The source of the configuration.
+      hidden: true
+    outputs: [] # No outputs are returned in response
+  - name: azure-postgres-flexible-server-set-secure-transport-quick-action
+    prettyname: Set Secure Transport on PostgreSQL Flexible Server
+    hidden: true
+    quickaction: true
+    description: "Enforces SSL/TLS connections for the PostgreSQL Flexible Server by enabling the require_secure_transport configuration parameter. Required permissions: Microsoft.DBforPostgreSQL/flexibleServers/configurations/write."
+    arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      defaultValue: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The name of the resource group.
+      required: true
+      prettyname: Resource Group
+      defaultValue: Resource Group
+      prettypredefined:
+        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
+    - name: server_name
+      type: string
+      required: true
+      description: The name of the PostgreSQL Flexible Server.
+      prettyname: Postgres Flexible Server Name
+      defaultValue: Postgres Flexible Server Name
+      prettypredefined:
+        Postgres Flexible Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The name of the configuration setting.
+      hidden: true
+      defaultValue: 'require_secure_transport'
+    - name: value
+      type: string
+      description: The value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: The source of the configuration.
+      hidden: true
+    outputs: [] # No outputs are returned in response
   - arguments:
     - name: log_profile_name
       description: The name of the log profile to update.
@@ -5764,6 +6109,116 @@ script:
       type: Boolean
     - contextPath: Azure.VirtualNetworks.NetworkInterfaces.properties.nicType
       description: The network interface card type (Standard/Basic).
+      type: String
+
+  - name: azure-vn-virtual-networks-list
+    description: "Gets virtual networks in a resource group. Required permissions: Microsoft.Network/virtualNetworks/read."
+    arguments:
+    - description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: resource_group_name
+      type: String
+      required: false
+      required:platform: true
+    - description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: subscription_id
+      type: String
+      required: false
+      required:platform: true
+    - description: The URI to fetch the next page of results as returned in the Azure.VirtualNetworks.VirtualNetworksNextToken output of a previous run.
+      name: next_token
+      type: String
+      required: false
+    outputs:
+    - contextPath: Azure.VirtualNetworks.VirtualNetworksNextToken
+      description: The URI to fetch the next page of virtual networks. Run the same command with the next_token argument to get the next page.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.name
+      description: The virtual network's name.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.id
+      description: The virtual network's ID.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.etag
+      description: The virtual network's ETag.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.type
+      description: The resource type.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.location
+      description: The virtual network's location.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.tags
+      description: The tags associated with the virtual network.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.provisioningState
+      description: 'The provisioning state of the virtual network resource. Possible values are Succeeded, Updating, Deleting, or Failed.'
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.resourceGuid
+      description: The resource GUID property of the virtual network resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.addressSpace
+      description: The address space object of the virtual network. Contains the addressPrefixes field, which is a list of address blocks reserved for this virtual network in CIDR notation.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.subnets
+      description: The list of subnets in the virtual network. Each subnet contains the name, ID, and properties fields.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.virtualNetworkPeerings
+      description: The list of peerings in the virtual network.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.dhcpOptions
+      description: The dhcpOptions object of the virtual network. Contains the dnsServers field, which is a list of DNS servers IP addresses.
+      type: Unknown
+    - contextPath: Azure.VirtualNetworks.VirtualNetworks.properties.enableDdosProtection
+      description: Whether DDoS protection is enabled for all the protected resources in the virtual network.
+      type: Boolean
+  - name: azure-rm-subscriptions-list
+    description: "Gets all subscriptions for a tenant. Required permissions: Microsoft.Resources/subscriptions/read."
+    arguments:
+    - description: The Azure subscription ID used to authenticate the request. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: subscription_id
+      type: String
+      required: false
+      required:platform: true
+    - description: The URI to fetch the next page of results as returned in the Azure.ResourceManagement.SubscriptionsNextToken output of a previous run.
+      name: next_token
+      type: String
+      required: false
+    outputs:
+    - contextPath: Azure.ResourceManagement.SubscriptionsNextToken
+      description: The URI to fetch the next page of subscriptions. Run the same command with the next_token argument to get the next page.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.id
+      description: The unique identifier of the subscription.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.subscriptionId
+      description: The ID of the subscription.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.tenantId
+      description: The ID of the tenant associated with the subscription.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.displayName
+      description: The display name of the subscription.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.state
+      description: 'The current state of the subscription. Possible values are Enabled, Warned, PastDue, Disabled, or Deleted.'
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.authorizationSource
+      description: 'The authorization source of the request. Possible values are Legacy, RoleBased, Bypassed, Direct, or Management.'
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.managedByTenants
+      description: The list of tenants that have access to manage the subscription.
+      type: Unknown
+    - contextPath: Azure.ResourceManagement.Subscriptions.tags
+      description: The tags associated with the subscription.
+      type: Unknown
+    - contextPath: Azure.ResourceManagement.Subscriptions.subscriptionPolicies.locationPlacementId
+      description: The ID of the location placement policy for the subscription.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.subscriptionPolicies.quotaId
+      description: The ID of the quota policy for the subscription.
+      type: String
+    - contextPath: Azure.ResourceManagement.Subscriptions.subscriptionPolicies.spendingLimit
+      description: The spending limit policy for the subscription.
       type: String
 
   - description: Gets public IP addresses in a resource group. The command is deprecated, please use azure-vn-public-ip-addresses-list.
@@ -11948,6 +12403,1016 @@ script:
     quickaction: true
     prettyname: Enable SSL on Postgres Server
     deprecated: true
+  - name: azure-firewall-rule-collection-groups-create
+    description: "Creates a network rule collection that contains a single network rule in an Azure Firewall. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: firewall_name
+      description: The name of the Azure Firewall in which to create the network rule collection.
+      type: String
+      required: true
+    - name: collection_name
+      description: The name of the network rule collection to create.
+      type: String
+      required: true
+    - name: collection_priority
+      description: The priority of the network rule collection. Must be between 100 and 65000.
+      type: Number
+      required: true
+    - name: action
+      description: The action type of the network rule collection.
+      auto: PREDEFINED
+      predefined:
+        - Allow
+        - Deny
+      type: String
+      required: true
+    - name: rule_name
+      description: The name of the network rule to create in the collection.
+      type: String
+      required: true
+    - name: description
+      description: The description of the created network rule.
+      type: String
+    - name: protocols
+      description: A comma-separated list of protocols for the created network rule.
+      auto: PREDEFINED
+      predefined:
+        - TCP
+        - UDP
+        - ICMP
+        - Any
+      isArray: true
+      required: true
+    - name: source_type
+      description: The source type of the created network rule.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+      type: String
+      required: true
+    - name: source_ips
+      description: A comma-separated list of source IP addresses for the created network rule. Required when source_type is ip_address.
+      isArray: true
+    - name: source_ip_group_ids
+      description: A comma-separated list of source IP group IDs for the created network rule. Required when source_type is ip_group.
+      isArray: true
+    - name: destination_type
+      description: The destination type of the created network rule.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+        - service_tag
+        - fqdn
+      type: String
+      required: true
+    - name: destinations
+      description: A comma-separated list of destinations for the created network rule. Must match the value of destination_type. Supports IP addresses, IP group IDs, service tag names, and FQDNs.
+      isArray: true
+      required: true
+    - name: destination_ports
+      description: A comma-separated list of destination ports for the created network rule.
+      isArray: true
+      required: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The time, in seconds, after which polling stops. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: Whether this is the first polling run. For internal use only. Do not set this argument manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: Whether to hide the polling message and display only the final status.
+      hidden: true
+    outputs:
+    - contextPath: Azure.Firewall.Firewalls.name
+      description: The name of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.id
+      description: The ID of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.type
+      description: The type of the Azure Firewall resource.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.location
+      description: The location of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.etag
+      description: The ETag of the Azure Firewall. The ETag prevents concurrent updates from overwriting each other.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.provisioningState
+      description: The provisioning state of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.networkRuleCollections
+      description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
+      type: Unknown
+  - name: azure-vn-firewall-policy-rule-collection-groups-create
+    description: "Creates a rule collection group in a firewall policy. The group contains a network rule collection with a single network rule. Required permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: policy_name
+      description: The name of the firewall policy in which to create the rule collection group.
+      type: String
+      required: true
+    - name: collection_name
+      description: The name of the network rule collection to create.
+      type: String
+      required: true
+    - name: collection_priority
+      description: The priority of the network rule collection. Must be between 100 and 65000.
+      type: Number
+      required: true
+    - name: action
+      description: The action type of the network rule collection.
+      auto: PREDEFINED
+      predefined:
+        - Allow
+        - Deny
+      type: String
+      required: true
+    - name: rule_name
+      description: The name of the network rule to create in the collection.
+      type: String
+      required: true
+    - name: description
+      description: The description of the created network rule.
+      type: String
+    - name: protocols
+      description: A comma-separated list of protocols for the created network rule.
+      auto: PREDEFINED
+      predefined:
+        - TCP
+        - UDP
+        - ICMP
+        - Any
+      isArray: true
+      required: true
+    - name: source_type
+      description: The source type of the created network rule.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+      type: String
+      required: true
+    - name: source_ips
+      description: A comma-separated list of source IP addresses for the created network rule. Required when source_type is ip_address.
+      isArray: true
+    - name: source_ip_group_ids
+      description: A comma-separated list of source IP group IDs for the created network rule. Required when source_type is ip_group.
+      isArray: true
+    - name: destination_type
+      description: The destination type of the created network rule.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+        - service_tag
+        - fqdn
+      type: String
+      required: true
+    - name: destinations
+      description: A comma-separated list of destinations for the created network rule. Must match the value of destination_type. Supports IP addresses, IP group IDs, service tag names, and FQDNs.
+      isArray: true
+      required: true
+    - name: destination_ports
+      description: A comma-separated list of destination ports for the created network rule.
+      isArray: true
+      required: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The time, in seconds, after which polling stops. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: Whether this is the first polling run. For internal use only. Do not set this argument manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: Whether to hide the polling message and display only the final status.
+      hidden: true
+    outputs:
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name
+      description: The name of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id
+      description: The ID of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type
+      description: The type of the firewall policy rule collection group resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag
+      description: The ETag of the firewall policy rule collection group. The ETag prevents concurrent updates from overwriting each other.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority
+      description: The priority of the firewall policy rule collection group.
+      type: Number
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState
+      description: The provisioning state of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections
+      description: The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection.
+      type: Unknown
+  - name: azure-firewall-rule-collection-groups-update
+    description: "Updates the priority or the action of a network rule collection in an Azure Firewall. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: firewall_name
+      description: The name of the Azure Firewall that contains the network rule collection.
+      type: String
+      required: true
+    - name: collection_name
+      description: The name of the network rule collection to update.
+      type: String
+      required: true
+    - name: priority
+      description: The new priority of the network rule collection. Must be between 100 and 65000. It is mandatory to provide priority, action, or both.
+      type: Number
+    - name: action
+      description: The new action type of the network rule collection. It is mandatory to provide priority, action, or both.
+      auto: PREDEFINED
+      predefined:
+        - Allow
+        - Deny
+      type: String
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The time, in seconds, after which polling stops. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: Whether this is the first polling run. For internal use only. Do not set this argument manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: Whether to hide the polling message and display only the final status.
+      hidden: true
+    outputs:
+    - contextPath: Azure.Firewall.Firewalls.name
+      description: The name of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.id
+      description: The ID of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.type
+      description: The type of the Azure Firewall resource.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.location
+      description: The location of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.etag
+      description: The ETag of the Azure Firewall. The ETag prevents concurrent updates from overwriting each other.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.provisioningState
+      description: The provisioning state of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.networkRuleCollections
+      description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
+      type: Unknown
+  - name: azure-vn-firewall-policy-rule-collection-groups-update
+    description: "Updates the priority or the action of a network rule collection in a firewall policy rule collection group. Required permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: policy_name
+      description: The name of the firewall policy that contains the rule collection group.
+      type: String
+      required: true
+    - name: collection_name
+      description: The name of the network rule collection to update.
+      type: String
+      required: true
+    - name: priority
+      description: The new priority of the network rule collection. Must be between 100 and 65000. It is mandatory to provide priority, action, or both.
+      type: Number
+    - name: action
+      description: The new action type of the network rule collection. It is mandatory to provide priority, action, or both.
+      auto: PREDEFINED
+      predefined:
+        - Allow
+        - Deny
+      type: String
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The time, in seconds, after which polling stops. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: Whether this is the first polling run. For internal use only. Do not set this argument manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: Whether to hide the polling message and display only the final status.
+      hidden: true
+    outputs:
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name
+      description: The name of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id
+      description: The ID of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type
+      description: The type of the firewall policy rule collection group resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag
+      description: The ETag of the firewall policy rule collection group. The ETag prevents concurrent updates from overwriting each other.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority
+      description: The priority of the firewall policy rule collection group.
+      type: Number
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState
+      description: The provisioning state of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections
+      description: The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection.
+      type: Unknown
+  - name: azure-firewall-rule-collection-groups-delete
+    description: "Deletes a network rule collection from an Azure Firewall. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: firewall_name
+      description: The name of the Azure Firewall that contains the network rule collection.
+      type: String
+      required: true
+    - name: collection_name
+      description: The name of the network rule collection to delete.
+      type: String
+      required: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The time, in seconds, after which polling stops. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: Whether this is the first polling run. For internal use only. Do not set this argument manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: Whether to hide the polling message and display only the final status.
+      hidden: true
+    outputs:
+    - contextPath: Azure.Firewall.Firewalls.name
+      description: The name of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.id
+      description: The ID of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.type
+      description: The type of the Azure Firewall resource.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.location
+      description: The location of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.etag
+      description: The ETag of the Azure Firewall. The ETag prevents concurrent updates from overwriting each other.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.provisioningState
+      description: The provisioning state of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.networkRuleCollections
+      description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
+      type: Unknown
+  - name: azure-vn-firewall-policy-rule-collection-groups-delete
+    description: "Deletes a rule collection group from a firewall policy. Required permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/delete."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: policy_name
+      description: The name of the firewall policy that contains the rule collection group.
+      type: String
+      required: true
+    - name: collection_name
+      description: The name of the rule collection group to delete. This is the network rule collection name that was used when the group was created.
+      type: String
+      required: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The time, in seconds, after which polling stops. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: Whether this is the first polling run. For internal use only. Do not set this argument manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: Whether to hide the polling message and display only the final status.
+      hidden: true
+  - name: azure-firewall-network-rule-create
+    description: "Creates a network rule in an existing network rule collection of an Azure Firewall. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: firewall_name
+      description: The name of the Azure Firewall that contains the network rule collection.
+      type: String
+      required: true
+    - name: collection_name
+      description: The name of the network rule collection in which to create the network rule.
+      type: String
+      required: true
+    - name: rule_name
+      description: The name of the network rule to create.
+      type: String
+      required: true
+    - name: description
+      description: The description of the created network rule.
+      type: String
+    - name: protocols
+      description: A comma-separated list of protocols for the created network rule.
+      auto: PREDEFINED
+      predefined:
+        - TCP
+        - UDP
+        - ICMP
+        - Any
+      isArray: true
+      required: true
+    - name: source_type
+      description: The source type of the created network rule.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+      type: String
+      required: true
+    - name: source_ips
+      description: A comma-separated list of source IP addresses for the created network rule. Required when source_type is ip_address.
+      isArray: true
+    - name: source_ip_group_ids
+      description: A comma-separated list of source IP group IDs for the created network rule. Required when source_type is ip_group.
+      isArray: true
+    - name: destination_type
+      description: The destination type of the created network rule.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+        - service_tag
+        - fqdn
+      type: String
+      required: true
+    - name: destinations
+      description: A comma-separated list of destinations for the created network rule. Must match the value of destination_type. Supports IP addresses, IP group IDs, service tag names, and FQDNs.
+      isArray: true
+      required: true
+    - name: destination_ports
+      description: A comma-separated list of destination ports for the created network rule.
+      isArray: true
+      required: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The time, in seconds, after which polling stops. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: Whether this is the first polling run. For internal use only. Do not set this argument manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: Whether to hide the polling message and display only the final status.
+      hidden: true
+    outputs:
+    - contextPath: Azure.Firewall.Firewalls.name
+      description: The name of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.id
+      description: The ID of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.type
+      description: The type of the Azure Firewall resource.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.location
+      description: The location of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.etag
+      description: The ETag of the Azure Firewall. The ETag prevents concurrent updates from overwriting each other.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.provisioningState
+      description: The provisioning state of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.networkRuleCollections
+      description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
+      type: Unknown
+  - name: azure-vn-firewall-policy-network-rule-create
+    description: "Creates a network rule in an existing network rule collection of a firewall policy rule collection group. Required permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: policy_name
+      description: The name of the firewall policy that contains the rule collection group.
+      type: String
+      required: true
+    - name: collection_name
+      description: The name of the network rule collection in which to create the network rule.
+      type: String
+      required: true
+    - name: rule_name
+      description: The name of the network rule to create.
+      type: String
+      required: true
+    - name: description
+      description: The description of the created network rule.
+      type: String
+    - name: protocols
+      description: A comma-separated list of protocols for the created network rule.
+      auto: PREDEFINED
+      predefined:
+        - TCP
+        - UDP
+        - ICMP
+        - Any
+      isArray: true
+      required: true
+    - name: source_type
+      description: The source type of the created network rule.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+      type: String
+      required: true
+    - name: source_ips
+      description: A comma-separated list of source IP addresses for the created network rule. Required when source_type is ip_address.
+      isArray: true
+    - name: source_ip_group_ids
+      description: A comma-separated list of source IP group IDs for the created network rule. Required when source_type is ip_group.
+      isArray: true
+    - name: destination_type
+      description: The destination type of the created network rule.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+        - service_tag
+        - fqdn
+      type: String
+      required: true
+    - name: destinations
+      description: A comma-separated list of destinations for the created network rule. Must match the value of destination_type. Supports IP addresses, IP group IDs, service tag names, and FQDNs.
+      isArray: true
+      required: true
+    - name: destination_ports
+      description: A comma-separated list of destination ports for the created network rule.
+      isArray: true
+      required: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The time, in seconds, after which polling stops. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: Whether this is the first polling run. For internal use only. Do not set this argument manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: Whether to hide the polling message and display only the final status.
+      hidden: true
+    outputs:
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name
+      description: The name of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id
+      description: The ID of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type
+      description: The type of the firewall policy rule collection group resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag
+      description: The ETag of the firewall policy rule collection group. The ETag prevents concurrent updates from overwriting each other.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority
+      description: The priority of the firewall policy rule collection group.
+      type: Number
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState
+      description: The provisioning state of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections
+      description: The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection.
+      type: Unknown
+  - name: azure-firewall-network-rule-update
+    description: "Updates a network rule in a network rule collection of an Azure Firewall. Only the provided properties are replaced. The rest of the rule configuration remains unchanged. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: firewall_name
+      description: The name of the Azure Firewall that contains the network rule collection.
+      type: String
+      required: true
+    - name: collection_name
+      description: The name of the network rule collection that contains the network rule.
+      type: String
+      required: true
+    - name: rule_name
+      description: The name of the network rule to update.
+      type: String
+      required: true
+    - name: description
+      description: The new description of the network rule.
+      type: String
+    - name: protocols
+      description: A comma-separated list of protocols that replaces the protocols of the network rule.
+      auto: PREDEFINED
+      predefined:
+        - TCP
+        - UDP
+        - ICMP
+        - Any
+      isArray: true
+    - name: source_type
+      description: The new source type of the network rule. If provided, you must also provide source_ips or source_ip_group_ids.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+      type: String
+    - name: source_ips
+      description: A comma-separated list of source IP addresses that replaces the sources of the network rule. Required when source_type is ip_address.
+      isArray: true
+    - name: source_ip_group_ids
+      description: A comma-separated list of source IP group IDs that replaces the sources of the network rule. Required when source_type is ip_group.
+      isArray: true
+    - name: destination_type
+      description: The new destination type of the network rule. Required when destinations is provided.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+        - service_tag
+        - fqdn
+      type: String
+    - name: destinations
+      description: A comma-separated list of destinations that replaces the destinations of the network rule. Must match the value of destination_type. Supports IP addresses, IP group IDs, service tag names, and FQDNs.
+      isArray: true
+    - name: destination_ports
+      description: A comma-separated list of destination ports that replaces the destination ports of the network rule.
+      isArray: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The time, in seconds, after which polling stops. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: Whether this is the first polling run. For internal use only. Do not set this argument manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: Whether to hide the polling message and display only the final status.
+      hidden: true
+    outputs:
+    - contextPath: Azure.Firewall.Firewalls.name
+      description: The name of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.id
+      description: The ID of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.type
+      description: The type of the Azure Firewall resource.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.location
+      description: The location of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.etag
+      description: The ETag of the Azure Firewall. The ETag prevents concurrent updates from overwriting each other.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.provisioningState
+      description: The provisioning state of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.networkRuleCollections
+      description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
+      type: Unknown
+  - name: azure-vn-firewall-policy-network-rule-update
+    description: "Updates a network rule in a network rule collection of a firewall policy rule collection group. Only the provided properties are replaced. The rest of the rule configuration remains unchanged. Required permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: policy_name
+      description: The name of the firewall policy that contains the rule collection group.
+      type: String
+      required: true
+    - name: collection_name
+      description: The name of the network rule collection that contains the network rule.
+      type: String
+      required: true
+    - name: rule_name
+      description: The name of the network rule to update.
+      type: String
+      required: true
+    - name: description
+      description: The new description of the network rule.
+      type: String
+    - name: protocols
+      description: A comma-separated list of protocols that replaces the protocols of the network rule.
+      auto: PREDEFINED
+      predefined:
+        - TCP
+        - UDP
+        - ICMP
+        - Any
+      isArray: true
+    - name: source_type
+      description: The new source type of the network rule. If provided, you must also provide source_ips or source_ip_group_ids.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+      type: String
+    - name: source_ips
+      description: A comma-separated list of source IP addresses that replaces the sources of the network rule. Required when source_type is ip_address.
+      isArray: true
+    - name: source_ip_group_ids
+      description: A comma-separated list of source IP group IDs that replaces the sources of the network rule. Required when source_type is ip_group.
+      isArray: true
+    - name: destination_type
+      description: The new destination type of the network rule. Required when destinations is provided.
+      auto: PREDEFINED
+      predefined:
+        - ip_address
+        - ip_group
+        - service_tag
+        - fqdn
+      type: String
+    - name: destinations
+      description: A comma-separated list of destinations that replaces the destinations of the network rule. Must match the value of destination_type. Supports IP addresses, IP group IDs, service tag names, and FQDNs.
+      isArray: true
+    - name: destination_ports
+      description: A comma-separated list of destination ports that replaces the destination ports of the network rule.
+      isArray: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The time, in seconds, after which polling stops. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: Whether this is the first polling run. For internal use only. Do not set this argument manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: Whether to hide the polling message and display only the final status.
+      hidden: true
+    outputs:
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name
+      description: The name of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id
+      description: The ID of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type
+      description: The type of the firewall policy rule collection group resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag
+      description: The ETag of the firewall policy rule collection group. The ETag prevents concurrent updates from overwriting each other.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority
+      description: The priority of the firewall policy rule collection group.
+      type: Number
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState
+      description: The provisioning state of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections
+      description: The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection.
+      type: Unknown
+  - name: azure-firewall-network-rule-delete
+    description: "Deletes network rules from a network rule collection of an Azure Firewall. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: firewall_name
+      description: The name of the Azure Firewall that contains the network rule collection.
+      type: String
+      required: true
+    - name: collection_name
+      description: The name of the network rule collection that contains the network rules.
+      type: String
+      required: true
+    - name: rule_names
+      description: A comma-separated list of network rule names to delete from the collection.
+      isArray: true
+      required: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The time, in seconds, after which polling stops. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: Whether this is the first polling run. For internal use only. Do not set this argument manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: Whether to hide the polling message and display only the final status.
+      hidden: true
+    outputs:
+    - contextPath: Azure.Firewall.Firewalls.name
+      description: The name of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.id
+      description: The ID of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.type
+      description: The type of the Azure Firewall resource.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.location
+      description: The location of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.etag
+      description: The ETag of the Azure Firewall. The ETag prevents concurrent updates from overwriting each other.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.provisioningState
+      description: The provisioning state of the Azure Firewall.
+      type: String
+    - contextPath: Azure.Firewall.Firewalls.properties.networkRuleCollections
+      description: The network rule collections of the Azure Firewall, containing the name, etag, id, and properties fields of each collection.
+      type: Unknown
+  - name: azure-vn-firewall-policy-network-rule-delete
+    description: "Deletes network rules from a network rule collection of a firewall policy rule collection group. Required permissions: Microsoft.Network/firewallPolicies/ruleCollectionGroups/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/write."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >= 3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      type: String
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: The name of the resource group.
+      type: String
+      required: true
+    - name: policy_name
+      description: The name of the firewall policy that contains the rule collection group.
+      type: String
+      required: true
+    - name: collection_name
+      description: The name of the network rule collection that contains the network rules.
+      type: String
+      required: true
+    - name: rule_names
+      description: A comma-separated list of network rule names to delete from the collection.
+      isArray: true
+      required: true
+    - name: interval_in_seconds
+      description: The interval, in seconds, between polling attempts. Must be a positive number.
+      required: false
+      defaultValue: "30"
+    - name: polling_timeout
+      description: The time, in seconds, after which polling stops. Must be a positive number.
+      required: false
+      defaultValue: "600"
+    - name: first_run
+      description: Whether this is the first polling run. For internal use only. Do not set this argument manually.
+      defaultValue: "true"
+      hidden: true
+    - name: hide_polling_output
+      description: Whether to hide the polling message and display only the final status.
+      hidden: true
+    outputs:
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.name
+      description: The name of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.id
+      description: The ID of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.type
+      description: The type of the firewall policy rule collection group resource.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.etag
+      description: The ETag of the firewall policy rule collection group. The ETag prevents concurrent updates from overwriting each other.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.priority
+      description: The priority of the firewall policy rule collection group.
+      type: Number
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.provisioningState
+      description: The provisioning state of the firewall policy rule collection group.
+      type: String
+    - contextPath: Azure.VirtualNetworks.FirewallPolicyRuleCollectionGroups.properties.ruleCollections
+      description: The rule collections of the group, containing the ruleCollectionType, name, priority, action, and rules fields of each collection.
+      type: Unknown
   - name: azure-compute-vm-list
     description: "Lists all the virtual machines in the specified subscription. Use the next_token argument to view the next page of results. Required Permissions: Microsoft.Compute/virtualMachines/read."
     arguments:
@@ -13997,6 +15462,418 @@ script:
       - contextPath: Azure.ResourceGraph.QueryNextToken
         description: The token to pass as the next_token argument to retrieve the next set of query results.
         type: String
+  - name: azure-log-analytics-saved-searches-list
+    description: "Gets the saved searches of a Log Analytics workspace. Required permission: Microsoft.OperationalInsights/workspaces/savedSearches/read."
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: resource_group_name
+        description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: workspace_name
+        description: The name of the Log Analytics workspace.
+        required: true
+    outputs:
+      - contextPath: Azure.LogAnalytics.SavedSearches.id
+        description: The fully qualified resource ID for the resource.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.name
+        description: The name of the resource.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.etag
+        description: The ETag of the saved search.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.type
+        description: The resource type.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.category
+        description: The category of the saved search.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.displayName
+        description: The display name of the saved search.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.functionAlias
+        description: The function alias if the query serves as a function.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.functionParameters
+        description: The optional function parameters if the query serves as a function.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.query
+        description: The query expression for the saved search.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.tags
+        description: The tags attached to the saved search.
+        type: Unknown
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.version
+        description: The version number of the query language.
+        type: Number
+      - contextPath: Azure.LogAnalytics.SavedSearches.systemData
+        description: The Azure Resource Manager metadata containing createdBy and modifiedBy information.
+        type: Unknown
+  - name: azure-log-analytics-saved-search-get
+    description: "Gets a specified saved search from a Log Analytics workspace. Required permission: Microsoft.OperationalInsights/workspaces/savedSearches/read."
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: saved_search_id
+        description: The ID of the saved search.
+        required: true
+      - name: resource_group_name
+        description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: workspace_name
+        description: The name of the Log Analytics workspace.
+        required: true
+    outputs:
+      - contextPath: Azure.LogAnalytics.SavedSearches.id
+        description: The fully qualified resource ID for the resource.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.name
+        description: The name of the resource.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.etag
+        description: The ETag of the saved search.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.type
+        description: The resource type.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.category
+        description: The category of the saved search.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.displayName
+        description: The display name of the saved search.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.functionAlias
+        description: The function alias if the query serves as a function.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.functionParameters
+        description: The optional function parameters if the query serves as a function.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.query
+        description: The query expression for the saved search.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.tags
+        description: The tags attached to the saved search.
+        type: Unknown
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.version
+        description: The version number of the query language.
+        type: Number
+      - contextPath: Azure.LogAnalytics.SavedSearches.systemData
+        description: The Azure Resource Manager metadata containing createdBy and modifiedBy information.
+        type: Unknown
+  - name: azure-log-analytics-saved-search-create-update
+    description: "Creates or updates a saved search in a Log Analytics workspace. Required permissions: Microsoft.OperationalInsights/workspaces/savedSearches/read, Microsoft.OperationalInsights/workspaces/savedSearches/write."
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: saved_search_id
+        description: The ID of the saved search.
+        required: true
+      - name: etag
+        description: The ETag of the saved search. This argument is required for updating an existing saved search.
+      - name: category
+        description: The category of the saved search.
+        required: true
+      - name: display_name
+        description: The display name of the saved search.
+        required: true
+      - name: function_alias
+        description: The function alias if the query serves as a function.
+      - name: function_parameters
+        description: "The optional function parameters if the query serves as a function. The value should be in the following format: param-name1:type1 = default_value1, param-name2:type2 = default_value2."
+      - name: query
+        description: The query expression for the saved search.
+        required: true
+      - name: tags
+        description: "The tags attached to the saved search. The value should be in the following format: name=value;name=value."
+      - name: resource_group_name
+        description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: workspace_name
+        description: The name of the Log Analytics workspace.
+        required: true
+    outputs:
+      - contextPath: Azure.LogAnalytics.SavedSearches.id
+        description: The fully qualified resource ID for the resource.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.name
+        description: The name of the resource.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.etag
+        description: The ETag of the saved search.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.type
+        description: The resource type.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.category
+        description: The category of the saved search.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.displayName
+        description: The display name of the saved search.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.functionAlias
+        description: The function alias if the query serves as a function.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.functionParameters
+        description: The optional function parameters if the query serves as a function.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.query
+        description: The query expression for the saved search.
+        type: String
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.tags
+        description: The tags attached to the saved search.
+        type: Unknown
+      - contextPath: Azure.LogAnalytics.SavedSearches.properties.version
+        description: The version number of the query language.
+        type: Number
+      - contextPath: Azure.LogAnalytics.SavedSearches.systemData
+        description: The Azure Resource Manager metadata containing createdBy and modifiedBy information.
+        type: Unknown
+  - name: azure-log-analytics-saved-search-delete
+    description: "Deletes a specified saved search in a Log Analytics workspace. Required permission: Microsoft.OperationalInsights/workspaces/savedSearches/delete."
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: saved_search_id
+        description: The ID of the saved search.
+        required: true
+      - name: resource_group_name
+        description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: workspace_name
+        description: The name of the Log Analytics workspace.
+        required: true
+  - name: azure-log-analytics-workspaces-list
+    description: "Gets Log Analytics workspaces in a resource group. Required permission: Microsoft.OperationalInsights/workspaces/read."
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: resource_group_name
+        description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+    outputs:
+      - contextPath: Azure.LogAnalytics.Workspaces.id
+        description: The fully qualified resource ID for the resource.
+        type: String
+      - contextPath: Azure.LogAnalytics.Workspaces.name
+        description: The name of the resource.
+        type: String
+      - contextPath: Azure.LogAnalytics.Workspaces.type
+        description: The resource type.
+        type: String
+      - contextPath: Azure.LogAnalytics.Workspaces.location
+        description: The geo-location where the resource lives.
+        type: String
+      - contextPath: Azure.LogAnalytics.Workspaces.etag
+        description: The ETag of the workspace.
+        type: String
+      - contextPath: Azure.LogAnalytics.Workspaces.identity
+        description: The identity of the resource.
+        type: Unknown
+      - contextPath: Azure.LogAnalytics.Workspaces.tags
+        description: The resource tags.
+        type: Unknown
+      - contextPath: Azure.LogAnalytics.Workspaces.properties.createdDate
+        description: The date and time when the workspace was created in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
+        type: Date
+      - contextPath: Azure.LogAnalytics.Workspaces.properties.customerId
+        description: The ID associated with the workspace.
+        type: String
+      - contextPath: Azure.LogAnalytics.Workspaces.properties.defaultDataCollectionRuleResourceId
+        description: The resource ID of the default data collection rule to use for this workspace.
+        type: String
+      - contextPath: Azure.LogAnalytics.Workspaces.properties.failover
+        description: The workspace failover properties.
+        type: Unknown
+      - contextPath: Azure.LogAnalytics.Workspaces.properties.features
+        description: The workspace features.
+        type: Unknown
+      - contextPath: Azure.LogAnalytics.Workspaces.properties.forceCmkForQuery
+        description: Whether customer managed storage is mandatory for query management.
+        type: Boolean
+      - contextPath: Azure.LogAnalytics.Workspaces.properties.modifiedDate
+        description: The date and time when the workspace was modified in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
+        type: Date
+      - contextPath: Azure.LogAnalytics.Workspaces.properties.privateLinkScopedResources
+        description: The list of linked private link scope resources.
+        type: Unknown
+      - contextPath: Azure.LogAnalytics.Workspaces.properties.provisioningState
+        description: The provisioning state of the workspace.
+        type: String
+      - contextPath: Azure.LogAnalytics.Workspaces.properties.publicNetworkAccessForIngestion
+        description: The network access type for accessing Log Analytics ingestion.
+        type: String
+      - contextPath: Azure.LogAnalytics.Workspaces.properties.publicNetworkAccessForQuery
+        description: The network access type for accessing Log Analytics query.
+        type: String
+      - contextPath: Azure.LogAnalytics.Workspaces.properties.replication
+        description: Workspace replication properties.
+        type: Unknown
+      - contextPath: Azure.LogAnalytics.Workspaces.properties.retentionInDays
+        description: The workspace data retention in days. Allowed values are per pricing plan. See pricing tiers documentation for details.
+        type: Number
+      - contextPath: Azure.LogAnalytics.Workspaces.properties.sku
+        description: The SKU of the workspace.
+        type: Unknown
+      - contextPath: Azure.LogAnalytics.Workspaces.properties.workspaceCapping
+        description: The daily volume cap for ingestion.
+        type: Unknown
+      - contextPath: Azure.LogAnalytics.Workspaces.systemData
+        description: The Azure Resource Manager metadata containing createdBy and modifiedBy information.
+        type: Unknown
+  - name: azure-log-analytics-table-get
+    description: "Gets a Log Analytics workspace table (search job). Required permission: Microsoft.OperationalInsights/workspaces/tables/read."
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: table_name
+        description: "The name of the table. Example value: AuditLogs_SRCH."
+        required: true
+      - name: resource_group_name
+        description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: workspace_name
+        description: The name of the Log Analytics workspace.
+        required: true
+    outputs:
+      - contextPath: Azure.LogAnalytics.Tables.id
+        description: The fully qualified resource ID for the resource.
+        type: String
+      - contextPath: Azure.LogAnalytics.Tables.name
+        description: The name of the resource.
+        type: String
+      - contextPath: Azure.LogAnalytics.Tables.type
+        description: The resource type.
+        type: String
+      - contextPath: Azure.LogAnalytics.Tables.properties.archiveRetentionInDays
+        description: The table's long-term retention in days. Calculated as (totalRetentionInDays-retentionInDays).
+        type: Number
+      - contextPath: Azure.LogAnalytics.Tables.properties.lastPlanModifiedDate
+        description: The date and time when the table plan was last modified (UTC) in ISO 8601 format (for example, 2024-01-15T12:34:56Z).
+        type: String
+      - contextPath: Azure.LogAnalytics.Tables.properties.plan
+        description: The instruction for the system on how to handle and charge the logs ingested into this table.
+        type: String
+      - contextPath: Azure.LogAnalytics.Tables.properties.protectionLevel
+        description: The protection level of the table. Determines the default data access isolation behavior.
+        type: String
+      - contextPath: Azure.LogAnalytics.Tables.properties.provisioningState
+        description: The table's current provisioning state. If set to updating, it indicates a resource lock due to an ongoing operation, forbidding any update to the table until the ongoing operation is concluded.
+        type: String
+      - contextPath: Azure.LogAnalytics.Tables.properties.restoredLogs
+        description: The parameters of the restore operation that created the table.
+        type: Unknown
+      - contextPath: Azure.LogAnalytics.Tables.properties.resultStatistics
+        description: The search job execution statistics.
+        type: Unknown
+      - contextPath: Azure.LogAnalytics.Tables.properties.retentionInDays
+        description: "The table's analytics retention in days for Analytics tables, between 4 and 730. Setting this property to -1 defaults to the workspace retention. For Basic and Auxiliary tables, this is a read-only property."
+        type: Number
+      - contextPath: Azure.LogAnalytics.Tables.properties.retentionInDaysAsDefault
+        description: Whether the value originates from workspace retention in days (true) or is customer specific (false).
+        type: Boolean
+      - contextPath: Azure.LogAnalytics.Tables.properties.schema
+        description: The table schema.
+        type: Unknown
+      - contextPath: Azure.LogAnalytics.Tables.properties.searchResults
+        description: The parameters of the search job that initiated the table.
+        type: Unknown
+      - contextPath: Azure.LogAnalytics.Tables.properties.totalRetentionInDays
+        description: The table's total retention in days, between 4 and 4383. Setting this property to -1 defaults to retentionInDays.
+        type: Number
+      - contextPath: Azure.LogAnalytics.Tables.properties.totalRetentionInDaysAsDefault
+        description: Whether the value originates from retention in days (true) or is customer specific (false).
+        type: Boolean
+      - contextPath: Azure.LogAnalytics.Tables.systemData
+        description: The Azure Resource Manager metadata containing createdBy and modifiedBy information.
+        type: Unknown
+  - name: azure-log-analytics-table-run
+    description: "Runs a search job to fetch records from large datasets into a new search results table in the workspace, and polls until the table is provisioned. Required permissions: Microsoft.OperationalInsights/workspaces/tables/read, Microsoft.OperationalInsights/workspaces/tables/write, Microsoft.OperationalInsights/workspaces/searchJobs/write."
+    polling: true
+    hidden:
+      - platform
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: table_name
+        description: The name of the table to add. Must contain the _SRCH suffix. For example, AuditLogs_SRCH.
+        required: true
+      - name: limit
+        description: The maximum number of records to return in the result set.
+        defaultValue: '50'
+      - name: query
+        description: The log query written in KQL format to retrieve data. Search job queries must start with a table name.
+        required: true
+      - name: start_search_time
+        description: The start of the time range to search. The value can be in minutes, days, weeks, or  ISO 8601 format (for example, 2023-10-31T00:00:00Z).
+        defaultValue: '1 day'
+      - name: end_search_time
+        description: The end of the time range to search. The value can be in minutes, days, weeks, or ISO 8601 format (for example, 2023-10-31T00:00:00Z).
+        defaultValue: now
+      - name: timeout
+        description: The timeout in seconds until polling ends.
+        defaultValue: '600'
+      - name: interval
+        description: The interval in seconds between each poll.
+        defaultValue: '60'
+      - name: first_run
+        description: Whether the current execution is the initial run. Used internally. Do not set manually.
+        hidden: true
+        defaultValue: 'true'
+      - name: hide_polling_output
+        description: Whether to hide the polling message and only print the final status at the end.
+        hidden: true
+      - name: resource_group_name
+        description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: workspace_name
+        description: The name of the Log Analytics workspace.
+        required: true
+    outputs:
+      - contextPath: Azure.LogAnalytics.Tables.TableName
+        description: The table name.
+        type: String
+      - contextPath: Azure.LogAnalytics.Tables.Query
+        description: The query that was used to create the table.
+        type: String
+  - name: azure-log-analytics-table-delete
+    description: "Deletes a Log Analytics workspace table (search job). Required permission: Microsoft.OperationalInsights/workspaces/tables/delete."
+    arguments:
+      - name: subscription_id
+        description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: table_name
+        description: The name of the table. Must contain the _SRCH suffix. For example, AuditLogs_SRCH.
+        required: true
+      - name: resource_group_name
+        description: The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: workspace_name
+        description: The name of the Log Analytics workspace.
+        required: true
   isfetch: false
   runonce: false
   script: '-'
