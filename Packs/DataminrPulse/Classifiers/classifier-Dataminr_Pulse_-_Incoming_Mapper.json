@@ -967,13 +967,6 @@
                         "root": "headline",
                         "transformers": []
                     }
-                },
-                "description": {
-                    "complex": {
-                        "filters": [],
-                        "root": "headline",
-                        "transformers": []
-                    }
                 }
             }
         },
