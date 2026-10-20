@@ -15,6 +15,9 @@
                 "details": {
                     "simple": "description"
                 },
+                "Device Security Incident URL": {
+                    "simple": "devicesecurityincidenturl"
+                },
                 "Device Security ServiceNow Table Name": {
                     "simple": "devicesecurityservicenowtablename"
                 },
