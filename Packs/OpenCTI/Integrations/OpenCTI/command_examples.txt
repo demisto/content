@@ -3,7 +3,7 @@
 !opencti-observable-delete id=74faf2e8-bbab-4a1a-a548-58db202c5e57
 !opencti-observable-field-add id=33bd535b-fa1c-41e2-a6f9-80d82dd29a9b field=label value=07cfae2d-6cc9-42c5-9fd0-32eff8142404
 !opencti-observable-field-remove id=33bd535b-fa1c-41e2-a6f9-80d82dd29a9b field=marking value=c9819001-c80c-45e1-8edb-e543e350f195
-!opencti-observable-field-update field=score id=81d63245-9ba3-495d-8e78-03b037d71e01 value=100
+!opencti-observable-field-update id=a6b0bb74-fa60-46b9-ae12-08a82f1608c0 field=score value=80
 !opencti-external-reference-create source_name=source_name url=www.url.com
 !opencti-label-list limit=2
 !opencti-label-create name=docsTest
@@ -25,3 +25,17 @@
 !opencti-get-indicators limit=2 label_id=07cfae2d-6cc9-42c5-9fd0-32eff8142404
 !opencti-indicator-types-list
 !opencti-get-incidents additional_filters=`[{"key": "description","operator": "eq","values": ["test"],"mode": "and"}]`
+!opencti-incident-response-create name="Example Incident Response" severity=high priority=P2 description="Incident response created from Cortex XSOAR." incident_response_date=2025-01-15T09:30:00.000Z
+!opencti-malware-create name="Example Malware" malware_types=ransomware,worm is_family=true
+!opencti-vulnerability-create name=CVE-2025-0001 description="Vulnerability created from Cortex XSOAR."
+!opencti-intrusion-set-create name="Example Intrusion Set"
+!opencti-threat-actor-group-create name="Example Threat Actor Group"
+!opencti-campaign-create name="Example Campaign" first_seen=2025-01-01T00:00:00Z last_seen=2025-06-30T00:00:00Z
+!opencti-grouping-create name="Example Grouping" context=suspicious-activity
+!opencti-report-create name="Example Report" published=2025-01-15T00:00:00.000Z
+!opencti-add-object-to-container container_type=report container_id=253e4a59-6e61-4409-a2cb-ecefd5105383 object_id=0e6fcea0-670c-473e-ad53-cf3f80dd7764
+!ip ip=203.0.113.42
+!domain domain=suspicious.example.com
+!email email=phishing@example.com
+!url url=https://malicious.example.com/payload
+!file file=41d099611bfc31f99e8234be7942016551d38b3c0326630475bef6ae35995e84

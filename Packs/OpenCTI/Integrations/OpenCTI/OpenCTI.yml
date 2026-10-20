@@ -2,6 +2,7 @@ category: Data Enrichment & Threat Intelligence
 provider: Filigran
 sectionorder:
 - Connect
+- Collect
 commonfields:
   id: OpenCTI
   version: -1
@@ -34,7 +35,44 @@ configuration:
   additionalinfo: Used for troubleshooting purposes.
   required: false
   section: Connect
-description: Manages OpenCTI platform. Compatible with OpenCTI 4.X API and OpenCTI 5.X API versions.
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
+  section: Collect
+- additionalinfo: Used by the ip, domain, email, url and file commands. An indicator whose OpenCTI score (x_opencti_score) is above this threshold and not above the malicious score threshold is suspicious. An indicator whose score is not above this threshold is good. A value unknown to OpenCTI is unknown.
+  defaultvalue: '20'
+  display: Suspicious score threshold (0-100)
+  name: reputation_suspicious_threshold
+  required: false
+  type: 0
+  section: Collect
+- additionalinfo: Used by the ip, domain, email, url and file commands. An indicator whose OpenCTI score (x_opencti_score) is above this threshold is malicious. Must not be below the suspicious score threshold.
+  defaultvalue: '70'
+  display: Malicious score threshold (0-100)
+  name: reputation_threshold
+  required: false
+  type: 0
+  section: Collect
+- defaultvalue: 'true'
+  additionalinfo: Create relationships between indicators as part of Enrichment.
+  display: Create relationships
+  name: create_relationships
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+description: Manages OpenCTI platform. Compatible with OpenCTI 6.9 and later versions.
 display: OpenCTI
 name: OpenCTI
 script:
@@ -785,7 +823,1291 @@ script:
       description: Indicator type name.
     - contextPath: OpenCTI.IndicatorTypes.IndicatorTypesList.description
       description: Indicator type description.
-  dockerimage: demisto/vendors-sdk:1.0.0.10120494
+  - arguments:
+    - description: Incident Response name.
+      name: name
+      required: true
+    - description: Incident Response type name. Use opencti-incident-types-list to find all incident types in OpenCTI.
+      name: incident_response_type
+    - auto: PREDEFINED
+      description: Incident Response severity.
+      name: severity
+      predefined:
+      - low
+      - medium
+      - high
+      - critical
+    - auto: PREDEFINED
+      description: Incident Response priority.
+      name: priority
+      predefined:
+      - P1
+      - P2
+      - P3
+      - P4
+    - description: Incident Response description.
+      name: description
+    - description: Organization ID. Use opencti-organization-list to find all organization IDs in OpenCTI, or use opencti-organization-create to create a new organization ID.
+      name: created_by
+    - description: Incident Response date (ISO 8601 format, e.g., 2020-01-01T00:11:22.000Z).
+      name: incident_response_date
+    - description: Incident Response label ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label.
+      name: label_id
+    - description: Incident Response marking definition ID. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI.
+      name: marking_id
+    - description: External references URL. Use opencti-external-reference-create to create a new external reference.
+      name: external_references_id
+    description: Create a new incident response.
+    name: opencti-incident-response-create
+    outputs:
+    - contextPath: OpenCTI.IncidentResponse.id
+      description: New incident response ID.
+      type: String
+  - arguments:
+    - description: Name of the malware.
+      name: name
+      required: true
+    - description: Description of the malware.
+      name: description
+      required: false
+    - description: Comma-separated list of malware types.
+      name: malware_types
+      required: false
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether this is a malware family.
+      name: is_family
+      predefined:
+      - "true"
+      - "false"
+      required: false
+    description: Create a new malware.
+    name: opencti-malware-create
+    outputs:
+    - contextPath: OpenCTI.Malware.id
+      description: New malware ID.
+      type: String
+  - arguments:
+    - description: Name of the vulnerability (e.g., CVE-2025-0001).
+      name: name
+      required: true
+    - description: Description of the vulnerability.
+      name: description
+      required: false
+    description: Create a new vulnerability.
+    name: opencti-vulnerability-create
+    outputs:
+    - contextPath: OpenCTI.Vulnerability.id
+      description: New vulnerability ID.
+      type: String
+  - arguments:
+    - description: Name of the intrusion set.
+      name: name
+      required: true
+    - description: Description of the intrusion set.
+      name: description
+      required: false
+    description: Create a new intrusion set.
+    name: opencti-intrusion-set-create
+    outputs:
+    - contextPath: OpenCTI.IntrusionSet.id
+      description: New intrusion set ID.
+      type: String
+  - arguments:
+    - description: Name of the threat actor group.
+      name: name
+      required: true
+    - description: Description of the threat actor group.
+      name: description
+      required: false
+    description: Create a new threat actor group.
+    name: opencti-threat-actor-group-create
+    outputs:
+    - contextPath: OpenCTI.ThreatActorGroup.id
+      description: New threat actor group ID.
+      type: String
+  - arguments:
+    - description: Name of the campaign.
+      name: name
+      required: true
+    - description: Description of the campaign.
+      name: description
+      required: false
+    - description: First seen date (ISO 8601 format, e.g., 2020-01-01T00:11:22Z).
+      name: first_seen
+      required: false
+    - description: Last seen date (ISO 8601 format, e.g., 2020-01-01T00:11:22Z).
+      name: last_seen
+      required: false
+    description: Create a new campaign.
+    name: opencti-campaign-create
+    outputs:
+    - contextPath: OpenCTI.Campaign.id
+      description: New campaign ID.
+      type: String
+  - arguments:
+    - description: Name of the grouping.
+      name: name
+      required: true
+    - description: Description of the grouping.
+      name: description
+      required: false
+    - description: Context of the grouping.
+      name: context
+      required: true
+    description: Create a new grouping.
+    name: opencti-grouping-create
+    outputs:
+    - contextPath: OpenCTI.Grouping.id
+      description: New grouping ID.
+      type: String
+  - arguments:
+    - description: Name of the report.
+      name: name
+      required: true
+    - description: Description of the report.
+      name: description
+      required: false
+    - description: Published date (ISO 8601 format, e.g., 2020-01-01T00:11:22Z).
+      name: published
+      required: true
+    description: Create a new report.
+    name: opencti-report-create
+    outputs:
+    - contextPath: OpenCTI.Report.id
+      description: New report ID.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: grouping
+      description: Container type.
+      name: container_type
+      predefined:
+      - report
+      - grouping
+      - case-rft
+      - case-rfi
+      - case-incident
+      required: true
+    - description: Container ID.
+      name: container_id
+      required: true
+    - description: ID of the object to add to the container.
+      name: object_id
+      required: true
+    description: Add an object to a container (report, grouping, case-rft, case-rfi, case-incident).
+    name: opencti-add-object-to-container
+  - arguments:
+    - default: true
+      description: A comma-separated list of IPv4 or IPv6 addresses to check.
+      isArray: true
+      name: ip
+      required: true
+    description: Checks the reputation of an IP address in OpenCTI, using its observable and its indicator.
+    name: ip
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor that reported the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description of why the IP address was reported as malicious.
+      type: String
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.id
+      description: ID of the OpenCTI indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.name
+      description: Name of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.description
+      description: Description of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.patternType
+      description: Pattern type of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.pattern
+      description: Pattern of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.mainObservableType
+      description: Main observable type of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.indicatorTypes
+      description: Types of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.score
+      description: OpenCTI score (x_opencti_score) of the indicator, used to calculate the DBot score.
+      type: Number
+    - contextPath: OpenCTI.Indicator.confidence
+      description: Confidence level of the indicator.
+      type: Number
+    - contextPath: OpenCTI.Indicator.validFrom
+      description: Date from which the indicator is valid.
+      type: Date
+    - contextPath: OpenCTI.Indicator.validUntil
+      description: Date until which the indicator is valid.
+      type: Date
+    - contextPath: OpenCTI.Indicator.revoked
+      description: Whether the indicator is revoked.
+      type: Boolean
+    - contextPath: OpenCTI.Indicator.detection
+      description: Whether the indicator is used for detection.
+      type: Boolean
+    - contextPath: OpenCTI.Indicator.created
+      description: Creation date of the indicator.
+      type: Date
+    - contextPath: OpenCTI.Indicator.updatedAt
+      description: Last update date of the indicator.
+      type: Date
+    - contextPath: OpenCTI.Indicator.createdBy
+      description: Author of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.creators
+      description: Creators of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.labels
+      description: Labels of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.markings
+      description: Marking definitions of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.externalReferences.sourceName
+      description: Source name of the external reference.
+      type: String
+    - contextPath: OpenCTI.Indicator.externalReferences.url
+      description: URL of the external reference.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.id
+      description: ID of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relationshipType
+      description: Type of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.fromId
+      description: ID of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.fromName
+      description: Name of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.fromEntityType
+      description: Entity type of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.toId
+      description: ID of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.toName
+      description: Name of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.toEntityType
+      description: Entity type of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relatedEntityId
+      description: ID of the entity related to the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relatedEntityName
+      description: Name of the entity related to the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relatedEntityType
+      description: Entity type of the entity related to the indicator.
+      type: String
+    - contextPath: OpenCTI.Observable.found
+      description: Whether the observable was found in OpenCTI.
+      type: Boolean
+    - contextPath: OpenCTI.Observable.id
+      description: ID of the OpenCTI observable.
+      type: String
+    - contextPath: OpenCTI.Observable.value
+      description: Value of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.type
+      description: Type of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.entityType
+      description: OpenCTI entity type of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.score
+      description: OpenCTI score of the observable.
+      type: Number
+    - contextPath: OpenCTI.Observable.description
+      description: Description of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.createdBy
+      description: Author of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.creators
+      description: Creators of the observable.
+      type: Unknown
+    - contextPath: OpenCTI.Observable.labels
+      description: Labels of the observable.
+      type: Unknown
+    - contextPath: OpenCTI.Observable.markings
+      description: Marking definitions of the observable.
+      type: Unknown
+    - contextPath: OpenCTI.Observable.externalReferences.sourceName
+      description: Source name of the external reference.
+      type: String
+    - contextPath: OpenCTI.Observable.externalReferences.url
+      description: URL of the external reference.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.id
+      description: ID of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relationshipType
+      description: Type of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.fromId
+      description: ID of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.fromName
+      description: Name of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.fromEntityType
+      description: Entity type of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.toId
+      description: ID of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.toName
+      description: Name of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.toEntityType
+      description: Entity type of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relatedEntityId
+      description: ID of the entity related to the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relatedEntityName
+      description: Name of the entity related to the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relatedEntityType
+      description: Entity type of the entity related to the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.created
+      description: Creation date of the observable.
+      type: Date
+    - contextPath: OpenCTI.Observable.updatedAt
+      description: Last update date of the observable.
+      type: Date
+  - arguments:
+    - default: true
+      description: A comma-separated list of domains to check.
+      isArray: true
+      name: domain
+      required: true
+    description: Checks the reputation of a domain in OpenCTI, using its observable and its indicator.
+    name: domain
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor that reported the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description of why the domain was reported as malicious.
+      type: String
+    - contextPath: Domain.Relationships.Relationship
+      description: The name of the relationship.
+      type: String
+    - contextPath: Domain.Relationships.EntityA
+      description: The source of the relationship.
+      type: String
+    - contextPath: Domain.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: String
+    - contextPath: Domain.Relationships.EntityB
+      description: The destination of the relationship.
+      type: String
+    - contextPath: Domain.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.id
+      description: ID of the OpenCTI indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.name
+      description: Name of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.description
+      description: Description of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.patternType
+      description: Pattern type of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.pattern
+      description: Pattern of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.mainObservableType
+      description: Main observable type of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.indicatorTypes
+      description: Types of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.score
+      description: OpenCTI score (x_opencti_score) of the indicator, used to calculate the DBot score.
+      type: Number
+    - contextPath: OpenCTI.Indicator.confidence
+      description: Confidence level of the indicator.
+      type: Number
+    - contextPath: OpenCTI.Indicator.validFrom
+      description: Date from which the indicator is valid.
+      type: Date
+    - contextPath: OpenCTI.Indicator.validUntil
+      description: Date until which the indicator is valid.
+      type: Date
+    - contextPath: OpenCTI.Indicator.revoked
+      description: Whether the indicator is revoked.
+      type: Boolean
+    - contextPath: OpenCTI.Indicator.detection
+      description: Whether the indicator is used for detection.
+      type: Boolean
+    - contextPath: OpenCTI.Indicator.created
+      description: Creation date of the indicator.
+      type: Date
+    - contextPath: OpenCTI.Indicator.updatedAt
+      description: Last update date of the indicator.
+      type: Date
+    - contextPath: OpenCTI.Indicator.createdBy
+      description: Author of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.creators
+      description: Creators of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.labels
+      description: Labels of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.markings
+      description: Marking definitions of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.externalReferences.sourceName
+      description: Source name of the external reference.
+      type: String
+    - contextPath: OpenCTI.Indicator.externalReferences.url
+      description: URL of the external reference.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.id
+      description: ID of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relationshipType
+      description: Type of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.fromId
+      description: ID of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.fromName
+      description: Name of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.fromEntityType
+      description: Entity type of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.toId
+      description: ID of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.toName
+      description: Name of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.toEntityType
+      description: Entity type of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relatedEntityId
+      description: ID of the entity related to the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relatedEntityName
+      description: Name of the entity related to the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relatedEntityType
+      description: Entity type of the entity related to the indicator.
+      type: String
+    - contextPath: OpenCTI.Observable.found
+      description: Whether the observable was found in OpenCTI.
+      type: Boolean
+    - contextPath: OpenCTI.Observable.id
+      description: ID of the OpenCTI observable.
+      type: String
+    - contextPath: OpenCTI.Observable.value
+      description: Value of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.type
+      description: Type of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.entityType
+      description: OpenCTI entity type of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.score
+      description: OpenCTI score of the observable.
+      type: Number
+    - contextPath: OpenCTI.Observable.description
+      description: Description of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.createdBy
+      description: Author of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.creators
+      description: Creators of the observable.
+      type: Unknown
+    - contextPath: OpenCTI.Observable.labels
+      description: Labels of the observable.
+      type: Unknown
+    - contextPath: OpenCTI.Observable.markings
+      description: Marking definitions of the observable.
+      type: Unknown
+    - contextPath: OpenCTI.Observable.externalReferences.sourceName
+      description: Source name of the external reference.
+      type: String
+    - contextPath: OpenCTI.Observable.externalReferences.url
+      description: URL of the external reference.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.id
+      description: ID of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relationshipType
+      description: Type of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.fromId
+      description: ID of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.fromName
+      description: Name of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.fromEntityType
+      description: Entity type of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.toId
+      description: ID of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.toName
+      description: Name of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.toEntityType
+      description: Entity type of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relatedEntityId
+      description: ID of the entity related to the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relatedEntityName
+      description: Name of the entity related to the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relatedEntityType
+      description: Entity type of the entity related to the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.created
+      description: Creation date of the observable.
+      type: Date
+    - contextPath: OpenCTI.Observable.updatedAt
+      description: Last update date of the observable.
+      type: Date
+  - arguments:
+    - default: true
+      description: A comma-separated list of email addresses to check.
+      isArray: true
+      name: email
+      required: true
+    description: Checks the reputation of an email address in OpenCTI, using its observable and its indicator.
+    name: email
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: Account.Email.Address
+      description: The email address.
+      type: String
+    - contextPath: Account.Relationships.Relationship
+      description: The name of the relationship.
+      type: String
+    - contextPath: Account.Relationships.EntityA
+      description: The source of the relationship.
+      type: String
+    - contextPath: Account.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: String
+    - contextPath: Account.Relationships.EntityB
+      description: The destination of the relationship.
+      type: String
+    - contextPath: Account.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.id
+      description: ID of the OpenCTI indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.name
+      description: Name of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.description
+      description: Description of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.patternType
+      description: Pattern type of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.pattern
+      description: Pattern of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.mainObservableType
+      description: Main observable type of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.indicatorTypes
+      description: Types of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.score
+      description: OpenCTI score (x_opencti_score) of the indicator, used to calculate the DBot score.
+      type: Number
+    - contextPath: OpenCTI.Indicator.confidence
+      description: Confidence level of the indicator.
+      type: Number
+    - contextPath: OpenCTI.Indicator.validFrom
+      description: Date from which the indicator is valid.
+      type: Date
+    - contextPath: OpenCTI.Indicator.validUntil
+      description: Date until which the indicator is valid.
+      type: Date
+    - contextPath: OpenCTI.Indicator.revoked
+      description: Whether the indicator is revoked.
+      type: Boolean
+    - contextPath: OpenCTI.Indicator.detection
+      description: Whether the indicator is used for detection.
+      type: Boolean
+    - contextPath: OpenCTI.Indicator.created
+      description: Creation date of the indicator.
+      type: Date
+    - contextPath: OpenCTI.Indicator.updatedAt
+      description: Last update date of the indicator.
+      type: Date
+    - contextPath: OpenCTI.Indicator.createdBy
+      description: Author of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.creators
+      description: Creators of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.labels
+      description: Labels of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.markings
+      description: Marking definitions of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.externalReferences.sourceName
+      description: Source name of the external reference.
+      type: String
+    - contextPath: OpenCTI.Indicator.externalReferences.url
+      description: URL of the external reference.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.id
+      description: ID of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relationshipType
+      description: Type of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.fromId
+      description: ID of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.fromName
+      description: Name of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.fromEntityType
+      description: Entity type of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.toId
+      description: ID of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.toName
+      description: Name of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.toEntityType
+      description: Entity type of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relatedEntityId
+      description: ID of the entity related to the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relatedEntityName
+      description: Name of the entity related to the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relatedEntityType
+      description: Entity type of the entity related to the indicator.
+      type: String
+    - contextPath: OpenCTI.Observable.found
+      description: Whether the observable was found in OpenCTI.
+      type: Boolean
+    - contextPath: OpenCTI.Observable.id
+      description: ID of the OpenCTI observable.
+      type: String
+    - contextPath: OpenCTI.Observable.value
+      description: Value of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.type
+      description: Type of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.entityType
+      description: OpenCTI entity type of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.score
+      description: OpenCTI score of the observable.
+      type: Number
+    - contextPath: OpenCTI.Observable.description
+      description: Description of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.createdBy
+      description: Author of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.creators
+      description: Creators of the observable.
+      type: Unknown
+    - contextPath: OpenCTI.Observable.labels
+      description: Labels of the observable.
+      type: Unknown
+    - contextPath: OpenCTI.Observable.markings
+      description: Marking definitions of the observable.
+      type: Unknown
+    - contextPath: OpenCTI.Observable.externalReferences.sourceName
+      description: Source name of the external reference.
+      type: String
+    - contextPath: OpenCTI.Observable.externalReferences.url
+      description: URL of the external reference.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.id
+      description: ID of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relationshipType
+      description: Type of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.fromId
+      description: ID of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.fromName
+      description: Name of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.fromEntityType
+      description: Entity type of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.toId
+      description: ID of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.toName
+      description: Name of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.toEntityType
+      description: Entity type of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relatedEntityId
+      description: ID of the entity related to the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relatedEntityName
+      description: Name of the entity related to the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relatedEntityType
+      description: Entity type of the entity related to the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.created
+      description: Creation date of the observable.
+      type: Date
+    - contextPath: OpenCTI.Observable.updatedAt
+      description: Last update date of the observable.
+      type: Date
+  - arguments:
+    - default: true
+      description: A comma-separated list of URLs to check.
+      isArray: true
+      name: url
+      required: true
+    description: Checks the reputation of a URL in OpenCTI, using its observable and its indicator.
+    name: url
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor that reported the URL as malicious.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: A description of why the URL was reported as malicious.
+      type: String
+    - contextPath: URL.Relationships.Relationship
+      description: The name of the relationship.
+      type: String
+    - contextPath: URL.Relationships.EntityA
+      description: The source of the relationship.
+      type: String
+    - contextPath: URL.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: String
+    - contextPath: URL.Relationships.EntityB
+      description: The destination of the relationship.
+      type: String
+    - contextPath: URL.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.id
+      description: ID of the OpenCTI indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.name
+      description: Name of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.description
+      description: Description of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.patternType
+      description: Pattern type of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.pattern
+      description: Pattern of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.mainObservableType
+      description: Main observable type of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.indicatorTypes
+      description: Types of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.score
+      description: OpenCTI score (x_opencti_score) of the indicator, used to calculate the DBot score.
+      type: Number
+    - contextPath: OpenCTI.Indicator.confidence
+      description: Confidence level of the indicator.
+      type: Number
+    - contextPath: OpenCTI.Indicator.validFrom
+      description: Date from which the indicator is valid.
+      type: Date
+    - contextPath: OpenCTI.Indicator.validUntil
+      description: Date until which the indicator is valid.
+      type: Date
+    - contextPath: OpenCTI.Indicator.revoked
+      description: Whether the indicator is revoked.
+      type: Boolean
+    - contextPath: OpenCTI.Indicator.detection
+      description: Whether the indicator is used for detection.
+      type: Boolean
+    - contextPath: OpenCTI.Indicator.created
+      description: Creation date of the indicator.
+      type: Date
+    - contextPath: OpenCTI.Indicator.updatedAt
+      description: Last update date of the indicator.
+      type: Date
+    - contextPath: OpenCTI.Indicator.createdBy
+      description: Author of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.creators
+      description: Creators of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.labels
+      description: Labels of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.markings
+      description: Marking definitions of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.externalReferences.sourceName
+      description: Source name of the external reference.
+      type: String
+    - contextPath: OpenCTI.Indicator.externalReferences.url
+      description: URL of the external reference.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.id
+      description: ID of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relationshipType
+      description: Type of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.fromId
+      description: ID of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.fromName
+      description: Name of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.fromEntityType
+      description: Entity type of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.toId
+      description: ID of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.toName
+      description: Name of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.toEntityType
+      description: Entity type of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relatedEntityId
+      description: ID of the entity related to the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relatedEntityName
+      description: Name of the entity related to the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relatedEntityType
+      description: Entity type of the entity related to the indicator.
+      type: String
+    - contextPath: OpenCTI.Observable.found
+      description: Whether the observable was found in OpenCTI.
+      type: Boolean
+    - contextPath: OpenCTI.Observable.id
+      description: ID of the OpenCTI observable.
+      type: String
+    - contextPath: OpenCTI.Observable.value
+      description: Value of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.type
+      description: Type of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.entityType
+      description: OpenCTI entity type of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.score
+      description: OpenCTI score of the observable.
+      type: Number
+    - contextPath: OpenCTI.Observable.description
+      description: Description of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.createdBy
+      description: Author of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.creators
+      description: Creators of the observable.
+      type: Unknown
+    - contextPath: OpenCTI.Observable.labels
+      description: Labels of the observable.
+      type: Unknown
+    - contextPath: OpenCTI.Observable.markings
+      description: Marking definitions of the observable.
+      type: Unknown
+    - contextPath: OpenCTI.Observable.externalReferences.sourceName
+      description: Source name of the external reference.
+      type: String
+    - contextPath: OpenCTI.Observable.externalReferences.url
+      description: URL of the external reference.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.id
+      description: ID of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relationshipType
+      description: Type of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.fromId
+      description: ID of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.fromName
+      description: Name of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.fromEntityType
+      description: Entity type of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.toId
+      description: ID of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.toName
+      description: Name of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.toEntityType
+      description: Entity type of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relatedEntityId
+      description: ID of the entity related to the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relatedEntityName
+      description: Name of the entity related to the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relatedEntityType
+      description: Entity type of the entity related to the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.created
+      description: Creation date of the observable.
+      type: Date
+    - contextPath: OpenCTI.Observable.updatedAt
+      description: Last update date of the observable.
+      type: Date
+  - arguments:
+    - default: true
+      description: A comma-separated list of MD5, SHA-1 or SHA-256 file hashes to check.
+      isArray: true
+      name: file
+      required: true
+    description: Checks the reputation of a file hash in OpenCTI, using its observable and its indicator.
+    name: file
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA-1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA-256 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor that reported the file as malicious.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: A description of why the file was reported as malicious.
+      type: String
+    - contextPath: File.Relationships.Relationship
+      description: The name of the relationship.
+      type: String
+    - contextPath: File.Relationships.EntityA
+      description: The source of the relationship.
+      type: String
+    - contextPath: File.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: String
+    - contextPath: File.Relationships.EntityB
+      description: The destination of the relationship.
+      type: String
+    - contextPath: File.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.id
+      description: ID of the OpenCTI indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.name
+      description: Name of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.description
+      description: Description of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.patternType
+      description: Pattern type of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.pattern
+      description: Pattern of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.mainObservableType
+      description: Main observable type of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.indicatorTypes
+      description: Types of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.score
+      description: OpenCTI score (x_opencti_score) of the indicator, used to calculate the DBot score.
+      type: Number
+    - contextPath: OpenCTI.Indicator.confidence
+      description: Confidence level of the indicator.
+      type: Number
+    - contextPath: OpenCTI.Indicator.validFrom
+      description: Date from which the indicator is valid.
+      type: Date
+    - contextPath: OpenCTI.Indicator.validUntil
+      description: Date until which the indicator is valid.
+      type: Date
+    - contextPath: OpenCTI.Indicator.revoked
+      description: Whether the indicator is revoked.
+      type: Boolean
+    - contextPath: OpenCTI.Indicator.detection
+      description: Whether the indicator is used for detection.
+      type: Boolean
+    - contextPath: OpenCTI.Indicator.created
+      description: Creation date of the indicator.
+      type: Date
+    - contextPath: OpenCTI.Indicator.updatedAt
+      description: Last update date of the indicator.
+      type: Date
+    - contextPath: OpenCTI.Indicator.createdBy
+      description: Author of the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.creators
+      description: Creators of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.labels
+      description: Labels of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.markings
+      description: Marking definitions of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicator.externalReferences.sourceName
+      description: Source name of the external reference.
+      type: String
+    - contextPath: OpenCTI.Indicator.externalReferences.url
+      description: URL of the external reference.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.id
+      description: ID of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relationshipType
+      description: Type of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.fromId
+      description: ID of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.fromName
+      description: Name of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.fromEntityType
+      description: Entity type of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.toId
+      description: ID of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.toName
+      description: Name of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.toEntityType
+      description: Entity type of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relatedEntityId
+      description: ID of the entity related to the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relatedEntityName
+      description: Name of the entity related to the indicator.
+      type: String
+    - contextPath: OpenCTI.Indicator.relationships.relatedEntityType
+      description: Entity type of the entity related to the indicator.
+      type: String
+    - contextPath: OpenCTI.Observable.found
+      description: Whether the observable was found in OpenCTI.
+      type: Boolean
+    - contextPath: OpenCTI.Observable.id
+      description: ID of the OpenCTI observable.
+      type: String
+    - contextPath: OpenCTI.Observable.value
+      description: Value of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.type
+      description: Type of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.entityType
+      description: OpenCTI entity type of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.score
+      description: OpenCTI score of the observable.
+      type: Number
+    - contextPath: OpenCTI.Observable.description
+      description: Description of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.createdBy
+      description: Author of the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.creators
+      description: Creators of the observable.
+      type: Unknown
+    - contextPath: OpenCTI.Observable.labels
+      description: Labels of the observable.
+      type: Unknown
+    - contextPath: OpenCTI.Observable.markings
+      description: Marking definitions of the observable.
+      type: Unknown
+    - contextPath: OpenCTI.Observable.externalReferences.sourceName
+      description: Source name of the external reference.
+      type: String
+    - contextPath: OpenCTI.Observable.externalReferences.url
+      description: URL of the external reference.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.id
+      description: ID of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relationshipType
+      description: Type of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.fromId
+      description: ID of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.fromName
+      description: Name of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.fromEntityType
+      description: Entity type of the source entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.toId
+      description: ID of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.toName
+      description: Name of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.toEntityType
+      description: Entity type of the target entity of the relationship.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relatedEntityId
+      description: ID of the entity related to the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relatedEntityName
+      description: Name of the entity related to the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.relationships.relatedEntityType
+      description: Entity type of the entity related to the observable.
+      type: String
+    - contextPath: OpenCTI.Observable.created
+      description: Creation date of the observable.
+      type: Date
+    - contextPath: OpenCTI.Observable.updatedAt
+      description: Last update date of the observable.
+      type: Date
+  dockerimage: demisto/opencti:1.0.0.7499058
   runonce: false
   script: '-'
   subtype: python3

@@ -1,4 +1,6 @@
 import copy
+import ipaddress
+import re
 import sys
 from io import StringIO
 
@@ -54,6 +56,88 @@ OBSERVABLE_TYPE_TO_STIX_PATTERN_MAPPING = {
     "User-Account": "[user-account:user_id = '{{indicator}}']",
     "Windows-Registry-Key": "[windows-registry-key:key = '{{indicator}}']",
 }
+CONTAINER_CLIENT_ATTRIBUTES = {
+    "report": "report",
+    "grouping": "grouping",
+    "case-incident": "case_incident",
+    "case-rft": "case_rft",
+    "case-rfi": "case_rfi",
+}
+DEFAULT_REPUTATION_THRESHOLD = 70
+DEFAULT_SUSPICIOUS_THRESHOLD = 20
+DEFAULT_RELIABILITY = "B - Usually reliable"
+OPENCTI_LINK_TEXT = "View in OpenCTI"
+MAX_ENTITY_RELATIONSHIPS = 100
+# Reputation command -> OpenCTI observable types, indicator main observable types, DBot type and context key.
+REPUTATION_COMMANDS = {
+    "ip": {
+        "observable_types": ["IPv4-Addr", "IPv6-Addr"],
+        "main_observable_types": ["IPv4-Addr", "IPv6-Addr"],
+        "dbot_type": DBotScoreType.IP,
+        "relationship_type": FeedIndicatorType.IP,
+    },
+    "domain": {
+        "observable_types": ["Domain-Name"],
+        "main_observable_types": ["Domain-Name"],
+        "dbot_type": DBotScoreType.DOMAIN,
+        "relationship_type": FeedIndicatorType.Domain,
+    },
+    "email": {
+        "observable_types": ["Email-Addr"],
+        "main_observable_types": ["Email-Addr"],
+        "dbot_type": DBotScoreType.EMAIL,
+        "relationship_type": FeedIndicatorType.Email,
+    },
+    "url": {
+        "observable_types": ["Url"],
+        "main_observable_types": ["Url"],
+        "dbot_type": DBotScoreType.URL,
+        "relationship_type": FeedIndicatorType.URL,
+    },
+    "file": {
+        "observable_types": ["StixFile"],
+        "main_observable_types": ["StixFile", "File"],
+        "dbot_type": DBotScoreType.FILE,
+        "relationship_type": FeedIndicatorType.File,
+    },
+}
+# OpenCTI entity type -> XSOAR indicator type, for the XSOAR relationships of the reputation commands.
+# Entities of another type (an indicator, a note...) have no XSOAR relationship.
+OPENCTI_TYPES_TO_RELATIONSHIP_TYPES = {
+    "Malware": ThreatIntel.ObjectsNames.MALWARE,
+    "Threat-Actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    "Threat-Actor-Group": ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    "Threat-Actor-Individual": ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    "Intrusion-Set": ThreatIntel.ObjectsNames.INTRUSION_SET,
+    "Campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
+    "Attack-Pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    "Tool": ThreatIntel.ObjectsNames.TOOL,
+    "Infrastructure": ThreatIntel.ObjectsNames.INFRASTRUCTURE,
+    "Report": ThreatIntel.ObjectsNames.REPORT,
+    "Course-Of-Action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
+    "Vulnerability": FeedIndicatorType.CVE,
+    "IPv4-Addr": FeedIndicatorType.IP,
+    "IPv6-Addr": FeedIndicatorType.IPv6,
+    "Domain-Name": FeedIndicatorType.Domain,
+    "Hostname": FeedIndicatorType.Host,
+    "Url": FeedIndicatorType.URL,
+    "Email-Addr": FeedIndicatorType.Email,
+    "StixFile": FeedIndicatorType.File,
+    "Autonomous-System": FeedIndicatorType.AS,
+    "Country": FeedIndicatorType.Location,
+    "City": FeedIndicatorType.Location,
+    "Region": FeedIndicatorType.Location,
+    "Administrative-Area": FeedIndicatorType.Location,
+    "Position": FeedIndicatorType.Location,
+    "Organization": FeedIndicatorType.Identity,
+    "Individual": FeedIndicatorType.Identity,
+    "Sector": FeedIndicatorType.Identity,
+    "System": FeedIndicatorType.Identity,
+}
+# OpenCTI relationship type -> XSOAR relationship name, when they differ. Other unknown types become related-to.
+OPENCTI_RELATIONSHIP_NAMES = {"indicates": EntityRelationship.Relationships.INDICATOR_OF}
+# Hash length -> (STIX / OpenCTI hash name, XSOAR File context field).
+FILE_HASH_TYPES = {32: ("MD5", "md5"), 40: ("SHA-1", "sha1"), 64: ("SHA-256", "sha256")}
 
 
 def label_create(client: OpenCTIApiClient, label_name: str | None):
@@ -773,13 +857,17 @@ def observable_field_update_command(client: OpenCTIApiClient, args: dict) -> Com
     observable_id = args.get("id")
     # works only with score and description
     key = KEY_TO_CTI_NAME[args.get("field")]  # type: ignore
-    value = args.get("value")
+    value: Any = args.get("value")
+    if key == "x_opencti_score":
+        value = int(value)
     try:
-        result = client.stix_cyber_observable.update_field(id=observable_id, key=key, value=value)
+        result = client.stix_cyber_observable.update_field(id=observable_id, input=[{"key": key, "value": value}])
     except Exception as e:
         demisto.error(str(e))
         raise DemistoException(f"Can't update observable. {e}")
 
+    if not result:
+        raise DemistoException("Can't update observable.")
     return CommandResults(
         outputs_prefix="OpenCTI.Observable",
         outputs_key_field="id",
@@ -1544,6 +1632,815 @@ def marking_list_command(client: OpenCTIApiClient, args: Dict[str, str]) -> Comm
         return CommandResults(readable_output="No markings")
 
 
+def incident_response_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Create incident response at opencti
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    name = args.get("name")
+    response_types = args.get("incident_response_type", None)
+    severity = args.get("severity", None)
+    priority = args.get("priority", None)
+    description = args.get("description", None)
+    created_by = args.get("created_by")
+    incident_response_date = args.get("incident_response_date", None)
+    label_id = args.get("label_id", None)
+    marking_id = args.get("marking_id", None)
+    external_references_id = args.get("external_references_id", None)
+
+    try:
+        result = client.case_incident.create(
+            name=name,
+            created=incident_response_date,
+            response_types=response_types,
+            severity=severity,
+            priority=priority,
+            description=description,
+            createdBy=created_by,
+            objectLabel=label_id,
+            objectMarking=marking_id,
+            externalReferences=external_references_id,
+        )
+    except Exception as e:
+        demisto.error(traceback.format_exc())
+        raise DemistoException(f"Can't create incident response. {e}")
+
+    if result and (incident_response_id := result.get("id")):
+        readable_output = f"Incident response created successfully. New Incident Response id: {incident_response_id}."
+        return CommandResults(
+            outputs_prefix="OpenCTI.IncidentResponse",
+            outputs_key_field="id",
+            outputs={"id": result.get("id")},
+            readable_output=readable_output,
+            raw_response=result,
+        )
+    else:
+        raise DemistoException("Can't create incident response.")
+
+
+def malware_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Create malware at opencti
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    name = args.get("name")
+    description = args.get("description", None)
+    is_family = argToBoolean(args.get("is_family", False))
+    malware_types = argToList(args.get("malware_types"))
+
+    try:
+        result = client.malware.create(name=name, description=description, is_family=is_family, malware_types=malware_types)
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't create malware. {e}")
+
+    if result and (malware_id := result.get("id")):
+        readable_output = f"Malware created successfully. New Malware id: {malware_id}."
+        return CommandResults(
+            outputs_prefix="OpenCTI.Malware",
+            outputs_key_field="id",
+            outputs={"id": result.get("id")},
+            readable_output=readable_output,
+            raw_response=result,
+        )
+    else:
+        raise DemistoException("Can't create malware.")
+
+
+def vulnerability_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Create vulnerability at opencti
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    name = args.get("name")
+    description = args.get("description", None)
+
+    try:
+        result = client.vulnerability.create(name=name, description=description)
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't create vulnerability. {e}")
+
+    if result and (vulnerability_id := result.get("id")):
+        readable_output = f"Vulnerability created successfully. New Vulnerability id: {vulnerability_id}."
+        return CommandResults(
+            outputs_prefix="OpenCTI.Vulnerability",
+            outputs_key_field="id",
+            outputs={"id": result.get("id")},
+            readable_output=readable_output,
+            raw_response=result,
+        )
+    else:
+        raise DemistoException("Can't create vulnerability.")
+
+
+def intrusion_set_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Create intrusion-set at opencti
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    name = args.get("name")
+    description = args.get("description", None)
+    try:
+        result = client.intrusion_set.create(name=name, description=description)
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't create intrusion set. {e}")
+
+    if result and (intrusion_set_id := result.get("id")):
+        readable_output = f"Intrusion set created successfully. New Intrusion Set id: {intrusion_set_id}."
+        return CommandResults(
+            outputs_prefix="OpenCTI.IntrusionSet",
+            outputs_key_field="id",
+            outputs={"id": result.get("id")},
+            readable_output=readable_output,
+            raw_response=result,
+        )
+    else:
+        raise DemistoException("Can't create intrusion set.")
+
+
+def threat_actor_group_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Create threat-actor-group at opencti
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    name = args.get("name")
+    description = args.get("description", None)
+    try:
+        result = client.threat_actor_group.create(name=name, description=description)
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't create threat-actor-group. {e}")
+
+    if result and (threat_actor_group_id := result.get("id")):
+        readable_output = f"Threat Actor Group created successfully. New Threat Actor Group id: {threat_actor_group_id}."
+        return CommandResults(
+            outputs_prefix="OpenCTI.ThreatActorGroup",
+            outputs_key_field="id",
+            outputs={"id": result.get("id")},
+            readable_output=readable_output,
+            raw_response=result,
+        )
+    else:
+        raise DemistoException("Can't create threat-actor-group.")
+
+
+def campaign_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Create campaign at opencti
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    name = args.get("name")
+    description = args.get("description", None)
+    first_seen = args.get("first_seen", None)
+    last_seen = args.get("last_seen", None)
+
+    try:
+        result = client.campaign.create(name=name, description=description, first_seen=first_seen, last_seen=last_seen)
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't create campaign. {e}")
+
+    if result and (campaign_id := result.get("id")):
+        readable_output = f"Campaign created successfully. New Campaign id: {campaign_id}."
+        return CommandResults(
+            outputs_prefix="OpenCTI.Campaign",
+            outputs_key_field="id",
+            outputs={"id": result.get("id")},
+            readable_output=readable_output,
+            raw_response=result,
+        )
+    else:
+        raise DemistoException("Can't create campaign.")
+
+
+def grouping_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Create grouping at opencti
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    name = args.get("name")
+    description = args.get("description", None)
+    context = args.get("context")
+
+    try:
+        result = client.grouping.create(name=name, description=description, context=context)
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't create grouping. {e}")
+
+    if result and (grouping_id := result.get("id")):
+        readable_output = f"Grouping created successfully. New Grouping id: {grouping_id}."
+        return CommandResults(
+            outputs_prefix="OpenCTI.Grouping",
+            outputs_key_field="id",
+            outputs={"id": result.get("id")},
+            readable_output=readable_output,
+            raw_response=result,
+        )
+    else:
+        raise DemistoException("Can't create grouping.")
+
+
+def report_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Create report at opencti
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    name = args.get("name")
+    description = args.get("description", None)
+    published = args.get("published")
+
+    try:
+        result = client.report.create(name=name, description=description, published=published)
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't create report. {e}")
+
+    if result and (report_id := result.get("id")):
+        readable_output = f"Report created successfully. New Report id: {report_id}."
+        return CommandResults(
+            outputs_prefix="OpenCTI.Report",
+            outputs_key_field="id",
+            outputs={"id": result.get("id")},
+            readable_output=readable_output,
+            raw_response=result,
+        )
+    else:
+        raise DemistoException("Can't create report.")
+
+
+def add_object_to_container_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> CommandResults:
+    """Add object Id into a container Id
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+
+    Returns:
+        readable_output, raw_response
+    """
+    container_type = args.get("container_type")
+    container_id = args.get("container_id")
+    object_id = args.get("object_id")
+
+    client_attribute = CONTAINER_CLIENT_ATTRIBUTES.get(container_type or "")
+    if not client_attribute:
+        supported = ", ".join(f"'{name}'" for name in CONTAINER_CLIENT_ATTRIBUTES)
+        error = (
+            f"Can't add object into container. Invalid container_type: {container_type}. "
+            f"Supported containers are: {supported}."
+        )
+        demisto.error(error)
+        raise DemistoException(error)
+
+    try:
+        added = getattr(client, client_attribute).add_stix_object_or_stix_relationship(
+            id=container_id,
+            stixObjectOrStixRelationshipId=object_id,
+        )
+    except Exception as e:
+        demisto.error(str(e))
+        raise DemistoException(f"Can't add object into {container_type}. {e}")
+
+    if not added:
+        raise DemistoException(f"Can't add object into {container_type}.")
+    return CommandResults(readable_output=f"Object added into {container_type}")
+
+
+def opencti_score_to_dbot_score(
+    score: Any,
+    threshold: int | None = DEFAULT_REPUTATION_THRESHOLD,
+    suspicious_threshold: int | None = DEFAULT_SUSPICIOUS_THRESHOLD,
+) -> int:
+    """Map an OpenCTI indicator score (x_opencti_score, 0-100) to a DBot score.
+
+    Args:
+        score: x_opencti_score of the OpenCTI indicator, None when no indicator was found.
+        threshold: score above which the indicator is malicious.
+        suspicious_threshold: score above which the indicator is suspicious.
+
+    Returns:
+        Common.DBotScore.NONE when there is no score (the value is unknown to OpenCTI), BAD above the malicious
+        threshold, SUSPICIOUS above the suspicious threshold, GOOD otherwise.
+    """
+    try:
+        score = min(max(int(score), 0), 100)
+    except (TypeError, ValueError):
+        return Common.DBotScore.NONE
+    threshold = DEFAULT_REPUTATION_THRESHOLD if threshold is None else threshold
+    suspicious_threshold = DEFAULT_SUSPICIOUS_THRESHOLD if suspicious_threshold is None else suspicious_threshold
+    if score > threshold:
+        return Common.DBotScore.BAD
+    if score > suspicious_threshold:
+        return Common.DBotScore.SUSPICIOUS
+    return Common.DBotScore.GOOD
+
+
+def get_reputation_thresholds(params: dict) -> tuple[int, int]:
+    """Return the (suspicious, malicious) score thresholds of the integration parameters.
+
+    Raises:
+        DemistoException: a threshold is not between 0 and 100, or the suspicious one is above the malicious one.
+    """
+    thresholds = []
+    for name, default in (
+        ("reputation_suspicious_threshold", DEFAULT_SUSPICIOUS_THRESHOLD),
+        ("reputation_threshold", DEFAULT_REPUTATION_THRESHOLD),
+    ):
+        value = arg_to_number(params.get(name), arg_name=name)
+        value = default if value is None else value
+        if not 0 <= value <= 100:
+            raise DemistoException(f"The {name} parameter must be between 0 and 100, got {value}.")
+        thresholds.append(value)
+    suspicious_threshold, malicious_threshold = thresholds
+    if suspicious_threshold > malicious_threshold:
+        raise DemistoException(
+            f"The suspicious score threshold ({suspicious_threshold}) must not be above the malicious score threshold "
+            f"({malicious_threshold})."
+        )
+    return suspicious_threshold, malicious_threshold
+
+
+def is_valid_ip(value: str) -> bool:
+    """Return True when the value is an IPv4 or IPv6 address."""
+    try:
+        ipaddress.ip_address(value)
+    except ValueError:
+        return False
+    return True
+
+
+def get_file_hash_type(value: str) -> tuple[str, str] | None:
+    """Return the (OpenCTI hash name, XSOAR File field) of an MD5, SHA-1 or SHA-256 hash, None otherwise."""
+    value = (value or "").strip()
+    if not re.fullmatch(r"[A-Fa-f0-9]+", value):
+        return None
+    return FILE_HASH_TYPES.get(len(value))
+
+
+def build_reputation_pattern(value: str, indicator_type: str) -> str | None:
+    """Build the STIX pattern an OpenCTI indicator of this value would have."""
+    if indicator_type == "file":
+        hash_type = get_file_hash_type(value)
+        return f"[file:hashes.'{hash_type[0]}' = '{value}']" if hash_type else None
+    if indicator_type == "ip":
+        observable_type = "IPv6-Addr" if ":" in value else "IPv4-Addr"
+    else:
+        observable_type = {"domain": "Domain-Name", "email": "Email-Addr", "url": "Url"}[indicator_type]
+    return build_stix_pattern(value, observable_type)
+
+
+def get_names(items: list | None, key: str) -> list[str]:
+    """Return the `key` value of every item of an OpenCTI list (labels, markings, creators)."""
+    return [item.get(key) for item in items or [] if item and item.get(key)]
+
+
+def get_external_references(entity: dict) -> list[dict]:
+    """Return the source name and URL of the external references of an OpenCTI entity."""
+    references = []
+    for reference in entity.get("externalReferences") or []:
+        source_name = reference.get("source_name") or reference.get("sourceName")
+        url = reference.get("url")
+        if source_name or url:
+            references.append({"sourceName": source_name, "url": url})
+    return references
+
+
+def entity_name(entity: dict) -> str | None:
+    """Return the display name of an OpenCTI entity or observable."""
+    return entity.get("name") or entity.get("observable_value") or entity.get("value")
+
+
+def is_incoming_relationship(relationship: dict) -> bool:
+    """Return True when the related entity is the source of the relationship (see get_entity_relationships)."""
+    return bool(relationship.get("relatedEntityId")) and relationship.get("relatedEntityId") == relationship.get("fromId")
+
+
+def get_entity_relationships(client: OpenCTIApiClient, entity_id: str, excluded_entity_id: str | None = None) -> list[dict]:
+    """Return the relationships of an OpenCTI observable or indicator with the entity on their other side.
+
+    Args:
+        client: OpenCTI Client object
+        entity_id: ID of the observable or indicator
+        excluded_entity_id: ID of an entity whose relationships with this one are left out (the indicator of the
+            observable, or the reverse: their based-on relationship only links the two objects already returned)
+
+    Returns:
+        The relationships. A failure is logged and does not fail the reputation command.
+    """
+    try:
+        raw_relationships = (
+            client.stix_core_relationship.list(fromOrToId=entity_id, first=MAX_ENTITY_RELATIONSHIPS, withPagination=False) or []
+        )
+    except Exception as e:
+        demisto.error(f"Can't list the relationships of {entity_id}. {e}")
+        return []
+
+    relationships = []
+    for relationship in raw_relationships:
+        from_entity = relationship.get("from") or {}
+        to_entity = relationship.get("to") or {}
+        outgoing = from_entity.get("id") == entity_id
+        related_entity = to_entity if outgoing else from_entity
+        if excluded_entity_id and related_entity.get("id") == excluded_entity_id:
+            continue
+        relationships.append(
+            {
+                "id": relationship.get("id"),
+                "relationshipType": relationship.get("relationship_type"),
+                "fromId": from_entity.get("id"),
+                "fromName": entity_name(from_entity),
+                "fromEntityType": from_entity.get("entity_type"),
+                "toId": to_entity.get("id"),
+                "toName": entity_name(to_entity),
+                "toEntityType": to_entity.get("entity_type"),
+                "relatedEntityId": related_entity.get("id"),
+                "relatedEntityName": entity_name(related_entity),
+                "relatedEntityType": related_entity.get("entity_type"),
+            }
+        )
+    return relationships
+
+
+def find_observable(client: OpenCTIApiClient, value: str, indicator_type: str) -> dict | None:
+    """Find the OpenCTI observable that has exactly this value (this hash for files)."""
+    if indicator_type == "file":
+        value_filter = {"key": f"hashes.{get_file_hash_type(value)[0]}", "values": [value], "operator": "eq"}  # type: ignore[index]
+    else:
+        value_filter = {"key": "value", "values": [value], "operator": "eq"}
+    filters = {
+        "mode": "and",
+        "filters": [
+            {
+                "key": "entity_type",
+                "values": REPUTATION_COMMANDS[indicator_type]["observable_types"],
+                "operator": "eq",
+                "mode": "or",
+            },
+            value_filter,
+        ],
+        "filterGroups": [],
+    }
+    observables = client.stix_cyber_observable.list(first=1, withPagination=False, filters=filters)
+    return observables[0] if observables else None
+
+
+def find_indicator(client: OpenCTIApiClient, value: str, indicator_type: str) -> dict | None:
+    """Find the OpenCTI STIX indicator whose pattern matches exactly this value.
+
+    The pattern is first matched by an exact filter, then among the results of a full-text search.
+    """
+    pattern = build_reputation_pattern(value, indicator_type)
+    base_filters = [
+        {
+            "key": "x_opencti_main_observable_type",
+            "values": REPUTATION_COMMANDS[indicator_type]["main_observable_types"],
+            "operator": "eq",
+            "mode": "or",
+        },
+        {"key": "pattern_type", "values": ["stix"], "operator": "eq"},
+    ]
+    exact_filters = {
+        "mode": "and",
+        "filters": [*base_filters, {"key": "pattern", "values": [pattern], "operator": "eq"}],
+        "filterGroups": [],
+    }
+    indicators = client.indicator.list(first=1, withPagination=False, filters=exact_filters)
+    if not indicators:
+        search_filters = {"mode": "and", "filters": base_filters, "filterGroups": []}
+        candidates = client.indicator.list(first=10, withPagination=False, filters=search_filters, search=f'"{value}"')
+        indicators = [indicator for indicator in candidates or [] if indicator.get("pattern") == pattern]
+    return indicators[0] if indicators else None
+
+
+def build_observable_details(observable: dict | None, value: str, indicator_type: str, relationships: list[dict]) -> dict:
+    """Build the OpenCTI.Observable context of a reputation command."""
+    if not observable:
+        return {"found": False, "value": value, "type": indicator_type}
+    entity_type = observable.get("entity_type") or ""
+    return {
+        "found": True,
+        "id": observable.get("id"),
+        "value": value,
+        "type": OPENCTI_TYPES_TO_XSOAR.get(entity_type, entity_type),
+        "entityType": entity_type,
+        "score": observable.get("x_opencti_score"),
+        "description": observable.get("x_opencti_description"),
+        "createdBy": (observable.get("createdBy") or {}).get("name"),
+        "creators": get_names(observable.get("creators"), "name"),
+        "labels": get_names(observable.get("objectLabel"), "value"),
+        "markings": get_names(observable.get("objectMarking"), "definition"),
+        "externalReferences": get_external_references(observable),
+        "relationships": relationships,
+        "created": observable.get("created_at"),
+        "updatedAt": observable.get("updated_at"),
+    }
+
+
+def build_indicator_details(indicator: dict, relationships: list[dict]) -> dict:
+    """Build the OpenCTI.Indicator context of a reputation command."""
+    return {
+        "id": indicator.get("id"),
+        "name": indicator.get("name"),
+        "description": indicator.get("description"),
+        "patternType": indicator.get("pattern_type"),
+        "pattern": indicator.get("pattern"),
+        "mainObservableType": indicator.get("x_opencti_main_observable_type"),
+        "indicatorTypes": indicator.get("indicator_types") or [],
+        "score": indicator.get("x_opencti_score"),
+        "confidence": indicator.get("confidence"),
+        "validFrom": indicator.get("valid_from"),
+        "validUntil": indicator.get("valid_until"),
+        "revoked": indicator.get("revoked"),
+        "detection": indicator.get("x_opencti_detection"),
+        "created": indicator.get("created"),
+        "updatedAt": indicator.get("updated_at"),
+        "createdBy": (indicator.get("createdBy") or {}).get("name"),
+        "creators": get_names(indicator.get("creators"), "name"),
+        "labels": get_names(indicator.get("objectLabel"), "value"),
+        "markings": get_names(indicator.get("objectMarking"), "definition"),
+        "externalReferences": get_external_references(indicator),
+        "relationships": relationships,
+    }
+
+
+def opencti_link(platform_url: str, entity_id: str | None, text: str | None = None) -> str | None:
+    """Return a markdown link to an OpenCTI entity page, or the plain text when there is no platform URL or ID."""
+    text = text or entity_id
+    if not platform_url or not entity_id:
+        return text
+    return f"[{text}]({platform_url}/dashboard/id/{entity_id})"
+
+
+def relationships_to_markdown(title: str, relationships: list[dict], platform_url: str = "") -> str:
+    """Render relationships as a Relationship / Entity type / Entity table. Incoming relationships are marked with ←.
+
+    The related entities link to their OpenCTI page when the platform URL is given.
+    """
+    rows = [
+        {
+            "Relationship": ("← " if is_incoming_relationship(relationship) else "") + str(relationship.get("relationshipType")),
+            "Entity type": relationship.get("relatedEntityType"),
+            "Entity": opencti_link(platform_url, relationship.get("relatedEntityId"), relationship.get("relatedEntityName")),
+        }
+        for relationship in relationships
+    ]
+    return tableToMarkdown(title, rows, headers=["Relationship", "Entity type", "Entity"], removeNull=True)
+
+
+def build_entity_relationships(
+    value: str, indicator_type: str, relationships: list[dict], reliability: str
+) -> list[EntityRelationship]:
+    """Convert the OpenCTI relationships of a value into XSOAR relationships, the value being entity A.
+
+    Args:
+        value: the value checked by the reputation command
+        indicator_type: ip, domain, email, url or file
+        relationships: the relationships of its observable and indicator (see get_entity_relationships)
+        reliability: reliability of the source
+
+    Returns:
+        One XSOAR relationship per related entity and relationship name. Related entities whose type has no
+        XSOAR equivalent are left out.
+    """
+    entity_a_type = REPUTATION_COMMANDS[indicator_type]["relationship_type"]
+    if indicator_type == "ip" and ":" in value:
+        entity_a_type = FeedIndicatorType.IPv6
+
+    entity_relationships = []
+    seen = set()
+    for relationship in relationships:
+        entity_b = relationship.get("relatedEntityName")
+        entity_b_type = OPENCTI_TYPES_TO_RELATIONSHIP_TYPES.get(relationship.get("relatedEntityType") or "")
+        if not entity_b or not entity_b_type:
+            continue
+        opencti_name = relationship.get("relationshipType") or ""
+        name = OPENCTI_RELATIONSHIP_NAMES.get(opencti_name, opencti_name)
+        if not EntityRelationship.Relationships.is_valid(name):
+            name = EntityRelationship.Relationships.RELATED_TO
+        if is_incoming_relationship(relationship):
+            name = EntityRelationship.Relationships.get_reverse(name)
+        if (name, entity_b, entity_b_type) in seen:
+            continue
+        seen.add((name, entity_b, entity_b_type))
+        entity_relationships.append(
+            EntityRelationship(
+                name=name,
+                entity_a=value,
+                entity_a_type=entity_a_type,
+                entity_b=entity_b,
+                entity_b_type=entity_b_type,
+                source_reliability=reliability,
+                brand="OpenCTI",
+            )
+        )
+    return entity_relationships
+
+
+def build_reputation_indicator(
+    value: str, indicator_type: str, dbot_score: Common.DBotScore, relationships: list[EntityRelationship]
+) -> Common.Indicator:
+    """Build the XSOAR standard indicator (Common.IP, Common.Domain...) of a reputation command."""
+    if indicator_type == "ip":
+        return Common.IP(ip=value, dbot_score=dbot_score, relationships=relationships)
+    if indicator_type == "domain":
+        return Common.Domain(domain=value, dbot_score=dbot_score, relationships=relationships)
+    if indicator_type == "email":
+        return Common.EMAIL(address=value, dbot_score=dbot_score, relationships=relationships)
+    if indicator_type == "url":
+        return Common.URL(url=value, dbot_score=dbot_score, relationships=relationships)
+    hash_field = get_file_hash_type(value)[1]  # type: ignore[index]
+    return Common.File(dbot_score=dbot_score, relationships=relationships, **{hash_field: value})
+
+
+def reputation_result(
+    client: OpenCTIApiClient,
+    value: str,
+    indicator_type: str,
+    threshold: int | None,
+    reliability: str,
+    create_relationships: bool,
+    platform_url: str = "",
+    suspicious_threshold: int | None = DEFAULT_SUSPICIOUS_THRESHOLD,
+) -> CommandResults:
+    """Check the reputation of one value in OpenCTI: its observable and its indicator, with their relationships."""
+    observable = find_observable(client, value, indicator_type)
+    indicator = find_indicator(client, value, indicator_type)
+    observable_id = observable.get("id") if observable else None
+    indicator_id = indicator.get("id") if indicator else None
+    observable_relationships = get_entity_relationships(client, observable_id, indicator_id) if observable_id else []
+    observable_details = build_observable_details(observable, value, indicator_type, observable_relationships)
+    indicator_details = None
+    if indicator:
+        indicator_relationships = get_entity_relationships(client, indicator_id, observable_id)  # type: ignore[arg-type]
+        indicator_details = build_indicator_details(indicator, indicator_relationships)
+    score = indicator_details.get("score") if indicator_details else None
+
+    dbot_score_value = opencti_score_to_dbot_score(score, threshold, suspicious_threshold)
+    dbot_score = Common.DBotScore(
+        indicator=value,
+        indicator_type=REPUTATION_COMMANDS[indicator_type]["dbot_type"],
+        integration_name="OpenCTI",
+        score=dbot_score_value,
+        reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(reliability),
+        malicious_description=f"OpenCTI score: {score}" if dbot_score_value == Common.DBotScore.BAD else None,
+    )
+
+    outputs: dict = {"OpenCTI.Observable(val.value && val.value == obj.value)": observable_details}
+    indicator_id = indicator_details.get("id") if indicator_details else None
+    observable_id = observable_details.get("id")
+    summary = {
+        "Value": value,
+        "OpenCTI Score": score if score is not None else "Unknown",
+        "Indicator ID": indicator_id,
+        "Indicator Link": opencti_link(platform_url, indicator_id, OPENCTI_LINK_TEXT) if platform_url and indicator_id else None,
+        "Observable ID": observable_id,
+        "Observable Link": opencti_link(platform_url, observable_id, OPENCTI_LINK_TEXT)
+        if platform_url and observable_id
+        else None,
+        "Labels": ", ".join((indicator_details or observable_details).get("labels", [])),
+        "Markings": ", ".join((indicator_details or observable_details).get("markings", [])),
+    }
+    readable_output = tableToMarkdown(
+        f"OpenCTI reputation for {indicator_type} {value}",
+        {header: cell for header, cell in summary.items() if cell is not None},
+        headers=[header for header, cell in summary.items() if cell is not None],
+        removeNull=True,
+    )
+    if indicator_details:
+        outputs["OpenCTI.Indicator(val.id && val.id == obj.id)"] = indicator_details
+        readable_output += tableToMarkdown(
+            "Indicator",
+            indicator_details,
+            headers=["name", "pattern", "score", "confidence", "validFrom", "validUntil", "revoked", "detection", "createdBy"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+    for title, details in (("Indicator relationships", indicator_details), ("Observable relationships", observable_details)):
+        if details and details.get("relationships"):
+            readable_output += relationships_to_markdown(title, details["relationships"], platform_url)
+
+    entity_relationships = []
+    if create_relationships:
+        entity_relationships = build_entity_relationships(
+            value,
+            indicator_type,
+            (indicator_details or {}).get("relationships", []) + observable_details.get("relationships", []),
+            reliability,
+        )
+    demisto.debug(f"OpenCTI reputation for {value}: {create_relationships=}, {len(entity_relationships)} XSOAR relationships.")
+
+    return CommandResults(
+        outputs=outputs,
+        indicator=build_reputation_indicator(value, indicator_type, dbot_score, entity_relationships),
+        relationships=entity_relationships,
+        readable_output=readable_output,
+        raw_response={"observable": observable_details, "indicator": indicator_details},
+    )
+
+
+def reputation_command(
+    client: OpenCTIApiClient,
+    args: Dict[str, Any],
+    indicator_type: str,
+    threshold: int | None = DEFAULT_REPUTATION_THRESHOLD,
+    reliability: str = DEFAULT_RELIABILITY,
+    create_relationships: bool = True,
+    platform_url: str = "",
+    suspicious_threshold: int | None = DEFAULT_SUSPICIOUS_THRESHOLD,
+) -> list[CommandResults]:
+    """Check the reputation of IPs, domains, emails, URLs or file hashes in OpenCTI.
+
+    Args:
+        client: OpenCTI Client object
+        args: demisto.args()
+        indicator_type: ip, domain, email, url or file (the command name)
+        threshold: OpenCTI score above which an indicator is malicious
+        suspicious_threshold: OpenCTI score above which an indicator is suspicious (below: good)
+        reliability: reliability of the source
+        create_relationships: whether to create the XSOAR relationships of the values
+        platform_url: OpenCTI URL, used to link the indicators, observables and related entities to their page
+
+    Returns:
+        One CommandResults per value. A value that can't be checked doesn't fail the others.
+    """
+    values = argToList(args.get(indicator_type))
+    if not values:
+        raise DemistoException(f"Please provide at least one value in the '{indicator_type}' argument.")
+
+    results = []
+    for value in values:
+        if indicator_type == "ip" and not is_valid_ip(value):
+            results.append(CommandResults(readable_output=f"{value} is not a valid IP address."))
+            continue
+        if indicator_type == "file" and not get_file_hash_type(value):
+            results.append(CommandResults(readable_output=f"{value} is not a valid MD5, SHA-1 or SHA-256 hash."))
+            continue
+        try:
+            results.append(
+                reputation_result(
+                    client,
+                    value,
+                    indicator_type,
+                    threshold,
+                    reliability,
+                    create_relationships,
+                    platform_url,
+                    suspicious_threshold,
+                )
+            )
+        except Exception as e:
+            demisto.error(traceback.format_exc())
+            results.append(
+                CommandResults(
+                    readable_output=f"Can't check the reputation of {value} in OpenCTI. {e}", entry_type=EntryType.WARNING
+                )
+            )
+    return results
+
+
 def main():
     params = demisto.params()
     args = demisto.args()
@@ -1552,6 +2449,8 @@ def main():
     api_key = credentials.get("password")
     base_url = params.get("base_url").strip("/")
     verify = not argToBoolean(params.get("insecure", False))
+    reliability = params.get("integrationReliability") or DEFAULT_RELIABILITY
+    create_relationships = argToBoolean(params.get("create_relationships", True))
 
     try:
         client = OpenCTIApiClient(base_url, api_key, ssl_verify=verify, log_level="error", proxies=handle_proxy())
@@ -1562,6 +2461,7 @@ def main():
         if command == "test-module":
             """When setting up an OpenCTI Client it is checked that it is valid and allows requests to be sent.
             and if not he immediately sends an error"""
+            get_reputation_thresholds(params)
             get_observables_command(client, args)
             return_results("ok")
 
@@ -1639,6 +2539,48 @@ def main():
 
         elif command == "opencti-indicator-types-list":
             return_results(indicator_types_list_command(client, args))
+
+        elif command == "opencti-incident-response-create":
+            return_results(incident_response_create_command(client, args))
+
+        elif command == "opencti-malware-create":
+            return_results(malware_create_command(client, args))
+
+        elif command == "opencti-vulnerability-create":
+            return_results(vulnerability_create_command(client, args))
+
+        elif command == "opencti-intrusion-set-create":
+            return_results(intrusion_set_create_command(client, args))
+
+        elif command == "opencti-threat-actor-group-create":
+            return_results(threat_actor_group_create_command(client, args))
+
+        elif command == "opencti-campaign-create":
+            return_results(campaign_create_command(client, args))
+
+        elif command == "opencti-grouping-create":
+            return_results(grouping_create_command(client, args))
+
+        elif command == "opencti-report-create":
+            return_results(report_create_command(client, args))
+
+        elif command == "opencti-add-object-to-container":
+            return_results(add_object_to_container_create_command(client, args))
+
+        elif command in REPUTATION_COMMANDS:
+            suspicious_threshold, malicious_threshold = get_reputation_thresholds(params)
+            return_results(
+                reputation_command(
+                    client,
+                    args,
+                    command,
+                    malicious_threshold,
+                    reliability,
+                    create_relationships,
+                    base_url,
+                    suspicious_threshold=suspicious_threshold,
+                )
+            )
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
