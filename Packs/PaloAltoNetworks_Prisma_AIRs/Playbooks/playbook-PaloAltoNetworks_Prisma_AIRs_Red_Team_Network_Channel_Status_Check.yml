@@ -285,6 +285,14 @@ tasks:
           right:
             value:
               simple: "true"
+          ignorecase: true
+          left:
+            value:
+              simple: inputs.NotifyOffline
+            iscontext: true
+          right:
+            value:
+              simple: "true"
       - - operator: isExists
           left:
             value:
