@@ -1,0 +1,52 @@
+{
+    "id": "incident_microsoftgraphsecurityclassification",
+    "version": -1,
+    "name": "Microsoft Graph Security Classification",
+    "ownerOnly": false,
+    "cliName": "microsoftgraphsecurityclassification",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Graph Security Alert",
+        "Graph Security Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ],
+    "selectValues": [
+        "Unclassified",
+        "True positive - Multi staged attack",
+        "True positive - Malware",
+        "True positive - Malicious user activity",
+        "True positive - Unwanted software",
+        "True positive - Phishing",
+        "True positive - Compromised account",
+        "True positive - Other",
+        "Informational - Security testing",
+        "Informational - Confirmed activity",
+        "Informational - Line of business application",
+        "Informational - Other",
+        "False positive - Not malicious",
+        "False positive - Not enough data to validate",
+        "False positive - Other"
+    ]
+}

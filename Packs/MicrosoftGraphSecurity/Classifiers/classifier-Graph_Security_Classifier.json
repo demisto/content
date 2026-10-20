@@ -1,0 +1,24 @@
+{
+    "defaultIncidentType": "Graph Security Alert",
+    "description": "Classifies Microsoft Graph Security alerts and incidents by the mirror_type key.",
+    "feed": false,
+    "id": "Graph Security Classifier",
+    "keyTypeMap": {
+        "alert": "Graph Security Alert",
+        "incident": "Graph Security Incident"
+    },
+    "name": "Graph Security Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "mirror_type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

@@ -11,6 +11,18 @@ Use the **Fetch incidents type** parameter to control what this integration inge
 
 You can narrow what is fetched using the **Alerts Filter** and **Incidents Filter** parameters. These accept an OData `$filter` expression, for example `severity eq 'medium' and status eq 'active'`. For the supported syntax and operators, see [Microsoft query parameters](https://learn.microsoft.com/en-us/graph/query-parameters?tabs=http).
 
+# Mirroring
+1. Select the **Incident Mirroring Direction**: Incoming, Outgoing, or Incoming And Outgoing.
+2. Select the **Fetches incidents** radio button.
+3. Under **Classifier**, select **Graph Security Classifier**. It sets the incident type to **Graph Security Alert** or **Graph Security Incident**.
+4. Under **Mapper (incoming)**, select **Graph Security Mapper - Incoming** (covers both alerts and incidents).
+5. Under **Mapper (outgoing)**, select **Graph Security Mapper - Outgoing** (covers both alerts and incidents).
+6. To close the Cortex XSOAR incident when the Microsoft alert/incident is resolved, check **Close Mirrored XSOAR Incident**.
+7. To resolve the Microsoft alert/incident when the Cortex XSOAR incident is closed, check **Close Mirrored Microsoft Alert/Incident**.
+8. Entries tagged with the **Comment Entry Tag (to Microsoft)** are mirrored out as Microsoft alert/incident comments.
+
+Outgoing mirroring requires the `SecurityIncident.ReadWrite.All` and `SecurityAlert.ReadWrite.All` permissions.
+
 # Authentication
 You can authenticate either by Entra ID applications or by Azure Managed Identities.
 
