@@ -910,9 +910,9 @@ class TestNormalizeToolSchemas:
         """
         tool = self._tool({"field": prop})
 
-        normalize_tool_schemas([tool])
+        [result] = normalize_tool_schemas([tool])
 
-        assert tool["inputSchema"]["properties"]["field"] == expected
+        assert result["inputSchema"]["properties"]["field"] == expected
 
     @pytest.mark.parametrize(
         "prop",
@@ -933,9 +933,9 @@ class TestNormalizeToolSchemas:
         """
         tool = self._tool({"field": copy.deepcopy(prop)})
 
-        normalize_tool_schemas([tool])
+        [result] = normalize_tool_schemas([tool])
 
-        assert tool["inputSchema"]["properties"]["field"] == prop
+        assert result["inputSchema"]["properties"]["field"] == prop
 
     def test_top_level_schema_type_list_is_flattened(self):
         """
@@ -945,10 +945,10 @@ class TestNormalizeToolSchemas:
         """
         tool = {"name": "t", "inputSchema": {"type": ["object", "null"]}, "outputSchema": {"type": ["object", "null"]}}
 
-        normalize_tool_schemas([tool])
+        [result] = normalize_tool_schemas([tool])
 
-        assert tool["inputSchema"]["type"] == "object"
-        assert tool["outputSchema"]["type"] == "object"
+        assert result["inputSchema"]["type"] == "object"
+        assert result["outputSchema"]["type"] == "object"
 
     def test_top_level_schema_type_list_with_several_real_types_loses_its_type(self):
         """
@@ -958,10 +958,10 @@ class TestNormalizeToolSchemas:
         """
         tool = {"name": "t", "outputSchema": {"type": ["object", "array"], "properties": {"a": {"type": ["string", "null"]}}}}
 
-        normalize_tool_schemas([tool])
+        [result] = normalize_tool_schemas([tool])
 
-        assert "type" not in tool["outputSchema"]
-        assert tool["outputSchema"]["properties"]["a"]["type"] == "string"
+        assert "type" not in result["outputSchema"]
+        assert result["outputSchema"]["properties"]["a"]["type"] == "string"
 
     def test_output_property_without_description_gets_a_default(self):
         """
@@ -979,9 +979,9 @@ class TestNormalizeToolSchemas:
             },
         )
 
-        normalize_tool_schemas([tool])
+        [result] = normalize_tool_schemas([tool])
 
-        properties = tool["outputSchema"]["properties"]
+        properties = result["outputSchema"]["properties"]
         assert properties["results"]["description"] == "results"
         assert properties["empty"]["description"] == "empty"
         assert properties["found"]["description"] == "Found"
@@ -996,9 +996,9 @@ class TestNormalizeToolSchemas:
         """
         tool = self._tool({}, {"found": {"type": "boolean", "title": title}})
 
-        normalize_tool_schemas([tool])
+        [result] = normalize_tool_schemas([tool])
 
-        assert tool["outputSchema"]["properties"]["found"]["description"] == "found"
+        assert result["outputSchema"]["properties"]["found"]["description"] == "found"
 
     def test_input_property_description_is_left_alone(self):
         """
@@ -1008,9 +1008,9 @@ class TestNormalizeToolSchemas:
         """
         tool = self._tool({"field": {"type": "string"}})
 
-        normalize_tool_schemas([tool])
+        [result] = normalize_tool_schemas([tool])
 
-        assert "description" not in tool["inputSchema"]["properties"]["field"]
+        assert "description" not in result["inputSchema"]["properties"]["field"]
 
     def test_unusual_shapes_do_not_raise(self):
         """
@@ -1026,6 +1026,26 @@ class TestNormalizeToolSchemas:
         expected = copy.deepcopy(tools)
 
         assert normalize_tool_schemas(tools) == expected
+
+    def test_input_is_not_modified(self):
+        """
+        Given: Tools with a nullable type, a multi-type list, and an undocumented output property.
+        When: normalize_tool_schemas runs.
+        Then: The result is normalized, and the given tools are left exactly as they were.
+        """
+        tools = [
+            self._tool(
+                {"owner": {"type": ["string", "null"]}, "mixed": {"type": ["string", "number"]}},
+                {"results": {"type": ["array", "null"]}},
+            )
+        ]
+        original = copy.deepcopy(tools)
+
+        result = normalize_tool_schemas(tools)
+
+        assert tools == original
+        assert result[0]["inputSchema"]["properties"] == {"owner": {"type": "string"}, "mixed": {}}
+        assert result[0]["outputSchema"]["properties"] == {"results": {"type": "array", "description": "results"}}
 
     def test_empty_tool_list(self):
         """
