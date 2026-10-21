@@ -3771,8 +3771,11 @@ def test_send_assets_with_retry_resends_the_identical_request(mocker: MockerFixt
     )
 
     first_request, retried_request = requests_mock.request_history
-    assert retried_request.body == first_request.body
-    assert b"asset-2" in gzip.decompress(retried_request.body)
+    # Compare the decompressed payloads: the gzip header holds the compression time (in seconds), so the raw bodies
+    # differ when the retry crosses a second boundary.
+    retried_payload = gzip.decompress(retried_request.body)
+    assert retried_payload == gzip.decompress(first_request.body)
+    assert b"asset-2" in retried_payload
     assert retried_request.headers["snapshot-id"] == first_request.headers["snapshot-id"]
     assert retried_request.headers["total-items-count"] == first_request.headers["total-items-count"] == "1"
 
