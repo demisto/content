@@ -201,7 +201,13 @@ def test_fetch_incidents_translates_kela_severity_to_xsoar_scale(mock_demisto):
 
     fetch_incidents(
         client,
-        {"workspace_id": "ws-1", "max_fetch": "50", "first_fetch": "3 days", "fetch_bot_markets": False, "fetch_cookie_incidents": False},
+        {
+            "workspace_id": "ws-1",
+            "max_fetch": "50",
+            "first_fetch": "3 days",
+            "fetch_bot_markets": False,
+            "fetch_cookie_incidents": False,
+        },
     )
 
     incidents_arg = mock_demisto.incidents.call_args[0][0]

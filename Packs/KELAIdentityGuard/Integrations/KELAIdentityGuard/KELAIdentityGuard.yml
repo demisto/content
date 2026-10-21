@@ -415,7 +415,7 @@ script:
     - contextPath: KELA.IdentityGuard.CookieIncident.botOS
       description: The OS of the infected machine.
       type: String
-  dockerimage: demisto/python3:3.12.14.13495286
+  dockerimage: demisto/py3-tools:1.0.0.13712671
   isfetch: true
   runonce: false
   script: '-'

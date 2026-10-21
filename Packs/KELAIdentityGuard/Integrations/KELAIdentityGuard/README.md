@@ -96,7 +96,7 @@ Search Identity Guard incidents for a workspace, with rich filtering, sorting an
     "KELA": {
         "IdentityGuard": {
             "Incident": {
-                "incidentId": "<incident-id>",
+                "incidentId": "example-incident-id",
                 "severity": "critical",
                 "status": "UNRESOLVED",
                 "sourceType": "infectedBots",
@@ -106,7 +106,7 @@ Search Identity Guard incidents for a workspace, with rich filtering, sorting an
                 "accountUserName": "jdoe",
                 "accountServiceHostname": "example.com",
                 "botName": "RedLine",
-                "link": "https://platform.ke-la.com/incidents/<incident-id>"
+                "link": "https://platform.ke-la.com/incidents/example-incident-id"
             }
         }
     }
@@ -120,7 +120,7 @@ Search Identity Guard incidents for a workspace, with rich filtering, sorting an
 >### KELA Identity Guard incidents (workspace 1234) - 1 total
 >|incidentId|severity|status|sourceType|accountUserName|accountServiceHostname|createdDate|
 >|---|---|---|---|---|---|---|
->| <incident-id> | critical | UNRESOLVED | infectedBots | jdoe | example.com | 2024-01-15T12:34:56.000Z |
+>| example-incident-id | critical | UNRESOLVED | infectedBots | jdoe | example.com | 2024-01-15T12:34:56.000Z |
 
 *(Illustrative output: values are placeholders, not real data. It has not been run against the live API yet.)*
 
@@ -177,7 +177,7 @@ Search Identity Guard bot-market alerts (bots/webmails offered for sale) for a w
     "KELA": {
         "IdentityGuard": {
             "BotMarket": {
-                "alertId": "<alert-id>",
+                "alertId": "example-alert-id",
                 "marketBotName": "bot_1234",
                 "marketName": "RussianMarket",
                 "requestStatus": "pending",
@@ -185,7 +185,7 @@ Search Identity Guard bot-market alerts (bots/webmails offered for sale) for a w
                 "module": "RedLine",
                 "price": "$10",
                 "postedDate": "2024-01-15T12:34:56.000Z",
-                "linkAlert": "https://platform.ke-la.com/bot-markets/<alert-id>"
+                "linkAlert": "https://platform.ke-la.com/bot-markets/example-alert-id"
             }
         }
     }
@@ -199,7 +199,7 @@ Search Identity Guard bot-market alerts (bots/webmails offered for sale) for a w
 >### KELA Identity Guard bot-market alerts (workspace 1234)
 >|alertId|marketName|requestStatus|availabilityStatus|price|postedDate|
 >|---|---|---|---|---|---|
->| <alert-id> | RussianMarket | pending | available | $10 | 2024-01-15T12:34:56.000Z |
+>| example-alert-id | RussianMarket | pending | available | $10 | 2024-01-15T12:34:56.000Z |
 
 *(Illustrative output: values are placeholders, not real data. It has not been run against the live API yet.)*
 
@@ -261,12 +261,12 @@ permission on Identity Guard.
     "KELA": {
         "IdentityGuard": {
             "CookieIncident": {
-                "incidentId": "<incident-id>",
-                "sessionHash": "<session-hash>",
+                "incidentId": "example-incident-id",
+                "sessionHash": "example-session-hash",
                 "severity": "critical",
                 "status": "UNRESOLVED",
                 "cookieCategory": "sso",
-                "cookieName": "<cookie-name>",
+                "cookieName": "example-cookie-name",
                 "expirationDate": "2024-01-15T12:34:56.000Z",
                 "hasLinkedUsernames": true,
                 "botCountry": "US",
@@ -284,6 +284,6 @@ permission on Identity Guard.
 >### KELA Identity Guard cookie incidents (workspace 1234)
 >|incidentId|severity|status|cookieCategory|cookieName|botCountry|
 >|---|---|---|---|---|---|
->| <incident-id> | critical | UNRESOLVED | sso | <cookie-name> | US |
+>| example-incident-id | critical | UNRESOLVED | sso | example-cookie-name | US |
 
 *(Illustrative output: values are placeholders, not real data. It has not been run against the live API yet.)*
