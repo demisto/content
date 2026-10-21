@@ -9,6 +9,7 @@ import requests
 from xml.etree import ElementTree
 
 from urllib3 import disable_warnings
+from urllib3.exceptions import ProtocolError, ReadTimeoutError
 
 disable_warnings()  # pylint: disable=no-member
 
@@ -41,6 +42,16 @@ ASSETS_COMMIT_HOSTS_BATCH_SIZE = 100
 # Assets runs in a row that may make no progress before the error is raised (fetch shows as failed). Counted: errors
 # before the first commit (including concurrency-limit errors) and host list timeouts once the limit is already 1.
 ASSETS_MAX_CONSECUTIVE_FAILURES = 5
+# Errors an assets page run recovers from: dropped connections, timeouts, XML cut off mid-stream, and Qualys / XSIAM
+# API errors. The run keeps its last commit, or counts toward ASSETS_MAX_CONSECUTIVE_FAILURES if nothing was committed.
+# Any other error (likely a code bug) is raised right away, since the next run would hit it again.
+RECOVERABLE_PAGE_ERRORS = (
+    requests.exceptions.RequestException,
+    ProtocolError,
+    ReadTimeoutError,
+    ElementTree.ParseError,
+    DemistoException,
+)
 # "nextTrigger" value in the assets last run that makes the server trigger the next fetch iteration immediately.
 ASSETS_NEXT_TRIGGER = "1"
 # Retry configuration for Qualys rate-limit (HTTP 409, Error Code 1965) responses.
@@ -3685,10 +3696,23 @@ def send_assets_batch(rows: list[dict], snapshot_id: str, items_count: int) -> N
     send_snapshot_batch(rows, "assets", snapshot_id, items_count)
 
 
+def log_unexpected_assets_error(error: Exception, committed_run: Optional[dict[str, Any]]) -> None:
+    """Logs an error the page functions do not recover from (likely a code bug) before it is raised.
+
+    Progress saved earlier in the run was already stored with ``demisto.setAssetsLastRun``,
+    so raising loses nothing; the next run resumes from that point.
+    """
+    saved_page = committed_run.get("next_page") if committed_run else None
+    demisto.error(
+        f"[Assets] Unexpected {type(error).__name__} while processing the page; raising. "
+        f"Progress saved in this run is kept ({saved_page=}). Error: {error}\n{traceback.format_exc()}"
+    )
+
+
 def handle_assets_page_error(
     error: Exception, last_run: dict[str, Any], committed_run: Optional[dict[str, Any]]
 ) -> tuple[dict[str, Any], bool]:
-    """Ends the run after a page failure, keeping the last commit.
+    """Ends the run after a recoverable page failure (see ``RECOVERABLE_PAGE_ERRORS``), keeping the last commit.
 
     - If a commit was made in this run, returns it with ``set_new_limit=False``.
     - Otherwise the failure counts toward ``consecutive_failures`` (raising once ``ASSETS_MAX_CONSECUTIVE_FAILURES``
@@ -3865,8 +3889,11 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
             send_assets_batch(batch, snapshot_id, items_count=seal_count)
         elif batch:
             send_assets_batch(batch, snapshot_id, items_count=1)
-    except Exception as e:
+    except RECOVERABLE_PAGE_ERRORS as e:
         return handle_assets_page_error(e, last_run, committed_run)
+    except Exception as e:
+        log_unexpected_assets_error(e, committed_run)
+        raise
     finally:
         if raw_response is not None:
             raw_response.close()
@@ -3960,8 +3987,11 @@ def fetch_and_send_assets_and_vulnerabilities_by_qids(client: Client, last_run: 
             has_next_page=bool(next_run_page),
             snapshot_id=snapshot_id,
         )
-    except Exception as e:
+    except RECOVERABLE_PAGE_ERRORS as e:
         return handle_assets_page_error(e, last_run, committed_run)
+    except Exception as e:
+        log_unexpected_assets_error(e, committed_run)
+        raise
     finally:
         if raw_response is not None:
             raw_response.close()
@@ -4203,7 +4233,10 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
               ``consecutive_failures``; the ``limit`` is kept, since the page size is not the cause.
             - Request timeout: the ``limit`` is halved without counting. Once the ``limit`` is already 1, the timeout
               counts toward ``consecutive_failures`` instead.
-            - Any other error before the first commit: counts toward ``consecutive_failures`` and halves the ``limit``.
+            - Any other recoverable error before the first commit: counts toward ``consecutive_failures`` and halves
+              the ``limit``.
+        - Only the errors in ``RECOVERABLE_PAGE_ERRORS`` are handled this way. Any other error (likely a code bug) is
+          raised right away; commits made earlier in the run are kept.
         - Any commit resets ``consecutive_failures``. After ``ASSETS_MAX_CONSECUTIVE_FAILURES`` counted runs in a row,
           the fetch raises so the failure is visible.
         - On the last page, the final send seals the snapshot with the cumulative total and the stage moves to
@@ -4295,9 +4328,12 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
               knowledge-base request: counts toward ``consecutive_failures``; the ``limit`` is kept.
             - Host list request timeout: the ``limit`` is halved without counting. Once the ``limit`` is already 1,
               the timeout counts toward ``consecutive_failures`` instead.
-            - Any other error before the first commit: counts toward ``consecutive_failures`` and halves the ``limit``.
+            - Any other recoverable error before the first commit: counts toward ``consecutive_failures`` and halves
+              the ``limit``.
         - Any commit resets ``consecutive_failures``. After ``ASSETS_MAX_CONSECUTIVE_FAILURES`` counted runs in a row,
           the fetch raises so the failure is visible.
+        - Only the errors in ``RECOVERABLE_PAGE_ERRORS`` are handled this way. Any other error (likely a code bug) is
+          raised right away; commits made earlier in the run are kept.
         - The run is bounded by the request's connect/read timeouts, and progress is saved after every batch.
 
     Args:

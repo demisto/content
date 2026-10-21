@@ -4255,7 +4255,8 @@ def test_fetch_and_send_assets_streamed_host_missing_id_does_not_commit(mocker: 
     When:
         - Calling fetch_and_send_assets_streamed.
     Then:
-        - No cursor is committed, the run is counted as a failure without progress, and the response is closed.
+        - The KeyError is not recoverable, so it is raised right away: no cursor is committed, the error is logged,
+          and the response is closed.
     """
     last_run = {"stage": "assets", "next_page": "50", "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
     host_without_id = _make_host("101", 1)
@@ -4266,14 +4267,111 @@ def test_fetch_and_send_assets_streamed_host_missing_id_does_not_commit(mocker: 
     mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
     mock_set_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
     mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 2)
-    mocker.patch("Qualysv2.demisto.error")
+    mock_error = mocker.patch("Qualysv2.demisto.error")
 
-    new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+    with pytest.raises(KeyError, match="ID"):
+        fetch_and_send_assets_streamed(client, last_run)
 
     mock_set_last_run.assert_not_called()
-    assert new_last_run["next_page"] == "50"
-    assert new_last_run["consecutive_failures"] == 1
+    mock_error.assert_called_once()
+    raw_response.close.assert_called_once()
+
+
+def _mock_page_stream(mocker: MockerFixture, client: Client, hosts_before_error: list, error: Exception) -> tuple[Mock, Mock]:
+    """Mocks one page (for either page function) whose stream raises ``error`` after ``hosts_before_error``.
+
+    Commits every 2 hosts. Returns the mocks of the raw response and demisto.setAssetsLastRun.
+    """
+
+    def broken_stream(*_args):
+        yield from hosts_before_error
+        raise error
+
+    raw_response = Mock()
+    mocker.patch.object(client, "get_host_list_detection", return_value=(raw_response, False))
+    mocker.patch("Qualysv2.iter_host_list_detections", side_effect=broken_stream)
+    mocker.patch("Qualysv2.fetch_vulnerabilities_of_new_qids", return_value=[])
+    mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam_with_retry")
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 2)
+    return raw_response, mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+
+
+@pytest.mark.parametrize("page_function", PAGE_FUNCTIONS)
+def test_page_unexpected_error_before_commit_is_raised(mocker: MockerFixture, client: Client, page_function):
+    """
+    Given:
+        - A page whose processing hits an error outside RECOVERABLE_PAGE_ERRORS (a TypeError), before any commit.
+    When:
+        - Calling either page function.
+    Then:
+        - The error is raised right away (not counted), nothing is committed, the error is logged,
+          and the response is closed.
+    """
+    last_run = {"stage": "assets", "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
+    raw_response, mock_set_last_run = _mock_page_stream(mocker, client, [], TypeError("bug"))
+    mock_error = mocker.patch("Qualysv2.demisto.error")
+
+    with pytest.raises(TypeError, match="bug"):
+        page_function(client, last_run)
+
+    mock_set_last_run.assert_not_called()
+    assert "saved_page=None" in mock_error.call_args[0][0]
+    raw_response.close.assert_called_once()
+
+
+@pytest.mark.parametrize("page_function", PAGE_FUNCTIONS)
+def test_page_unexpected_error_after_commit_keeps_commit(mocker: MockerFixture, client: Client, page_function):
+    """
+    Given:
+        - A page whose processing hits a TypeError after the first batch of 2 hosts was committed.
+    When:
+        - Calling either page function.
+    Then:
+        - The error is raised, and the commit saved earlier in the run stays saved (next run resumes after host 101).
+    """
+    last_run = {"stage": "assets", "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
+    hosts = [_make_host("100", 1), _make_host("101", 1)]
+    raw_response, mock_set_last_run = _mock_page_stream(mocker, client, hosts, TypeError("bug"))
+    mock_error = mocker.patch("Qualysv2.demisto.error")
+
+    with pytest.raises(TypeError, match="bug"):
+        page_function(client, last_run)
+
+    mock_set_last_run.assert_called_once()
+    assert mock_set_last_run.call_args[0][0]["next_page"] == "102"
+    assert "saved_page='102'" in mock_error.call_args[0][0]
+    raw_response.close.assert_called_once()
+
+
+@pytest.mark.parametrize("page_function", PAGE_FUNCTIONS)
+@pytest.mark.parametrize(
+    "error",
+    [
+        pytest.param(requests.exceptions.ChunkedEncodingError("Connection broken"), id="chunked_encoding"),
+        pytest.param(Qualysv2.ProtocolError("Connection aborted"), id="protocol"),
+        pytest.param(Qualysv2.ElementTree.ParseError("no element found"), id="xml_parse"),
+        pytest.param(DemistoException("XSIAM error"), id="demisto_exception"),
+    ],
+)
+def test_page_recoverable_error_before_commit_is_counted(mocker: MockerFixture, client: Client, page_function, error):
+    """
+    Given:
+        - A page whose processing hits an error in RECOVERABLE_PAGE_ERRORS, before any commit.
+    When:
+        - Calling either page function.
+    Then:
+        - The error is not raised: the failure is counted, set_new_limit=True is returned,
+          and the response is closed.
+    """
+    last_run = {"stage": "assets", "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
+    raw_response, mock_set_last_run = _mock_page_stream(mocker, client, [], error)
+    mocker.patch("Qualysv2.demisto.error")
+
+    new_last_run, set_new_limit = page_function(client, last_run)
+
     assert set_new_limit is True
+    assert new_last_run["consecutive_failures"] == 1
+    mock_set_last_run.assert_not_called()
     raw_response.close.assert_called_once()
 
 
