@@ -280,7 +280,7 @@ script:
     - contextPath: KELA.BrandControl.Incident.lastVisited
       description: The timestamp in Unix milliseconds of the last time the incident was visited in the UI (e.g., 1700000000000).
       type: Number
-  dockerimage: demisto/python3:3.12.14.13495286
+  dockerimage: demisto/py3-tools:1.0.0.13712671
   runonce: false
   script: '-'
   subtype: python3

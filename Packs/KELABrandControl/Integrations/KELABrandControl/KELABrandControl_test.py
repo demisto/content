@@ -198,7 +198,8 @@ def test_mask_secret():
     token = "a/b+c d"
     text = "url?apiToken=a%2Fb%2Bc%20d and a/b+c d and a%2Fb%2Bc+d"
     masked = mask_secret(text, token)
-    assert "a%2Fb" not in masked and "a/b+c d" not in masked
+    assert "a%2Fb" not in masked
+    assert "a/b+c d" not in masked
     assert mask_secret("nothing", None) == "nothing"
 
 
@@ -334,7 +335,9 @@ def test_incident_list_command_payload_mapping():
     assert result.outputs_prefix == "KELA.BrandControl.Incident"
     assert result.outputs_key_field == "incidentId"
     assert result.outputs[0]["incidentId"] == "i1"
-    assert "kela.com" in result.readable_output  # lgtm[py/incomplete-url-substring-sanitization] - test assertion on markdown table text, not a URL trust check
+    assert (
+        "kela.com" in result.readable_output
+    )  # lgtm[py/incomplete-url-substring-sanitization] - test assertion on markdown table text, not a URL trust check
     assert result.raw_response["filteredCount"] == 1
 
 
@@ -542,10 +545,12 @@ def test_fetch_page_size_is_max_fetch_plus_seen_ids():
     store.cycle(api, max_fetch=3)
     store.cycle(api, max_fetch=3)
     last_call = api.calls[-1]
-    assert last_call["limit"] == 5 and last_call["offset"] == 0
+    assert last_call["limit"] == 5
+    assert last_call["offset"] == 0
     assert last_call["sort"] == {"sortBy": "incidentDate", "order": "asc"}
     assert last_call["filters"]["timeRange"] == {"fieldName": "incident_date", "startDate": 1000}
-    assert last_call["filters"]["isDeleted"] is False and last_call["filters"]["isArchived"] is False
+    assert last_call["filters"]["isDeleted"] is False
+    assert last_call["filters"]["isArchived"] is False
 
 
 def test_fetch_legacy_last_run_upgrade():
