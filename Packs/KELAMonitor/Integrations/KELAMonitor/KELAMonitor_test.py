@@ -239,7 +239,8 @@ def test_mask_secret():
     """
     token = "a/b+c d"
     masked = mask_secret("url?apiToken=a%2Fb%2Bc%20d and a/b+c d and a%2Fb%2Bc+d", token)
-    assert "a%2Fb" not in masked and "a/b+c d" not in masked
+    assert "a%2Fb" not in masked
+    assert "a/b+c d" not in masked
     assert mask_secret("nothing", None) == "nothing"
 
 
@@ -420,8 +421,16 @@ def test_incident_list_command_defaults_and_no_scroll():
     assert len(results) == 1
 
 
-@pytest.mark.parametrize("args", [{}, {"incident_type": "Botnets"}, {"incident_type": "botnets", "severities": "urgent"},
-    {"incident_type": "botnets", "limit": "1001"}, {"incident_type": "botnets", "limit": "0"}])
+@pytest.mark.parametrize(
+    "args",
+    [
+        {},
+        {"incident_type": "Botnets"},
+        {"incident_type": "botnets", "severities": "urgent"},
+        {"incident_type": "botnets", "limit": "1001"},
+        {"incident_type": "botnets", "limit": "0"},
+    ],
+)
 def test_incident_list_command_rejects_bad_input(args):
     """
     Given: a missing or wrongly cased incident_type, or an unknown severity.
@@ -447,7 +456,8 @@ def test_incident_scroll_command():
     }
     results = incident_scroll_command(client, {"scroll_id": "S1"}, MON, mask=True)
     client.incidents_scroll.assert_called_once_with(MON, "S1")
-    assert results[0].outputs[0]["id"] == "i2" and results[1].outputs["scrollId"] == "NEXT"
+    assert results[0].outputs[0]["id"] == "i2"
+    assert results[1].outputs["scrollId"] == "NEXT"
     client.incidents_scroll.return_value = {"incidents": [], "scrollId": None}
     empty = incident_scroll_command(client, {"scroll_id": "S2"}, MON, mask=True)
     assert "No more incidents" in empty[0].readable_output
@@ -465,7 +475,8 @@ def test_module_success_and_fetch_validation():
     client.incidents_list.return_value = {"incidents": []}
     params = {"isFetch": True, "incident_types": ["botnets"], "first_fetch": "3 days", "max_fetch": "50"}
     assert run_test_module(client, MON, ["botnets"], params) == "ok"
-    assert client.incidents_list.call_args.kwargs["limit"] == 1 and client.incidents_list.call_args.args[1] == "botnets"
+    assert client.incidents_list.call_args.kwargs["limit"] == 1
+    assert client.incidents_list.call_args.args[1] == "botnets"
     with pytest.raises(DemistoException, match="at least one"):
         run_test_module(client, MON, [], {"isFetch": True, "incident_types": []})
     with pytest.raises(DemistoException, match="max_fetch"):
@@ -487,7 +498,9 @@ def test_module_forbidden_types():
 
     client.incidents_list.side_effect = partial
     out = run_test_module(client, MON, ["leaked_credentials", "botnets"], {})
-    assert out != "ok" and "botnets" in out and "leaked_credentials" not in out
+    assert out != "ok"
+    assert "botnets" in out
+    assert "leaked_credentials" not in out
     client.incidents_list.side_effect = ForbiddenError("Forbidden [403]")
     with pytest.raises(DemistoException, match="no access to this Monitor"):
         run_test_module(client, MON, ["leaked_credentials", "botnets"], {})
@@ -677,7 +690,8 @@ def test_fetch_state_without_id_list_is_upgraded():
     store.value = {"streams": {f"{MON}:botnets": {"watermark": NOW - 7200}}}
     assert store.cycle(api, types=("botnets",)) == ["new"]
     state = store.value["streams"][f"{MON}:botnets"]
-    assert state["watermark"] == NOW - 3600 and state["seen_ids"] == ["new"]
+    assert state["watermark"] == NOW - 3600
+    assert state["seen_ids"] == ["new"]
     assert store.cycle(api, types=("botnets",)) == []
 
 
@@ -814,6 +828,7 @@ def test_fake_api_reproduces_the_duplicate_bug_without_dedup():
             watermark = max(watermark, row["incident_date"])
     assert created["b"] == 3  # duplicated every cycle
 
+
 def test_fetch_skips_forbidden_type_and_keeps_the_others():
     """
     Given: the token has no access to botnets, but does to leaked_credentials, and both have incidents.
@@ -887,7 +902,6 @@ def test_fetch_other_errors_still_abort_the_whole_cycle():
     with pytest.raises(DemistoException, match="500"):
         store.cycle(api, types=("leaked_credentials", "botnets"))
     assert store.value == {}
-
 
 
 # endregion

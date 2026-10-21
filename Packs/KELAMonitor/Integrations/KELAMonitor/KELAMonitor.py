@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 import html
 import re
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from urllib.parse import quote, quote_plus
 
 """ KELA Monitor integration for Cortex XSOAR.
@@ -118,7 +118,7 @@ def to_epoch_seconds(value: Any, arg_name: str) -> int | None:
 
 
 def epoch_to_iso(seconds: int) -> str:
-    return datetime.fromtimestamp(seconds, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.fromtimestamp(seconds, tz=UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def clean_text(value: Any) -> str:
@@ -371,7 +371,7 @@ def _list_results(
                 outputs={"scrollId": scroll_id, "monitorId": monitor_id, "incidentType": incident_type},
                 readable_output=(
                     f"More incidents may be available. "
-            f"Run `kela-monitor-incident-scroll scroll_id={scroll_id}` to get the next batch. "
+                    f"Run `kela-monitor-incident-scroll scroll_id={scroll_id}` to get the next batch. "
                     "The scroll ID is valid for 2 minutes."
                 ),
             )
