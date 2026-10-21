@@ -987,6 +987,19 @@ class TestNormalizeToolSchemas:
         assert properties["found"]["description"] == "Found"
         assert properties["ok"]["description"] == "Kept."
 
+    @pytest.mark.parametrize("title", [5, None, "", ["Found"], {"text": "Found"}])
+    def test_output_property_title_that_is_not_a_usable_string_falls_back_to_the_name(self, title):
+        """
+        Given: An output property with no description and a title that is empty or not a string.
+        When: normalize_tool_schemas runs.
+        Then: The property name becomes the description, so the description is always a non-empty string.
+        """
+        tool = self._tool({}, {"found": {"type": "boolean", "title": title}})
+
+        normalize_tool_schemas([tool])
+
+        assert tool["outputSchema"]["properties"]["found"]["description"] == "found"
+
     def test_input_property_description_is_left_alone(self):
         """
         Given: An input property with no description.

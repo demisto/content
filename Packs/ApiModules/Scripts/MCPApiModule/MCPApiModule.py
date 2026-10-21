@@ -466,7 +466,8 @@ def normalize_tool_schemas(tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     continue
                 _flatten_nullable_type(prop)
                 if schema_key == "outputSchema" and not prop.get("description"):
-                    prop["description"] = prop.get("title") or name
+                    title = prop.get("title")
+                    prop["description"] = title if isinstance(title, str) and title else name
     return tools
 
 
