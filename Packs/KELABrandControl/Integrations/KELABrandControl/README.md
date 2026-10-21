@@ -154,6 +154,6 @@ Retrieves the Brand Control incidents of a workspace, with filtering, sorting an
 >
 >|Incident ID|Incident Date|Type|Severity|Status|Title|Impersonated Asset|Detected URLs|
 >|---|---|---|---|---|---|---|---|
->| `<incident-id>` | 2026-10-03T14:21:07.000Z | look_alike_domain | high | new | `<title>` | example.com | http://examp1e.com |
+>| `<incident-id>` | 2026-10-03T14:21:07.000Z | look_alike_domain | high | new | `<title>` | example.com | <http://examp1e.com> |
 
 *(Illustrative output: values are placeholders, not real data. It has not been run against the live API yet.)*

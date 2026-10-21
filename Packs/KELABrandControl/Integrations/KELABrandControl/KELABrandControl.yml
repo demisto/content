@@ -133,28 +133,28 @@ script:
       predefined:
       - 'true'
       - 'false'
-      defaultvalue: 'false'
+      defaultValue: 'false'
     - name: is_archived
       description: When true, returns only archived incidents. When false, returns only incidents that are not archived.
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      defaultvalue: 'false'
+      defaultValue: 'false'
     - name: new_updates_only
       description: When true, returns only incidents with updates available since they were last visited in the UI.
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      defaultvalue: 'false'
+      defaultValue: 'false'
     - name: time_range_field
       description: Date field the start/end dates apply to.
       auto: PREDEFINED
       predefined:
       - incident_date
       - incident_update_date
-      defaultvalue: incident_date
+      defaultValue: incident_date
     - name: start_date
       description: 'Return incidents on or after this date. Accepts ISO dates, relative dates (e.g. "3 days") or a 13 digit epoch in milliseconds.'
     - name: end_date
@@ -175,7 +175,7 @@ script:
       - desc
     - name: limit
       description: Number of incidents to return (1-1000). Ignored when page or page_size is given.
-      defaultvalue: '50'
+      defaultValue: '50'
     - name: page
       description: Page number, starting at 1. Used together with page_size.
     - name: page_size
@@ -286,6 +286,6 @@ script:
   subtype: python3
   type: python
   isfetch: true
-fromversion: 6.8.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
