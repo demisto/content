@@ -41,6 +41,8 @@ ASSETS_COMMIT_HOSTS_BATCH_SIZE = 100
 # Assets runs in a row that may make no progress before the error is raised (fetch shows as failed). Counted: errors
 # before the first commit (including concurrency-limit errors) and host list timeouts once the limit is already 1.
 ASSETS_MAX_CONSECUTIVE_FAILURES = 5
+# "nextTrigger" value in the assets last run that makes the server trigger the next fetch iteration immediately.
+ASSETS_NEXT_TRIGGER = "1"
 # Retry configuration for Qualys rate-limit (HTTP 409, Error Code 1965) responses.
 RATE_LIMIT_STATUS_CODE = 409
 RATE_LIMIT_TO_WAIT_HEADER = "X-RateLimit-ToWait-Sec"
@@ -3516,7 +3518,7 @@ def schedule_next_assets_run_immediately(last_run: dict) -> dict:
     Returns:
         dict: The updated last assets run.
     """
-    last_run["nextTrigger"] = "1"  # Trigger next fetch iteration immediately
+    last_run["nextTrigger"] = ASSETS_NEXT_TRIGGER  # Trigger next fetch iteration immediately
     last_run["type"] = FETCH_COMMAND["assets"]  # Set next fetch iteration to type 'assets'
     return last_run
 
@@ -3667,7 +3669,7 @@ def build_next_last_run(
         "total_assets": total_assets,
         "since_datetime": since_datetime,
         "snapshot_id": snapshot_id,
-        "nextTrigger": "1",
+        "nextTrigger": ASSETS_NEXT_TRIGGER,
         "type": FETCH_COMMAND.get("assets"),
     }
     if limit is not None:
