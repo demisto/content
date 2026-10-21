@@ -1,6 +1,9 @@
+import errno
 import os
+import socket
 import subprocess
 import traceback
+import urllib.parse
 import uuid
 from itertools import count
 from math import ceil
@@ -569,6 +572,12 @@ proxy_cache_background_update on;
     location = /nginx-test {
         alias /var/lib/nginx/html/index.html;
         default_type text/html;
+        # Identify which integration instance owns this nginx, so the Test button can tell its
+        # own live server apart from another instance listening on the same port. The value is
+        # URL-encoded (no quotes, dollar signs or backslashes), so it is safe inside this quoted nginx string.
+        add_header $instance_name_header "$instance_name" always;
+        # add_header in a location drops the server-level add_header directives, so re-add them.
+        $extra_headers
     }
 
     # ---- Tier 1: public cache front --------------------------------------
@@ -662,6 +671,20 @@ server {
 
 """
 NGINX_MAX_POLLING_TRIES = 5
+# Response header on /nginx-test that carries the URL-encoded name of the instance that owns nginx.
+INSTANCE_NAME_HEADER = "X-Instance-Name"
+
+
+def get_encoded_instance_name() -> str:
+    """Return the current integration instance name, URL-encoded with no safe characters.
+
+    The encoded value only contains [A-Za-z0-9_.~-] and %XX sequences, so it can be embedded in a
+    quoted nginx config string (no `"`, `$` or `\\`) and sent as an HTTP header value as is.
+
+    Returns:
+        str: The encoded instance name ("" when the instance name is unknown).
+    """
+    return urllib.parse.quote(demisto.integrationInstance() or "", safe="")
 
 
 def create_nginx_server_conf(file_path: str, port: int, params: dict):
@@ -694,11 +717,12 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
         cache_refresh_rate = timeout
 
     ssl, extra_headers, sslcerts, proxy_set_range_header = "", "", "", ""
-    serverport = port + 1
-    # Internal loopback port for the Tier-2 cold-MISS fetch server. Tier 1 (public,
-    # $port) proxies cache misses to localhost:$fetchport, which applies the
-    # fail-fast `limit_conn` and then proxies on to the gevent app on $serverport.
-    fetchport = serverport + 1
+    # serverport (port + 1) is the gevent app. fetchport (port + 2) is the internal loopback port for
+    # the Tier-2 cold-MISS fetch server: Tier 1 (public, $port) proxies cache misses to
+    # localhost:$fetchport, which applies the fail-fast `limit_conn` and then proxies on to the gevent
+    # app on $serverport. Keep the layout in get_long_running_ports so the test-module port check
+    # always covers every port bound here.
+    _, serverport, fetchport = get_long_running_ports(port)
     extra_cache_keys = []
     if (certificate and not private_key) or (private_key and not certificate):
         raise DemistoException("If using HTTPS connection, both certificate and private key should be provided.")
@@ -736,6 +760,11 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
         cache_404_ttl=cache_404_ttl,
         cache_default_ttl=cache_default_ttl,
         extra_headers=extra_headers,
+        # Custom `nginx_server_conf` templates that don't reference these placeholders are not
+        # affected: safe_substitute ignores unused keys. Substitution is single-pass, so the
+        # (already encoded) value is never re-interpreted as a placeholder.
+        instance_name_header=INSTANCE_NAME_HEADER,
+        instance_name=get_encoded_instance_name(),
         access_log_path=NGINX_SERVER_ACCESS_LOG,
         error_log_path=NGINX_SERVER_ERROR_LOG,
     )
@@ -840,31 +869,33 @@ def nginx_log_monitor_loop(nginx_process: subprocess.Popen):
         nginx_log_process(nginx_process)
 
 
-def test_nginx_web_server(port: int, params: dict):
+def test_nginx_web_server(port: int, params: dict) -> requests.Response:
+    """Poll the nginx /nginx-test endpoint until it answers with the nginx welcome page.
+
+    Returns:
+        requests.Response: The successful /nginx-test response (its headers identify the owning instance).
+    """
     polling_tries = 1
-    is_test_done = False
-    try:
-        while polling_tries <= NGINX_MAX_POLLING_TRIES and not is_test_done:
-            try:
-                # let nginx startup
-                time.sleep(0.5)
-                protocol = "https" if params.get("key") else "http"
-                res = requests.get(
-                    f"{protocol}://localhost:{port}/nginx-test", verify=False, proxies={"http": "", "https": ""}
-                )  # guardrails-disable-line # nosec
-                res.raise_for_status()
-                welcome = "Welcome to nginx"
-                if welcome not in res.text:
-                    raise ValueError(f'Unexpected response from nginx-test (does not contain "{welcome}"): {res.text}')
-                is_test_done = True
-            except Exception:
-                if polling_tries == NGINX_MAX_POLLING_TRIES:
-                    raise
+    while True:
+        try:
+            # let nginx startup
+            time.sleep(0.5)
+            protocol = "https" if params.get("key") else "http"
+            res = requests.get(
+                f"{protocol}://localhost:{port}/nginx-test", verify=False, proxies={"http": "", "https": ""}
+            )  # guardrails-disable-line # nosec
+            res.raise_for_status()
+            welcome = "Welcome to nginx"
+            if welcome not in res.text:
+                raise ValueError(f'Unexpected response from nginx-test (does not contain "{welcome}"): {res.text}')
+            return res
+        except Exception as ex:
+            if polling_tries < NGINX_MAX_POLLING_TRIES:
                 polling_tries += 1
-    except Exception as ex:
-        err_msg = f"Testing nginx server: {ex}"
-        demisto.error(err_msg)
-        raise DemistoException(err_msg) from ex
+                continue
+            err_msg = f"Testing nginx server: {ex}"
+            demisto.error(err_msg)
+            raise DemistoException(err_msg) from ex
 
 
 def test_nginx_server(port: int, params: dict):
@@ -1062,6 +1093,196 @@ def get_params_port(params: dict = None) -> int:
     else:
         raise ValueError("Please provide a Listen Port.")
     return port
+
+
+def is_port_in_use(port: int, host: str = "127.0.0.1") -> bool:
+    """Check whether a TCP port is already bound (i.e. in use) on the given host.
+
+    We try to bind to the port ourselves: if the bind fails with an "address already
+    in use" error, the port is taken. Any other outcome is treated as "free" so we
+    don't wrongly block the test on transient socket errors.
+
+    Args:
+        port (int): The TCP port to check.
+        host (str): The host/interface to check the port on. Defaults to "127.0.0.1".
+
+    Returns:
+        bool: True if the port is already in use, False otherwise.
+    """
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        try:
+            sock.bind((host, port))
+            return False
+        except OSError as err:
+            if err.errno in (errno.EADDRINUSE, errno.EADDRNOTAVAIL):
+                demisto.debug(f"nginx: port {port} on {host} is already in use ({err}).")
+                return True
+            # Any other error - assume the port is not blocking us.
+            demisto.debug(f"nginx: unexpected error while checking port {port} on {host}: {err}. Treating as free.")
+            return False
+
+
+def is_answering_instance_this_instance(nginx_test_response: requests.Response, nginx_port: int) -> bool:
+    """Check the X-Instance-Name header of a /nginx-test response against the current instance name.
+
+    Args:
+        nginx_test_response (requests.Response): The successful /nginx-test response.
+        nginx_port (int): The probed nginx port (for logging).
+
+    Returns:
+        bool: False only if the header is present and names a different instance, True otherwise.
+    """
+    answering_instance = nginx_test_response.headers.get(INSTANCE_NAME_HEADER)
+    if answering_instance is None:
+        # Lenient on purpose: the header is missing when a custom `nginx_server_conf` template does not
+        # add it, or when the running instance was started before this header existed and has not been
+        # restarted onto the new config. Failing here would break the Test button for those healthy,
+        # legitimate setups, so we keep the previous behavior and rely on the remaining checks.
+        demisto.debug(
+            f"nginx: /nginx-test on port {nginx_port} has no {INSTANCE_NAME_HEADER} header; skipping the instance identity check."
+        )
+        return True
+    if answering_instance != get_encoded_instance_name():
+        demisto.debug(
+            f"nginx: port {nginx_port} is answered by another integration instance "
+            f"({urllib.parse.unquote(answering_instance)!r}), not by {demisto.integrationInstance()!r}."
+        )
+        return False
+    return True
+
+
+def is_long_running_instance_healthy(nginx_port: int, params: dict, app_path: str = "/") -> bool:
+    """Check whether the server already listening on nginx_port looks like a healthy instance of this integration.
+
+    The caller invokes this check when the Listen Port is already in use, so that the Test button
+    can report success for a running instance instead of trying to re-bind its ports (which would
+    fail). The port may be held by this instance's own long-running server, but it may also be held
+    by a different process: on some deployments (for example, XSOAR 8 SaaS) long-running containers
+    share a single network namespace, so another integration instance configured with the same
+    Listen Port can be the one answering. The check passes only if all of the following hold:
+        1. Connectivity + the nginx health endpoint (/nginx-test) returns the expected
+           "Welcome to nginx" response (nginx is up and its config is serving correctly).
+        2. Identity: if the /nginx-test response carries the X-Instance-Name header, it must name
+           this instance; a different name fails the check. If the header is missing (a custom
+           nginx_server_conf template that does not add it, or an instance started before the header
+           existed), the identity check is skipped and the result relies on the other checks only,
+           so in that case another instance answering on the same Listen Port cannot be ruled out.
+        3. The app route (app_path) is reachable through nginx (any HTTP status, including 401
+           when credentials are configured, means an app is answering behind nginx).
+
+    Note:
+        Only nginx_port is probed. The WSGI server_port (nginx_port + 1) and the internal
+        cache-fetch port (nginx_port + 2) are not checked here, so this function does not prove
+        who owns them.
+
+        test_nginx_web_server retries internally (see NGINX_MAX_POLLING_TRIES) to avoid a
+        false negative from a momentarily busy nginx.
+
+    Args:
+        nginx_port (int): The nginx listen port of the running instance.
+        params (dict): The integration parameters (used to determine http/https).
+        app_path (str): The app route to probe through nginx. Defaults to "/".
+
+    Returns:
+        bool: True if a healthy instance is answering on the ports, False otherwise.
+    """
+    protocol = "https" if params.get("key") else "http"
+    app_url = f"{protocol}://localhost:{nginx_port}/{app_path.lstrip('/')}"
+    no_proxy = {"http": "", "https": ""}
+
+    # 1. nginx health endpoint - confirms nginx is up and its config is serving correctly.
+    #    test_nginx_web_server polls with retries, so a transient hiccup won't fail us.
+    try:
+        nginx_test_response = test_nginx_web_server(nginx_port, params=params)
+    except Exception as ex:
+        demisto.debug(f"nginx: connectivity/nginx health check against port {nginx_port} failed: {ex}.")
+        return False
+
+    # 1b. Identity - make sure the nginx answering is this instance's and not another instance's
+    #     sharing the same network and Listen Port.
+    if not is_answering_instance_this_instance(nginx_test_response, nginx_port):
+        return False
+
+    # 2. App route - confirms our app is answering behind nginx.
+    #    Any HTTP response (including 401 when authentication is enforced) proves it is our app.
+    try:
+        app_resp = requests.get(app_url, verify=False, proxies=no_proxy, timeout=10)  # guardrails-disable-line # nosec
+        demisto.debug(f"nginx: app route on port {nginx_port} responded with status {app_resp.status_code}.")
+    except Exception as ex:
+        demisto.debug(f"nginx: app route check against port {nginx_port} failed: {ex}.")
+        return False
+
+    demisto.debug(f"nginx: detected an existing healthy long-running instance on port {nginx_port}.")
+    return True
+
+
+def get_long_running_ports(nginx_port: int) -> tuple[int, int, int]:
+    """Return all the TCP ports a long-running nginx instance binds for the given Listen Port.
+
+    Mirrors the port layout rendered by create_nginx_server_conf:
+        - nginx_port: the public nginx listener (the configured Listen Port).
+        - server_port (nginx_port + 1): the gevent WSGI app.
+        - fetch_port (nginx_port + 2): the internal Tier-2 cache-fetch nginx server (`listen localhost:$fetchport`).
+
+    Args:
+        nginx_port (int): The configured Listen Port.
+
+    Returns:
+        tuple[int, int, int]: (nginx_port, server_port, fetch_port).
+    """
+    server_port = nginx_port + 1
+    fetch_port = server_port + 1
+    return nginx_port, server_port, fetch_port
+
+
+def test_long_running_with_running_instance_check(params: dict, app_path: str = "/") -> None:
+    """Run the long-running test without failing on ports already bound by this instance's live server.
+
+    Flow:
+        1. If all the instance ports (nginx_port, the WSGI port nginx_port + 1 and the internal
+           cache-fetch port nginx_port + 2) are free - run the regular nginx/WSGI test.
+        2. If nginx_port is free but another of the ports is in use - nothing of ours can be serving,
+           so raise an exception naming the occupied ports (re-binding would fail with a raw nginx error).
+        3. If nginx_port is in use:
+            a. If a healthy instance of this integration instance is answering - the test passes (we
+               must not re-bind the ports of a live instance).
+            b. Otherwise - raise an exception: the ports are used by a different process/instance.
+
+    Args:
+        params (dict): The integration parameters (must contain longRunningPort).
+        app_path (str): The app route probed by the health check. Defaults to "/".
+
+    Raises:
+        DemistoException: If any of the ports is in use and a healthy instance could not be verified.
+    """
+    nginx_port, server_port, fetch_port = get_long_running_ports(get_params_port(params))
+    ports_in_use = [port for port in (nginx_port, server_port, fetch_port) if is_port_in_use(port)]
+
+    if not ports_in_use:
+        demisto.debug(f"nginx: ports {nginx_port}, {server_port} and {fetch_port} are free. Running the standard test.")
+        run_long_running(params, is_test=True)
+        return
+
+    demisto.debug(f"nginx: ports in use: {ports_in_use} (nginx {nginx_port}, wsgi {server_port}, fetch {fetch_port}).")
+    if nginx_port in ports_in_use:
+        demisto.debug("nginx: checking whether a healthy long-running instance is already running.")
+        if is_long_running_instance_healthy(nginx_port, params, app_path):
+            demisto.debug(
+                "nginx: an existing long-running instance is already running and serving on the configured ports. "
+                "Connectivity and nginx configuration were verified successfully."
+            )
+            return
+    else:
+        demisto.debug(f"nginx: Listen Port {nginx_port} is free, so no instance of ours is serving; skipping the health check.")
+
+    occupied_ports = ", ".join(str(port) for port in ports_in_use)
+    raise DemistoException(
+        f"Port(s) {occupied_ports} are already in use, but a healthy instance of this integration could not be "
+        f"verified on them. This instance requires ports {nginx_port} (Listen Port), {server_port} (Listen Port + 1) "
+        f"and {fetch_port} (Listen Port + 2) to be free. This usually means a different process or another "
+        "integration instance with an overlapping Listen Port range is holding the ports (or the existing instance "
+        "is not responding). Please free the ports or configure a different Listen Port and test again."
+    )
 
 
 def run_long_running(params: dict = None, is_test: bool = False):

@@ -1673,28 +1673,49 @@ def test_get_indicators_to_format_noop_when_stdout_lock_timeout_absent(mocker):
     assert not hasattr(demisto, "_stdout_lock_timeout")
 
 
+def _patch_long_running_check_names(mocker, port_in_use: bool, healthy: bool | None = None) -> dict:
+    """Patch the names used by test_long_running_with_running_instance_check in the namespace
+    they are resolved from at runtime.
+
+    In production NGINXApiModule is unified into EDL.py (so the namespace is EDL's globals); in unit
+    tests it is imported as a sibling module. Patching the delegate's __globals__ covers both layouts.
+
+    Returns:
+        dict: The created mocks keyed by name.
+    """
+    runtime_globals = edl.test_long_running_with_running_instance_check.__globals__
+    mocks = {
+        "get_params_port": mocker.MagicMock(return_value=1000),
+        "is_port_in_use": mocker.MagicMock(return_value=port_in_use),
+        "is_long_running_instance_healthy": mocker.MagicMock(return_value=healthy),
+        "run_long_running": mocker.MagicMock(return_value=None),
+    }
+    mocker.patch.dict(runtime_globals, mocks)
+    return mocks
+
+
 def test_test_module_ports_free_returns_ok(mocker):
     """
     Given:
-      - Both EDL ports are free.
+      - All required EDL ports (Listen Port, Listen Port + 1, Listen Port + 2) are free.
     When:
       - test_module runs.
     Then:
       - The standard nginx/WSGI test runs and the result is exactly "ok"
         (the string the platform requires to mark the test as passed).
+      - The health check is not invoked.
     """
 
     mocker.patch.object(edl, "validate_test_module_params", return_value=None)
-    mocker.patch.object(edl, "get_params_port", return_value=1000)
-    mocker.patch.object(edl, "is_port_in_use", return_value=False)
-    run_long_running_mock = mocker.patch.object(edl, "run_long_running", return_value=None)
+    mocks = _patch_long_running_check_names(mocker, port_in_use=False)
 
     readable_output, outputs, raw = edl.test_module({}, {"longRunningPort": "1000"})
 
     assert readable_output == "ok"
     assert outputs == {}
     assert raw == {}
-    run_long_running_mock.assert_called_once()
+    mocks["run_long_running"].assert_called_once_with({"longRunningPort": "1000"}, is_test=True)
+    mocks["is_long_running_instance_healthy"].assert_not_called()
 
 
 def test_test_module_existing_healthy_instance_returns_ok(mocker):
@@ -1710,18 +1731,16 @@ def test_test_module_existing_healthy_instance_returns_ok(mocker):
     """
 
     mocker.patch.object(edl, "validate_test_module_params", return_value=None)
-    mocker.patch.object(edl, "get_params_port", return_value=1000)
-    mocker.patch.object(edl, "is_port_in_use", return_value=True)
-    mocker.patch.object(edl, "is_our_edl_instance_running", return_value=True)
-    run_long_running_mock = mocker.patch.object(edl, "run_long_running", return_value=None)
+    mocks = _patch_long_running_check_names(mocker, port_in_use=True, healthy=True)
 
     readable_output, outputs, raw = edl.test_module({}, {"longRunningPort": "1000"})
 
     assert readable_output == "ok"
     assert outputs == {}
     assert raw == {}
+    mocks["is_long_running_instance_healthy"].assert_called_once_with(1000, {"longRunningPort": "1000"}, "/")
     # We must not re-bind the ports of a live instance.
-    run_long_running_mock.assert_not_called()
+    mocks["run_long_running"].assert_not_called()
 
 
 def test_test_module_ports_taken_by_foreign_process_raises(mocker):
@@ -1739,12 +1758,27 @@ def test_test_module_ports_taken_by_foreign_process_raises(mocker):
     from CommonServerPython import DemistoException
 
     mocker.patch.object(edl, "validate_test_module_params", return_value=None)
-    mocker.patch.object(edl, "get_params_port", return_value=1000)
-    mocker.patch.object(edl, "is_port_in_use", return_value=True)
-    mocker.patch.object(edl, "is_our_edl_instance_running", return_value=False)
-    run_long_running_mock = mocker.patch.object(edl, "run_long_running", return_value=None)
+    mocks = _patch_long_running_check_names(mocker, port_in_use=True, healthy=False)
 
-    with pytest.raises(DemistoException):
+    with pytest.raises(DemistoException, match="already in use"):
         edl.test_module({}, {"longRunningPort": "1000"})
 
-    run_long_running_mock.assert_not_called()
+    mocks["run_long_running"].assert_not_called()
+
+
+def test_test_module_validation_runs_before_port_check(mocker):
+    """
+    Given:
+      - Invalid configuration params (validate_test_module_params raises).
+    When:
+      - test_module runs.
+    Then:
+      - The validation error propagates and the long-running port/health check is never reached.
+    """
+    mocker.patch.object(edl, "validate_test_module_params", side_effect=ValueError("bad params"))
+    check_mock = mocker.patch.object(edl, "test_long_running_with_running_instance_check")
+
+    with pytest.raises(ValueError, match="bad params"):
+        edl.test_module({}, {"longRunningPort": "1000"})
+
+    check_mock.assert_not_called()

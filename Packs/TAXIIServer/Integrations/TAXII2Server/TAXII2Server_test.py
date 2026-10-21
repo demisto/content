@@ -727,3 +727,115 @@ def test_remove_old_cache(mocker):
         }
     }
     assert integration_context == expected_context
+
+
+def _patch_long_running_check_names(mocker, port_in_use: bool, healthy: bool | None = None) -> dict:
+    """Patch the names used by test_long_running_with_running_instance_check in the namespace
+    they are resolved from at runtime.
+
+    In production NGINXApiModule is unified into TAXII2Server.py (so the namespace is TAXII2Server
+    globals); in unit tests it is imported as a sibling module. Patching the delegate's __globals__
+    covers both layouts.
+
+    Returns:
+        dict: The created mocks keyed by name.
+    """
+    import TAXII2Server as taxii2_server_module
+
+    runtime_globals = taxii2_server_module.test_long_running_with_running_instance_check.__globals__
+    mocks = {
+        "get_params_port": mocker.MagicMock(return_value=1000),
+        "is_port_in_use": mocker.MagicMock(return_value=port_in_use),
+        "is_long_running_instance_healthy": mocker.MagicMock(return_value=healthy),
+        "run_long_running": mocker.MagicMock(return_value=None),
+    }
+    mocker.patch.dict(runtime_globals, mocks)
+    return mocks
+
+
+def test_test_module_ports_free_runs_long_running_test(mocker):
+    """
+    Given:
+      - All required TAXII2 server ports (Listen Port, Listen Port + 1, Listen Port + 2) are free.
+    When:
+      - test_module runs.
+    Then:
+      - The standard nginx/WSGI test runs (run_long_running with is_test=True).
+      - The result is exactly "ok".
+      - The health check is not invoked.
+    """
+    from TAXII2Server import test_module
+
+    mocks = _patch_long_running_check_names(mocker, port_in_use=False)
+    params = {"longRunningPort": "1000"}
+
+    result = test_module(params)
+
+    assert result == "ok"
+    mocks["run_long_running"].assert_called_once_with({"longRunningPort": "1000"}, is_test=True)
+    mocks["is_long_running_instance_healthy"].assert_not_called()
+
+
+def test_test_module_existing_healthy_instance_returns_ok(mocker):
+    """
+    Given:
+      - The TAXII2 server ports are already in use.
+      - A healthy TAXII2 server instance is answering on them.
+    When:
+      - test_module runs.
+    Then:
+      - The result is exactly "ok".
+      - The health check is called with the nginx port, params and the default "/" app path.
+      - run_long_running is NOT called (the live instance's ports must not be re-bound).
+    """
+    from TAXII2Server import test_module
+
+    mocks = _patch_long_running_check_names(mocker, port_in_use=True, healthy=True)
+    params = {"longRunningPort": "1000"}
+
+    result = test_module(params)
+
+    assert result == "ok"
+    mocks["is_long_running_instance_healthy"].assert_called_once_with(1000, {"longRunningPort": "1000"}, "/")
+    mocks["run_long_running"].assert_not_called()
+
+
+def test_test_module_ports_in_use_unhealthy_raises(mocker):
+    """
+    Given:
+      - The TAXII2 server ports are already in use.
+      - No healthy TAXII2 server instance is answering on them.
+    When:
+      - test_module runs.
+    Then:
+      - A DemistoException matching "already in use" is raised.
+      - run_long_running is NOT called.
+    """
+    from CommonServerPython import DemistoException
+    from TAXII2Server import test_module
+
+    mocks = _patch_long_running_check_names(mocker, port_in_use=True, healthy=False)
+
+    with pytest.raises(DemistoException, match="already in use"):
+        test_module({"longRunningPort": "1000"})
+
+    mocks["run_long_running"].assert_not_called()
+
+
+def test_test_module_default_port_is_set(mocker):
+    """
+    Given:
+      - Params without a longRunningPort.
+    When:
+      - test_module runs.
+    Then:
+      - The default port "1111" is set on params before the port check runs (existing behavior is preserved).
+    """
+    from TAXII2Server import test_module
+
+    mocks = _patch_long_running_check_names(mocker, port_in_use=False)
+    params: dict = {}
+
+    assert test_module(params) == "ok"
+    assert params["longRunningPort"] == "1111"
+    mocks["run_long_running"].assert_called_once_with({"longRunningPort": "1111"}, is_test=True)
