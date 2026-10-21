@@ -1,7 +1,7 @@
-Fetches KELA Monitor incidents (hacking discussions, instant messaging, leaked credentials, network vulnerabilities, credit cards and botnets) into Cortex XSOAR.
+Fetches KELA Monitor incidents (hacking discussions, instant messaging, leaked credentials, network vulnerabilities, credit cards and botnets) into Cortex.
 This integration was integrated and tested with version 1.0 of the KELA Monitor API.
 
-## Configure KELA Monitor in Cortex XSOAR
+## Configure KELA Monitor in Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for KELA Monitor.
@@ -156,6 +156,48 @@ Returns a batch of incidents of one incident type, with optional filters. When m
 
 ```!kela-monitor-incident-list incident_type=leaked_credentials severities=high,critical from_date="7 days" limit=20```
 
+#### Context Example
+
+```json
+{
+    "KELA": {
+        "Monitor": {
+            "Incident": {
+                "id": "example-incident-id",
+                "type": "leaked_credentials",
+                "sub_type": "leaked_credentials_from_instant_messaging",
+                "sub_type_description": "Leaked Credentials From Instant Messaging",
+                "severity": 3,
+                "incident_date": 1759500067,
+                "email": "user@example.com",
+                "domain": "example.com",
+                "password": "********",
+                "password_type": "plain",
+                "source": "example-source",
+                "tags": [
+                    "example.com"
+                ]
+            },
+            "Scroll": {
+                "scrollId": "example-scroll-id",
+                "monitorId": 1234,
+                "incidentType": "leaked_credentials"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### KELA Monitor incidents (leaked_credentials) (1 returned)
+>
+>|ID|Type|Sub Type|Severity|Incident Date|Tags|
+>|---|---|---|---|---|---|
+>| example-incident-id | leaked_credentials | Leaked Credentials From Instant Messaging | 3 | 2025-10-03T14:21:07Z | example.com |
+
+*(Illustrative output: values are placeholders, not real data. It has not been run against the live API yet.)*
+
 ### kela-monitor-incident-scroll
 
 ***
@@ -261,10 +303,44 @@ Continues a kela-monitor-incident-list request using its scroll ID. Repeat until
 
 ```!kela-monitor-incident-scroll scroll_id=<SCROLL_ID>```
 
-#### Human Readable Output (illustrative, not run against the live API)
+#### Context Example
+
+```json
+{
+    "KELA": {
+        "Monitor": {
+            "Incident": {
+                "id": "example-incident-id",
+                "type": "leaked_credentials",
+                "sub_type": "leaked_credentials_from_instant_messaging",
+                "sub_type_description": "Leaked Credentials From Instant Messaging",
+                "severity": 3,
+                "incident_date": 1759500067,
+                "email": "user@example.com",
+                "domain": "example.com",
+                "password": "********",
+                "password_type": "plain",
+                "source": "example-source",
+                "tags": [
+                    "example.com"
+                ]
+            },
+            "Scroll": {
+                "scrollId": "example-scroll-id",
+                "monitorId": 1234,
+                "incidentType": ""
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
 
 >### KELA Monitor incidents (leaked_credentials) (1 returned)
 >
 >|ID|Type|Sub Type|Severity|Incident Date|Tags|
 >|---|---|---|---|---|---|
->| `<incident-id>` | leaked_credentials | Leaked Credentials From Instant Messaging | 3 | 2026-10-03T14:21:07Z | example.com |
+>| example-incident-id | leaked_credentials | Leaked Credentials From Instant Messaging | 3 | 2025-10-03T14:21:07Z | example.com |
+
+*(Illustrative output: values are placeholders, not real data. It has not been run against the live API yet.)*

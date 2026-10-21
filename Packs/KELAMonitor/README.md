@@ -1,6 +1,6 @@
 # KELA Monitor
 
-KELA Monitor tracks your organization's exposure on the dark web. This pack fetches Monitor incidents into Cortex XSOAR and lets analysts list them by incident type.
+KELA Monitor tracks your organization's exposure on the dark web. This pack fetches Monitor incidents into Cortex and lets analysts list them by incident type.
 
 ## What does this pack include?
 

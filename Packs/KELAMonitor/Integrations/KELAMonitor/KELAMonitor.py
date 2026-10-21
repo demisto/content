@@ -6,7 +6,7 @@ import re
 from datetime import datetime, UTC
 from urllib.parse import quote, quote_plus
 
-""" KELA Monitor integration for Cortex XSOAR.
+""" KELA Monitor integration for Cortex.
 
 Evidence legend used in comments:
     [SPEC]      -> taken from the OpenAPI file only (kela-api-Monitor.yaml).
@@ -497,7 +497,7 @@ def process_window(
     cut = False
     valid = [r for r in records if r.get("id") and isinstance(r.get("incident_date"), int)]
     if len(valid) != len(records):
-        demisto.debug(f"KELA Monitor: ignored {len(records) - len(valid)} record(s) without id/incident_date.")
+        demisto.debug(f"[Fetch] KELA Monitor: ignored {len(records) - len(valid)} record(s) without id/incident_date.")
     valid.sort(key=lambda r: (r["incident_date"], r["id"]))  # never rely on the API order
 
     for record in valid:
@@ -556,11 +556,11 @@ def fetch_stream(
         if truncated:
             if first_window and window > WINDOW_MIN_SECONDS:
                 window = max(window // 2, WINDOW_MIN_SECONDS)
-                demisto.debug(f"KELA Monitor: window too large for {incident_type}, halved to {window}s.")
+                demisto.debug(f"[Fetch] KELA Monitor: window too large for {incident_type}, halved to {window}s.")
                 break
             if not first_window:
                 break  # keep what earlier (empty) windows achieved and retry with a fresh budget next cycle
-            demisto.debug(f"KELA Monitor: minimal window still truncated for {incident_type}; processing what was read.")
+            demisto.debug(f"[Fetch] KELA Monitor: minimal window still truncated for {incident_type}; processing what was read.")
         first_window = False
 
         new_watermark, ids_at_watermark, emitted, cut = process_window(
@@ -576,7 +576,7 @@ def fetch_stream(
             break
 
     if len(seen_ids) > SEEN_IDS_CAP:
-        demisto.debug(f"KELA Monitor: seen_ids capped at {SEEN_IDS_CAP} for {incident_type}.")
+        demisto.debug(f"[Fetch] KELA Monitor: seen_ids capped at {SEEN_IDS_CAP} for {incident_type}.")
         seen_ids = seen_ids[-SEEN_IDS_CAP:]
     return {"watermark": watermark, "seen_ids": seen_ids, "window": window}, incidents
 
@@ -598,6 +598,7 @@ def fetch_incidents(
     others continue; if every type answers 403 the cycle raises. Any other failure raises for the whole cycle: nothing is
     created and the last run is not saved, so the next cycle retries cleanly with no duplicates.
     """
+    demisto.debug(f"[Fetch] KELA Monitor: fetch started for monitor {monitor_id}, incident types {incident_types}.")
     wanted_keys = {f"{monitor_id}:{t}" for t in incident_types}
     previous = last_run.get("streams") or {}
     next_streams: dict[str, Any] = {k: v for k, v in previous.items() if k not in wanted_keys}
@@ -622,7 +623,8 @@ def fetch_incidents(
             "Check the Monitor ID and the token."
         )
     if forbidden:
-        demisto.info(f"KELA Monitor: no access (403) to {forbidden}; skipped. The other incident types were fetched.")
+        demisto.info(f"[Fetch] KELA Monitor: no access (403) to {forbidden}; skipped. The other incident types were fetched.")
+    demisto.info(f"[Fetch] KELA Monitor: fetch completed, {len(all_incidents)} incident(s) created.")
     return {"streams": next_streams}, all_incidents
 
 

@@ -1,6 +1,6 @@
 ## KELA Monitor
 
-Fetches the incidents of your KELA Monitor into Cortex XSOAR and lets you list them by incident type.
+Fetches the incidents of your KELA Monitor into Cortex and lets you list them by incident type.
 
 ### How to get the connection data
 

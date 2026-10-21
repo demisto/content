@@ -1,8 +1,11 @@
+display: KELA Monitor
+name: KELAMonitor
 category: Data Enrichment & Threat Intelligence
-provider: KELA
 sectionorder:
 - Connect
 - Collect
+provider: KELA
+description: Fetches KELA Monitor incidents (hacking discussions, instant messaging, leaked credentials, network vulnerabilities, credit cards and botnets) into Cortex.
 commonfields:
   id: KELAMonitor
   version: -1
@@ -100,9 +103,6 @@ configuration:
   required: false
   section: Collect
   additionalinfo: When selected (recommended), passwords are replaced by ******** and credit card numbers keep only the BIN and the last 4 digits, both in fetched incidents and in command outputs. Clear it to store the data exactly as KELA returns it.
-description: Fetches KELA Monitor incidents (hacking discussions, instant messaging, leaked credentials, network vulnerabilities, credit cards and botnets) into Cortex XSOAR.
-display: KELA Monitor
-name: KELAMonitor
 script:
   commands:
   - name: kela-monitor-incident-list
