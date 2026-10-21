@@ -3255,6 +3255,8 @@ def send_assets_and_vulnerabilities_to_xsiam_with_retry(data: list, **kwargs: An
         - ``client_class=XSIAMIngestionClient``, so a failed response keeps its HTTP status code.
         - Each attempt receives a shallow copy of ``data``. The streaming send path clears the items of the
           list it is given while serializing them, so the copy keeps the original rows intact for a retry.
+        - A retry resends the whole batch. If the batch was split into several chunks and a later chunk failed,
+          the earlier chunks are sent again into the same snapshot, so their rows may appear twice.
         - On a retryable error (see ``XSIAM_SEND_RETRYABLE_STATUS_CODES``, timeouts and dropped
           connections) the same call is repeated, up to ``XSIAM_SEND_MAX_ATTEMPTS`` times, with
           exponential backoff. Any other error is raised immediately, exactly as before.
@@ -3454,7 +3456,11 @@ def get_host_list_detections_events(
     demisto.debug(f"Finished getting client host list detections. Set new limit: {set_new_limit}")
 
     if not set_new_limit:
-        host_list_assets, next_url = handle_host_list_detection_result(host_list_detections)
+        try:
+            host_list_assets, next_url = handle_host_list_detection_result(host_list_detections)
+        finally:
+            if host_list_detections is not None:
+                host_list_detections.close()
 
         demisto.debug("Starting to parse asset detections from hosts.")
         assets, set_new_limit = get_detections_from_hosts(host_list_assets) if (host_list_assets and not is_test) else ([], False)
@@ -3490,7 +3496,11 @@ def fetch_vulnerabilities_of_new_qids(client: Client, assets: list[dict], fetche
     vulnerabilities: list[dict] = []
     for qids_batch in batch(new_qids, QIDS_BATCH_SIZE):
         raw_response = client.get_vulnerabilities(detection_qids=",".join(qids_batch))
-        vulnerabilities.extend(handle_vulnerabilities_result(raw_response) or [])
+        try:
+            vulnerabilities.extend(handle_vulnerabilities_result(raw_response) or [])
+        finally:
+            if raw_response is not None:
+                raw_response.close()
 
     fetched_qids.update(new_qids)
     demisto.debug(f"[Vulnerabilities] Got {len(vulnerabilities)} vulnerabilities for {len(new_qids)} new QIDs.")
@@ -3498,7 +3508,7 @@ def fetch_vulnerabilities_of_new_qids(client: Client, assets: list[dict], fetche
 
 
 def schedule_next_assets_run_immediately(last_run: dict) -> dict:
-    """Sets `nextTrigger` to 0 and `type` to 1 (assets), so the server triggers the next assets fetch right away.
+    """Sets `nextTrigger` to 1 and `type` to 1 (assets), so the server triggers the next assets fetch right away.
 
     Args:
         last_run (dict): Last assets run dictionary. Updated in place.
@@ -3506,7 +3516,7 @@ def schedule_next_assets_run_immediately(last_run: dict) -> dict:
     Returns:
         dict: The updated last assets run.
     """
-    last_run["nextTrigger"] = "0"  # Trigger next fetch iteration immediately
+    last_run["nextTrigger"] = "1"  # Trigger next fetch iteration immediately
     last_run["type"] = FETCH_COMMAND["assets"]  # Set next fetch iteration to type 'assets'
     return last_run
 
@@ -3543,7 +3553,8 @@ def count_assets_failure(last_run: dict[str, Any], reason: str, error: Optional[
     consecutive_failures = last_run.get("consecutive_failures", 0) + 1
     demisto.debug(
         f"[Assets] Run made no progress, counting failure {consecutive_failures}/{ASSETS_MAX_CONSECUTIVE_FAILURES}. "
-        f"Reason: {reason}"
+        f"next_page={last_run.get('next_page')}, snapshot_id={last_run.get('snapshot_id')}, "
+        f"limit={last_run.get('limit', HOST_LIMIT)}. Reason: {reason}"
     )
     if consecutive_failures >= ASSETS_MAX_CONSECUTIVE_FAILURES:
         raise DemistoException(
@@ -3615,18 +3626,22 @@ def fetch_and_send_vulnerabilities_streamed(client: Client, last_run: dict[str, 
     total_sent = 0
     remainder: list[dict] = []
 
-    for batch in iter_batches(iter_vulnerabilities_result(raw_response), VULNERABILITIES_SEND_BATCH_SIZE):
-        if len(batch) < VULNERABILITIES_SEND_BATCH_SIZE:
-            remainder = batch  # only the last batch can be partial; it is sent below as the sealing send
-            break
-        send_snapshot_batch(batch, "vulnerabilities", snapshot_id, items_count=1)  # unsealed: more may follow
-        total_sent += len(batch)
+    try:
+        for batch in iter_batches(iter_vulnerabilities_result(raw_response), VULNERABILITIES_SEND_BATCH_SIZE):
+            if len(batch) < VULNERABILITIES_SEND_BATCH_SIZE:
+                remainder = batch  # only the last batch can be partial; it is sent below as the sealing send
+                break
+            send_snapshot_batch(batch, "vulnerabilities", snapshot_id, items_count=1)  # unsealed: more may follow
+            total_sent += len(batch)
 
-    # The final send seals the snapshot with the cumulative total. If the rows divided evenly (empty remainder),
-    # close_snapshot_if_empty emits a closing signal so the snapshot still seals with the correct count.
-    total_sent += len(remainder)
-    remainder, seal_count = close_snapshot_if_empty(remainder, total_sent, snapshot_id, "vulnerabilities")
-    send_snapshot_batch(remainder, "vulnerabilities", snapshot_id, items_count=seal_count)
+        # The final send seals the snapshot with the cumulative total. If the rows divided evenly (empty remainder),
+        # close_snapshot_if_empty emits a closing signal so the snapshot still seals with the correct count.
+        total_sent += len(remainder)
+        remainder, seal_count = close_snapshot_if_empty(remainder, total_sent, snapshot_id, "vulnerabilities")
+        send_snapshot_batch(remainder, "vulnerabilities", snapshot_id, items_count=seal_count)
+    finally:
+        if raw_response is not None:
+            raw_response.close()
 
     demisto.debug(f"[Vulnerabilities] Finished streaming vulnerabilities to XSIAM. Total sent: {total_sent}. {snapshot_id=}")
     return DEFAULT_LAST_ASSETS_RUN
@@ -3652,7 +3667,7 @@ def build_next_last_run(
         "total_assets": total_assets,
         "since_datetime": since_datetime,
         "snapshot_id": snapshot_id,
-        "nextTrigger": "0",
+        "nextTrigger": "1",
         "type": FETCH_COMMAND.get("assets"),
     }
     if limit is not None:
@@ -3793,7 +3808,8 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
             page_assets_count += len(batch)
             batch = []
 
-            # Host IDs are ascending and `id_min` is inclusive, so the next run resumes right after this host.
+            # Assumes Qualys returns hosts in ascending ID order (observed behavior, not stated in the Qualys API docs).
+            # `id_min` is inclusive, so the next run resumes right after this host.
             host_id = int(host_batch[-1]["ID"])
             committed_run = build_next_last_run(
                 "assets", str(host_id + 1), total_assets + page_assets_count, since_datetime, snapshot_id, limit=limit
@@ -3891,7 +3907,8 @@ def fetch_and_send_assets_and_vulnerabilities_by_qids(client: Client, last_run: 
             )
             assets, vulnerabilities = [], []
 
-            # Host IDs are ascending and `id_min` is inclusive, so the next run resumes right after this host.
+            # Assumes Qualys returns hosts in ascending ID order (observed behavior, not stated in the Qualys API docs).
+            # `id_min` is inclusive, so the next run resumes right after this host.
             committed_run = build_next_last_run(
                 "assets",
                 str(int(host_batch[-1]["ID"]) + 1),
@@ -4180,6 +4197,11 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
         last_run (dict): Last assets run dictionary.
     """
     fetch_stage = last_run.get("stage", "assets")
+    demisto.debug(
+        f"[Fetch Assets By Date] Starting fetch by date: assets (host detections by VM scan date) page by page, then all "
+        f"vulnerabilities by last modified date. {fetch_stage=}, next_page={last_run.get('next_page')}, "
+        f"limit={last_run.get('limit', HOST_LIMIT)}, consecutive_failures={last_run.get('consecutive_failures', 0)}."
+    )
 
     if fetch_stage == "assets":
         demisto.debug(f"Starting fetch for assets, {EXECUTION_START_TIME=}")
@@ -4258,7 +4280,11 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
         client (Client): Qualys client.
         last_run (dict): Last assets run dictionary.
     """
-    demisto.debug(f"Starting fetch for assets and vulnerabilities, {EXECUTION_START_TIME=}")
+    demisto.debug(
+        f"[Fetch Assets By QIDs] Starting fetch by QIDs: one page of assets (host detections by VM scan date) with the "
+        f"vulnerabilities of their QIDs. next_page={last_run.get('next_page')}, limit={last_run.get('limit', HOST_LIMIT)}, "
+        f"consecutive_failures={last_run.get('consecutive_failures', 0)}, {EXECUTION_START_TIME=}."
+    )
 
     new_last_run, set_new_limit = fetch_and_send_assets_and_vulnerabilities_by_qids(client, last_run)
 
@@ -4557,7 +4583,8 @@ def main():  # pragma: no cover
             since_datetime = arg_to_datetime("1 hour").strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
             assets, _, _ = get_host_list_detections_events(client=client, since_datetime=since_datetime, limit=1, qid=qid)
             if should_push_events:
-                send_assets_and_vulnerabilities_to_xsiam(assets, vendor=VENDOR, product="host_detections")
+                # The streaming send clears the list it is given; send a copy so `assets` stays intact for the output.
+                send_assets_and_vulnerabilities_to_xsiam(list(assets), vendor=VENDOR, product="host_detections")
 
             readable_output = tableToMarkdown(name="Assets from Qualys:", t=assets)
 

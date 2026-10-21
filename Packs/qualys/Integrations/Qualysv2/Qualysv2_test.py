@@ -1808,14 +1808,14 @@ def test_set_assets_last_run_with_new_limit():
         - Calling set_assets_last_run_with_new_limit.
 
     Assert:
-        - Ensure last_run is correctly updated with half 'limit', 'nextTrigger' 0, and 'type' 1.
+        - Ensure last_run is correctly updated with half 'limit', 'nextTrigger' 1, and 'type' 1.
     """
     last_run = {"stage": "assets", "total_assets": 10, "snapshot_id": SNAPSHOT_ID}
     updated_last_run = set_assets_last_run_with_new_limit(last_run, limit=HOST_LIMIT)
 
     assert updated_last_run == {
         **last_run,
-        "nextTrigger": "0",
+        "nextTrigger": "1",
         "type": 1,  # assets
         "limit": HOST_LIMIT // 2,
     }
@@ -2443,7 +2443,7 @@ def test_fetch_assets_and_vulnerabilities_by_date_assets_stage_set_new_limit(moc
     assert spy_set_new_limit.call_count == 1
     saved_last_run = mock_set_assets_last_run.call_args[0][0]
     assert saved_last_run["limit"] == HOST_LIMIT // 2
-    assert saved_last_run["nextTrigger"] == "0"
+    assert saved_last_run["nextTrigger"] == "1"
 
 
 def test_fetch_assets_and_vulnerabilities_by_date_vulnerabilities_stage(mocker: MockerFixture, client: Client):
@@ -2650,7 +2650,7 @@ def test_build_next_last_run(optional_fields: dict):
         "total_assets": 14,
         "since_datetime": "2024-10-03",
         "snapshot_id": SNAPSHOT_ID,
-        "nextTrigger": "0",
+        "nextTrigger": "1",
         "type": 1,
         **optional_fields,
     }
@@ -2839,7 +2839,7 @@ def test_page_host_list_concurrency_limit_counts_and_keeps_limit(mocker: MockerF
     assert set_new_limit is False
     assert new_last_run["consecutive_failures"] == 1
     assert new_last_run["limit"] == 250
-    assert new_last_run["nextTrigger"] == "0"
+    assert new_last_run["nextTrigger"] == "1"
     assert new_last_run["type"] == Qualysv2.FETCH_COMMAND["assets"]
     mock_send.assert_not_called()
 
@@ -2916,7 +2916,7 @@ def test_page_timeout_at_limit_1_counts_failure(
     assert set_new_limit is False
     assert new_last_run["consecutive_failures"] == expected_failures
     assert new_last_run["limit"] == 1
-    assert new_last_run["nextTrigger"] == "0"
+    assert new_last_run["nextTrigger"] == "1"
 
 
 @pytest.mark.parametrize("page_function", PAGE_FUNCTIONS)
@@ -2983,7 +2983,7 @@ def test_by_qids_knowledge_base_concurrency_limit_before_commit_keeps_limit(mock
     assert set_new_limit is False
     assert new_last_run["consecutive_failures"] == 1
     assert new_last_run["limit"] == 250
-    assert new_last_run["nextTrigger"] == "0"
+    assert new_last_run["nextTrigger"] == "1"
     mock_publish.assert_not_called()
 
 
@@ -3036,7 +3036,7 @@ def test_fetch_assets_and_vulnerabilities_by_qids_concurrency_limit_saves_same_l
     saved_last_run = mock_set_assets_last_run.call_args.args[0]
     assert saved_last_run["limit"] == 250
     assert saved_last_run["consecutive_failures"] == 1
-    assert saved_last_run["nextTrigger"] == "0"
+    assert saved_last_run["nextTrigger"] == "1"
 
 
 @pytest.mark.parametrize(
@@ -3378,6 +3378,39 @@ class TestConcurrencyLimitRetry:
 
         with pytest.raises(DemistoException, match="concurrency limited"):
             client.get_host_list_detection(since_datetime="2024-12-12", limit=HOST_LIMIT)
+
+        assert http_mock.call_count == Qualysv2.CONCURRENCY_LIMIT_MAX_RETRIES + 1
+
+    def test_vulnerabilities_1960_retries_then_succeeds(self, mocker: MockerFixture, client: Client):
+        """
+        Given: a first 409/1960 concurrency-limit response from the knowledge base, followed by a successful response.
+        When:  get_vulnerabilities is called.
+        Then:  it backs off (fixed wait) and returns the successful response.
+        """
+        sleep_mock = mocker.patch.object(Qualysv2.time, "sleep")
+        http_mock = mocker.patch.object(client, "_http_request", side_effect=[_make_concurrency_limit_exception(), "kb-data"])
+
+        response = client.get_vulnerabilities(detection_qids="1,2")
+
+        assert response == "kb-data"
+        assert http_mock.call_count == 2
+        sleep_mock.assert_called_once_with(Qualysv2.CONCURRENCY_LIMIT_WAIT_SEC)
+
+    def test_vulnerabilities_1960_exhausts_retries_raises(self, mocker: MockerFixture, client: Client):
+        """
+        Given: persistent 409/1960 concurrency-limit responses from the knowledge base on every attempt.
+        When:  get_vulnerabilities is called.
+        Then:  after the in-run retries the 1960 error is raised.
+        """
+        mocker.patch.object(Qualysv2.time, "sleep")
+        http_mock = mocker.patch.object(
+            client,
+            "_http_request",
+            side_effect=[_make_concurrency_limit_exception() for _ in range(Qualysv2.CONCURRENCY_LIMIT_MAX_RETRIES + 1)],
+        )
+
+        with pytest.raises(DemistoException, match="concurrency limited"):
+            client.get_vulnerabilities(detection_qids="1,2")
 
         assert http_mock.call_count == Qualysv2.CONCURRENCY_LIMIT_MAX_RETRIES + 1
 
@@ -3749,6 +3782,320 @@ def test_publish_assets_and_vulnerabilities_uses_retry_wrapper(mocker: MockerFix
     assert [call.kwargs["product"] for call in retry_send_mock.call_args_list] == ["assets", "vulnerabilities"]
 
 
+def test_get_assets_command_push_keeps_assets_for_output(mocker: MockerFixture):
+    """
+    Given:
+        - The qualys-get-assets command with should_push_assets=true.
+        - A send that clears the list it is given, like the streaming send does.
+    When:
+        - Running main.
+    Then:
+        - The send gets a copy of the assets.
+        - The command outputs and readable output still contain the assets.
+    """
+    assets = [{"ID": "1", "IP": "1.1.1.1"}]
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": BASE_URL,
+            "credentials": {"identifier": "user", "password": "pass"},
+            "fetch_vulnerabilities_behavior": "Fetch by date",
+        },
+    )
+    mocker.patch.object(demisto, "args", return_value={"should_push_assets": "true"})
+    mocker.patch.object(demisto, "command", return_value="qualys-get-assets")
+    mocker.patch("Qualysv2.get_host_list_detections_events", return_value=(assets, None, False))
+
+    def clearing_send(data: list, **_kwargs: Any) -> None:
+        for index in range(len(data)):
+            data[index] = None
+
+    send_mock = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam", side_effect=clearing_send)
+    return_results_mock = mocker.patch("Qualysv2.return_results")
+
+    Qualysv2.main()
+
+    sent_data = send_mock.call_args.args[0]
+    assert sent_data is not assets
+    assert send_mock.call_args.kwargs == {"vendor": VENDOR, "product": "host_detections"}
+    results = return_results_mock.call_args.args[0]
+    assert results.outputs == [{"ID": "1", "IP": "1.1.1.1"}]
+    assert "1.1.1.1" in results.readable_output
+
+
+def test_fetch_and_send_vulnerabilities_streamed_send_failure_closes_response(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - 4 vulnerabilities with a send batch size of 2, where the send of the second full batch fails.
+    When:
+        - Calling fetch_and_send_vulnerabilities_streamed.
+    Then:
+        - The first batch was sent, the send error propagates, and the streamed response is closed.
+    """
+    raw_response = Mock()
+    mocker.patch.object(client, "get_vulnerabilities", return_value=raw_response)
+    mocker.patch("Qualysv2.iter_vulnerabilities_result", return_value=iter([{"QID": str(i)} for i in range(4)]))
+    mocker.patch("Qualysv2.VULNERABILITIES_SEND_BATCH_SIZE", 2)
+    send_mock = mocker.patch(
+        "Qualysv2.send_assets_and_vulnerabilities_to_xsiam_with_retry",
+        side_effect=[None, Qualysv2.XSIAMSendError("send failed", status_code=502)],
+    )
+
+    with pytest.raises(Qualysv2.XSIAMSendError, match="send failed"):
+        Qualysv2.fetch_and_send_vulnerabilities_streamed(client, {"since_datetime": "2024-10-03"})
+
+    assert send_mock.call_count == 2
+    assert send_mock.call_args_list[0].args[0] == [{"QID": "0"}, {"QID": "1"}]
+    raw_response.close.assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "vulnerabilities, expected_batches, expected_items_counts",
+    [
+        pytest.param([], [[]], ["0"], id="empty_stream"),
+        pytest.param(
+            [{"QID": "0"}, {"QID": "1"}, {"QID": "2"}],
+            [[{"QID": "0"}, {"QID": "1"}], [{"QID": "2"}]],
+            ["1", "3"],
+            id="partial_final_batch",
+        ),
+    ],
+)
+def test_fetch_and_send_vulnerabilities_streamed_final_batch(
+    mocker: MockerFixture,
+    client: Client,
+    vulnerabilities: list,
+    expected_batches: list,
+    expected_items_counts: list,
+):
+    """
+    Given:
+        - A send batch size of 2 and either an empty stream or 3 vulnerabilities (a partial final batch).
+    When:
+        - Calling fetch_and_send_vulnerabilities_streamed.
+    Then:
+        - Empty stream: only the closing send is made, with no rows and items_count 0.
+        - Partial final batch: one unsealed full batch, then the partial batch seals with the cumulative total.
+        - The streamed response is closed and the default last run is returned.
+    """
+    raw_response = Mock()
+    mocker.patch.object(client, "get_vulnerabilities", return_value=raw_response)
+    mocker.patch("Qualysv2.iter_vulnerabilities_result", return_value=iter(vulnerabilities))
+    mocker.patch("Qualysv2.VULNERABILITIES_SEND_BATCH_SIZE", 2)
+    send_mock = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+
+    next_run = Qualysv2.fetch_and_send_vulnerabilities_streamed(client, {"since_datetime": "2024-10-03"})
+
+    assert [call.args[0] for call in send_mock.call_args_list] == expected_batches
+    assert [call.kwargs["items_count"] for call in send_mock.call_args_list] == expected_items_counts
+    assert len({call.kwargs["snapshot_id"] for call in send_mock.call_args_list}) == 1
+    raw_response.close.assert_called_once()
+    assert next_run == DEFAULT_LAST_ASSETS_RUN
+
+
+def test_fetch_vulnerabilities_of_new_qids_closes_every_response(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - 3 new QIDs requested from the knowledge base in chunks of 2.
+    When:
+        - Calling fetch_vulnerabilities_of_new_qids.
+    Then:
+        - Each of the 2 streamed responses is closed.
+    """
+    responses = [Mock(), Mock()]
+    mocker.patch("Qualysv2.QIDS_BATCH_SIZE", 2)
+    mocker.patch.object(client, "get_vulnerabilities", side_effect=responses)
+    mocker.patch("Qualysv2.handle_vulnerabilities_result", side_effect=[[{"QID": "1"}, {"QID": "2"}], [{"QID": "3"}]])
+
+    vulnerabilities = fetch_vulnerabilities_of_new_qids(client, [_asset_row("1"), _asset_row("2"), _asset_row("3")], set())
+
+    assert len(vulnerabilities) == 3
+    for response in responses:
+        response.close.assert_called_once()
+
+
+def test_fetch_vulnerabilities_of_new_qids_closes_response_on_parse_error(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A knowledge base response that fails while it is being parsed.
+    When:
+        - Calling fetch_vulnerabilities_of_new_qids.
+    Then:
+        - The error propagates, the streamed response is closed, and the QIDs are not marked as fetched.
+    """
+    raw_response = Mock()
+    mocker.patch.object(client, "get_vulnerabilities", return_value=raw_response)
+    mocker.patch("Qualysv2.handle_vulnerabilities_result", side_effect=requests.exceptions.ChunkedEncodingError("broken"))
+    fetched_qids: set = set()
+
+    with pytest.raises(requests.exceptions.ChunkedEncodingError):
+        fetch_vulnerabilities_of_new_qids(client, [_asset_row("1")], fetched_qids)
+
+    raw_response.close.assert_called_once()
+    assert fetched_qids == set()
+
+
+def test_xsiam_ingestion_client_handle_error_keeps_status_code_and_message():
+    """
+    Given:
+        - A 502 response from the XSIAM ingestion endpoint.
+    When:
+        - XSIAMIngestionClient._handle_error handles it.
+    Then:
+        - XSIAMSendError is raised with status_code 502 and the same message as the original BaseClient error.
+    """
+    response = requests.Response()
+    response.status_code = 502
+    response.reason = "Bad Gateway"
+    response._content = NGINX_502_BODY.encode()
+    ingestion_client = Qualysv2.XSIAMIngestionClient(base_url="https://xsiam.example.com")
+
+    with pytest.raises(Qualysv2.XSIAMSendError) as error:
+        ingestion_client._handle_error(None, response, False)
+
+    assert error.value.status_code == 502
+    assert isinstance(error.value.__cause__, DemistoException)
+    assert str(error.value) == str(error.value.__cause__)
+    assert "502 Bad Gateway" in str(error.value)
+
+
+@pytest.mark.parametrize(
+    "consecutive_failures, committed_run, expected_run, expected_set_new_limit",
+    [
+        pytest.param(2, {"next_page": "101"}, {"next_page": "101"}, False, id="commit_present_returns_commit"),
+        pytest.param(2, None, {"next_page": "50", "consecutive_failures": 3}, True, id="no_commit_counts_failure"),
+    ],
+)
+def test_handle_assets_page_error(
+    consecutive_failures: int, committed_run: dict | None, expected_run: dict, expected_set_new_limit: bool
+):
+    """
+    Given:
+        - A page error, with or without a commit made earlier in the run.
+    When:
+        - Calling handle_assets_page_error.
+    Then:
+        - With a commit: the commit is returned as is, without counting a failure or halving the limit.
+        - Without a commit: consecutive_failures is incremented and set_new_limit is True.
+    """
+    last_run = {"next_page": "50", "consecutive_failures": consecutive_failures}
+
+    new_run, set_new_limit = Qualysv2.handle_assets_page_error(DemistoException("boom"), last_run, committed_run)
+
+    assert new_run == expected_run
+    assert set_new_limit is expected_set_new_limit
+
+
+def test_handle_assets_page_error_raises_at_threshold():
+    """
+    Given:
+        - A page error with nothing committed, after ASSETS_MAX_CONSECUTIVE_FAILURES - 1 failed runs in a row.
+    When:
+        - Calling handle_assets_page_error.
+    Then:
+        - A DemistoException is raised, chained to the original error.
+    """
+    original_error = DemistoException("boom")
+    last_run = {"consecutive_failures": Qualysv2.ASSETS_MAX_CONSECUTIVE_FAILURES - 1}
+
+    with pytest.raises(DemistoException, match="failed .* times in a row") as error:
+        Qualysv2.handle_assets_page_error(original_error, last_run, committed_run=None)
+
+    assert error.value.__cause__ is original_error
+
+
+def test_fetch_and_send_assets_streamed_host_missing_id_does_not_commit(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A batch of 2 hosts where the last host has no ID, with nothing committed yet in the run.
+    When:
+        - Calling fetch_and_send_assets_streamed.
+    Then:
+        - No cursor is committed, the run is counted as a failure without progress, and the response is closed.
+    """
+    last_run = {"stage": "assets", "next_page": "50", "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID}
+    host_without_id = _make_host("101", 1)
+    del host_without_id["ID"]
+    raw_response = Mock()
+    mocker.patch.object(client, "get_host_list_detection", return_value=(raw_response, False))
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter([_make_host("100", 1), host_without_id]))
+    mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+    mock_set_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 2)
+
+    new_last_run, set_new_limit = fetch_and_send_assets_streamed(client, last_run)
+
+    mock_set_last_run.assert_not_called()
+    assert new_last_run["next_page"] == "50"
+    assert new_last_run["consecutive_failures"] == 1
+    assert set_new_limit is True
+    raw_response.close.assert_called_once()
+
+
+@freeze_time("2025-01-01 00:00:00 UTC")
+def test_fetch_and_send_assets_streamed_commit_cursor_follows_last_host_of_batch(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - Hosts that are not in ascending ID order (100, 300, 200, 400), committed every 2 hosts.
+    When:
+        - Calling fetch_and_send_assets_streamed.
+    Then:
+        - Each commit uses the ID of the last host in the batch + 1 ("301", then "401").
+        - This documents the assumption the cursor relies on: Qualys returns hosts in ascending ID order and
+          `id_min` is inclusive. If that order were broken, a resumed run could skip hosts with lower IDs
+          (here, host 200 is below the first cursor "301").
+    """
+    last_run = {"stage": "assets", "since_datetime": "2024-10-03", "snapshot_id": SNAPSHOT_ID, "limit": 50}
+    hosts = [_make_host(host_id, 1) for host_id in ("100", "300", "200", "400")]
+    mocker.patch.object(client, "get_host_list_detection", return_value=(Mock(), False))
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter(hosts))
+    mocker.patch("Qualysv2.get_next_page_from_url", return_value="500")
+    mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+    mock_set_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 2)
+
+    fetch_and_send_assets_streamed(client, last_run)
+
+    assert [call.args[0]["next_page"] for call in mock_set_last_run.call_args_list] == ["301", "401"]
+
+
+def test_send_assets_with_retry_resends_whole_batch_when_a_later_chunk_fails(
+    mocker: MockerFixture, requests_mock: RequestsMocker
+):
+    """
+    Given:
+        - A batch of 2 rows split into 2 chunks (one row per chunk), where chunk 2 returns 502 on the first attempt.
+    When:
+        - Sending it with send_assets_and_vulnerabilities_to_xsiam_with_retry.
+    Then:
+        - The retry resends the whole batch: chunk 1 is sent a second time, then chunk 2 succeeds.
+        - All 4 requests use the same snapshot ID, so chunk 1's rows may appear twice in the snapshot.
+    """
+    mock_xsiam_ingestion(mocker)
+    sleep_mock = mocker.patch("Qualysv2.time.sleep")
+    requests_mock.post(
+        XSIAM_INGEST_URL,
+        [XSIAM_OK_RESPONSE, {"status_code": 502, "text": NGINX_502_BODY}, XSIAM_OK_RESPONSE, XSIAM_OK_RESPONSE],
+    )
+
+    Qualysv2.send_assets_and_vulnerabilities_to_xsiam_with_retry(
+        [{"ID": "asset-1"}, {"ID": "asset-2"}],
+        vendor=VENDOR,
+        product="assets",
+        snapshot_id="123",
+        items_count="1",
+        should_update_health_module=False,
+        chunk_size=1,
+    )
+
+    sent_rows = [gzip.decompress(request.body) for request in requests_mock.request_history]
+    assert [b"asset-1" in row for row in sent_rows] == [True, False, True, False]
+    assert [b"asset-2" in row for row in sent_rows] == [False, True, False, True]
+    assert {request.headers["snapshot-id"] for request in requests_mock.request_history} == {"123"}
+    sleep_mock.assert_called_once_with(Qualysv2.XSIAM_SEND_BACKOFF_SECONDS)
+
+
 class TestGetHostListDetectionRequest:
     """Tests for Client.get_host_list_detection request building and error handling."""
 
@@ -3859,6 +4206,47 @@ def test_get_host_list_detections_events_test_mode_skips_parsing(mocker: MockerF
 
     assert (assets, next_page, set_new_limit) == ([], "42", False)
     mock_parse.assert_not_called()
+
+
+def test_get_host_list_detections_events_closes_response(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A streamed host list detection response that is parsed successfully.
+
+    When:
+        - Calling get_host_list_detections_events.
+
+    Assert:
+        - The streamed response is closed once.
+    """
+    raw_response = Mock()
+    mocker.patch.object(client, "get_host_list_detection", return_value=(raw_response, False))
+    mocker.patch("Qualysv2.handle_host_list_detection_result", return_value=([_make_host("1", 1)], ""))
+
+    Qualysv2.get_host_list_detections_events(client, "2024-12-12")
+
+    raw_response.close.assert_called_once()
+
+
+def test_get_host_list_detections_events_closes_response_on_parse_error(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - A streamed host list detection response whose parsing raises an error.
+
+    When:
+        - Calling get_host_list_detections_events.
+
+    Assert:
+        - The error is raised and the streamed response is still closed once.
+    """
+    raw_response = Mock()
+    mocker.patch.object(client, "get_host_list_detection", return_value=(raw_response, False))
+    mocker.patch("Qualysv2.handle_host_list_detection_result", side_effect=ValueError("bad XML"))
+
+    with pytest.raises(ValueError, match="bad XML"):
+        Qualysv2.get_host_list_detections_events(client, "2024-12-12")
+
+    raw_response.close.assert_called_once()
 
 
 @pytest.mark.parametrize(
