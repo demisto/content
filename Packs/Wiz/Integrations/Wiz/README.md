@@ -54,6 +54,18 @@ On the first incoming sync after an incident is created in XSOAR, existing Wiz n
 
 Notes longer than **1400 characters** are truncated and suffixed with `... [truncated]` before being sent to the Wiz API. This applies to all mirrored notes and to the `wiz-set-issue-note`, `wiz-resolve-issue`, `wiz-reject-issue`, and `wiz-defend-set-threat-comment` commands.
 
+### Required permissions
+
+Notes are stored as Wiz Issue comments. The service account needs the following scopes:
+
+| Operation | Scope |
+| --- | --- |
+| `wiz-set-issue-note`, note arguments of `wiz-reject-issue` / `wiz-resolve-issue` / `wiz-reopen-issue`, outgoing note mirroring | `write:comments` |
+| `wiz-clear-issue-note` | `read:comments` + `write:comments` + `admin:comments` (to delete other authors' comments) |
+| Incoming note mirroring | `read:comments` |
+
+`admin:comments` does not replace `read:comments` or `write:comments`. Without it, clearing other authors' comments can fail after some comments have already been deleted.
+
 ### Mirror engine commands
 
 The following commands are invoked by the XSOAR mirroring engine and are **not intended for manual use**:

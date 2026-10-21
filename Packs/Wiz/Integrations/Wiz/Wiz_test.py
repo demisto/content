@@ -281,8 +281,8 @@ test_reject_issue_response = {
     }
 }
 
-# Define the return values
-resolve_issues_return_values = [test_get_issues_response, test_reject_issue_response]
+# Define the return values: issue-type lookup, updateIssue, then the comment create
+resolve_issues_return_values = [test_get_issues_response, test_reject_issue_response, {"data": {}}]
 
 
 # Define a function that will serve as the side effect
@@ -501,7 +501,6 @@ VALID_RESPONSE_JSON = {
                     "type": "CORTEX_XSOAR",
                     "evidenceQuery": "test_query",
                     "status": "SUCCESS",
-                    "notes": [{"id": "test_note_result"}],
                     "project": None,
                     "isAccessibleToAllProjects": True,
                     "params": {
@@ -745,7 +744,7 @@ def test_set_issue_note_truncates_long_note(checkAPIerrors):
     set_issue_comment("12345678-2222-3333-1111-ff5fa2ff7f78", long_note)
 
     call_args = checkAPIerrors.call_args
-    sent_text = call_args[0][1]["input"]["text"]
+    sent_text = call_args[0][1]["input"]["body"]
     assert len(sent_text) <= MAX_NOTE_LENGTH
     assert sent_text.endswith("... [truncated]")
 
@@ -788,38 +787,6 @@ def test_set_issue_note_failed(checkAPIerrors, capfd):
 
         res = set_issue_comment("12345678-2222-3333-1111-ff5fa2ff7f78", "blah")
         assert res == "Error details: Resource not found"
-
-
-test_clear_issue_note_response = {
-    "data": {
-        "updateIssue": {
-            "issue": {
-                "id": "12345678-2222-3333-1111-ff5fa2ff7f78",
-                "note": "",
-                "status": "REJECTED",
-                "dueAt": "2022-01-14T20:24:20Z",
-                "resolutionReason": "WONT_FIX",
-            }
-        }
-    }
-}
-
-test_clear_issue_note_fail_response = (
-    "Error details: Only the user who created the note, can delete it.\n" "Check server.log file for additional information"
-)
-
-
-@patch("Wiz._get_issue", return_value=VALID_RESPONSE_JSON)
-@patch("Wiz.checkAPIerrors", return_value=test_clear_issue_note_fail_response)
-def test_clear_issue_note_failed(checkAPIerrors, capfd):
-    with capfd.disabled():
-        from Wiz import clear_issue_note
-
-        res = clear_issue_note("12345678-2222-3333-1111-ff5fa2ff7f78")
-        assert (
-            res == "Error details: Only the user who created the note, can delete it.\n"
-            "Check server.log file for additional information"
-        )
 
 
 @patch("Wiz._get_issue", return_value=VALID_RESPONSE_JSON)
@@ -1761,25 +1728,20 @@ def test_get_modified_remote_data_command(mock_check_api, _mock_get_ctx, _mock_s
     ]
 
 
+@patch("Wiz.get_issue_comments")
 @patch("Wiz.get_issue")
-def test_get_remote_data_command(mock_get_issue, mock_mirror_params):
+def test_get_remote_data_command(mock_get_issue, mock_get_comments, mock_mirror_params):
     """Test get_remote_data_command returns issue with mirror metadata and note entries"""
     from Wiz import get_remote_data_command
 
-    mock_get_issue.return_value = [
+    mock_get_issue.return_value = [{"id": "11111111-1111-1111-1111-111111111111", "status": "OPEN", "severity": "HIGH"}]
+    mock_get_comments.return_value = [
         {
-            "id": "11111111-1111-1111-1111-111111111111",
-            "status": "OPEN",
-            "severity": "HIGH",
-            "notes": [
-                {
-                    "text": "New finding from team",
-                    "createdAt": "2025-06-01T10:00:00Z",
-                    "updatedAt": "2025-06-01T10:00:00Z",
-                    "user": {"name": "Alice"},
-                    "serviceAccount": None,
-                }
-            ],
+            "body": "New finding from team",
+            "createdAt": "2025-06-01T10:00:00Z",
+            "updatedAt": "2025-06-01T10:00:00Z",
+            "author": {"name": "Alice"},
+            "serviceAccount": None,
         }
     ]
 
@@ -1805,41 +1767,6 @@ def test_get_remote_data_command_issue_not_found(mock_get_issue):
 
     assert result.mirrored_object == {}
     assert result.entries == []
-
-
-@patch("Wiz.get_issue")
-def test_get_remote_data_skips_xsoar_mirrored_notes(mock_get_issue, mock_mirror_params):
-    """Test that notes containing XSOAR_MIRROR_MARKER are skipped"""
-    from Wiz import get_remote_data_command
-
-    mock_get_issue.return_value = [
-        {
-            "id": "11111111-1111-1111-1111-111111111111",
-            "status": "OPEN",
-            "notes": [
-                {
-                    "text": f"(analyst): some note\n\n{XSOAR_MIRROR_MARKER}",
-                    "createdAt": "2025-06-01T10:00:00Z",
-                    "updatedAt": "2025-06-01T10:00:00Z",
-                    "user": {"name": "Bot"},
-                    "serviceAccount": None,
-                },
-                {
-                    "text": "Genuine Wiz note",
-                    "createdAt": "2025-06-01T11:00:00Z",
-                    "updatedAt": "2025-06-01T11:00:00Z",
-                    "user": {"name": "Bob"},
-                    "serviceAccount": None,
-                },
-            ],
-        }
-    ]
-
-    args = {"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": "2025-01-01T00:00:00Z"}
-    result = get_remote_data_command(args)
-
-    assert len(result.entries) == 1
-    assert "Bob" in result.entries[0]["Contents"]
 
 
 @pytest.mark.parametrize(
@@ -1978,7 +1905,7 @@ def test_handle_incident_closed(mock_resolve, _mock_type):
     mock_resolve.assert_called_once_with(
         "11111111-1111-1111-1111-111111111111",
         DEFAULT_RESOLUTION_REASON,
-        "Resolved from Cortex XSOAR",
+        "Status mirrored from Cortex XSOAR",
         "RESOLVED",
     )
 
@@ -2623,37 +2550,6 @@ def test_mirror_status_to_wiz_resolved_uses_close_reason_fallback(mock_reject_re
     )
 
 
-# ===== GAP #6: get_remote_data_command with service account notes =====
-
-
-@patch("Wiz.get_issue")
-def test_get_remote_data_command_service_account_notes(mock_get_issue, mock_mirror_params):
-    """Test get_remote_data_command formats SA notes with [SA] prefix"""
-    from Wiz import get_remote_data_command
-
-    mock_get_issue.return_value = [
-        {
-            "id": "11111111-1111-1111-1111-111111111111",
-            "status": "OPEN",
-            "notes": [
-                {
-                    "text": "Automated scan completed",
-                    "createdAt": "2025-06-01T10:00:00Z",
-                    "updatedAt": "2025-06-01T10:00:00Z",
-                    "user": None,
-                    "serviceAccount": {"name": "WizScanner"},
-                }
-            ],
-        }
-    ]
-
-    args = {"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": "2025-01-01T00:00:00Z"}
-    result = get_remote_data_command(args)
-
-    assert len(result.entries) == 1
-    assert "[SA] WizScanner" in result.entries[0]["Contents"]
-
-
 # ===== GAP #7: WizMirrorDirection.from_params() Outgoing + invalid =====
 
 
@@ -2732,53 +2628,111 @@ def test_get_resources_error_mentions_new_params(capfd):
         assert "updated_at_after" in res
 
 
-# ===== GAP #10: reject_or_resolve_issue truncation =====
-
-
-@patch("Wiz.checkAPIerrors", return_value=test_reject_issue_response)
-def test_reject_or_resolve_issue_truncates_long_comment(mock_check_api):
-    """Test that reject_or_resolve_issue truncates comments exceeding MAX_NOTE_LENGTH"""
+def test_reject_issue_legacy_note_retry_truncates_long_comment():
     from Wiz import reject_or_resolve_issue, MAX_NOTE_LENGTH
 
-    long_comment = "x" * (MAX_NOTE_LENGTH + 100)
-    reject_or_resolve_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "WONT_FIX", long_comment, "RESOLVED")
+    note_required = Exception("Wiz API error details: A note is required for rejection\n")
+    with patch("Wiz.checkAPIerrors", side_effect=[note_required, test_reject_issue_response]) as mock_check_api:
+        reject_or_resolve_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "WONT_FIX", "x" * (MAX_NOTE_LENGTH + 100), "REJECTED")
 
-    sent_note = mock_check_api.call_args[0][1]["patch"]["note"]
+    sent_note = mock_check_api.call_args_list[1][0][1]["patch"]["note"]
     assert len(sent_note) <= MAX_NOTE_LENGTH
     assert sent_note.endswith("... [truncated]")
 
 
+@pytest.mark.parametrize(
+    "status, error",
+    [
+        pytest.param("REJECTED", Exception("update failed"), id="rejected_other_error"),
+        pytest.param(
+            "RESOLVED", Exception("Wiz API error details: A note is required for rejection\n"), id="resolved_note_required"
+        ),
+    ],
+)
+def test_reject_or_resolve_issue_raises_without_retry(status, error):
+    from Wiz import reject_or_resolve_issue
+
+    with patch("Wiz.checkAPIerrors", side_effect=[error]) as mock_check_api, pytest.raises(Exception, match=str(error).strip()):
+        reject_or_resolve_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "WONT_FIX", "note", status)
+    assert mock_check_api.call_count == 1
+
+
+@pytest.mark.parametrize(
+    "call",
+    [
+        pytest.param(
+            lambda m: m.reject_or_resolve_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "ISSUE_FIXED", "n", "RESOLVED"),
+            id="resolve",
+        ),
+        pytest.param(lambda m: m.reopen_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "n"), id="reopen"),
+    ],
+)
+@patch.object(demisto, "error")
+def test_status_update_succeeds_with_warning_when_note_fails(mock_error, call):
+    import Wiz
+
+    status_response = {"data": {"updateIssue": {"issue": {"id": "12345678-2222-3333-1111-ff5fa2ff7f78"}}}}
+    denied = Exception("access denied: [write:all write:comments]")
+    with patch("Wiz.checkAPIerrors", side_effect=[status_response, denied]):
+        response = call(Wiz)
+
+    assert response["data"] == status_response["data"]
+    assert "the note could not be added" in response["warning"]
+    assert "write:comments" in response["warning"]
+
+
+@pytest.mark.parametrize(
+    "retry_result, expected_error",
+    [
+        pytest.param(test_reject_issue_response, None, id="legacy_note_accepted"),
+        pytest.param(Exception("Wiz API error: unknown field note"), "requires a note to reject", id="legacy_note_retired"),
+    ],
+)
+def test_reject_issue_retries_with_legacy_note_when_tenant_requires_it(retry_result, expected_error):
+    from Wiz import reject_issue, UPDATE_ISSUE_QUERY
+
+    note_required = Exception("Wiz API error details: A note is required for rejection\n")
+    with patch("Wiz.checkAPIerrors", side_effect=[note_required, retry_result]) as mock_check_api:
+        if expected_error:
+            with pytest.raises(Exception, match=expected_error):
+                reject_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "FALSE_POSITIVE", "rejecting_for_e2e")
+        else:
+            assert reject_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "FALSE_POSITIVE", "rejecting_for_e2e") == (
+                test_reject_issue_response
+            )
+
+    assert mock_check_api.call_count == 2
+    retry_query, retry_variables = mock_check_api.call_args_list[1][0]
+    assert retry_query == UPDATE_ISSUE_QUERY
+    assert retry_variables["patch"]["note"] == "rejecting_for_e2e"
+
+
+@pytest.mark.parametrize(
+    "fn_name, status, reason, note",
+    [
+        pytest.param("reject_issue", "REJECTED", "FALSE_POSITIVE", "rejecting_for_e2e", id="reject"),
+        pytest.param("resolve_issue", "RESOLVED", "ISSUE_FIXED", "resolving_for_e2e", id="resolve"),
+    ],
+)
+@patch("Wiz._get_issue", return_value={"data": {"issues": {"nodes": [{"type": "THREAT_DETECTION"}]}}})
 @patch("Wiz.checkAPIerrors", return_value=test_reject_issue_response)
-def test_reject_issue_sends_rejected_status_and_reason(mock_check_api):
-    """Reject path must send status=REJECTED with resolutionReason and the note text."""
-    from Wiz import reject_issue
+def test_reject_or_resolve_sends_status_then_comment(mock_check_api, _get_issue, fn_name, status, reason, note):
+    import Wiz
 
-    reject_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "FALSE_POSITIVE", "rejecting_for_e2e")
+    getattr(Wiz, fn_name)("12345678-2222-3333-1111-ff5fa2ff7f78", reason, note)
 
-    variables = mock_check_api.call_args[0][1]
-    assert variables["issueId"] == "12345678-2222-3333-1111-ff5fa2ff7f78"
-    assert variables["patch"]["status"] == "REJECTED"
-    assert variables["patch"]["resolutionReason"] == "FALSE_POSITIVE"
-    assert variables["patch"]["note"] == "rejecting_for_e2e"
-
-
-@patch("Wiz.checkAPIerrors", return_value=test_reject_issue_response)
-def test_resolve_issue_sends_resolved_status_and_reason(mock_check_api):
-    """Resolve path must send status=RESOLVED with resolutionReason and the note text."""
-    # resolve_issue requires the issue type to be THREAT_DETECTION; mock _get_issue accordingly
-    from unittest.mock import patch as _patch
-
-    threat_issue = {"data": {"issues": {"nodes": [{"type": "THREAT_DETECTION"}]}}}
-    with _patch("Wiz._get_issue", return_value=threat_issue):
-        from Wiz import resolve_issue
-
-        resolve_issue("12345678-2222-3333-1111-ff5fa2ff7f78", "ISSUE_FIXED", "resolving_for_e2e")
-
-    variables = mock_check_api.call_args[0][1]
-    assert variables["issueId"] == "12345678-2222-3333-1111-ff5fa2ff7f78"
-    assert variables["patch"]["status"] == "RESOLVED"
-    assert variables["patch"]["resolutionReason"] == "ISSUE_FIXED"
-    assert variables["patch"]["note"] == "resolving_for_e2e"
+    variables = mock_check_api.call_args_list[-2][0][1]
+    assert variables == {
+        "issueId": "12345678-2222-3333-1111-ff5fa2ff7f78",
+        "patch": {"status": status, "resolutionReason": reason},
+    }
+    comment_query, comment_variables = mock_check_api.call_args_list[-1][0]
+    assert comment_query == Wiz.CREATE_COMMENT_QUERY
+    assert comment_variables["input"] == {
+        "subjectId": "12345678-2222-3333-1111-ff5fa2ff7f78",
+        "subjectType": "ISSUE",
+        "body": note,
+    }
 
 
 # ===== _build_new_note_entries tests =====
@@ -2789,39 +2743,61 @@ LAST_UPDATE = "2025-01-01T00:00:00Z"
 
 def format_as_note(text: str, time: str, author: str) -> dict[str, Any]:
     return {
-        "text": text,
+        "body": text,
         "createdAt": time,
         "updatedAt": time,
-        "user": {"name": author},
+        "author": {"name": author},
         "serviceAccount": None,
     }
 
 
 @pytest.mark.parametrize(
-    "issue,last_update,expected_count,expected_content",
+    "comments,last_update,expected_count,expected_content",
     [
-        pytest.param({"notes": None}, LAST_UPDATE, 0, None, id="notes_null"),
-        pytest.param({"notes": []}, LAST_UPDATE, 0, None, id="notes_empty"),
-        pytest.param({}, LAST_UPDATE, 0, None, id="notes_key_missing"),
-        pytest.param({"notes": [format_as_note("x", "2025-06-01T10:00:00Z", "A")]}, None, 0, None, id="no_last_update"),
+        pytest.param([], LAST_UPDATE, 0, None, id="comments_empty"),
         pytest.param(
-            {
-                "notes": [
-                    format_as_note("old", "2024-01-01T00:00:00Z", "Alice"),
-                    format_as_note("new", "2025-06-01T10:00:00Z", "Bob"),
-                ]
-            },
+            [
+                format_as_note("old", "2024-01-01T00:00:00Z", "Alice"),
+                format_as_note("new", "2025-06-01T10:00:00Z", "Bob"),
+            ],
             LAST_UPDATE,
             1,
             "Bob",
             id="filters_old_keeps_new",
         ),
+        pytest.param(
+            [format_as_note(f"x\n\n{XSOAR_MIRROR_MARKER}", "2025-06-01T10:00:00Z", "Bot")],
+            LAST_UPDATE,
+            0,
+            None,
+            id="skips_xsoar_mirrored",
+        ),
+        pytest.param(
+            [format_as_note("Status mirrored from Cortex XSOAR", "2025-06-01T10:00:00Z", "SA")],
+            LAST_UPDATE,
+            0,
+            None,
+            id="skips_xsoar_status_note",
+        ),
+        pytest.param(
+            [
+                {
+                    **format_as_note("scan done", "2025-06-01T10:00:00Z", ""),
+                    "author": None,
+                    "serviceAccount": {"name": "WizScanner"},
+                }
+            ],
+            LAST_UPDATE,
+            1,
+            "[SA] WizScanner",
+            id="service_account_author",
+        ),
     ],
 )
-def test_build_new_note_entries(issue, last_update, expected_count, expected_content):
+def test_build_new_note_entries(comments, last_update, expected_count, expected_content):
     from Wiz import _build_new_note_entries
 
-    result = _build_new_note_entries(issue, last_update)
+    result = _build_new_note_entries(comments, last_update)
     assert len(result) == expected_count
     if expected_content:
         assert expected_content in result[0]["Contents"]
@@ -2836,15 +2812,13 @@ def test_build_new_note_entries_microsecond_vs_second_precision():
     from Wiz import _build_new_note_entries
 
     last_update = "2025-06-01T10:00:00Z"  # second-precision (XSOAR style)
-    issue = {
-        "notes": [
-            # Note created 0.5s AFTER lastUpdate, but with microsecond precision (Wiz style)
-            format_as_note("new_microsecond", "2025-06-01T10:00:00.500000Z", "Alice"),
-            # Note created 1s before lastUpdate — should still be filtered out
-            format_as_note("old", "2025-06-01T09:59:59Z", "Bob"),
-        ]
-    }
-    result = _build_new_note_entries(issue, last_update)
+    comments = [
+        # Note created 0.5s AFTER lastUpdate, but with microsecond precision (Wiz style)
+        format_as_note("new_microsecond", "2025-06-01T10:00:00.500000Z", "Alice"),
+        # Note created 1s before lastUpdate — should still be filtered out
+        format_as_note("old", "2025-06-01T09:59:59Z", "Bob"),
+    ]
+    result = _build_new_note_entries(comments, last_update)
 
     # Pre-fix: lex compare would treat the microsecond note as OLDER and drop it (0 entries).
     # Post-fix: parsed datetime compare correctly identifies it as newer.
@@ -2858,13 +2832,11 @@ def test_build_new_note_entries_iso_with_offset():
     even when the other side uses the `Z` shorthand. Both denote UTC."""
     from Wiz import _build_new_note_entries
 
-    issue = {
-        "notes": [
-            format_as_note("newer", "2025-06-01T10:00:01+00:00", "Alice"),
-            format_as_note("equal", "2025-06-01T10:00:00+00:00", "Bob"),
-        ]
-    }
-    result = _build_new_note_entries(issue, "2025-06-01T10:00:00Z")
+    comments = [
+        format_as_note("newer", "2025-06-01T10:00:01+00:00", "Alice"),
+        format_as_note("equal", "2025-06-01T10:00:00+00:00", "Bob"),
+    ]
+    result = _build_new_note_entries(comments, "2025-06-01T10:00:00Z")
 
     assert len(result) == 1
     assert "newer" in result[0]["Contents"]
@@ -2905,28 +2877,82 @@ def test_attach_mirror_metadata_no_direction():
     assert WizMirrorField.DIRECTION not in issue
 
 
-# ===== Null-safety for notes in mirroring and commands =====
-
-
+@patch.object(demisto, "info")
+@patch("Wiz.get_issue_comments", side_effect=Exception("access denied: [read:all read:comments]"))
 @patch("Wiz.get_issue")
-def test_get_remote_data_command_notes_none(mock_get_issue, mock_mirror_params):
+def test_get_remote_data_command_mirrors_issue_when_comments_unreadable(
+    mock_get_issue, mock_get_comments, mock_info, mock_mirror_params
+):
     from Wiz import get_remote_data_command
 
-    mock_get_issue.return_value = [{"id": "11111111-1111-1111-1111-111111111111", "status": "OPEN", "notes": None}]
+    mock_get_issue.return_value = [{"id": "11111111-1111-1111-1111-111111111111", "status": "RESOLVED"}]
 
     result = get_remote_data_command({"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": "2025-01-01T00:00:00Z"})
-
-    assert result.mirrored_object["id"] == "11111111-1111-1111-1111-111111111111"
+    assert result.mirrored_object["status"] == "RESOLVED"
     assert result.entries == []
+    assert "read:comments" in mock_info.call_args[0][0]
+
+    mock_get_comments.reset_mock()
+    get_remote_data_command({"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": ""})
+    mock_get_comments.assert_not_called()
+
+    mock_get_comments.side_effect = Exception("Wiz API error: 503 Service Unavailable")
+    with pytest.raises(Exception, match="503"):
+        get_remote_data_command({"id": "11111111-1111-1111-1111-111111111111", "lastUpdate": "2025-01-01T00:00:00Z"})
 
 
-@patch("Wiz._get_issue")
-def test_clear_issue_note_notes_none(mock_get_issue):
-    from Wiz import clear_issue_note
+@pytest.mark.parametrize(
+    "comments,expected_deleted_ids",
+    [
+        pytest.param([], [], id="no_comments"),
+        pytest.param([{"id": "c1"}, {"id": "c2"}], ["c1", "c2"], id="two_comments"),
+    ],
+)
+@patch("Wiz.checkAPIerrors", return_value={"data": {"deleteComment": {}}})
+def test_clear_issue_note(mock_check_api, comments, expected_deleted_ids):
+    from Wiz import clear_issue_note, DELETE_COMMENT_QUERY
 
-    mock_get_issue.return_value = {"data": {"issues": {"nodes": [{"notes": None}]}}}
-    result = clear_issue_note("12345678-1111-2222-3333-444444444444")
-    assert result is None  # no notes to delete, returns None
+    with patch("Wiz.get_issue_comments", return_value=comments):
+        result = clear_issue_note("12345678-1111-2222-3333-444444444444")
+
+    assert [c[0][0] for c in mock_check_api.call_args_list] == [DELETE_COMMENT_QUERY] * len(expected_deleted_ids)
+    assert [c[0][1]["input"]["id"] for c in mock_check_api.call_args_list] == expected_deleted_ids
+    if expected_deleted_ids:
+        assert result == mock_check_api.return_value
+    else:
+        assert result is None  # no comments to delete, returns None
+
+
+@patch("Wiz.checkAPIerrors")
+def test_get_issue_comments_paginates(mock_check_api):
+    from Wiz import get_issue_comments, ISSUE_COMMENTS_QUERY
+
+    def page(nodes, has_next, cursor):
+        return {
+            "data": {
+                "issue": {
+                    "commentThread": {"comments": {"nodes": nodes, "pageInfo": {"hasNextPage": has_next, "endCursor": cursor}}}
+                }
+            }
+        }
+
+    mock_check_api.side_effect = [page([{"id": "c1"}], True, "c1"), page([{"id": "c2"}], False, None)]
+    assert get_issue_comments("12345678-1111-2222-3333-444444444444") == [{"id": "c1"}, {"id": "c2"}]
+    assert mock_check_api.call_count == 2
+    assert mock_check_api.call_args_list[0][0][0] == ISSUE_COMMENTS_QUERY
+    assert mock_check_api.call_args_list[0][0][1]["after"] is None
+    assert mock_check_api.call_args_list[1][0][1]["after"] == "c1"
+
+    mock_check_api.side_effect = None
+    mock_check_api.return_value = {"data": {"issue": {"commentThread": None}}}
+    assert get_issue_comments("12345678-1111-2222-3333-444444444444") == []
+
+
+def test_fetch_query_does_not_select_comments():
+    """commentThread needs read:comments, so it must stay off the fetch query."""
+    from Wiz import PULL_ISSUES_QUERY
+
+    assert "commentThread" not in PULL_ISSUES_QUERY
 
 
 def test_outgoing_mapper_includes_resolution_reason():
