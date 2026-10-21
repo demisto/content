@@ -2804,7 +2804,7 @@ Creates a provider binding inside a workspace on the AI Gateway control plane. R
 | note | A free-form note. | Optional |
 | usage_limits | Usage limit settings (JSON). | Optional |
 | rate_limits | Rate limit settings (JSON). | Optional |
-| expires_at | Expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
+| expires_at | The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
 
 #### Context Output
 
@@ -2831,7 +2831,7 @@ Updates a provider binding on the AI Gateway control plane. Provide at least one
 | note | A free-form note. | Optional |
 | usage_limits | Usage limit settings (JSON). | Optional |
 | rate_limits | Rate limit settings (JSON). | Optional |
-| expires_at | Expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
+| expires_at | The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
 | reset_usage | Whether to reset the accumulated usage counters. Possible values are: true, false. | Optional |
 
 #### Context Output
@@ -3029,7 +3029,7 @@ Creates a service API key in a workspace on the AI Gateway data plane. The one-t
 | organisation_id | The numeric organisation ID. Defaults to the configured tenant TSG ID. | Optional |
 | description | A free-form description. | Optional |
 | alert_emails | A comma-separated list of alert notification email addresses. | Optional |
-| expires_at | Expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
+| expires_at | The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
 | rate_limits | Rate limit settings (JSON array). | Optional |
 | usage_limits | Usage limit settings (JSON object). | Optional |
 | defaults | Default settings (JSON object). | Optional |
@@ -3064,7 +3064,7 @@ Creates a user API key in a workspace on the AI Gateway data plane. Requires use
 | organisation_id | The numeric organisation ID. Defaults to the configured tenant TSG ID. | Optional |
 | description | A free-form description. | Optional |
 | alert_emails | A comma-separated list of alert notification email addresses. | Optional |
-| expires_at | Expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
+| expires_at | The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
 | rate_limits | Rate limit settings (JSON array). | Optional |
 | usage_limits | Usage limit settings (JSON object). | Optional |
 | defaults | Default settings (JSON object). | Optional |
@@ -3096,7 +3096,7 @@ Updates a service API key on the AI Gateway data plane. Provide at least one fie
 | description | A free-form description. | Optional |
 | scopes | A comma-separated list of at least one scope. | Optional |
 | alert_emails | A comma-separated list of alert notification email addresses. | Optional |
-| expires_at | Expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
+| expires_at | The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
 | rate_limits | Rate limit settings (JSON array). | Optional |
 | usage_limits | Usage limit settings (JSON object). | Optional |
 | defaults | Default settings (JSON object). | Optional |
@@ -3125,7 +3125,7 @@ Updates a user API key on the AI Gateway data plane. Provide at least one field.
 | description | A free-form description. | Optional |
 | scopes | A comma-separated list of at least one scope. | Optional |
 | alert_emails | A comma-separated list of alert notification email addresses. | Optional |
-| expires_at | Expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
+| expires_at | The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
 | rate_limits | Rate limit settings (JSON array). | Optional |
 | usage_limits | Usage limit settings (JSON object). | Optional |
 | defaults | Default settings (JSON object). | Optional |
@@ -3196,7 +3196,7 @@ Rotates a service API key on the AI Gateway data plane. The new one-time secret 
 | --- | --- | --- |
 | PrismaAIRs.AIGatewayApiKeyRotation.id | String | The rotated API key ID. |
 | PrismaAIRs.AIGatewayApiKeyRotation.key | String | The new one-time secret key value. Shown only once - capture it immediately. |
-| PrismaAIRs.AIGatewayApiKeyRotation.key_transition_expires_at | Date | When the previous key stops being accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.AIGatewayApiKeyRotation.key_transition_expires_at | Date | The timestamp when the previous key stops being accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 ### prisma-airs-aigateway-api-keys-user-rotate
 
@@ -3220,7 +3220,7 @@ Rotates a user API key on the AI Gateway data plane. The new one-time secret key
 | --- | --- | --- |
 | PrismaAIRs.AIGatewayApiKeyRotation.id | String | The rotated API key ID. |
 | PrismaAIRs.AIGatewayApiKeyRotation.key | String | The new one-time secret key value. Shown only once - capture it immediately. |
-| PrismaAIRs.AIGatewayApiKeyRotation.key_transition_expires_at | Date | When the previous key stops being accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.AIGatewayApiKeyRotation.key_transition_expires_at | Date | The timestamp when the previous key stops being accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 ### prisma-airs-aigateway-organisations-info-get
 

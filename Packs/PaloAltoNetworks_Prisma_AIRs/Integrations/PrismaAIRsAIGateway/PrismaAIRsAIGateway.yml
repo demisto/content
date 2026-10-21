@@ -1963,7 +1963,7 @@ script:
     - name: rate_limits
       description: Rate limit settings (JSON).
     - name: expires_at
-      description: Expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
     outputs:
     - contextPath: PrismaAIRs.AIGatewayProvider.id
       description: The created provider ID.
@@ -1986,7 +1986,7 @@ script:
     - name: rate_limits
       description: Rate limit settings (JSON).
     - name: expires_at
-      description: Expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
     - name: reset_usage
       description: Whether to reset the accumulated usage counters.
       auto: PREDEFINED
@@ -2162,7 +2162,7 @@ script:
       description: A comma-separated list of alert notification email addresses.
       isArray: true
     - name: expires_at
-      description: Expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
     - name: rate_limits
       description: Rate limit settings (JSON array).
     - name: usage_limits
@@ -2208,7 +2208,7 @@ script:
       description: A comma-separated list of alert notification email addresses.
       isArray: true
     - name: expires_at
-      description: Expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
     - name: rate_limits
       description: Rate limit settings (JSON array).
     - name: usage_limits
@@ -2244,7 +2244,7 @@ script:
       description: A comma-separated list of alert notification email addresses.
       isArray: true
     - name: expires_at
-      description: Expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
     - name: rate_limits
       description: Rate limit settings (JSON array).
     - name: usage_limits
@@ -2277,7 +2277,7 @@ script:
       description: A comma-separated list of alert notification email addresses.
       isArray: true
     - name: expires_at
-      description: Expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
     - name: rate_limits
       description: Rate limit settings (JSON array).
     - name: usage_limits
@@ -2325,7 +2325,7 @@ script:
       description: The new one-time secret key value. Shown only once - capture it immediately.
       type: String
     - contextPath: PrismaAIRs.AIGatewayApiKeyRotation.key_transition_expires_at
-      description: When the previous key stops being accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The timestamp when the previous key stops being accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-aigateway-api-keys-user-rotate
     description: Rotates a user API key on the AI Gateway data plane. The new one-time secret key is returned ONLY in this response - capture it immediately.
@@ -2343,7 +2343,7 @@ script:
       description: The new one-time secret key value. Shown only once - capture it immediately.
       type: String
     - contextPath: PrismaAIRs.AIGatewayApiKeyRotation.key_transition_expires_at
-      description: When the previous key stops being accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      description: The timestamp when the previous key stops being accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-aigateway-organisations-info-get
     description: Gets one organisation's capabilities and settings on the AI Gateway admin plane.
