@@ -5,7 +5,6 @@ from collections.abc import Callable, Iterable, Iterator
 from typing import Any
 import csv
 import io
-import resource
 import requests
 from xml.etree import ElementTree
 
@@ -77,36 +76,6 @@ DEFAULT_LAST_ASSETS_RUN = {
     "nextTrigger": None,
     "type": FETCH_COMMAND.get("assets"),
 }
-
-
-def log_memory_usage(checkpoint: str) -> None:
-    """Logs the current and peak process memory usage at a given checkpoint of the fetch flow.
-
-    Diagnostic-only helper. It never raises: any failure to read memory metrics is swallowed
-    so that it cannot affect the existing behavior.
-
-    Args:
-        checkpoint (str): A short label describing where in the flow this measurement is taken.
-    """
-    try:
-        # Peak resident set size for this process. On Linux ru_maxrss is reported in kilobytes.
-        peak_rss_mb = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
-
-        current_rss_mb: float | None = None
-        try:
-            # Current RSS via /proc (available in the Linux runtime container).
-            with open("/proc/self/statm") as statm_file:
-                resident_pages = int(statm_file.read().split()[1])
-            current_rss_mb = resident_pages * resource.getpagesize() / (1024 * 1024)
-        except Exception:
-            current_rss_mb = None
-
-        if current_rss_mb is not None:
-            demisto.debug(f"[MEMORY][{checkpoint}] current RSS: {current_rss_mb:.2f} MB, peak RSS: {peak_rss_mb:.2f} MB")
-        else:
-            demisto.debug(f"[MEMORY][{checkpoint}] peak RSS: {peak_rss_mb:.2f} MB")
-    except Exception as memory_log_error:
-        demisto.debug(f"[MEMORY][{checkpoint}] failed to read memory usage: {memory_log_error}")
 
 
 # Arguments that need to be parsed as dates
@@ -3413,15 +3382,9 @@ def fetch_vulnerabilities_of_new_qids(client: Client, assets: list[dict], fetche
 
     demisto.debug(f"[Vulnerabilities] Fetching vulnerabilities for {len(new_qids)} new QIDs.")
     vulnerabilities: list[dict] = []
-    for qids_chunk_index, qids_batch in enumerate(batch(new_qids, QIDS_BATCH_SIZE)):
-        log_memory_usage(f"fetch_vulnerabilities_of_new_qids - before API request for QIDs chunk #{qids_chunk_index}")
+    for qids_batch in batch(new_qids, QIDS_BATCH_SIZE):
         raw_response = client.get_vulnerabilities(detection_qids=",".join(qids_batch))
-        log_memory_usage(f"fetch_vulnerabilities_of_new_qids - after API request for QIDs chunk #{qids_chunk_index}")
         vulnerabilities.extend(handle_vulnerabilities_result(raw_response) or [])
-        log_memory_usage(
-            f"fetch_vulnerabilities_of_new_qids - after parsing QIDs chunk #{qids_chunk_index}, "
-            f"total vulnerabilities so far: {len(vulnerabilities)}"
-        )
 
     fetched_qids.update(new_qids)
     demisto.debug(f"[Vulnerabilities] Got {len(vulnerabilities)} vulnerabilities for {len(new_qids)} new QIDs.")
@@ -3541,9 +3504,7 @@ def fetch_and_send_vulnerabilities_streamed(client: Client, last_run: dict[str, 
     snapshot_id = str(round(time.time() * 1000))
     demisto.debug(f"[Vulnerabilities] Getting vulnerabilities modified after {since_datetime} (streamed batches) {snapshot_id=}")
 
-    log_memory_usage("fetch_and_send_vulnerabilities_streamed - before vulnerabilities API request")
     raw_response = client.get_vulnerabilities(since_datetime=since_datetime)
-    log_memory_usage("fetch_and_send_vulnerabilities_streamed - after vulnerabilities API request")
 
     total_sent = 0
     remainder: list[dict] = []
@@ -3554,14 +3515,12 @@ def fetch_and_send_vulnerabilities_streamed(client: Client, last_run: dict[str, 
             break
         send_snapshot_batch(batch, "vulnerabilities", snapshot_id, items_count=1)  # unsealed: more may follow
         total_sent += len(batch)
-        log_memory_usage(f"fetch_and_send_vulnerabilities_streamed - after sending batch, total sent so far: {total_sent}")
 
     # The final send seals the snapshot with the cumulative total. If the rows divided evenly (empty remainder),
     # close_snapshot_if_empty emits a closing signal so the snapshot still seals with the correct count.
     total_sent += len(remainder)
     remainder, seal_count = close_snapshot_if_empty(remainder, total_sent, snapshot_id, "vulnerabilities")
     send_snapshot_batch(remainder, "vulnerabilities", snapshot_id, items_count=seal_count)
-    log_memory_usage(f"fetch_and_send_vulnerabilities_streamed - after final (sealing) send, total sent: {total_sent}")
 
     demisto.debug(f"[Vulnerabilities] Finished streaming vulnerabilities to XSIAM. Total sent: {total_sent}. {snapshot_id=}")
     return DEFAULT_LAST_ASSETS_RUN
@@ -3708,9 +3667,7 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
         f"consecutive_failures={last_run.get('consecutive_failures', 0)}"
     )
 
-    log_memory_usage("fetch_and_send_assets_streamed - before host list detection API request")
     raw_response, failed_request_outcome = request_host_list_page(client, last_run, since_datetime, next_page, limit)
-    log_memory_usage("fetch_and_send_assets_streamed - after host list detection API request")
     if failed_request_outcome is not None:
         demisto.debug("[Assets] Host list detection request failed; deferring to next fetch without sending.")
         return failed_request_outcome
@@ -3737,7 +3694,6 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
             )
             demisto.setAssetsLastRun(committed_run)
             demisto.debug(f"[Assets] Committed hosts up to ID {host_id}. Cumulative: {committed_run['total_assets']}.")
-            log_memory_usage(f"fetch_and_send_assets_streamed - after committing hosts up to ID {host_id}")
 
         # The next-page URL and any API error are known only after the stream is fully consumed.
         next_run_page = get_next_page_from_url(stream_state.get("next_url", ""), "id_min")
@@ -3752,7 +3708,6 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
             send_assets_batch(batch, snapshot_id, items_count=seal_count)
         elif batch:
             send_assets_batch(batch, snapshot_id, items_count=1)
-        log_memory_usage(f"fetch_and_send_assets_streamed - after sending end of page ({page_assets_count} assets on page)")
     except Exception as e:
         return handle_assets_page_error(e, last_run, committed_run)
     finally:
@@ -3805,9 +3760,7 @@ def fetch_and_send_assets_and_vulnerabilities_by_qids(client: Client, last_run: 
         f"consecutive_failures={last_run.get('consecutive_failures', 0)}"
     )
 
-    log_memory_usage("fetch by QIDs page - before host list detection API request")
     raw_response, failed_request_outcome = request_host_list_page(client, last_run, since_datetime, next_page, limit)
-    log_memory_usage("fetch by QIDs page - after host list detection API request")
     if failed_request_outcome is not None:
         demisto.debug("[Assets By QIDs] Host list detection request failed; deferring to next fetch.")
         return failed_request_outcome
@@ -3846,7 +3799,6 @@ def fetch_and_send_assets_and_vulnerabilities_by_qids(client: Client, last_run: 
             demisto.debug(
                 f"[Assets By QIDs] Committed hosts up to ID {host_batch[-1]['ID']}. {total_assets=}, {total_vulnerabilities=}."
             )
-            log_memory_usage(f"fetch by QIDs page - after committing hosts up to ID {host_batch[-1]['ID']}")
 
         # The next-page URL and any API error are known only after the stream is fully consumed.
         next_run_page = get_next_page_from_url(stream_state.get("next_url", ""), "id_min")
@@ -3861,7 +3813,6 @@ def fetch_and_send_assets_and_vulnerabilities_by_qids(client: Client, last_run: 
             has_next_page=bool(next_run_page),
             snapshot_id=snapshot_id,
         )
-        log_memory_usage(f"fetch by QIDs page - after sending end of page ({total_assets=}, {total_vulnerabilities=})")
     except Exception as e:
         return handle_assets_page_error(e, last_run, committed_run)
     finally:
@@ -4123,7 +4074,6 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
         last_run (dict): Last assets run dictionary.
     """
     fetch_stage = last_run.get("stage", "assets")
-    log_memory_usage(f"fetch by date - start of fetch cycle (stage: {fetch_stage})")
 
     if fetch_stage == "assets":
         demisto.debug(f"Starting fetch for assets, {EXECUTION_START_TIME=}")
@@ -4148,7 +4098,6 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
         new_last_run = fetch_and_send_vulnerabilities_streamed(client, last_run)
         demisto.setAssetsLastRun(new_last_run)
 
-    log_memory_usage("fetch by date - end of fetch cycle")
     demisto.debug(f"Finished fetch assets and vulnerabilities run (by date). Set last assets run: {new_last_run}")
 
 
@@ -4204,7 +4153,6 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
         last_run (dict): Last assets run dictionary.
     """
     demisto.debug(f"Starting fetch for assets and vulnerabilities, {EXECUTION_START_TIME=}")
-    log_memory_usage("fetch by QIDs - start of fetch cycle")
 
     new_last_run, set_new_limit = fetch_and_send_assets_and_vulnerabilities_by_qids(client, last_run)
 
@@ -4215,7 +4163,6 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
         new_last_run = set_assets_last_run_with_new_limit(new_last_run, new_last_run.get("limit", HOST_LIMIT))
 
     demisto.setAssetsLastRun(new_last_run)
-    log_memory_usage("fetch by QIDs - end of fetch cycle")
     demisto.debug(f"Finished fetch assets and vulnerabilities run (by QIDs). Set last assets run: {new_last_run}")
 
 
@@ -4544,12 +4491,10 @@ def main():  # pragma: no cover
             last_run = demisto.getAssetsLastRun()
             demisto.debug(f"Got last assets run: {last_run}")
             demisto.debug(f"Fetch vulnerabilites behavior is set to: {fetch_vulnerabilities_behavior}")
-            log_memory_usage("fetch-assets command - before fetch")
             if fetch_vulnerabilities_behavior == "Fetch by unique QIDs of assets":
                 fetch_assets_and_vulnerabilities_by_qids(client, last_run)
             else:
                 fetch_assets_and_vulnerabilities_by_date(client, last_run)
-            log_memory_usage("fetch-assets command - after fetch")
 
         elif command in commands_methods:
             return_results(qualys_command_flow_manager(client, args, command, commands_methods[command]))
