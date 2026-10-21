@@ -5292,7 +5292,11 @@ def test_azure_billing_usage_list_command_with_pagination_token(mocker, client, 
     }
     mocker.patch.object(client, "http_request", return_value=mock_response)
 
-    args = {"subscription_id": "test-subscription-id", "next_page_token": "existing-skiptoken"}
+    args = {
+        "subscription_id": "test-subscription-id",
+        "next_page_token": "https://management.azure.com/subscriptions/test-subscription-id/providers/"
+        "Microsoft.Consumption/usageDetails?api-version=2024-08-01&$skiptoken=existing-skiptoken",
+    }
     params = mock_params
 
     result = azure_billing_usage_list_command(client, params, args)
@@ -7829,10 +7833,19 @@ def test_ip_group_list_client_uses_next_token(mocker, client):
     assert mock_http_request.call_args.kwargs["params"] == {}
 
 
-def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, client):
+INVALID_NEXT_TOKENS = [
+    "https://attacker.example.com/next-page",
+    "https://management.azure.com.attacker.example.com/next-page",
+    "https://management.azure.com@attacker.example.com/next-page",
+    "http://management.azure.com/next-page",
+]
+
+
+@pytest.mark.parametrize("next_token", INVALID_NEXT_TOKENS)
+def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, client, next_token):
     """
     Given:
-        - An AzureClient and a next token pointing at a host that is not the configured Azure management endpoint.
+        - An AzureClient and a next token that is not an HTTPS URL on the configured Azure management endpoint.
     When:
         - Calling the ip_group_list client method with that token.
     Then:
@@ -7841,11 +7854,89 @@ def test_ip_group_list_client_rejects_a_next_token_from_another_host(mocker, cli
     mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
 
     with pytest.raises(DemistoException, match="Invalid next_token"):
-        client.ip_group_list(
-            subscription_id="sub-id", resource_group_name="test-rg", next_token="https://attacker.example.com/next-page"
-        )
+        client.ip_group_list(subscription_id="sub-id", resource_group_name="test-rg", next_token=next_token)
 
     mock_http_request.assert_not_called()
+
+
+@pytest.mark.parametrize("next_token", INVALID_NEXT_TOKENS)
+def test_list_vm_request_rejects_invalid_next_token(mocker, client, next_token):
+    """
+    Given:
+        - An AzureClient and a next token that is not an HTTPS URL on the configured Azure management endpoint.
+    When:
+        - Calling the list_vm_request client method with that token.
+    Then:
+        - A DemistoException is raised and no request is sent, so that the Azure access token is not leaked.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.list_vm_request(subscription_id="sub-id", resource_group_name="test-rg", next_token=next_token)
+
+    mock_http_request.assert_not_called()
+
+
+def test_billing_usage_list_with_valid_next_page_token(mocker, client):
+    """
+    Given:
+        - An AzureClient and a next page token returned by a previous call to the usage details API.
+    When:
+        - Calling the billing_usage_list client method with that token.
+    Then:
+        - The request is sent to the next page URL, with the api-version from the token replaced by the default one.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+    next_page_token = (
+        "https://management.azure.com/subscriptions/sub-id/providers/Microsoft.Consumption/usageDetails"
+        "?api-version=2019-01-01&$skiptoken=abc"
+    )
+
+    client.billing_usage_list(subscription_id="sub-id", next_page_token=next_page_token)
+
+    mock_http_request.assert_called_once()
+    assert mock_http_request.call_args.kwargs["full_url"].startswith(
+        "https://management.azure.com/subscriptions/sub-id/providers/Microsoft.Consumption/usageDetails"
+    )
+    assert "api-version" not in mock_http_request.call_args.kwargs["full_url"]
+    assert mock_http_request.call_args.kwargs["params"] == {"api-version": "2024-08-01"}
+
+
+@pytest.mark.parametrize("next_page_token", INVALID_NEXT_TOKENS)
+def test_billing_usage_list_rejects_invalid_next_page_token(mocker, client, next_page_token):
+    """
+    Given:
+        - An AzureClient and a next page token that is not an HTTPS URL on the configured Azure management endpoint.
+    When:
+        - Calling the billing_usage_list client method with that token.
+    Then:
+        - A DemistoException is raised and no request is sent, so that the Azure access token is not leaked.
+    """
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={"value": []})
+
+    with pytest.raises(DemistoException, match="Invalid next_token"):
+        client.billing_usage_list(subscription_id="sub-id", next_page_token=next_page_token)
+
+    mock_http_request.assert_not_called()
+
+
+def test_validate_next_link_accepts_gov_host(mocker):
+    """
+    Given:
+        - A next link on the US Gov management host, and the integration configured for a Gov account.
+    When:
+        - Calling validate_next_link with the host taken from PREFIX_URL_AZURE.
+    Then:
+        - The link is returned unchanged, so valid Gov pagination keeps working.
+    """
+    from urllib.parse import urlparse
+
+    from Azure import validate_next_link
+
+    mocker.patch.object(Azure, "PREFIX_URL_AZURE", "https://management.usgovcloudapi.net/subscriptions/")
+    next_link = "https://management.usgovcloudapi.net/subscriptions/sub-id/next-page?$skipToken=abc"
+
+    assert validate_next_link(next_link, urlparse(Azure.PREFIX_URL_AZURE).hostname or "") == next_link
 
 
 def test_ip_group_list_client_by_subscription(mocker, client):
