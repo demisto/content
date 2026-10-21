@@ -23,10 +23,10 @@ Before configuring the integration, ensure that you have:
 | Use system proxy settings |  | False |
 | First fetch time | The format must be &lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days, or 2 seconds. | False |
 | Maximum number of incidents per fetch | The maximum number of incidents is 100. | False |
-| Fetch Device Security Alerts | When selected, the integration fetches Device Security alerts from the Device Security Portal. | False |
-| Fetch Device Security Vulnerabilities | When selected, the integration fetches Device Security vulnerabilities from the Device Security Portal. | False |
+| Fetch Device Security Alerts | Whether to fetch Device Security alerts from the Device Security Portal. | False |
+| Fetch Device Security Vulnerabilities | Whether to fetch Device Security vulnerabilities from the Device Security Portal. | False |
 | Fetch incidents |  | False |
-| Incidents Fetch Interval |  | False |
+| Incidents Fetch Interval | The interval between automatic incident fetches. This setting applies when you enable Fetch incidents. | False |
 | The timeout for querying APIs |  | False |
 | Incident type |  | False |
 
@@ -48,7 +48,7 @@ Retrieves a single device's details using its MAC address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Retrieves the device UID (mac address). | Required |
+| id | The UID (MAC address) of the device. | Required |
 
 #### Context Output
 
