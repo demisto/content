@@ -1,0 +1,7 @@
+# Test playbooks are not uploaded to the marketplace, so the missing 'Anti Fraud API' content item reference can be safely ignored.
+
+[file:CSCTakedowns_Test.yml]
+ignore=GR103
+
+[file:CSCFraudProtection_Test.yml]
+ignore=GR103
