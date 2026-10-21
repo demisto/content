@@ -11,6 +11,7 @@ This integration was integrated and tested with version `1.0.0` of CTM360_CyberB
 | First fetch (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours. Default is `7 days`) | The time the incidents should be fetched starting from. | False |
 | API Key | The CTM360 CyberBlindspot API Key to use for fetching data. | True |
 | Maximum Number of Incidents per Fetch | Default is 25. Maximum is 200. | True |
+| Severities to Fetch | Used only when Module To Use is Incidents. A selection is ignored for every other module. Leave empty to fetch every incident severity. | False |
 | Fetch incidents |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
