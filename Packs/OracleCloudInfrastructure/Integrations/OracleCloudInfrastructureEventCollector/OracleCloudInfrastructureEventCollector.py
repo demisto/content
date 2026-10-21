@@ -17,8 +17,24 @@ FETCH_DEFAULT_TIME = "3 days"
 PORT = 20190901
 SEARCHLOG_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 SEARCHLOG_FIRST_FETCH_TIME_IN_MINUTES = 10
+AUDIT_EVENT_TYPE = "Audit"
+SEARCHLOG_EVENT_TYPE = "Search Logs"
 CLOUDGUARD_EVENT_TYPE = "CloudGuard Problems"
+# Last run keys per event type. These keys are persisted between fetch cycles and must not be renamed.
+AUDIT_LAST_RUN_KEY = "lastRun"
+SEARCHLOG_LAST_RUN_KEY = "SearchLog"
 CLOUDGUARD_LAST_RUN_KEY = "CloudGuardProblems"
+EVENT_TYPE_LAST_RUN_KEYS = {
+    AUDIT_EVENT_TYPE: AUDIT_LAST_RUN_KEY,
+    SEARCHLOG_EVENT_TYPE: SEARCHLOG_LAST_RUN_KEY,
+    CLOUDGUARD_EVENT_TYPE: CLOUDGUARD_LAST_RUN_KEY,
+}
+EVENT_TYPE_TABLE_TITLES = {
+    AUDIT_EVENT_TYPE: "Oracle Cloud Infrastructure Audit Events",
+    SEARCHLOG_EVENT_TYPE: "Oracle Cloud Infrastructure Search Logs Events",
+    CLOUDGUARD_EVENT_TYPE: "Oracle Cloud Infrastructure CloudGuard Problems",
+}
+SEARCHLOG_QUERY_REQUIRED_ERROR = "The parameter 'Search log query' is required in order to fetch search logs."
 CLOUDGUARD_API_VERSION = "20200131"
 CLOUDGUARD_PAGE_SIZE = 1000
 # Single timestamp format used for every CloudGuard fetch-window value (request params and stored cursor).
@@ -439,6 +455,9 @@ def get_searchlogs_events(
         last_searchlogs_ids (list[str]): The last fetched events IDs.
         first_fetch_time (str): The start time to fetch events from.
 
+    Raises:
+        DemistoException: If a Search Logs API request fails or the start time is invalid.
+
     Returns:
         tuple[list[dict[str, Any]], dict]: A tuple containing:
             - list of search log events.
@@ -446,53 +465,48 @@ def get_searchlogs_events(
     """
     searchlogs_events: list[dict[str, Any]] = []
     last_run = first_fetch_time
-    try:
-        searchlogs_time_end = (arg_to_datetime(first_fetch_time) + timedelta(days=14)).strftime(SEARCHLOG_DATE_FORMAT)  # type: ignore
+    searchlogs_time_end = (arg_to_datetime(first_fetch_time) + timedelta(days=14)).strftime(SEARCHLOG_DATE_FORMAT)  # type: ignore
 
+    searchlogs_res = searchlogs_api_request(
+        client=client, time_start=first_fetch_time, time_end=searchlogs_time_end, search_query=search_log_query
+    )
+
+    for result in json.loads(searchlogs_res.content).get("results", []):
+        event_data = result.get("data", {}).get("logContent", {})
+        searchlog_time = event_data.get("time")
+        event_data["_time"] = searchlog_time
+        if not searchlog_time:
+            demisto.debug(f"Search log event with Id {event_data.get('id')} has no time field.")
+        searchlogs_events.append(event_data)
+
+    while len(searchlogs_events) < max_fetch and (next_page := searchlogs_res.headers._store.get("opc-next-page")):  # type: ignore[attr-defined]
         searchlogs_res = searchlogs_api_request(
-            client=client, time_start=first_fetch_time, time_end=searchlogs_time_end, search_query=search_log_query
+            client=client,
+            time_start=first_fetch_time,
+            time_end=searchlogs_time_end,
+            search_query=search_log_query,
+            next_page=next_page[1],
         )
 
-        for result in json.loads(searchlogs_res.content).get("results", []):
+        results = json.loads(searchlogs_res.content).get("results", [])
+        if not results:
+            break
+
+        for result in results:
             event_data = result.get("data", {}).get("logContent", {})
-            searchlog_time = event_data.get("time")
-            event_data["_time"] = searchlog_time
-            if not searchlog_time:
-                demisto.debug(f"Search log event with Id {event_data.get('id')} has no time field.")
+            event_data["_time"] = event_data.get("time")
             searchlogs_events.append(event_data)
 
-        while len(searchlogs_events) < max_fetch and (next_page := searchlogs_res.headers._store.get("opc-next-page")):  # type: ignore[attr-defined]
-            searchlogs_res = searchlogs_api_request(
-                client=client,
-                time_start=first_fetch_time,
-                time_end=searchlogs_time_end,
-                search_query=search_log_query,
-                next_page=next_page[1],
-            )
+    if searchlogs_events:
+        # Deduplicate
+        searchlogs_events = deduplicate_events(searchlogs_events, last_searchlogs_ids)
+        searchlogs_events = searchlogs_events[:max_fetch]
 
-            results = json.loads(searchlogs_res.content).get("results", [])
-            if not results:
-                break
-
-            for result in results:
-                event_data = result.get("data", {}).get("logContent", {})
-                event_data["_time"] = event_data.get("time")
-                searchlogs_events.append(event_data)
-
-        if searchlogs_events:
-            # Deduplicate
-            searchlogs_events = deduplicate_events(searchlogs_events, last_searchlogs_ids)
-            searchlogs_events = searchlogs_events[:max_fetch]
-
-        if searchlogs_events:
-            last_run = searchlogs_events[-1]["_time"]
-            last_searchlogs_ids = [
-                str(event.get("id")) for event in searchlogs_events if event.get("_time") == last_run and event.get("id")
-            ]
-
-    except Exception as e:
-        demisto.error(f"Error while fetching search log events: {e}")
-        return [], {"lastRun": last_run, "LastFetchedIds": last_searchlogs_ids}
+    if searchlogs_events:
+        last_run = searchlogs_events[-1]["_time"]
+        last_searchlogs_ids = [
+            str(event.get("id")) for event in searchlogs_events if event.get("_time") == last_run and event.get("id")
+        ]
 
     return searchlogs_events, {"lastRun": last_run, "LastFetchedIds": last_searchlogs_ids}
 
@@ -762,8 +776,21 @@ def fetch_cloudguard_problems(
     return get_cloudguard_problems(client, filters, max_fetch, cloudguard_last_run.get("LastFetchedIds", []), start_time)
 
 
+class EventFetchError(DemistoException):
+    """Raised when an event type fetch fails after some events were already collected.
+
+    Carries the partial events and the matching last run so the caller can still send them
+    and advance the last run of that event type.
+    """
+
+    def __init__(self, message: str, events: list[dict[str, Any]], last_run: Any):
+        super().__init__(message)
+        self.events = events
+        self.last_run = last_run
+
+
 def get_events(
-    client: Client, first_fetch_time: datetime, max_fetch: int, push_events_on_error: bool
+    client: Client, first_fetch_time: datetime | None, max_fetch: int, push_events_on_error: bool
 ) -> tuple[list[dict[str, Any]], str]:
     """Get events from an oracle cloud infrastructure tenant.
     - The request returns a maximum of 100 events per call by default.
@@ -776,11 +803,14 @@ def get_events(
         push_events_on_error (bool): Whether to push available fetched events to XSIAM if an error occurred while fetching events.
 
     Raises:
-        DemistoException: If an error occurred while fetching events.
+        DemistoException: If the first fetch time is invalid or an error occurred while fetching events.
+        EventFetchError: If an error occurred after some events were collected and push_events_on_error is False.
 
     Returns:
         tuple[list[dict[str, Any]], str]: A tuple of the events list and the last event time for next fetch cycle.
     """
+    if not isinstance(first_fetch_time, datetime):
+        raise DemistoException("Could not resolve First fetch time parameter.")
 
     # Initialize before the try so the except handler can safely reference them
     # even if the first API call fails.
@@ -809,11 +839,15 @@ def get_events(
     # Handle the case where an error occurred while fetching events,
     # and there are currently available events that can and need to be sent to XSIAM.
     except Exception as e:
-        if events and push_events_on_error:
-            last_event_time = get_last_event_time(events, first_fetch_time)
-            events = add_time_key_to_events(events)
+        error_message = f"Error while fetching events: {e}"
+        if not events:
+            raise DemistoException(error_message) from e
+        last_event_time = get_last_event_time(events, first_fetch_time)
+        events = add_time_key_to_events(events)
+        if push_events_on_error:
             handle_fetched_events(events, last_event_time)
-        raise DemistoException(f"Error while fetching events: {e}") from e
+            raise DemistoException(error_message) from e
+        raise EventFetchError(error_message, events, last_event_time) from e
 
     demisto.info(f"OCI: {len(events)} Events fetched from start time: {first_fetch_time}.")
     return events, last_event_time
@@ -837,6 +871,137 @@ def handle_fetched_events(events: list[dict[str, Any]], last_event_time: str):
         demisto.info(f"OCI: Set last run to {last_event_time}")
     else:
         demisto.info("OCI: No new events fetched, Last run was not updated.")
+
+
+""" Fetch orchestration """
+
+
+def migrate_last_run(last_run: Any) -> dict[str, Any]:
+    """Normalize a last run saved by any previous version of the collector.
+
+    Older versions stored only the Audit 'lastRun' string, later versions added the 'SearchLog' sub-dict,
+    and this version adds the 'CloudGuardProblems' sub-dict. Missing keys are fine (each event type starts
+    from its first fetch time), malformed values are dropped so they can not break the fetch, and unknown
+    keys are kept as-is.
+
+    Args:
+        last_run (Any): The raw last run returned by demisto.getLastRun().
+
+    Returns:
+        dict[str, Any]: A last run dict that is safe to use by every event type.
+    """
+    if not isinstance(last_run, dict):
+        demisto.debug(f"OCI: Ignoring invalid last run of type {type(last_run).__name__}.")
+        return {}
+
+    migrated = dict(last_run)
+    audit_last_run = migrated.get(AUDIT_LAST_RUN_KEY)
+    if audit_last_run is not None and not isinstance(audit_last_run, str):
+        demisto.debug(f"OCI: Dropping invalid Audit last run: {audit_last_run}")
+        migrated.pop(AUDIT_LAST_RUN_KEY)
+
+    for sub_key in (SEARCHLOG_LAST_RUN_KEY, CLOUDGUARD_LAST_RUN_KEY):
+        sub_last_run = migrated.get(sub_key)
+        if sub_last_run is None:
+            continue
+        if not isinstance(sub_last_run, dict):
+            demisto.debug(f"OCI: Dropping invalid {sub_key} last run: {sub_last_run}")
+            migrated.pop(sub_key)
+            continue
+        if not isinstance(sub_last_run.get("LastFetchedIds", []), list):
+            migrated[sub_key] = {**sub_last_run, "LastFetchedIds": []}
+
+    return migrated
+
+
+def fetch_searchlog_events(
+    client: Client, search_log_query: str | None, max_fetch: int, searchlog_last_run: dict[str, Any]
+) -> tuple[list[dict[str, Any]], dict]:
+    """Run the Search Logs fetch flow: validate the query, resolve the fetch window start and fetch.
+
+    Args:
+        client (Client): Client object for API requests.
+        search_log_query (str | None): The 'Search log query' parameter.
+        max_fetch (int): The maximum number of events to fetch.
+        searchlog_last_run (dict[str, Any]): The Search Logs last run sub-key from the previous cycle.
+
+    Raises:
+        DemistoException: If the query is missing or a Search Logs request fails.
+
+    Returns:
+        tuple[list[dict[str, Any]], dict]: The fetched events and the Search Logs last run for the next cycle.
+    """
+    if not search_log_query:
+        raise DemistoException(SEARCHLOG_QUERY_REQUIRED_ERROR)
+
+    start_time = searchlog_last_run.get("lastRun") or (
+        datetime.now() - timedelta(minutes=SEARCHLOG_FIRST_FETCH_TIME_IN_MINUTES)
+    ).strftime(SEARCHLOG_DATE_FORMAT)
+    return get_searchlogs_events(client, search_log_query, max_fetch, searchlog_last_run.get("LastFetchedIds", []), start_time)
+
+
+def run_event_type_fetchers(
+    fetchers: dict[str, Callable[[], tuple[list[dict[str, Any]], Any]]],
+) -> tuple[dict[str, tuple[list[dict[str, Any]], Any]], dict[str, Exception]]:
+    """Run each event type fetcher independently so a failure in one does not stop the others.
+
+    Args:
+        fetchers (dict): Event type name to a callable returning (events, last_run).
+
+    Returns:
+        tuple: A dict of event type to (events, last_run) for every type that returned events
+               (including partial events of a failed type), and a dict of event type to the raised error.
+    """
+    fetched: dict[str, tuple[list[dict[str, Any]], Any]] = {}
+    errors: dict[str, Exception] = {}
+    for event_type, fetcher in fetchers.items():
+        try:
+            fetched[event_type] = fetcher()
+        except EventFetchError as e:
+            demisto.error(f"OCI: Error while fetching {event_type} ({len(e.events)} events collected before the error): {e}")
+            fetched[event_type] = (e.events, e.last_run)
+            errors[event_type] = e
+        except Exception as e:
+            demisto.error(f"OCI: Error while fetching {event_type}: {e}")
+            errors[event_type] = e
+    return fetched, errors
+
+
+def send_fetched_events(fetched: dict[str, tuple[list[dict[str, Any]], Any]], last_run: dict[str, Any]) -> dict[str, Any]:
+    """Send the fetched events of every event type to XSIAM and update only their last run keys.
+
+    Event types with no events (or that failed before collecting any) keep their previous last run.
+
+    Args:
+        fetched (dict): Event type to (events, last_run) as returned by run_event_type_fetchers.
+        last_run (dict[str, Any]): The current last run.
+
+    Returns:
+        dict[str, Any]: The updated last run.
+    """
+    for event_type, (events, event_type_last_run) in fetched.items():
+        if not events:
+            demisto.info(f"OCI: No new {event_type} events fetched, Last run was not updated.")
+            continue
+        send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+        demisto.info(f"OCI: {len(events)} {event_type} events were sent to XSIAM at {datetime.now()}.")
+        last_run[EVENT_TYPE_LAST_RUN_KEYS[event_type]] = event_type_last_run
+    return last_run
+
+
+def raise_fetch_errors(errors: dict[str, Exception]) -> None:
+    """Raise a single error that lists every event type that failed during the fetch.
+
+    Args:
+        errors (dict[str, Exception]): Event type to the raised error.
+
+    Raises:
+        DemistoException: If at least one event type failed.
+    """
+    if not errors:
+        return
+    details = "\n".join(f"- {event_type}: {error}" for event_type, error in errors.items())
+    raise DemistoException(f"Failed to fetch the following event types:\n{details}")
 
 
 """ Test module """
@@ -867,7 +1032,9 @@ def test_module(client: Client, search_log_query: str, event_types_to_fetch: lis
         except Exception as e:
             raise DemistoException(f"Error while testing: {e}") from e
 
-    if "Search Logs" in event_types_to_fetch:
+    if SEARCHLOG_EVENT_TYPE in event_types_to_fetch:
+        if not search_log_query:
+            raise DemistoException(SEARCHLOG_QUERY_REQUIRED_ERROR)
         try:
             now = datetime.now()
             searchlogs_time_start = now.strftime(SEARCHLOG_DATE_FORMAT)
@@ -901,28 +1068,21 @@ def main():
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    last_run = demisto.getLastRun()
-    last_run_time = last_run.get("lastRun")
+    last_run = migrate_last_run(demisto.getLastRun())
+    last_run_time = last_run.get(AUDIT_LAST_RUN_KEY)
     demisto.info(f"OCI: last_run_time value {last_run_time}")
     max_fetch = arg_to_number(params.get("max_fetch")) or MAX_EVENTS_TO_FETCH
     first_fetch = params.get("first_fetch", FETCH_DEFAULT_TIME)
-    first_fetch_time = get_fetch_time(last_run=last_run_time, first_fetch_param=first_fetch)
     should_push_events = argToBoolean(args.get("should_push_events", False))
     private_key_type = params.get("private_key_type") or "PKCS#8"
     searchlogs_query = params.get("search_log_query")
-    searchlog_last_run = last_run.get("SearchLog", {})
+    searchlog_last_run = last_run.get(SEARCHLOG_LAST_RUN_KEY, {})
     cloudguard_last_run = last_run.get(CLOUDGUARD_LAST_RUN_KEY, {})
-    event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Audit"]))
-
-    if "Search Logs" in event_types_to_fetch and not searchlogs_query:
-        raise DemistoException("The parameter 'Search log query' is required in order to fetch search logs.")
+    event_types_to_fetch = argToList(params.get("event_types_to_fetch", [AUDIT_EVENT_TYPE]))
 
     demisto.info(f"OCI: Command being called is {command}")
 
     try:
-        if not isinstance(first_fetch_time, datetime):
-            raise DemistoException("Could not resolve First fetch time parameter.")
-
         client = Client(
             verify_certificate=not params.get("insecure", False),
             proxy=params.get("proxy", False),
@@ -942,81 +1102,33 @@ def main():
         elif command in ("oracle-cloud-infrastructure-get-events", "fetch-events"):
             push_events = command == "fetch-events" or should_push_events
 
-            searchlog_events: list[dict] = []
-            audit_events: list[dict] = []
-            cloudguard_problems: list[dict] = []
-            cloudguard_error: Exception | None = None
-            last_audit_event_time = ""
-
-            if "Search Logs" in event_types_to_fetch:
-                if searchlog_last_run.get("lastRun"):
-                    first_fetch_time_search_logs = searchlog_last_run["lastRun"]
-                else:
-                    first_fetch_time_search_logs = (
-                        datetime.now() - timedelta(minutes=SEARCHLOG_FIRST_FETCH_TIME_IN_MINUTES)
-                    ).strftime(SEARCHLOG_DATE_FORMAT)
-
-                searchlog_events, searchlog_last_run = get_searchlogs_events(
+            # Each event type is fetched independently: a failure in one type (bad query, API error,
+            # invalid first fetch time) does not stop the others. All failures are raised at the end,
+            # after the successfully fetched events were sent and their last run was saved.
+            all_fetchers: dict[str, Callable[[], tuple[list[dict[str, Any]], Any]]] = {
+                SEARCHLOG_EVENT_TYPE: lambda: fetch_searchlog_events(client, searchlogs_query, max_fetch, searchlog_last_run),
+                CLOUDGUARD_EVENT_TYPE: lambda: fetch_cloudguard_problems(
+                    client, params.get("cloudguard_query"), max_fetch, cloudguard_last_run, first_fetch
+                ),
+                AUDIT_EVENT_TYPE: lambda: get_events(
                     client,
-                    searchlogs_query,
+                    get_fetch_time(last_run=last_run_time, first_fetch_param=first_fetch),
                     max_fetch,
-                    searchlog_last_run.get("LastFetchedIds", []),
-                    first_fetch_time_search_logs,
-                )
-
-            if CLOUDGUARD_EVENT_TYPE in event_types_to_fetch:
-                # A CloudGuard failure (invalid query / API error) must not block the other event types,
-                # so it is raised only after they were fetched, sent and the last run was saved.
-                try:
-                    cloudguard_problems, cloudguard_last_run = fetch_cloudguard_problems(
-                        client, params.get("cloudguard_query"), max_fetch, cloudguard_last_run, first_fetch
-                    )
-                except Exception as e:
-                    demisto.error(f"OCI: Error while fetching CloudGuard problems: {e}")
-                    cloudguard_error = e
-
-            if "Audit" in event_types_to_fetch:
-                audit_events, last_audit_event_time = get_events(
-                    client, first_fetch_time, max_fetch, push_events_on_error=push_events
-                )
+                    push_events_on_error=False,
+                ),
+            }
+            selected_fetchers = {event_type: f for event_type, f in all_fetchers.items() if event_type in event_types_to_fetch}
+            fetched, fetch_errors = run_event_type_fetchers(selected_fetchers)
 
             if push_events:
-                if cloudguard_problems:
-                    send_events_to_xsiam(cloudguard_problems, vendor=VENDOR, product=PRODUCT)
-                    demisto.info(f"OCI: {len(cloudguard_problems)} CloudGuard problems were sent to XSIAM at {datetime.now()}.")
-                    last_run[CLOUDGUARD_LAST_RUN_KEY] = cloudguard_last_run
-                else:
-                    demisto.info("OCI: No new CloudGuard problems fetched, Last run was not updated.")
-
-                if searchlog_events:
-                    send_events_to_xsiam(searchlog_events, vendor=VENDOR, product=PRODUCT)
-                    demisto.info(f"OCI: {len(searchlog_events)} searchlog events were sent to XSIAM at {datetime.now()}.")
-                    last_run["SearchLog"] = searchlog_last_run
-                else:
-                    demisto.info("OCI: No new searchlog events fetched, Last run was not updated.")
-
-                if audit_events:
-                    send_events_to_xsiam(audit_events, vendor=VENDOR, product=PRODUCT)
-                    demisto.info(f"OCI: {len(audit_events)} events were sent to XSIAM at {datetime.now()}.")
-                    last_run["lastRun"] = last_audit_event_time
-                else:
-                    demisto.info("OCI: No new events fetched, Last run was not updated.")
-
+                last_run = send_fetched_events(fetched, last_run)
                 demisto.setLastRun(last_run)
                 demisto.info(f"OCI: Set last run to {last_run}")
+            else:
+                for event_type, (events, _) in fetched.items():
+                    return_results(events_to_command_results(events, EVENT_TYPE_TABLE_TITLES[event_type]))
 
-            elif command == "oracle-cloud-infrastructure-get-events":
-                if "Audit" in event_types_to_fetch:
-                    return_results(events_to_command_results(audit_events, "Oracle Cloud Infrastructure Audit Events"))
-                if "Search Logs" in event_types_to_fetch:
-                    return_results(events_to_command_results(searchlog_events, "Oracle Cloud Infrastructure Search Logs Events"))
-                if CLOUDGUARD_EVENT_TYPE in event_types_to_fetch and not cloudguard_error:
-                    return_results(
-                        events_to_command_results(cloudguard_problems, "Oracle Cloud Infrastructure CloudGuard Problems")
-                    )
-
-            if cloudguard_error:
-                raise DemistoException(f"Error while fetching CloudGuard problems: {cloudguard_error}") from cloudguard_error
+            raise_fetch_errors(fetch_errors)
         else:
             return_error(f"Command {command} does not exist for this integration.")
     except Exception as e:
