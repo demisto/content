@@ -23,6 +23,12 @@ GET_EVENTS_LOOKBACK_DAYS = 2
 FINDINGS_SORT = "first_seen"
 # Cap the dedup memory kept in last_run so the state object cannot grow unbounded.
 MAX_DEDUP_KEYS = 20000
+# TEMPORARY DEBUG (XSUP-77274): on every fetch, also issue the same request WITHOUT the sort
+# and log a comparison, to prove the sort changes what the offset window returns.
+# The unsorted response is never sent to XSIAM and never affects last_run. Remove before merge.
+DEBUG_COMPARE_UNSORTED = True
+# Max keys printed per list in the comparison log lines.
+DEBUG_COMPARE_MAX_KEYS = 200
 
 # Bitsight headers per existing integration
 CALLING_PLATFORM_VERSION = "XSIAM"
@@ -48,6 +54,7 @@ class Client(BaseClient):
         last_seen_lte: str,
         limit: int,
         offset: int,
+        sort: str | None = FINDINGS_SORT,
     ) -> dict[str, Any]:
         """Get company findings for given guid and time range.
 
@@ -57,28 +64,87 @@ class Client(BaseClient):
             last_seen_lte (str): last seen date (YYYY-MM-DD) of the findings
             limit (int): maximum number of findings to return
             offset (int): offset to begin returning findings from
+            sort (str | None): sort field. Defaults to FINDINGS_SORT. None omits the sort param
+                (API default order) and is used only by the temporary debug comparison.
 
         Returns:
             dict[str, Any]: findings response
         """
-        params = {
+        params: dict[str, Any] = {
             "first_seen_gte": first_seen_gte,
             "last_seen_lte": last_seen_lte,
             "unsampled": "true",
             "expand": "attributed_companies",
+            "limit": limit,
+            "offset": offset,
+        }
+        if sort:
             # Force a deterministic ascending order by first_seen so new findings always
             # append at the tail. This is required for offset pagination to be correct
             # (see XSUP-77274). Without it, the API's default ordering is unstable and
             # new findings can be silently skipped by the advancing offset cursor.
-            "sort": FINDINGS_SORT,
-            "limit": limit,
-            "offset": offset,
-        }
+            params["sort"] = sort
         demisto.debug(
             f"BitSight: requesting findings guid={guid} first_seen_gte={first_seen_gte} "
-            f"last_seen_lte={last_seen_lte} sort={FINDINGS_SORT} limit={limit} offset={offset}"
+            f"last_seen_lte={last_seen_lte} sort={sort} limit={limit} offset={offset}"
         )
         return self._http_request(method="GET", url_suffix=f"v1/companies/{encode_string_results(guid)}/findings", params=params)
+
+
+def finding_key(finding: dict[str, Any]) -> str:
+    """Build the identity key of a finding: rolledup_observation_id + "-#-" + first_seen."""
+    return f"{finding.get('rolledup_observation_id', '')}-#-{finding.get('first_seen', '')}"
+
+
+def count_first_seen_descents(findings: list[dict[str, Any]]) -> int:
+    """Count adjacent pairs where first_seen goes DOWN (0 means ascending by first_seen)."""
+    dates = [str(f.get("first_seen") or "") for f in findings]
+    return sum(1 for prev, cur in zip(dates, dates[1:]) if cur < prev)
+
+
+def debug_compare_unsorted(
+    client: "Client",
+    guid: str,
+    first_seen_gte: str,
+    last_seen_lte: str,
+    limit: int,
+    offset: int,
+    sorted_res: dict[str, Any],
+) -> None:
+    """TEMPORARY DEBUG (XSUP-77274): repeat the request without the sort and log the differences.
+
+    Logged with demisto.info (prefix "BitSight sort-compare:") so it is visible without debug mode.
+    Never raises; the unsorted response is discarded.
+    """
+    try:
+        unsorted_res = client.get_company_findings(
+            guid, first_seen_gte=first_seen_gte, last_seen_lte=last_seen_lte, limit=limit, offset=offset, sort=None
+        )
+        sorted_findings = sorted_res.get("results", []) or []
+        unsorted_findings = unsorted_res.get("results", []) or []
+        sorted_keys = [finding_key(f) for f in sorted_findings]
+        unsorted_keys = [finding_key(f) for f in unsorted_findings]
+        sorted_set, unsorted_set = set(sorted_keys), set(unsorted_keys)
+        only_unsorted = [k for k in unsorted_keys if k not in sorted_set]
+        only_sorted = [k for k in sorted_keys if k not in unsorted_set]
+        moved = sum(1 for a, b in zip(sorted_keys, unsorted_keys) if a != b)
+        cap = DEBUG_COMPARE_MAX_KEYS
+
+        demisto.info(
+            f"BitSight sort-compare: window first_seen_gte={first_seen_gte} last_seen_lte={last_seen_lte} "
+            f"offset={offset} limit={limit} | sorted(sort={FINDINGS_SORT}): count={sorted_res.get('count')} "
+            f"returned={len(sorted_keys)} first_seen_descents={count_first_seen_descents(sorted_findings)} | "
+            f"unsorted: count={unsorted_res.get('count')} returned={len(unsorted_keys)} "
+            f"first_seen_descents={count_first_seen_descents(unsorted_findings)} | "
+            f"same_order={sorted_keys == unsorted_keys} same_set={sorted_set == unsorted_set} "
+            f"positions_differ={moved} only_in_unsorted={len(only_unsorted)} only_in_sorted={len(only_sorted)}"
+        )
+        demisto.info(f"BitSight sort-compare: only_in_sorted (new code fetches, old code would not): {only_sorted[:cap]}")
+        demisto.info(f"BitSight sort-compare: only_in_unsorted (old code fetches, new code does not): {only_unsorted[:cap]}")
+        demisto.info(f"BitSight sort-compare: sorted order: {sorted_keys[:cap]}")
+        demisto.info(f"BitSight sort-compare: unsorted order: {unsorted_keys[:cap]}")
+    except Exception as e:  # never let the debug comparison affect the real fetch
+        demisto.info(f"BitSight sort-compare: comparison failed and was skipped: {e}")
 
 
 def to_bitsight_date(ts: int) -> str:
@@ -139,6 +205,7 @@ def fetch_events(
     max_fetch: int,
     last_run: dict[str, Any],
     lookback_days: int | None = None,
+    debug_compare_unsorted_request: bool = False,
 ) -> tuple[list[dict[str, Any]], dict[str, Any], list[str]]:
     """Fetch Bitsight findings as events using offset pagination from a fixed starting date.
 
@@ -153,6 +220,8 @@ def fetch_events(
         max_fetch (int): Maximum number of findings to request for this page.
         last_run (dict[str, Any]): State from the previous run (expects keys `first_fetch`, `offset`).
         lookback_days (int | None): Days to look back for initial fetch. If None, uses current date.
+        debug_compare_unsorted_request (bool): TEMPORARY DEBUG (XSUP-77274). When True, also send the
+            same request without the sort and log the comparison. Has no effect on the results.
 
     Returns:
         tuple[list[dict[str, Any]], dict[str, Any], list[str]]: A tuple containing:
@@ -192,6 +261,9 @@ def fetch_events(
         guid, first_seen_gte=first_seen_gte, last_seen_lte=last_seen_lte, limit=max_fetch, offset=offset
     )
     findings = res.get("results", [])
+
+    if debug_compare_unsorted_request and DEBUG_COMPARE_UNSORTED:
+        debug_compare_unsorted(client, guid, first_seen_gte, last_seen_lte, max_fetch, offset, res)
 
     # Log the API-level pagination metadata so we can tell, on failure, whether the current
     # window still has more pages than this single fetch pulled (i.e. offset hasn't reached
@@ -427,7 +499,9 @@ def main():
             return_results(test_module(client, params.get("guid")))
 
         elif command == "fetch-events":
-            events, new_last_run, missing_date_findings = fetch_events(client, guid=guid, max_fetch=max_fetch, last_run=last_run)
+            events, new_last_run, missing_date_findings = fetch_events(
+                client, guid=guid, max_fetch=max_fetch, last_run=last_run, debug_compare_unsorted_request=True
+            )
             demisto.setLastRun(new_last_run)
 
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)

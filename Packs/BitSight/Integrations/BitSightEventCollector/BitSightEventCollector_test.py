@@ -562,6 +562,105 @@ class TestBitSightEventCollector:
             method="GET", url_suffix="v1/companies/test-guid/findings", params=expected_params
         )
 
+    def test_client_get_company_findings_without_sort(self, mock_client):
+        """
+        Given: sort=None (used only by the temporary unsorted debug comparison)
+
+        When: Calling get_company_findings
+
+        Then: The sort param is omitted from the request
+        """
+        mock_client.get_company_findings(
+            guid="test-guid", first_seen_gte="2024-01-15", last_seen_lte="2024-01-16", limit=100, offset=0, sort=None
+        )
+
+        _, kwargs = mock_client._http_request.call_args
+        assert "sort" not in kwargs["params"]
+
+    def test_fetch_events_debug_compare_unsorted(self, mock_client, mocker):
+        """
+        Given: debug_compare_unsorted_request=True and the API returns different orders with/without sort
+
+        When: fetch_events runs
+
+        Then: A second, unsorted request with the same window/offset is sent, the differences are logged,
+              and only the sorted response is used for events and last_run.
+        """
+        sorted_findings = [
+            {"rolledup_observation_id": "A", "first_seen": "2026-09-01"},
+            {"rolledup_observation_id": "B", "first_seen": "2026-09-02"},
+        ]
+        unsorted_findings = [
+            {"rolledup_observation_id": "C", "first_seen": "2026-09-03"},
+            {"rolledup_observation_id": "A", "first_seen": "2026-09-01"},
+        ]
+
+        def fake_get_findings(guid, first_seen_gte, last_seen_lte, limit, offset, sort="first_seen"):
+            return {"results": unsorted_findings if sort is None else sorted_findings, "count": 3}
+
+        get_findings = mocker.patch.object(mock_client, "get_company_findings", side_effect=fake_get_findings)
+        info = mocker.patch("BitSightEventCollector.demisto.info")
+        last_run = {"first_fetch": "2026-09-01", "offset": 5}
+
+        with freeze_time("2026-09-03 12:00:00"):
+            events, new_last_run, _ = fetch_events(
+                client=mock_client, guid="g", max_fetch=2, last_run=last_run, debug_compare_unsorted_request=True
+            )
+
+        assert get_findings.call_count == 2
+        _, unsorted_kwargs = get_findings.call_args_list[1]
+        assert unsorted_kwargs["sort"] is None
+        assert unsorted_kwargs["offset"] == 5
+        assert unsorted_kwargs["first_seen_gte"] == "2026-09-01"
+        # Only the sorted response feeds events / last_run
+        assert [e["rolledup_observation_id"] for e in events] == ["A", "B"]
+        assert new_last_run["offset"] == 7
+        logs = " ".join(str(c.args[0]) for c in info.call_args_list)
+        assert "same_order=False" in logs
+        assert "unsorted: count=3 returned=2 first_seen_descents=1" in logs
+        assert "only_in_sorted (new code fetches, old code would not): ['B-#-2026-09-02']" in logs
+        assert "only_in_unsorted (old code fetches, new code does not): ['C-#-2026-09-03']" in logs
+
+    def test_fetch_events_debug_compare_failure_does_not_break_fetch(self, mock_client, mocker):
+        """
+        Given: The unsorted debug request raises an error
+
+        When: fetch_events runs with debug_compare_unsorted_request=True
+
+        Then: The error is swallowed and the sorted results are still returned.
+        """
+        sorted_findings = [{"rolledup_observation_id": "A", "first_seen": "2026-09-01"}]
+
+        def fake_get_findings(guid, first_seen_gte, last_seen_lte, limit, offset, sort="first_seen"):
+            if sort is None:
+                raise DemistoException("boom")
+            return {"results": sorted_findings}
+
+        mocker.patch.object(mock_client, "get_company_findings", side_effect=fake_get_findings)
+
+        with freeze_time("2026-09-03 12:00:00"):
+            events, new_last_run, _ = fetch_events(
+                client=mock_client, guid="g", max_fetch=10, last_run={}, debug_compare_unsorted_request=True
+            )
+
+        assert len(events) == 1
+        assert new_last_run["offset"] == 1
+
+    def test_fetch_events_no_debug_compare_by_default(self, mock_client, sample_findings, mocker):
+        """
+        Given: fetch_events called without debug_compare_unsorted_request (e.g. bitsight-get-events)
+
+        When: fetch_events runs
+
+        Then: Only the single sorted request is sent.
+        """
+        get_findings = mocker.patch.object(mock_client, "get_company_findings", return_value={"results": sample_findings})
+
+        with freeze_time("2024-01-15 12:00:00"):
+            fetch_events(client=mock_client, guid="g", max_fetch=10, last_run={})
+
+        assert get_findings.call_count == 1
+
     def test_fetch_events_skips_already_fetched_findings(self, mock_client, mocker):
         """
         Given: last_run already contains a finding key (rolledup_observation_id-#-first_seen)
