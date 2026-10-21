@@ -12,7 +12,7 @@ This integration was integrated and tested with version 47.0 of Workday.
 | Token | The identifier for the WS-Security `UsernameToken` element in the request (letters, digits, `-` and `_` only). It is not a Workday credential and is not validated by Workday. | True |
 | Trust any certificate (not secure) | | False |
 | Use system proxy settings | | False |
-| API Version | The Workday Human Resources web service version to use, in the format `vXX.X`. | False |
+| API Version | The Workday Human Resources web service version to use, in the format `vXX.X`. Default is `v47.0`. | False |
 
 The integration sends requests to `<Server URL>/<Tenant name>/Staffing/` with the user `<Username>@<Tenant name>`.
 
