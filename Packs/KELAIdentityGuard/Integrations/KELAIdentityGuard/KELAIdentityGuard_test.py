@@ -1,9 +1,11 @@
+from datetime import UTC, datetime, timedelta
 from unittest.mock import MagicMock, patch
 
 import pytest
 from pytest_mock import MockerFixture
 
 from KELAIdentityGuard import (
+    DATE_FORMAT,
     search_incidents_command,
     search_bot_markets_command,
     search_cookie_incidents_command,
@@ -316,9 +318,11 @@ def test_fetch_incidents_respects_source_toggles(mock_demisto):
 # sitting exactly at the watermark was returned - and re-created in XSOAR - every cycle.
 # ############################################################################
 
-T0 = "2026-10-04T16:34:29.000Z"
-T1 = "2026-10-04T17:00:00.000Z"
-T2 = "2026-10-04T18:00:00.000Z"
+# Relative to "now" so the records always fall inside the "3 days" first-fetch window.
+_BASE = datetime.now(UTC).replace(microsecond=0) - timedelta(days=1)
+T0 = _BASE.strftime(DATE_FORMAT)
+T1 = (_BASE + timedelta(minutes=30)).strftime(DATE_FORMAT)
+T2 = (_BASE + timedelta(hours=1, minutes=30)).strftime(DATE_FORMAT)
 FIRST_RUN_PARAMS = {
     "workspace_id": "ws-1",
     "max_fetch": "50",
