@@ -150,7 +150,7 @@ def recursive_replace(org_dict: dict[Any, Any] | None, substitutions: list[tuple
     # Create a deep copy of the dictionary to avoid modifying the original
     copy_dict = copy.deepcopy(org_dict)
 
-    for key, value in copy_dict.items():
+    for key, value in list(copy_dict.items()):
         if isinstance(value, dict):
             # If value is a dictionary, recursively call this function
             copy_dict[key] = recursive_replace(value, substitutions)
@@ -158,6 +158,12 @@ def recursive_replace(org_dict: dict[Any, Any] | None, substitutions: list[tuple
             # If value is a string, perform substitutions
             for old, new in substitutions:
                 value = value.replace(old, new)
+            # A placeholder with no value yet (e.g. @last_fetched_id before the first stored ID) would be sent
+            # literally and rejected by the API, so the parameter is omitted instead.
+            if unresolved := [p.value for p in PlaceHolders if p.value in value]:
+                demisto.debug(f"Omitting parameter {key}: no value yet for {', '.join(unresolved)}")
+                del copy_dict[key]
+                continue
             copy_dict[key] = value
 
     return copy_dict
@@ -253,11 +259,13 @@ def fetch_events(
             if id_type.lower() not in ALL_ID_TYPES:
                 return_error(f"ID type {id_type} but must be one of {', '.join(ALL_ID_TYPES)}")
                 return {}, []
+            id_type_lower = id_type.lower()
             demisto.debug(f"ID type:{id_type}")
         else:
             return_error("ID type was not specified")
             return {}, []
 
+    previous_page_value: Any = None
     while pagination_needed:
         raw_events = client.search_events(
             endpoint=endpoint, http_method=http_method, request_data=request_data, ok_codes=ok_codes
@@ -266,15 +274,32 @@ def fetch_events(
         all_events_list.extend(events_list)
         demisto.debug(f"{len(all_events_list)} events fetched")
         pagination_needed, next_page_value = is_pagination_needed(raw_events, pagination_logic)
+        # Stop on an empty page or a cursor that did not advance, otherwise APIs that always return
+        # the pagination flag (e.g. a sequence cursor) would loop forever.
+        if pagination_needed and (
+            not events_list or next_page_value in (None, previous_page_value) or len(all_events_list) >= MAX_INCIDENTS_TO_FETCH
+        ):
+            demisto.debug(f"Stopping pagination: page size {len(events_list)}, next page value {next_page_value}")
+            pagination_needed = False
         if pagination_needed:
-            request_json = {pagination_logic.pagination_field_name: next_page_value}
-            request_data = RequestData(request_data.request_data, request_json, request_data.query_params)
+            previous_page_value = next_page_value
+            # pagination_field_name is a dot-separated path in the response; the request uses its last key.
+            page_param = {pagination_logic.pagination_field_name[-1]: next_page_value}
+            if http_method.upper() == "GET":
+                request_data = RequestData(
+                    request_data.request_data, request_data.request_json, {**(request_data.query_params or {}), **page_param}
+                )
+            else:
+                request_data = RequestData(
+                    request_data.request_data, {**(request_data.request_json or {}), **page_param}, request_data.query_params
+                )
 
     # endregion
 
     # region Collect all events based on their last fetch time.
     latest_created_datetime: datetime = last_fetched_datetime
     last_fetched_id: Any | None = last_run.get(PlaceHolders.LAST_FETCHED_ID.value)
+    previous_fetched_id: Any | None = last_fetched_id
     returned_event_list: list[dict[str, Any]] = []
     for event in all_events_list:
         try:
@@ -283,9 +308,16 @@ def fetch_events(
             demisto.error(f"Error parsing timestamp for event: {event} exception: {e}")
             continue
         event["_time"] = incident_created_dt.isoformat()
+        current_id: Any = dict_safe_get(event, id_keys) if id_keys else None
+        current_id_int = arg_to_number(current_id) if id_type_lower == IdTypes.INTEGER.value else None
+        previous_id_int = arg_to_number(previous_fetched_id) if id_type_lower == IdTypes.INTEGER.value else None
+
+        # An integer ID above the last fetched ID is new even if its timestamp is older, e.g. feeds
+        # ordered by an update sequence where the timestamp is the original content date.
+        is_new_by_id = current_id_int is not None and previous_id_int is not None and current_id_int > previous_id_int
 
         # to prevent duplicates, we are only adding events with creation_time > last fetched incident
-        if incident_created_dt > last_fetched_datetime:
+        if incident_created_dt > last_fetched_datetime or is_new_by_id:
             demisto.debug(f"Adding event with creation time: {incident_created_dt}")
             returned_event_list.append(event)
             latest_created_datetime = max(latest_created_datetime, incident_created_dt)
@@ -294,10 +326,9 @@ def fetch_events(
 
         # Handle the last event id.
         if id_keys:
-            current_id: Any = dict_safe_get(event, id_keys)
             demisto.debug(f"Current event id: {current_id}")
-            if last_fetched_id is not None and id_type_lower == IdTypes.INTEGER.value:
-                last_fetched_id = str(max(int(last_fetched_id), int(current_id)))  # noqa
+            if current_id_int is not None and last_fetched_id is not None:
+                last_fetched_id = str(max(int(last_fetched_id), current_id_int))
             else:
                 # We assume the last event contains the last id.
                 last_fetched_id = current_id

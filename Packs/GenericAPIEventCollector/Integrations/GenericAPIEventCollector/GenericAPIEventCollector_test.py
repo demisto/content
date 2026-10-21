@@ -67,6 +67,19 @@ def test_recursive_replace_with_none():
     assert recursive_replace(None, []) is None
 
 
+def test_recursive_replace_omits_unresolved_placeholders():
+    """
+    Given: query params referencing @last_fetched_id while the last run has no stored ID yet.
+    When: recursive_replace substitutes only the placeholders that have values.
+    Then: the unresolved parameter is omitted instead of being sent literally (regression test, XSUP-78726).
+    """
+    query_params = {"limit": "@fetch_size_limit", "seqUpdate": "@last_fetched_id", "nested": {"cursor": "@last_fetched_id"}}
+
+    result = recursive_replace(query_params, [("@fetch_size_limit", "10")])
+
+    assert result == {"limit": "10", "nested": {}}
+
+
 def test_get_time_field_from_event_to_dt():
     event = {"timestamp": "2023-05-01T12:00:00Z"}
     config = TimestampFieldConfig(["timestamp"], "%Y-%m-%dT%H:%M:%SZ")
@@ -942,6 +955,124 @@ def test_fetch_events_skips_unparsable_timestamp_without_moving_watermark(mock_e
     # The skip must be reported, not silently swallowed.
     mock_error.assert_called_once()
     assert "NOT-A-TIMESTAMP" in mock_error.call_args[0][0]
+
+
+class RecordingClient:
+    """Returns the given pages in order and records the request of every call."""
+
+    def __init__(self, pages):
+        self.pages = list(pages)
+        self.requests: list[RequestData] = []
+
+    def search_events(self, **kwargs):
+        self.requests.append(kwargs["request_data"])
+        return self.pages.pop(0) if self.pages else {"items": []}
+
+
+def run_fetch(client, params, last_run, http_method="GET"):
+    return fetch_events(
+        client=client,
+        params=params,
+        last_run=last_run,
+        first_fetch_datetime=datetime(2026, 10, 11),
+        endpoint="/e",
+        http_method=http_method,
+        ok_codes=[200],
+        events_keys=["items"],
+        timestamp_field_config=TimestampFieldConfig(["datetime"], "%Y-%m-%dT%H:%M:%S"),
+    )
+
+
+def test_fetch_events_pagination_sends_cursor_as_query_param():
+    """
+    Given: pagination configured with a cursor field that is a list (as built by argToList).
+    When: fetch_events paginates a GET endpoint.
+    Then: no "unhashable type: 'list'" error, the cursor is sent as a query parameter on the next
+          request, and pagination stops on an empty page (regression test, XSUP-78726).
+    """
+    client = RecordingClient(
+        [
+            {"items": [{"datetime": "2026-10-12T00:00:00", "seqUpdate": 5}], "seqUpdate": 5},
+            {"items": [], "seqUpdate": 5},
+        ]
+    )
+    params = {"pagination_needed": "true", "pagination_field_name": "seqUpdate", "pagination_flag": "seqUpdate"}
+
+    _, events = run_fetch(client, params, {"@first_fetch_datetime": "2026-10-11T00:00:00"})
+
+    assert len(events) == 1
+    assert len(client.requests) == 2
+    assert client.requests[1].query_params == {"seqUpdate": 5}
+
+
+def test_fetch_events_pagination_stops_when_cursor_does_not_advance():
+    """
+    Given: an API that always returns the pagination flag with the same cursor.
+    When: fetch_events paginates.
+    Then: it stops instead of looping forever.
+    """
+    page = {"items": [{"datetime": "2026-10-12T00:00:00"}], "next": "abc"}
+    client = RecordingClient([page, page, page])
+    params = {"pagination_needed": "true", "pagination_field_name": "next", "pagination_flag": "next"}
+
+    run_fetch(client, params, {"@first_fetch_datetime": "2026-10-11T00:00:00"}, http_method="POST")
+
+    assert len(client.requests) == 2
+    assert client.requests[1].request_json == {"next": "abc"}
+
+
+def test_fetch_events_integer_id_cursor_accepts_events_with_old_timestamps():
+    """
+    Given: a feed ordered by an integer update sequence whose timestamp is the original content date
+           (Group-IB darkweb items), and a last run holding the previous sequence.
+    When: fetch_events runs with ID type "integer".
+    Then: events with a higher sequence are ingested even though their timestamp is old, events at
+          or below the stored sequence are dropped, and the cursor becomes the maximum sequence
+          even when the API returns items out of order (regression test, XSUP-78726).
+    """
+    client = RecordingClient(
+        [
+            {
+                "items": [
+                    {"datetime": "2014-06-04T01:28:00", "seqUpdate": 300},
+                    {"datetime": "2025-03-09T17:15:00", "seqUpdate": 100},
+                    {"datetime": "2023-12-23T15:28:00", "seqUpdate": 200},
+                ]
+            }
+        ]
+    )
+    params = {"id_keys": "seqUpdate", "id_type": "integer"}
+    last_run = {
+        "@first_fetch_datetime": "2026-10-11T00:00:00",
+        "@last_fetched_datetime": "2026-10-11T00:00:00",
+        "@last_fetched_id": "100",
+    }
+
+    next_run, events = run_fetch(client, params, last_run)
+
+    assert [event["seqUpdate"] for event in events] == [300, 200]
+    assert next_run["@last_fetched_id"] == "300"
+    assert next_run["@last_fetched_datetime"] == "2026-10-11T00:00:00"
+
+
+def test_fetch_events_string_id_keeps_time_filter():
+    """
+    Given: ID type "string".
+    When: fetch_events runs with events older than the last fetched time.
+    Then: the time filter still applies (string IDs are not comparable), and the last event's ID is kept.
+    """
+    client = RecordingClient([{"items": [{"datetime": "2020-01-01T00:00:00", "id": "b"}]}])
+    params = {"id_keys": "id", "id_type": "string"}
+    last_run = {
+        "@first_fetch_datetime": "2026-10-11T00:00:00",
+        "@last_fetched_datetime": "2026-10-11T00:00:00",
+        "@last_fetched_id": "a",
+    }
+
+    next_run, events = run_fetch(client, params, last_run)
+
+    assert events == []
+    assert next_run["@last_fetched_id"] == "b"
 
 
 def test_derive_authorize_url_swaps_last_path_segment():
