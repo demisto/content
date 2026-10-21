@@ -1,6 +1,6 @@
 {
     "name": "Intel471 Feed",
-    "description": "This content pack fetches actor and malware related indicators from Intel 471. It also fetches watcher alerts.",
+    "description": "This content pack fetches actor and malware related indicators from Intel 471. It also fetches watcher alerts and creates incidents for leaked credentials.",
     "support": "partner",
     "currentVersion": "2.4.0",
     "author": "Intel 471",
