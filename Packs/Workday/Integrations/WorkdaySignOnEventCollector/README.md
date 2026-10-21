@@ -5,15 +5,17 @@ This integration was integrated and tested with version v37.0 of Workday Sign On
 
 | **Parameter**                                      | **Description** | **Required** |
 |----------------------------------------------------| --- |--------------|
-| Server URL (e.g., https://services1.myworkday.com) | API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application. | True         |
-| Tenant Name                                        | The name of the Workday Tenant. Can be obtained from View API Clients report in Workday application. | True         |
+| Server URL (e.g., https://services1.myworkday.com) | Only the Workday host, without any path, for example, `https://wd5-services1.myworkday.com`. Take it from the Workday Web Services Endpoint in the View API Clients report (`https://<host>/ccx/service/<tenant>`). | True         |
+| Tenant Name                                        | The name of the Workday Tenant, for example, `acme`. Can be obtained from View API Clients report in Workday application. | True         |
 | API Version                                        | Some tenants may be using different API versions. Check in your Workday tenant to determine the version to use. Default is v40.0. | False        |
-| Username                                           |  | True         |
-| Password                                           |  | True         |
+| Username                                           | Integration system user name in the `Username@TenantName` format. | True         |
+| Password                                           | Integration system user password. | True         |
 | Trust any certificate (not secure)                 |  | False        |
 | Use system proxy settings                          |  | False        |
 | Max events per fetch                               | The maximum number of sign on events to retrieve. Large amount of events may cause performance issues. | False        |
 | Events Fetch Interval                              |  | False        |
+
+The integration sends requests to `<Server URL>/ccx/service/<Tenant Name>/Identity_Management/<API Version>`.
 
 ## Commands
 

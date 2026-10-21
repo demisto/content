@@ -5,14 +5,16 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://wd5-impl-services1.workday.com/ccx/service
-  display: Server URL (e.g. https://example.net)
+  display: Server URL (e.g. https://wd5-services1.myworkday.com/ccx/service)
   name: base_url
   required: true
   type: 0
+  additionalinfo: 'The Workday web services endpoint up to and including /ccx/service, without the tenant name. Can be obtained from the View API Clients report in Workday.'
 - display: Username
   name: credentials
   required: true
   type: 9
+  additionalinfo: 'The integration system user name without the @TenantName suffix. The integration appends @TenantName automatically.'
 - display: Tenant name
   name: tenant_name
   type: 4
@@ -23,6 +25,7 @@ configuration:
   type: 9
   hiddenusername: true
   required: false
+  additionalinfo: 'The Workday tenant name, for example, acme or acme_preview. Can be obtained from the View API Clients report in Workday.'
 - display: Token
   name: token
   type: 4
@@ -33,6 +36,13 @@ configuration:
   type: 9
   hiddenusername: true
   required: false
+  additionalinfo: 'An identifier for the WS-Security UsernameToken element in the request (letters, digits, - and _ only). It is not a Workday credential and is not validated by Workday.'
+- defaultvalue: v47.0
+  display: API Version
+  name: api_version
+  type: 0
+  required: false
+  additionalinfo: 'The Workday Human Resources web service version to use, in the format vXX.X. Default is v47.0.'
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

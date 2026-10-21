@@ -15,7 +15,7 @@ configuration:
   required: true
   defaultvalue:
   type: 0
-  additionalinfo: 'REST API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application.'
+  additionalinfo: 'The Workday privacy REST API endpoint including the tenant name. Take the Workday REST API Endpoint from the View API Clients report and replace /api/v1/ with /api/privacy/v1/.'
   section: Connect
 - name: token_url
   display: Token endpoint (e.g. https://WORKDAY-HOST/ccx/oauth2/TENANT-NAME/token)

@@ -1,17 +1,20 @@
 Workday offers enterprise-level software solutions for financial management, human resources, and planning.
-This integration was integrated and tested with version 34.0 of Workday
+This integration was integrated and tested with version 47.0 of Workday.
 
 ## Configure Workday in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| base_url | Server URL \(e.g. https://example.net\) | True |
-| username | Username | True |
-| password | Password | True |
-| tenant_name | Tenant name | True |
-| token | Token | True |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
+| Server URL | The Workday web services endpoint up to and including `/ccx/service`, without the tenant name, for example, `https://wd5-services1.myworkday.com/ccx/service`. Can be obtained from the View API Clients report in Workday. | True |
+| Username | The integration system user name **without** the `@TenantName` suffix. The integration appends `@TenantName` automatically. | True |
+| Password | The integration system user password. | True |
+| Tenant name | The Workday tenant name, for example, `acme` or `acme_preview`. | True |
+| Token | An identifier for the WS-Security `UsernameToken` element in the request (letters, digits, `-` and `_` only). It is not a Workday credential and is not validated by Workday. | True |
+| API Version | The Workday Human Resources web service version, in the format `vXX.X`. Default is `v47.0`. | False |
+| Trust any certificate (not secure) | | False |
+| Use system proxy settings | | False |
+
+The integration sends requests to `<Server URL>/<Tenant name>/Staffing/` with the user `<Username>@<Tenant name>`.
 
 ## Commands
 
