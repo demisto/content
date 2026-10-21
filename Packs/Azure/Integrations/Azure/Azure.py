@@ -3215,7 +3215,7 @@ class AzureClient:
             A dictionary containing the network security group information.
 
         Docs:
-            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups/create-or-update?view=rest-virtualnetwork-2024-05-01
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups/create-or-update?view=rest-virtualnetwork-2026-01-01
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
@@ -3224,7 +3224,7 @@ class AzureClient:
         json_data = {
             "location": location,
         }
-        params = {"api-version": "2025-05-01"}
+        params = {"api-version": NSG_API_VERSION}
         try:
             return self.http_request(method="PUT", full_url=full_url, json_data=remove_empty_elements(json_data), params=params)
         except Exception as e:
