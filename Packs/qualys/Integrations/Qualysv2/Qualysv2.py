@@ -3889,7 +3889,7 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
             send_assets_batch(batch, snapshot_id, items_count=seal_count)
         elif batch:
             send_assets_batch(batch, snapshot_id, items_count=1)
-    except RECOVERABLE_PAGE_ERRORS as e:
+    except RECOVERABLE_PAGE_ERRORS as e:  # pylint: disable=catching-non-exception
         return handle_assets_page_error(e, last_run, committed_run)
     except Exception as e:
         log_unexpected_assets_error(e, committed_run)
@@ -3987,7 +3987,7 @@ def fetch_and_send_assets_and_vulnerabilities_by_qids(client: Client, last_run: 
             has_next_page=bool(next_run_page),
             snapshot_id=snapshot_id,
         )
-    except RECOVERABLE_PAGE_ERRORS as e:
+    except RECOVERABLE_PAGE_ERRORS as e:  # pylint: disable=catching-non-exception
         return handle_assets_page_error(e, last_run, committed_run)
     except Exception as e:
         log_unexpected_assets_error(e, committed_run)
