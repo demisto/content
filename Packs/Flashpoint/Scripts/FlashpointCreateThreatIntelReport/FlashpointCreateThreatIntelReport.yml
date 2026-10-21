@@ -9,7 +9,7 @@ comment: Retrieves an Ignite intelligence report and creates the corresponding E
 enabled: true
 args:
 - name: report_id
-  description: The ID of the Ignite report from which the Threat Intel Report is to be created.
+  description: "The ID of the Ignite report from which the Threat Intel Report is to be created.\n\nNote: The report ID can be retrieved from the output context path (Ignite.Report.ReportId) of the 'flashpoint-ignite-intelligence-report-search' command."
   required: true
 scripttarget: 0
 subtype: python3

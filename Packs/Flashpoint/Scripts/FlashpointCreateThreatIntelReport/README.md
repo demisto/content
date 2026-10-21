@@ -15,7 +15,7 @@ Retrieves an Ignite intelligence report and creates the corresponding Executive 
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| report_id | The ID of the Ignite report from which the Threat Intel Report is to be created. |
+| report_id | The ID of the Ignite report from which the Threat Intel Report is to be created.<br/><br/>Note: The report ID can be retrieved from the output context path \(Ignite.Report.ReportId\) of the 'flashpoint-ignite-intelligence-report-search' command. |
 
 ## Outputs
 
