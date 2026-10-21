@@ -20,7 +20,14 @@ urllib3.disable_warnings()
 EVENT_TYPE_ALERTS = "alerts"
 EVENT_TYPE_ACTIVITIES = "activity"
 EVENT_TYPE_DEVICES = "devices"
-MAX_PAGINATION_DURATION_SECONDS = 90  # Per-type pagination time cap; breaks early and resumes next cycle to bound cycle length
+# Pagination time budget. The per-type pagination cap is computed dynamically from the
+# container time budget and how many types actually paginate this cycle (see
+# compute_pagination_budget), so a single-type instance uses far more of the window than a
+# fixed cap would allow, while a busy multi-type instance degrades gracefully to the floor.
+PAGINATION_BUDGET_SECONDS = 270  # Usable slice of the ~300s container limit (30s safety margin)
+ALERT_ENRICHMENT_RESERVE_SECONDS = 60  # Headroom kept for the no-timeout alert enrichment tail when alerts are present
+MAX_PAGINATION_DURATION_SECONDS = 180  # Per-type ceiling; leaves margin for send-latency variance
+MIN_PAGINATION_DURATION_SECONDS = 90  # Per-type floor; never drop below the previously proven behavior
 MAX_PAGE_SIZE = 10000  # Armis recommended max page size per request
 TOKEN_TTL_SECONDS = 30 * 60  # Armis token TTL is exactly 30 minutes (confirmed by Armis)
 TOKEN_REFRESH_BUFFER_SECONDS = 5 * 60  # Refresh 5 minutes before expiry (at 25 min mark)
@@ -448,6 +455,7 @@ class Client(BaseClient):
         before: datetime | None = None,
         event_type: str = "",
         on_page: Callable[[list[dict]], None] | None = None,
+        max_pagination_seconds: int = MIN_PAGINATION_DURATION_SECONDS,
     ):
         """Fetches events using AQL query.
 
@@ -523,9 +531,9 @@ class Client(BaseClient):
 
                 total_seconds = time.monotonic() - start_time
                 demisto.debug(f"total {total_seconds} seconds so far")
-                if next and total_seconds >= MAX_PAGINATION_DURATION_SECONDS:
+                if next and total_seconds >= max_pagination_seconds:
                     demisto.debug(
-                        f"Reached pagination time limit of {MAX_PAGINATION_DURATION_SECONDS}s for {event_type}, "
+                        f"Reached pagination time limit of {max_pagination_seconds}s for {event_type}, "
                         f"breaking early with {next=} to avoid timeout. Pagination will resume in the next fetch cycle."
                     )
                     break
@@ -730,15 +738,98 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
         # the following timestamp format from the response: "YYYY-MM-DDTHH:MM:SS.fffff+Z"
         demisto.debug("Dedup case 3 - Most recent event has later timestamp then other events in the response.")
 
-        latest_event_timestamp = events[-1].get(event_order_by, "")[:19]
+        latest_event_timestamp = (events[-1].get(event_order_by) or "")[:19]
         # itertools.takewhile is used to iterate over the list of events (from latest time to earliest)
         # and take only the events with identical latest time
         events_with_identical_latest_time = list(
-            itertools.takewhile(lambda x: x.get(event_order_by, "")[:19] == latest_event_timestamp, reversed(events))
+            itertools.takewhile(lambda x: (x.get(event_order_by) or "")[:19] == latest_event_timestamp, reversed(events))
         )
         new_ids = [event.get(unique_id_key, "") for event in events_with_identical_latest_time]
 
         return new_events, new_ids
+
+
+def compute_pagination_budget(
+    paginating_types: int,
+    alerts_elapsed_seconds: float = 0.0,
+    alerts_present: bool = False,
+) -> int:
+    """Compute the per-type pagination time cap from the shared container time budget.
+
+    The container runs each cycle under a hard ~300s limit. A fixed cap wastes most of
+    that window on single-type instances, so the cap is derived from how many types
+    actually paginate this cycle and the time the Alerts phase consumes:
+
+    - ``alerts_elapsed_seconds`` (already-measured, serial up-front alert fetch) is
+      subtracted, since it ran before pagination begins.
+    - ``ALERT_ENRICHMENT_RESERVE_SECONDS`` is subtracted only when alerts returned events,
+      leaving headroom for the no-timeout enrichment tail at the end of the cycle.
+
+    The remaining budget is split across the paginating types and clamped to
+    ``[MIN_PAGINATION_DURATION_SECONDS, MAX_PAGINATION_DURATION_SECONDS]``.
+    """
+    if paginating_types <= 0:
+        return MIN_PAGINATION_DURATION_SECONDS
+    reserve = ALERT_ENRICHMENT_RESERVE_SECONDS if alerts_present else 0
+    usable = PAGINATION_BUDGET_SECONDS - alerts_elapsed_seconds - reserve
+    per_type = int(usable // paginating_types)
+    return max(MIN_PAGINATION_DURATION_SECONDS, min(MAX_PAGINATION_DURATION_SECONDS, per_type))
+
+
+def compute_resume_state(
+    response_events: list[dict],
+    last_fetch_time: str | None,
+    last_fetch_next: int,
+    order_by: str,
+) -> tuple[str | None, int]:
+    """Decide the next-cycle ``after`` watermark and ``from`` offset from a response.
+
+    The offset is kept shallow by re-anchoring it to the watermark whenever the
+    watermark advances, which avoids the slow deep-offset pagination that otherwise
+    grows unbounded while a backlog persists. Events are assumed ascending by
+    ``order_by`` (the same assumption ``dedup_events`` relies on).
+    """
+    if not response_events:
+        return last_fetch_time, last_fetch_next
+
+    earliest_second = str(response_events[0].get(order_by) or "")[:19]
+    latest_second = str(response_events[-1].get(order_by) or "")[:19]
+    return _next_fetch_window(earliest_second, latest_second, len(response_events), last_fetch_time, last_fetch_next)
+
+
+def _next_fetch_window(
+    earliest_second: str,
+    latest_second: str,
+    count: int,
+    last_fetch_time: str | None,
+    last_fetch_next: int,
+) -> tuple[str | None, int]:
+    """Compute the next fetch window (``after`` watermark and ``from`` offset).
+
+    Shared by both the streaming and non-streaming fetch paths. The streaming path
+    tracks the earliest/latest second and the fetched count as it ships pages, so it
+    reuses this without retaining the full response in memory.
+    """
+    if not count:
+        # Empty fetch: keep the position so already-consumed events are not re-read.
+        return last_fetch_time, last_fetch_next
+
+    if earliest_second and latest_second and earliest_second != latest_second:
+        # The latest second has started, so earlier seconds are complete: advance the
+        # watermark to the latest second and re-anchor the offset to 0 (dedup keeps the
+        # latest-second ids, so a shallow re-read stays duplicate-free). Both bounds must
+        # be present — a missing timestamp must not be mistaken for a second boundary.
+        return latest_second, 0
+
+    # Single-second fetch (possibly larger than a page), or a missing boundary timestamp:
+    # completion cannot be proven, so keep the watermark and step the offset within the
+    # second to read the next slice (conservative — re-read rather than risk a gap).
+    stepped_offset = last_fetch_next + count
+    demisto.debug(
+        f"[resume] hot second not drained at {latest_second or last_fetch_time}: "
+        f"keeping watermark, stepping offset {last_fetch_next} -> {stepped_offset} (count={count})"
+    )
+    return last_fetch_time, stepped_offset
 
 
 def _stream_page_to_xsiam(event_type: EVENT_TYPE, running_state: dict) -> Callable[[list[dict]], None]:
@@ -773,6 +864,16 @@ def _stream_page_to_xsiam(event_type: EVENT_TYPE, running_state: dict) -> Callab
             safe_debug(f"[{tname}] [stream:{dataset}] page #{page_idx} empty — skipping")
             return
 
+        # Track the earliest second and the total fetched (pre-dedup) across the whole
+        # cycle so the caller can re-anchor the resume offset (see compute_resume_state).
+        # Like the non-streaming path, always take the first event of the cycle; a missing
+        # timestamp hits the "do not advance" guard in _next_fetch_window. Empty pages return
+        # above before total_fetched is incremented, so 0 means this is the first page with events.
+        is_first_non_empty_page = running_state["total_fetched"] == 0
+        if is_first_non_empty_page:
+            running_state["first_event_time"] = page[0].get(event_type.order_by)
+        running_state["total_fetched"] += page_len
+
         dedup_start = time.monotonic()
         new_events, updated_ids = dedup_events(
             page, running_state["last_fetch_ids"], event_type.unique_id_key, event_type.order_by
@@ -781,15 +882,16 @@ def _stream_page_to_xsiam(event_type: EVENT_TYPE, running_state: dict) -> Callab
         # Mutate the shared ID list in place so the next page sees the cumulative set.
         running_state["last_fetch_ids"] = updated_ids
         deduped_count = page_len - len(new_events)
+        # Always track the latest event timestamp from the raw page (even if everything
+        # deduped) so the watermark can still advance when a later second appears. Record it
+        # unconditionally, like the non-streaming path: a missing timestamp hits the
+        # "do not advance" guard instead of leaving an older value that would cause re-reads.
+        running_state["last_event_time"] = page[-1].get(event_type.order_by)
         if not new_events:
             safe_debug(f"[{tname}] [stream:{dataset}] page #{page_idx} all {page_len} events deduped (no ship)")
             return
 
-        # Track the latest event timestamp so the caller can advance last_fetch_time
-        # after pagination completes (mirrors the non-streaming path).
-        latest_time = new_events[-1].get(event_type.order_by)
-        if latest_time:
-            running_state["last_event_time"] = latest_time
+        latest_time = running_state["last_event_time"]
 
         add_time_to_events(new_events, dataset)
         product = f"{PRODUCT}_{dataset}" if event_type.type != EVENT_TYPE_ALERTS else PRODUCT
@@ -820,6 +922,7 @@ def fetch_by_event_type(
     fetch_start_time: datetime | None,
     fetch_delay: int = DEFAULT_FETCH_DELAY,
     stream: bool = False,
+    max_pagination_seconds: int = MIN_PAGINATION_DURATION_SECONDS,
 ):
     """Fetch events by specific event type.
 
@@ -854,7 +957,9 @@ def fetch_by_event_type(
         stream_start = time.monotonic()
         running_state: dict = {
             "last_fetch_ids": list(last_run.get(last_fetch_ids, [])),  # copy so we mutate locally
+            "first_event_time": None,
             "last_event_time": None,
+            "total_fetched": 0,
             "total_shipped": 0,
             "total_send_secs": 0.0,
             "page_count": 0,
@@ -869,6 +974,7 @@ def fetch_by_event_type(
             before=before_time,
             event_type=event_type.type,
             on_page=on_page,
+            max_pagination_seconds=max_pagination_seconds,
         )
         next_run[last_fetch_ids] = running_state["last_fetch_ids"]
         total_secs = time.monotonic() - stream_start
@@ -879,19 +985,22 @@ def fetch_by_event_type(
             f"total={total_secs:.2f}s, send={running_state['total_send_secs']:.2f}s ({send_share:.0f}%), "
             f"cursor_next={next}, fully_drained={not next}"
         )
-        # Advance last_fetch_time only when pagination is fully drained (next == 0),
-        # mirroring the non-streaming path. While next > 0 we keep the same window so
-        # the cursor (`from_param`) is meaningful on the next cycle.
-        if not next:
-            event_type_fetch_start_time = running_state["last_event_time"] or last_fetch_time
-            demisto.debug(
-                f"[stream:{event_type.dataset_name}] cursor drained — advancing last_fetch_time to {event_type_fetch_start_time}"
-            )
-        else:
-            demisto.debug(
-                f"[stream:{event_type.dataset_name}] cursor NOT drained (next={next}) — "
-                f"keeping last_fetch_time at {last_fetch_time} for next cycle resume"
-            )
+        # Re-anchor the resume window: advance the watermark to the latest drained
+        # second and reset the offset, or step the offset within an incomplete second.
+        earliest_second = str(running_state["first_event_time"] or "")[:19]
+        latest_second = str(running_state["last_event_time"] or "")[:19]
+        event_type_fetch_start_time, next_offset = _next_fetch_window(
+            earliest_second,
+            latest_second,
+            running_state["total_fetched"],
+            last_fetch_time,
+            last_fetch_next,
+        )
+        next_run[last_fetch_next_field] = next_offset
+        demisto.debug(
+            f"[stream:{event_type.dataset_name}] resume: after={event_type_fetch_start_time}, "
+            f"offset={next_offset} (fetched={running_state['total_fetched']}, api_next={next})"
+        )
     else:
         response, next = client.fetch_by_aql_query(
             aql_query=event_type.aql_query,
@@ -901,6 +1010,7 @@ def fetch_by_event_type(
             from_param=last_fetch_next,
             before=before_time,
             event_type=event_type.type,
+            max_pagination_seconds=max_pagination_seconds,
         )
         new_events: list[dict] = []
         demisto.debug(f"fetched {len(response)} {event_type.type} from API")
@@ -913,11 +1023,17 @@ def fetch_by_event_type(
             last_event_str = str(new_events[-1])[:500] if new_events else "{}"
             demisto.debug(f"last {event_type.dataset_name} in list: {last_event_str}")
 
-        if not next:  # we wish to update the time only in case the next is 0 because the next is relative to the time.
-            event_type_fetch_start_time = new_events[-1].get(event_type.order_by) if new_events else last_fetch_time
-            #  can empty the list.
+        # Re-anchor the resume window from the raw response (see compute_resume_state).
+        event_type_fetch_start_time, next_run[last_fetch_next_field] = compute_resume_state(
+            response, last_fetch_time, last_fetch_next, event_type.order_by
+        )
+        advanced = event_type_fetch_start_time != last_fetch_time
+        demisto.debug(
+            f"[{event_type.dataset_name}] resume: after={event_type_fetch_start_time}, "
+            f"offset={next_run[last_fetch_next_field]} (fetched={len(response)}, "
+            f"advanced={advanced}, dedup_ids={len(next_run.get(last_fetch_ids, []))})"
+        )
 
-    next_run[last_fetch_next_field] = next
     if isinstance(event_type_fetch_start_time, datetime):
         event_type_fetch_start_time = event_type_fetch_start_time.strftime(DATE_FORMAT)
     next_run[last_fetch_time_field] = event_type_fetch_start_time
@@ -1148,6 +1264,7 @@ def fetch_event_type_worker(
     fetch_delay: int,
     context_manager: IntegrationContextManager,
     stream: bool = False,
+    max_pagination_seconds: int = MIN_PAGINATION_DURATION_SECONDS,
 ) -> tuple[str, dict, dict]:
     """Worker function to fetch events for a specific event type in a thread.
 
@@ -1176,7 +1293,16 @@ def fetch_event_type_worker(
 
     try:
         fetch_by_event_type(
-            client, event_type, events, max_fetch, last_run, next_run, fetch_start_time, fetch_delay=fetch_delay, stream=stream
+            client,
+            event_type,
+            events,
+            max_fetch,
+            last_run,
+            next_run,
+            fetch_start_time,
+            fetch_delay=fetch_delay,
+            stream=stream,
+            max_pagination_seconds=max_pagination_seconds,
         )
 
         # Update context for this event type atomically
@@ -1268,6 +1394,8 @@ def fetch_events(
     # for armis-get-events we keep them collected so they render in CommandResults.
     enrichment_future = None
     enrichment_executor = None
+    alerts_elapsed_seconds = 0.0
+    alerts_present = False
     if "Alerts" in event_types_to_fetch:
         main_tname = threading.current_thread().name
         safe_debug(f"[{main_tname}] Fetching Alerts (enrichment will run in parallel with other workers)")
@@ -1277,7 +1405,9 @@ def fetch_events(
         )
         alerts_to_enrich = events.get(EVENT_TYPE_ALERTS, [])
         alerts_count = len(alerts_to_enrich)
-        safe_debug(f"[{main_tname}] Fetched {alerts_count} alerts in {time.monotonic() - alerts_start:.2f}s")
+        alerts_elapsed_seconds = time.monotonic() - alerts_start
+        alerts_present = bool(alerts_to_enrich)
+        safe_debug(f"[{main_tname}] Fetched {alerts_count} alerts in {alerts_elapsed_seconds:.2f}s")
 
         if alerts_to_enrich:
             enrichment_executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="ArmisEnrich")
@@ -1298,6 +1428,18 @@ def fetch_events(
         total_events = sum(len(event_list) for event_list in events.values())
         safe_debug(f"=== Fetch cycle completed in {fetch_duration:.2f}s - Total events: {total_events} ===")
         return events, next_run
+
+    # Derive the per-type pagination cap from the shared container budget: fewer paginating
+    # types (and no alert-enrichment tail) means each type may use more of the window.
+    max_pagination_seconds = compute_pagination_budget(
+        paginating_types=len(event_types_to_fetch),
+        alerts_elapsed_seconds=alerts_elapsed_seconds,
+        alerts_present=alerts_present,
+    )
+    safe_debug(
+        f"Pagination cap={max_pagination_seconds}s for {len(event_types_to_fetch)} paginating type(s) "
+        f"(alerts_present={alerts_present}, alerts_elapsed={alerts_elapsed_seconds:.2f}s)"
+    )
 
     # Use multithreading only if it's beneficial: more than one event type AND the caller is the
     # periodic ``fetch-events`` command (manual ``armis-get-events`` always passes False).
@@ -1320,6 +1462,7 @@ def fetch_events(
                 fetch_start_time,
                 fetch_delay=fetch_delay,
                 stream=stream_this,
+                max_pagination_seconds=max_pagination_seconds,
             )
 
             type_duration = time.monotonic() - type_start
@@ -1358,6 +1501,7 @@ def fetch_events(
                     fetch_delay,
                     context_manager,
                     stream_this,
+                    max_pagination_seconds,
                 )
                 submitted_tasks[task] = event_type_name
 
@@ -1465,7 +1609,10 @@ def handle_fetched_events(events: dict[str, list[dict[str, Any]]], next_run: dic
         demisto.debug("No collected events to send (either none fetched, or all streamed). Sending 0 to XSIAM.")
         send_events_to_xsiam([], vendor=VENDOR, product=PRODUCT)  # heartbeat
 
-    demisto.debug(f"setting {next_run=}")
+    # Summarize next_run for logging: collapse list values (e.g. dedup id lists) to their
+    # length so the long id lists do not spam the logs, while keeping scalar fields visible.
+    next_run_summary = {key: (f"<{len(value)} ids>" if isinstance(value, list) else value) for key, value in next_run.items()}
+    demisto.debug(f"[handle_fetched_events] setting next_run={next_run_summary}")
     next_run["nextTrigger"] = "1"
     demisto.setLastRun(next_run)
 
