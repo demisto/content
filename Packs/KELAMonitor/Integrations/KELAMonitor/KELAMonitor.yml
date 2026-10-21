@@ -47,17 +47,26 @@ configuration:
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
   defaultvalue: '1'
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident types to fetch
   name: incident_types
   type: 16
@@ -85,6 +94,9 @@ configuration:
   required: false
   section: Collect
   additionalinfo: Between 1 and 200.
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch only these severities
   name: fetch_severities
   type: 16
