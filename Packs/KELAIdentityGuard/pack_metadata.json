@@ -1,6 +1,6 @@
 {
     "name": "KELA Identity Guard",
-    "description": "Search KELA Identity Guard incidents: compromised credentials detected on infostealer-infected machines (bots), credential lists, data breaches and cybercrime chatter; bot-market alerts; and compromised session-cookie incidents. Includes fetch-incidents to automatically mirror all three sources into Cortex XSOAR.",
+    "description": "Search KELA Identity Guard incidents: compromised credentials detected on infostealer-infected machines (bots), credential lists, data breaches and cybercrime chatter; bot-market alerts; and compromised session-cookie incidents. Includes fetch-incidents to automatically mirror all three sources into Cortex.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "KELA",

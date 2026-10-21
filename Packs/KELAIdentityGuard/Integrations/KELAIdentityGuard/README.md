@@ -25,7 +25,7 @@ This integration was integrated and tested with the Identity Guard module of the
 | Trust any certificate (not secure) | Skip TLS certificate validation. | False |
 | Use system proxy settings | Route requests through the configured system proxy. | False |
 
-The interval between fetch cycles is Cortex XSOAR's built-in "Incidents Fetch Interval" setting on
+The interval between fetch cycles is Cortex's built-in "Incidents Fetch Interval" setting on
 the instance (not configured in this pack).
 
 ## Commands
