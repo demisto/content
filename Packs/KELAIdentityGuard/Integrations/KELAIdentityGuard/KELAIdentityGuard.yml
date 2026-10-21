@@ -1,7 +1,6 @@
 display: KELA Identity Guard
 name: KELAIdentityGuard
 category: Data Enrichment & Threat Intelligence
-supportlevelheader: partner
 provider: KELA
 sectionorder:
 - Connect
@@ -88,9 +87,6 @@ configuration:
   name: incidentType
   type: 13
   section: Connect
-  required: false
-  section: Connect
-  advanced: true
   required: false
 description: Search KELA Identity Guard incidents - compromised credentials detected on infostealer-infected machines, leaked credential lists, data breaches and cybercrime chatter; bot-market alerts; and compromised session-cookie incidents. Automatically fetches all three (each independently toggleable) into Cortex.
 script:
