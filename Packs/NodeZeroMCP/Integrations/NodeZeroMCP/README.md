@@ -1,22 +1,13 @@
-# NodeZeroMCP
-
-Connects Cortex to the [NodeZero](https://www.horizon3.ai/nodezero/) autonomous penetration testing platform MCP server, automatically discovering NodeZero's pentesting tools and exposing them as agentic system actions.
+Use the *NodeZero MCP* integration to connect to the NodeZero MCP server and automatically discover its available pentesting tools.
 
 This integration uses OAuth 2.0 Dynamic Client Registration (DCR). It registers itself as a public OAuth client with the NodeZero OAuth proxy, so no pre-issued Client ID or Client Secret is required. Authentication flows through the NodeZero portal.
-
-## What does this pack do?
-
-- Fetches HIGH and CRITICAL severity weaknesses from NodeZero pentest operations
-- Creates incidents with full weakness context including severity scores, attack paths, and proof status
-- Tracks CISA KEV (Known Exploited Vulnerabilities) and ransomware campaign associations
-- Enables automated remediation workflows based on weakness severity and exploitability
 
 ## Configure NodeZero MCP in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | MCP Server URL | The NodeZero MCP server endpoint. Select the region that matches your NodeZero deployment. | True |
-| Authorization Code | The authorization code returned by the \!nodezero-mcp-generate-login-url command. Paste it here, then run \!nodezero-mcp-auth-test to complete authentication. |  |
+| Authorization Code | The authorization code that the \!nodezero-mcp-generate-login-url command returns. Paste it here, and then run \!nodezero-mcp-auth-test to complete the authentication. |  |
 
 ## Commands
 
@@ -26,7 +17,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### list-tools
 
 ***
-Retrieves a list of available tools in the NodeZero MCP server.
+Retrieves a list of available tools on the NodeZero MCP server.
 
 #### Base Command
 
@@ -55,7 +46,7 @@ Calls a specific tool on the NodeZero MCP server with optional input parameters.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name of the tool to call. | Optional |
-| arguments | Parameters for the tool execution. | Optional |
+| arguments | The parameters for the tool execution. | Optional |
 
 #### Context Output
 
@@ -64,7 +55,7 @@ There is no context output for this command.
 ### nodezero-mcp-generate-login-url
 
 ***
-Register this integration with your NodeZero portal and generate a login URL. Follow the returned instructions to authenticate via the NodeZero portal.
+Registers this integration with your NodeZero portal and generates a login URL. To authenticate through the NodeZero portal, follow the instructions that the command returns.
 
 #### Base Command
 
@@ -99,7 +90,7 @@ There is no context output for this command.
 ### nodezero-mcp-auth-test
 
 ***
-Test the OAuth authentication configuration with the NodeZero MCP server.
+Tests the OAuth authentication configuration with the NodeZero MCP server.
 
 #### Base Command
 

@@ -1,9 +1,10 @@
 import asyncio
+import traceback
 from urllib.parse import unquote
 
 import demistomock as demisto
 from CommonServerPython import *
-from MCPApiModule import *
+from MCPApiModule import AuthMethods, Client, REDIRECT_URI, extract_root_error_message, generate_login_url
 
 COMMAND_PREFIX = "nodezero-mcp"
 DEFAULT_BASE_URL = "https://mcp.horizon3ai.com/mcp"
@@ -72,6 +73,7 @@ async def main() -> None:  # pragma: no cover
             raise NotImplementedError(f"Command {command} is not implemented")
 
     except Exception as eg:
+        demisto.debug(traceback.format_exc())
         root_msg = extract_root_error_message(eg)
         return_error(f"Failed to execute {command} command.\nError:\n{root_msg}", error=eg)
 
