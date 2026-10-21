@@ -25,7 +25,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "BoxEventsCollector",
     "supportedModules": [
         "agentix",
         "xsiam"

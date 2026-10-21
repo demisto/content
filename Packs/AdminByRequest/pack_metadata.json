@@ -19,7 +19,6 @@
         "marketplacev2",
         "xsoar"
     ],
-    "defaultDataSource": "AdminByRequest",
     "supportedModules": [
         "agentix",
         "xsiam"

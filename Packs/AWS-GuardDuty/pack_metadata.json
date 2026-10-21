@@ -29,7 +29,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "AWS - GuardDuty Event Collector",
     "supportedModules": [
         "agentix",
         "xsiam"
