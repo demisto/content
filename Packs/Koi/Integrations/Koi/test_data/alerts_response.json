@@ -2,6 +2,10 @@
     "alerts": [
         {
             "id": "alert-001",
+            "time": 1704067200000,
+            "metadata": {
+                "notification_event_id": "alert-001"
+            },
             "finding_info": {
                 "created_time": 1704067200000,
                 "title": "Suspicious extension detected"
@@ -11,6 +15,10 @@
         },
         {
             "id": "alert-002",
+            "time": 1704067260000,
+            "metadata": {
+                "notification_event_id": "alert-002"
+            },
             "finding_info": {
                 "created_time": 1704067260000,
                 "title": "Malicious URL blocked"
