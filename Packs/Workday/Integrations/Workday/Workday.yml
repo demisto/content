@@ -36,13 +36,7 @@ configuration:
   type: 9
   hiddenusername: true
   required: false
-  additionalinfo: 'An identifier for the WS-Security UsernameToken element in the request (letters, digits, - and _ only). It is not a Workday credential and is not validated by Workday.'
-- defaultvalue: v47.0
-  display: API Version
-  name: api_version
-  type: 0
-  required: false
-  additionalinfo: 'The Workday Human Resources web service version to use, in the format vXX.X. Default is v47.0.'
+  additionalinfo: 'The identifier for the WS-Security UsernameToken element in the request (letters, digits, - and _ only). It is not a Workday credential and is not validated by Workday.'
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -51,6 +45,12 @@ configuration:
   name: proxy
   type: 8
   required: false
+- defaultvalue: 'v47.0'
+  display: API Version
+  name: api_version
+  type: 0
+  required: false
+  additionalinfo: 'The Workday Human Resources web service version to use, in the format vXX.X.'
 description: Workday offers enterprise-level software solutions for financial management, human resources, and planning.
 display: Workday
 name: Workday

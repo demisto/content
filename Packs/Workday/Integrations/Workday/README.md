@@ -9,10 +9,10 @@ This integration was integrated and tested with version 47.0 of Workday.
 | Username | The integration system user name **without** the `@TenantName` suffix. The integration appends `@TenantName` automatically. | True |
 | Password | The integration system user password. | True |
 | Tenant name | The Workday tenant name, for example, `acme` or `acme_preview`. | True |
-| Token | An identifier for the WS-Security `UsernameToken` element in the request (letters, digits, `-` and `_` only). It is not a Workday credential and is not validated by Workday. | True |
-| API Version | The Workday Human Resources web service version, in the format `vXX.X`. Default is `v47.0`. | False |
+| Token | The identifier for the WS-Security `UsernameToken` element in the request (letters, digits, `-` and `_` only). It is not a Workday credential and is not validated by Workday. | True |
 | Trust any certificate (not secure) | | False |
 | Use system proxy settings | | False |
+| API Version | The Workday Human Resources web service version to use, in the format `vXX.X`. | False |
 
 The integration sends requests to `<Server URL>/<Tenant name>/Staffing/` with the user `<Username>@<Tenant name>`.
 

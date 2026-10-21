@@ -6,12 +6,12 @@ This collector uses OAuth 2.0 (Client ID, Client Secret and Refresh Token). It d
 
 #### Client ID and Client secret
 
-1. To register the API client, access the Register API Client for Integrations task and provide the relevant parameters.
-2. Copy the Client Secret and Client ID
+1. To register the API client, access the **Register API Client for Integrations** task and provide the relevant parameters.
+2. Copy the **Client Secret** and **Client ID**.
 
 #### Server URL and Token endpoint
 
-1. Access the View API Clients task and copy the below two parameters from the top of the page:
+1. Access the **View API Clients** task and copy the below two parameters from the top of the page:
    1. **Workday REST API Endpoint**, for example, `https://wd5-services1.myworkday.com/ccx/api/v1/acme`.
    2. **Token Endpoint**, for example, `https://wd5-services1.myworkday.com/ccx/oauth2/acme/token`.
 2. **Server URL**: Use the REST API endpoint with `/api/v1/` replaced by `/api/privacy/v1/`, for example, `https://wd5-services1.myworkday.com/ccx/api/privacy/v1/acme`.
@@ -19,8 +19,8 @@ This collector uses OAuth 2.0 (Client ID, Client Secret and Refresh Token). It d
 
 #### Refresh token
 
-1. Go to API Clients for Integrations tab hover on the relevant client and click on the three-dot action buttons.
-2. In the new pop up window, click API Client > Manage Refresh Token for Integrations.
-3. In the Manage Refresh Token for Integrations window, select the relevant integration name in the Workday Account field and click OK.
-4. In the newly opened window, select Generate New Refresh Token checkbox and click OK.
-5. Copy the value of the Refresh Token column from the opened window and click Done.
+1. Go to the **API Clients for Integrations** tab, hover over the relevant client, and click the three-dot action button.
+2. In the new pop-up window, click **API Client** > **Manage Refresh Token for Integrations**.
+3. In the **Manage Refresh Token for Integrations** window, select the relevant integration name in the **Workday Account** field and click **OK**.
+4. In the newly opened window, select the **Generate New Refresh Token** checkbox and click **OK**.
+5. Copy the value of the **Refresh Token** column from the opened window and click **Done**.

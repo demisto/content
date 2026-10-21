@@ -12,7 +12,7 @@ configuration:
   required: true
   defaultvalue: 'https://services1.myworkday.com'
   type: 0
-  additionalinfo: 'Only the Workday host, without any path (no /ccx/service and no tenant name). Can be obtained from the Workday Web Services Endpoint in the View API Clients report.'
+  additionalinfo: 'The Workday host only, without any path (no /ccx/service and no tenant name). Can be obtained from the Workday Web Services Endpoint in the View API Clients report.'
   section: Connect
 - name: tenant_name
   display: Tenant Name
