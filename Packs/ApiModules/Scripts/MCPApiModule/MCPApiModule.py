@@ -433,7 +433,7 @@ def _flatten_nullable_type(schema: dict[str, Any]) -> None:
 
     ["string", "null"] becomes "string", because "null" only marks the value as optional. A list that names no real
     type (["null"]) or several (["string", "number"]) loses its "type", since picking one would be a guess. The
-    platform reads a missing type as unknown. Any other form (a plain string, anyOf, oneOf) is left alone.
+    server stores a field without a type as unknown. Any other form (a plain string, anyOf, oneOf) is left alone.
     """
     declared = schema.get("type")
     if not isinstance(declared, list):
@@ -445,6 +445,8 @@ def _flatten_nullable_type(schema: dict[str, Any]) -> None:
         schema.pop("type", None)
 
 
+# Workaround for MCP servers whose tool schemas are valid but not readable by the platform's tool discovery.
+# The platform-side fix is tracked in CRTX-289860. Once it ships, this normalization becomes redundant and should be removed.
 def normalize_tool_schemas(tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Make the list-tools output readable by the platform's MCP tool discovery. Modifies the tools in place.
 
