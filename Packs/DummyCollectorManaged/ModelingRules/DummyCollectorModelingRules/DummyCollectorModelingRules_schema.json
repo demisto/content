@@ -1,0 +1,36 @@
+{
+    "dummy_collector_raw": {
+        "id": {
+            "type": "int",
+            "is_array": false
+        },
+        "event_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "message": {
+            "type": "string",
+            "is_array": false
+        },
+        "user": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_ip": {
+            "type": "string",
+            "is_array": false
+        },
+        "severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "collector_source": {
+            "type": "string",
+            "is_array": false
+        },
+        "integration_id": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

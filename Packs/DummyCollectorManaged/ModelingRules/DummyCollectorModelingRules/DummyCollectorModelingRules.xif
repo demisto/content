@@ -1,0 +1,10 @@
+[MODEL: dataset=dummy_collector_raw]
+alter
+    xdm.event.id = to_string(id),
+    xdm.event.type = event_type,
+    xdm.event.description = message,
+    xdm.source.user.username = user,
+    xdm.source.ipv4 = source_ip,
+    xdm.alert.severity = severity,
+    xdm.observer.name = collector_source,
+    xdm.observer.product = integration_id;
