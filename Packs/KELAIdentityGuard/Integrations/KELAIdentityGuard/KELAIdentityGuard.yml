@@ -102,6 +102,7 @@ configuration:
   type: 19
   defaultvalue: '1'
   required: false
+  additionalinfo: The interval, in minutes, between fetch cycles for this instance.
   advanced: true
   section: Collect
   supportedModules:
