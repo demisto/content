@@ -28,14 +28,16 @@ configuration:
   name: proxy
   type: 8
   required: false
-  additionalinfo: Route requests to the KELA Brand Control API through the system proxy configured on the Cortex server or engine.
+  additionalinfo: The system proxy configured on the Cortex server or engine used to route requests to the KELA Brand Control API.
   section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
-  additionalinfo: Skip TLS certificate validation when connecting to the KELA Brand Control API.
+  additionalinfo: The option to skip TLS certificate validation when connecting to the KELA Brand Control API.
   section: Connect
+  advanced: true
 - display: Workspace ID(s)
   name: workspace_ids
   type: 0
@@ -57,7 +59,7 @@ configuration:
   type: 19
   defaultvalue: '1'
   required: false
-  additionalinfo: How often, in minutes, Cortex runs a fetch cycle for this instance.
+  additionalinfo: The interval, in minutes, at which Cortex runs a fetch cycle for this instance.
   section: Collect
 - display: First fetch time
   name: first_fetch

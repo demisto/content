@@ -2,7 +2,7 @@
 
 Brand Control detects brand impersonation across the open web, social media and app ecosystems: phishing websites, look-alike domains, fake social media profiles, fake shops and more.
 
-Detects brand impersonation (phishing websites, look-alike domains, fake social media profiles and more) with KELA Brand Control and fetches the incidents into Cortex.
+This integration fetches brand impersonation incidents from KELA Brand Control into Cortex.
 This integration was integrated and tested with version 1.0 of the KELA Brand Control API.
 
 ## Configure KELA BrandControl in Cortex

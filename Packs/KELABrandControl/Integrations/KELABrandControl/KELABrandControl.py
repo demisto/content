@@ -454,7 +454,7 @@ def fetch_incidents(
     If any workspace fails the whole cycle raises: nothing is created and the last run is not saved, so the
     next cycle retries cleanly with no duplicates.
     """
-    demisto.debug(f"KELA BrandControl: fetch started for workspaces {workspace_ids}.")
+    demisto.debug(f"[Fetch] KELA BrandControl: fetch started for workspaces {workspace_ids}.")
     previous = last_run.get("workspaces") or {}
     next_workspaces: dict[str, Any] = {ws: st for ws, st in previous.items() if ws not in workspace_ids}
     all_incidents: list[dict[str, Any]] = []
@@ -463,7 +463,7 @@ def fetch_incidents(
         next_state, incidents = fetch_workspace(client, workspace_id, state, max_fetch, severities)
         next_workspaces[workspace_id] = next_state
         all_incidents.extend(incidents)
-    demisto.info(f"KELA BrandControl: fetch completed, {len(all_incidents)} incident(s) created.")
+    demisto.info(f"[Fetch] KELA BrandControl: fetch completed, {len(all_incidents)} incident(s) created.")
     return {"workspaces": next_workspaces}, all_incidents
 
 
