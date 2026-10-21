@@ -1879,7 +1879,6 @@ def test_fetch_incidents_command_enriches_incident_alerts(mocker):
         incident_statuses=None,
         incident_verdicts=None,
         first_fetch_time=FIRST_FETCH_TIME,
-        include_incident_alert_metadata=True,
     )
 
     assert incidents[0]["CustomFields"]["vegaalerts"][0]["detectionId"] == "det-1"
@@ -1936,7 +1935,7 @@ def test_get_remote_data_command_mirrors_incident_alerts(mocker):
     )
 
 
-def test_fetch_incidents_command_omits_alert_metadata_by_default(mocker):
+def test_fetch_incidents_command_omits_alert_metadata_when_disabled(mocker):
     mocker.patch.object(demisto, "debug")
     mock_client = mocker.Mock()
     mock_client.get_incidents.return_value = {
@@ -1968,6 +1967,7 @@ def test_fetch_incidents_command_omits_alert_metadata_by_default(mocker):
         incident_statuses=None,
         incident_verdicts=None,
         first_fetch_time=FIRST_FETCH_TIME,
+        include_incident_alert_metadata=False,
     )
 
     assert incidents[0]["CustomFields"]["vegaalerts"] == [{"alertId": "alert-1", "name": "Stub name", "createdAt": TIMESTAMP_T1}]

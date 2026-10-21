@@ -4077,7 +4077,7 @@ def _incident_alert_reference_rows(alerts: Any) -> list[dict[str, str]]:
 def _include_incident_alert_metadata(params: dict[str, Any] | None = None) -> bool:
     """Return True when fetched incidents should store full related-alert metadata."""
     params = demisto.params() if params is None else params
-    return argToBoolean(params.get("include_incident_alert_metadata", False))
+    return argToBoolean(params.get("include_incident_alert_metadata", True))
 
 
 def _format_incident_alert_grid_row(alert: dict[str, Any]) -> dict[str, Any]:
@@ -6714,7 +6714,7 @@ def fetch_incidents_command(
     max_fetch: int = DEFAULT_MAX_FETCH,
     lookback_minutes: int = DEFAULT_LOOKBACK_MINUTES,
     incident_investigation_statuses: list[str] | None = None,
-    include_incident_alert_metadata: bool = False,
+    include_incident_alert_metadata: bool = True,
 ) -> tuple[dict, list[dict]]:
     xsoar_incidents: list[dict] = []
     next_run: dict = dict(last_run)
