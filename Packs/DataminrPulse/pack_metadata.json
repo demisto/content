@@ -60,7 +60,6 @@
         "agentix",
         "xsiam"
     ],
-    "defaultDataSource": "Dataminr Pulse ReGenAI",
     "dependencies": {
         "FiltersAndTransformers": {
             "mandatory": true,
