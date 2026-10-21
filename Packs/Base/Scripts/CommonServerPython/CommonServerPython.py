@@ -13950,6 +13950,8 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
 
     :type multiple_threads: ``bool``
     :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
+        Note that when set to True, should_update_health_module is ignored and the updateModuleHealth should be done
+        from the integration itself, after awaiting the returned futures.
 
     :type client_class: ``BaseClient``
     :param client_class: The client class to use for the request.
@@ -14142,7 +14144,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
     :type multiple_threads: ``bool``
     :param multiple_threads: whether to use multiple threads to send the events to xsiam or not.
-    Note that when set to True, the updateModuleHealth should be done from the itnegration itself.
+    Note that when set to True, the updateModuleHealth should be done from the integration itself.
 
     :type client_class: ``BaseClient``
     :param client_class: The client class to use for the request.
@@ -14456,8 +14458,8 @@ def send_assets_and_vulnerabilities_to_xsiam(data,  # type: Union[str, list]
 
     :type multiple_threads: ``bool``
     :param multiple_threads: whether to use multiple threads to send the assets to xsiam or not.
-        Note that when set to True, the updateModuleHealth should be done from the integration itself, and the
-        streaming send path is disabled (falls back to the legacy chunked path).
+        Note that when set to True, should_update_health_module is ignored and the updateModuleHealth should be done
+        from the integration itself, after awaiting the returned futures.
 
     :type client_class: ``BaseClient``
     :param client_class: The client class to use for the request.
@@ -14465,8 +14467,8 @@ def send_assets_and_vulnerabilities_to_xsiam(data,  # type: Union[str, list]
     :type use_streaming_send: ``bool``
     :param use_streaming_send: Feature flag (default True for assets). When True, serializes and gzips the data
         one item at a time (streaming) instead of building full copies of the whole batch, keeping peak memory
-        ~flat; the bytes sent to XSIAM are equivalent to the legacy path. Ignored when multiple_threads=True or
-        when data is already a raw string.
+        ~flat; the bytes sent to XSIAM are equivalent to the legacy path. When combined with multiple_threads=True,
+        each finished compressed chunk is POSTed on a bounded thread pool. Ignored when data is already a raw string.
 
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of assets sent and can be accessed by:
