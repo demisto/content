@@ -21,7 +21,6 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "Elasticsearch v2",
     "supportedModules": [
         "agentix",
         "cloud_runtime_security",
