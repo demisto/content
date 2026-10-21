@@ -4005,6 +4005,89 @@ def test_handle_assets_page_error_raises_at_threshold():
     assert error.value.__cause__ is original_error
 
 
+@freeze_time("2025-01-01 00:00:00 UTC")
+@pytest.mark.parametrize(
+    "last_run, expected_state",
+    [
+        pytest.param(
+            {},
+            ("2024-10-03", "", "1735689600000", Qualysv2.HOST_LIMIT),  # ASSETS_FETCH_FROM (90 days) before the frozen time
+            id="first_run_uses_defaults",
+        ),
+        pytest.param(
+            {"since_datetime": "2024-10-03", "next_page": "301", "snapshot_id": SNAPSHOT_ID, "limit": 250},
+            ("2024-10-03", "301", str(SNAPSHOT_ID), 250),
+            id="resumed_run_reads_saved_fields",
+        ),
+    ],
+)
+def test_read_assets_page_state(last_run: dict, expected_state: tuple):
+    """
+    Given:
+        - A last assets run, either empty (first run) or saved by a previous page.
+    When:
+        - Calling read_assets_page_state.
+    Then:
+        - A first run starts from ASSETS_FETCH_FROM with a new snapshot ID and the default limit.
+        - A resumed run returns the saved since_datetime, next_page, snapshot_id and limit.
+    """
+    assert Qualysv2.read_assets_page_state(last_run) == expected_state
+
+
+@pytest.mark.parametrize(
+    "host_ids, expected_batches",
+    [
+        pytest.param(
+            ["100", "200", "300", "400", "500"],
+            [(["100", "200"], "201", True), (["300", "400"], "401", True), (["500"], None, False)],
+            id="full_batches_then_partial",
+        ),
+        pytest.param(
+            ["100", "200", "300", "400"],
+            [(["100", "200"], "201", True), (["300", "400"], "401", True)],
+            id="only_full_batches",
+        ),
+        pytest.param(["100"], [(["100"], None, False)], id="single_partial_batch"),
+        pytest.param([], [], id="no_hosts"),
+    ],
+)
+def test_iter_committable_host_batches(mocker: MockerFixture, host_ids: list[str], expected_batches: list[tuple]):
+    """
+    Given:
+        - A streamed page of hosts (one detection each), with a commit batch size of 2.
+    When:
+        - Iterating iter_committable_host_batches.
+    Then:
+        - Each full batch yields its asset rows, next_page set to the last host ID + 1, and is_full_batch=True.
+        - Only the last batch can be partial: it yields next_page=None and is_full_batch=False.
+    """
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter([_make_host(host_id, 1) for host_id in host_ids]))
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 2)
+
+    batches = list(Qualysv2.iter_committable_host_batches(Mock(), {}))
+
+    assert [([row["ID"] for row in rows], next_page, is_full) for rows, next_page, is_full in batches] == expected_batches
+
+
+def test_iter_committable_host_batches_next_page_follows_last_host_with_no_detections(mocker: MockerFixture):
+    """
+    Given:
+        - A full batch whose last host has no detections (so it yields no asset rows).
+    When:
+        - Iterating iter_committable_host_batches.
+    Then:
+        - next_page follows the last host of the batch, not the last asset row, so that host is not resent.
+    """
+    hosts = [_make_host("100", 1), _make_host("200", 0)]
+    mocker.patch("Qualysv2.iter_host_list_detections", return_value=iter(hosts))
+    mocker.patch("Qualysv2.ASSETS_COMMIT_HOSTS_BATCH_SIZE", 2)
+
+    (rows, next_page, is_full_batch), *_ = Qualysv2.iter_committable_host_batches(Mock(), {})
+
+    assert next_page == "201"
+    assert is_full_batch is True
+
+
 def test_fetch_and_send_assets_streamed_host_missing_id_does_not_commit(mocker: MockerFixture, client: Client):
     """
     Given:

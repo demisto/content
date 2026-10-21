@@ -3759,6 +3759,51 @@ def request_host_list_page(
     return raw_response, None
 
 
+def read_assets_page_state(last_run: dict[str, Any]) -> tuple[str, str, str, int]:
+    """Reads the page fields shared by both assets flows from the last run, and logs the start of the page.
+
+    A first run (no saved ``since_datetime`` / ``snapshot_id``) starts from ``ASSETS_FETCH_FROM`` with a new snapshot ID.
+
+    Args:
+        last_run (dict): Last assets run dictionary.
+    Returns:
+        tuple: (since_datetime, next_page, snapshot_id, limit).
+    """
+    since_datetime = last_run.get("since_datetime", "") or arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
+    next_page = last_run.get("next_page", "")
+    snapshot_id = str(last_run.get("snapshot_id", str(round(time.time() * 1000))))
+    limit = last_run.get("limit", HOST_LIMIT)
+    demisto.debug(
+        f"[Assets Page] Starting page fetch {snapshot_id=}, {since_datetime=}, {next_page=}, {limit=}, "
+        f"consecutive_failures={last_run.get('consecutive_failures', 0)}"
+    )
+    return since_datetime, next_page, snapshot_id, limit
+
+
+def iter_committable_host_batches(
+    raw_response: Optional[requests.Response], stream_state: dict
+) -> Iterator[tuple[list[dict], Optional[str], bool]]:
+    """Streams the page's hosts in batches of ``ASSETS_COMMIT_HOSTS_BATCH_SIZE`` and yields the asset rows of each batch.
+
+    Args:
+        raw_response (Optional[requests.Response]): The streamed host list detection response.
+        stream_state (dict): Filled with ``next_url`` once the stream is fully consumed.
+    Yields:
+        tuple: (asset rows, next_page, is_full_batch).
+            - next_page: the ``id_min`` the next run resumes from once this batch is committed; None for a partial batch.
+            - is_full_batch: False only for the last batch, which the caller sends as the end-of-page remainder.
+    """
+    hosts = iter_host_list_detections(raw_response, stream_state)
+    for host_batch in iter_batches(hosts, ASSETS_COMMIT_HOSTS_BATCH_SIZE):
+        rows = list(iter_detections_from_hosts(host_batch))
+        if len(host_batch) < ASSETS_COMMIT_HOSTS_BATCH_SIZE:
+            yield rows, None, False
+            return
+        # Assumes Qualys returns hosts in ascending ID order (observed behavior, not stated in the Qualys API docs).
+        # `id_min` is inclusive, so the next run resumes right after the last host of this batch.
+        yield rows, str(int(host_batch[-1]["ID"]) + 1), True
+
+
 def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> tuple[dict[str, Any], bool]:
     """Fetches one assets page (host list detections) and sends it to XSIAM, committing every few hosts.
 
@@ -3777,16 +3822,9 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
     Returns:
         tuple[dict, bool]: (the new last run to save, set_new_limit flag).
     """
-    since_datetime = last_run.get("since_datetime", "") or arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
-    next_page = last_run.get("next_page", "")
+    demisto.debug("[Assets] Starting streamed assets page (fetch by date flow).")
+    since_datetime, next_page, snapshot_id, limit = read_assets_page_state(last_run)
     total_assets = last_run.get("total_assets", 0)
-    snapshot_id = str(last_run.get("snapshot_id", str(round(time.time() * 1000))))
-    limit = last_run.get("limit", HOST_LIMIT)
-
-    demisto.debug(
-        f"[Assets] Starting streamed assets fetch {snapshot_id=}, {since_datetime=}, {next_page=}, {limit=}, "
-        f"consecutive_failures={last_run.get('consecutive_failures', 0)}"
-    )
 
     raw_response, failed_request_outcome = request_host_list_page(client, last_run, since_datetime, next_page, limit)
     if failed_request_outcome is not None:
@@ -3798,24 +3836,19 @@ def fetch_and_send_assets_streamed(client: Client, last_run: dict[str, Any]) -> 
     page_assets_count = 0
     committed_run: Optional[dict[str, Any]] = None
     try:
-        hosts = iter_host_list_detections(raw_response, stream_state)
-        for host_batch in iter_batches(hosts, ASSETS_COMMIT_HOSTS_BATCH_SIZE):
-            batch = list(iter_detections_from_hosts(host_batch))
-            if len(host_batch) < ASSETS_COMMIT_HOSTS_BATCH_SIZE:
-                break  # only the last batch can be partial; it is sent below as the end-of-page remainder
+        for batch, batch_next_page, is_full_batch in iter_committable_host_batches(raw_response, stream_state):
+            if not is_full_batch:
+                break  # sent below as the end-of-page remainder
 
             send_assets_batch(batch, snapshot_id, items_count=1)
             page_assets_count += len(batch)
             batch = []
 
-            # Assumes Qualys returns hosts in ascending ID order (observed behavior, not stated in the Qualys API docs).
-            # `id_min` is inclusive, so the next run resumes right after this host.
-            host_id = int(host_batch[-1]["ID"])
             committed_run = build_next_last_run(
-                "assets", str(host_id + 1), total_assets + page_assets_count, since_datetime, snapshot_id, limit=limit
+                "assets", batch_next_page, total_assets + page_assets_count, since_datetime, snapshot_id, limit=limit
             )
             demisto.setAssetsLastRun(committed_run)
-            demisto.debug(f"[Assets] Committed hosts up to ID {host_id}. Cumulative: {committed_run['total_assets']}.")
+            demisto.debug(f"[Assets] Committed up to next_page={batch_next_page}. Cumulative: {committed_run['total_assets']}.")
 
         # The next-page URL and any API error are known only after the stream is fully consumed.
         next_run_page = get_next_page_from_url(stream_state.get("next_url", ""), "id_min")
@@ -3870,17 +3903,10 @@ def fetch_and_send_assets_and_vulnerabilities_by_qids(client: Client, last_run: 
     Returns:
         tuple[dict, bool]: (the new last run to save, set_new_limit flag).
     """
-    since_datetime = last_run.get("since_datetime", "") or arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
-    next_page = last_run.get("next_page", "")
+    demisto.debug("[Assets By QIDs] Starting assets and vulnerabilities page (fetch by QIDs flow).")
+    since_datetime, next_page, snapshot_id, limit = read_assets_page_state(last_run)
     total_assets = last_run.get("total_assets", 0)
     total_vulnerabilities = last_run.get("total_vulnerabilities", 0)
-    snapshot_id = str(last_run.get("snapshot_id", str(round(time.time() * 1000))))
-    limit = last_run.get("limit", HOST_LIMIT)
-
-    demisto.debug(
-        f"[Assets By QIDs] Starting page fetch {snapshot_id=}, {since_datetime=}, {next_page=}, {limit=}, "
-        f"consecutive_failures={last_run.get('consecutive_failures', 0)}"
-    )
 
     raw_response, failed_request_outcome = request_host_list_page(client, last_run, since_datetime, next_page, limit)
     if failed_request_outcome is not None:
@@ -3893,12 +3919,10 @@ def fetch_and_send_assets_and_vulnerabilities_by_qids(client: Client, last_run: 
     vulnerabilities: list = []
     committed_run: Optional[dict[str, Any]] = None
     try:
-        hosts = iter_host_list_detections(raw_response, stream_state)
-        for host_batch in iter_batches(hosts, ASSETS_COMMIT_HOSTS_BATCH_SIZE):
-            assets = list(iter_detections_from_hosts(host_batch))
+        for assets, batch_next_page, is_full_batch in iter_committable_host_batches(raw_response, stream_state):
             vulnerabilities = fetch_vulnerabilities_of_new_qids(client, assets, fetched_qids)
-            if len(host_batch) < ASSETS_COMMIT_HOSTS_BATCH_SIZE:
-                break  # only the last batch can be partial; it is sent below as the end-of-page remainder
+            if not is_full_batch:
+                break  # sent below as the end-of-page remainder
 
             total_assets += len(assets)
             total_vulnerabilities += len(vulnerabilities)
@@ -3907,11 +3931,9 @@ def fetch_and_send_assets_and_vulnerabilities_by_qids(client: Client, last_run: 
             )
             assets, vulnerabilities = [], []
 
-            # Assumes Qualys returns hosts in ascending ID order (observed behavior, not stated in the Qualys API docs).
-            # `id_min` is inclusive, so the next run resumes right after this host.
             committed_run = build_next_last_run(
                 "assets",
-                str(int(host_batch[-1]["ID"]) + 1),
+                batch_next_page,
                 total_assets,
                 since_datetime,
                 snapshot_id,
@@ -3920,7 +3942,7 @@ def fetch_and_send_assets_and_vulnerabilities_by_qids(client: Client, last_run: 
             )
             demisto.setAssetsLastRun(committed_run)
             demisto.debug(
-                f"[Assets By QIDs] Committed hosts up to ID {host_batch[-1]['ID']}. {total_assets=}, {total_vulnerabilities=}."
+                f"[Assets By QIDs] Committed up to next_page={batch_next_page}. {total_assets=}, {total_vulnerabilities=}."
             )
 
         # The next-page URL and any API error are known only after the stream is fully consumed.
