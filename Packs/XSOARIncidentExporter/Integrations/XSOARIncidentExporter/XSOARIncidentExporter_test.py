@@ -1,7 +1,7 @@
 import json
 import pytest
-import XSIAMAlertPusher
-from XSIAMAlertPusher import (
+import XSOARIncidentExporter
+from XSOARIncidentExporter import (
     map_severity,
     parse_date_to_epoch_ms,
     build_description,
@@ -170,8 +170,8 @@ class TestPushSingleIncidentCommand:
 
 class TestSyncNewIncidentsCommand:
     def test_no_new_incidents(self, mocker):
-        mocker.patch('XSIAMAlertPusher.demisto')
-        from XSIAMAlertPusher import demisto as mock_demisto
+        mocker.patch('XSOARIncidentExporter.demisto')
+        from XSOARIncidentExporter import demisto as mock_demisto
         mock_demisto.getIntegrationContext.return_value = {'last_synced_id': 999}
 
         mock_xsoar = mocker.MagicMock()
@@ -184,7 +184,7 @@ class TestSyncNewIncidentsCommand:
 
 class TestResetSyncCommand:
     def test_reset(self, mocker):
-        mocker.patch('XSIAMAlertPusher.demisto')
+        mocker.patch('XSOARIncidentExporter.demisto')
         result = reset_sync_command()
         assert 'reset' in result.readable_output.lower()
 
@@ -193,7 +193,7 @@ class TestTestModule:
     def test_ok(self, mocker):
         mock_xsoar = mocker.MagicMock()
         mock_xsiam = mocker.MagicMock()
-        assert XSIAMAlertPusher.test_module(mock_xsiam, mock_xsoar) == 'ok'
+        assert XSOARIncidentExporter.test_module(mock_xsiam, mock_xsoar) == 'ok'
 
 
 class TestExtractAlertField:

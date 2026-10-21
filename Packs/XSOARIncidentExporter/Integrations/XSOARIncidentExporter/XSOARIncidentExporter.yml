@@ -1,8 +1,8 @@
 commonfields:
-  id: Xporter
+  id: XSOARIncidentExporter
   version: -1
-name: Xporter
-display: Xporter
+name: XSOARIncidentExporter
+display: XSOAR Incident Exporter
 category: Utilities
 provider: Open Source
 description: Pushes Cortex XSOAR 6 or Cortex XSOAR 8 incidents to Cortex XSIAM as parsed alerts using the Insert Parsed Alerts API.
@@ -92,7 +92,7 @@ script:
   subtype: python3
   script: ''
   commands:
-    - name: xsiam-push-incidents
+    - name: xsoar-exporter-push-incidents
       description: Pushes Cortex XSOAR incidents matching a query to Cortex XSIAM as parsed alerts.
       arguments:
         - name: query
@@ -109,23 +109,23 @@ script:
           description: "The end date for incident search in ISO 8601 format (e.g., 2024-01-01T00:00:00Z)."
           required: false
       outputs:
-        - contextPath: XSIAMPush.PushedCount
+        - contextPath: XSOARExporter.Push.PushedCount
           description: The number of incidents pushed.
           type: Number
-        - contextPath: XSIAMPush.Incidents
+        - contextPath: XSOARExporter.Push.Incidents
           description: The list of pushed incident IDs and names.
           type: Unknown
-    - name: xsiam-push-incident
+    - name: xsoar-exporter-push-incident
       description: Pushes a single Cortex XSOAR incident to Cortex XSIAM as a parsed alert.
       arguments:
         - name: incident_id
           description: The Cortex XSOAR incident ID to push.
           required: true
       outputs:
-        - contextPath: XSIAMPush.PushedIncident
+        - contextPath: XSOARExporter.Push.PushedIncident
           description: The details of the pushed incident.
           type: Unknown
-    - name: xsiam-sync-new-incidents
+    - name: xsoar-exporter-sync-new-incidents
       description: Finds and pushes only new Cortex XSOAR incidents that have not been synced yet.
       arguments:
         - name: query
@@ -139,20 +139,20 @@ script:
           description: "The sync timestamp override in ISO 8601 format (e.g., 2024-01-01T00:00:00Z)."
           required: false
       outputs:
-        - contextPath: XSIAMSync.SyncedCount
+        - contextPath: XSOARExporter.Sync.SyncedCount
           description: The number of new incidents synced.
           type: Number
-        - contextPath: XSIAMSync.Incidents
+        - contextPath: XSOARExporter.Sync.Incidents
           description: The list of synced incident IDs and names.
           type: Unknown
-        - contextPath: XSIAMSync.LastSyncedID
+        - contextPath: XSOARExporter.Sync.LastSyncedID
           description: The highest incident ID that has been synced.
           type: Number
-    - name: xsiam-reset-sync
+    - name: xsoar-exporter-reset-sync
       description: Resets the sync state so the next sync will send all incidents.
       arguments: []
       outputs: []
-    - name: xsiam-sync-close-status
+    - name: xsoar-exporter-sync-close-status
       description: Queries Cortex XSIAM for open XSOAR-sourced alerts and resolves those whose XSOAR incidents are closed.
       arguments:
         - name: max_alerts
@@ -160,13 +160,13 @@ script:
           required: false
           defaultvalue: "100"
       outputs:
-        - contextPath: XSOARCloseSync.ClosedCount
+        - contextPath: XSOARExporter.CloseSync.ClosedCount
           description: The number of alerts closed.
           type: Number
-        - contextPath: XSOARCloseSync.SkippedCount
+        - contextPath: XSOARExporter.CloseSync.SkippedCount
           description: The number of open alerts skipped.
           type: Number
-        - contextPath: XSOARCloseSync.ClosedAlerts
+        - contextPath: XSOARExporter.CloseSync.ClosedAlerts
           description: The details of closed alerts.
           type: Unknown
   dockerimage: demisto/python3:3.10.14.100715

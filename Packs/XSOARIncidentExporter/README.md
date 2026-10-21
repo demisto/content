@@ -6,7 +6,7 @@ Export Cortex XSOAR 6 or Cortex XSOAR 8 incidents to Cortex XSIAM using the Inse
 
 ### Integrations
 
-- **Xporter** — Runs on Cortex XSOAR 6 or 8. Pushes incidents to Cortex XSIAM as parsed alerts. Supports bulk push, single incident push, incremental sync, and close status sync.
+- **XSOAR Incident Exporter** — Runs on Cortex XSOAR 6 or 8. Pushes incidents to Cortex XSIAM as parsed alerts. Supports bulk push, single incident push, incremental sync, and close status sync.
 
 ### Scripts
 
@@ -29,7 +29,7 @@ The integration supports Cortex XSOAR 6 (on-prem) and Cortex XSOAR 8 (cloud). Th
 ## Setup
 
 1. Install the pack on Cortex XSOAR.
-2. Configure the Xporter integration instance with your Cortex XSOAR and Cortex XSIAM API credentials.
+2. Configure the XSOAR Incident Exporter integration instance with your Cortex XSOAR and Cortex XSIAM API credentials.
 3. For Cortex XSOAR 8, fill in the **Cortex XSOAR API Key ID** field.
-4. Run `!xsiam-push-incidents` for bulk push or `!xsiam-sync-new-incidents` for incremental sync.
-5. Run `!xsiam-sync-close-status` to resolve Cortex XSIAM alerts whose source incidents are closed.
+4. Run `!xsoar-exporter-push-incidents` for bulk push or `!xsoar-exporter-sync-new-incidents` for incremental sync.
+5. Run `!xsoar-exporter-sync-close-status` to resolve Cortex XSIAM alerts whose source incidents are closed.

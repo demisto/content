@@ -275,7 +275,7 @@ def push_incidents_command(xsiam_client: XSIAMClient, xsoar_client: XSOARClient,
     if not incidents:
         return CommandResults(
             readable_output='No incidents found matching the query.',
-            outputs_prefix='XSIAMPush',
+            outputs_prefix='XSOARExporter.Push',
             outputs={'PushedCount': 0, 'Incidents': []},
         )
 
@@ -292,7 +292,7 @@ def push_incidents_command(xsiam_client: XSIAMClient, xsoar_client: XSOARClient,
     )
     return CommandResults(
         readable_output=readable,
-        outputs_prefix='XSIAMPush',
+        outputs_prefix='XSOARExporter.Push',
         outputs={'PushedCount': len(alerts), 'Incidents': pushed_summary},
     )
 
@@ -324,7 +324,7 @@ def push_single_incident_command(xsiam_client: XSIAMClient, xsoar_client: XSOARC
     )
     return CommandResults(
         readable_output=readable,
-        outputs_prefix='XSIAMPush',
+        outputs_prefix='XSOARExporter.Push',
         outputs={'PushedIncident': pushed_info},
     )
 
@@ -346,7 +346,7 @@ def sync_new_incidents_command(xsiam_client: XSIAMClient, xsoar_client: XSOARCli
     if not incidents:
         return CommandResults(
             readable_output=f'No new incidents found (last synced ID: {last_id}).',
-            outputs_prefix='XSIAMSync',
+            outputs_prefix='XSOARExporter.Sync',
             outputs={'SyncedCount': 0, 'Incidents': [], 'LastSyncedID': last_id},
         )
 
@@ -355,7 +355,7 @@ def sync_new_incidents_command(xsiam_client: XSIAMClient, xsoar_client: XSOARCli
     if not new_incidents:
         return CommandResults(
             readable_output=f'All incidents already synced (last synced ID: {last_id}).',
-            outputs_prefix='XSIAMSync',
+            outputs_prefix='XSOARExporter.Sync',
             outputs={'SyncedCount': 0, 'Incidents': [], 'LastSyncedID': last_id},
         )
 
@@ -378,7 +378,7 @@ def sync_new_incidents_command(xsiam_client: XSIAMClient, xsoar_client: XSOARCli
     )
     return CommandResults(
         readable_output=readable,
-        outputs_prefix='XSIAMSync',
+        outputs_prefix='XSOARExporter.Sync',
         outputs={'SyncedCount': len(new_incidents), 'Incidents': pushed_summary, 'LastSyncedID': new_last_id},
     )
 
@@ -490,7 +490,7 @@ def sync_close_status_command(xsiam_client: XSIAMClient, args: dict) -> CommandR
 
     return CommandResults(
         readable_output='\n'.join(output_parts),
-        outputs_prefix='XSOARCloseSync',
+        outputs_prefix='XSOARExporter.CloseSync',
         outputs={
             'ClosedCount': len(closed_summary),
             'SkippedCount': len(skipped),
@@ -538,19 +538,19 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             result = test_module(xsiam_client, xsoar_client)
             return_results(result)
-        elif command == 'xsiam-push-incidents':
+        elif command == 'xsoar-exporter-push-incidents':
             result = push_incidents_command(xsiam_client, xsoar_client, args, default_query, default_max, elevate_low, timestamp_offset)
             return_results(result)
-        elif command == 'xsiam-push-incident':
+        elif command == 'xsoar-exporter-push-incident':
             result = push_single_incident_command(xsiam_client, xsoar_client, args, elevate_low, timestamp_offset)
             return_results(result)
-        elif command == 'xsiam-sync-new-incidents':
+        elif command == 'xsoar-exporter-sync-new-incidents':
             result = sync_new_incidents_command(xsiam_client, xsoar_client, args, default_query, default_max, elevate_low, timestamp_offset)
             return_results(result)
-        elif command == 'xsiam-reset-sync':
+        elif command == 'xsoar-exporter-reset-sync':
             result = reset_sync_command()
             return_results(result)
-        elif command == 'xsiam-sync-close-status':
+        elif command == 'xsoar-exporter-sync-close-status':
             result = sync_close_status_command(xsiam_client, args)
             return_results(result)
         else:
